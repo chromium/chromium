@@ -1,6 +1,6 @@
 const executor_path = '/common/dispatcher/executor.html?pipe=';
 
-const enableAnonymousIframeOriginTrial = () => {
+const enableIframeCredentiallessOriginTrial = () => {
   const meta = document.createElement('meta');
   meta.httpEquiv = 'origin-trial';
   // Generated using:
@@ -45,11 +45,11 @@ let parseCookies = function(headers_json) {
 }
 
 // Create an iframe, return the token to communicate with it.
-const newIframe = (origin, anonymous) => {
+const newIframe = (origin, credentialless) => {
   const iframe_token = token();
   const iframe = document.createElement('iframe');
   iframe.src = origin + executor_path + `&uuid=${iframe_token}`;
-  iframe.anonymous = anonymous;
+  iframe.credentialless = credentialless;
   document.body.appendChild(iframe);
   return iframe_token;
 }

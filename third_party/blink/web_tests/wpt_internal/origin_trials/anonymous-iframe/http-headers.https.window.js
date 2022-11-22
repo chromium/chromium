@@ -1,3 +1,3 @@
 test(t => {
-  assert_true('anonymouslyFramed' in window);
-}, 'Anonymous iframe is enabled using HTTP headers');
+  assert_true('credentialless' in window);
+}, 'Credentialless iframe is enabled using HTTP headers');

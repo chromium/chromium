@@ -2415,11 +2415,11 @@ void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
 }
 
-bool LocalDOMWindow::anonymouslyFramed() const {
+bool LocalDOMWindow::credentialless() const {
   return GetExecutionContext()
       ->GetPolicyContainer()
       ->GetPolicies()
-      .is_anonymous;
+      .is_credentialless;
 }
 
 bool LocalDOMWindow::IsInFencedFrame() const {

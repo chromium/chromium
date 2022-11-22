@@ -122,8 +122,9 @@ class RenderFrameHostTester {
       const std::string& frame_name,
       const blink::ParsedPermissionsPolicy& allow) = 0;
 
-  // Same as AppendChild above, but simulates a custom attributes.
-  virtual RenderFrameHost* AppendAnonymousChild(
+  // Same as AppendChild above, but simulates the `credentialless` attribute
+  // being added.
+  virtual RenderFrameHost* AppendCredentiallessChild(
       const std::string& frame_name) = 0;
 
   // Gives tests access to RenderFrameHostImpl::OnDetach. Destroys |this|.

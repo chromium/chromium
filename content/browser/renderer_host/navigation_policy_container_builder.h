@@ -144,7 +144,7 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   void ComputePolicies(const GURL& url,
                        bool is_inside_mhtml,
                        network::mojom::WebSandboxFlags frame_sandbox_flags,
-                       bool is_anonymous);
+                       bool is_credentialless);
 
   // Returns a reference to the policies of the new document, i.e. the policies
   // in the policy container host to be committed.
@@ -220,7 +220,7 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
       const GURL& url,
       bool is_inside_mhtml,
       network::mojom::WebSandboxFlags frame_sandbox_flags,
-      bool is_anonymous);
+      bool is_credentialless);
 
   // The policies of the parent document, if any.
   const std::unique_ptr<PolicyContainerPolicies> parent_policies_;

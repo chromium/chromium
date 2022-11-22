@@ -2895,7 +2895,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
             network::mojom::WebSandboxFlags::kNone,
-            /*is_anonymous=*/false,
+            /*is_credentialless=*/false,
             /*can_navigate_top_without_user_gesture=*/true)));
   } else if (frame_tree_node_->opener()) {
     // During a `window.open(...)` without `noopener`, a new popup is created
@@ -2952,10 +2952,10 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   }
   policy_container_host_->set_sandbox_flags(sandbox_flags_to_commit);
 
-  // The initial empty document's anonymous bit was inherited from the parent
-  // document. The frame's anonymous bit can also turn it one.
-  if (frame_tree_node_->anonymous()) {
-    policy_container_host_->SetIsAnonymous();
+  // The initial empty document's credentialless bit was inherited from the
+  // parent document. The frame's credentialless bit can also turn it on.
+  if (frame_tree_node_->credentialless()) {
+    policy_container_host_->SetIsCredentialless();
   }
 }
 
@@ -2964,10 +2964,10 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   policy_container_host_ = std::move(policy_container_host);
   policy_container_host_->AssociateWithFrameToken(GetFrameToken(),
                                                   GetProcess()->GetID());
-  // Top-level document are never anonymous.
+  // Top-level document are never credentialless.
   // Note: It is never inherited from the opener, because they are forced to
   // open windows using noopener.
-  CHECK(parent_ || !IsAnonymous());
+  CHECK(parent_ || !IsCredentialless());
 }
 
 void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
@@ -3578,8 +3578,8 @@ void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
   coop_access_report_manager_.set_coop_reporter(std::move(coop_reporter));
 }
 
-bool RenderFrameHostImpl::IsAnonymous() const {
-  return policy_container_host_->policies().is_anonymous;
+bool RenderFrameHostImpl::IsCredentialless() const {
+  return policy_container_host_->policies().is_credentialless;
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
@@ -3718,7 +3718,7 @@ void RenderFrameHostImpl::DidNavigate(
 
   isolation_info_ = ComputeIsolationInfoInternal(
       origin, isolation_info_.request_type(),
-      navigation_request->is_anonymous(),
+      navigation_request->is_credentialless(),
       navigation_request->ComputeFencedFrameNonce());
 
   // Separately, update the frame's last successful URL except for net error
@@ -3817,30 +3817,30 @@ void RenderFrameHostImpl::SetStorageKey(const blink::StorageKey& storage_key) {
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination) {
   return ComputeIsolationInfoForNavigation(
-      destination, IsAnonymous(),
+      destination, IsCredentialless(),
       /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
 }
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination,
-    bool is_anonymous,
+    bool is_credentialless,
     absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   net::IsolationInfo::RequestType request_type =
       is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
                       : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
-                                      request_type, is_anonymous,
+                                      request_type, is_credentialless,
                                       fenced_frame_nonce_for_navigation);
 }
 
 net::IsolationInfo
 RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
     const url::Origin& main_world_origin,
-    bool is_anonymous,
+    bool is_credentialless,
     absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   return ComputeIsolationInfoInternal(
-      main_world_origin, net::IsolationInfo::RequestType::kOther, is_anonymous,
-      fenced_frame_nonce_for_navigation);
+      main_world_origin, net::IsolationInfo::RequestType::kOther,
+      is_credentialless, fenced_frame_nonce_for_navigation);
 }
 
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
@@ -3850,7 +3850,7 @@ net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
     net::IsolationInfo::RequestType request_type,
-    bool is_anonymous,
+    bool is_credentialless,
     absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
@@ -3895,40 +3895,40 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
   }
 
   absl::optional<base::UnguessableToken> nonce =
-      ComputeNonce(is_anonymous, fenced_frame_nonce_for_navigation);
+      ComputeNonce(is_credentialless, fenced_frame_nonce_for_navigation);
   return net::IsolationInfo::Create(
       request_type, top_frame_origin, frame_origin, candidate_site_for_cookies,
       std::move(party_context), nonce ? &nonce.value() : nullptr);
 }
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
-    bool is_anonymous,
+    bool is_credentialless,
     absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
-  // If it's an anonymous frame tree, use its nonce even if it's within a fenced
-  // frame tree to maintain the guarantee that an anonymous frame tree has
-  // a unique nonce.
-  if (is_anonymous) {
+  // If it's a credentialless frame tree, use its nonce even if it's within a
+  // fenced frame tree to maintain the guarantee that a credentialless frame
+  // tree has a unique nonce.
+  if (is_credentialless) {
     RenderFrameHostImpl* main_rfh = this;
     while (main_rfh->parent_ && !main_rfh->IsFencedFrameRoot()) {
       main_rfh = main_rfh->parent_;
     }
-    return main_rfh->anonymous_iframes_nonce();
+    return main_rfh->credentialless_iframes_nonce();
   }
 
   // Otherwise, use the fenced frame nonce for this navigation.
   // If this call is for a pending navigation, the fenced frame nonce should
-  // have been computed with `NavigationRequest::ComputeFencedFrameNonce()`
-  // and passed in `fenced_frame_nonce_for_navigation`.
-  // If there is no navigation associated with this call, then we get the nonce
-  // from this RFHI's FrameTreeNode with FrameTreeNode::GetFencedFrameNonce().
+  // have been computed with `NavigationRequest::ComputeFencedFrameNonce()` and
+  // passed in `fenced_frame_nonce_for_navigation`. If there is no navigation
+  // associated with this call, then we get the nonce from this RFHI's
+  // FrameTreeNode with FrameTreeNode::GetFencedFrameNonce().
   //
-  // Note that MPArch will ensure that fenced frame tree within an anonymous
-  // iframe does not have `is_anonymous` set to true. The nonce was moved from
-  // PageImpl to RenderFrameHostImpl to fix crbug.com/1287458. In the case of an
-  // anonymous iframe embedded in a fenced frame, we get the
-  // `anonymous_iframes_nonce_` of the fenced frame root to prevent anonymous
-  // iframes embedded inside a fenced frame from sharing nonce with anonymous
-  // iframes outside the fenced frame.
+  // Note that MPArch will ensure that fenced frame tree within an
+  // credentialless iframe does not have `is_credentialless` set to true. The
+  // nonce was moved from PageImpl to RenderFrameHostImpl to fix
+  // crbug.com/1287458. In the case of a credentialless iframe embedded in a
+  // fenced frame, we get the `credentialless_iframes_nonce_` of the fenced
+  // frame root to prevent credentialless iframes embedded inside a fenced frame
+  // from sharing nonce with credentialless iframes outside the fenced frame.
   if (fenced_frame_nonce_for_navigation.has_value()) {
     return fenced_frame_nonce_for_navigation;
   }
@@ -4006,7 +4006,8 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
                                      : new_frame_creator;
   isolation_info_ = ComputeIsolationInfoInternal(
-      new_frame_origin, net::IsolationInfo::RequestType::kOther, IsAnonymous(),
+      new_frame_origin, net::IsolationInfo::RequestType::kOther,
+      IsCredentialless(),
       /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
   SetLastCommittedOrigin(new_frame_origin);
 
@@ -7259,7 +7260,7 @@ void RenderFrameHostImpl::CreateNewWindow(
         dom_storage_context, params->session_storage_namespace_id);
   }
 
-  if (IsAnonymous() || IsNestedWithinFencedFrame() ||
+  if (IsCredentialless() || IsNestedWithinFencedFrame() ||
       CoopSuppressOpener(/*opener=*/this)) {
     params->opener_suppressed = true;
     // TODO(https://crbug.com/1060691) This should be applied to all
@@ -10752,7 +10753,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
-      origin, net::IsolationInfo::RequestType::kOther, IsAnonymous(),
+      origin, net::IsolationInfo::RequestType::kOther, IsCredentialless(),
       /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
@@ -11676,11 +11677,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
          navigation_request->GetURL().IsAboutSrcdoc());
   set_inherited_base_url(navigation_request->inherited_base_url());
 
-  // The nonce to use in anonymous iframe is a page scoped attribute. So it
+  // The nonce to use in credentialless iframe is a page scoped attribute. So it
   // needs to change every time the top-level document change.
   // TODO(https://crbug.com1287458): Once the ShadowDom implementation of
   // FencedFrame is gone, move this attribute back to PageImpl.
-  anonymous_iframes_nonce_ = base::UnguessableToken::Create();
+  credentialless_iframes_nonce_ = base::UnguessableToken::Create();
 
   ResetPermissionsPolicy();
 

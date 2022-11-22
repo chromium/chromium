@@ -2319,10 +2319,10 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
                                   &policy_container_data,
                                   &name](WebLocalFrame* new_child_frame,
                                          const DocumentToken& document_token) {
-    // The initial empty document's anonymous bit is the union of:
-    // - its parent's anonymous bit.
-    // - its frame's anonymous attribute.
-    policy_container_data->is_anonymous |= owner_element->Anonymous();
+    // The initial empty document's credentialless bit is the union of:
+    // - its parent's credentialless bit.
+    // - its frame's credentialless attribute.
+    policy_container_data->is_credentialless |= owner_element->Credentialless();
 
     std::unique_ptr<PolicyContainer> policy_container =
         std::make_unique<PolicyContainer>(std::move(policy_container_remote),

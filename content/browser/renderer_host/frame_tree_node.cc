@@ -481,8 +481,8 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
 
 void FrameTreeNode::SetAttributes(
     blink::mojom::IframeAttributesPtr attributes) {
-  if (!anonymous() && attributes->anonymous) {
-    // Log this only when anonymous is changed to true.
+  if (!credentialless() && attributes->credentialless) {
+    // Log this only when credentialless is changed to true.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         parent_, blink::mojom::WebFeature::kAnonymousIframe);
   }

@@ -3676,9 +3676,9 @@ interface HTMLIFrameElement : HTMLElement
     getter allow
     getter allowFullscreen
     getter allowPaymentRequest
-    getter anonymous
     getter contentDocument
     getter contentWindow
+    getter credentialless
     getter csp
     getter featurePolicy
     getter frameBorder
@@ -3701,7 +3701,7 @@ interface HTMLIFrameElement : HTMLElement
     setter allow
     setter allowFullscreen
     setter allowPaymentRequest
-    setter anonymous
+    setter credentialless
     setter csp
     setter frameBorder
     setter height
@@ -11779,11 +11779,11 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter anonymouslyFramed
     getter caches
     getter clientInformation
     getter closed
     getter cookieStore
+    getter credentialless
     getter crossOriginEmbedderPolicy
     getter crossOriginIsolated
     getter crypto

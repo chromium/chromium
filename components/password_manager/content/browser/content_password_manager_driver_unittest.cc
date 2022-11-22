@@ -437,39 +437,40 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
 }
 
 TEST_F(ContentPasswordManagerDriverTest,
-       PasswordAutofillDisabledOnAnonymousIframe) {
+       PasswordAutofillDisabledOnCredentiallessIframe) {
   NavigateAndCommit(GURL("https://test.org"));
 
-  content::RenderFrameHost* anonymous_iframe_root =
+  content::RenderFrameHost* credentialless_iframe_root =
       content::RenderFrameHostTester::For(main_rfh())
-          ->AppendAnonymousChild("anonymous_iframe");
+          ->AppendCredentiallessChild("credentialless_iframe");
 
-  // Navigate an anonymous iframe.
-  GURL anonymous_iframe_url = GURL("https://hostname/path?query#hash");
+  // Navigate a credentialless iframe.
+  GURL credentialless_iframe_url = GURL("https://hostname/path?query#hash");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          anonymous_iframe_url, anonymous_iframe_root);
+          credentialless_iframe_url, credentialless_iframe_root);
   navigation_simulator->Commit();
-  content::RenderFrameHost* anonymous_iframe_1 =
+  content::RenderFrameHost* credentialless_rfh_1 =
       navigation_simulator->GetFinalRenderFrameHost();
 
   // Install a the PasswordAutofillAgent mock. Verify it do not receive commands
   // from the browser side.
-  FakePasswordAutofillAgent anonymous_fake_agent_;
-  EXPECT_CALL(anonymous_fake_agent_, SetPasswordFillData(_)).Times(0);
-  anonymous_iframe_1->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      autofill::mojom::PasswordAutofillAgent::Name_,
-      base::BindRepeating(&FakePasswordAutofillAgent::BindPendingReceiver,
-                          base::Unretained(&anonymous_fake_agent_)));
+  FakePasswordAutofillAgent credentialless_fake_agent;
+  EXPECT_CALL(credentialless_fake_agent, SetPasswordFillData(_)).Times(0);
+  credentialless_rfh_1->GetRemoteAssociatedInterfaces()
+      ->OverrideBinderForTesting(
+          autofill::mojom::PasswordAutofillAgent::Name_,
+          base::BindRepeating(&FakePasswordAutofillAgent::BindPendingReceiver,
+                              base::Unretained(&credentialless_fake_agent)));
 
   autofill::FormData initial_form;
-  autofill::FormData form_in_anonymous_iframe =
-      GetFormWithFrameAndFormMetaData(anonymous_iframe_1, initial_form);
+  autofill::FormData form_in_credentialless_iframe =
+      GetFormWithFrameAndFormMetaData(credentialless_rfh_1, initial_form);
 
   // Verify autofill can not be triggered by browser side.
   std::unique_ptr<ContentPasswordManagerDriver> driver(
       std::make_unique<ContentPasswordManagerDriver>(
-          anonymous_iframe_1, &password_manager_client_, &autofill_client_));
+          credentialless_rfh_1, &password_manager_client_, &autofill_client_));
   driver->SetPasswordFillData(GetTestPasswordFormFillData());
   base::RunLoop().RunUntilIdle();
 }

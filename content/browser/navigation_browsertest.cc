@@ -5871,7 +5871,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug1210234) {
   EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
 }
 
-class NavigationBrowserTestAnonymousIframe : public NavigationBrowserTest {
+class NavigationBrowserTestCredentiallessIframe : public NavigationBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NavigationBrowserTest::SetUpCommandLine(command_line);
@@ -5880,8 +5880,8 @@ class NavigationBrowserTestAnonymousIframe : public NavigationBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
-                       AnonymousAttributeIsHonoredByNavigation) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
+                       CredentiallessAttributeIsHonoredByNavigation) {
   GURL main_url = embedded_test_server()->GetURL("/page_with_iframe.html");
   GURL iframe_url_1 = embedded_test_server()->GetURL("/title1.html");
   GURL iframe_url_2 = embedded_test_server()->GetURL("/title2.html");
@@ -5891,20 +5891,20 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(1U, main_frame()->child_count());
   FrameTreeNode* child = main_frame()->child_at(0);
   EXPECT_EQ(iframe_url_1, child->current_url());
-  EXPECT_FALSE(child->anonymous());
-  EXPECT_FALSE(child->current_frame_host()->IsAnonymous());
+  EXPECT_FALSE(child->credentialless());
+  EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
+            EvalJs(child->current_frame_host(), "window.credentialless"));
 
-  // Changes to the iframe 'anonymous' attribute are propagated to the
+  // Changes to the iframe 'credentialless' attribute are propagated to the
   // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
   EXPECT_TRUE(
       ExecJs(main_frame(),
-             "document.getElementById('test_iframe').anonymous = true;"));
-  EXPECT_TRUE(child->anonymous());
-  EXPECT_FALSE(child->current_frame_host()->IsAnonymous());
+             "document.getElementById('test_iframe').credentialless = true;"));
+  EXPECT_TRUE(child->credentialless());
+  EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
+            EvalJs(child->current_frame_host(), "window.credentialless"));
 
   // Create a grandchild iframe.
   EXPECT_TRUE(ExecJs(
@@ -5916,13 +5916,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(1U, child->child_count());
   FrameTreeNode* grandchild = child->child_at(0);
 
-  // The grandchild FrameTreeNode does not set the 'anonymous'
-  // attribute. The grandchild RenderFrameHost is not anonymous, since its
-  // parent RenderFrameHost is not anonymous.
-  EXPECT_FALSE(grandchild->anonymous());
-  EXPECT_FALSE(grandchild->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(false, EvalJs(grandchild->current_frame_host(),
-                          "window.anonymouslyFramed"));
+  // The grandchild FrameTreeNode does not set the 'credentialless'
+  // attribute. The grandchild RenderFrameHost is not credentialless, since its
+  // parent RenderFrameHost is not credentialless.
+  EXPECT_FALSE(grandchild->credentialless());
+  EXPECT_FALSE(grandchild->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(false,
+            EvalJs(grandchild->current_frame_host(), "window.credentialless"));
 
   // Navigate the child iframe same-document. This does not change anything.
   EXPECT_TRUE(ExecJs(main_frame(),
@@ -5930,25 +5930,24 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
                                "        .contentWindow.location.href = $1;",
                                iframe_url_1.Resolve("#here").spec())));
   WaitForLoadStop(web_contents());
-  EXPECT_TRUE(child->anonymous());
-  EXPECT_FALSE(child->current_frame_host()->IsAnonymous());
+  EXPECT_TRUE(child->credentialless());
+  EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
+            EvalJs(child->current_frame_host(), "window.credentialless"));
 
   // Now navigate the child iframe cross-document.
   EXPECT_TRUE(ExecJs(
       main_frame(), JsReplace("document.getElementById('test_iframe').src = $1",
                               iframe_url_2)));
   WaitForLoadStop(web_contents());
-  EXPECT_TRUE(child->anonymous());
-  EXPECT_TRUE(child->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(true,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
-  // An anonymous document has a storage key with a nonce.
+  EXPECT_TRUE(child->credentialless());
+  EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
+  // A credentialless document has a storage key with a nonce.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
-  base::UnguessableToken anonymous_nonce =
-      current_frame_host()->anonymous_iframes_nonce();
-  EXPECT_EQ(anonymous_nonce,
+  base::UnguessableToken credentialless_nonce =
+      current_frame_host()->credentialless_iframes_nonce();
+  EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->storage_key().nonce().value());
 
   // Create a grandchild iframe.
@@ -5960,17 +5959,17 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_EQ(1U, child->child_count());
   grandchild = child->child_at(0);
 
-  // The grandchild does not set the 'anonymous' attribute, but the grandchild
-  // document is anonymous.
-  EXPECT_FALSE(grandchild->anonymous());
-  EXPECT_TRUE(grandchild->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(true, EvalJs(grandchild->current_frame_host(),
-                         "window.anonymouslyFramed"));
+  // The grandchild does not set the 'credentialless' attribute, but the
+  // grandchild document is credentialless.
+  EXPECT_FALSE(grandchild->credentialless());
+  EXPECT_TRUE(grandchild->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(true,
+            EvalJs(grandchild->current_frame_host(), "window.credentialless"));
 
-  // The storage key's nonce is the same for all anonymous documents in the same
-  // page.
+  // The storage key's nonce is the same for all credentialless documents in the
+  // same page.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
-  EXPECT_EQ(anonymous_nonce,
+  EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->storage_key().nonce().value());
 
   // Now navigate the grandchild iframe.
@@ -5978,80 +5977,81 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
       child, JsReplace("document.getElementById('grandchild_iframe').src = $1",
                        iframe_url_2)));
   WaitForLoadStop(web_contents());
-  EXPECT_TRUE(grandchild->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(true, EvalJs(grandchild->current_frame_host(),
-                         "window.anonymouslyFramed"));
+  EXPECT_TRUE(grandchild->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(true,
+            EvalJs(grandchild->current_frame_host(), "window.credentialless"));
 
   // The storage key's nonce is still the same.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
-  EXPECT_EQ(anonymous_nonce,
+  EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->storage_key().nonce().value());
 
-  // Remove the 'anonymous' attribute from the iframe. This propagates to the
-  // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
+  // Remove the 'credentialless' attribute from the iframe. This propagates to
+  // the FrameTreeNode. The RenderFrameHost, however, is updated only on
+  // navigation.
   EXPECT_TRUE(
       ExecJs(main_frame(),
-             "document.getElementById('test_iframe').anonymous = false;"));
-  EXPECT_FALSE(child->anonymous());
-  EXPECT_TRUE(child->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(true,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
+             "document.getElementById('test_iframe').credentialless = false;"));
+  EXPECT_FALSE(child->credentialless());
+  EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
-  EXPECT_EQ(anonymous_nonce,
+  EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->storage_key().nonce().value());
 
   // Create another grandchild iframe. Even if the parent iframe element does
-  // not have the 'anonymous' attribute anymore, the grandchild document is
-  // still loaded inside of an anonymous RenderFrameHost, so it will be
-  // anonymous.
+  // not have the 'credentialless' attribute anymore, the grandchild document is
+  // still loaded inside of a credentialless RenderFrameHost, so it will be
+  // credentialless.
   EXPECT_TRUE(ExecJs(
       child, JsReplace("let grandchild2 = document.createElement('iframe');"
                        "document.body.appendChild(grandchild2);",
                        iframe_url_1)));
   EXPECT_EQ(2U, child->child_count());
   FrameTreeNode* grandchild2 = child->child_at(1);
-  EXPECT_FALSE(grandchild2->anonymous());
-  EXPECT_TRUE(grandchild2->current_frame_host()->IsAnonymous());
-  EXPECT_EQ(true, EvalJs(grandchild2->current_frame_host(),
-                         "window.anonymouslyFramed"));
+  EXPECT_FALSE(grandchild2->credentialless());
+  EXPECT_TRUE(grandchild2->current_frame_host()->IsCredentialless());
+  EXPECT_EQ(true,
+            EvalJs(grandchild2->current_frame_host(), "window.credentialless"));
   EXPECT_TRUE(
       grandchild2->current_frame_host()->storage_key().nonce().has_value());
-  EXPECT_EQ(anonymous_nonce,
+  EXPECT_EQ(credentialless_nonce,
             grandchild2->current_frame_host()->storage_key().nonce().value());
 
   // Navigate the child iframe. Since the iframe element does not set the
-  // 'anonymous' attribute, the resulting RenderFrameHost will not be anonymous.
+  // 'credentialless' attribute, the resulting RenderFrameHost will not be
+  // credentialless.
   EXPECT_TRUE(
       ExecJs(main_frame(),
              JsReplace("document.getElementById('test_iframe').src = $1;",
                        iframe_url_2)));
   WaitForLoadStop(web_contents());
-  EXPECT_FALSE(child->anonymous());
-  EXPECT_FALSE(child->current_frame_host()->IsAnonymous());
+  EXPECT_FALSE(child->credentialless());
+  EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
-            EvalJs(child->current_frame_host(), "window.anonymouslyFramed"));
+            EvalJs(child->current_frame_host(), "window.credentialless"));
   EXPECT_FALSE(child->current_frame_host()->storage_key().nonce().has_value());
 
   // Now navigate the whole page away.
   GURL main_url_b = embedded_test_server()->GetURL(
-      "b.com", "/page_with_anonymous_iframe.html");
+      "b.com", "/page_with_credentialless_iframe.html");
   GURL iframe_url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url_b));
 
-  // The main page has an anonymous child iframe with url `iframe_url_b`.
+  // The main page has a credentialless child iframe with url `iframe_url_b`.
   EXPECT_EQ(1U, main_frame()->child_count());
   FrameTreeNode* child_b = main_frame()->child_at(0);
   EXPECT_EQ(iframe_url_b, child_b->current_url());
-  EXPECT_TRUE(child_b->anonymous());
-  EXPECT_TRUE(child_b->current_frame_host()->IsAnonymous());
+  EXPECT_TRUE(child_b->credentialless());
+  EXPECT_TRUE(child_b->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true,
-            EvalJs(child_b->current_frame_host(), "window.anonymouslyFramed"));
+            EvalJs(child_b->current_frame_host(), "window.credentialless"));
 
   EXPECT_TRUE(child_b->current_frame_host()->storage_key().nonce().has_value());
-  base::UnguessableToken anonymous_nonce_b =
-      current_frame_host()->anonymous_iframes_nonce();
-  EXPECT_NE(anonymous_nonce, anonymous_nonce_b);
-  EXPECT_EQ(anonymous_nonce_b,
+  base::UnguessableToken credentialless_nonce_b =
+      current_frame_host()->credentialless_iframes_nonce();
+  EXPECT_NE(credentialless_nonce, credentialless_nonce_b);
+  EXPECT_EQ(credentialless_nonce_b,
             child_b->current_frame_host()->storage_key().nonce().value());
 }
 

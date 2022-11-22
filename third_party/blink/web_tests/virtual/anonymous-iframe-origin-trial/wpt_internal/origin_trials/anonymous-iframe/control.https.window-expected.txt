@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-PASS Anonymous iframe is disabled by default
+PASS Credentialless iframe is disabled by default
 Harness: the test ran to completion.
 

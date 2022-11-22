@@ -196,11 +196,11 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       child_creation_observer_.last_created_frame());
 }
 
-TestRenderFrameHost* TestRenderFrameHost::AppendAnonymousChild(
+TestRenderFrameHost* TestRenderFrameHost::AppendCredentiallessChild(
     const std::string& frame_name) {
   TestRenderFrameHost* rfh = AppendChildWithPolicy(frame_name, {});
   auto attributes = blink::mojom::IframeAttributes::New();
-  attributes->anonymous = true;
+  attributes->credentialless = true;
   rfh->frame_tree_node()->SetAttributes(std::move(attributes));
   return rfh;
 }

@@ -877,15 +877,15 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/echoheader?Cookie"));
 }
 
-class WorkerFromAnonymousIframeNikBrowserTest : public WorkerTest {
+class WorkerFromCredentiallessIframeNikBrowserTest : public WorkerTest {
  public:
-  WorkerFromAnonymousIframeNikBrowserTest() {
+  WorkerFromCredentiallessIframeNikBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable parsing the iframe 'anonymous' attribute.
+    // Enable parsing the iframe 'credentialless' attribute.
     command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
     WorkerTest::SetUpCommandLine(command_line);
   }
@@ -919,18 +919,18 @@ class WorkerFromAnonymousIframeNikBrowserTest : public WorkerTest {
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         WorkerFromAnonymousIframeNikBrowserTest,
+                         WorkerFromCredentiallessIframeNikBrowserTest,
                          testing::Range(0, 3));
 
-IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
+IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
   if (!SupportsSharedWorker())
     return;
 
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
 
-  for (bool anonymous : {false, true}) {
-    SCOPED_TRACE(anonymous ? "anonymous iframe" : "normal iframe");
+  for (bool credentialless : {false, true}) {
+    SCOPED_TRACE(credentialless ? "credentialless iframe" : "normal iframe");
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
     RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
@@ -940,14 +940,14 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
     EXPECT_TRUE(ExecJs(main_rfh,
                        JsReplace("let child = document.createElement('iframe');"
                                  "child.src = $1;"
-                                 "child.anonymous = $2;"
+                                 "child.credentialless = $2;"
                                  "document.body.appendChild(child);",
-                                 main_url, anonymous)));
+                                 main_url, credentialless)));
     WaitForLoadStop(shell()->web_contents());
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-    EXPECT_EQ(anonymous, iframe->IsAnonymous());
-    EXPECT_EQ(anonymous, EvalJs(iframe, "window.anonymouslyFramed"));
+    EXPECT_EQ(credentialless, iframe->IsCredentialless());
+    EXPECT_EQ(credentialless, EvalJs(iframe, "window.credentialless"));
     ResetNetworkState();
 
     GURL worker_url = embedded_test_server()->GetURL("/workers/worker.js");
@@ -971,12 +971,12 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
     ExecuteScriptAsync(iframe, start_worker);
     connection_tracker_->WaitUntilConnectionRead();
 
-    // The normal iframe should reuse the preconnected socket, the anonymous
-    // iframe should open a new one.
-    if (!anonymous) {
-      EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
-    } else {
+    // The normal iframe should reuse the preconnected socket, the
+    // credentialless iframe should open a new one.
+    if (credentialless) {
       EXPECT_EQ(2u, connection_tracker_->GetAcceptedSocketCount());
+    } else {
+      EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
     }
     EXPECT_EQ(1u, connection_tracker_->GetReadSocketCount());
   }

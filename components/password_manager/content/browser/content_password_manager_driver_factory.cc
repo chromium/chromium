@@ -117,7 +117,7 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
   // always iframes.
   if (!navigation->IsInPrimaryMainFrame()) {
     if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost())) {
-      if (navigation->GetRenderFrameHost()->IsAnonymous()) {
+      if (navigation->GetRenderFrameHost()->IsCredentialless()) {
         driver->UnbindReceiver();
       }
     }

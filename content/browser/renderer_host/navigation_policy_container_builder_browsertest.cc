@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
   builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   builder.ComputePolicies(AboutSrcdocUrl(), false,
                           network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePoliciesForError();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   builder.ComputePolicies(GURL("http://foo.test"), false,
                           network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
 
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone,
-                          /*is_anonymous=*/false);
+                          /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }

@@ -4095,7 +4095,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           needs_paint_property_update_(true),
           descendant_needs_paint_property_update_(true),
           floating_(false),
-          is_anonymous_(!node),
+          is_anonymous(!node),
           is_text_(false),
           is_box_(false),
           is_inline_(true),
@@ -4266,7 +4266,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // (see ComputedStyle::isFloating).
     ADD_BOOLEAN_BITFIELD(floating_, Floating);
 
-    ADD_BOOLEAN_BITFIELD(is_anonymous_, IsAnonymous);
+    ADD_BOOLEAN_BITFIELD(is_anonymous, IsAnonymous);
     ADD_BOOLEAN_BITFIELD(is_text_, IsText);
     ADD_BOOLEAN_BITFIELD(is_box_, IsBox);
 

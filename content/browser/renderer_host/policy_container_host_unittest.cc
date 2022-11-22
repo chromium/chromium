@@ -30,7 +30,7 @@ struct SameSizeAsPolicyContainerPolicies {
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network::mojom::WebSandboxFlags sandbox_flags;
-  bool is_anonymous;
+  bool is_credentialless;
   bool can_navigate_top_without_user_gesture;
 };
 
@@ -74,7 +74,7 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
       network::mojom::IPAddressSpace::kUnknown,
       /*is_web_secure_context=*/true, std::move(csps), coop, coep,
       sandbox_flags,
-      /*is_anonymous=*/true,
+      /*is_credentialless=*/true,
       /*can_navigate_top_without_user_gesture=*/true);
 
   EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));

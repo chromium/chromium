@@ -24,7 +24,7 @@ struct WebPolicyContainerPolicies {
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
   WebVector<WebContentSecurityPolicy> content_security_policies;
-  bool is_anonymous = false;
+  bool is_credentialless = false;
   network::mojom::WebSandboxFlags sandbox_flags =
       network::mojom::WebSandboxFlags::kNone;
   network::mojom::IPAddressSpace ip_address_space =

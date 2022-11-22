@@ -208,7 +208,7 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
       trustmeifembeddingsecure_factory_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
 // TODO(mlamouri): part of these tests were removed because they were dependent
 // on an environment were focus is guaranteed. This is only for
@@ -6381,21 +6381,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(document_user_data_was_destroyed);
 }
 
-class RenderFrameHostImplAnonymousIframeBrowserTest
+class RenderFrameHostImplCredentiallessIframeBrowserTest
     : public RenderFrameHostImplBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
 
-    // Enable parsing the iframe 'anonymous' attribute.
+    // Enable parsing the iframe 'credentialless' attribute.
     command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 
-// This test checks that the initial empty document in an anonymous iframe whose
-// parent document is not anonymous is anonymous.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
-                       InitialEmptyDocumentInAnonymousIframe) {
+// This test checks that the initial empty document in a credentialless iframe
+// whose parent document is not credentialless is credentialless.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeBrowserTest,
+                       InitialEmptyDocumentInCredentiallessIframe) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -6404,19 +6404,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
   // Create an empty iframe
   EXPECT_TRUE(ExecJs(main_rfh,
                      "let child = document.createElement('iframe');"
-                     "child.anonymous = true;"
+                     "child.credentialless = true;"
                      "document.body.appendChild(child);"));
   WaitForLoadStop(web_contents());
 
-  EXPECT_FALSE(main_rfh->IsAnonymous());
-  EXPECT_EQ(false, EvalJs(main_rfh, "window.anonymouslyFramed"));
+  EXPECT_FALSE(main_rfh->IsCredentialless());
+  EXPECT_EQ(false, EvalJs(main_rfh, "window.credentialless"));
   EXPECT_FALSE(main_rfh->storage_key().nonce().has_value());
 
   EXPECT_EQ(1U, main_rfh->child_count());
-  EXPECT_TRUE(main_rfh->child_at(0)->anonymous());
-  EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->IsAnonymous());
+  EXPECT_TRUE(main_rfh->child_at(0)->credentialless());
+  EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true, EvalJs(main_rfh->child_at(0)->current_frame_host(),
-                         "window.anonymouslyFramed"));
+                         "window.credentialless"));
   EXPECT_FALSE(main_rfh->child_at(0)
                    ->current_frame_host()
                    ->storage_key()
@@ -6424,43 +6424,46 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
                    .has_value());
 }
 
-// Check that a page's anonymous_iframes_nonce is re-initialized after
+// Check that a page's credentialless_iframes_nonce is re-initialized after
 // navigations.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
-                       NewAnonymousNonceOnNavigation) {
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeBrowserTest,
+                       NewCredentiallessNonceOnNavigation) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   base::UnguessableToken first_nonce =
-      web_contents()->GetPrimaryMainFrame()->anonymous_iframes_nonce();
+      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
   EXPECT_TRUE(first_nonce);
 
   // Same-document navigation does not change the nonce.
   EXPECT_TRUE(NavigateToURL(shell(), main_url.Resolve("#here")));
-  EXPECT_EQ(first_nonce,
-            web_contents()->GetPrimaryMainFrame()->anonymous_iframes_nonce());
+  EXPECT_EQ(
+      first_nonce,
+      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
 
   // Cross-document same-site navigation creates a new nonce.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   base::UnguessableToken second_nonce =
-      web_contents()->GetPrimaryMainFrame()->anonymous_iframes_nonce();
+      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
   EXPECT_TRUE(second_nonce);
   EXPECT_NE(first_nonce, second_nonce);
 
   // Cross-document cross-site navigation creates a new nonce.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  EXPECT_NE(first_nonce,
-            web_contents()->GetPrimaryMainFrame()->anonymous_iframes_nonce());
-  EXPECT_NE(second_nonce,
-            web_contents()->GetPrimaryMainFrame()->anonymous_iframes_nonce());
+  EXPECT_NE(
+      first_nonce,
+      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
+  EXPECT_NE(
+      second_nonce,
+      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
 }
 
-class RenderFrameHostImplAnonymousIframeNikBrowserTest
-    : public RenderFrameHostImplAnonymousIframeBrowserTest {
+class RenderFrameHostImplCredentiallessIframeNikBrowserTest
+    : public RenderFrameHostImplCredentiallessIframeBrowserTest {
  public:
-  RenderFrameHostImplAnonymousIframeNikBrowserTest() {
+  RenderFrameHostImplCredentiallessIframeNikBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
@@ -6472,7 +6475,7 @@ class RenderFrameHostImplAnonymousIframeNikBrowserTest
         alternate_test_server_.get());
     alternate_test_server_->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(alternate_test_server_->Start());
-    RenderFrameHostImplAnonymousIframeBrowserTest::SetUpOnMainThread();
+    RenderFrameHostImplCredentiallessIframeBrowserTest::SetUpOnMainThread();
   }
 
   void ResetNetworkState() {
@@ -6497,12 +6500,12 @@ class RenderFrameHostImplAnonymousIframeNikBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
-                       AnonymousIframeHasPartitionedNetworkState) {
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
+                       CredentiallessIframeHasPartitionedNetworkState) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
 
-  for (bool anonymous : {false, true}) {
-    SCOPED_TRACE(anonymous ? "anonymous iframe" : "normal iframe");
+  for (bool credentialless : {false, true}) {
+    SCOPED_TRACE(credentialless ? "credentialless iframe" : "normal iframe");
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
     RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
@@ -6511,14 +6514,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
     EXPECT_TRUE(ExecJs(main_rfh,
                        JsReplace("let child = document.createElement('iframe');"
                                  "child.src = $1;"
-                                 "child.anonymous = $2;"
+                                 "child.credentialless = $2;"
                                  "document.body.appendChild(child);",
-                                 main_url, anonymous)));
+                                 main_url, credentialless)));
     WaitForLoadStop(web_contents());
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-    EXPECT_EQ(anonymous, iframe->IsAnonymous());
-    EXPECT_EQ(anonymous, EvalJs(iframe, "window.anonymouslyFramed"));
+    EXPECT_EQ(credentialless, iframe->IsCredentialless());
+    EXPECT_EQ(credentialless, EvalJs(iframe, "window.credentialless"));
 
     ResetNetworkState();
 
@@ -6554,9 +6557,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
 
     EXPECT_EQ(200, EvalJs(iframe, fetch_resource));
 
-    // The normal iframe should reuse the preconnected socket, the anonymous
-    // iframe should open a new one.
-    if (!anonymous) {
+    // The normal iframe should reuse the preconnected socket, the
+    // credentialless iframe should open a new one.
+    if (!credentialless) {
       EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
     } else {
       EXPECT_EQ(2u, connection_tracker_->GetAcceptedSocketCount());

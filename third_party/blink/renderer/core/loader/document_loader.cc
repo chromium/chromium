@@ -2235,9 +2235,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   // The old window's PolicyContainer must be accessed before being potentially
   // extracted below.
-  const bool old_window_is_anonymous =
-      frame_->DomWindow() &&
-      frame_->DomWindow()->GetPolicyContainer()->GetPolicies().is_anonymous;
+  const bool old_window_is_credentialless =
+      frame_->DomWindow() && frame_->DomWindow()
+                                 ->GetPolicyContainer()
+                                 ->GetPolicies()
+                                 .is_credentialless;
 
   // DocumentLoader::InitializeWindow is called either on FrameLoader::Init or
   // on FrameLoader::CommitNavigation. FrameLoader::Init always initializes a
@@ -2260,7 +2262,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   DCHECK(policy_container_);
 
   const bool window_anonymous_matching =
-      old_window_is_anonymous == policy_container_->GetPolicies().is_anonymous;
+      old_window_is_credentialless ==
+      policy_container_->GetPolicies().is_credentialless;
 
   ContentSecurityPolicy* csp = CreateCSP();
 

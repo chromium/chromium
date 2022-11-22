@@ -272,11 +272,11 @@ void HTMLIFrameElement::ParseAttribute(
       should_call_did_change_attributes = true;
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
-  } else if (name == html_names::kAnonymousAttr &&
+  } else if (name == html_names::kCredentiallessAttr &&
              AnonymousIframeEnabled(GetExecutionContext())) {
     bool new_value = !value.IsNull();
-    if (anonymous_ != new_value) {
-      anonymous_ = new_value;
+    if (credentialless_ != new_value) {
+      credentialless_ = new_value;
       should_call_did_change_attributes = true;
     }
   } else if (name == html_names::kAllowAttr) {
@@ -567,7 +567,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
 
   auto attributes = mojom::blink::IframeAttributes::New();
   attributes->parsed_csp_attribute = csp.empty() ? nullptr : std::move(csp[0]);
-  attributes->anonymous = anonymous_;
+  attributes->credentialless = credentialless_;
 
   attributes->id = ConvertToReportValue(id_);
   attributes->name = ConvertToReportValue(name_);

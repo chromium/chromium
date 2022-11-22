@@ -39,7 +39,7 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       network::mojom::WebSandboxFlags sandbox_flags,
-      bool is_anonymous,
+      bool is_credentialless,
       bool can_navigate_top_without_user_gesture);
 
   explicit PolicyContainerPolicies(
@@ -115,9 +115,9 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       network::mojom::WebSandboxFlags::kNone;
 
   // https://wicg.github.io/anonymous-iframe/#spec-window-attribute
-  // True for window framed inside an anonymous iframe, directly or indirectly
+  // True for window framed inside credentialless iframe, directly or indirectly
   // by one of its ancestors
-  bool is_anonymous = false;
+  bool is_credentialless = false;
 
   // Tracks if a document is allowed to navigate the top-level frame without
   // sticky user activation. A document loses this ability when it is
@@ -231,7 +231,7 @@ class CONTENT_EXPORT PolicyContainerHost
     policies_.sandbox_flags = sandbox_flags;
   }
 
-  void SetIsAnonymous() { policies_.is_anonymous = true; }
+  void SetIsCredentialless() { policies_.is_credentialless = true; }
 
   void SetCanNavigateTopWithoutUserGesture(bool value) {
     policies_.can_navigate_top_without_user_gesture = value;

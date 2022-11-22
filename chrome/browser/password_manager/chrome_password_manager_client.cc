@@ -284,7 +284,7 @@ void ChromePasswordManagerClient::BindPasswordGenerationDriver(
         receiver,
     content::RenderFrameHost* rfh) {
   // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
-  if (rfh->IsAnonymous())
+  if (rfh->IsCredentialless())
     return;
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)

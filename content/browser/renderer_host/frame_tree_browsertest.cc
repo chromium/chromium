@@ -1526,17 +1526,17 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
             DepictFrameTree(*root));
 }
 
-class FrameTreeAnonymousIframeBrowserTest : public FrameTreeBrowserTest {
+class FrameTreeCredentiallessIframeBrowserTest : public FrameTreeBrowserTest {
  public:
-  FrameTreeAnonymousIframeBrowserTest() = default;
+  FrameTreeCredentiallessIframeBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 
-// Tests the mojo propagation of the 'anonymous' attribute to the browser.
-IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
+// Tests the mojo propagation of the 'credentialless' attribute to the browser.
+IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                        AttributeIsPropagatedToBrowser) {
   GURL main_url(embedded_test_server()->GetURL("/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1545,44 +1545,45 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  // Not setting the attribute => the iframe is not anonymous.
+  // Not setting the attribute => the iframe is not credentialless.
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('iframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root->child_count());
-  EXPECT_FALSE(root->child_at(0)->anonymous());
+  EXPECT_FALSE(root->child_at(0)->credentialless());
   EXPECT_EQ(false, EvalJs(root->child_at(0)->current_frame_host(),
-                          "window.anonymouslyFramed"));
+                          "window.credentialless"));
 
-  // Setting the attribute on the iframe element makes the iframe anonymous.
+  // Setting the attribute on the iframe element makes the iframe
+  // credentialless.
   EXPECT_TRUE(ExecJs(root,
                      "var d = document.createElement('div');"
-                     "d.innerHTML = '<iframe anonymous></iframe>';"
+                     "d.innerHTML = '<iframe credentialless></iframe>';"
                      "document.body.appendChild(d);"));
   EXPECT_EQ(2U, root->child_count());
-  EXPECT_TRUE(root->child_at(1)->anonymous());
+  EXPECT_TRUE(root->child_at(1)->credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(1)->current_frame_host(),
-                         "window.anonymouslyFramed"));
+                         "window.credentialless"));
 
   // Setting the attribute via javascript works.
   EXPECT_TRUE(ExecJs(root,
                      "var g = document.createElement('iframe');"
-                     "g.anonymous = true;"
+                     "g.credentialless = true;"
                      "document.body.appendChild(g);"));
   EXPECT_EQ(3U, root->child_count());
-  EXPECT_TRUE(root->child_at(2)->anonymous());
+  EXPECT_TRUE(root->child_at(2)->credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.anonymouslyFramed"));
+                         "window.credentialless"));
 
-  EXPECT_TRUE(ExecJs(root, "g.anonymous = false;"));
-  EXPECT_FALSE(root->child_at(2)->anonymous());
+  EXPECT_TRUE(ExecJs(root, "g.credentialless = false;"));
+  EXPECT_FALSE(root->child_at(2)->credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.anonymouslyFramed"));
+                         "window.credentialless"));
 
-  EXPECT_TRUE(ExecJs(root, "g.anonymous = true;"));
-  EXPECT_TRUE(root->child_at(2)->anonymous());
+  EXPECT_TRUE(ExecJs(root, "g.credentialless = true;"));
+  EXPECT_TRUE(root->child_at(2)->credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.anonymouslyFramed"));
+                         "window.credentialless"));
 }
 
 }  // namespace content

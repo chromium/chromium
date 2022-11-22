@@ -211,7 +211,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   net::IsolationInfo isolation_info_for_subresources =
       frame_tree_node_->current_frame_host()
           ->ComputeIsolationInfoForSubresourcesForPendingCommit(
-              response_origin, navigation_request_->is_anonymous(),
+              response_origin, navigation_request_->is_credentialless(),
               navigation_request_->ComputeFencedFrameNonce());
   DCHECK(!isolation_info_for_subresources.IsEmpty());
 

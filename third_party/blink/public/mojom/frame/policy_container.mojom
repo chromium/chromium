@@ -20,7 +20,7 @@ struct PolicyContainerPolicies {
   network.mojom.ReferrerPolicy referrer_policy =
     network.mojom.ReferrerPolicy.kDefault;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
-  bool is_anonymous = false;
+  bool is_credentialless = false;
   network.mojom.WebSandboxFlags sandbox_flags =
     network.mojom.WebSandboxFlags.kNone;
   // This is necessary for service worker restored from database to perform

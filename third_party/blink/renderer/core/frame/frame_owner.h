@@ -66,10 +66,10 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   // Returns whether or not children of the owned frame should be lazily loaded.
   virtual bool ShouldLazyLoadChildren() const = 0;
 
-  // Returns whether this is an iframe with the anonymous attribute set.
+  // Returns whether this is an iframe with the credentialless attribute set.
   // [spec]
-  // https://wicg.github.io/anonymous-iframe/#dom-htmliframeelement-anonymous
-  virtual bool Anonymous() const { return false; }
+  // https://wicg.github.io/anonymous-iframe/#dom-htmliframeelement-credentialless
+  virtual bool Credentialless() const { return false; }
 
  protected:
   virtual void FrameOwnerPropertiesChanged() {}

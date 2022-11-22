@@ -268,12 +268,12 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   }
 
   // Reflects the attributes of the corresponding iframe html element, such
-  // as 'anonymous', 'id', 'name' and 'src'. These values should not be
+  // as 'credentialless', 'id', 'name' and 'src'. These values should not be
   // exposed to cross-origin renderers.
   const network::mojom::ContentSecurityPolicy* csp_attribute() const {
     return attributes_->parsed_csp_attribute.get();
   }
-  bool anonymous() const { return attributes_->anonymous; }
+  bool credentialless() const { return attributes_->credentialless; }
   const std::string& html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
   // tracked in FrameReplicationState. See the comment for frame_name() for
@@ -606,12 +606,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicySandboxDynamic);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, StorageKeyToCommit);
-  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
-                           NavigationToAnonymousDocumentNetworkIsolationInfo);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationRequestTest,
+      NavigationToCredentiallessDocumentNetworkIsolationInfo);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
-                           ChildOfAnonymousIsAnonymous);
+                           ChildOfCredentiallessIsCredentialless);
   FRIEND_TEST_ALL_PREFIXES(ContentPasswordManagerDriverTest,
-                           PasswordAutofillDisabledOnAnonymousIframe);
+                           PasswordAutofillDisabledOnCredentiallessIframe);
 
   // Called by the destructor. When `this` is an outer dummy FrameTreeNode
   // representing an inner FrameTree, this method destroys said inner FrameTree.

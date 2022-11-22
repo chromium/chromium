@@ -7,19 +7,20 @@
 // This is a copy/adaptation of:
 // external/wpt/html/anonymous-iframe/cookie-store.tentative.https.window.js
 //
-// It checks cookies can be loaded/saved from an anonymous iframe and they don't
-// share the same partition as the ones from outside the anonymous iframe.
-enableAnonymousIframeOriginTrial();
+// It checks cookies can be loaded/saved from a credentialless iframe and they
+// don't share the same partition as the ones from outside the
+// credentiallessiframe.
+enableIframeCredentiallessOriginTrial();
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
 const cookie_key = token()
 
-const anonymous_iframe = newIframe(cross_origin, /*anonymous=*/true);
+const iframe_credentialless = newIframe(cross_origin, /*credentialless=*/true);
 
 // Install some helper functions in the child to observe Cookies:
 promise_setup(async () => {
-  await send(anonymous_iframe, `
+  await send(iframe_credentialless, `
     window.getMyCookie = () => {
       const value = "; " + document.cookie;
       const parts = value.split("; ${cookie_key}=");
@@ -47,7 +48,7 @@ promise_setup(async () => {
 
 promise_test(async test => {
   const this_token = token();
-  send(anonymous_iframe, `
+  send(iframe_credentialless, `
     document.cookie = "${cookie_key}=cookie_value_1";
     send("${this_token}", getMyCookie());
   `);
@@ -57,7 +58,7 @@ promise_test(async test => {
 
 promise_test(async test => {
   const resource_token = token();
-  send(anonymous_iframe, `
+  send(iframe_credentialless, `
     fetch("${showRequestHeaders(cross_origin, resource_token)}");
   `);
 
@@ -71,7 +72,7 @@ promise_test(async test => {
   const resource_url = cross_origin + "/common/blank.html?pipe=" +
     `|header(Set-Cookie,${cookie_key}=cookie_value_2;Path=/common/dispatcher)`;
   const this_token = token();
-  send(anonymous_iframe, `
+  send(iframe_credentialless, `
     const next_cookie_value = nextCookieValue();
     fetch("${resource_url}");
     send("${this_token}", await next_cookie_value);
@@ -85,7 +86,7 @@ promise_test(async test => {
   const resource_url = cross_origin + "/common/blank.html?pipe=" +
     `|header(Set-Cookie,${cookie_key}=cookie_value_3;Path=/common/dispatcher)`;
   const this_token = token();
-  send(anonymous_iframe, `
+  send(iframe_credentialless, `
     const next_cookie_value = nextCookieValue();
     const iframe = document.createElement("iframe");
     iframe.src = "${resource_url}";

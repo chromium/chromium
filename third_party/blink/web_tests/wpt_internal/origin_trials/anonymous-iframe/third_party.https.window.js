@@ -1,7 +1,7 @@
 // META: script=/common/get-host-info.sub.js
 
 promise_test(async t => {
-  assert_false('anonymouslyFramed' in window);
+  assert_false('credentialless' in window);
 
   const script_executed = new Promise(resolve => window.script_done = resolve);
   const script = document.createElement('script');
@@ -12,5 +12,5 @@ promise_test(async t => {
   document.head.appendChild(script);
 
   await script_executed;
-  assert_true('anonymouslyFramed' in window);
-}, 'Anonymous iframe is enabled from a third party (first party POV)');
+  assert_true('credentialless' in window);
+}, 'Credentialless iframe is enabled from a third party (first party POV)');

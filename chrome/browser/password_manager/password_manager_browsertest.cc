@@ -4691,8 +4691,9 @@ class MockPasswordManagerDriverInjector : public content::WebContentsObserver {
   std::vector<std::unique_ptr<MockPrerenderPasswordManagerDriver>> mocks_;
 };
 
-// Test class for testing password manager with AnonymousIframe enabled.
-class PasswordManagerAnonymousIframeTest : public PasswordManagerBrowserTest {
+// Test class for testing password manager with CredentiallessIframe enabled.
+class PasswordManagerCredentiallessIframeTest
+    : public PasswordManagerBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     PasswordManagerBrowserTest::SetUpOnMainThread();
@@ -4703,9 +4704,9 @@ class PasswordManagerAnonymousIframeTest : public PasswordManagerBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest, NoFormsSeen) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest, NoFormsSeen) {
   GURL main_frame_url = embedded_test_server()->GetURL(
-      "/password/password_form_in_anonymous_iframe.html");
+      "/password/password_form_in_credentialless_iframe.html");
   MockPasswordManagerDriverInjector injector(WebContents());
   PasswordsNavigationObserver nav_observer(WebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -4728,7 +4729,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest, NoFormsSeen) {
                       WAIT_FOR_PARSED);
   }
 
-  // Check what happens when using an anonymous iframe instead:
+  // Check what happens when using a credentialless iframe instead:
   {
     ASSERT_TRUE(content::ExecJs(
         main_rfh, "create_iframe('/empty.html', 'iframe', true);"));
@@ -4745,11 +4746,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest, NoFormsSeen) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest,
-                       DisablePasswordManagerOnAnonymousIframe) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest,
+                       DisablePasswordManagerOnCredentiallessIframe) {
   GURL base_url = https_test_server().GetURL("a.test", "/");
   GURL main_frame_url = https_test_server().GetURL(
-      "a.test", "/password/password_form_in_anonymous_iframe.html");
+      "a.test", "/password/password_form_in_credentialless_iframe.html");
   GURL form_url = https_test_server().GetURL(
       "a.test", "/password/crossite_iframe_content.html");
 
@@ -4766,10 +4767,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest,
   signin_form.password_value = u"pa55w0rd";
   password_store->AddLogin(signin_form);
 
-  // 2. Load the form again, from a normal and an anonymous iframe.
+  // 2. Load the form again, from a normal and a credentialless iframe.
   PasswordsNavigationObserver reload_observer(WebContents());
   reload_observer.SetPathToWaitFor(
-      "/password/password_form_in_anonymous_iframe.html");
+      "/password/password_form_in_credentialless_iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   reload_observer.Wait();
   EXPECT_TRUE(content::ExecJs(
@@ -4777,23 +4778,25 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest,
       content::JsReplace("create_iframe($1, 'normal', false); ", form_url)));
   EXPECT_TRUE(content::ExecJs(
       WebContents(),
-      content::JsReplace("create_iframe($1, 'anonymous', true); ", form_url)));
+      content::JsReplace("create_iframe($1, 'credentialless', true); ",
+                         form_url)));
   content::WaitForLoadStop(WebContents());
   content::RenderFrameHost* iframe_normal =
       ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
-  content::RenderFrameHost* iframe_anonymous =
+  content::RenderFrameHost* iframe_credentialless =
       ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 1);
 
   EXPECT_EQ("pa55w0rd",
             content::EvalJs(iframe_normal,
                             "window.parent.check_password(document);"));
   EXPECT_EQ("not found",
-            content::EvalJs(iframe_anonymous,
+            content::EvalJs(iframe_credentialless,
                             "window.parent.check_password(document);"));
 
-  // 3. Navigate the normal iframe to be an anonymous iframe.
+  // 3. Navigate the normal iframe to be a credentialless iframe.
   EXPECT_TRUE(content::ExecJs(
-      WebContents(), "document.getElementById('normal').anonymous = true"));
+      WebContents(),
+      "document.getElementById('normal').credentialless = true"));
   EXPECT_TRUE(content::ExecJs(
       WebContents(),
       content::JsReplace("document.getElementById('normal').src = $1",

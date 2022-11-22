@@ -101,7 +101,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
       const blink::ParsedPermissionsPolicy& allow) override;
-  TestRenderFrameHost* AppendAnonymousChild(
+  TestRenderFrameHost* AppendCredentiallessChild(
       const std::string& frame_name) override;
   void Detach() override;
   void SendNavigateWithTransition(int nav_entry_id,

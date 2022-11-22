@@ -2,9 +2,9 @@ Tests property access on a cached DOMWindow after the associated frame is naviga
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS oldChildWindow.anonymouslyFramed is newChildWindow.anonymouslyFramed
 PASS oldChildWindow.closed is newChildWindow.closed
 PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
+PASS oldChildWindow.credentialless is newChildWindow.credentialless
 PASS oldChildWindow.crossOriginEmbedderPolicy is newChildWindow.crossOriginEmbedderPolicy
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
 PASS oldChildWindow.devicePixelRatio is newChildWindow.devicePixelRatio

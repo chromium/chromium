@@ -484,8 +484,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // frame is in back-forward cache.
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
 
-  // Whether the window is anonymous or not.
-  bool anonymouslyFramed() const;
+  // Whether the window is credentialless or not.
+  bool credentialless() const;
 
   bool IsInFencedFrame() const override;
 

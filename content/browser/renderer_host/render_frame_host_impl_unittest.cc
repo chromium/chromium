@@ -372,13 +372,13 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
   EXPECT_EQ(0u, contents()->GetFaviconURLs().size());
 }
 
-TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
-  EXPECT_FALSE(main_test_rfh()->IsAnonymous());
+TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
+  EXPECT_FALSE(main_test_rfh()->IsCredentialless());
 
   auto* child_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
-  EXPECT_FALSE(child_frame->IsAnonymous());
+  EXPECT_FALSE(child_frame->IsCredentialless());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   auto attributes = blink::mojom::IframeAttributes::New();
@@ -387,44 +387,43 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   attributes->id = child_frame->frame_tree_node()->html_id();
   attributes->name = child_frame->frame_tree_node()->html_name();
   attributes->src = child_frame->frame_tree_node()->html_src();
-  // Set |anonymous| to true.
-  attributes->anonymous = true;
+  attributes->credentialless = true;
   child_frame->frame_tree_node()->SetAttributes(std::move(attributes));
 
-  EXPECT_FALSE(child_frame->IsAnonymous());
+  EXPECT_FALSE(child_frame->IsCredentialless());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
-  // A navigation in the anonymous iframe commits an anonymous RFH.
+  // A navigation in the credentialless iframe commits a credentialless RFH.
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateRendererInitiated(
           GURL("https://example.com/navigation.html"), child_frame);
   navigation->Commit();
   child_frame =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
-  EXPECT_TRUE(child_frame->IsAnonymous());
+  EXPECT_TRUE(child_frame->IsCredentialless());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
-  // An anonymous document sets a nonce on its network isolation key.
+  // A credentialless document sets a nonce on its network isolation key.
   EXPECT_TRUE(child_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->anonymous_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
             child_frame->GetNetworkIsolationKey().GetNonce().value());
 
-  // A child of an anonymous RFH is anonymous.
+  // A child of a credentialless RFH is credentialless.
   auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(child_frame)
           ->AppendChild("grandchild"));
-  EXPECT_TRUE(grandchild_frame->IsAnonymous());
+  EXPECT_TRUE(grandchild_frame->IsCredentialless());
   EXPECT_TRUE(grandchild_frame->storage_key().nonce().has_value());
 
-  // The two anonymous RFH's storage keys should have the same nonce.
+  // The two credentialless RFH's storage keys should have the same nonce.
   EXPECT_EQ(child_frame->storage_key().nonce().value(),
             grandchild_frame->storage_key().nonce().value());
 
-  // Also the anonymous initial empty document sets a nonce on its network
+  // Also the credentialless initial empty document sets a nonce on its network
   // isolation key.
   EXPECT_TRUE(
       grandchild_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->anonymous_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
             grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
 }
 

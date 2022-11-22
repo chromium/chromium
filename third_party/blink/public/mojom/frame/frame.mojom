@@ -161,8 +161,8 @@ const uint16 kMaxTitleChars = 4096; // 4 * 1024;
 struct IframeAttributes {
   // Parsed value of the 'csp' attribute of the iframe.
   network.mojom.ContentSecurityPolicy? parsed_csp_attribute;
-  // 'anonymous' attribute of the iframe.
-  bool anonymous;
+  // 'credentialless' attribute of the iframe.
+  bool credentialless;
   // 'id' attribute of the iframe.
   string id;
   // 'name' attribute of the iframe. This is different from window.name, which is
