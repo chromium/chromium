@@ -73,6 +73,8 @@ top of it:
    `//chrome/browser/web_applications/isolated_web_apps`, but there are also
    other bits and pieces throughout `//content`.
 
+### `web_app::SignedWebBundleReader`
+
 The `web_package::WebBundleParser` can not be directly used from the browser
 process in `//chrome/browser/web_applications/isolated_web_apps` due to the
 [rule of 2](../../../../docs/security/rule-of-2.md) (it is implemented in an
@@ -89,4 +91,13 @@ the utility process is terminated for other reasons, like Android's OOM killer.
 
 The following graphic illustrates the relationship between the aforementioned
 classes: ![Diagram showing the relation between the classes mentioned in the
-previous paragraph](../docs/signed_web_bundle_parser_class_structure.png)
+previous paragraph](../../../../docs/webapps/signed_web_bundle_parser_class_structure.png)
+
+The `SignedWebBundleReader` is supposed to be a generic reader for Signed Web
+Bundles, unrelated to Isolated Web Apps. As such, it does not know anything
+about Isolated Web Apps or the `isolated-app:` scheme. The more specific
+requirements for Signed Web Bundles when used as Isolated Web Apps are checked
+as part of the `IsolatedWebAppValidator`, `IsolatedWebAppReaderRegistry`, and
+`IsolatedWebAppURLLoader`. For example, the `IsolatedWebAppValidator` checks
+that the URLs contained in the Signed Web Bundle do not have query parameters or
+fragments.
