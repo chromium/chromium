@@ -861,6 +861,10 @@ config("compiler") {
     # we discover a reason to turn them off.
     "-Coverflow-checks=on",
 
+    # Turn warnings into the "deny" lint level, which produce compiler errors.
+    # The equivalent of -Werror for clang/gcc.
+    "-Dwarnings",
+
     # To make Rust .d files compatible with ninja
     "-Zdep-info-omit-d-target",
 
