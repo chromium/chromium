@@ -20,6 +20,7 @@ declare_args() {
   rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
 
   # Set to the path of the RBE reclient configuration files.
+  rbe_py_cfg_file = ""
   rbe_cc_cfg_file = ""
   rbe_link_cfg_file = ""
 
@@ -29,11 +30,13 @@ declare_args() {
 
 # Configuration file selection based on operating system.
 if (is_linux || is_android || is_chromeos || is_fuchsia) {
+  rbe_py_cfg_file = "${rbe_cfg_dir}/python/rewrapper_linux.cfg"
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
   rbe_link_cfg_file =
       "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link.cfg"
 }
 if (is_win) {
+  rbe_py_cfg_file = "${rbe_cfg_dir}/python/rewrapper_windows.cfg"
   rbe_cc_cfg_file =
       "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_windows.cfg"
 
@@ -43,6 +46,7 @@ if (is_win) {
   }
 }
 if (is_mac || is_ios) {
+  rbe_py_cfg_file = "${rbe_cfg_dir}/python/rewrapper_mac.cfg"
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_mac.cfg"
 
   if (use_remoteexec_links) {

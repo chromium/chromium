@@ -605,3 +605,107 @@ if (is_component_build) {
 set_defaults("component") {
   configs = default_component_configs
 }
+
+# =============================================================================
+# ACTION OVERRIDE
+# =============================================================================
+#
+# We override gn action() to support remote execution using rewrapper. The
+# invoker should set allow_remote to true if remote execution is desired.
+#
+# As remote execution requires inputs to be made more explicit than is normally
+# expected with gn, you may find that setting allow_remote to true will result
+# in many missing file errors. This should be resolved by explicitly declaring
+# these inputs/sources.
+
+# Variables needed by rbe.gni aren't available at the top of this file.
+import("//build/toolchain/rbe.gni")
+
+# TODO(b/253987456): Add action_foreach support.
+foreach(_target_type, [ "action" ]) {
+  template(_target_type) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, [ "allow_remote" ])
+    action("${target_name}") {
+      forward_variables_from(invoker,
+                             [
+                               "args",
+                               "assert_no_deps",
+                               "check_includes",
+                               "data_deps",
+                               "data",
+                               "depfile",
+                               "deps",
+                               "metadata",
+                               "outputs",
+                               "pool",
+                               "script",
+                               "public_configs",
+                               "public_deps",
+                               "response_file_contents",
+                               "sources",
+                               "write_runtime_deps",
+                             ])
+      allow_remote = false
+      if (defined(invoker.allow_remote)) {
+        allow_remote = invoker.allow_remote
+      }
+
+      # If remote execution is desired, only run remotely when use_remoteexec
+      # is enabled, and the environment is not nacl.
+      # TODO(b/259381924): Investigate enabling in nacl config.
+      if (allow_remote && use_remoteexec && !is_nacl) {
+        pool = "//build/toolchain:remote_action_pool($default_toolchain)"
+        script = "//build/util/action_remote.py"
+        inputs = [ invoker.script ]
+
+        re_inputs = [ rebase_path(invoker.script, rbe_exec_root) ]
+        if (defined(invoker.inputs)) {
+          foreach(input, invoker.inputs) {
+            re_inputs += [ rebase_path(input, rbe_exec_root) ]
+          }
+        }
+        if (defined(invoker.sources)) {
+          foreach(source, invoker.sources) {
+            re_inputs += [ rebase_path(source, rbe_exec_root) ]
+          }
+        }
+
+        re_outputs = []
+        if (defined(invoker.outputs)) {
+          foreach(output, invoker.outputs) {
+            re_outputs += [ rebase_path(output, rbe_exec_root) ]
+          }
+        }
+
+        # Write input/output lists to files as these can grow extremely large.
+        re_inputs_file = "$target_gen_dir/${target_name}__remote_inputs.rsp"
+        write_file(re_inputs_file, re_inputs)
+        re_outputs_file = "$target_gen_dir/${target_name}__remote_outputs.rsp"
+        write_file(re_outputs_file, re_outputs)
+
+        args = []
+        args += [ "$rbe_bin_dir/rewrapper" ]
+        if (defined(invoker.custom_processor)) {
+          args += [ "--custom_processor=" + invoker.custom_processor ]
+        }
+
+        args += [
+          "--cfg=$rbe_py_cfg_file",
+          "--exec_root=$rbe_exec_root",
+          "--input_list_paths=" + rebase_path(re_inputs_file, root_build_dir),
+          "--output_list_paths=" + rebase_path(re_outputs_file, root_build_dir),
+          "python3",
+          rebase_path(invoker.script, root_build_dir),
+        ]
+
+        if (defined(invoker.args)) {
+          args += invoker.args
+        }
+      } else {
+        forward_variables_from(invoker, [ "inputs" ])
+        not_needed(invoker, [ "custom_processor" ])
+      }
+    }
+  }
+}

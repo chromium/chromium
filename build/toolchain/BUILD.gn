@@ -23,4 +23,8 @@ if (current_toolchain == default_toolchain) {
   pool("action_pool") {
     depth = action_pool_depth
   }
+
+  pool("remote_action_pool") {
+    depth = 1000
+  }
 }
