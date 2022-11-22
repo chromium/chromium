@@ -8,15 +8,20 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -35,6 +40,12 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+
+  // Set the right and left margins to 0 such that the `page_container_` fills
+  // the whole page bubble width.
+  set_margins(ChromeLayoutProvider::Get()
+                  ->GetInsetsMetric(views::INSETS_DIALOG)
+                  .set_left_right(0, 0));
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(CreatePasswordListView()));
@@ -84,12 +95,50 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListTitleView()
   return header;
 }
 
-std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView()
-    const {
+std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  // TODO(crbug.com/1382017): List all saved passwords here.
+  for (const password_manager::PasswordForm& password_form :
+       controller_.local_credentials()) {
+    // TODO(crbug.com/1382017): Add support for favicons.
+    // TODO(crbug.com/1382017): Make sure the alignment works for different use
+    // cases. (e.g. long username, federated credentials)
+    RichHoverButton* row =
+        container_view->AddChildView(std::make_unique<RichHoverButton>(
+            base::BindRepeating(
+                [](ManagePasswordsView* view,
+                   const password_manager::PasswordForm& password_form) {
+                  view->page_container_->SwitchToPage(
+                      view->CreatePasswordDetailsView(password_form));
+                },
+                base::Unretained(this), password_form),
+            /*main_image_icon=*/ui::ImageModel(),
+            /*title_text=*/GetDisplayUsername(password_form),
+            /*secondary_text=*/GetDisplayPassword(password_form),
+            /*tooltip_text=*/std::u16string(),
+            /*subtitle_text=*/std::u16string(),
+            /*action_image_icon=*/
+            ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                           ui::kColorIcon),
+            /*state_icon=*/absl::nullopt));
+
+    views::Label* password_label = row->secondary_label();
+    if (password_form.federation_origin.opaque()) {
+      password_label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
+      password_label->SetObscured(true);
+      password_label->SetElideBehavior(gfx::TRUNCATE);
+    } else {
+      password_label->SetTextStyle(views::style::STYLE_SECONDARY);
+      password_label->SetElideBehavior(gfx::ELIDE_HEAD);
+    }
+  }
   return container_view;
+}
+
+std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView(
+    const password_manager::PasswordForm& password_form) const {
+  NOTIMPLEMENTED();
+  return std::make_unique<views::View>();
 }
 
 std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {

@@ -31,8 +31,10 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   void AddedToWidget() override;
 
   std::unique_ptr<views::View> CreatePasswordListTitleView() const;
+  std::unique_ptr<views::View> CreatePasswordListView();
+  std::unique_ptr<views::View> CreatePasswordDetailsView(
+      const password_manager::PasswordForm& password_form) const;
   std::unique_ptr<views::View> CreateFooterView();
-  std::unique_ptr<views::View> CreatePasswordListView() const;
 
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
