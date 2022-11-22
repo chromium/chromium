@@ -163,7 +163,8 @@ async function asyncGetBrowsingTopicsConfiguration() {
 
 async function asyncGetBrowsingTopicsState(calculateNow: boolean) {
   // Clear and hide existing content.
-  document.querySelector('#epoch-div-list-wrapper')!.innerHTML = '';
+  document.querySelector('#epoch-div-list-wrapper')!.innerHTML =
+      window.trustedTypes!.emptyHTML;
   setElementVisible('topics-state-override-status-message-div', false);
   setElementVisible('topics-state-div', false);
 
@@ -278,7 +279,7 @@ function clearHostsClassificationResult() {
 
   const div = document.querySelector<HTMLElement>(
       '#hosts-classification-input-validation-error');
-  div!.innerHTML = '';
+  div!.innerHTML = window.trustedTypes!.emptyHTML;
 
   setElementVisible('hosts-classification-loader-div', false);
   setElementVisible('hosts-classification-input-validation-error', false);
