@@ -680,8 +680,9 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   DCHECK(child);
   if (child->IsDetached())
     return;
-  if (AXObject* new_parent = object_cache_->RestoreParentOrPrune(child))
-    ChildrenChanged(new_parent);
+  if (AXObject* new_parent = object_cache_->RestoreParentOrPrune(child)) {
+    object_cache_->ChildrenChanged(new_parent);
+  }
 }
 
 }  // namespace blink

@@ -1085,9 +1085,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // Now remove "Node 1" from the DOM and verify the text range created from
   // "Node 1" is still functional.
   {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
     EXPECT_TRUE(
         ExecJs(shell()->web_contents(),
                "document.getElementById('wrapper').removeChild(document."
@@ -1104,9 +1104,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // Now remove all children from the DOM and verify the text range created from
   // "Node 1" is still valid (it got moved to a non-deleted ancestor node).
   {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
     EXPECT_TRUE(ExecJs(shell()->web_contents(),
                        "while(document.body.childElementCount > 0) {"
                        "  document.body.removeChild(document.body.firstChild);"
@@ -3296,7 +3296,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
 
     AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+                                           ax::mojom::Event::kLayoutComplete);
 
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
@@ -3324,7 +3324,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_count*/ 1);
 
     AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+                                           ax::mojom::Event::kLayoutComplete);
 
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
@@ -3356,7 +3356,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_count*/ -1);
 
     AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+                                           ax::mojom::Event::kEndOfTest);
 
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
@@ -3365,6 +3365,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 
+    GetManager()->SignalEndOfTest();
     ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"iframe\nAfter frame");
   }
@@ -3394,8 +3395,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     // Reloading changes the tree id, triggering an AXTreeManager replacement.
     shell()->Reload();
 
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+    AccessibilityNotificationWaiter waiter(
+        web_contents, ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::FOCUS_CHANGED);
 
     // We do a style change here only to trigger an AXTree update - apparently,
     // a shell reload doesn't update the tree by itself.
@@ -3433,13 +3435,14 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_count*/ 1);
 
     AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+                                           ax::mojom::Event::kEndOfTest);
 
     // We do a style change here only to trigger an AXTree update.
     EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 
+    GetManager()->SignalEndOfTest();
     ASSERT_TRUE(waiter.WaitForNotification());
 
     // If the previous observer was not removed correctly, this will cause a

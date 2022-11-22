@@ -69,7 +69,7 @@ void AXVirtualObject::AddChildren() {
 
 void AXVirtualObject::ChildrenChangedWithCleanLayout() {
   ClearChildren();
-  AXObjectCache().PostNotification(this, ax::mojom::Event::kChildrenChanged);
+  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
 }
 
 const AtomicString& AXVirtualObject::GetAOMPropertyOrARIAAttribute(

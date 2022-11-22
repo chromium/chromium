@@ -559,9 +559,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kCheckedStateChanged:
       event_name = "CheckedStateChanged";
       break;
-    case ax::mojom::Event::kChildrenChanged:
-      event_name = "ChildrenChanged";
-      break;
     case ax::mojom::Event::kClicked:
       event_name = "Clicked";
       break;
@@ -631,6 +628,7 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     // RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent().
     case ax::mojom::Event::kAlert:
     case ax::mojom::Event::kAutocorrectionOccured:
+    case ax::mojom::Event::kChildrenChanged:
     case ax::mojom::Event::kControlsChanged:
     case ax::mojom::Event::kEndOfTest:
     case ax::mojom::Event::kFocusAfterMenuClose:

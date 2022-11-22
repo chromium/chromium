@@ -2478,6 +2478,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 
   if (obj) {
     obj->ChildrenChangedWithCleanLayout();
+    modification_count_++;
     // TODO(accessibility) Only needed for <select> size changes.
     // This can turn into a DCHECK if the shadow DOM is used for <select>
     // elements instead of AXMenuList* and AXListBox* classes.
@@ -3608,7 +3609,7 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
     DCHECK(!obj->IsDetached());
     if (!obj->NeedsToUpdateChildren()) {
       obj->SetNeedsToUpdateChildren();
-      PostNotification(obj, ax::mojom::blink::Event::kChildrenChanged);
+      MarkAXObjectDirty(obj);
     }
   }
 }
