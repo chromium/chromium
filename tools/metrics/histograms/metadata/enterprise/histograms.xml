@@ -289,25 +289,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
-    enum="BooleanHit" expires_after="2021-06-30">
+    enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
   <summary>
     Recorded when a signed-in user is automatically signed out of the browser
     due to the BrowserSignin policy being set to 0 (sign-in disabled) by their
     organization. The sample is always recorded as true.
+
+    Warning: This histogram was expired from 2021-06-30 to 2022-11-30; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram base="true"
     name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
-    enum="BooleanHit" expires_after="2021-06-30">
+    enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
   <summary>
     Recorded when a user is in the process of signing in to the browser, but is
     interrupted due to the BrowserSignin policy being set to 0 (sign-in
     disabled) by their organization. The sample is always recorded as true.
+
+    Warning: This histogram was expired from 2021-06-30 to 2022-11-30; data may
+    be missing.
   </summary>
 </histogram>
 
