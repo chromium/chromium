@@ -22,6 +22,8 @@ constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode5";
 constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
     "Power.BatteryDischargeRateMilliwatts5";
+constexpr const char* kAltBatteryDischargeRateMilliwattsHistogramName =
+    "Power.AltBatteryDischargeRateMilliwatts5";
 constexpr const char* kBatteryDischargeRateRelativeHistogramName =
     "Power.BatteryDischargeRateRelative5";
 
@@ -170,6 +172,9 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
       &histogram_tester_, suffixes,
       {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{kAltBatteryDischargeRateMilliwattsHistogramName,
+                           kExpectedDischargeRate}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{kBatteryDischargeRateRelativeHistogramName,
                            kExpectedDischargeRateRelative}});
 }
@@ -279,6 +284,45 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
       kBatteryDischargeRateMilliwattsHistogramName, 1);
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
                                      1);
+}
+
+TEST_F(BatteryDischargeReporterTest, FullChargedCapacityIncreased) {
+  TestUsageScenarioDataStoreImpl usage_scenario_data_store;
+
+  base::BatteryStateSampler battery_state_sampler(
+      std::make_unique<NoopSamplingEventSource>(),
+      std::make_unique<NoopBatteryLevelProvider>());
+  BatteryDischargeReporter battery_discharge_reporter(
+      &battery_state_sampler, &usage_scenario_data_store);
+
+  battery_discharge_reporter.OnBatteryStateSampled(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 40,
+          .full_charged_capacity = 100,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      });
+  task_environment_.FastForwardBy(base::Minutes(1));
+  battery_discharge_reporter.OnBatteryStateSampled(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 40,
+          .full_charged_capacity = 110,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      });
+
+  // Full charged capacity increased. Used capacity went from 60 mWh to 70 mwh,
+  // which is interpreted as a 10 mWh discharge. 10 mWh discharge over 1 minute
+  // equals 600 mW.
+  const int64_t kExpectedDischargeRate = 600;
+
+  const std::vector<const char*> suffixes(
+      {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"});
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{kAltBatteryDischargeRateMilliwattsHistogramName,
+                           kExpectedDischargeRate}});
 }
 
 TEST_F(BatteryDischargeReporterTest, RetrievalError) {
