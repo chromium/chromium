@@ -72,6 +72,7 @@ public class CardUnmaskPrompt
     private final long mSuccessMessageDurationMilliseconds;
     private final int mGooglePayDrawableId;
     private final boolean mIsCardLocal;
+    private final boolean mIsVirtualCard;
 
     private int mThisYear;
     private int mThisMonth;
@@ -146,12 +147,14 @@ public class CardUnmaskPrompt
 
     public CardUnmaskPrompt(Context context, CardUnmaskPromptDelegate delegate, String title,
             String instructions, String confirmButtonLabel, int cvcDrawableId,
-            int googlePayDrawableId, boolean isCardLocal, boolean shouldRequestExpirationDate,
-            boolean defaultToStoringLocally, boolean shouldOfferWebauthn,
-            boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds) {
+            int googlePayDrawableId, boolean isCardLocal, boolean isVirtualCard,
+            boolean shouldRequestExpirationDate, boolean defaultToStoringLocally,
+            boolean shouldOfferWebauthn, boolean defaultUseScreenlockChecked,
+            long successMessageDurationMilliseconds) {
         mDelegate = delegate;
         mGooglePayDrawableId = googlePayDrawableId;
         mIsCardLocal = isCardLocal;
+        mIsVirtualCard = isVirtualCard;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
@@ -334,7 +337,11 @@ public class CardUnmaskPrompt
                 setInputsEnabled(true);
                 setInitialFocus();
 
-                if (!mShouldRequestExpirationDate) mNewCardLink.setVisibility(View.VISIBLE);
+                if (!mShouldRequestExpirationDate && !mIsVirtualCard) {
+                    mNewCardLink.setVisibility(View.VISIBLE);
+                } else {
+                    mNewCardLink.setVisibility(View.GONE);
+                }
             } else {
                 clearInputError();
                 setNoRetryError(errorMessage);
