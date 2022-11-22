@@ -283,6 +283,8 @@ class AutocompleteResult {
   // under consideration.
   static constexpr size_t kMaxAutocompletePositionValue = 30;
 
+  static void ClearDontCopyDoneProvidersForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);

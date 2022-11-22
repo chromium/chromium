@@ -139,7 +139,10 @@ class AutocompleteResultTest : public testing::Test {
     template_url_service_->Load();
   }
 
-  void TearDown() override { task_environment_.RunUntilIdle(); }
+  void TearDown() override {
+    task_environment_.RunUntilIdle();
+    AutocompleteResult::ClearDontCopyDoneProvidersForTesting();
+  }
 
   // Configures |match| from |data|.
   void PopulateAutocompleteMatch(const TestData& data,
@@ -657,23 +660,14 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
                                                     result, std::size(result)));
 }
 
-// Enables `kAutocompleteStabilityDontCopyDoneProviders`. Can't be done locally
-// within the test, as the param value is cached by a static local variable.
-class AutocompleteResultTest_DontCopyDoneProviders
-    : public AutocompleteResultTest {
- public:
-  AutocompleteResultTest_DontCopyDoneProviders() {
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kAutocompleteStability,
-        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-          "true"}});
-  }
-  base::test::ScopedFeatureList feature_list;
-};
-
 // Tests that transferred matches do not include the specialized match types.
-TEST_F(AutocompleteResultTest_DontCopyDoneProviders,
-       TransferOldMatchesSkipDoneProviders) {
+TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAutocompleteStability,
+      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+        "true"}});
+
   TestData last[] = {
       {0, 1, 500},  // Suggestion from done provider
       {1, 2, 400},  // Suggestion for not-done provider
