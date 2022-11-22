@@ -175,6 +175,22 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
   });
 }
 
+void RunUpdaterWithSwitch(const base::Version& version,
+                          UpdaterScope scope,
+                          const std::string& command,
+                          int expected_exit_code) {
+  const absl::optional<base::FilePath> installed_executable_path =
+      GetVersionedInstallDirectory(scope, version)
+          ->Append(GetExecutableRelativePath());
+  ASSERT_TRUE(installed_executable_path);
+  ASSERT_TRUE(base::PathExists(*installed_executable_path));
+  base::CommandLine command_line(*installed_executable_path);
+  command_line.AppendSwitch(command);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(exit_code, expected_exit_code);
+}
+
 }  // namespace
 
 void ExitTestMode(UpdaterScope scope) {
@@ -282,15 +298,13 @@ void CopyLog(const base::FilePath& src_dir) {
 }
 
 void RunWake(UpdaterScope scope, int expected_exit_code) {
-  const absl::optional<base::FilePath> installed_executable_path =
-      GetInstalledExecutablePath(scope);
-  ASSERT_TRUE(installed_executable_path);
-  EXPECT_TRUE(base::PathExists(*installed_executable_path));
-  base::CommandLine command_line(*installed_executable_path);
-  command_line.AppendSwitch(kWakeSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, expected_exit_code);
+  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeSwitch,
+                       expected_exit_code);
+}
+
+void RunWakeAll(UpdaterScope scope) {
+  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeAllSwitch,
+                       kErrorOk);
 }
 
 void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
@@ -309,13 +323,7 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   ASSERT_TRUE(active_version.IsValid());
 
   // Invoke the wake client of that version.
-  base::CommandLine command_line(
-      GetVersionedInstallDirectory(scope, active_version)
-          ->Append(GetExecutableRelativePath()));
-  command_line.AppendSwitch(kWakeSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, expected_exit_code);
+  RunUpdaterWithSwitch(active_version, scope, kWakeSwitch, expected_exit_code);
 }
 
 void Update(UpdaterScope scope,

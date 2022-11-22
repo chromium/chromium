@@ -52,7 +52,7 @@ const char kLoggingModuleSwitchValue[] =
 const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
-const char kWakeAllSwitch[] = "wakeall";
+const char kWakeAllSwitch[] = "wake-all";
 const char kTagSwitch[] = "tag";
 const char kInstallerDataSwitch[] = "installerdata";
 

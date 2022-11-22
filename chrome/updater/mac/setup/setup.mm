@@ -169,7 +169,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
       [NSMutableArray<NSString*> array];
   [program_arguments addObjectsFromArray:@[
     base::SysUTF8ToNSString(updater_path.value()),
-    MakeProgramArgument(kWakeSwitch), MakeProgramArgument(kEnableLoggingSwitch)
+    MakeProgramArgument(kWakeAllSwitch),
+    MakeProgramArgument(kEnableLoggingSwitch)
   ]];
   if (scope == UpdaterScope::kSystem)
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
@@ -371,18 +372,12 @@ int DoSetup(UpdaterScope scope) {
                "cause Gatekeeper to show a prompt to the user.";
   }
 
-  if (!CreateWakeLaunchdJobPlist(scope, updater_executable_path))
-    return kErrorFailedToCreateWakeLaunchdJobPlist;
-
   if (!CreateUpdateServiceInternalLaunchdJobPlist(scope,
                                                   updater_executable_path))
     return kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist;
 
   if (!StartUpdateServiceInternalVersionedLaunchdJob(scope))
     return kErrorFailedToStartLaunchdUpdateServiceInternalJob;
-
-  if (!StartUpdateWakeVersionedLaunchdJob(scope))
-    return kErrorFailedToStartLaunchdWakeJob;
 
   return kErrorOk;
 }
@@ -404,8 +399,14 @@ int PromoteCandidate(UpdaterScope scope) {
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
 
+  if (!CreateWakeLaunchdJobPlist(scope, updater_executable_path))
+    return kErrorFailedToCreateWakeLaunchdJobPlist;
+
   if (!CreateUpdateServiceLaunchdJobPlist(scope, updater_executable_path))
     return kErrorFailedToCreateUpdateServiceLaunchdJobPlist;
+
+  if (!StartUpdateWakeVersionedLaunchdJob(scope))
+    return kErrorFailedToStartLaunchdWakeJob;
 
   if (!StartLaunchdServiceJob(scope))
     return kErrorFailedToStartLaunchdActiveServiceJob;

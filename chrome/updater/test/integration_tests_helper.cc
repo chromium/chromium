@@ -280,6 +280,7 @@ void AppTestHelper::FirstTaskRun() {
     {"install", WithSystemScope(Wrap(&Install))},
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+    {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},
     {"run_wake_active",
      WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
     {"update",

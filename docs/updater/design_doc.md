@@ -754,7 +754,7 @@ considers it uninstalled and ceases attempting to update it.
 ### Periodic Task Scheduling
 On Mac, the scheduler is implemented via LaunchAgents (for user-level installs)
 and LaunchDaemons (for system-level installs). The scheduled task is defined by
-the `org.chromium.ChromiumUpdater.wake.1.2.3.4.plist`, which contains a Label
+the `org.chromium.ChromiumUpdater.wake.plist`, which contains a Label
 corresponding to the name of the plist, program arguments, which contains the
 path to the executable and the arguments it'll run with, and a StartInterval,
 which denotes interval for when launchctl should invoke the program. An example:
@@ -767,13 +767,13 @@ which denotes interval for when launchctl should invoke the program. An example:
 	<key>AbandonProcessGroup</key>
 	<true/>
 	<key>Label</key>
-	<string>org.chromium.ChromiumUpdater.wake.1.2.3.4</string>
+	<string>org.chromium.ChromiumUpdater.wake</string>
 	<key>LimitLoadToSessionType</key>
 	<string>Aqua</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/Users/user/Library/Chromium/ChromiumUpdater/1.2.3.4/ChromiumUpdater.app/Contents/MacOS/ChromiumUpdater</string>
-		<string>--wake</string>
+		<string>--wake-all</string>
 		<string>--vmodule=*/chrome/updater/*=2,*/components/update_client/*=2</string>
 		<string>--enable-logging</string>
 	</array>
@@ -782,6 +782,13 @@ which denotes interval for when launchctl should invoke the program. An example:
 </dict>
 </plist>
 ```
+
+macOS 13 notifies the user each time a new task is created. Since it is not
+useful to notify the user each time the updater sets up a new version of
+itself, the scheduled task is not side-by-side on macOS 13. The task is
+replaced during each activation of each new instance, and calls --wake-all for
+the active version of the updater. --wakeall will then --wake every version of
+the updater that is present in the base install directory.
 
 ### Legacy State
 TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.

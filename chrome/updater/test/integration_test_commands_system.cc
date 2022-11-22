@@ -172,6 +172,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
+  void RunWakeAll() const override { RunCommand("run_wake_all", {}); }
+
   void RunWakeActive(int expected_exit_code) const override {
     RunCommand("run_wake_active",
                {Param("exit_code", base::NumberToString(expected_exit_code))});

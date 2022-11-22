@@ -64,6 +64,7 @@ class IntegrationTestCommands
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
+  virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index) const = 0;

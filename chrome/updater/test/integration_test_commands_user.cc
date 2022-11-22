@@ -151,6 +151,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWake(updater_scope_, exit_code);
   }
 
+  void RunWakeAll() const override {
+    updater::test::RunWakeAll(updater_scope_);
+  }
+
   void RunWakeActive(int exit_code) const override {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }

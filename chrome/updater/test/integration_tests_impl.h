@@ -106,6 +106,10 @@ void Uninstall(UpdaterScope scope);
 // `exit_code`. The server should exit a few seconds after.
 void RunWake(UpdaterScope scope, int exit_code);
 
+// Runs the wake-all client and wait for it to exit. Assert that it exits with
+// kErrorOk. The server should exit a few seconds after.
+void RunWakeAll(UpdaterScope scope);
+
 // As RunWake, but runs the wake client for whatever version of the server is
 // active, rather than kUpdaterVersion.
 void RunWakeActive(UpdaterScope scope, int exit_code);

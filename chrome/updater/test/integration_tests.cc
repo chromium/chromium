@@ -258,6 +258,8 @@ class IntegrationTest : public ::testing::Test {
 
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
 
+  void RunWakeAll() { test_commands_->RunWakeAll(); }
+
   void RunWakeActive(int exit_code) {
     test_commands_->RunWakeActive(exit_code);
   }
@@ -465,6 +467,21 @@ TEST_F(IntegrationTest, SelfUpdate) {
                        base::Version(kUpdaterVersion), next_version);
 
   RunWake(0);
+  EXPECT_TRUE(WaitForUpdaterExit());
+  ExpectAppVersion(kUpdaterAppId, next_version);
+
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
+  ScopedServer test_server(test_commands_);
+  Install();
+
+  base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
+                       base::Version(kUpdaterVersion), next_version);
+
+  RunWakeAll();
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectAppVersion(kUpdaterAppId, next_version);
 
