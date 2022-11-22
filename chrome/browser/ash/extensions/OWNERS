@@ -11,5 +11,5 @@ per-file device_local_account*=emaxx@chromium.org
 per-file device_local_account*=poromov@chromium.org
 
 # input method related reviewers.
-per-file input_method*=keithlee@chromium.org
-per-file ime_menu*=keithlee@chromium.org
+per-file input_method*=file://chrome/browser/ash/input_method/OWNERS
+per-file ime_menu*=file://chrome/browser/ash/input_method/OWNERS
