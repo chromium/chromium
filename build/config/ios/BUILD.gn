@@ -62,9 +62,22 @@ config("compiler") {
     "5",
   ]
 
-  # Without this, the constructors and destructors of a C++ object inside
-  # an Objective C struct won't be called, which is very bad.
-  cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
+  cflags_objcc = [
+    # Without this, the constructors and destructors of a C++ object inside
+    # an Objective C struct won't be called, which is very bad.
+    "-fobjc-call-cxx-cdtors",
+
+    # When using -std=c++20 or higher, clang automatically returns true for
+    # `__has_feature(modules)` as it enables cxx modules. This is problematic
+    # because Objective-C code uses this to detect whether `@import` can be
+    # used (this feature is also named modules).
+    #
+    # Since Chromium does not yet enable cxx modules, nor clang modules,
+    # force disable the cxx modules, which cause `__has_features(modules)`
+    # to return false unless clang modules are explicitly enabled.
+    "-Xclang",
+    "-fno-cxx-modules",
+  ]
 
   ldflags = common_flags
 }
