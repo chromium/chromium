@@ -135,7 +135,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
 
   // views::WidgetObserver:
   void OnWidgetDragWillStart(views::Widget* widget) override;
-  void OnWidgetDestroying(views::Widget* widget) override;
 
   // Registers pref change registrars for preferences relevant to the holding
   // space tray state.
