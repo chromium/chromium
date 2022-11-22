@@ -57,12 +57,11 @@ struct DirectVariation {
   template <typename T>
   class Wrapper : public SequenceBound<T> {
    public:
-    using SequenceBound = SequenceBound<T>;
-
     template <typename... Args>
     explicit Wrapper(scoped_refptr<SequencedTaskRunner> task_runner,
                      Args&&... args)
-        : SequenceBound(std::move(task_runner), std::forward<Args>(args)...) {}
+        : SequenceBound<T>(std::move(task_runner),
+                           std::forward<Args>(args)...) {}
 
     template <typename... Args>
     void WrappedEmplace(scoped_refptr<SequencedTaskRunner> task_runner,
@@ -70,11 +69,11 @@ struct DirectVariation {
       this->emplace(std::move(task_runner), std::forward<Args>(args)...);
     }
 
-    using SequenceBound::SequenceBound;
-    using SequenceBound::operator=;
+    using SequenceBound<T>::SequenceBound;
+    using SequenceBound<T>::operator=;
 
    private:
-    using SequenceBound::emplace;
+    using SequenceBound<T>::emplace;
   };
 };
 
@@ -84,13 +83,12 @@ struct UniquePtrVariation {
   template <typename T>
   struct Wrapper : public SequenceBound<std::unique_ptr<T>> {
    public:
-    using SequenceBound = SequenceBound<std::unique_ptr<T>>;
-
     template <typename... Args>
     explicit Wrapper(scoped_refptr<SequencedTaskRunner> task_runner,
                      Args&&... args)
-        : SequenceBound(std::move(task_runner),
-                        std::make_unique<T>(std::forward<Args>(args)...)) {}
+        : SequenceBound<std::unique_ptr<T>>(
+              std::move(task_runner),
+              std::make_unique<T>(std::forward<Args>(args)...)) {}
 
     template <typename... Args>
     void WrappedEmplace(scoped_refptr<SequencedTaskRunner> task_runner,
@@ -99,11 +97,11 @@ struct UniquePtrVariation {
                     std::make_unique<T>(std::forward<Args>(args)...));
     }
 
-    using SequenceBound::SequenceBound;
-    using SequenceBound::operator=;
+    using SequenceBound<std::unique_ptr<T>>::SequenceBound;
+    using SequenceBound<std::unique_ptr<T>>::operator=;
 
    private:
-    using SequenceBound::emplace;
+    using SequenceBound<std::unique_ptr<T>>::emplace;
   };
 };
 
