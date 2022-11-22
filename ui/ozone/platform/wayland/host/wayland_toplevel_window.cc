@@ -132,7 +132,6 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     const gfx::Point& pointer_location_in_px) {
   DCHECK(shell_toplevel_);
 
-  connection()->event_source()->ResetPointerFlags();
   if (hittest == HTCAPTION)
     shell_toplevel_->SurfaceMove(connection());
   else
