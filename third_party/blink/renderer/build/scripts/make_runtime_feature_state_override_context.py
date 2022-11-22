@@ -20,16 +20,15 @@ class RunTimeFeatureStateOverrideContextWriter(
             (self.file_basename + '.cc'): self.generate_implementation,
             (self.file_basename + '.h'): self.generate_header,
         }
-        self._browser_read_access_features = util.browser_read_access(
-            self._features)
+        self._overridable_features = util.overridable_features(self._features)
 
     def _template_inputs(self):
         return {
             'features': self._features,
-            'browser_read_access_features': self._browser_read_access_features,
             'platforms': self._platforms(),
             'input_files': self._input_files,
             'header_guard': self._header_guard,
+            'overridable_features': self._overridable_features,
         }
 
     @template_expander.use_jinja(f'templates/{file_basename}.cc.tmpl')

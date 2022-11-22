@@ -6,21 +6,23 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "base/containers/flat_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 // This class coalesces browser side and enterprise policy state into a final
 // value which is then used to override the blink runtime feature state. It can
 // be queried with `Is*ForceEnabled()` or `Is*ForceDisabled()`.
-class RuntimeFeatureStateOverrideContext {
+class RuntimeFeatureStateOverrideContext
+    : public GarbageCollected<RuntimeFeatureStateOverrideContext> {
  public:
-  explicit RuntimeFeatureStateOverrideContext(
-      ExecutionContext* execution_context) {
-    // TODO(crbug.com/1377000): Actually init the object.
+  RuntimeFeatureStateOverrideContext() {
+    override_values_.reserve({{overridable_features|length()}});
+    ApplyEnterprisePolicyOverrides();
   }
 
-  {% for feature in browser_read_access_features %}
+  {% for feature in overridable_features %}
   bool Is{{feature.name}}ForceDisabled();
 
   bool Is{{feature.name}}ForceEnabled();
@@ -28,7 +30,21 @@ class RuntimeFeatureStateOverrideContext {
   void Set{{feature.name}}ForceDisabled();
 
   void Set{{feature.name}}ForceEnabled();
+
   {% endfor %}
+  void Trace(Visitor*) const {}
+
+ private:
+
+  enum class OverridableFeatures {
+    {% for feature in overridable_features %}
+    k{{feature.name}} = {{loop.index0}},
+    {% endfor %}
+  };
+
+  void ApplyEnterprisePolicyOverrides();
+
+  base::flat_map<OverridableFeatures, bool> override_values_;
 };
 
 }  // namespace blink

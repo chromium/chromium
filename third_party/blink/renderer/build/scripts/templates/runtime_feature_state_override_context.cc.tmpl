@@ -6,28 +6,40 @@
 #include "third_party/blink/renderer/core/runtime_feature_state/runtime_feature_state_override_context.h"
 
 namespace blink {
-{% for feature in browser_read_access_features %}
+{% for feature in overridable_features %}
 bool RuntimeFeatureStateOverrideContext::
     Is{{feature.name}}ForceDisabled() {
-  // TODO(crbug.com/1377000): Get the real value.
-  return true;
+  auto it = override_values_.find(
+      OverridableFeatures::k{{feature.name}});
+  if (it != override_values_.end() && it->second == false)
+    return true;
+
+  return false;
 }
 
 bool RuntimeFeatureStateOverrideContext::
     Is{{feature.name}}ForceEnabled() {
-  // TODO(crbug.com/1377000): Get the real value.
-  return true;
+  auto it = override_values_.find(
+      OverridableFeatures::k{{feature.name}});
+  if(it != override_values_.end() && it->second == true)
+    return true;
+
+  return false;
 }
 
 void RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}ForceDisabled() {
-  // TODO(crbug.com/1377000): Do something.
+  override_values_[OverridableFeatures::k{{feature.name}}] = false;
 }
 
 void RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}ForceEnabled() {
-  // TODO(crbug.com/1377000): Do something.
+  override_values_[OverridableFeatures::k{{feature.name}}] = true;
 }
+
 {% endfor %}
+void RuntimeFeatureStateOverrideContext::ApplyEnterprisePolicyOverrides() {
+  // Get the enterprise policies here.
+}
 
 }  // namespace blink

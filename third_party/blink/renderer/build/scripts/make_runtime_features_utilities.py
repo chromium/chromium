@@ -99,3 +99,21 @@ def browser_read_access(features):
 
 def browser_write_access(features):
     return [f for f in features if f['browser_process_read_write_access']]
+
+
+def override_from_pref(features):
+    return [f for f in features if f['override_from_pref']]
+
+
+# The list of features we want to generate getters/setters for may contain
+# duplicates, so this function will return a deduped list.
+def overridable_features(features):
+    combined_list = override_from_pref(features) + browser_read_access(
+        features)
+    seen = set()
+    final_list = []
+    for f in combined_list:
+        if f['name'] not in seen:
+            seen.add(f['name'])
+            final_list.append(f)
+    return final_list
