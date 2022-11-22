@@ -359,11 +359,11 @@ The possible flags are:
 
 In other cases, it may be interesting to take a closer look at the
 code generation for a single file. This can be done using LLD's
-support for distributed ThinLTO. The linker takes a `-thinlto-index-only`
+support for distributed ThinLTO. The linker takes a `--thinlto-index-only`
 option that does whole program analysis and writes index files:
 
 ```sh
-$ clang++ -fuse-ld=lld -Wl,-thinlto-index-only -o ./base_unittests @base_unittests.expanded.rsp
+$ clang++ -fuse-ld=lld -Wl,--thinlto-index-only -o ./base_unittests @base_unittests.expanded.rsp
 ```
 
 This creates `.thinlto.bc` files next to object files used by the link (e.g.
