@@ -850,7 +850,8 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
 
   // If the new ::spelling-error and ::grammar-error pseudos are not enabled,
   // use the old marker-based decorations for now.
-  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() &&
+      !RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled()) {
     return DocumentMarkerPainter::PaintDocumentMarker(
         paint_info_, box_origin_, originating_style_, type,
         MarkerRectForForeground(fragment_item_, text, paint_start_offset,

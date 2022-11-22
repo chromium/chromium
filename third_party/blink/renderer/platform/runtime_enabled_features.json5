@@ -810,6 +810,14 @@
       status: "experimental",
     },
     {
+      // Use the new CSS-based painting for spelling and grammar errors,
+      // regardless of whether the new highlights or decorations are exposed
+      // to authors (see CSSSpellingGrammarErrors).
+      name: "CSSPaintingForSpellingGrammarErrors",
+      status: "stable",
+      base_feature: "CssPaintingForSpellingGrammarErrors",
+    },
+    {
       name: "CSSPictureInPicture",
       status: "experimental",
       depends_on: ["PictureInPictureAPI"],
