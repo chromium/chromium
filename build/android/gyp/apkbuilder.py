@@ -112,12 +112,6 @@ def _ParseArgs(args):
       '--library-always-compress',
       action='append',
       help='The list of library files that we always compress.')
-  # TODO(crbug.com/1337134): Remove all references to --library-renames.
-  # Setting it should be a no-op.
-  parser.add_argument(
-      '--library-renames',
-      action='append',
-      help='The list of library files that we prepend crazy. to their names.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -136,7 +130,6 @@ def _ParseArgs(args):
       options.secondary_native_libs)
   options.library_always_compress = build_utils.ParseGnList(
       options.library_always_compress)
-  options.library_renames = build_utils.ParseGnList(options.library_renames)
 
   options.uncompress_shared_libraries = \
       options.uncompress_shared_libraries in [ 'true', 'True' ]

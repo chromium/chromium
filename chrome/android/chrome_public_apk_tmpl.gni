@@ -186,17 +186,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
         "libchrome_crashpad_handler.so",
         "libchromium_android_linker.so",
       ]
-
-      # Adds "crazy." prefix to avoid libraries being extracted when installed.
-      if (use_chromium_linker) {
-        if (!defined(library_renames)) {
-          library_renames = []
-        }
-        library_renames += [
-          "libchrome.so",
-          "libchromefortest.so",
-        ]
-      }
     }
 
     if (dfmify_dev_ui && (_target_type == "android_apk" ||

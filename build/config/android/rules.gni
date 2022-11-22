@@ -3128,7 +3128,6 @@ if (enable_java_templates && is_android) {
                                "sources",
                                "static_library_dependent_targets",
                                "library_always_compress",
-                               "library_renames",
                              ])
       if (_uses_static_library_synchronized_proguard) {
         if (!defined(jar_excluded_patterns)) {
@@ -3463,7 +3462,6 @@ if (enable_java_templates && is_android) {
                                  "uncompress_dex",
                                  "uncompress_shared_libraries",
                                  "library_always_compress",
-                                 "library_renames",
                                ])
 
         if (defined(expected_libs_and_assets)) {
@@ -3817,7 +3815,6 @@ if (enable_java_templates && is_android) {
                                "uncompress_dex",
                                "uncompress_shared_libraries",
                                "library_always_compress",
-                               "library_renames",
                                "use_chromium_linker",
                                "version_code",
                                "version_name",
@@ -3948,7 +3945,6 @@ if (enable_java_templates && is_android) {
                                "testonly",
                                "uncompress_shared_libraries",
                                "library_always_compress",
-                               "library_renames",
                                "use_chromium_linker",
                                "use_modern_linker",
                                "uses_split",
@@ -4966,8 +4962,7 @@ if (enable_java_templates && is_android) {
   #      used as a library jar for synchronized proguarding.
   #
   #    compress_shared_libraries: Optional. Whether to compress shared libraries
-  #      such that they are extracted upon install. Libraries prefixed with
-  #      "crazy." are never compressed.
+  #      such that they are extracted upon install.
   #
   #    system_image_locale_allowlist: List of locales that should be included
   #      on system APKs generated from this bundle.
