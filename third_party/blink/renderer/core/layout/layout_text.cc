@@ -646,9 +646,10 @@ bool LayoutText::MapDOMOffsetToTextContentOffset(const NGOffsetMapping& mapping,
   Position non_collpased_end_position =
       mapping.EndOfLastNonCollapsedContent(end_position);
 
+  // Note: `non_collpased_{start,end}_position}` can be position before/after
+  // non-`Text` node. See http://crbug.com/1389193
   if (non_collpased_end_position.IsNull() ||
-      non_collpased_end_position.OffsetInContainerNode() <=
-          non_collapsed_start_position.OffsetInContainerNode()) {
+      non_collpased_end_position <= non_collapsed_start_position) {
     // If all characters in the range are collapsed, make |end| = |start|.
     *end = *start;
   } else {
