@@ -16,9 +16,6 @@ from xml.parsers import expat
 sys.path.append(os.path.abspath('.'))
 from policy_templates import GetPolicyTemplates
 
-sys.path.append(os.path.abspath(os.path.join('..', 'tools')))
-import syntax_check_policy_template_json
-
 sys.path.append(os.path.join('..', '..', '..', 'third_party'))
 import pyyaml
 
@@ -135,7 +132,7 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api, legacy_policy_template):
   try:
     tools_path = input_api.os_path.normpath(
         input_api.os_path.join(local_path, input_api.os_path.pardir, 'tools'))
-    sys.path = [tools_path] + sys.path
+    sys.path.append(tools_path)
     # Optimization: only load this when it's needed.
     import syntax_check_policy_template_json
     device_policy_proto_path = input_api.os_path.join(
@@ -587,6 +584,14 @@ def CheckPolicyDefinitions(input_api, output_api):
             current_version)
   except:
     pass
+
+  old_sys_path = sys.path
+  tools_path = input_api.os_path.normpath(input_api.os_path.join(
+    input_api.PresubmitLocalPath(), input_api.os_path.pardir, 'tools'))
+  sys.path.append(tools_path)
+  # Optimization: only load this when it's needed.
+  import syntax_check_policy_template_json
+  sys.path = old_sys_path
 
   checker = syntax_check_policy_template_json.PolicyTemplateChecker()
   # Check if there is a tag that allows us to bypass compatibility checks.
