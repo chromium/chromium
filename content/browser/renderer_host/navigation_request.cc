@@ -6300,8 +6300,7 @@ void NavigationRequest::DidCommitNavigation(
     const mojom::DidCommitProvisionalLoadParams& params,
     bool navigation_entry_committed,
     bool did_replace_entry,
-    const GURL& previous_main_frame_url,
-    NavigationType navigation_type) {
+    const GURL& previous_main_frame_url) {
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
   should_update_history_ = params.should_update_history;
@@ -6319,7 +6318,6 @@ void NavigationRequest::DidCommitNavigation(
     should_update_history_ = false;
   }
   previous_main_frame_url_ = previous_main_frame_url;
-  navigation_type_ = navigation_type;
 
   // When the embedder navigates a fenced frame root, the navigation
   // installs a new set of inner fenced frame properties.

@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -41,7 +42,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/navigation_type.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -575,12 +575,15 @@ class CONTENT_EXPORT NavigationRequest
   void DidCommitNavigation(const mojom::DidCommitProvisionalLoadParams& params,
                            bool navigation_entry_committed,
                            bool did_replace_entry,
-                           const GURL& previous_main_frame_url,
-                           NavigationType navigation_type);
+                           const GURL& previous_main_frame_url);
 
   NavigationType navigation_type() const {
     DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
     return navigation_type_;
+  }
+
+  void set_navigation_type(NavigationType navigation_type) {
+    navigation_type_ = navigation_type;
   }
 
   const std::string& post_commit_error_page_html() {

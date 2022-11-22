@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_TYPE_H_
-#define CONTENT_PUBLIC_BROWSER_NAVIGATION_TYPE_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TYPE_H_
+#define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TYPE_H_
 
 namespace content {
 
 // Indicates different types of navigations that can occur that we will handle
 // separately.
-// TODO(crbug.com/1268254): Stop exposing NavigationType outside of //content.
 enum NavigationType {
   // Unknown type.
   NAVIGATION_TYPE_UNKNOWN,
@@ -77,4 +76,4 @@ enum NavigationType {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_NAVIGATION_TYPE_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TYPE_H_

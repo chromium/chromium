@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/navigation_type.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -25,11 +24,6 @@ struct CONTENT_EXPORT LoadCommittedDetails {
 
   // The committed entry. This will be the active entry in the controller.
   raw_ptr<NavigationEntry> entry = nullptr;
-
-  // The type of navigation that just occurred. Note that not all types of
-  // navigations in the enum are valid here, since some of them don't actually
-  // cause a "commit" and won't generate this notification.
-  content::NavigationType type = content::NAVIGATION_TYPE_UNKNOWN;
 
   // The index of the previously committed navigation entry. This will be -1
   // if there are no previous entries.

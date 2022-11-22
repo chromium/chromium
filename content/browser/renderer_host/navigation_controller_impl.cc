@@ -1416,7 +1416,9 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
 
   // Do navigation-type specific actions. These will make and commit an entry.
-  details->type = ClassifyNavigation(rfh, params, navigation_request);
+  NavigationType navigation_type =
+      ClassifyNavigation(rfh, params, navigation_request);
+  navigation_request->set_navigation_type(navigation_type);
 
   if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node())) {
     // Ensure that this navigation does not add a navigation entry, since
@@ -1431,7 +1433,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // pointed out in the issue.
     DCHECK(navigation_request->common_params().should_replace_current_entry ||
            navigation_request->GetReloadType() != ReloadType::NONE ||
-           details->type == NAVIGATION_TYPE_AUTO_SUBFRAME);
+           navigation_type == NAVIGATION_TYPE_AUTO_SUBFRAME);
   }
 
   if (GetLastCommittedEntry()->IsInitialEntry()) {
@@ -1448,8 +1450,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
       // means every subframe navigation that happens while we're on the initial
       // NavigationEntry will always reuse the existing NavigationEntry and
       // just update the corresponding FrameNavigationEntry.
-      DCHECK_EQ(details->type, NAVIGATION_TYPE_AUTO_SUBFRAME);
-    } else if (details->type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY) {
+      DCHECK_EQ(navigation_type, NAVIGATION_TYPE_AUTO_SUBFRAME);
+    } else if (navigation_type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY) {
       // This is a navigation that modifies the initial NavigationEntry, either
       // for a replacement or a reload. The initial NavigationEntry should
       // retain its "initial NavigationEntry" status in this case.
@@ -1489,10 +1491,10 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // TODO(crbug.com/926009): Handle history.pushState() as well.
   bool keep_pending_entry =
       is_same_document_navigation &&
-      details->type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
+      navigation_type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
       pending_entry_ && !PendingEntryMatchesRequest(navigation_request);
 
-  switch (details->type) {
+  switch (navigation_type) {
     case NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY:
       RendererDidNavigateToNewEntry(
           rfh, params, details->is_same_document, details->did_replace_entry,
@@ -1563,7 +1565,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // These are both only available from details at this point, so we capture
     // them here.
     SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "navigation_type",
-                            details->type);
+                            navigation_type);
     SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_replace",
                           details->did_replace_entry);
     active_entry->back_forward_cache_metrics()->DidCommitNavigation(
