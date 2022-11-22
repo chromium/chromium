@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
@@ -66,7 +65,7 @@
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #endif
 
@@ -280,7 +279,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+#if BUILDFLAG(IS_MAC)
       KeystonePromotionInfoBarDelegate::Create(GetWebContents());
 #else
       ADD_FAILURE() << "This infobar is not supported on this OS.";
