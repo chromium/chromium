@@ -96,14 +96,10 @@ class OmniboxMatchCellView : public views::View {
   raw_ptr<views::ImageView> icon_view_;
   // The image for answers in suggest and rich entity suggestions.
   raw_ptr<views::ImageView> answer_image_view_;
+  raw_ptr<OmniboxTextView> tail_suggest_ellipse_view_;
   raw_ptr<OmniboxTextView> content_view_;
   raw_ptr<OmniboxTextView> description_view_;
   raw_ptr<OmniboxTextView> separator_view_;
-
-  // This (permanently) holds the rendered width of
-  // AutocompleteMatch::kEllipsis so that we don't have to keep calculating
-  // it.
-  int ellipsis_width_ = 0;
 
   // This holds the rendered width of the common prefix of a set of tail
   // suggestions so that it doesn't have to be re-calculated if the prefix

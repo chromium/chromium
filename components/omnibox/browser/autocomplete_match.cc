@@ -1244,38 +1244,6 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteMatch::SetTailSuggestCommonPrefix(
-    const std::u16string& common_prefix) {
-  // Prevent re-addition of prefix.
-  if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
-      tail_suggest_common_prefix.empty()) {
-    tail_suggest_common_prefix = common_prefix;
-  }
-}
-
-void AutocompleteMatch::SetTailSuggestContentPrefix(
-    const std::u16string& common_prefix) {
-  // Prevent re-addition of prefix.
-  if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
-      tail_suggest_common_prefix.empty()) {
-    SetTailSuggestCommonPrefix(common_prefix);
-    // Insert an ellipsis before uncommon part.
-    const std::u16string ellipsis = kEllipsis;
-    contents = ellipsis + contents;
-    // If the first class is not already NONE, prepend a NONE class for the new
-    // ellipsis.
-    if (contents_class.empty() ||
-        (contents_class[0].offset == 0 &&
-         contents_class[0].style != ACMatchClassification::NONE)) {
-      contents_class.insert(contents_class.begin(),
-                            {0, ACMatchClassification::NONE});
-    }
-    // Shift existing styles.
-    for (size_t i = 1; i < contents_class.size(); ++i)
-      contents_class[i].offset += ellipsis.size();
-  }
-}
-
 size_t AutocompleteMatch::EstimateMemoryUsage() const {
   size_t res = 0;
 

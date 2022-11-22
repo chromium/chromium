@@ -790,9 +790,6 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
   DCHECK(controller == autocomplete_controller_.get());
 
-  // Prepend missing tail suggestion prefixes in results, if present.
-  autocomplete_controller_->SetTailSuggestCommonPrefixes();
-
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),
       autocomplete_controller_->result(),

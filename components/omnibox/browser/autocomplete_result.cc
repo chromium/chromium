@@ -995,25 +995,6 @@ std::u16string AutocompleteResult::GetCommonPrefix() {
   return common_prefix;
 }
 
-void AutocompleteResult::SetTailSuggestCommonPrefixes() {
-  std::u16string common_prefix = GetCommonPrefix();
-
-  if (!common_prefix.empty()) {
-    for (auto& match : matches_)
-      match.SetTailSuggestCommonPrefix(common_prefix);
-  }
-}
-
-void AutocompleteResult::SetTailSuggestContentPrefixes() {
-  std::u16string common_prefix = GetCommonPrefix();
-
-  if (!common_prefix.empty()) {
-    for (auto& match : matches_) {
-      match.SetTailSuggestContentPrefix(common_prefix);
-    }
-  }
-}
-
 size_t AutocompleteResult::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(matches_);
 }

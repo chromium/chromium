@@ -181,6 +181,9 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(
 OmniboxMatchCellView::OmniboxMatchCellView(OmniboxResultView* result_view) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   answer_image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
+  tail_suggest_ellipse_view_ =
+      AddChildView(std::make_unique<OmniboxTextView>(result_view));
+  tail_suggest_ellipse_view_->SetText(AutocompleteMatch::kEllipsis);
   content_view_ = AddChildView(std::make_unique<OmniboxTextView>(result_view));
   description_view_ =
       AddChildView(std::make_unique<OmniboxTextView>(result_view));
@@ -211,6 +214,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   layout_style_ = has_image_ && !OmniboxFieldTrial::IsUniformRowHeightEnabled()
                       ? LayoutStyle::TWO_LINE_SUGGESTION
                       : LayoutStyle::ONE_LINE_SUGGESTION;
+
+  tail_suggest_ellipse_view_->SetVisible(
+      !match.tail_suggest_common_prefix.empty());
 
   // Set up the separator.
   separator_view_->SetSize(layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION ||
@@ -337,6 +343,13 @@ void OmniboxMatchCellView::Layout() {
                           description_width, text_width,
                           /*description_on_separate_line=*/false,
                           !is_search_type_, &content_width, &description_width);
+    if (tail_suggest_ellipse_view_->GetVisible()) {
+      const int tail_suggest_ellipse_width =
+          tail_suggest_ellipse_view_->GetPreferredSize().width();
+      tail_suggest_ellipse_view_->SetBounds(x - tail_suggest_ellipse_width, y,
+                                            tail_suggest_ellipse_width,
+                                            row_height);
+    }
     content_view_->SetBounds(x, y, content_width, row_height);
     if (description_width) {
       x += content_view_->width();
@@ -373,13 +386,6 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   std::unique_ptr<gfx::RenderText> render_text =
       content_view_->CreateRenderText(common_prefix);
   tail_suggest_common_prefix_width_ = render_text->GetStringSize().width();
-  // Only calculate fixed string width once.
-  if (!ellipsis_width_) {
-    render_text->SetText(AutocompleteMatch::kEllipsis);
-    ellipsis_width_ = render_text->GetStringSize().width();
-  }
-  // Indent text by prefix, but come back by width of ellipsis.
-  tail_suggest_common_prefix_width_ -= ellipsis_width_;
 }
 
 BEGIN_METADATA(OmniboxMatchCellView, views::View)

@@ -333,9 +333,6 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
     popup_created = true;
   }
 
-  // Fix-up any matches due to tail suggestions, before display below.
-  edit_model_->autocomplete_controller()->SetTailSuggestContentPrefixes();
-
   // Update the match cached by each row, in the process of doing so make sure
   // we have enough row views.
   const size_t result_size = edit_model_->result().size();

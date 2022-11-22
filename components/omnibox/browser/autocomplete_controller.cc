@@ -889,14 +889,6 @@ void AutocompleteController::SetMatchDestinationURL(
 #endif
 }
 
-void AutocompleteController::SetTailSuggestContentPrefixes() {
-  result_.SetTailSuggestContentPrefixes();
-}
-
-void AutocompleteController::SetTailSuggestCommonPrefixes() {
-  result_.SetTailSuggestCommonPrefixes();
-}
-
 const AutocompleteResult& AutocompleteController::result() const {
   return DebouncingEnabled() ? published_result_ : result_;
 }
@@ -987,6 +979,8 @@ void AutocompleteController::UpdateResult(
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);
+  UpdateTailSuggestPrefix(&result_);
+
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(result_);
 
@@ -1211,6 +1205,17 @@ void AutocompleteController::UpdateAssistedQueryStats(
     }
     match->search_terms_args->assisted_query_stats = base::StringPrintf(
         "chrome.%s.%s", selected_index.c_str(), autocompletions.c_str());
+  }
+}
+
+void AutocompleteController::UpdateTailSuggestPrefix(
+    AutocompleteResult* result) {
+  const auto common_prefix = result->GetCommonPrefix();
+  if (!common_prefix.empty()) {
+    for (auto& match : *result) {
+      if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
+        match.tail_suggest_common_prefix = common_prefix;
+    }
   }
 }
 

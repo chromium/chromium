@@ -555,13 +555,6 @@ struct AutocompleteMatch {
   // Input "x" with prevent_inline_autocomplete will allow default match "x".
   void SetAllowedToBeDefault(const AutocompleteInput& input);
 
-  // If this match is a tail suggestion, prepends the passed |common_prefix|.
-  void SetTailSuggestCommonPrefix(const std::u16string& common_prefix);
-
-  // If this match is a tail suggestion, prepends the passed |common_prefix|
-  // and adds ellipses to contents.
-  void SetTailSuggestContentPrefix(const std::u16string& common_prefix);
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
@@ -677,7 +670,9 @@ struct AutocompleteMatch {
   // Optional override to use for types that specify an icon sub-type.
   DocumentType document_type = DocumentType::NONE;
 
-  // Holds the common part of tail suggestion.
+  // Holds the common part of tail suggestion. Used to indent the contents.
+  // Can't simply store the character length of the string, as different
+  // characters may have different rendered widths.
   std::u16string tail_suggest_common_prefix;
 
   // The main text displayed in the address bar dropdown.

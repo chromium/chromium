@@ -20,16 +20,6 @@
 
 namespace {
 
-bool EqualClassifications(const ACMatchClassifications& lhs,
-                          const ACMatchClassifications& rhs) {
-  if (lhs.size() != rhs.size())
-    return false;
-  for (size_t n = 0; n < lhs.size(); ++n)
-    if (lhs[n].style != rhs[n].style || lhs[n].offset != rhs[n].offset)
-      return false;
-  return true;
-}
-
 void TestSetAllowedToBeDefault(int caseI,
                                const std::string input_text,
                                bool input_prevent_inline_autocomplete,
@@ -153,34 +143,6 @@ TEST(AutocompleteMatchTest, MergeClassifications) {
                   "0,0," "2,1," "4,3," "7,7," "10,6," "15,0"),
               AutocompleteMatch::ClassificationsFromString(
                   "0,2," "1,0," "5,7," "6,1," "17,0"))));
-}
-
-TEST(AutocompleteMatchTest, InlineTailPrefix) {
-  struct TestData {
-    std::string before_contents, after_contents;
-    ACMatchClassifications before_contents_class, after_contents_class;
-  } cases[] = {
-      {"90123456",
-       "... 90123456",
-       // should prepend ellipsis, and offset remainder
-       {{0, ACMatchClassification::NONE}, {2, ACMatchClassification::MATCH}},
-       {{0, ACMatchClassification::NONE}, {6, ACMatchClassification::MATCH}}},
-      {"90123456",
-       "... 90123456",
-       // should prepend ellipsis
-       {},
-       {{0, ACMatchClassification::NONE}}},
-  };
-  for (const auto& test_case : cases) {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
-    match.contents = base::UTF8ToUTF16(test_case.before_contents);
-    match.contents_class = test_case.before_contents_class;
-    match.SetTailSuggestContentPrefix(u"12345678");
-    EXPECT_EQ(match.contents, base::UTF8ToUTF16(test_case.after_contents));
-    EXPECT_TRUE(EqualClassifications(match.contents_class,
-                                     test_case.after_contents_class));
-  }
 }
 
 TEST(AutocompleteMatchTest, GetMatchComponents) {
