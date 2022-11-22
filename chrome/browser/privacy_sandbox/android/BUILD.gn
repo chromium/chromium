@@ -109,6 +109,7 @@ android_resources("java_resources") {
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
     "java/res/drawable/ic_checklist_24dp.xml",
     "java/res/drawable/ic_interests_24dp.xml",
+    "java/res/drawable/ic_performance_max_24dp.xml",
     "java/res/drawable/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
     "java/res/drawable/privacy_sandbox_notice_eea_illustration_v4.xml",

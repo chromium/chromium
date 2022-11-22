@@ -4,7 +4,44 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(http://b/254412696): Create page layout. -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- TODO(http://b/259931308): Match layout to mocks -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="ad_measurement_toggle"
+        android:title="@string/settings_ad_measurement_page_toggle_label"
+        android:summary="@string/settings_ad_measurement_page_toggle_sub_label"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="ad_measurement_when_on"
+        android:title="@string/settings_ad_measurement_page_enabled_heading">
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_enabled_bullet_one"
+            android:summary="@string/settings_ad_measurement_page_enabled_bullet_1"
+            android:icon="@drawable/ic_spam_reduction_24dp"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_enabled_bullet_two"
+            android:summary="@string/settings_ad_measurement_page_enabled_bullet_2"
+            android:icon="@drawable/ic_performance_max_24dp"
+            app:allowDividerBelow="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="ad_measurement_things_to_consider"
+        android:title="@string/settings_ad_measurement_page_consider_heading">
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_enabled_bullet_one"
+            android:summary="@string/settings_ad_measurement_page_consider_bullet_1"
+            android:icon="@drawable/ic_tune_24dp"
+            app:allowDividerBelow="false" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

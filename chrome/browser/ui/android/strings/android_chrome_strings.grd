@@ -1251,6 +1251,27 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
         Vestibulum augue erat
       </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Ad Measurement toggle.">
+        Vestibulum augue erat
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Description for the Ad Measurement toggle.">
+        Vestibulum eleifend nunc a viverra congue. Integer nec mauris rutrum, porta mauris et, pellentesque ligula. Nam et pulvinar eros, in gravida nisl.
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_HEADING" translateable="false" desc="When on section header.">
+        Mauris
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_HEADING" translateable="false" desc="What to consider section header.">
+        Aenean
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" translateable="false" desc="When on first bullet point.">
+        Praesent sodales, magna eget volutpat iaculis, justo odio viverra justo, id venenatis est est sit amet ex
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" translateable="false" desc="When on second bullet point.">
+        Nunc metus est, faucibus sit amet lacus sit amet, aliquet rutrum libero. Maecenas vel euismod ante.
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_1" translateable="false" desc="What to consider first bullet point.">
+        Mauris mattis urna elit. Phasellus quis erat sapien. Praesent finibus pellentesque iaculis. Mauris hendrerit metus at enim rhoncus bibendum.
+      </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
