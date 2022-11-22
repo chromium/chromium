@@ -110,6 +110,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
     DXGI_IMAGE,
     D3D,
     DCOMP_SURFACE,
+    PBUFFER
   };
   virtual Type GetType() const;
 

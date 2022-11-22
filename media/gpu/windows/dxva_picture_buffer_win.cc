@@ -5,6 +5,7 @@
 #include "media/gpu/windows/dxva_picture_buffer_win.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
 #include "third_party/angle/include/EGL/egl.h"
@@ -18,54 +19,6 @@
 #include "ui/gl/scoped_binders.h"
 
 namespace media {
-
-namespace {
-
-// GLImagePbuffer is just used to hold references to the underlying
-// image content so it can be destroyed when the textures are.
-class GLImagePbuffer : public gl::GLImage {
- public:
-  GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
-      : size_(size), surface_(surface) {}
-
-  // gl::GLImage implementation.
-  gfx::Size GetSize() override { return size_; }
-  unsigned GetInternalFormat() override { return GL_BGRA_EXT; }
-  unsigned GetDataType() override { return GL_UNSIGNED_BYTE; }
-  BindOrCopy ShouldBindOrCopy() override { return BIND; }
-  // PbufferPictureBuffer::CopySurfaceComplete does the actual binding, so
-  // this doesn't do anything and always succeeds.
-  bool BindTexImage(unsigned target) override { return true; }
-  void ReleaseTexImage(unsigned target) override {}
-  bool CopyTexImage(unsigned target) override {
-    NOTREACHED();
-    return false;
-  }
-  bool CopyTexSubImage(unsigned target,
-                       const gfx::Point& offset,
-                       const gfx::Rect& rect) override {
-    return false;
-  }
-  void SetColorSpace(const gfx::ColorSpace& color_space) override {}
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override {}
-
- protected:
-  ~GLImagePbuffer() override {
-    EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
-
-    eglReleaseTexImage(egl_display, surface_, EGL_BACK_BUFFER);
-
-    eglDestroySurface(egl_display, surface_);
-  }
-
- private:
-  gfx::Size size_;
-  EGLSurface surface_;
-};
-
-}  // namespace
 
 enum {
   // The keyed mutex should always be released before the other thread
@@ -186,7 +139,8 @@ bool PbufferPictureBuffer::Initialize(const DXVAVideoDecodeAccelerator& decoder,
       egl_display, EGL_D3D_TEXTURE_2D_SHARE_HANDLE_ANGLE, texture_share_handle_,
       egl_config, attrib_list);
   RETURN_ON_FAILURE(decoding_surface_, "Failed to create surface", false);
-  gl_image_ = base::MakeRefCounted<GLImagePbuffer>(size(), decoding_surface_);
+  gl_image_ =
+      base::MakeRefCounted<gpu::GLImagePbuffer>(size(), decoding_surface_);
   if (decoder.d3d11_device_ && decoder.use_keyed_mutex_) {
     void* keyed_mutex = nullptr;
     EGLBoolean ret =
