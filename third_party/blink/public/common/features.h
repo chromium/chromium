@@ -383,12 +383,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSanitizerAPINamespaces);
 
-// Kill switch for the blocking of the navigation of top from a cross origin
-// iframe to a different scheme. TODO(https://crbug.com/1151507): Remove in
-// M92.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kBlockCrossOriginTopNavigationToDiffentScheme);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kJXL);
 
 // Main controls for ad serving API features.

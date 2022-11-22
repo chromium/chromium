@@ -922,13 +922,6 @@ BASE_FEATURE(kSanitizerAPINamespaces,
              "SanitizerAPINamespacesForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for the blocking of the navigation of top from a cross origin
-// iframe to a different protocol. TODO(https://crbug.com/1151507): Remove in
-// M92.
-BASE_FEATURE(kBlockCrossOriginTopNavigationToDiffentScheme,
-             "BlockCrossOriginTopNavigationToDiffentScheme",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
 BASE_FEATURE(kInterestGroupStorage,

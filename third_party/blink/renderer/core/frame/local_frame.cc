@@ -1846,9 +1846,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     if (!target_domain.empty() && !destination_domain.empty() &&
         target_domain == destination_domain &&
         (target_frame.GetSecurityContext()->GetSecurityOrigin()->Protocol() ==
-             destination_url.Protocol() ||
-         !base::FeatureList::IsEnabled(
-             features::kBlockCrossOriginTopNavigationToDiffentScheme))) {
+             destination_url.Protocol())) {
       return true;
     }
 
