@@ -258,7 +258,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public TabImpl prepareTab() {
         TabImpl tab = mock(TabImpl.class);
         when(tab.getView()).thenReturn(mock(View.class));
-        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        UserDataHost host = new UserDataHost();
+        when(tab.getUserDataHost()).thenReturn(host);
         WebContents webContents = mock(WebContents.class);
         when(tab.getWebContents()).thenReturn(webContents);
         NavigationController navigationController = mock(NavigationController.class);

@@ -44,6 +44,11 @@ public interface SessionRestoreManager {
      */
     void setEvictionTimeout(long timeoutMs);
 
+    /**
+     * Cancel the eviction timeout started during {@link #store}.
+     */
+    void cancelEvictionTimer();
+
     /** Clean the stored tab, if any. */
     void clearCache();
 

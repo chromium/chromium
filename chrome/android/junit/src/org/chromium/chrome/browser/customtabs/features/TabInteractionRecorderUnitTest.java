@@ -106,5 +106,11 @@ public class TabInteractionRecorderUnitTest {
         public boolean hadInteraction(long nativeTabInteractionRecorderAndroid) {
             return paramHadInteraction;
         }
+
+        @Override
+        public void reset(long nativeTabInteractionRecorderAndroid) {
+            paramHadInteraction = false;
+            paramDidGetUserInteraction = false;
+        }
     }
 }

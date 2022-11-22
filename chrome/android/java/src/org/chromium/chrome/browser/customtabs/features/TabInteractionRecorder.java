@@ -81,8 +81,7 @@ public class TabInteractionRecorder {
      */
     public void onTabClosing() {
         long timestamp = SystemClock.uptimeMillis();
-        boolean hadInteraction =
-                TabInteractionRecorderJni.get().hadInteraction(mNativeTabInteractionRecorder);
+        boolean hadInteraction = hadInteraction();
 
         Log.d(TAG,
                 String.format(Locale.US,
@@ -94,6 +93,22 @@ public class TabInteractionRecorder {
         pref.writeBoolean(
                 ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, hadInteraction);
         RecordHistogram.recordBooleanHistogram("CustomTabs.HadInteractionOnClose", hadInteraction);
+    }
+
+    /**
+     * Whether this instance has seen interactions in associated tab. Different than
+     * {@link #didGetUserInteraction()}, this function returns whether user had interactions with
+     * form entries, or had navigation entries by the time this method is called.
+     *
+     * More details see chrome/browser/android/customtabs/tab_interaction_recorder_android.h
+     */
+    public boolean hadInteraction() {
+        return TabInteractionRecorderJni.get().hadInteraction(mNativeTabInteractionRecorder);
+    }
+
+    /** Reset the interaction recorded. */
+    public void reset() {
+        TabInteractionRecorderJni.get().reset(mNativeTabInteractionRecorder);
     }
 
     /**
@@ -127,5 +142,6 @@ public class TabInteractionRecorder {
         TabInteractionRecorder createForTab(Tab tab);
         boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
         boolean hadInteraction(long nativeTabInteractionRecorderAndroid);
+        void reset(long nativeTabInteractionRecorderAndroid);
     }
 }

@@ -175,6 +175,10 @@ jboolean TabInteractionRecorderAndroid::HadInteraction(JNIEnv* env) const {
   return static_cast<jboolean>(has_interaction);
 }
 
+void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {
+  has_form_interactions_ = false;
+}
+
 ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab) {

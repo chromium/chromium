@@ -84,6 +84,7 @@ class TabInteractionRecorderAndroid
   // JNI methods
   jboolean DidGetUserInteraction(JNIEnv* env) const;
   jboolean HadInteraction(JNIEnv* env) const;
+  void Reset(JNIEnv* env);
 
 #ifdef UNIT_TEST
   void SetAutofillManagerForTest(
