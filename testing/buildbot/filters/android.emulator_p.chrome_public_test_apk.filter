@@ -118,6 +118,7 @@
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest*
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPasswordManagerIntegrationTest*
 
-
+# crbug.com/1392774
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
 
 
