@@ -115,7 +115,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -584,7 +583,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1401,7 +1399,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1444,7 +1441,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1482,7 +1478,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1595,7 +1590,7 @@ ci.builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["use_clang_coverage", "enable_reclient", "reclient_test"],
+            apply_configs = ["use_clang_coverage", "reclient_test"],
         ),
     ),
     console_view_entry = consoles.console_view_entry(

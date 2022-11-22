@@ -46,7 +46,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -83,7 +82,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -130,7 +128,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -342,7 +339,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -373,7 +369,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -417,7 +412,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "checkout_pgo_profiles",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(

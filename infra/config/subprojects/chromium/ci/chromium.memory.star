@@ -136,7 +136,6 @@ linux_memory_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -305,7 +304,6 @@ linux_memory_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -332,7 +330,6 @@ linux_memory_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -360,7 +357,6 @@ linux_memory_builder(
             config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "chromeos",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -420,7 +416,6 @@ linux_memory_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -477,7 +472,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -503,7 +497,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -528,7 +521,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -565,7 +557,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(

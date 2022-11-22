@@ -42,7 +42,6 @@ ci.gpu.linux_builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -76,7 +75,6 @@ ci.gpu.linux_builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
