@@ -43,8 +43,6 @@ public class WebsitePermissionsFetcher {
     private BrowserContextHandle mBrowserContextHandle;
     private WebsitePreferenceBridge mWebsitePreferenceBridge;
 
-    private static final String SCHEME_SUFFIX = "://";
-
     /**
      * A callback to pass to WebsitePermissionsFetcher. This is run when the
      * website permissions have been fetched.
@@ -320,9 +318,6 @@ public class WebsitePermissionsFetcher {
         }
 
         private Website findOrCreateSite(String origin, String embedder) {
-            // Ensure that the origin parameter is actually an origin and not a host.
-            assert origin.contains(SCHEME_SUFFIX);
-
             // This allows us to show multiple entries in "All sites" for the same origin, based on
             // the (origin, embedder) combination. For example, "cnn.com", "cnn.com all cookies on
             // this site only", and "cnn.com embedded on example.com" are all possible. In the
@@ -356,9 +351,7 @@ public class WebsitePermissionsFetcher {
                         || (address.equals(embedder) && address.equals(SITE_WILDCARD))) {
                     continue;
                 }
-                // Convert the address to origin, if it's not one already.
-                String origin = WebsiteAddress.create(address).getOrigin();
-                Website site = findOrCreateSite(origin, embedder);
+                Website site = findOrCreateSite(address, embedder);
                 site.setContentSettingException(contentSettingsType, exception);
             }
         }
@@ -480,12 +473,7 @@ public class WebsitePermissionsFetcher {
                                 for (StorageInfo info : infoArray) {
                                     String address = info.getHost();
                                     if (address == null) continue;
-                                    // Convert host to origin, in order to avoid duplication in the
-                                    // UI.
-                                    // TODO(crbug.com/1342991): Use BrowsingDataModel to avoid this
-                                    // conversion.
-                                    String origin = WebsiteAddress.create(address).getOrigin();
-                                    findOrCreateSite(origin, null).addStorageInfo(info);
+                                    findOrCreateSite(address, null).addStorageInfo(info);
                                 }
                                 queue.next();
                             }
