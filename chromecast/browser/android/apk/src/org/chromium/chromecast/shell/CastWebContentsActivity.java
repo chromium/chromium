@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.BuildInfo;
@@ -92,6 +93,9 @@ public class CastWebContentsActivity extends Activity {
     private final Controller<Unit> mIsTestingState = new Controller<>();
     // Set at creation. Handles destroying SurfaceHelper.
     private final Controller<CastWebContentsSurfaceHelper> mSurfaceHelperState = new Controller<>();
+    // Set when the activity has the surface available.
+    @VisibleForTesting
+    final Controller<Unit> mSurfaceAvailable = new Controller<>();
 
     @Nullable
     private CastWebContentsSurfaceHelper mSurfaceHelper;
@@ -123,7 +127,9 @@ public class CastWebContentsActivity extends Activity {
                             (FrameLayout) findViewById(R.id.web_contents_container),
                             CastSwitches.getSwitchValueColor(
                                     CastSwitches.CAST_APP_BACKGROUND_COLOR, Color.BLACK)),
-                    (Uri uri) -> mIsFinishingState.set("Delayed teardown for URI: " + uri)));
+                    (Uri uri)
+                            -> mIsFinishingState.set("Delayed teardown for URI: " + uri),
+                    mSurfaceAvailable));
         }));
 
         mSurfaceHelperState.subscribe((CastWebContentsSurfaceHelper surfaceHelper) -> {
@@ -156,6 +162,7 @@ public class CastWebContentsActivity extends Activity {
                 sendVisibilityChanged(both.second, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
             };
         });
+        mStartedState.subscribe(Observers.onEnter(mSurfaceAvailable::set));
 
         // Set a flag to exit sleep mode when this activity starts.
         mCreatedState.and(mGotIntentState)
@@ -293,6 +300,8 @@ public class CastWebContentsActivity extends Activity {
         if (DEBUG) Log.d(TAG, "onUserLeaveHint");
         if (canUsePictureInPicture() && mAllowPictureInPicture) {
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        } else {
+            mSurfaceAvailable.reset();
         }
     }
 

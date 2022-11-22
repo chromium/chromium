@@ -55,6 +55,9 @@ import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chromecast.base.Observer;
+import org.chromium.chromecast.base.Scope;
+import org.chromium.chromecast.base.Unit;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -515,6 +518,21 @@ public class CastWebContentsActivityTest {
 
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         assertFalse(shadowActivity.getInPictureInPictureMode());
+    }
+
+    @Test
+    public void testSurfaceAvailable() {
+        Observer<Unit> observer = mock(Observer.class);
+        Scope scope = mock(Scope.class);
+        when(observer.open(any())).thenReturn(scope);
+
+        mActivity.mSurfaceAvailable.subscribe(observer);
+
+        mActivityLifecycle.create().start().resume();
+        verify(observer).open(any());
+
+        mActivity.onUserLeaveHint();
+        verify(scope).close();
     }
 
     private IntentFilter filterFor(String action) {

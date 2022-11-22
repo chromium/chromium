@@ -103,8 +103,8 @@ class CastWebContentsSurfaceHelper {
      * @param webContentsView A Observer that displays incoming WebContents.
      * @param finishCallback Invoked to tell host to finish.
      */
-    CastWebContentsSurfaceHelper(
-            Observer<WebContents> webContentsView, Consumer<Uri> finishCallback) {
+    CastWebContentsSurfaceHelper(Observer<WebContents> webContentsView,
+            Consumer<Uri> finishCallback, Observable<Unit> surfaceAvailable) {
         Handler handler = new Handler();
 
         mMediaSessionGetter =
@@ -162,6 +162,9 @@ class CastWebContentsSurfaceHelper {
 
         // webContentsView is responsible for displaying each new WebContents.
         webContentsState.subscribe(webContentsView);
+        webContentsState.and(surfaceAvailable)
+                .map(Both::getFirst)
+                .subscribe(Observers.onExit(WebContents::tearDownDialogOverlays));
 
         // Take audio focus when receiving new WebContents if not the remote control app.
         mStartParamsState.filter(params -> !params.isRemoteControlMode)
