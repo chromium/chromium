@@ -53,37 +53,41 @@ class [[clang::lto_visibility_public]] ServiceResolverThunk
   size_t GetThunkSize() const override;
 
   // Call this to set up ntdll_base_ which will allow for local patches.
-  virtual void AllowLocalPatches();
+  void AllowLocalPatches();
 
   // Verifies that the function specified by |target_name| in |target_module| is
   // a service and copies the data from that function into |thunk_storage|. If
   // |storage_bytes| is too small, then the method fails.
-  virtual NTSTATUS CopyThunk(const void* target_module,
-                             const char* target_name,
-                             BYTE* thunk_storage,
-                             size_t storage_bytes,
-                             size_t* storage_used);
+  NTSTATUS CopyThunk(const void* target_module,
+                     const char* target_name,
+                     BYTE* thunk_storage,
+                     size_t storage_bytes,
+                     size_t* storage_used);
 
- protected:
+  // Checks if a target was patched correctly for a jump. This is only for use
+  // in testing in 32-bit builds. Will always return true on 64-bit builds. Set
+  // |thunk_storage| to the same pointer passed to Setup().
+  bool VerifyJumpTargetForTesting(void* thunk_storage) const;
+
+ private:
   // The unit test will use this member to allow local patch on a buffer.
   HMODULE ntdll_base_;
 
   // Handle of the child process.
   HANDLE process_;
 
- private:
   // Returns true if the code pointer by target_ corresponds to the expected
   // type of function. Saves that code on the first part of the thunk pointed
   // by local_thunk (should be directly accessible from the parent).
-  virtual bool IsFunctionAService(void* local_thunk) const;
+  bool IsFunctionAService(void* local_thunk) const;
 
   // Performs the actual patch of target_.
   // local_thunk must be already fully initialized, and the first part must
   // contain the original code. The real type of this buffer is ServiceFullThunk
   // (yes, private). remote_thunk (real type ServiceFullThunk), must be
   // allocated on the child, and will contain the thunk data, after this call.
-  // Returns the apropriate status code.
-  virtual NTSTATUS PerformPatch(void* local_thunk, void* remote_thunk);
+  // Returns the appropriate status code.
+  NTSTATUS PerformPatch(void* local_thunk, void* remote_thunk);
 
   // Provides basically the same functionality as IsFunctionAService but it
   // continues even if it does not recognize the function code. remote_thunk
@@ -93,74 +97,6 @@ class [[clang::lto_visibility_public]] ServiceResolverThunk
   // true if we are allowed to patch already-patched functions.
   bool relaxed_;
   ULONG relative_jump_;
-};
-
-// This is the concrete resolver used to perform service-call type functions
-// inside ntdll.dll on WOW64 (32 bit ntdll on 64 bit Vista).
-class Wow64ResolverThunk : public ServiceResolverThunk {
- public:
-  // The service resolver needs a child process to write to.
-  Wow64ResolverThunk(HANDLE process, bool relaxed)
-      : ServiceResolverThunk(process, relaxed) {}
-
-  Wow64ResolverThunk(const Wow64ResolverThunk&) = delete;
-  Wow64ResolverThunk& operator=(const Wow64ResolverThunk&) = delete;
-
-  ~Wow64ResolverThunk() override {}
-
- private:
-  bool IsFunctionAService(void* local_thunk) const override;
-};
-
-// This is the concrete resolver used to perform service-call type functions
-// inside ntdll.dll on WOW64 for Windows 8.
-class Wow64W8ResolverThunk : public ServiceResolverThunk {
- public:
-  // The service resolver needs a child process to write to.
-  Wow64W8ResolverThunk(HANDLE process, bool relaxed)
-      : ServiceResolverThunk(process, relaxed) {}
-
-  Wow64W8ResolverThunk(const Wow64W8ResolverThunk&) = delete;
-  Wow64W8ResolverThunk& operator=(const Wow64W8ResolverThunk&) = delete;
-
-  ~Wow64W8ResolverThunk() override {}
-
- private:
-  bool IsFunctionAService(void* local_thunk) const override;
-};
-
-// This is the concrete resolver used to perform service-call type functions
-// inside ntdll.dll on Windows 8.
-class Win8ResolverThunk : public ServiceResolverThunk {
- public:
-  // The service resolver needs a child process to write to.
-  Win8ResolverThunk(HANDLE process, bool relaxed)
-      : ServiceResolverThunk(process, relaxed) {}
-
-  Win8ResolverThunk(const Win8ResolverThunk&) = delete;
-  Win8ResolverThunk& operator=(const Win8ResolverThunk&) = delete;
-
-  ~Win8ResolverThunk() override {}
-
- private:
-  bool IsFunctionAService(void* local_thunk) const override;
-};
-
-// This is the concrete resolver used to perform service-call type functions
-// inside ntdll.dll on WOW64 for Windows 10.
-class Wow64W10ResolverThunk : public ServiceResolverThunk {
- public:
-  // The service resolver needs a child process to write to.
-  Wow64W10ResolverThunk(HANDLE process, bool relaxed)
-      : ServiceResolverThunk(process, relaxed) {}
-
-  Wow64W10ResolverThunk(const Wow64W10ResolverThunk&) = delete;
-  Wow64W10ResolverThunk& operator=(const Wow64W10ResolverThunk&) = delete;
-
-  ~Wow64W10ResolverThunk() override {}
-
- private:
-  bool IsFunctionAService(void* local_thunk) const override;
 };
 
 }  // namespace sandbox

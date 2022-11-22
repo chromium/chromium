@@ -7,19 +7,7 @@
 
 #include <windows.h>
 
-namespace sandbox {
-class ServiceResolverThunk;
-}
-
 namespace elf_hook {
-
-//------------------------------------------------------------------------------
-// System Service hooking support
-//------------------------------------------------------------------------------
-
-// Creates a |ServiceResolverThunk| based on the OS version. Ownership of the
-// resulting thunk is passed to the caller.
-sandbox::ServiceResolverThunk* HookSystemService(bool relaxed);
 
 //------------------------------------------------------------------------------
 // Import Address Table hooking support

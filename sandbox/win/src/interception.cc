@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/scoped_native_library.h"
 #include "base/win/pe_image.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/internal_types.h"
@@ -432,25 +431,7 @@ ResultCode InterceptionManager::PatchClientFunctions(
   if (!ntdll_base)
     return SBOX_ERROR_NO_HANDLE;
 
-  std::unique_ptr<ServiceResolverThunk> thunk;
-#if defined(_WIN64)
-  thunk = std::make_unique<ServiceResolverThunk>(child_->Process(), true);
-#else
-  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  base::win::Version real_os_version = os_info->Kernel32Version();
-  if (os_info->IsWowX86OnAMD64()) {
-    if (real_os_version >= base::win::Version::WIN10)
-      thunk.reset(new Wow64W10ResolverThunk(child_->Process(), true));
-    else if (real_os_version >= base::win::Version::WIN8)
-      thunk.reset(new Wow64W8ResolverThunk(child_->Process(), true));
-    else
-      thunk.reset(new Wow64ResolverThunk(child_->Process(), true));
-  } else if (real_os_version >= base::win::Version::WIN8) {
-    thunk.reset(new Win8ResolverThunk(child_->Process(), true));
-  } else {
-    thunk.reset(new ServiceResolverThunk(child_->Process(), true));
-  }
-#endif
+  ServiceResolverThunk thunk(child_->Process(), /*relaxed=*/true);
 
   for (auto interception : interceptions_) {
     const std::wstring ntdll(kNtdllName);
@@ -460,7 +441,7 @@ ResultCode InterceptionManager::PatchClientFunctions(
     if (INTERCEPTION_SERVICE_CALL != interception.type)
       return SBOX_ERROR_BAD_PARAMS;
 
-    NTSTATUS ret = thunk->Setup(
+    NTSTATUS ret = thunk.Setup(
         ntdll_base, nullptr, interception.function.c_str(),
         interception.interceptor.c_str(), interception.interceptor_address,
         &thunks->thunks[dll_data->num_thunks],

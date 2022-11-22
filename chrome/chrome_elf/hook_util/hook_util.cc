@@ -11,7 +11,6 @@
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/sandbox_utils.h"
-#include "sandbox/win/src/service_resolver.h"
 
 namespace {
 
@@ -197,43 +196,6 @@ DWORD RemoveIATHook(void* intercept_function,
 }  // namespace
 
 namespace elf_hook {
-
-//------------------------------------------------------------------------------
-// System Service hooking support
-//------------------------------------------------------------------------------
-
-sandbox::ServiceResolverThunk* HookSystemService(bool relaxed) {
-  // Create a thunk via the appropriate ServiceResolver instance.
-  sandbox::ServiceResolverThunk* thunk = nullptr;
-
-  // No hooking on unsupported OS versions.
-  if (!::IsWindows7OrGreater())
-    return thunk;
-
-  // Pseudo-handle, no need to close.
-  HANDLE current_process = ::GetCurrentProcess();
-
-#if defined(_WIN64)
-  // ServiceResolverThunk can handle all the formats in 64-bit (instead only
-  // handling one like it does in 32-bit versions).
-  thunk = new sandbox::ServiceResolverThunk(current_process, relaxed);
-#else
-  if (nt::IsCurrentProcWow64()) {
-    if (::IsWindows10OrGreater())
-      thunk = new sandbox::Wow64W10ResolverThunk(current_process, relaxed);
-    else if (::IsWindows8OrGreater())
-      thunk = new sandbox::Wow64W8ResolverThunk(current_process, relaxed);
-    else
-      thunk = new sandbox::Wow64ResolverThunk(current_process, relaxed);
-  } else if (::IsWindows8OrGreater()) {
-    thunk = new sandbox::Win8ResolverThunk(current_process, relaxed);
-  } else {
-    thunk = new sandbox::ServiceResolverThunk(current_process, relaxed);
-  }
-#endif
-
-  return thunk;
-}
 
 //------------------------------------------------------------------------------
 // Import Address Table hooking support
