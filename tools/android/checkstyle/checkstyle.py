@@ -4,84 +4,104 @@
 
 """Script that is used by PRESUBMIT.py to run style checks on Java files."""
 
+import collections
 import os
 import subprocess
 import sys
 import xml.dom.minidom
 
 
-CHROMIUM_SRC = os.path.normpath(
-    os.path.join(os.path.dirname(__file__),
-                 os.pardir, os.pardir, os.pardir))
-CHECKSTYLE_ROOT = os.path.join(CHROMIUM_SRC, 'third_party', 'checkstyle',
-                               'checkstyle-all.jar')
-JAVA_PATH = os.path.join(CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin',
-                         'java')
+_SELF_DIR = os.path.dirname(__file__)
+CHROMIUM_SRC = os.path.normpath(os.path.join(_SELF_DIR, '..', '..', '..'))
+_CHECKSTYLE_ROOT = os.path.join(CHROMIUM_SRC, 'third_party', 'checkstyle',
+                                'checkstyle-all.jar')
+_JAVA_PATH = os.path.join(CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin',
+                          'java')
+_STYLE_FILE = os.path.join(_SELF_DIR, 'chromium-style-5.0.xml')
+_REMOVE_UNUSED_IMPORTS_PATH = os.path.join(_SELF_DIR,
+                                           'remove_unused_imports.py')
 
 
-def FormatCheckstyleOutput(checkstyle_output):
-  lines = checkstyle_output.splitlines(True)
-  if 'Checkstyle ends with' in lines[-1]:
-    return ''.join(lines[:-1])
-  else:
-    return checkstyle_output
+class Violation(
+        collections.namedtuple('Violation',
+                               'file,line,column,message,severity')):
+    def __str__(self):
+        column = f'{self.column}:' if self.column else ''
+        return f'{self.file}:{self.line}:{column} {self.message}'
+
+    def is_warning(self):
+        return self.severity == 'warning'
+
+    def is_error(self):
+        return self.severity == 'error'
 
 
-def RunCheckstyle(input_api, output_api, style_file, files_to_skip=None):
-  # Android toolchain is only available on Linux.
-  if not sys.platform.startswith('linux'):
-    return []
+def run_checkstyle(local_path, style_file, java_files):
+    cmd = [
+        _JAVA_PATH, '-cp', _CHECKSTYLE_ROOT,
+        'com.puppycrawl.tools.checkstyle.Main', '-c', style_file, '-f', 'xml'
+    ] + java_files
+    check = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    stdout = check.communicate()[0].decode('utf-8')
+    results = []
 
-  if not os.path.exists(style_file):
-    file_error = ('  Java checkstyle configuration file is missing: '
-                  + style_file)
-    return [output_api.PresubmitError(file_error)]
+    lines = stdout.splitlines(keepends=True)
+    if 'Checkstyle ends with' in lines[-1]:
+        stdout = ''.join(lines[:-1])
+    try:
+        root = xml.dom.minidom.parseString(stdout)
+    except Exception:
+        print('Tried to parse:')
+        print(stdout)
+        raise
 
-  # Filter out non-Java files and files that were deleted.
-  java_files = [
-      x.AbsoluteLocalPath() for x in input_api.AffectedSourceFiles(
-          lambda f: input_api.FilterSourceFile(f, files_to_skip=files_to_skip))
-      if os.path.splitext(x.LocalPath())[1] == '.java'
-  ]
-  if not java_files:
-    return []
+    for fileElement in root.getElementsByTagName('file'):
+        filename = fileElement.attributes['name'].value
+        if filename.startswith(local_path):
+            filename = filename[len(local_path) + 1:]
+        errors = fileElement.getElementsByTagName('error')
+        for error in errors:
+            severity = error.attributes['severity'].value
+            if severity not in ('warning', 'error'):
+                continue
+            message = error.attributes['message'].value
+            line = int(error.attributes['line'].value)
+            column = None
+            if error.hasAttribute('column'):
+                column = int(error.attributes['column'].value)
+            results.append(Violation(filename, line, column, message,
+                                     severity))
+    return results
 
-  # Run checkstyle
-  check = subprocess.Popen([JAVA_PATH, '-cp',
-                            CHECKSTYLE_ROOT,
-                            'com.puppycrawl.tools.checkstyle.Main', '-c',
-                            style_file, '-f', 'xml'] + java_files,
-                            stdout=subprocess.PIPE)
-  stdout = check.communicate()[0].decode('utf-8')
 
-  result_errors = []
-  result_warnings = []
+def run_presubmit(input_api, output_api, files_to_skip=None):
+    # Android toolchain is only available on Linux.
+    if not sys.platform.startswith('linux'):
+        return []
 
-  formatted_checkstyle_output = FormatCheckstyleOutput(stdout)
+    # Filter out non-Java files and files that were deleted.
+    java_files = [
+        x.AbsoluteLocalPath() for x in
+        input_api.AffectedSourceFiles(lambda f: input_api.FilterSourceFile(
+            f, files_to_skip=files_to_skip)) if x.LocalPath().endswith('.java')
+    ]
+    if not java_files:
+        return []
 
-  local_path = input_api.PresubmitLocalPath()
-  root = xml.dom.minidom.parseString(formatted_checkstyle_output)
-  for fileElement in root.getElementsByTagName('file'):
-    fileName = fileElement.attributes['name'].value
-    fileName = os.path.relpath(fileName, local_path)
-    errors = fileElement.getElementsByTagName('error')
-    for error in errors:
-      line = error.attributes['line'].value
-      column = ''
-      if error.hasAttribute('column'):
-        column = '%s:' % (error.attributes['column'].value)
-      message = error.attributes['message'].value
-      result = '  %s:%s:%s %s' % (fileName, line, column, message)
+    local_path = input_api.PresubmitLocalPath()
+    violations = run_checkstyle(local_path, _STYLE_FILE, java_files)
+    warnings = ['  ' + str(v) for v in violations if v.is_warning()]
+    errors = ['  ' + str(v) for v in violations if v.is_error()]
 
-      severity = error.attributes['severity'].value
-      if severity == 'error':
-        result_errors.append(result)
-      elif severity == 'warning':
-        result_warnings.append(result)
+    ret = []
+    if warnings:
+        ret.append(output_api.PresubmitPromptWarning('\n'.join(warnings)))
+    if errors:
+        msg = '\n'.join(errors)
+        if 'Unused import:' in msg or 'Duplicate import' in msg:
+            msg += """
 
-  result = []
-  if result_warnings:
-    result.append(output_api.PresubmitPromptWarning('\n'.join(result_warnings)))
-  if result_errors:
-    result.append(output_api.PresubmitError('\n'.join(result_errors)))
-  return result
+To remove unused imports: """ + input_api.os_path.relpath(
+                _REMOVE_UNUSED_IMPORTS_PATH, local_path)
+        ret.append(output_api.PresubmitError(msg))
+    return ret

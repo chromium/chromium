@@ -3228,10 +3228,9 @@ def CheckJavaStyle(input_api, output_api):
         # Restore sys.path to what it was before.
         sys.path = original_sys_path
 
-    return checkstyle.RunCheckstyle(
+    return checkstyle.run_presubmit(
         input_api,
         output_api,
-        'tools/android/checkstyle/chromium-style-5.0.xml',
         files_to_skip=_EXCLUDED_PATHS + input_api.DEFAULT_FILES_TO_SKIP)
 
 
