@@ -10,7 +10,7 @@
 
 goog.provide('ApiImplementation');
 
-goog.require('ContentExtensionBridge');
+goog.require('ContentScriptBridge');
 goog.require('ScriptInstaller');
 
 ApiImplementation = class {
@@ -24,7 +24,7 @@ ApiImplementation = class {
       console.error('Unable to install api script');
     }
 
-    ContentExtensionBridge.addDisconnectListener(function() {
+    ContentScriptBridge.addDisconnectListener(function() {
       ApiImplementation.port.postMessage(ApiImplementation.DISCONNECT_MSG);
       ScriptInstaller.uninstallScript('cvoxapi');
     });
@@ -82,7 +82,7 @@ ApiImplementation = class {
       properties,
     };
 
-    ContentExtensionBridge.send(message);
+    ContentScriptBridge.send(message);
   }
 };
 

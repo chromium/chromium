@@ -22,7 +22,7 @@ chromevox_modules = [
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
   "injected/api_implementation.js",
-  "injected/extension_bridge.js",
+  "injected/content_script_bridge.js",
   "injected/loader.js",
   "injected/script_installer.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",

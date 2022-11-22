@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Bridge to aid in communication between a Chrome
- * background page and content script.
+ * @fileoverview Bridge to aid in communication between the ChromeVox background
+ * page and content script.
  *
  * Use addMessageListener() to provide a message listener.
  * Messages can be any object that can be serialized using JSON.
  */
-
 export class ContentScriptBridge {
   /** @private */
   constructor() {
@@ -45,7 +44,7 @@ export class ContentScriptBridge {
    * The function gets called with two parameters: the message, and a
    * port that can be used to send replies.
    *
-   * @param {function(Object, Port)} listener The message listener.
+   * @param {function(Object, Port)} listener
    */
   static addMessageListener(listener) {
     ContentScriptBridge.instance.messageListeners_.push(listener);
@@ -108,18 +107,18 @@ ContentScriptBridge.instance;
  * The name of the port between the content script and background page.
  * @const {string}
  */
-ContentScriptBridge.PORT_NAME = 'ExtensionBridge.Port';
+ContentScriptBridge.PORT_NAME = 'ContentScriptBridge.Port';
 
 /**
  * The name of the message between the content script and background to
  * see if they're connected.
  * @const {string}
  */
-ContentScriptBridge.PING_MSG = 'ExtensionBridge.Ping';
+ContentScriptBridge.PING_MSG = 'ContentScriptBridge.Ping';
 
 /**
  * The name of the message between the background and content script to
  * confirm that they're connected.
  * @const {string}
  */
-ContentScriptBridge.PONG_MSG = 'ExtensionBridge.Pong';
+ContentScriptBridge.PONG_MSG = 'ContentScriptBridge.Pong';

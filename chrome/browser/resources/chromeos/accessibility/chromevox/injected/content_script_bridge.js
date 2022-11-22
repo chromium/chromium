@@ -7,9 +7,9 @@
  * background page and content script.
  */
 
-goog.provide('ContentExtensionBridge');
+goog.provide('ContentScriptBridge');
 
-ContentExtensionBridge = class {
+ContentScriptBridge = class {
   /** @private */
   constructor() {
     /** @private {!Array<!function()>} */
@@ -30,12 +30,12 @@ ContentExtensionBridge = class {
 
   /** Initialize the extension bridge. */
   static init() {
-    ContentExtensionBridge.instance = new ContentExtensionBridge();
+    ContentScriptBridge.instance = new ContentScriptBridge();
   }
 
   /** @param {Object} message The message to be sent. */
   static send(message) {
-    ContentExtensionBridge.instance.send_(message);
+    ContentScriptBridge.instance.send_(message);
   }
 
   /**
@@ -44,7 +44,7 @@ ContentExtensionBridge = class {
    * @param {function()} listener The listener.
    */
   static addDisconnectListener(listener) {
-    ContentExtensionBridge.instance.disconnectListeners_.push(listener);
+    ContentScriptBridge.instance.disconnectListeners_.push(listener);
   }
 
   /**
@@ -80,7 +80,7 @@ ContentExtensionBridge = class {
    */
   setupBackgroundPort_() {
     this.backgroundPort_ =
-        chrome.extension.connect({name: ContentExtensionBridge.PORT_NAME});
+        chrome.extension.connect({name: ContentScriptBridge.PORT_NAME});
     if (!this.backgroundPort_) {
       return;
     }
@@ -94,8 +94,8 @@ ContentExtensionBridge = class {
    * @private
    */
   onMessage_(message) {
-    if (message[ContentExtensionBridge.PONG_MSG]) {
-      this.gotPongFromBackgroundPage_(message[ContentExtensionBridge.PONG_MSG]);
+    if (message[ContentScriptBridge.PONG_MSG]) {
+      this.gotPongFromBackgroundPage_(message[ContentScriptBridge.PONG_MSG]);
     }
   }
 
@@ -123,7 +123,7 @@ ContentExtensionBridge = class {
     }
 
     this.pingAttempts_++;
-    if (this.pingAttempts_ > ContentExtensionBridge.MAX_PING_ATTEMPTS) {
+    if (this.pingAttempts_ > ContentScriptBridge.MAX_PING_ATTEMPTS) {
       // Could not connect after several ping attempts. Call the disconnect
       // handlers, which will disable ChromeVox.
       this.disconnectListeners_.forEach(listener => listener());
@@ -132,7 +132,7 @@ ContentExtensionBridge = class {
 
     // Send the ping.
     const msg = {
-      [ContentExtensionBridge.PING_MSG]: 1,
+      [ContentScriptBridge.PING_MSG]: 1,
     };
 
     if (!this.backgroundPort_) {
@@ -145,7 +145,7 @@ ContentExtensionBridge = class {
     // Check again after a short while in case we get no response.
     setTimeout(
         () => this.tryToPingBackgroundPage_(),
-        ContentExtensionBridge.TIME_BETWEEN_PINGS_MS);
+        ContentScriptBridge.TIME_BETWEEN_PINGS_MS);
   }
 
   /**
@@ -190,26 +190,26 @@ ContentExtensionBridge = class {
  * The name of the port between the content script and background page.
  * @const {string}
  */
-ContentExtensionBridge.PORT_NAME = 'ExtensionBridge.Port';
+ContentScriptBridge.PORT_NAME = 'ContentScriptBridge.Port';
 
 /**
  * The name of the message between the content script and background to
  * see if they're connected.
  * @const {string}
  */
-ContentExtensionBridge.PING_MSG = 'ExtensionBridge.Ping';
+ContentScriptBridge.PING_MSG = 'ContentScriptBridge.Ping';
 
 /**
  * The name of the message between the background and content script to
  * confirm that they're connected.
  * @const {string}
  */
-ContentExtensionBridge.PONG_MSG = 'ExtensionBridge.Pong';
+ContentScriptBridge.PONG_MSG = 'ContentScriptBridge.Pong';
 
 /** @const {number} */
-ContentExtensionBridge.MAX_PING_ATTEMPTS = 5;
+ContentScriptBridge.MAX_PING_ATTEMPTS = 5;
 
 /** @const {number} */
-ContentExtensionBridge.TIME_BETWEEN_PINGS_MS = 500;
+ContentScriptBridge.TIME_BETWEEN_PINGS_MS = 500;
 
-ContentExtensionBridge.init();
+ContentScriptBridge.init();
