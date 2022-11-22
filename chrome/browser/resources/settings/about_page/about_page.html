@@ -75,7 +75,7 @@
         <div class="flex cr-padded-text">
 <if expr="not chromeos_ash">
           <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
-            <div
+            <div role="alert" aria-live="polite"
                 inner-h-t-m-l="[[getUpdateStatusMessage_(
                     currentUpdateStatusEvent_)]]">
             </div>
