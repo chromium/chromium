@@ -91,6 +91,17 @@ class NET_EXPORT GlobalFirstPartySets {
   void ApplyManuallySpecifiedSet(
       const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries);
 
+  // Directly sets this instance's manual config. This is unsafe, because it
+  // assumes that the config was computed by this instance (or one with
+  // identical data), but cannot enforce that as a precondition.
+  //
+  // This must be public since at least one caller is above the //net layer, so
+  // we can't refer to the caller's type here (and therefore can't "friend" it
+  // and also can't use a base::Passkey).
+  //
+  // Must not be called if the manual config has already been set.
+  void UnsafeSetManualConfig(FirstPartySetsContextConfig manual_config);
+
   // Synchronously iterate over all entries in the public sets (i.e. not
   // including any manual set entries). Returns early if any of the iterations
   // returns false. Returns false if iteration was incomplete; true if all
@@ -99,6 +110,15 @@ class NET_EXPORT GlobalFirstPartySets {
   bool ForEachPublicSetEntry(
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
+
+  // Synchronously iterate over the manual config. Returns early if any of the
+  // iterations returns false. Returns false if iteration was incomplete; true
+  // if all iterations returned true. No guarantees are made re: iteration
+  // order.
+  bool ForEachManualConfigEntry(
+      base::FunctionRef<bool(const SchemefulSite&,
+                             const absl::optional<FirstPartySetEntry>&)> f)
+      const;
 
   // Synchronously iterate over all the effective entries (i.e. anything that
   // could be returned by `FindEntry` using this instance and `config`,
@@ -118,10 +138,6 @@ class NET_EXPORT GlobalFirstPartySets {
     return public_sets_version_;
   }
 
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_sets() const {
-    return manual_sets_;
-  }
-
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::StructTraits<network::mojom::GlobalFirstPartySetsDataView,
@@ -134,7 +150,6 @@ class NET_EXPORT GlobalFirstPartySets {
       base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets,
       FirstPartySetsContextConfig manual_config);
 
   // Same as the public version of FindEntry, but is allowed to omit the
@@ -193,10 +208,6 @@ class NET_EXPORT GlobalFirstPartySets {
   // The site aliases. Used to normalize a given SchemefulSite into its
   // canonical representative, before looking it up in `entries_`.
   base::flat_map<SchemefulSite, SchemefulSite> aliases_;
-
-  // A map representing the manually-specified sets. Contains entries for
-  // aliases as well as canonical sites.
-  base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets_;
 
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.

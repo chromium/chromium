@@ -21,7 +21,6 @@
 #include "sql/meta_table.h"
 
 namespace net {
-class FirstPartySetEntry;
 class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
 class GlobalFirstPartySets;
@@ -120,24 +119,24 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
                                    const net::GlobalFirstPartySets& sets);
 
-  // Stores the Manual Sets into manual_sets table, and returns true on success.
-  // Inserting new manual sets will wipe out pre-existing manual sets for the
-  // given 'browser_context_id'
-  [[nodiscard]] bool InsertManualSets(
+  // Stores the manual configuration into manual_configurations table, and
+  // returns true on success. Inserting new manual configuration will wipe out
+  // pre-existing entries for the given 'browser_context_id'
+  [[nodiscard]] bool InsertManualConfiguration(
       const std::string& browser_context_id,
-      const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
-          manual_sets);
+      const net::GlobalFirstPartySets& global_first_party_sets);
 
   // Stores the policy configurations into policy_configurations table, and
   // returns true on success. Note that inserting new configurations will
   // wipe out the pre-existing ones for the given `browser_context_id`.
   [[nodiscard]] bool InsertPolicyConfigurations(
       const std::string& browser_context_id,
-      const net::FirstPartySetsContextConfig& config);
+      const net::FirstPartySetsContextConfig& policy_config);
 
-  // Gets the previously-stored manual_sets for the `browser_context_id`.
-  [[nodiscard]] base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
-  FetchManualSets(const std::string& browser_context_id);
+  // Gets the previously-stored manual configuration for the
+  // `browser_context_id`.
+  [[nodiscard]] net::FirstPartySetsContextConfig FetchManualConfiguration(
+      const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
@@ -170,6 +169,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool UpgradeSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool MigrateToVersion3()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool MigrateToVersion4()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Increase the `run_count` stored in the meta table by 1. Should only be

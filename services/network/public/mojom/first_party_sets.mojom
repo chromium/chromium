@@ -91,10 +91,6 @@ struct GlobalFirstPartySets {
   // The mapping from site alias to canonical site from public sets.
   map<SchemefulSite, SchemefulSite> aliases;
 
-  // The mapping of site to FPS entry representing the parsed manually-supplied
-  // set, without taking the underlying public sets into account.
-  map<SchemefulSite, FirstPartySetEntry> manual_entries;
-
   // The config induced by the manually-supplied set.
   FirstPartySetsContextConfig manual_config;
 };

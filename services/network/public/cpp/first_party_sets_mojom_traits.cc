@@ -162,17 +162,12 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   if (!sets.ReadAliases(&aliases))
     return false;
 
-  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_entries;
-  if (!sets.ReadManualEntries(&manual_entries))
-    return false;
-
   net::FirstPartySetsContextConfig manual_config;
   if (!sets.ReadManualConfig(&manual_config))
     return false;
 
-  *out_sets = net::GlobalFirstPartySets(
-      std::move(public_sets_version), std::move(entries), std::move(aliases),
-      std::move(manual_entries), std::move(manual_config));
+  *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version), entries,
+                                        aliases, std::move(manual_config));
 
   return true;
 }

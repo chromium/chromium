@@ -38,7 +38,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 // Version number of the database.
-const int kCurrentVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
 
 static const size_t kTableCount = 7u;
 
@@ -117,9 +117,9 @@ class FirstPartySetsDatabaseTest : public testing::Test {
     return size;
   }
 
-  size_t CountManualSetsEntries(sql::Database* db) {
+  size_t CountManualConfigurationsEntries(sql::Database* db) {
     size_t size = 0;
-    EXPECT_TRUE(sql::test::CountTableRows(db, "manual_sets", &size));
+    EXPECT_TRUE(sql::test::CountTableRows(db, "manual_configurations", &size));
     return size;
   }
 
@@ -157,7 +157,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   // [public_sets], [browser_context_sets_version], [policy_configurations],
-  // [manual_sets], [browser_context_sites_to_clear],
+  // [manual_configurations], [browser_context_sites_to_clear],
   // [browser_contexts_cleared], and [meta].
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
@@ -181,7 +181,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   EXPECT_EQ(0u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
-  EXPECT_EQ(0u, CountManualSetsEntries(&db));
+  EXPECT_EQ(0u, CountManualConfigurationsEntries(&db));
 }
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
@@ -203,7 +203,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
-  EXPECT_EQ(2u, CountManualSetsEntries(&db));
+  EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kSuccess,
@@ -232,7 +232,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
-  EXPECT_EQ(0u, CountManualSetsEntries(&db));
+  EXPECT_EQ(0u, CountManualConfigurationsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kSuccess,
@@ -261,7 +261,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
-  EXPECT_EQ(0u, CountManualSetsEntries(&db));
+  EXPECT_EQ(0u, CountManualConfigurationsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kSuccess,
@@ -333,6 +333,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+  EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
   EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
 
   // ============ Verify persisting public sets
@@ -379,9 +380,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 
   EXPECT_FALSE(s_config.Step());
 
-  // ============ Verify persisting manual sets
+  // ============ Verify persisting manual config
   const char kSelectManualSql[] =
-      "SELECT site,primary_site,site_type FROM manual_sets";
+      "SELECT site,primary_site,site_type FROM manual_configurations";
   sql::Statement s_manual(db.GetUniqueStatement(kSelectManualSql));
   EXPECT_TRUE(s_manual.Step());
   EXPECT_EQ(manual_site, s_manual.ColumnString(0));
@@ -444,7 +445,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
-  EXPECT_EQ(2u, CountManualSetsEntries(&db));
+  EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
   EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
 
   // ============ Verify persisting context config
@@ -463,9 +464,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
 
   EXPECT_FALSE(s_config.Step());
 
-  // ============ Verify persisting manual sets
+  // ============ Verify persisting manual configurations
   const char kSelectManualSql[] =
-      "SELECT site,primary_site,site_type FROM manual_sets";
+      "SELECT site,primary_site,site_type FROM manual_configurations";
   sql::Statement s_manual(db.GetUniqueStatement(kSelectManualSql));
   EXPECT_TRUE(s_manual.Step());
   EXPECT_EQ(manual_site, s_manual.ColumnString(0));
@@ -526,22 +527,22 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
 
     EXPECT_FALSE(s_config.Step());
 
-    // Verify data in the manual_sets table
+    // Verify data in the manual_configurations table
     static constexpr char kSelectManualSetsSql[] =
         "SELECT browser_context_id,site,primary_site,site_type FROM "
-        "manual_sets";
-    sql::Statement s_manual_sets(db.GetUniqueStatement(kSelectManualSetsSql));
-    ASSERT_TRUE(s_manual_sets.Step());
-    ASSERT_EQ("b0", s_manual_sets.ColumnString(0));
-    ASSERT_EQ("https://ccc.test", s_manual_sets.ColumnString(1));
-    ASSERT_EQ("https://ddd.test", s_manual_sets.ColumnString(2));
-    ASSERT_EQ(1, s_manual_sets.ColumnInt(3));
+        "manual_configurations";
+    sql::Statement s_manual(db.GetUniqueStatement(kSelectManualSetsSql));
+    ASSERT_TRUE(s_manual.Step());
+    ASSERT_EQ("b0", s_manual.ColumnString(0));
+    ASSERT_EQ("https://ccc.test", s_manual.ColumnString(1));
+    ASSERT_EQ("https://ddd.test", s_manual.ColumnString(2));
+    ASSERT_EQ(1, s_manual.ColumnInt(3));
 
-    ASSERT_TRUE(s_manual_sets.Step());
-    ASSERT_EQ("b0", s_manual_sets.ColumnString(0));
-    ASSERT_EQ("https://ddd.test", s_manual_sets.ColumnString(1));
-    ASSERT_EQ("https://ddd.test", s_manual_sets.ColumnString(2));
-    ASSERT_EQ(0, s_manual_sets.ColumnInt(3));
+    ASSERT_TRUE(s_manual.Step());
+    ASSERT_EQ("b0", s_manual.ColumnString(0));
+    ASSERT_EQ("https://ddd.test", s_manual.ColumnString(1));
+    ASSERT_EQ("https://ddd.test", s_manual.ColumnString(2));
+    ASSERT_EQ(0, s_manual.ColumnInt(3));
   }
   const base::Version version("0.0.2");
   const std::string site = "https://site1.test";
@@ -637,23 +638,23 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   EXPECT_EQ("", s_config.ColumnString(2));
   EXPECT_FALSE(s_config.Step());
 
-  // ============ Verify new manual sets overwrote pre-existing data
+  // ============ Verify new manual config overwrote pre-existing data
   static constexpr char kSelectManualSetsSql[] =
-      "SELECT site,primary_site,site_type FROM manual_sets "
+      "SELECT site,primary_site,site_type FROM manual_configurations "
       "WHERE browser_context_id=?";
-  sql::Statement s_manual_sets(db.GetUniqueStatement(kSelectManualSetsSql));
-  s_manual_sets.BindString(0, browser_context_id);
-  EXPECT_TRUE(s_manual_sets.Step());
-  EXPECT_EQ(manual_site, s_manual_sets.ColumnString(0));
-  EXPECT_EQ(manual_primary, s_manual_sets.ColumnString(1));
-  EXPECT_EQ(1, s_manual_sets.ColumnInt(2));
+  sql::Statement s_manual(db.GetUniqueStatement(kSelectManualSetsSql));
+  s_manual.BindString(0, browser_context_id);
+  EXPECT_TRUE(s_manual.Step());
+  EXPECT_EQ(manual_site, s_manual.ColumnString(0));
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(1));
+  EXPECT_EQ(1, s_manual.ColumnInt(2));
 
-  EXPECT_TRUE(s_manual_sets.Step());
-  EXPECT_EQ(manual_primary, s_manual_sets.ColumnString(0));
-  EXPECT_EQ(manual_primary, s_manual_sets.ColumnString(1));
-  EXPECT_EQ(0, s_manual_sets.ColumnInt(2));
+  EXPECT_TRUE(s_manual.Step());
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(0));
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(1));
+  EXPECT_EQ(0, s_manual.ColumnInt(2));
 
-  EXPECT_FALSE(s_manual_sets.Step());
+  EXPECT_FALSE(s_manual.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
@@ -1177,9 +1178,44 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("policy_configurations"));
+    EXPECT_FALSE(db.DoesTableExist("policy_modifications"));
+    EXPECT_TRUE(db.DoesTableExist("manual_configurations"));
+    EXPECT_FALSE(db.DoesTableExist("manual_sets"));
 
     // Verify that data is preserved across the migration.
     EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
+    EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
+  }
+}
+
+TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v3.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    ASSERT_EQ(3, VersionFromDatabase(&db));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("manual_configurations"));
+    EXPECT_FALSE(db.DoesTableExist("manual_sets"));
+
+    // Verify that data is preserved across the migration.
+    EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
   }
 }
 
