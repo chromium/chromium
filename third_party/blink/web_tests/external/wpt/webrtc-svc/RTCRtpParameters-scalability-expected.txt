@@ -1,30 +1,10 @@
 This is a testharness.js-based test.
-PASS [0] video/VP8 - L1T2 should produce valid video content
-PASS [1] video/VP8 - L1T3 should produce valid video content
-PASS [2] video/VP9 - L1T2 should produce valid video content
-PASS [3] video/VP9 - L1T3 should produce valid video content
-PASS [4] video/AV1 - L1T2 should produce valid video content
-PASS [5] video/AV1 - L1T3 should produce valid video content
-PASS [6] video/AV1 - L2T1 should produce valid video content
-PASS [7] video/AV1 - L2T1h should produce valid video content
-PASS [8] video/AV1 - L2T1_KEY should produce valid video content
-PASS [9] video/AV1 - L2T2 should produce valid video content
-PASS [10] video/AV1 - L2T2_KEY should produce valid video content
-PASS [11] video/AV1 - L2T2_KEY_SHIFT should produce valid video content
-PASS [12] video/AV1 - L3T1 should produce valid video content
-PASS [13] video/AV1 - L3T3 should produce valid video content
-PASS [14] video/AV1 - L3T3_KEY should produce valid video content
-PASS [15] video/AV1 - S2T1 should produce valid video content
 PASS Setting and updating scalabilityMode to a legal value should be accepted
 PASS Sender capabilities should include at least some scalability modes
 PASS Not setting sendEncodings results in no mode info before negotiation
 PASS Not setting a scalability mode results in no mode set before negotiation
 FAIL Not setting a scalability mode results in some mode set after negotiation assert_true: expected true got false
-FAIL Setting a scalability mode to nonsense throws an exception assert_throws_dom: function "() => {
-    pc.addTransceiver('video', {
-      sendEncodings: [{scalabilityMode: 'TotalNonsense'}],
-    });
-  }" did not throw
+PASS Setting a scalability mode to nonsense throws an exception
 FAIL L3T3 on VP8 should return something other than L3T3 assert_not_equals: got disallowed value "L3T3"
 Harness: the test ran to completion.
 
