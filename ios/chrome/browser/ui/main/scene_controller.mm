@@ -2315,7 +2315,9 @@ bool IsSigninForcedByPolicy() {
                 wrappedDismissModalCompletion();
               } else {
                 // Do not open the tab, but still call completion.
-                completion();
+                if (completion) {
+                  completion();
+                }
               }
             }];
       };
