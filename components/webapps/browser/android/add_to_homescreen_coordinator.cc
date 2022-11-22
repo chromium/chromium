@@ -24,6 +24,14 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
         event_callback) {
+  // Don't start if app info is not available.
+  if ((params->app_type == AddToHomescreenParams::AppType::NATIVE &&
+       params->native_app_data.is_null()) ||
+      (params->app_type == AddToHomescreenParams::AppType::WEBAPK &&
+       !params->shortcut_info)) {
+    return false;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   AddToHomescreenMediator* mediator = (AddToHomescreenMediator*)
       Java_AddToHomescreenCoordinator_initMvcAndReturnMediator(
