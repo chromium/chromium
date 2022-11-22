@@ -100,17 +100,8 @@ class TabManager : public LifecycleUnitObserver,
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
 
-  // Return whether tabs are being loaded during session restore.
-  bool IsSessionRestoreLoadingTabs() const {
-    return is_session_restore_loading_tabs_;
-  }
-
   // Returns the number of tabs open in all browser instances.
   int GetTabCount() const;
-
-  // Returns the number of restored tabs during session restore. This is
-  // non-zero only during session restore.
-  int restored_tab_count() const { return restored_tab_count_; }
 
   UsageClock* usage_clock() { return &usage_clock_; }
 
@@ -193,9 +184,6 @@ class TabManager : public LifecycleUnitObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TabManagerDelegate> delegate_;
 #endif
-
-  bool is_session_restore_loading_tabs_;
-  size_t restored_tab_count_;
 
   class TabManagerSessionRestoreObserver;
   std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;

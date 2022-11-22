@@ -226,23 +226,3 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
       session_restore_events()[1]);
   EXPECT_EQ(0u, number_of_tabs_restoring());
 }
-
-TEST_F(SessionRestoreObserverTest, TabManagerShouldObserveSessionRestore) {
-  auto test_contents = CreateRestoredWebContents();
-
-  std::vector<SessionRestoreDelegate::RestoredTab> restored_tabs{
-      SessionRestoreDelegate::RestoredTab(test_contents.get(), false, false,
-                                          false, absl::nullopt)};
-
-  resource_coordinator::TabManager* tab_manager =
-      g_browser_process->GetTabManager();
-  EXPECT_FALSE(tab_manager->IsSessionRestoreLoadingTabs());
-
-  SessionRestore::NotifySessionRestoreStartedLoadingTabs();
-  SessionRestore::OnWillRestoreTab(test_contents.get());
-  EXPECT_TRUE(tab_manager->IsSessionRestoreLoadingTabs());
-  TabLoader::RestoreTabs(restored_tabs, base::TimeTicks());
-
-  LoadWebContents(test_contents.get());
-  EXPECT_FALSE(tab_manager->IsSessionRestoreLoadingTabs());
-}

@@ -96,14 +96,6 @@ class TabManager::TabManagerSessionRestoreObserver final
   ~TabManagerSessionRestoreObserver() { SessionRestore::RemoveObserver(this); }
 
   // SessionRestoreObserver implementation:
-  void OnSessionRestoreStartedLoadingTabs() override {
-    tab_manager_->OnSessionRestoreStartedLoadingTabs();
-  }
-
-  void OnSessionRestoreFinishedLoadingTabs() override {
-    tab_manager_->OnSessionRestoreFinishedLoadingTabs();
-  }
-
   void OnWillRestoreTab(WebContents* web_contents) override {
     tab_manager_->OnWillRestoreTab(web_contents);
   }
@@ -112,8 +104,7 @@ class TabManager::TabManagerSessionRestoreObserver final
   raw_ptr<TabManager> tab_manager_;
 };
 
-TabManager::TabManager()
-    : is_session_restore_loading_tabs_(false), restored_tab_count_(0u) {
+TabManager::TabManager() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_ =
       std::make_unique<TabManagerDelegate>(weak_ptr_factory_.GetWeakPtr());
@@ -329,20 +320,7 @@ content::WebContents* TabManager::DiscardTabImpl(
   return nullptr;
 }
 
-void TabManager::OnSessionRestoreStartedLoadingTabs() {
-  DCHECK(!is_session_restore_loading_tabs_);
-  is_session_restore_loading_tabs_ = true;
-}
-
-void TabManager::OnSessionRestoreFinishedLoadingTabs() {
-  DCHECK(is_session_restore_loading_tabs_);
-  is_session_restore_loading_tabs_ = false;
-  restored_tab_count_ = 0u;
-}
-
 void TabManager::OnWillRestoreTab(WebContents* contents) {
-  restored_tab_count_++;
-
   // TabUIHelper is initialized in TabHelpers::AttachTabHelpers. But this place
   // gets called earlier than that. So for restored tabs, also initialize their
   // TabUIHelper here.
