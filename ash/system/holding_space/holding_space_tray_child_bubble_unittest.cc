@@ -17,6 +17,8 @@
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "ash/system/holding_space/test_holding_space_item_views_section.h"
+#include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,71 +26,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
-namespace {
-
-// TestHoldingSpaceItemViewsSection --------------------------------------------
-
-class TestHoldingSpaceItemViewsSection : public HoldingSpaceItemViewsSection {
- public:
-  TestHoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* view_delegate,
-                                   HoldingSpaceSectionId section_id)
-      : HoldingSpaceItemViewsSection(view_delegate, section_id) {}
-
- private:
-  // HoldingSpaceItemViewsSection:
-  std::unique_ptr<views::View> CreateHeader() override {
-    return std::make_unique<views::View>();
-  }
-
-  std::unique_ptr<views::View> CreateContainer() override {
-    return std::make_unique<views::View>();
-  }
-
-  std::unique_ptr<HoldingSpaceItemView> CreateView(
-      const HoldingSpaceItem* item) override {
-    return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
-  }
-};
-
-// TestHoldingSpaceTrayChildBubble ---------------------------------------------
-
-class TestHoldingSpaceTrayChildBubble : public HoldingSpaceTrayChildBubble {
- public:
-  struct Params {
-    base::OnceCallback<
-        std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>(
-            HoldingSpaceViewDelegate* view_delegate)>
-        create_sections_callback;
-
-    base::OnceCallback<std::unique_ptr<views::View>()>
-        create_placeholder_callback;
-  };
-
-  TestHoldingSpaceTrayChildBubble(HoldingSpaceViewDelegate* view_delegate,
-                                  Params params)
-      : HoldingSpaceTrayChildBubble(view_delegate),
-        params_(std::move(params)) {}
-
- private:
-  // HoldingSpaceChildBubble:
-  std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections()
-      override {
-    return params_.create_sections_callback
-               ? std::move(params_.create_sections_callback).Run(delegate())
-               : std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>();
-  }
-
-  std::unique_ptr<views::View> CreatePlaceholder() override {
-    return params_.create_placeholder_callback
-               ? std::move(params_.create_placeholder_callback).Run()
-               : nullptr;
-  }
-
-  Params params_;
-};
-
-}  // namespace
-
 // HoldingSpaceTrayChildBubbleTestBase -----------------------------------------
 
 class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
@@ -176,14 +113,13 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
       HoldingSpaceViewDelegate* view_delegate) override {
     return std::make_unique<TestHoldingSpaceTrayChildBubble>(
         view_delegate,
-        TestHoldingSpaceTrayChildBubble::Params{
-            .create_sections_callback = base::BindOnce(
+        TestHoldingSpaceTrayChildBubble::Params(
+            base::BindOnce(
                 &HoldingSpaceTrayChildBubblePlaceholderTest::CreateSections,
                 base::Unretained(this)),
-            .create_placeholder_callback = base::BindOnce(
+            base::BindOnce(
                 &HoldingSpaceTrayChildBubblePlaceholderTest::CreatePlaceholder,
-                base::Unretained(this)),
-        });
+                base::Unretained(this))));
   }
 
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections(
@@ -216,6 +152,14 @@ TEST_P(HoldingSpaceTrayChildBubblePlaceholderTest,
        MaybeShowsPlaceholderWhenEmpty) {
   {
     SCOPED_TRACE(testing::Message() << "Initial state.");
+    ExpectPlaceholderOrGone();
+  }
+
+  AddPartiallyInitializedItem(HoldingSpaceItem::Type::kPinnedFile,
+                              base::FilePath("foo"));
+
+  {
+    SCOPED_TRACE(testing::Message() << "Partially initialized state.");
     ExpectPlaceholderOrGone();
   }
 

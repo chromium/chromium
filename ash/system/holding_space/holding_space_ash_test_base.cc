@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_ash_test_base.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -11,40 +12,78 @@
 #include "base/strings/strcat.h"
 
 namespace ash {
+namespace {
+
+std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  return std::make_unique<HoldingSpaceImage>(
+      holding_space_util::GetMaxImageSizeForType(type), file_path,
+      /*async_bitmap_resolver=*/base::DoNothing());
+}
+
+}  // namespace
 
 HoldingSpaceAshTestBase::HoldingSpaceAshTestBase() = default;
 
 HoldingSpaceAshTestBase::~HoldingSpaceAshTestBase() = default;
 
-void HoldingSpaceAshTestBase::AddItem(HoldingSpaceItem::Type type,
-                                      const base::FilePath& file_path) {
-  auto* model = HoldingSpaceController::Get()->model();
-  ASSERT_TRUE(model);
-  model->AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      type, file_path,
-      GURL(base::StrCat({"filesystem: ", file_path.BaseName().value()})),
-      base::BindOnce(
-          [](HoldingSpaceItem::Type type, const base::FilePath& file_path) {
-            return std::make_unique<HoldingSpaceImage>(
-                holding_space_util::GetMaxImageSizeForType(type), file_path,
-                /*async_bitmap_resolver=*/base::DoNothing());
-          })));
+HoldingSpaceItem* HoldingSpaceAshTestBase::AddItem(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  std::unique_ptr<HoldingSpaceItem> item =
+      HoldingSpaceItem::CreateFileBackedItem(
+          type, file_path,
+          GURL(base::StrCat({"filesystem:", file_path.BaseName().value()})),
+          base::BindOnce(&CreateStubHoldingSpaceImage));
+  auto* item_ptr = item.get();
+  DCHECK(model());
+  model()->AddItem(std::move(item));
+  return item_ptr;
+}
+
+HoldingSpaceItem* HoldingSpaceAshTestBase::AddPartiallyInitializedItem(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& path) {
+  // Create a holding space item, and use it to create a serialized item
+  // dictionary, then immediately deserialize it. This results in a
+  // partially initialized item, since it does not have a `GURL` for the
+  // backing file.
+  std::unique_ptr<HoldingSpaceItem> item =
+      HoldingSpaceItem::CreateFileBackedItem(
+          type, path, GURL("filesystem:ignored"),
+          base::BindOnce(&CreateStubHoldingSpaceImage));
+  const base::DictionaryValue serialized_holding_space_item = item->Serialize();
+  std::unique_ptr<HoldingSpaceItem> deserialized_item =
+      HoldingSpaceItem::Deserialize(
+          serialized_holding_space_item,
+          /*image_resolver=*/
+          base::BindOnce(&CreateStubHoldingSpaceImage));
+  DCHECK(!deserialized_item->IsInitialized());
+
+  HoldingSpaceItem* deserialized_item_ptr = deserialized_item.get();
+  DCHECK(model());
+  model()->AddItem(std::move(deserialized_item));
+  return deserialized_item_ptr;
 }
 
 void HoldingSpaceAshTestBase::RemoveAllItems() {
-  auto* model = HoldingSpaceController::Get()->model();
-  ASSERT_TRUE(model);
-  model->RemoveIf(
+  ASSERT_TRUE(model());
+  model()->RemoveIf(
       base::BindRepeating([](const HoldingSpaceItem* item) { return true; }));
+}
+
+void HoldingSpaceAshTestBase::MarkTimeOfFirstAdd(AccountId account_id) {
+  holding_space_prefs::MarkTimeOfFirstAdd(
+      GetSessionControllerClient()->GetUserPrefService(account_id));
 }
 
 void HoldingSpaceAshTestBase::SetUp() {
   AshTestBase::SetUp();
 
   // Add and activate a new user.
-  constexpr char kUserEmail[] = "user@test";
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-  GetSessionControllerClient()->AddUserSession(kUserEmail);
+  AccountId account_id = AccountId::FromUserEmail(kTestUser);
+  GetSessionControllerClient()->AddUserSession(kTestUser);
   GetSessionControllerClient()->SwitchActiveUser(account_id);
 
   // Mark the holding space feature as being available to the user.

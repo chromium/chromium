@@ -28,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
+#include "ash/system/holding_space/holding_space_ash_test_base.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
@@ -579,6 +580,10 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
   HoldingSpaceModel holding_space_model_;
 };
 
+// TODO(crbug.com/1373911): Break up `HoldingSpaceTrayTest` so that tests are
+// grouped by the component they're testing. Do not add new tests to this suite.
+// If you have a test that truly belongs this file, use (or create) a test suite
+// that inherits from `HoldingSpaceAshTestBase`.
 class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
   HoldingSpaceTrayTest() {
@@ -843,79 +848,6 @@ TEST_F(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
   TabletModeControllerTestApi().LeaveTabletMode();
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
-}
-
-// Verifies the pinned files bubble is not shown if it only contains partially
-// initialized items.
-TEST_F(HoldingSpaceTrayTest,
-       PinnedFilesBubbleWithPartiallyInitializedItemsOnly) {
-  MarkTimeOfFirstPin();
-  StartSession();
-
-  // Add a download item to show the tray button.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/download"));
-
-  AddPartiallyInitializedItem(HoldingSpaceItem::Type::kPinnedFile,
-                              base::FilePath("/tmp/fake_1"));
-
-  test_api()->Show();
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-
-  // Add another partially initialized item.
-  HoldingSpaceItem* item_2 = AddPartiallyInitializedItem(
-      HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake_2"));
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-
-  // Add a fully initialized item, and verify it gets shown.
-  HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kPinnedFile,
-                                     base::FilePath("/tmp/fake_3"));
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-
-  std::vector<views::View*> pinned_files = test_api()->GetPinnedFileChips();
-  ASSERT_EQ(1u, pinned_files.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
-  EXPECT_TRUE(HoldingSpaceItemView::Cast(pinned_files[0])->GetVisible());
-
-  // Fully initialize a partially initialized item with an empty URL - it should
-  // get removed.
-  model()->InitializeOrRemoveItem(item_2->id(), GURL());
-
-  pinned_files = test_api()->GetPinnedFileChips();
-  ASSERT_EQ(1u, pinned_files.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
-}
-
-// Verifies the pinned items section is shown and orders items as expected when
-// the model contains a number of initialized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, PinnedFilesSectionWithInitializedItemsOnly) {
-  MarkTimeOfFirstPin();
-  StartSession();
-
-  // Add a number of initialized pinned items.
-  std::deque<HoldingSpaceItem*> items;
-  for (int i = 0; i < 10; ++i) {
-    items.push_back(
-        AddItem(HoldingSpaceItem::Type::kPinnedFile,
-                base::FilePath("/tmp/fake_" + base::NumberToString(i))));
-  }
-
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-
-  std::vector<views::View*> pinned_files = test_api()->GetPinnedFileChips();
-  ASSERT_EQ(items.size(), pinned_files.size());
-
-  while (!items.empty()) {
-    // View order is expected to be reverse of item order.
-    auto* pinned_file = HoldingSpaceItemView::Cast(pinned_files.back());
-    EXPECT_EQ(pinned_file->item()->id(), items.front()->id());
-
-    items.pop_front();
-    pinned_files.pop_back();
-  }
-  test_api()->Close();
 }
 
 // Right clicking the holding space tray should show a context menu if the
@@ -4154,6 +4086,88 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
         break;
     }
     EXPECT_EQ(HasContextMenuCommand(id), expect_context_menu_command);
+  }
+}
+
+// TODO(crbug.com/1373911): Once `HoldingSpaceTrayTest` is smaller,
+// parameterized, and based on `HoldingSpaceAshTestBase`, this can be folded
+// into it. Test suite to confirm that holding space is visible in the tray when
+// appropriate.
+class HoldingSpaceTrayVisibilityTest
+    : public HoldingSpaceAshTestBase,
+      public testing::WithParamInterface<
+          std::tuple<HoldingSpaceItem::Type,
+                     /*predictability_enabled=*/bool,
+                     /*suggestions_enabled=*/bool>> {
+ public:
+  HoldingSpaceTrayVisibilityTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    (IsHoldingSpacePredictabilityEnabled() ? enabled_features
+                                           : disabled_features)
+        .push_back(features::kHoldingSpacePredictability);
+
+    (IsHoldingSpaceSuggestionsEnabled() ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceSuggestions);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUp() override {
+    HoldingSpaceAshTestBase::SetUp();
+    test_api_ = std::make_unique<HoldingSpaceTestApi>();
+  }
+
+  void TearDown() override {
+    test_api_.reset();
+    AshTestBase::TearDown();
+  }
+
+  // Returns the parameterized holding space item type.
+  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
+
+  bool IsHoldingSpacePredictabilityEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsHoldingSpaceSuggestionsEnabled() const {
+    return std::get<2>(GetParam());
+  }
+
+  HoldingSpaceTestApi* test_api() { return test_api_.get(); }
+
+ private:
+  std::unique_ptr<HoldingSpaceTestApi> test_api_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceTrayVisibilityTest,
+    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+                     /*predictability_enabled=*/testing::Bool(),
+                     /*suggestions_enabled=*/testing::Bool()));
+
+TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
+  // Partially initialized items should not cause the tray to show.
+  HoldingSpaceItem* item =
+      AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake"));
+  EXPECT_EQ(test_api()->IsShowingInShelf(),
+            IsHoldingSpacePredictabilityEnabled());
+
+  // Once initialized, the item should show the tray if appropriate.
+  model()->InitializeOrRemoveItem(
+      item->id(), GURL(base::StrCat(
+                      {"filesystem:", item->file_path().BaseName().value()})));
+
+  if (IsHoldingSpacePredictabilityEnabled()) {
+    // In the predictability experiment, the tray should always be showing.
+    EXPECT_TRUE(test_api()->IsShowingInShelf());
+  } else {
+    // A suggestion alone should not show the tray.
+    EXPECT_NE(test_api()->IsShowingInShelf(),
+              HoldingSpaceItem::IsSuggestion(GetType()));
   }
 }
 
