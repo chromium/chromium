@@ -4737,7 +4737,8 @@ void AXNodeObject::ChildrenChangedWithCleanLayout() {
   DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
                         << ToString(true, true);
 
-  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
+  AXObjectCache().PostNotification(this,
+                                   ax::mojom::blink::Event::kChildrenChanged);
 }
 
 void AXNodeObject::SelectedOptions(AXObjectVector& options) const {

@@ -1071,9 +1071,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   document_checker.CheckAccessible(GetRendererAccessible());
 
   // Change the children of the document body.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
   ExecuteScript(u"document.body.innerHTML='<b>new text</b>'");
   ASSERT_TRUE(waiter.WaitForNotification());
 
@@ -1096,9 +1096,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   document_checker.CheckAccessible(GetRendererAccessible());
 
   // Change the children of the document body.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
   ExecuteScript(u"document.body.children[0].style.visibility='visible'");
   ASSERT_TRUE(waiter.WaitForNotification());
 
@@ -2093,9 +2093,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   }
 
   // Delete the character in the input field.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
   ExecuteScript(u"document.querySelector('[contenteditable]').innerText='';");
   ASSERT_TRUE(waiter.WaitForNotification());
 
@@ -2568,9 +2568,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestPutAccValueInEditable) {
 
   base::win::ScopedVariant childid_self(CHILDID_SELF);
   base::win::ScopedBstr new_value(L"New value");
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
   EXPECT_HRESULT_SUCCEEDED(
       paragraph->put_accValue(childid_self, new_value.Get()));
   ASSERT_TRUE(waiter.WaitForNotification());

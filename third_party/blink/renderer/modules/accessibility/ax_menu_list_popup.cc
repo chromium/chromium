@@ -168,8 +168,8 @@ void AXMenuListPopup::DidHide() {
   AXObjectCacheImpl& cache = AXObjectCache();
   AXObject* descendant = ActiveDescendant();
   cache.PostNotification(this, ax::mojom::Event::kHide);
-  if (descendant)  // TODO(accessibility) Try removing. Line below is enough.
-    cache.MarkAXObjectDirtyWithCleanLayout(this);
+  if (descendant)
+    cache.PostNotification(this, ax::mojom::Event::kChildrenChanged);
   cache.MarkAXSubtreeDirtyWithCleanLayout(ParentObject());
 }
 

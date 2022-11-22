@@ -776,16 +776,13 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     // If there is a popup, expand it and wait for it to appear.
     // If it's a list, it will simply click on the list.
     {
-      // Note: the kEndOfTextSignal actually represents the next step in the
-      // test, when a response is received from the SignalEndOfTest() call.
-      AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                             ui::kAXModeComplete,
-                                             ax::mojom::Event::kEndOfTest);
+      AccessibilityNotificationWaiter waiter(
+          shell()->web_contents(), ui::kAXModeComplete,
+          ax::mojom::Event::kChildrenChanged);
 
       ui::AXActionData action_data;
       action_data.action = ax::mojom::Action::kDoDefault;
       select->AccessibilityPerformAction(action_data);
-      GetManager()->SignalEndOfTest();
       ASSERT_TRUE(waiter.WaitForNotification());
     }
 
@@ -862,10 +859,10 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   }
 
   // Open popup.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
   {
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::EXPANDED);
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kDoDefault;
     select->AccessibilityPerformAction(action_data);
@@ -904,9 +901,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Close the popup.
   {
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::COLLAPSED);
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kDoDefault;
     select->AccessibilityPerformAction(action_data);
