@@ -1115,7 +1115,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
         NavigationSuggestionEvent::kMatchSiteEngagement);
 
     ukm_urls.push_back(kNavigatedUrl);
-    CheckUkm(ukm_urls, "MatchType", LookalikeUrlMatchType::kSiteEngagement);
+    CheckUkm(ukm_urls, "MatchType",
+             LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
   }
 }
 
@@ -1218,7 +1219,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
       NavigationSuggestionEvent::kMatchSiteEngagement);
 
   CheckUkm({kNavigatedUrl}, "MatchType",
-           LookalikeUrlMatchType::kSiteEngagement);
+           LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
 }
 
 // Similar to Idn_SiteEngagement_Match, but tests a single domain. Also checks
@@ -1249,7 +1250,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
         NavigationSuggestionEvent::kMatchSiteEngagement);
 
     ukm_urls.push_back(kNavigatedUrl);
-    CheckUkm(ukm_urls, "MatchType", LookalikeUrlMatchType::kSiteEngagement);
+    CheckUkm(ukm_urls, "MatchType",
+             LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
   }
 
   // Incognito shouldn't record metrics because there are no engaged sites.
@@ -1274,7 +1276,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
         incognito, histograms, kNavigatedUrl, kEngagedUrl,
         NavigationSuggestionEvent::kMatchSiteEngagement);
     ukm_urls.push_back(kNavigatedUrl);
-    CheckUkm(ukm_urls, "MatchType", LookalikeUrlMatchType::kSiteEngagement);
+    CheckUkm(ukm_urls, "MatchType",
+             LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
   }
 
   // Main profile shouldn't record metrics because there are no engaged sites.
@@ -1351,7 +1354,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
       NavigationSuggestionEvent::kMatchSiteEngagement);
 
   CheckUkm({kNavigatedUrl}, "MatchType",
-           LookalikeUrlMatchType::kSiteEngagement);
+           LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
 }
 
 // Navigate to lookalike domains that redirect to benign domains and ensure that

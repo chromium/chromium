@@ -92,7 +92,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
       // For now, no safety tip is shown for domain names that fail spoof checks
       // and don't have a suggested URL.
       return false;
-    case LookalikeUrlMatchType::kSiteEngagement:
+    case LookalikeUrlMatchType::kSkeletonMatchSiteEngagement:
     case LookalikeUrlMatchType::kSkeletonMatchTop500:
       // We should only ever reach these cases when the lookalike interstitial
       // is disabled. Now that interstitial is fully launched, this only happens

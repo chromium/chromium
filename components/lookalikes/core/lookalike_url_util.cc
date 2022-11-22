@@ -943,7 +943,7 @@ bool IsTopDomain(const DomainInfo& domain_info) {
 }
 
 bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
-  if (match_type == LookalikeUrlMatchType::kSiteEngagement) {
+  if (match_type == LookalikeUrlMatchType::kSkeletonMatchSiteEngagement) {
     return true;
   }
   if (match_type == LookalikeUrlMatchType::kTargetEmbedding) {
@@ -980,7 +980,7 @@ bool GetMatchingDomain(
     DCHECK_NE(navigated_domain.domain_and_registry, matched_engaged_domain);
     if (!matched_engaged_domain.empty()) {
       *matched_domain = matched_engaged_domain;
-      *match_type = LookalikeUrlMatchType::kSiteEngagement;
+      *match_type = LookalikeUrlMatchType::kSkeletonMatchSiteEngagement;
       return true;
     }
 
@@ -1052,7 +1052,7 @@ bool GetMatchingDomain(
 
 void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
   switch (match_type) {
-    case LookalikeUrlMatchType::kSiteEngagement:
+    case LookalikeUrlMatchType::kSkeletonMatchSiteEngagement:
       RecordEvent(NavigationSuggestionEvent::kMatchSiteEngagement);
       break;
     case LookalikeUrlMatchType::kEditDistance:

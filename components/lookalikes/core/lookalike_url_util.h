@@ -57,7 +57,7 @@ enum class LookalikeUrlMatchType {
   kNone = 0,
   // DEPRECATED: Use kSkeletonMatchTop500 or kSkeletonMatchTop5k.
   // kTopSite = 1,
-  kSiteEngagement = 2,
+  kSkeletonMatchSiteEngagement = 2,
   kEditDistance = 3,
   kEditDistanceSiteEngagement = 4,
   kTargetEmbedding = 5,
