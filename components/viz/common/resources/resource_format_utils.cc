@@ -601,11 +601,56 @@ WGPUTextureFormat ToWGPUFormat(ResourceFormat format) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
 }
 
-// TODO (hitawala): Add support for multiplanar formats.
 SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                               SharedImageFormat format) {
-  return ResourceFormatToClosestSkColorType(gpu_compositing,
-                                            format.resource_format());
+                                               SharedImageFormat format,
+                                               int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (!gpu_compositing) {
+    // TODO(crbug.com/986405): Remove this assumption and have clients tag
+    // resources with the correct format.
+    // In software compositing we lazily use RGBA_8888 throughout the system,
+    // but actual pixel encodings are the native skia bit ordering, which can be
+    // RGBA or BGRA.
+    return kN32_SkColorType;
+  }
+  if (format.is_single_plane()) {
+    return ResourceFormatToClosestSkColorType(gpu_compositing,
+                                              format.resource_format());
+  }
+
+  auto plane_config = format.plane_config();
+  auto channel_format = format.channel_format();
+  if (format.PrefersExternalSampler()) {
+    switch (channel_format) {
+      case SharedImageFormat::ChannelFormat::k8:
+        return plane_config == SharedImageFormat::PlaneConfig::kY_UV_A
+                   ? kRGBA_8888_SkColorType
+                   : kRGB_888x_SkColorType;
+      case SharedImageFormat::ChannelFormat::k10:
+        return kRGBA_1010102_SkColorType;
+      case SharedImageFormat::ChannelFormat::k16:
+        return kR16G16B16A16_unorm_SkColorType;
+      case SharedImageFormat::ChannelFormat::k16F:
+        return kRGBA_F16_SkColorType;
+    }
+  } else {
+    // No external sampling, format is per plane.
+    int num_channels = format.NumChannelsInPlane(plane_index);
+    DCHECK_GT(num_channels, 0);
+    DCHECK_LE(num_channels, 2);
+    switch (channel_format) {
+      case SharedImageFormat::ChannelFormat::k8:
+        return num_channels == 1 ? kAlpha_8_SkColorType
+                                 : kR8G8_unorm_SkColorType;
+      case SharedImageFormat::ChannelFormat::k10:
+      case SharedImageFormat::ChannelFormat::k16:
+        return num_channels == 1 ? kA16_unorm_SkColorType
+                                 : kR16G16_unorm_SkColorType;
+      case SharedImageFormat::ChannelFormat::k16F:
+        return num_channels == 1 ? kA16_float_SkColorType
+                                 : kR16G16_float_SkColorType;
+    }
+  }
 }
 
 }  // namespace viz

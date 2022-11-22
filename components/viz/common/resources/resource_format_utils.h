@@ -82,11 +82,14 @@ ToWGPUFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int ToMTLPixelFormat(ResourceFormat format);
 #endif
 
-// WARNING: The `format` must be single planar.
-// TODO(hitawala): Add multiplanar format support.
+// Gets the closest SkColorType for a given `format` and `plane_index`. For
+// single planar formats (eg. RGBA) the plane_index is not required and is
+// default to 0; in such cases the corresponding function with ResourceFormat is
+// called. For multiplanar formats a plane_index is required.
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
 ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                   SharedImageFormat format);
+                                   SharedImageFormat format,
+                                   int plane_index = 0);
 
 }  // namespace viz
 
