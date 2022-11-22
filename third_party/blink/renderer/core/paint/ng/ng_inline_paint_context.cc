@@ -274,8 +274,10 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   PhysicalOffset offset = line_item.OffsetInContainerFragment();
   const NGPhysicalLineBoxFragment* fragment = line_item.LineBoxFragment();
   DCHECK(fragment);
-  offset.top += fragment->Metrics().ascent;
-  offset.top -= style.GetFont().PrimaryFont()->GetFontMetrics().FixedAscent();
+  if (const SimpleFontData* font = style.GetFont().PrimaryFont()) {
+    offset.top += fragment->Metrics().ascent;
+    offset.top -= font->GetFontMetrics().FixedAscent();
+  }
 
   // If the block has multiple decorations, all decorations have the same
   // decorating box, which is a non-existent anonymous inline box that wraps all
