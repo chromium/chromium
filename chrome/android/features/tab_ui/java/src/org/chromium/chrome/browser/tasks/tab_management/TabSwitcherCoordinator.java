@@ -499,9 +499,8 @@ public class TabSwitcherCoordinator
 
         if (mTabSelectionEditorActions == null) {
             mTabSelectionEditorActions = new ArrayList<>();
-            mTabSelectionEditorActions.add(TabSelectionEditorSelectionAction.createAction(mActivity,
-                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END,
-                    mTabModelSelector.getCurrentModel().isIncognito()));
+            mTabSelectionEditorActions.add(TabSelectionEditorSelectionAction.createAction(
+                    mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
             mTabSelectionEditorActions.add(TabSelectionEditorCloseAction.createAction(
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(

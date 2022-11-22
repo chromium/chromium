@@ -16,7 +16,6 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionViewLayout.ActionViewLayoutDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -36,9 +35,9 @@ import java.util.Set;
  * {@link TabSelectionEditorActionViewLayout} for Action views. The menu contains a list of
  * {@link TabSelectionEditorMenuItem}s which hold optional action views if room is available.
  */
-public class TabSelectionEditorMenu
-        implements ListMenu, OnItemClickListener, SelectionDelegate.SelectionObserver<Integer>,
-                   ActionViewLayoutDelegate, ListMenuButton.PopupMenuShownListener {
+public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
+                                               SelectionDelegate.SelectionObserver<Integer>,
+                                               ActionViewLayoutDelegate {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.MENU_ITEM})
     public static @interface ListItemType {
@@ -85,7 +84,7 @@ public class TabSelectionEditorMenu
         mListView.setDivider(null);
         mListView.setOnItemClickListener(this);
 
-        mActionViewLayout.setListMenuButtonDelegate(this, () -> this);
+        mActionViewLayout.setListMenuButtonDelegate(() -> this);
     }
 
     private void registerItemTypes() {
@@ -94,13 +93,6 @@ public class TabSelectionEditorMenu
             new LayoutViewBuilder(R.layout.list_menu_item),
             TabSelectionEditorMenuAdapter::bindMenuItem);
         // clang-format on
-    }
-
-    @Override
-    public void onPopupMenuShown() {
-        for (ListItem listItem : mModelList) {
-            listItem.model.get(TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU).run();
-        }
     }
 
     private ListItem buildListItem(int menuItemId) {
