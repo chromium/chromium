@@ -682,21 +682,10 @@
       "use_remoteexec": true
     }
   },
-  "linux_chromium_msan_focal": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "instrumented_libraries_release": "focal",
-      "is_component_build": false,
-      "is_debug": false,
-      "is_msan": true,
-      "msan_track_origins": 2,
-      "use_remoteexec": true
-    }
-  },
   "linux_chromium_msan_rel_ng": {
     "gn_args": {
       "dcheck_always_on": false,
-      "instrumented_libraries_release": "xenial",
+      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,

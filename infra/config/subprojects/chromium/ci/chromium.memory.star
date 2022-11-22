@@ -321,6 +321,7 @@ linux_memory_builder(
         short_name = "bld",
     ),
     ssd = True,
+    os = os.LINUX_FOCAL,
 )
 
 linux_memory_builder(
@@ -348,6 +349,7 @@ linux_memory_builder(
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
     triggered_by = ["Linux MSan Builder"],
+    os = os.LINUX_FOCAL,
 )
 
 linux_memory_builder(
