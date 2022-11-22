@@ -131,10 +131,11 @@ in the `NetworkTrafficAnnotation` message of
      field.
    * `destination_other`: Human readable description in case the destination
      points to `OTHER`.
-   * `contacts`: A person's or team's email address who are point-of-contact 
-      for questions, issues, or bugs related to this network request. 
-      This field is meant for internal use and should not be used in any 
+   * `internal`: Data that is meant to be visible internally, example point of contacts, 
+      should be placed inside internal field. This field should not be used in any
       external reports.
+     * `contacts`: A person's or team's email address who are point-of-contact 
+        for questions, issues, or bugs related to this network request.
    * `last_reviewed`: Date when this annotation was last reviewed in YYYY-MM-DD format.
 * `policy`: These set of fields specify the controls that a user may have
   on disabling or limiting the network request and its trace.
@@ -231,6 +232,11 @@ all other fields bundled together as a serialized protobuf string.
             "The state of the local DB is sent so the server can send just the "
             "changes. This doesn't include any user data."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "chrome-safebrowsing@google.com"
+            }
+          }
         }
         policy {
           cookies_allowed: YES

@@ -381,7 +381,9 @@ class Annotation:
     try:
       text_format.Parse(serialized_annotation.text, self.proto)
     except Exception as e:
-      logger.error(str(e))
+      logger.error(
+          "Error encountered by annotation {}. Error details : {}".format(
+              serialized_annotation.unique_id, str(e)))
       return [AuditorError(ErrorType.SYNTAX, str(e), file_path, line_number)]
 
     return []

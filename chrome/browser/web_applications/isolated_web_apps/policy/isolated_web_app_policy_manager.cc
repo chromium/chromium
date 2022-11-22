@@ -115,8 +115,10 @@ void IsolatedWebAppPolicyManager::DownloadUpdateManifest() {
         "This request does not send any data. It loads update manifest "
         "by a URL provided by the admin."
       destination: OTHER
-      contacts {
-        email: "peletskyi@google.com"
+      internal {
+        contacts {
+          email: "peletskyi@google.com"
+        }
       }
     }
     policy {
@@ -259,8 +261,10 @@ void IsolatedWebAppPolicyManager::DownloadWebBundle() {
     data:
       "This request does not send any data. It just downloads a Web Bundle."
     destination: OTHER
-    contacts {
-      email: "peletskyi@google.com"
+    internal {
+      contacts {
+        email: "peletskyi@google.com"
+      }
     }
   }
   policy {

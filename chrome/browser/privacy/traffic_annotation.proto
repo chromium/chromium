@@ -122,17 +122,23 @@ message NetworkTrafficAnnotation {
     // Human readable description in case the destination points to OTHER.
     string destination_other = 6;
 
-    // Point-of-contact for questions, issues, or bugs related to
-    // this network request. This field is meant for internal use, and should
-    // not be used in any external reports.
-    message Contact {
-      oneof contact_type {
-        // Email of a team or individual owner
-        string email = 1;
+    // Data that is meant to be visible internally, example point of contacts,
+    // should be placed inside internal field.
+    // This field should not be used in any external reports.
+    message Internal {
+      // Point-of-contact for questions, issues, or bugs related to
+      // this network request.
+      message Contact {
+        oneof contact_type {
+          // Email of a team or individual owner
+          string email = 1;
+        }
       }
+      // TODO(b/254273300): add contacts tag in auditor.py
+      repeated Contact contacts = 1;
     }
-    // TODO(b/254273300): add contacts tag in auditor.py
-    repeated Contact contacts = 7;
+
+    Internal internal = 7;
 
     // Types of user data sent in this network request
     message UserData {

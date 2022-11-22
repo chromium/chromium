@@ -247,8 +247,10 @@ void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
               "Page."
             data: "The only data sent is the URL to an image."
             destination: GOOGLE_OWNED_SERVICE
-            contacts {
-              email: "chrome-desktop-ntp@google.com"
+            internal {
+              contacts {
+                email: "chrome-desktop-ntp@google.com"
+              }
             }
           }
           policy {
