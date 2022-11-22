@@ -220,6 +220,8 @@ source_set("test_support") {
     "fake_network_device_handler.h",
     "fake_stub_cellular_networks_provider.cc",
     "fake_stub_cellular_networks_provider.h",
+    "mock_managed_cellular_pref_handler.cc",
+    "mock_managed_cellular_pref_handler.h",
     "mock_managed_network_configuration_handler.cc",
     "mock_managed_network_configuration_handler.h",
     "mock_network_device_handler.cc",
