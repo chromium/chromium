@@ -98,6 +98,20 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
   // Check the WebsiteSettingsInfo is registered correctly.
   EXPECT_EQ(website_settings_registry()->Get(ContentSettingsType::COOKIES),
             website_settings_info);
+
+  // Check that PRIVATE_NETWORK_GUARD is registered correctly.
+#if !BUILDFLAG(IS_IOS)
+  info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
+  ASSERT_TRUE(info);
+
+  // Check the other properties are populated correctly.
+  EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_BLOCK));
+  EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_ASK));
+  EXPECT_FALSE(info->IsSettingValid(CONTENT_SETTING_SESSION_ONLY));
+  EXPECT_FALSE(info->IsSettingValid(CONTENT_SETTING_ALLOW));
+  EXPECT_EQ(ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+            info->incognito_behavior());
+#endif
 }
 
 TEST_F(ContentSettingsRegistryTest, Iteration) {

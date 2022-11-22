@@ -555,8 +555,7 @@ void ContentSettingsRegistry::Init() {
   Register(ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-guard",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
-                         CONTENT_SETTING_SESSION_ONLY},
+           /*valid_settings=*/{CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
