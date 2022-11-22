@@ -74,26 +74,7 @@ P2PSocket::P2PSocket(Delegate* delegate,
       base::BindOnce(&P2PSocket::OnError, base::Unretained(this)));
 }
 
-P2PSocket::~P2PSocket() {
-  if (protocol_type_ == P2PSocket::UDP) {
-    UMA_HISTOGRAM_COUNTS_10000("WebRTC.SystemMaxConsecutiveBytesDelayed_UDP",
-                               send_bytes_delayed_max_);
-  } else {
-    UMA_HISTOGRAM_COUNTS_10000("WebRTC.SystemMaxConsecutiveBytesDelayed_TCP",
-                               send_bytes_delayed_max_);
-  }
-
-  if (send_packets_total_ > 0) {
-    int delay_rate = (send_packets_delayed_total_ * 100) / send_packets_total_;
-    if (protocol_type_ == P2PSocket::UDP) {
-      UMA_HISTOGRAM_PERCENTAGE("WebRTC.SystemPercentPacketsDelayed_UDP",
-                               delay_rate);
-    } else {
-      UMA_HISTOGRAM_PERCENTAGE("WebRTC.SystemPercentPacketsDelayed_TCP",
-                               delay_rate);
-    }
-  }
-}
+P2PSocket::~P2PSocket() = default;
 
 // Verifies that the packet |data| has a valid STUN header.
 // static
@@ -193,26 +174,6 @@ P2PSocket::ReleaseClientForTesting() {
 
 mojo::PendingReceiver<mojom::P2PSocket> P2PSocket::ReleaseReceiverForTesting() {
   return receiver_.Unbind();
-}
-
-void P2PSocket::IncrementDelayedPackets() {
-  send_packets_delayed_total_++;
-}
-
-void P2PSocket::IncrementTotalSentPackets() {
-  send_packets_total_++;
-}
-
-void P2PSocket::IncrementDelayedBytes(uint32_t size) {
-  send_bytes_delayed_cur_ += size;
-  if (send_bytes_delayed_cur_ > send_bytes_delayed_max_) {
-    send_bytes_delayed_max_ = send_bytes_delayed_cur_;
-  }
-}
-
-void P2PSocket::DecrementDelayedBytes(uint32_t size) {
-  send_bytes_delayed_cur_ -= size;
-  DCHECK_GE(send_bytes_delayed_cur_, 0);
 }
 
 void P2PSocket::OnError() {

@@ -351,7 +351,6 @@ void P2PSocketUdp::OnSend(uint64_t packet_id,
     send_queue_.pop_front();
     if (!DoSend(packet))
       return;
-    DecrementDelayedBytes(packet.size);
   }
 }
 
@@ -395,15 +394,11 @@ void P2PSocketUdp::Send(
     return;
   }
 
-  IncrementTotalSentPackets();
-
   if (send_pending_) {
     send_queue_.push_back(
         PendingPacket(packet_info.destination, data, packet_info.packet_options,
                       packet_info.packet_id,
                       net::NetworkTrafficAnnotationTag(traffic_annotation)));
-    IncrementDelayedBytes(data.size());
-    IncrementDelayedPackets();
   } else {
     PendingPacket packet(packet_info.destination, data,
                          packet_info.packet_options, packet_info.packet_id,

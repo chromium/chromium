@@ -253,11 +253,8 @@ bool P2PSocketTcpBase::OnPacket(base::span<const uint8_t> data) {
 }
 
 void P2PSocketTcpBase::WriteOrQueue(SendBuffer& send_buffer) {
-  IncrementTotalSentPackets();
   if (write_buffer_.buffer.get()) {
     write_queue_.push(send_buffer);
-    IncrementDelayedPackets();
-    IncrementDelayedBytes(send_buffer.buffer->size());
     return;
   }
 
@@ -312,8 +309,6 @@ bool P2PSocketTcpBase::HandleWriteResult(int result) {
     } else {
       write_buffer_ = write_queue_.front();
       write_queue_.pop();
-      // Update how many bytes are still waiting to be sent.
-      DecrementDelayedBytes(write_buffer_.buffer->size());
     }
   }
   return true;

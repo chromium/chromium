@@ -2069,34 +2069,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="WebRTC.SystemMaxConsecutiveBytesDelayed{IPProtocolType}"
-    units="units" expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    The maximum of consecutive delayed bytes caused by EWOULDBLOCKs from system.
-    This happens when system can't send any packet synchronously at that moment.
-    {IPProtocolType}
-  </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.SystemPercentPacketsDelayed{IPProtocolType}" units="%"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    The percentage of packets delayed due to ERR_IO_PENDING from system in a
-    WebRTC socket. This happens when system can't send any packet synchronously
-    at that moment. {IPProtocolType}
-  </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="WebRTC.SystemSendPacketDuration{IPProtocolType}" units="ms"
     expires_after="M81">
   <owner>qingsi@google.com</owner>
