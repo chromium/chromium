@@ -88,6 +88,7 @@ ChromeIdentityService::PresentAccountDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
     BOOL animated) {
+  NOTREACHED() << "Subclasses must override this";
   return nil;
 }
 
@@ -96,6 +97,7 @@ ChromeIdentityService::PresentWebAndAppSettingDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
     BOOL animated) {
+  NOTREACHED() << "Subclasses must override this";
   return nil;
 }
 
@@ -106,14 +108,20 @@ ChromeIdentityService::CreateChromeIdentityInteractionManager() const {
 }
 
 void ChromeIdentityService::IterateOverIdentities(
-    SystemIdentityIteratorCallback) {}
+    SystemIdentityIteratorCallback) {
+  // TODO(crbug.com/1392742): Need to add NOTREACHED().
+}
 
 void ChromeIdentityService::ForgetIdentity(id<SystemIdentity> identity,
-                                           ForgetIdentityCallback callback) {}
+                                           ForgetIdentityCallback callback) {
+  NOTREACHED() << "Subclasses must override this";
+}
 
 void ChromeIdentityService::GetAccessToken(id<SystemIdentity> identity,
                                            const std::set<std::string>& scopes,
-                                           AccessTokenCallback callback) {}
+                                           AccessTokenCallback callback) {
+  NOTREACHED() << "Subclasses must override this";
+}
 
 void ChromeIdentityService::GetAccessToken(id<SystemIdentity> identity,
                                            const std::string& client_id,
@@ -121,18 +129,20 @@ void ChromeIdentityService::GetAccessToken(id<SystemIdentity> identity,
                                            AccessTokenCallback callback) {}
 
 void ChromeIdentityService::GetAvatarForIdentity(id<SystemIdentity> identity) {
-  NOTREACHED();
+  NOTREACHED() << "Subclasses must override this";
 }
 
 UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
     id<SystemIdentity> identity) {
-  NOTREACHED();
+  NOTREACHED() << "Subclasses must override this";
   return nil;
 }
 
 void ChromeIdentityService::GetHostedDomainForIdentity(
     id<SystemIdentity> identity,
-    GetHostedDomainCallback callback) {}
+    GetHostedDomainCallback callback) {
+  NOTREACHED() << "Subclasses must override this";
+}
 
 NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
@@ -168,17 +178,20 @@ bool ChromeIdentityService::IsServiceSupported() {
 
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
     NSDictionary* user_info) {
+  NOTREACHED() << "Subclasses must override this";
   return 0;
 }
 
 bool ChromeIdentityService::HandleMDMNotification(id<SystemIdentity> identity,
                                                   NSDictionary* user_info,
                                                   MDMStatusCallback callback) {
+  NOTREACHED() << "Subclasses must override this";
   return false;
 }
 
 bool ChromeIdentityService::IsMDMError(id<SystemIdentity> identity,
                                        NSError* error) {
+  NOTREACHED() << "Subclasses must override this";
   return false;
 }
 
