@@ -233,7 +233,9 @@ CORE_EXPORT PositionInFlatTree NextPositionOf(const PositionInFlatTree&,
 CORE_EXPORT int PreviousGraphemeBoundaryOf(const Node&, int current);
 CORE_EXPORT int NextGraphemeBoundaryOf(const Node&, int current);
 
-// comparision functions on Position
+// Comparison functions on Position
+// Note: These functions reside in "compare_positions.cc" instead of
+// "editing_utilities.cc".
 
 // |disconnected| is optional output parameter having true if specified
 // positions don't have common ancestor.
@@ -247,12 +249,16 @@ int16_t ComparePositionsInFlatTree(const Node* container_a,
                                    const Node* container_b,
                                    int offset_b,
                                    bool* disconnected = nullptr);
-// TODO(yosin): We replace |comparePositions()| by |Position::opeator<()| to
-// utilize |DCHECK_XX()|.
+// TODO(yosin): We should replace `ComparePositions()` by `Position::
+// operator<()` to utilize `DCHECK_XX()`.
 int16_t ComparePositions(const Position&, const Position&);
 int16_t ComparePositions(const PositionWithAffinity&,
                          const PositionWithAffinity&);
-bool IsNodeFullyContained(const EphemeralRange&, const Node&);
+int16_t ComparePositions(const PositionInFlatTree&, const PositionInFlatTree&);
+
+// Returns true if `node` in `range`, otherwise false.
+// Note: This function resides in "editing_utilities.cc".
+bool IsNodeFullyContained(const EphemeralRange& range, const Node& node);
 
 // boolean functions on Position
 

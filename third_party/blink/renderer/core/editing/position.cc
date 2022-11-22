@@ -394,19 +394,6 @@ bool PositionTemplate<Strategy>::IsValidFor(const Document& document) const {
          OffsetInContainerNode() <= LastOffsetInNode(*AnchorNode());
 }
 
-int16_t ComparePositions(const PositionInFlatTree& position_a,
-                         const PositionInFlatTree& position_b) {
-  DCHECK(position_a.IsNotNull());
-  DCHECK(position_b.IsNotNull());
-
-  Node* container_a = position_a.ComputeContainerNode();
-  Node* container_b = position_b.ComputeContainerNode();
-  int offset_a = position_a.ComputeOffsetInContainerNode();
-  int offset_b = position_b.ComputeOffsetInContainerNode();
-  return ComparePositionsInFlatTree(container_a, offset_a, container_b,
-                                    offset_b);
-}
-
 template <typename Strategy>
 int16_t PositionTemplate<Strategy>::CompareTo(
     const PositionTemplate<Strategy>& other) const {
