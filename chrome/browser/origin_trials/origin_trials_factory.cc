@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
@@ -36,9 +38,16 @@ OriginTrialsFactory* OriginTrialsFactory::GetInstance() {
 }
 
 OriginTrialsFactory::OriginTrialsFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "OriginTrials",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::Builder()
+              // Do not use for system and internal profiles
+              // TODO(crbug.com/1392695): May need to enable Guest in the
+              // future.
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {}
 
 OriginTrialsFactory::~OriginTrialsFactory() noexcept = default;
 
