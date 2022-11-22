@@ -168,6 +168,9 @@ void LockStateController::StartShutdownAnimation(ShutdownReason reason) {
 }
 
 void LockStateController::LockWithoutAnimation() {
+  VLOG(1) << "LockWithoutAnimation : "
+          << "animating_unlock_: " << static_cast<int>(animating_unlock_)
+          << ", animating_lock_: " << static_cast<int>(animating_lock_);
   if (animating_unlock_) {
     CancelUnlockAnimation();
     // One would expect a call to
@@ -336,7 +339,9 @@ void LockStateController::OnLockStateChanged(bool locked) {
   VLOG(1) << "OnLockStateChanged called with locked: " << locked
           << ", shutting_down_: " << shutting_down_
           << ", system_is_locked_: " << system_is_locked_
-          << ", lock_fail_timer_.IsRunning(): " << lock_fail_timer_.IsRunning();
+          << ", lock_fail_timer_.IsRunning(): " << lock_fail_timer_.IsRunning()
+          << ", animating_unlock_: " << static_cast<int>(animating_unlock_)
+          << ", animating_lock_: " << static_cast<int>(animating_lock_);
 
   if (shutting_down_ || (system_is_locked_ == locked))
     return;
@@ -510,13 +515,13 @@ void LockStateController::StartUnlockAnimationAfterLockUIDestroyed() {
 }
 
 void LockStateController::LockAnimationCancelled(bool aborted) {
-  DVLOG(1) << "LockAnimationCancelled: aborted=" << aborted;
+  VLOG(1) << "LockAnimationCancelled: aborted=" << aborted;
   RestoreUnlockedProperties();
 }
 
 void LockStateController::PreLockAnimationFinished(bool request_lock,
                                                    bool aborted) {
-  DVLOG(1) << "PreLockAnimationFinished: aborted=" << aborted;
+  VLOG(1) << "PreLockAnimationFinished: aborted=" << aborted;
   // Aborted in this stage means the locking animation was cancelled by
   // `CancelLockAnimation()`, triggered by releasing a lock button before
   // finishing animation.
@@ -544,7 +549,7 @@ void LockStateController::PreLockAnimationFinished(bool request_lock,
 }
 
 void LockStateController::PostLockAnimationFinished(bool aborted) {
-  DVLOG(1) << "PostLockAnimationFinished: aborted=" << aborted;
+  VLOG(1) << "PostLockAnimationFinished: aborted=" << aborted;
   animating_lock_ = false;
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
@@ -555,8 +560,7 @@ void LockStateController::PostLockAnimationFinished(bool aborted) {
 
 void LockStateController::UnlockAnimationAfterLockUIDestroyedFinished(
     bool aborted) {
-  DVLOG(1) << "UnlockAnimationAfterLockUIDestroyedFinished: aborted="
-           << aborted;
+  VLOG(1) << "UnlockAnimationAfterLockUIDestroyedFinished: aborted=" << aborted;
   animating_unlock_ = false;
   if (pb_pressed_during_unlock_) {
     Shell::Get()->session_controller()->LockScreen();
