@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <shellapi.h>
 
 #include "base/strings/string_util_win.h"

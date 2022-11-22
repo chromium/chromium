@@ -35,6 +35,7 @@
 
 #include <windows.foundation.h>
 #include <windows.h>
+
 #include <mmsystem.h>
 #include <stdint.h>
 

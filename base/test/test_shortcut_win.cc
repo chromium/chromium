@@ -5,6 +5,7 @@
 #include "base/test/test_shortcut_win.h"
 
 #include <windows.h>
+
 #include <objbase.h>
 #include <shlobj.h>
 #include <propkey.h>

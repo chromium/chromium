@@ -4,10 +4,10 @@
 
 #include "base/power_monitor/speed_limit_observer_win.h"
 
-// windows.h must be included before powerbase.h
-#include <windows.h>    // NOLINT(build/include_order)
-#include <powerbase.h>  // NOLINT(build/include_order)
-#include <winternl.h>   // NOLINT(build/include_order)
+#include <windows.h>
+
+#include <powerbase.h>
+#include <winternl.h>
 
 #include <algorithm>
 #include <memory>

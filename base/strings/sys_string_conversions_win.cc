@@ -5,6 +5,7 @@
 #include "base/strings/sys_string_conversions.h"
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include "base/strings/string_piece.h"
