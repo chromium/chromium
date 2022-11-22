@@ -13,6 +13,12 @@ struct AttributionDebugKey {
   uint64 value;
 };
 
+// Encapsulates a potentially trustworthy origin. Equivalent to
+// attribution_reporting::SuitableOrigin.
+struct AttributionSuitableOrigin {
+  url.mojom.Origin origin;
+};
+
 // Filter data for selectively matching attribution sources and triggers.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
@@ -51,10 +57,10 @@ struct AttributionSourceData {
   // For sources associated with a navigation, the destination site must be
   // same-site with the final committed url of the navigation. If they are not
   // same-site, this source will be ignored by the browser.
-  url.mojom.Origin destination;
+  AttributionSuitableOrigin destination;
 
   // Origin that will receive all attribution reports associated with this source.
-  url.mojom.Origin reporting_origin;
+  AttributionSuitableOrigin reporting_origin;
 
   // Data that will be sent in attribution reports to identify this source.
   uint64 source_event_id = 0;
@@ -124,7 +130,7 @@ struct EventTriggerData {
 struct AttributionTriggerData {
   // Origin that registered this trigger, used to determine which source this
   // trigger is associated with.
-  url.mojom.Origin reporting_origin;
+  AttributionSuitableOrigin reporting_origin;
 
   // List of all event trigger data objects declared by the event trigger
   // header. This data is arbitrarily set by the reporting_origin.

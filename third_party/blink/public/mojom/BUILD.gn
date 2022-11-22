@@ -546,6 +546,10 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.AttributionTriggerDedupKey"
           cpp = "uint64_t"
         },
+        {
+          mojom = "blink.mojom.AttributionSuitableOrigin"
+          cpp = "::attribution_reporting::SuitableOrigin"
+        },
       ]
       traits_headers = [ "//third_party/blink/public/common/attribution_reporting/mojom_traits.h" ]
       traits_public_deps = [ "//components/attribution_reporting" ]

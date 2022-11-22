@@ -16,6 +16,10 @@
 
 class GURL;
 
+namespace mojo {
+struct DefaultConstructTraits;
+}  // namespace mojo
+
 namespace attribution_reporting {
 
 // A thin wrapper around `url::Origin` that enforces invariants required for an
@@ -43,8 +47,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   //
   // All parts of the URL other than the origin are ignored.
   static absl::optional<SuitableOrigin> Deserialize(base::StringPiece);
-
-  SuitableOrigin() = delete;
 
   ~SuitableOrigin();
 
@@ -82,10 +84,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
 
   std::string Serialize() const;
 
- private:
-  explicit SuitableOrigin(url::Origin);
-
   bool IsValid() const;
+
+ private:
+  friend mojo::DefaultConstructTraits;
+
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  SuitableOrigin();
+
+  explicit SuitableOrigin(url::Origin);
 
   url::Origin origin_;
 };

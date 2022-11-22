@@ -16,7 +16,9 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -205,11 +207,12 @@ bool ParseSourceRegistrationHeader(
   String destination_string;
   if (!object->GetString("destination", &destination_string))
     return false;
-  scoped_refptr<const SecurityOrigin> destination =
-      SecurityOrigin::CreateFromString(destination_string);
-  if (!destination->IsPotentiallyTrustworthy())
+  absl::optional<attribution_reporting::SuitableOrigin> destination =
+      attribution_reporting::SuitableOrigin::Create(
+          SecurityOrigin::CreateFromString(destination_string)->ToUrlOrigin());
+  if (!destination)
     return false;
-  source_data.destination = std::move(destination);
+  source_data.destination = std::move(*destination);
 
   // Treat invalid source_event_id, expiry, event_report_window,
   // aggregatable_report_window, priority, and debug key as if they were

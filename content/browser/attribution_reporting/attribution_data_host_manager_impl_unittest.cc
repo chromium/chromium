@@ -232,79 +232,6 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHost_OriginTrustworthyChecksPerformed) {
-  base::HistogramTester histograms;
-
-  const char kLocalHost[] = "http://localhost";
-
-  struct {
-    const char* destination_origin;
-    const char* reporting_origin;
-    bool source_expected;
-    const char* bad_message = nullptr;
-  } kTestCases[] = {
-      {.destination_origin = kLocalHost,
-       .reporting_origin = kLocalHost,
-       .source_expected = true},
-      {.destination_origin = "http://127.0.0.1",
-       .reporting_origin = "http://127.0.0.1",
-       .source_expected = true},
-      {.destination_origin = kLocalHost,
-       .reporting_origin = "http://insecure.com",
-       .source_expected = false,
-       .bad_message = "AttributionDataHost: Reporting origin must be secure."},
-      {.destination_origin = "http://insecure.com",
-       .reporting_origin = kLocalHost,
-       .source_expected = false,
-       .bad_message =
-           "AttributionDataHost: Destination origin must be secure."},
-      {.destination_origin = "https://secure.com",
-       .reporting_origin = "https://secure.com",
-       .source_expected = true},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.source_expected);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    RemoteDataHost data_host_remote{.task_environment =
-                                        raw_ref(task_environment_)};
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.data_host.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://secure.com"),
-        /*is_within_fenced_frame=*/false);
-
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination =
-        url::Origin::Create(GURL(test_case.destination_origin));
-    source_data->reporting_origin =
-        url::Origin::Create(GURL(test_case.reporting_origin));
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregation_keys =
-        blink::mojom::AttributionAggregationKeys::New();
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
-    data_host_remote.data_host.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_EQ(bad_message_observer.got_bad_message(), !!test_case.bad_message);
-
-    if (test_case.bad_message) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                test_case.bad_message);
-    }
-  }
-
-  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 1,
-                                3);
-  // kSuccess = 0.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 3);
-  // kUntrustworthyOrigin = 1.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 1, 2);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_FilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
     base::HistogramTester histograms;
@@ -322,9 +249,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto source_data = blink::mojom::AttributionSourceData::New();
     source_data->destination =
-        url::Origin::Create(GURL("https://trigger.example"));
+        *SuitableOrigin::Deserialize("https://trigger.example");
     source_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.AsMap());
     source_data->aggregation_keys =
@@ -382,9 +309,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto source_data = blink::mojom::AttributionSourceData::New();
     source_data->destination =
-        url::Origin::Create(GURL("https://trigger.example"));
+        *SuitableOrigin::Deserialize("https://trigger.example");
     source_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.filter_data);
     source_data->aggregation_keys =
@@ -426,8 +353,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
 
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -453,7 +381,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     checkpoint.Call(2);
 
     source_data->destination =
-        url::Origin::Create(GURL("https://other-trigger.example"));
+        *SuitableOrigin::Deserialize("https://other-trigger.example");
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
 
@@ -515,9 +443,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto source_data = blink::mojom::AttributionSourceData::New();
     source_data->destination =
-        url::Origin::Create(GURL("https://trigger.example"));
+        *SuitableOrigin::Deserialize("https://trigger.example");
     source_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
     source_data->aggregation_keys =
         blink::mojom::AttributionAggregationKeys::New(
@@ -619,65 +547,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_OriginTrustworthyChecksPerformed) {
-  base::HistogramTester histograms;
-
-  const char kLocalHost[] = "http://localhost";
-
-  struct {
-    const char* reporting_origin;
-    bool trigger_expected;
-    const char* bad_message = nullptr;
-  } kTestCases[] = {
-      {.reporting_origin = kLocalHost, .trigger_expected = true},
-      {.reporting_origin = "http://127.0.0.1", .trigger_expected = true},
-      {.reporting_origin = "http://insecure.com",
-       .trigger_expected = false,
-       .bad_message = "AttributionDataHost: Reporting origin must be secure."},
-      {.reporting_origin = "https://secure.com", .trigger_expected = true},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.trigger_expected);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    RemoteDataHost data_host_remote{.task_environment =
-                                        raw_ref(task_environment_)};
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.data_host.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://secure.com"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        url::Origin::Create(GURL(test_case.reporting_origin));
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.data_host.FlushForTesting();
-
-    EXPECT_EQ(bad_message_observer.got_bad_message(), !!test_case.bad_message);
-
-    if (test_case.bad_message) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                test_case.bad_message);
-    }
-
-    Mock::VerifyAndClear(&mock_manager_);
-  }
-
-  histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 1,
-                                3);
-  // kSuccess = 0.
-  histograms.ExpectBucketCount(kTriggerDataHandleStatusMetric, 0, 3);
-  // kUntrustworthyOrigin = 1.
-  histograms.ExpectBucketCount(kTriggerDataHandleStatusMetric, 1, 1);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_TopLevelFilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
     base::HistogramTester histograms;
@@ -695,7 +564,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     trigger_data->filters =
         blink::mojom::AttributionFilters::New(test_case.AsMap());
@@ -737,7 +606,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
@@ -785,7 +654,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
@@ -841,7 +710,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     for (size_t i = 0; i < test_case.size; ++i) {
       trigger_data->event_triggers.push_back(
@@ -899,7 +768,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
@@ -955,7 +824,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://reporter.example"));
+        *SuitableOrigin::Deserialize("https://reporter.example");
 
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
@@ -1201,7 +1070,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     // This should succeed even though the destination site doesn't match the
     // final navigation site.
     source_data->destination =
-        url::Origin::Create(GURL("https://trigger2.example"));
+        *SuitableOrigin::Deserialize("https://trigger2.example");
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
@@ -1271,7 +1140,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     // should be delayed.
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
-        url::Origin::Create(GURL("https://report.test"));
+        *SuitableOrigin::Deserialize("https://report.test");
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
     trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1328,7 +1197,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // be delayed.
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1530,7 +1399,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1579,7 +1448,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1610,7 +1479,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1638,7 +1507,7 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
 
@@ -1688,7 +1557,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1795,7 +1664,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report.test"));
+      *SuitableOrigin::Deserialize("https://report.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1902,9 +1771,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
       /*is_within_fenced_frame=*/false);
 
   auto source_data = blink::mojom::AttributionSourceData::New();
-  source_data->destination = url::Origin::Create(GURL("https://dest.test"));
+  source_data->destination = *SuitableOrigin::Deserialize("https://dest.test");
   source_data->reporting_origin =
-      url::Origin::Create(GURL("https://report1.test"));
+      *SuitableOrigin::Deserialize("https://report1.test");
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
   source_data->aggregation_keys =
       blink::mojom::AttributionAggregationKeys::New();
@@ -1915,7 +1784,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
   // should be delayed.
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin =
-      url::Origin::Create(GURL("https://report2.test"));
+      *SuitableOrigin::Deserialize("https://report2.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
   trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -2004,7 +1873,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin = url::Origin::Create(GURL("https://r.test"));
+  trigger_data->reporting_origin =
+      *SuitableOrigin::Deserialize("https://r.test");
   trigger_data->filters = blink::mojom::AttributionFilters::New();
   trigger_data->not_filters = blink::mojom::AttributionFilters::New();
 
@@ -2045,8 +1915,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 0, 1);
   }
 
-  const url::Origin destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
+  const auto destination_origin =
+      *SuitableOrigin::Deserialize("https://trigger.example");
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token,
@@ -2056,7 +1926,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->source_event_id = 1;
   source_data->destination = destination_origin;
   source_data->reporting_origin =
-      url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://reporter.example");
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
   source_data->aggregation_keys =
       blink::mojom::AttributionAggregationKeys::New();

@@ -99,11 +99,6 @@ const base::FeatureParam<base::TimeDelta> kTriggerDelay{
 
 constexpr size_t kMaxDelayedTriggers = 30;
 
-void ReportBadMessageInsecureReportingOrigin() {
-  mojo::ReportBadMessage(
-      "AttributionDataHost: Reporting origin must be secure.");
-}
-
 absl::optional<attribution_reporting::AggregatableTriggerDataList> FromMojo(
     std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr> mojo) {
   if (mojo.size() >
@@ -368,21 +363,9 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
-  auto reporting_origin =
-      SuitableOrigin::Create(std::move(data->reporting_origin));
-  if (!reporting_origin) {
-    RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
-    ReportBadMessageInsecureReportingOrigin();
-    return;
-  }
-
-  auto destination = SuitableOrigin::Create(std::move(data->destination));
-  if (!destination) {
-    RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
-    mojo::ReportBadMessage(
-        "AttributionDataHost: Destination origin must be secure.");
-    return;
-  }
+  // This is validated by the Mojo typemapping.
+  DCHECK(data->reporting_origin.IsValid());
+  DCHECK(data->destination.IsValid());
 
   FrozenContext& context = receivers_.current_context();
 
@@ -427,7 +410,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   StorableSource storable_source(
       CommonSourceInfo(
           data->source_event_id, context.context_origin,
-          std::move(*destination), std::move(*reporting_origin), source_time,
+          std::move(data->destination), std::move(data->reporting_origin),
+          source_time,
           CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
                                           context.source_type),
           data->event_report_window
@@ -449,13 +433,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  auto reporting_origin =
-      SuitableOrigin::Create(std::move(data->reporting_origin));
-  if (!reporting_origin) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
-    ReportBadMessageInsecureReportingOrigin();
-    return;
-  }
+  // This is validated by the Mojo typemapping.
+  DCHECK(data->reporting_origin.IsValid());
 
   FrozenContext& context = receivers_.current_context();
 
@@ -565,7 +544,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   AttributionTrigger trigger(
       attribution_reporting::TriggerRegistration(
-          std::move(*reporting_origin), std::move(*filters),
+          std::move(data->reporting_origin), std::move(*filters),
           std::move(*not_filters), data->debug_key,
           data->aggregatable_dedup_key, std::move(*event_trigger_data_list),
           std::move(*aggregatable_trigger_data),

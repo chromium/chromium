@@ -40,6 +40,10 @@ absl::optional<SuitableOrigin> SuitableOrigin::Deserialize(
   return Create(GURL(str));
 }
 
+SuitableOrigin::SuitableOrigin() {
+  DCHECK(!IsValid());
+}
+
 SuitableOrigin::SuitableOrigin(url::Origin origin)
     : origin_(std::move(origin)) {
   DCHECK(IsValid());

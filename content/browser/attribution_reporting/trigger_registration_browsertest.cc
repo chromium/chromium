@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -27,6 +29,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -105,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
       trigger_data.front()->event_triggers,
       ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 1)),
@@ -143,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(trigger_data1.size(), 1u);
   EXPECT_EQ(trigger_data1.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
       trigger_data1.front()->event_triggers,
       ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 5))));
@@ -153,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(trigger_data2.size(), 1u);
   EXPECT_EQ(trigger_data2.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
       trigger_data2.front()->event_triggers,
       ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 7))));

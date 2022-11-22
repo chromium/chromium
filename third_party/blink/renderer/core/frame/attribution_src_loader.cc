@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,12 +109,6 @@ void MaybeLogTriggerIgnored(ExecutionContext* execution_context,
                 /*invalid_parameter=*/json);
 }
 
-bool IsValidReportingOrigin(const SecurityOrigin* origin) {
-  return origin && origin->IsPotentiallyTrustworthy() &&
-         (origin->Protocol() == WTF::g_https_atom ||
-          origin->Protocol() == WTF::g_http_atom);
-}
-
 bool SubframeHasAllowedContainerPolicy(LocalFrame* frame) {
   DCHECK(frame->Parent());
   const FramePolicy& frame_policy = frame->Owner()->GetFramePolicy();
@@ -179,7 +174,7 @@ class AttributionSrcLoader::ResourceClient
   }
 
   void HandleResponseHeaders(
-      scoped_refptr<const SecurityOrigin> reporting_origin,
+      attribution_reporting::SuitableOrigin reporting_origin,
       const AtomicString& source_json,
       const AtomicString& trigger_json,
       uint64_t request_id);
@@ -192,11 +187,11 @@ class AttributionSrcLoader::ResourceClient
 
   void HandleSourceRegistration(
       const AtomicString& json,
-      scoped_refptr<const SecurityOrigin> reporting_origin,
+      attribution_reporting::SuitableOrigin reporting_origin,
       uint64_t request_id);
   void HandleTriggerRegistration(
       const AtomicString& json,
-      scoped_refptr<const SecurityOrigin> reporting_origin,
+      attribution_reporting::SuitableOrigin reporting_origin,
       uint64_t request_id);
 
   // RawResourceClient:
@@ -348,7 +343,7 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   return client;
 }
 
-scoped_refptr<const SecurityOrigin>
+absl::optional<attribution_reporting::SuitableOrigin>
 AttributionSrcLoader::ReportingOriginForUrlIfValid(
     const KURL& url,
     HTMLElement* element,
@@ -369,13 +364,13 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
   };
 
   if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
-    return nullptr;
+    return absl::nullopt;
 
   if (!window->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
     maybe_log_audit_issue(
         AttributionReportingIssueType::kPermissionPolicyDisabled);
-    return nullptr;
+    return absl::nullopt;
   }
 
   if (local_frame_->Parent() &&
@@ -387,17 +382,21 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
   if (!window->IsSecureContext()) {
     maybe_log_audit_issue(AttributionReportingIssueType::kInsecureContext,
                           window->GetSecurityContext().GetSecurityOrigin());
-    return nullptr;
+    return absl::nullopt;
   }
 
-  scoped_refptr<const SecurityOrigin> reporting_origin =
+  scoped_refptr<const SecurityOrigin> security_origin =
       SecurityOrigin::Create(url);
-  if (!url.ProtocolIsInHTTPFamily() ||
-      !reporting_origin->IsPotentiallyTrustworthy()) {
+
+  absl::optional<attribution_reporting::SuitableOrigin> reporting_origin =
+      attribution_reporting::SuitableOrigin::Create(
+          security_origin->ToUrlOrigin());
+
+  if (!url.ProtocolIsInHTTPFamily() || !reporting_origin) {
     maybe_log_audit_issue(
         AttributionReportingIssueType::kUntrustworthyReportingOrigin,
-        reporting_origin.get());
-    return nullptr;
+        security_origin.get());
+    return absl::nullopt;
   }
 
   UseCounter::Count(window, mojom::blink::WebFeature::kConversionAPIAll);
@@ -461,7 +460,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
 
   const uint64_t request_id = request.InspectorId();
-  scoped_refptr<const SecurityOrigin> reporting_origin =
+  absl::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                    /*element=*/nullptr, request_id);
   if (!reporting_origin)
@@ -523,7 +522,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   auto* client = MakeGarbageCollected<ResourceClient>(
       this, src_type, /*associated_with_navigation=*/false);
-  client->HandleResponseHeaders(std::move(reporting_origin), source_json,
+  client->HandleResponseHeaders(std::move(*reporting_origin), source_json,
                                 trigger_json, resource->InspectorId());
   client->Finish();
   return true;
@@ -586,7 +585,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   if (source_json.IsNull() && trigger_json.IsNull())
     return;
 
-  scoped_refptr<const SecurityOrigin> reporting_origin =
+  absl::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       loader_->ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                             /*element=*/nullptr, request_id);
   if (!reporting_origin)
@@ -598,16 +597,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     // Attribution-Reporting-Register-OS-Trigger headers.
   }
 
-  HandleResponseHeaders(std::move(reporting_origin), source_json, trigger_json,
+  HandleResponseHeaders(std::move(*reporting_origin), source_json, trigger_json,
                         request_id);
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
-    scoped_refptr<const SecurityOrigin> reporting_origin,
+    attribution_reporting::SuitableOrigin reporting_origin,
     const AtomicString& source_json,
     const AtomicString& trigger_json,
     uint64_t request_id) {
-  DCHECK(IsValidReportingOrigin(reporting_origin.get()));
   DCHECK(!source_json.IsNull() || !trigger_json.IsNull());
 
   switch (type_) {
@@ -657,11 +655,10 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const AtomicString& json,
-    scoped_refptr<const SecurityOrigin> reporting_origin,
+    attribution_reporting::SuitableOrigin reporting_origin,
     uint64_t request_id) {
   DCHECK_EQ(type_, SrcType::kSource);
   DCHECK(!json.IsNull());
-  DCHECK(IsValidReportingOrigin(reporting_origin.get()));
 
   auto source_data = mojom::blink::AttributionSourceData::New();
   source_data->reporting_origin = std::move(reporting_origin);
@@ -680,11 +677,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AtomicString& json,
-    scoped_refptr<const SecurityOrigin> reporting_origin,
+    attribution_reporting::SuitableOrigin reporting_origin,
     uint64_t request_id) {
   DCHECK_EQ(type_, SrcType::kTrigger);
   DCHECK(!json.IsNull());
-  DCHECK(IsValidReportingOrigin(reporting_origin.get()));
 
   auto trigger_data = mojom::blink::AttributionTriggerData::New();
   trigger_data->reporting_origin = std::move(reporting_origin);

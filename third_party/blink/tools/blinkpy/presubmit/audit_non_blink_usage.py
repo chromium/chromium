@@ -1828,6 +1828,8 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/frame/attribution_response_parsing.cc',
+            'third_party/blink/renderer/core/frame/attribution_src_loader.cc',
+            'third_party/blink/renderer/core/frame/attribution_src_loader.h',
         ],
         'allowed': [
             'attribution_reporting:.*',

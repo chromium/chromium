@@ -11,6 +11,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +26,8 @@
 namespace blink::attribution_response_parsing {
 
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using FilterValues = WTF::HashMap<String, WTF::Vector<String>>;
 
@@ -566,8 +570,7 @@ TEST(AttributionResponseParsingTest, ParseFilterValues) {
 }
 
 TEST(AttributionResponseParsingTest, ParseTriggerRegistrationHeader) {
-  const auto reporting_origin =
-      SecurityOrigin::CreateFromString("https://r.test");
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
 
   const struct {
     String description;
@@ -661,8 +664,8 @@ TEST(AttributionResponseParsingTest, ParseTriggerRegistrationHeader) {
     EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
 
     if (test_case.expected) {
-      EXPECT_EQ(test_case.expected->reporting_origin->ToUrlOrigin(),
-                trigger_data.reporting_origin->ToUrlOrigin())
+      EXPECT_EQ(test_case.expected->reporting_origin,
+                trigger_data.reporting_origin)
           << test_case.description;
 
       EXPECT_EQ(test_case.expected->event_triggers, trigger_data.event_triggers)
@@ -697,8 +700,7 @@ TEST(AttributionResponseParsingTest, ParseTriggerRegistrationHeader) {
 }
 
 TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
-  const auto reporting_origin =
-      SecurityOrigin::CreateFromString("https://r.test");
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
 
   const struct {
     String description;
@@ -721,8 +723,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "destination": "https://d.test"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -749,8 +750,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "destination": "https://d.test"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -770,8 +770,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "destination": "https://d.test"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -791,8 +790,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "destination": "https://d.test"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/1,
               /*expiry=*/absl::nullopt,
@@ -826,8 +824,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "priority": "5"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -847,8 +844,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "priority": 5
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -868,8 +864,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "priority": "abc"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -889,8 +884,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "expiry": "5"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
@@ -910,8 +904,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "expiry": 5
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -931,8 +924,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "expiry": "abc"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -953,8 +945,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "event_report_window": "10"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
@@ -975,8 +966,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "event_report_window": "NaN"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
@@ -997,8 +987,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "aggregatable_report_window": "10"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
@@ -1019,8 +1008,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "aggregatable_report_window": "NaN"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/base::Seconds(5),
@@ -1040,8 +1028,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "debug_key": "5"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -1061,8 +1048,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "filter_data": {"SOURCE_TYPE": []}
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -1093,8 +1079,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "a": {"b": {"c": {"d": "e"}}}
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -1114,8 +1099,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "debug_reporting": true
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -1135,8 +1119,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "debug_reporting": "true"
           })json",
           mojom::blink::AttributionSourceData::New(
-              /*destination=*/SecurityOrigin::CreateFromString(
-                  "https://d.test"),
+              /*destination=*/*SuitableOrigin::Deserialize("https://d.test"),
               /*reporting_origin=*/reporting_origin,
               /*source_event_id=*/0,
               /*expiry=*/absl::nullopt,
@@ -1161,12 +1144,11 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
     EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
 
     if (test_case.expected) {
-      EXPECT_EQ(test_case.expected->destination->ToUrlOrigin(),
-                source_data.destination->ToUrlOrigin())
+      EXPECT_EQ(test_case.expected->destination, source_data.destination)
           << test_case.description;
 
-      EXPECT_EQ(test_case.expected->reporting_origin->ToUrlOrigin(),
-                source_data.reporting_origin->ToUrlOrigin())
+      EXPECT_EQ(test_case.expected->reporting_origin,
+                source_data.reporting_origin)
           << test_case.description;
 
       EXPECT_EQ(test_case.expected->source_event_id,

@@ -3,12 +3,16 @@ specific_include_rules = {
     "+base/run_loop.h",
   ],
   "attribution_response_parsing\.cc": [
-    "+components/attribution_reporting/aggregation_keys.h",
-    "+components/attribution_reporting/constants.h",
-    "+components/attribution_reporting/filters.h",
+    "+components/attribution_reporting",
   ],
   "attribution_response_parsing_test\.cc": [
-    "+components/attribution_reporting/constants.h",
+    "+components/attribution_reporting",
+  ],
+  "attribution_src_loader\.cc": [
+    "+components/attribution_reporting",
+  ],
+  "attribution_src_loader_test\.cc": [
+    "+components/attribution_reporting",
   ],
   "child_frame_compositing_helper\.h": [
     "+components/viz/common/surfaces/surface_id.h",

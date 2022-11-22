@@ -8,13 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
 
 namespace blink {
 
@@ -24,7 +27,6 @@ class LocalFrame;
 class Resource;
 class ResourceRequest;
 class ResourceResponse;
-class SecurityOrigin;
 
 struct Impression;
 
@@ -96,13 +98,13 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
-  // allowed. Returns `nullptr` otherwise, and reports a DevTools issue using
-  // `element` and `request_id if `log_issues` is true.
-  scoped_refptr<const SecurityOrigin> ReportingOriginForUrlIfValid(
-      const KURL& url,
-      HTMLElement* element,
-      absl::optional<uint64_t> request_id,
-      bool log_issues = true);
+  // allowed. Returns `absl::nullopt` otherwise, and reports a DevTools issue
+  // using `element` and `request_id if `log_issues` is true.
+  absl::optional<attribution_reporting::SuitableOrigin>
+  ReportingOriginForUrlIfValid(const KURL& url,
+                               HTMLElement* element,
+                               absl::optional<uint64_t> request_id,
+                               bool log_issues = true);
 
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,

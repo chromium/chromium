@@ -47,8 +47,10 @@ TEST(SuitableOriginTest, Create) {
     EXPECT_EQ(test_case.expected_suitable, actual.has_value())
         << test_case.origin;
 
-    if (test_case.expected_suitable)
+    if (test_case.expected_suitable) {
       EXPECT_EQ(test_case.origin, *actual.value());
+      EXPECT_TRUE(actual->IsValid());
+    }
   }
 }
 

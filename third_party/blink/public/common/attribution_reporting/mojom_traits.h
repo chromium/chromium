@@ -10,11 +10,14 @@
 #include <utility>
 
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
+#include "url/origin.h"
 
 namespace mojo {
 
@@ -26,6 +29,31 @@ struct BLINK_COMMON_EXPORT
   static bool Read(blink::mojom::AttributionDebugKeyDataView data,
                    uint64_t* out) {
     *out = data.value();
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionSuitableOriginDataView,
+                 attribution_reporting::SuitableOrigin> {
+  static const url::Origin& origin(
+      const attribution_reporting::SuitableOrigin& origin) {
+    return *origin;
+  }
+
+  static bool Read(blink::mojom::AttributionSuitableOriginDataView data,
+                   attribution_reporting::SuitableOrigin* out) {
+    url::Origin origin;
+    if (!data.ReadOrigin(&origin))
+      return false;
+
+    auto suitable_origin =
+        attribution_reporting::SuitableOrigin::Create(std::move(origin));
+    if (!suitable_origin)
+      return false;
+
+    *out = std::move(*suitable_origin);
     return true;
   }
 };

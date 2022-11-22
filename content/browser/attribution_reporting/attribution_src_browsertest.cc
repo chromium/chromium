@@ -10,6 +10,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -42,6 +44,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -142,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
@@ -189,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front()->source_event_id, 5UL);
     EXPECT_EQ(source_data.front()->destination,
-              url::Origin::Create(GURL("https://d.test")));
+              *SuitableOrigin::Deserialize("https://d.test"));
     EXPECT_EQ(source_data.front()->priority, 0);
     EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
     EXPECT_FALSE(source_data.front()->debug_key);
@@ -522,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.front()->priority, 10);
   EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
   EXPECT_EQ(source_data.front()->debug_key, 789u);
@@ -561,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
@@ -599,10 +602,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 2u);
   EXPECT_EQ(source_data.front()->source_event_id, 1UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -634,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -695,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -923,7 +926,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(trigger_data.front()->filters->filter_values, IsEmpty());
   EXPECT_FALSE(trigger_data.front()->debug_key);
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
@@ -985,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
       trigger_data.front()->filters->filter_values,
       ElementsAre(Pair("w", IsEmpty()), Pair("x", ElementsAre("y", "z"))));
@@ -1049,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(trigger_data.front()->event_triggers, IsEmpty());
 
   EXPECT_THAT(
@@ -1101,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
 }
@@ -1190,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), 2u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
-            url::Origin::Create(register_url));
+            *SuitableOrigin::Create(register_url));
 
   // Both triggers should be processed.
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 5u);
@@ -1254,7 +1257,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://d.test")));
+            *SuitableOrigin::Deserialize("https://d.test"));
   EXPECT_THAT(source_data.back()->aggregation_keys->keys, SizeIs(2));
 }
 
