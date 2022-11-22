@@ -10,11 +10,13 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
+#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
@@ -49,6 +51,8 @@ namespace power_bookmarks {
 class PowerBookmarkServiceTest : public testing::Test {
  protected:
   void SetUp() override {
+    test_features_.InitAndEnableFeature(kPowerBookmarkBackend);
+
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
 
     model_ = bookmarks::TestBookmarkClient::CreateModel();
@@ -58,8 +62,6 @@ class PowerBookmarkServiceTest : public testing::Test {
     service_ = std::make_unique<PowerBookmarkService>(
         model_.get(), temp_directory_.GetPath(), backend_task_runner_);
     RunUntilIdle();
-
-    service_->InitPowerBookmarkDatabase();
   }
 
   void TearDown() override {
@@ -78,6 +80,8 @@ class PowerBookmarkServiceTest : public testing::Test {
   bookmarks::BookmarkModel* model() { return model_.get(); }
 
  private:
+  base::test::ScopedFeatureList test_features_;
+
   std::unique_ptr<PowerBookmarkService> service_;
   std::unique_ptr<bookmarks::BookmarkModel> model_;
 

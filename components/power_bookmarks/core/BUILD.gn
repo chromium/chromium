@@ -20,6 +20,7 @@ static_library("core") {
   public_deps = [ ":proto" ]
 
   deps = [
+    ":features",
     ":powers",
     "//base",
     "//base:i18n",
@@ -30,6 +31,15 @@ static_library("core") {
     "//ui/base",
     "//url",
   ]
+}
+
+static_library("features") {
+  sources = [
+    "power_bookmark_features.cc",
+    "power_bookmark_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 static_library("powers") {
@@ -81,6 +91,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":features",
     ":powers",
     "//base/test:test_support",
     "//components/bookmarks/browser",

@@ -4,9 +4,11 @@
 
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
+#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
@@ -28,10 +30,8 @@ PowerBookmarkService::PowerBookmarkService(
 
   backend_ = base::SequenceBound<PowerBookmarkBackend>(backend_task_runner_,
                                                        database_dir);
-  // Features that wish to use the real database, must call
-  // `InitPowerBookmarkDatabase`.
   backend_.AsyncCall(&PowerBookmarkBackend::Init)
-      .WithArgs(/*use_database=*/false);
+      .WithArgs(base::FeatureList::IsEnabled(kPowerBookmarkBackend));
 }
 
 PowerBookmarkService::~PowerBookmarkService() {
@@ -40,11 +40,6 @@ PowerBookmarkService::~PowerBookmarkService() {
 
   backend_.AsyncCall(&PowerBookmarkBackend::Shutdown);
   backend_task_runner_ = nullptr;
-}
-
-void PowerBookmarkService::InitPowerBookmarkDatabase() {
-  backend_.AsyncCall(&PowerBookmarkBackend::Init)
-      .WithArgs(/*use_database=*/true);
 }
 
 void PowerBookmarkService::GetPowersForURL(const GURL& url,
