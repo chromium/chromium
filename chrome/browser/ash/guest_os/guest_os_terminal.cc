@@ -547,9 +547,11 @@ void AddTerminalMenuShortcuts(
     std::vector<gfx::ImageSkia> images) {
   ui::ColorProvider* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(
-          ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+          ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+              nullptr));
   auto icon = [color_provider](const gfx::VectorIcon& icon) {
-    return ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+    return ui::ImageModel::FromVectorIcon(icon,
+                                          apps::GetColorIdForMenuItemIcon(),
                                           apps::kAppShortcutIconSizeDip)
         .Rasterize(color_provider);
   };
