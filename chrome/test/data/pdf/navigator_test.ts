@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
@@ -45,7 +46,25 @@ async function doNavigationUrlTest(
   navigatorDelegate.reset();
   await navigator.navigate(url, disposition);
   chrome.test.assertFalse(viewportChangedCallback.wasCalled);
+
   if (expectedResultUrl === undefined) {
+    // Navigation shouldn't occur.
+    switch (disposition) {
+      case WindowOpenDisposition.CURRENT_TAB:
+        chrome.test.assertEq(
+            0, navigatorDelegate.getCallCount('navigateInCurrentTab'));
+        break;
+      case WindowOpenDisposition.NEW_BACKGROUND_TAB:
+        chrome.test.assertEq(
+            0, navigatorDelegate.getCallCount('navigateInNewTab'));
+        break;
+      case WindowOpenDisposition.NEW_WINDOW:
+        chrome.test.assertEq(
+            0, navigatorDelegate.getCallCount('navigateInNewWindow'));
+        break;
+      default:
+        assertNotReached();
+    }
     return;
   }
 
