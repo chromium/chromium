@@ -107,19 +107,22 @@
         label="[[compromisedPasswordsText_]]"
         sub-label="[[getCompromisedSectionSublabel_(compromisedPasswords_)]]"
         compromised$="[[hasIssues_(compromisedPasswords_)]]"
-        hide-icon$="[[!hasIssues_(compromisedPasswords_)]]">
+        hide-icon$="[[!hasIssues_(compromisedPasswords_)]]"
+        on-click="onCompromisedClick_">
     </cr-link-row>
     <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
         label="[[reusedPasswordsText_]]" class="hr"
         sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
         has-issues$="[[hasIssues_(reusedPasswords_)]]"
-        hide-icon$="[[!hasIssues_(reusedPasswords_)]]">
+        hide-icon$="[[!hasIssues_(reusedPasswords_)]]"
+        on-click="onReusedClick_">
     </cr-link-row>
     <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
         label="[[weakPasswordsText_]]" class="hr"
         sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
         has-issues$="[[hasIssues_(weakPasswords_)]]"
-        hide-icon$="[[!hasIssues_(weakPasswords_)]]">
+        hide-icon$="[[!hasIssues_(weakPasswords_)]]"
+        on-click="onWeakClick_">
     </cr-link-row>
   </div>
 </div>

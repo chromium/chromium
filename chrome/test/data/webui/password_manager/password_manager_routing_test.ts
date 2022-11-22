@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, Route, RouteObserverMixin, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, Route, RouteObserverMixin, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -72,5 +72,14 @@ suite('PasswordManagerAppTest', function() {
     const router = new Router();
     assertEquals(Page.PASSWORD_DETAILS, router.currentRoute.page);
     assertEquals('amazon.com', router.currentRoute.details);
+  });
+
+  test('Direct navigation to Checkup details page supported', function() {
+    history.replaceState({}, '', '/checkup/weak');
+
+    // Create a new router to simulate opening a new page.
+    const router = new Router();
+    assertEquals(Page.CHECKUP_DETAILS, router.currentRoute.page);
+    assertEquals(CheckupSubpage.WEAK, router.currentRoute.details);
   });
 });

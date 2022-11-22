@@ -50,6 +50,8 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
 
   private getSelectedPage_(): string {
     switch (this.selectedPage_) {
+      case Page.CHECKUP_DETAILS:
+        return Page.CHECKUP;
       case Page.PASSWORD_DETAILS:
         return Page.PASSWORDS;
       default:

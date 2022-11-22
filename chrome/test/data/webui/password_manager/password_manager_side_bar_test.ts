@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerSideBarElement, Router} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, PasswordManagerSideBarElement, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -50,5 +50,11 @@ suite('PasswordManagerSideBarTest', function() {
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals(
         Page.PASSWORDS, (sidebar.$.menu.selectedItem as HTMLElement).id);
+  });
+
+  test('navigating to checkup details selects checkup tab', function() {
+    Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
+    assertEquals(Page.CHECKUP_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(Page.CHECKUP, (sidebar.$.menu.selectedItem as HTMLElement).id);
   });
 });

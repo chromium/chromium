@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordCheckInteraction, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -50,7 +50,7 @@ class CheckupTestPluralStringProxy extends TestBrowserProxy implements
   }
 }
 
-suite('SettingsSectionTest', function() {
+suite('CheckupSectionTest', function() {
   const CompromiseType = chrome.passwordsPrivate.CompromiseType;
 
   let passwordManager: TestPasswordManagerProxy;
@@ -62,6 +62,7 @@ suite('SettingsSectionTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     pluralString = new CheckupTestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
+    Router.getInstance().navigateTo(Page.CHECKUP);
     return flushTasks();
   });
 
@@ -218,4 +219,61 @@ suite('SettingsSectionTest', function() {
     assertTrue(!!statusLabel);
     assertEquals('checkedPasswords', statusLabel.textContent!.trim());
   });
+
+  [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]
+      .forEach(
+          type => test(
+              `clicking ${type} row navigates to details page`,
+              async function() {
+                passwordManager.data.checkStatus =
+                    makePasswordCheckStatus({state: PasswordCheckState.IDLE});
+
+                passwordManager.data.insecureCredentials =
+                    [makeInsecureCredential({
+                      types: [
+                        CompromiseType.LEAKED,
+                        CompromiseType.REUSED,
+                        CompromiseType.WEAK,
+                      ],
+                    })];
+
+                const section = document.createElement('checkup-section');
+                document.body.appendChild(section);
+                await passwordManager.whenCalled('getInsecureCredentials');
+                await passwordManager.whenCalled('getPasswordCheckStatus');
+
+                const listRow = section.shadowRoot!.querySelector<HTMLElement>(
+                    `#${type}Row`);
+                assertTrue(!!listRow);
+                listRow.click();
+
+                assertEquals(
+                    Page.CHECKUP_DETAILS,
+                    Router.getInstance().currentRoute.page);
+                assertEquals(type, Router.getInstance().currentRoute.details);
+              }));
+
+
+  [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]
+      .forEach(
+          type => test(
+              `clicking ${type} row has no effect if no issues`,
+              async function() {
+                passwordManager.data.checkStatus =
+                    makePasswordCheckStatus({state: PasswordCheckState.IDLE});
+                passwordManager.data.insecureCredentials = [];
+
+                const section = document.createElement('checkup-section');
+                document.body.appendChild(section);
+                await passwordManager.whenCalled('getInsecureCredentials');
+                await passwordManager.whenCalled('getPasswordCheckStatus');
+
+                const listRow = section.shadowRoot!.querySelector<HTMLElement>(
+                    `#${type}Row`);
+                assertTrue(!!listRow);
+                listRow.click();
+
+                assertEquals(
+                    Page.CHECKUP, Router.getInstance().currentRoute.page);
+              }));
 });

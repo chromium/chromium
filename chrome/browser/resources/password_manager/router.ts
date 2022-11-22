@@ -13,7 +13,17 @@ export enum Page {
   CHECKUP = 'checkup',
   SETTINGS = 'settings',
   // Sub-pages
+  CHECKUP_DETAILS = 'checkup-details',
   PASSWORD_DETAILS = 'password-details'
+}
+
+/**
+ * The different checkup sub-pages that can be shown at a time.
+ */
+export enum CheckupSubpage {
+  COMPROMISED = 'compromised',
+  REUSED = 'reused',
+  WEAK = 'weak',
 }
 
 export enum UrlParam {
@@ -44,6 +54,9 @@ export class Route {
         const origin = group.name ? group.name : (this.details as string);
         assert(origin);
         return '/' + Page.PASSWORDS + '/' + origin;
+      case Page.CHECKUP_DETAILS:
+        assert(this.details);
+        return '/' + Page.CHECKUP + '/' + this.details;
     }
   }
 }
@@ -144,7 +157,12 @@ export class Router {
         }
         break;
       case Page.CHECKUP:
-        this.currentRoute_.page = Page.CHECKUP;
+        if (details && (details as unknown as CheckupSubpage)) {
+          this.currentRoute_.page = Page.CHECKUP_DETAILS;
+          this.currentRoute_.details = details;
+        } else {
+          this.currentRoute_.page = Page.CHECKUP;
+        }
         break;
       case Page.SETTINGS:
         this.currentRoute_.page = Page.SETTINGS;

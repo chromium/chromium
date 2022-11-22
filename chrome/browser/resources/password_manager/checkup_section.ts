@@ -21,6 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './checkup_section.html.js';
 import {CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
+import {CheckupSubpage, Page, Router} from './router.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -280,6 +281,32 @@ export class CheckupSectionElement extends I18nMixin
   private getWeakSectionSublabel_(): string {
     return this.weakPasswords_.length ? this.i18n('weakPasswordsTitle') :
                                         this.i18n('weakPasswordsEmpty');
+  }
+
+  private onCompromisedClick_() {
+    if (!this.compromisedPasswords_.length) {
+      return;
+    }
+
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+  }
+
+  private onReusedClick_() {
+    if (!this.reusedPasswords_.length) {
+      return;
+    }
+
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.REUSED);
+  }
+
+  private onWeakClick_() {
+    if (!this.weakPasswords_.length) {
+      return;
+    }
+
+    Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
   }
 }
 
