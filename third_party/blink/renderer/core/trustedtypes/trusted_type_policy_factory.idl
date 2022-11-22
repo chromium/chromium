@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/wicg/trusted-types
+// https://github.com/w3c/trusted-types/
 
 [
     Exposed=(Window, Worker)
@@ -15,14 +15,14 @@
     readonly attribute TrustedHTML emptyHTML;
     readonly attribute TrustedScript emptyScript;
 
-    // Trusted Types metadata, following the proposal in:
-    // https://github.com/WICG/trusted-types/pull/149/commits/ecd9ab0b6993674951bfc7b44a04530fce7468a7
+
     DOMString? getAttributeType(DOMString tagName, DOMString attribute,
-        optional DOMString elementNS, optional DOMString attrNs);
+        optional DOMString? elementNS = "", optional DOMString? attrNs = "");
     DOMString? getPropertyType(DOMString tagName, DOMString property,
-        optional DOMString elementNS);
+        optional DOMString? elementNS = "");
 
     readonly attribute TrustedTypePolicy defaultPolicy;
+
     [CallWith=ScriptState] object? getTypeMapping(optional DOMString ns);
 
     [RuntimeEnabled=TrustedTypeBeforePolicyCreationEvent] attribute EventHandler onbeforecreatepolicy;

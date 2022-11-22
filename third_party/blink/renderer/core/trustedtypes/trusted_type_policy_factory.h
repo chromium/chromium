@@ -50,19 +50,13 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   TrustedScript* emptyScript() const;
 
   String getPropertyType(const String& tagName,
-                         const String& propertyName) const;
-  String getPropertyType(const String& tagName,
                          const String& propertyName,
                          const String& elementNS) const;
-  String getAttributeType(const String& tagName,
-                          const String& attributeName) const;
-  String getAttributeType(const String& tagName,
-                          const String& attributeName,
-                          const String& tagNS) const;
   String getAttributeType(const String& tagName,
                           const String& attributeName,
                           const String& tagNS,
                           const String& attributeNS) const;
+
   ScriptValue getTypeMapping(ScriptState*) const;
   ScriptValue getTypeMapping(ScriptState*, const String& ns) const;
 
