@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -611,14 +612,12 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     navigating_away_from_ = web_contents()->GetURL();
     DiscardCurrentElement();
   }
-  if (url.SchemeIs("chrome")) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    CHECK(browser);
-    NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
-    navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
-    auto navigate_result = Navigate(&navigate_params);
-    CHECK(navigate_result);
+  if (url.SchemeIs("chrome") || web_view_data_) {
+    // Secure pages and non-tab WebViews must be navigated via the controller.
+    content::NavigationController::LoadURLParams params(url);
+    CHECK(web_contents()->GetController().LoadURLWithParams(params));
   } else {
+    // Regular web pages can be navigated directly.
     const bool result =
         content::BeginNavigateToURLFromRenderer(web_contents(), url);
     CHECK(result);
