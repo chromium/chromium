@@ -333,6 +333,10 @@ bool WebContentsDelegate::DoBrowserControlsShrinkRendererSize(
   return false;
 }
 
+int WebContentsDelegate::GetVirtualKeyboardHeight(WebContents* web_contents) {
+  return 0;
+}
+
 bool WebContentsDelegate::OnlyExpandTopControlsAtPageTop() {
   return false;
 }

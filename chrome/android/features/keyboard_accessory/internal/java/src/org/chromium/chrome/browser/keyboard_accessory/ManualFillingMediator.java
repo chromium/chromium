@@ -565,6 +565,16 @@ class ManualFillingMediator
     }
 
     /**
+     * Returns the amount that the keyboard will be extended by the accessory bar.
+     */
+    public int getKeyboardExtensionHeight() {
+        if (!canExtendKeyboard()) return 0;
+
+        return mActivity.getResources().getDimensionPixelSize(
+                R.dimen.keyboard_accessory_suggestion_height);
+    }
+
+    /**
      * Opens the keyboard which implicitly dismisses the sheet. Without open sheet, this is a NoOp.
      */
     void swapSheetWithKeyboard() {

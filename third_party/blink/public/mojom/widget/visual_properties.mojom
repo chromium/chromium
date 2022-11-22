@@ -100,4 +100,8 @@ struct VisualProperties {
   // frame.
   gfx.mojom.Rect window_controls_overlay_rect;
 
+  // If shown and resizing the renderer, returns the height of the virtual
+  // keyboard in physical pixels. Otherwise, returns 0. Always 0 in a
+  // non-outermost main frame.
+  uint32 virtual_keyboard_resize_height_physical_px;
 };

@@ -184,6 +184,15 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
+     * @return If shown, returns the height of the virtual keyboard in physical pixels. Otherwise,
+     *         returns 0.
+     */
+    @CalledByNative
+    public int getVirtualKeyboardHeight() {
+        return 0;
+    }
+
+    /**
      * Check and return the {@link DisplayMode} value.
      *
      * @return The {@link DisplayMode} value.

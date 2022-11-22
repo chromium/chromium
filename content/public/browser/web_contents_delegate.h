@@ -651,6 +651,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual int GetBottomControlsMinHeight();
   virtual bool ShouldAnimateBrowserControlsHeightChanges();
   virtual bool DoBrowserControlsShrinkRendererSize(WebContents* web_contents);
+  virtual int GetVirtualKeyboardHeight(WebContents* web_contents);
   // Returns true if the top controls should only expand at the top of the page,
   // so they'll only be visible if the page is scrolled to the top.
   virtual bool OnlyExpandTopControlsAtPageTop();

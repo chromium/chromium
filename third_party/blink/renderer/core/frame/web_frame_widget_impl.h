@@ -312,6 +312,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) override;
   void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) override;
+  int GetVirtualKeyboardResizeHeight() const override;
+
   bool GetMayThrottleIfUndrawnFramesForTesting();
 
   // WebFrameWidget overrides.
@@ -948,6 +950,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // The size of the widget in viewport coordinates. This is slightly different
   // than the WebViewImpl::size_ since isn't set in auto resize mode.
   absl::optional<gfx::Size> size_;
+
+  // The amount the top-most widget has been resized by the virtual keyboard,
+  // in physical pixels.
+  int virtual_keyboard_resize_height_physical_px_ = 0;
 
   static bool ignore_input_events_;
 

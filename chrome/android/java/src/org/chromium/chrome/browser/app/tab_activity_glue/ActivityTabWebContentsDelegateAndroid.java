@@ -379,6 +379,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public int getVirtualKeyboardHeight() {
+        if (mActivity == null) return 0;
+
+        View rootView = mActivity.getWindow().getDecorView().getRootView();
+        return mTab.getWindowAndroid().getKeyboardDelegate().calculateTotalKeyboardHeight(rootView);
+    }
+
+    @Override
     public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
         if (mFullscreenManager != null) {
             mFullscreenManager.onEnterFullscreen(

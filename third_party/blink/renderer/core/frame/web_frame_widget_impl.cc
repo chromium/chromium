@@ -1619,6 +1619,10 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
 
+  virtual_keyboard_resize_height_physical_px_ =
+      visual_properties.virtual_keyboard_resize_height_physical_px;
+  DCHECK(!virtual_keyboard_resize_height_physical_px_ || ForTopMostMainFrame());
+
   if (ForMainFrame()) {
     if (!AutoResizeMode()) {
       size_ = widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size);
@@ -4379,6 +4383,11 @@ void WebFrameWidgetImpl::SetMayThrottleIfUndrawnFrames(
     return;
   widget_base_->LayerTreeHost()->SetMayThrottleIfUndrawnFrames(
       may_throttle_if_undrawn_frames);
+}
+
+int WebFrameWidgetImpl::GetVirtualKeyboardResizeHeight() const {
+  DCHECK(!virtual_keyboard_resize_height_physical_px_ || ForTopMostMainFrame());
+  return virtual_keyboard_resize_height_physical_px_;
 }
 
 bool WebFrameWidgetImpl::GetMayThrottleIfUndrawnFramesForTesting() {
