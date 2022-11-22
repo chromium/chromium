@@ -404,9 +404,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         GetInterestGroup(owner, name);
 
     if (result == kSuccess) {
-      // On success, the user should have joined the interest group, which
-      // should have been overwritten with the new interest group.
-      EXPECT_TRUE(final_interest_group);
+      // On or after success, the user should have joined the interest group,
+      // which should have been overwritten with the new interest group.
+      while (!final_interest_group) {
+        base::RunLoop().RunUntilIdle();
+        final_interest_group = GetInterestGroup(owner, name);
+      }
+
       if (final_interest_group) {
         if (!initial_interest_group) {
           EXPECT_EQ(1,
@@ -517,9 +521,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  EvalJsResult UpdateInterestGroupsInJS(
-      const absl::optional<ToRenderFrameHost> execution_target =
-          absl::nullopt) {
+  EvalJsResult UpdateInterestGroupsInJS(const absl::optional<ToRenderFrameHost>
+                                            execution_target = absl::nullopt) {
     return EvalJs(execution_target ? *execution_target : shell(), R"(
 (function() {
   try {
@@ -566,7 +569,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     std::string result = LeaveInterestGroup(owner, name, execution_target);
     int final_count = GetJoinCount(owner, name);
     if (result == kSuccess) {
-      // On success, the user should no longer be in the interest group.
+      // On or after success, the user should no longer be in the interest
+      // group.
+      while (final_count > 0) {
+        base::RunLoop().RunUntilIdle();
+        final_count = GetJoinCount(owner, name);
+      }
+
       EXPECT_EQ(0, final_count);
     } else {
       // On failure, nothing should have changed.
@@ -603,8 +612,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_groups;
   }
 
-  std::vector<std::pair<url::Origin, std::string>> GetAllInterestGroups() {
-    std::vector<std::pair<url::Origin, std::string>> interest_groups;
+  std::vector<blink::InterestGroupKey> GetAllInterestGroups() {
+    std::vector<blink::InterestGroupKey> interest_groups;
     for (const auto& owner : GetAllInterestGroupsOwners()) {
       for (const auto& storage_group : GetInterestGroupsForOwner(owner)) {
         interest_groups.emplace_back(storage_group.interest_group.owner,
@@ -617,12 +626,17 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   absl::optional<StorageInterestGroup> GetInterestGroup(
       const url::Origin& owner,
       const std::string& name) {
-    for (auto& storage_group : GetInterestGroupsForOwner(owner)) {
-      if (storage_group.interest_group.name == name) {
-        return std::move(storage_group);
-      }
-    }
-    return absl::nullopt;
+    absl::optional<StorageInterestGroup> result;
+    base::RunLoop run_loop;
+    manager_->GetInterestGroup(
+        owner, name,
+        base::BindLambdaForTesting(
+            [&run_loop, &result](absl::optional<StorageInterestGroup> group) {
+              result = std::move(group);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result;
   }
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
@@ -907,7 +921,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   void ExpectNotAllowedToJoinOrUpdateInterestGroup(
-      const url::Origin& origin, RenderFrameHost* execution_target) {
+      const url::Origin& origin,
+      RenderFrameHost* execution_target) {
     EXPECT_EQ(
         "NotAllowedError: Failed to execute 'joinAdInterestGroup' on "
         "'Navigator': Feature join-ad-interest-group is not enabled by "
@@ -1493,9 +1508,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   // Check that only the a.test and b.test interest groups were added to
   // the database.
-  std::vector<std::pair<url::Origin, std::string>> expected_groups = {
+  std::vector<blink::InterestGroupKey> expected_groups = {
       {test_origin_a, "cars"}, {test_origin_b, "trucks"}};
-  std::vector<std::pair<url::Origin, std::string>> received_groups;
+  std::vector<blink::InterestGroupKey> received_groups;
   received_groups = GetAllInterestGroups();
   EXPECT_THAT(received_groups,
               testing::UnorderedElementsAreArray(expected_groups));
@@ -1786,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(kSuccess, LeaveInterestGroup(allow_leave_origin, kGroup2));
 
   // The user should still be in kGroup2, but not kGroup1, for both origins.
-  std::vector<std::pair<url::Origin, std::string>> expected_groups = {
+  std::vector<blink::InterestGroupKey> expected_groups = {
       {allow_join_origin, kGroup2}, {allow_leave_origin, kGroup2}};
   EXPECT_THAT(GetAllInterestGroups(),
               testing::UnorderedElementsAreArray(expected_groups));
@@ -4201,7 +4216,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   // The ad should have left the "cars" interest group when the page was shown.
   auto groups = GetAllInterestGroups();
   ASSERT_EQ(1u, groups.size());
-  EXPECT_EQ("trucks", groups[0].second);
+  EXPECT_EQ("trucks", groups[0].name);
 }
 
 // Runs ad auction with fenced frames enabled. The auction should succeed and
@@ -6890,28 +6905,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
 
   WaitForInterestGroupsSatisfying(
       test_origin,
-      base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 1)
-              return false;
-            const auto& group = groups[0].interest_group;
-            return group.name == "cars" && group.priority == 0.0 &&
-                   group.execution_mode == blink::InterestGroup::ExecutionMode::
-                                               kGroupedByOriginMode &&
-                   group.bidding_url.has_value() &&
-                   group.bidding_url->path() ==
-                       "/interest_group/new_bidding_logic.js" &&
-                   group.trusted_bidding_signals_url.has_value() &&
-                   group.trusted_bidding_signals_url->path() ==
-                       "/interest_group/new_trusted_bidding_signals_url.json" &&
-                   group.trusted_bidding_signals_keys.has_value() &&
-                   group.trusted_bidding_signals_keys->size() == 1 &&
-                   group.trusted_bidding_signals_keys.value()[0] == "new_key" &&
-                   group.ads.has_value() && group.ads->size() == 1 &&
-                   group.ads.value()[0].render_url.path() ==
-                       "/new_ad_render_url" &&
-                   group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
-          }));
+      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+                                        groups) {
+        if (groups.size() != 1)
+          return false;
+        const auto& group = groups[0].interest_group;
+        return group.name == "cars" && group.priority == 0.0 &&
+               group.execution_mode ==
+                   blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+               group.bidding_url.has_value() &&
+               group.bidding_url->path() ==
+                   "/interest_group/new_bidding_logic.js" &&
+               group.trusted_bidding_signals_url.has_value() &&
+               group.trusted_bidding_signals_url->path() ==
+                   "/interest_group/new_trusted_bidding_signals_url.json" &&
+               group.trusted_bidding_signals_keys.has_value() &&
+               group.trusted_bidding_signals_keys->size() == 1 &&
+               group.trusted_bidding_signals_keys.value()[0] == "new_key" &&
+               group.ads.has_value() && group.ads->size() == 1 &&
+               group.ads.value()[0].render_url.path() == "/new_ad_render_url" &&
+               group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
+      }));
 }
 
 // Updates can proceed even if the page that started the update isn't running
@@ -8228,8 +8242,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 // Features join-ad-interest-group and run-ad-auction can be disabled by HTTP
 // headers, and they cannot be enabled again by container policy in that case.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       FeaturesDisabledByHttpHeader) {
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeaturesDisabledByHttpHeader) {
   GURL test_url = https_server_->GetURL(
       "a.test",
       "/interest_group/page-with-fledge-permissions-policy-disabled.html");
@@ -8425,9 +8438,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
 
 // Features join-ad-interest-group and run-ad-auction can be enabled/disabled
 // separately.
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupRestrictedPermissionsPolicyBrowserTest,
-    EnableOneOfInterestGroupAPIsAndAuctionAPIForIframe) {
+IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
+                       EnableOneOfInterestGroupAPIsAndAuctionAPIForIframe) {
   GURL other_url = https_server_->GetURL("b.test", "/echo");
   url::Origin other_origin = url::Origin::Create(other_url);
   // clang-format off
