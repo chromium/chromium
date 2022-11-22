@@ -6,7 +6,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -24,7 +23,6 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
@@ -284,23 +282,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
-class DeveloperPrivateOffscreenDocumentApiTest
-    : public DeveloperPrivateApiTest {
- public:
-  DeveloperPrivateOffscreenDocumentApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsOffscreenDocuments);
-  }
-  ~DeveloperPrivateOffscreenDocumentApiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test that offscreen documents show up in the list of inspectable views and
 // can be inspected.
-IN_PROC_BROWSER_TEST_F(DeveloperPrivateOffscreenDocumentApiTest,
-                       InspectOffscreenDocument) {
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",
