@@ -1,4 +1,4 @@
-<style>
+<style include="diagnostics-shared">
   #dialog {
     --cr-dialog-width: calc(100% - 80px);
   }
@@ -23,8 +23,13 @@
     text-decoration: none;
   }
 
+  #lostFocusToast {
+    bottom: 0;
+    left: 0;
+  }
+
   cr-toast iron-icon {
-    --iron-icon-fill-color: var(--cros-toast-icon-color);
+    --iron-icon-fill-color: var(--cros-text-color-prominent);
     margin-inline-end: 12px;
   }
 </style>
@@ -46,8 +51,8 @@
         </keyboard-diagram>
       </div>
     </template>
-    <cr-toast id="lostFocusToast">
-      <iron-icon icon="diagnostics:window"></iron-icon>
+    <cr-toast id="lostFocusToast" duration="[[lostFocusToastLingerMs]]">
+      <iron-icon icon="diagnostics:keyboard"></iron-icon>
       <!--
         Though the message refers to "other windows", it also applies when
         the user opens the launcher, but not if they just click another element

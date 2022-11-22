@@ -36,6 +36,11 @@
    bottom: 0;
    left: 0;
   }
+
+  cr-toast iron-icon {
+    --iron-icon-fill-color: var(--cros-text-color-prominent);
+    margin-inline-end: 12px;
+  }
 </style>
 <div id="diagnosticsAppContainer">
   <navigation-view-panel id="navigationPanel" show-tool-bar
@@ -60,6 +65,7 @@
     </div>
   </navigation-view-panel>
   <cr-toast id="toast" duration="2500">
+    <iron-icon icon="diagnostics:info"></iron-icon>
     <span>[[toastText_]]</span>
   </cr-toast>
 </div>
