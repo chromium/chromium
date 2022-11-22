@@ -399,6 +399,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // maximize request. Currently only true for Lacros.
   bool ShouldExitFullscreenFromRestoreOrMaximized();
 
+  static bool IsPopupWithGrab(aura::Window* window);
+
   views::Widget* widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;

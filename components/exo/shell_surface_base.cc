@@ -10,40 +10,31 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/debug/stack_trace.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/trees/layer_tree_frame_sink.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
-#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/custom_window_state_delegate.h"
@@ -53,21 +44,15 @@
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
-#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
@@ -75,9 +60,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_animations.h"
@@ -1093,24 +1076,99 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
 
 void ShellSurfaceBase::OnCaptureChanged(aura::Window* lost_capture,
                                         aura::Window* gained_capture) {
-  if (lost_capture == widget_->GetNativeWindow() && is_popup_) {
-    WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
-    if (gained_capture &&
-        lost_capture == wm::GetTransientParent(gained_capture)) {
-      // Don't close if the capture has been transferred to the child popup.
-      return;
+  if (lost_capture != widget_->GetNativeWindow() || !is_popup_)
+    return;
+
+  WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
+
+  // Fast return for a simple case: if `lost_capture` is the parent of
+  // `gained_capture`, do nothing.
+  aura::Window* gained_capture_parent =
+      gained_capture ? wm::GetTransientParent(gained_capture) : nullptr;
+  if (lost_capture == gained_capture_parent)
+    return;
+
+  if (!gained_capture) {
+    // If `gained_capture` is nullptr, find the closest ancestor of
+    // `lost_capture` that is a popup with grab.
+    for (aura::Window* next = wm::GetTransientParent(lost_capture);
+         next != nullptr; next = wm::GetTransientParent(next)) {
+      if (IsPopupWithGrab(next)) {
+        gained_capture = next;
+        break;
+      }
     }
-    aura::Window* parent = wm::GetTransientParent(lost_capture);
-    if (parent) {
-      // The capture needs to be transferred to the parent if it had grab.
-      views::Widget* parent_widget =
-          views::Widget::GetWidgetForNativeWindow(parent);
-      ShellSurfaceBase* parent_shell_surface = static_cast<ShellSurfaceBase*>(
-          parent_widget->widget_delegate()->GetContentsView());
-      if (parent_shell_surface->has_grab_)
-        parent_shell_surface->StartCapture();
+    // Give capture to the new `gained_capture`.
+    if (gained_capture) {
+      ShellSurfaceBase* parent_shell_surface =
+          GetShellSurfaceBaseForWindow(gained_capture);
+      parent_shell_surface->StartCapture();
     }
-    widget_->Close();
+  }
+
+  // Close any popup that satisfies the following conditions:
+  // 1) it has grab, and it is not `gained_capture` or any of its ancestors; or
+  // 2) descendants of any popup satisfying (1).
+  //
+  // Imagine there are the following popups:
+  //
+  //    popup_e
+  //   (no grab)
+  //       |
+  //    popup_d
+  // (has grab; lost_capture)
+  //       |
+  //    popup_c       popup_b
+  //   (no grab) (has grab; gained_capture)
+  //         \         /
+  //          \       /
+  //           popup_a
+  //
+  // In this case, popup_e and popup_d are the ones to close, in the order
+  // from leaf to root.
+
+  // Please note that `gained_capture_ancestors` also includes `gained_capture`.
+  base::flat_set<aura::Window*> gained_capture_ancestors;
+  for (aura::Window* next = gained_capture; next != nullptr;
+       next = wm::GetTransientParent(next)) {
+    gained_capture_ancestors.insert(next);
+  }
+
+  // BFS to collect all transient windows. The boolean field indicates whether
+  // the corresponding window is a popup to be closed.
+  std::vector<std::pair<aura::Window*, bool>> all;
+
+  auto is_close_candidate_with_popup_grab =
+      [&gained_capture_ancestors](aura::Window* window) {
+        return IsPopupWithGrab(window) &&
+               !base::Contains(gained_capture_ancestors, window);
+      };
+
+  aura::Window* root = wm::GetTransientRoot(lost_capture);
+  all.emplace_back(root, is_close_candidate_with_popup_grab(root));
+
+  // Use index instead of iterator because the vector grows during the
+  // iteration.
+  for (size_t i = 0; i < all.size(); ++i) {
+    const std::vector<aura::Window*>& children =
+        wm::GetTransientChildren(all[i].first);
+    for (aura::Window* child : children) {
+      const bool to_close =
+          all[i].second || is_close_candidate_with_popup_grab(child);
+      all.emplace_back(child, to_close);
+    }
+  }
+
+  // Traverse backwards so that popups are closed in the direction from leaf to
+  // root.
+  for (auto iter = all.rbegin(); iter != all.rend(); ++iter) {
+    if (!iter->second)
+      continue;
+
+    ShellSurfaceBase* shell_surface =
+        exo::GetShellSurfaceBaseForWindow(iter->first);
+    DCHECK(shell_surface);
+    shell_surface->widget_->Close();
   }
 }
 
@@ -1878,6 +1936,17 @@ void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
 
   // Otherwise, we want to save `z_order` for when `widget_` is initialized.
   initial_z_order_ = z_order;
+}
+
+// static
+bool ShellSurfaceBase::IsPopupWithGrab(aura::Window* window) {
+  ShellSurfaceBase* shell_surface = exo::GetShellSurfaceBaseForWindow(window);
+  if (shell_surface && shell_surface->has_grab_) {
+    DCHECK(shell_surface->is_popup_);
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace exo
