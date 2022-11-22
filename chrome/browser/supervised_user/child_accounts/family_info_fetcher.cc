@@ -10,7 +10,9 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -190,6 +192,7 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
       network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   // TODO re-add data use measurement once SimpleURLLoader supports it
   // data_use_measurement::DataUseUserData::SUPERVISED_USER
+  simple_url_loader_start_time_ = base::TimeTicks::Now();
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&FamilyInfoFetcher::OnSimpleLoaderComplete,
@@ -364,5 +367,8 @@ void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
+
+  UmaHistogramTimes("Signin.ListFamilyMembersRequest.LegacyNoError.Latency",
+                    base::TimeTicks::Now() - simple_url_loader_start_time_);
   consumer_->OnGetFamilyMembersSuccess(members);
 }

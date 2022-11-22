@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -131,6 +132,7 @@ class FamilyInfoFetcher {
   std::string access_token_;
   bool access_token_expired_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  base::TimeTicks simple_url_loader_start_time_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_FAMILY_INFO_FETCHER_H_
