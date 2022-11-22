@@ -3414,14 +3414,8 @@ extern const char kSnoopingProtectionDescription[];
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
-extern const char kSystemChinesePhysicalTypingName[];
-extern const char kSystemChinesePhysicalTypingDescription[];
-
 extern const char kSystemJapanesePhysicalTypingName[];
 extern const char kSystemJapanesePhysicalTypingDescription[];
-
-extern const char kSystemTransliterationPhysicalTypingName[];
-extern const char kSystemTransliterationPhysicalTypingDescription[];
 
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];

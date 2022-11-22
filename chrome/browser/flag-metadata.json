@@ -1946,19 +1946,9 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-cros-system-chinese-physical-typing",
-    "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "enable-cros-system-japanese-physical-typing",
     "owners": [ "keithlee", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116
-  },
-   {
-    "name": "enable-cros-system-transliteration-physical-typing",
-    "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-touch-text-editing-redesign",

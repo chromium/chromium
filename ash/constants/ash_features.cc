@@ -1878,12 +1878,6 @@ BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables using the system input engine for physical typing in
-// Chinese.
-BASE_FEATURE(kSystemChinesePhysicalTyping,
-             "SystemChinesePhysicalTyping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the System Extensions platform.
 BASE_FEATURE(kSystemExtensions,
              "SystemExtensions",
@@ -1908,12 +1902,6 @@ BASE_FEATURE(kSystemLiveCaption,
 
 // Enables the ability to play sounds for system services.
 BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables using the system input engine for physical typing in
-// transliteration input methods.
-BASE_FEATURE(kSystemTransliterationPhysicalTyping,
-             "SystemTransliterationPhysicalTyping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the shadows of system tray bubbles.
 BASE_FEATURE(kSystemTrayShadow,

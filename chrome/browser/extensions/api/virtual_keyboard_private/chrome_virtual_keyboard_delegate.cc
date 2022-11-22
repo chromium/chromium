@@ -584,10 +584,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "roundCorners", base::FeatureList::IsEnabled(
                           chromeos::features::kVirtualKeyboardRoundCorners)));
-  features.Append(GenerateFeatureFlag(
-      "systemchinesephysicaltyping",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kSystemChinesePhysicalTyping)));
+  features.Append(GenerateFeatureFlag("systemchinesephysicaltyping", true));
   features.Append(GenerateFeatureFlag(
       "systemjapanesephysicaltyping",
       base::FeatureList::IsEnabled(

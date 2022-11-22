@@ -248,7 +248,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            features::kSystemChinesePhysicalTyping,
             features::kAssistPersonalInfo,
             features::kAssistPersonalInfoEmail,
             features::kAssistPersonalInfoName,

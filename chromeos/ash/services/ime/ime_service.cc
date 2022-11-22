@@ -190,21 +190,16 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, chromeos::features::kLacrosSupport.name) == 0) {
     return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
   }
-  if (strcmp(feature_name,
-             chromeos::features::kSystemChinesePhysicalTyping.name) == 0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kSystemChinesePhysicalTyping);
+  if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
+    return true;
   }
   if (strcmp(feature_name,
              chromeos::features::kSystemJapanesePhysicalTyping.name) == 0) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kSystemJapanesePhysicalTyping);
   }
-  if (strcmp(feature_name,
-             chromeos::features::kSystemTransliterationPhysicalTyping.name) ==
-      0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kSystemTransliterationPhysicalTyping);
+  if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
+    return true;
   }
   return false;
 }

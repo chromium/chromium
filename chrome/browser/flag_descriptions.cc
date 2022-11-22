@@ -5917,24 +5917,12 @@ const char kSpectreVariant2MitigationDescription[] =
     "bootstrapping the Seccomp BPF sandbox. Can be overridden by "
     "#force-spectre-variant2-mitigation.";
 
-const char kSystemChinesePhysicalTypingName[] =
-    "Use system IME for Chinese typing";
-const char kSystemChinesePhysicalTypingDescription[] =
-    "Use the system input engine instead of the Chrome extension for physical "
-    "typing in Chinese.";
-
 const char kSystemJapanesePhysicalTypingName[] =
     "Use system IME for Japanese typing";
 const char kSystemJapanesePhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in Japanese. This also replaces the Japanese extension settings "
     "page with one built into the UI and migrates the data to a new location.";
-
-const char kSystemTransliterationPhysicalTypingName[] =
-    "Use system IME for Transliteration typing";
-const char kSystemTransliterationPhysicalTypingDescription[] =
-    "Use the system input engine instead of the Chrome extension for physical "
-    "typing in transliteration input methods.";
 
 const char kQuickSettingsNetworkRevampName[] =
     "Enables the Quick Settings Network revamp.";
