@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -34,6 +35,9 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkEncodedImageFormat.h"
+#include "third_party/skia/include/core/SkImageEncoder.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -48,6 +52,21 @@ using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::VariantWith;
+
+constexpr char kValidManifest[] = R"({
+      "name": "Simple Isolated App",
+      "id": "/",
+      "scope": "/",
+      "start_url": "/",
+      "display": "standalone",
+      "icons": [
+        {
+          "src": "256x256-green.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ]
+    })";
 
 class InstallIsolatedWebAppFromCommandLineBrowserTest
     : public InProcessBrowserTest {
@@ -135,15 +154,27 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
     DCHECK(base::WriteFile(path, bundle));
   }
 
-  std::vector<uint8_t> BuildBundle() {
+  static std::string GetIconInString() {
+    SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
+    sk_sp<SkData> icon_skdata =
+        SkEncodeBitmap(icon_bitmap, SkEncodedImageFormat::kPNG, 100);
+    return std::string(static_cast<const char*>(icon_skdata->data()),
+                       icon_skdata->size());
+  }
+
+  static std::vector<uint8_t> BuildBundle() {
     web_package::WebBundleBuilder builder;
     std::string primary_url =
         base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                       kTestEd25519WebBundleId});
 
-    builder.AddExchange(primary_url,
-                        {{":status", "200"}, {"content-type", "text/plain"}},
-                        "payload");
+    builder.AddExchange(
+        primary_url + "/manifest.webmanifest",
+        {{":status", "200"}, {"content-type", "application/manifest+json"}},
+        kValidManifest);
+    builder.AddExchange(primary_url + "/256x256-green.png",
+                        {{":status", "200"}, {"content-type", "image/png"}},
+                        GetIconInString());
 
     auto unsigned_bundle = builder.CreateBundle();
     web_package::WebBundleSigner::KeyPair key_pair(kTestPublicKey,
@@ -159,10 +190,8 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
   base::FilePath signed_web_bundle_path_;
 };
 
-// TODO: http://b/232991707 Enable this test with dev-mode signed web bundle
-// implementation.
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
-                       DISABLED_AppFromCommandLineIsInstalled) {
+                       AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();
 
