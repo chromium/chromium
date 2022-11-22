@@ -973,19 +973,19 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   if (params.name == html_names::kStyleAttr)
     return;
 
+  CSSPropertyID prop_id =
+      CssPropertyIdForSVGAttributeName(GetExecutionContext(), params.name);
+  if (prop_id > CSSPropertyID::kInvalid) {
+    InvalidateInstances();
+    return;
+  }
+
   SvgAttributeChanged({params.name, params.reason});
   UpdateWebAnimatedAttributeOnBaseValChange(params.name);
 }
 
 void SVGElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  CSSPropertyID prop_id = SVGElement::CssPropertyIdForSVGAttributeName(
-      GetExecutionContext(), attr_name);
-  if (prop_id > CSSPropertyID::kInvalid) {
-    InvalidateInstances();
-    return;
-  }
-
   if (attr_name == html_names::kClassAttr) {
     ClassAttributeChanged(AtomicString(class_name_->CurrentValue()->Value()));
     InvalidateInstances();
