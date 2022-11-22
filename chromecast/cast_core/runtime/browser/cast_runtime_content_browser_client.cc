@@ -13,9 +13,13 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
+#include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/cdm_factory.h"
 
@@ -128,6 +132,32 @@ bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {
 void CastRuntimeContentBrowserClient::OnWebContentsCreated(
     content::WebContents* web_contents) {
   application_client_->OnWebContentsCreated(web_contents);
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+    return throttles;
+  }
+
+  content::WebContents* web_contents = wc_getter.Run();
+  if (web_contents) {
+    const auto& rules =
+        application_client_->GetApplicationControls(*web_contents)
+            .GetUrlRequestRewriteRulesManager()
+            .GetCachedRules();
+    if (rules) {
+      throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+          rules, base::BindRepeating(&IsCorsExemptHeader)));
+    }
+  }
+  return throttles;
 }
 
 CastRuntimeContentBrowserClient::ApplicationClientObservers::

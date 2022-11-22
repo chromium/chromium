@@ -6,6 +6,7 @@
 
 #include "base/supports_user_data.h"
 #include "components/media_control/browser/media_blocker.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -34,15 +35,26 @@ class ApplicationControlsImpl : public ApplicationClient::ApplicationControls,
                                 public base::SupportsUserData::Data {
  public:
   explicit ApplicationControlsImpl(content::WebContents& web_contents)
-      : media_blocker_(&web_contents) {}
-  ~ApplicationControlsImpl() override = default;
+      : web_contents_(web_contents), media_blocker_(&web_contents) {
+    url_request_rewrite_rules_manager_.AddWebContents(&web_contents);
+  }
+  ~ApplicationControlsImpl() override {
+    url_request_rewrite_rules_manager_.RemoveWebContents(&*web_contents_);
+  }
 
   media_control::MediaBlocker& GetMediaBlocker() override {
     return media_blocker_;
   }
 
+  url_rewrite::UrlRequestRewriteRulesManager& GetUrlRequestRewriteRulesManager()
+      override {
+    return url_request_rewrite_rules_manager_;
+  }
+
  private:
+  const base::raw_ref<content::WebContents> web_contents_;
   media_control::MediaBlocker media_blocker_;
+  url_rewrite::UrlRequestRewriteRulesManager url_request_rewrite_rules_manager_;
 };
 
 }  // namespace

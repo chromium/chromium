@@ -12,6 +12,7 @@
 #include "chromecast/common/feature_constants.h"
 #include "components/cast_receiver/browser/permissions_manager_impl.h"
 #include "components/media_control/browser/media_blocker.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromecast {
@@ -57,10 +58,7 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
   is_application_running_ = true;
   if (cached_mojom_rules_) {
     // Apply cached URL rewrite rules before anything is done with the page.
-    auto* cast_web_contents = CastWebContents::FromWebContents(
-        embedder_application().GetWebContents());
-    DCHECK(cast_web_contents);
-    cast_web_contents->SetUrlRewriteRules(std::move(cached_mojom_rules_));
+    SetUrlRewriteRules(std::move(cached_mojom_rules_));
   }
 
   LOG(INFO) << "Loaded application: " << *this;
@@ -75,13 +73,11 @@ void RuntimeApplicationBase::Stop(StatusCallback callback) {
   std::move(callback).Run(cast_receiver::OkStatus());
 }
 
-cast_receiver::ApplicationClient::ApplicationControls*
+cast_receiver::ApplicationClient::ApplicationControls&
 RuntimeApplicationBase::GetApplicationControls() {
-  if (!embedder_application().GetWebContents()) {
-    return nullptr;
-  }
+  DCHECK(embedder_application().GetWebContents());
 
-  return &application_client_->GetApplicationControls(
+  return application_client_->GetApplicationControls(
       *embedder_application().GetWebContents());
 }
 
@@ -145,10 +141,10 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
     return;
   }
 
-  auto* cast_web_contents =
-      CastWebContents::FromWebContents(embedder_application().GetWebContents());
-  DCHECK(cast_web_contents);
-  cast_web_contents->SetUrlRewriteRules(std::move(mojom_rules));
+  url_rewrite::UrlRequestRewriteRulesManager&
+      url_request_rewrite_rules_manager =
+          GetApplicationControls().GetUrlRequestRewriteRulesManager();
+  url_request_rewrite_rules_manager.OnRulesUpdated(std::move(mojom_rules));
 }
 
 void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
@@ -164,10 +160,8 @@ void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
     return;
   }
 
-  auto* application_controls = GetApplicationControls();
-  DCHECK(application_controls);
   media_control::MediaBlocker& media_blocker =
-      application_controls->GetMediaBlocker();
+      GetApplicationControls().GetMediaBlocker();
 
   media_blocker.BlockMediaLoading(is_media_load_blocked_);
 

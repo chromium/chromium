@@ -31,6 +31,10 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
+namespace url_rewrite {
+class UrlRequestRewriteRulesManager;
+}  // namespace url_rewrite
+
 namespace cast_receiver {
 
 class RuntimeApplication;
@@ -52,6 +56,11 @@ class ApplicationClient : public StreamingResolutionObserver,
 
     // Returns the MediaBlocker instance associated with this application.
     virtual media_control::MediaBlocker& GetMediaBlocker() = 0;
+
+    // Returns the UrlRequestRewriteRulesManager instance associated with this
+    // application.
+    virtual url_rewrite::UrlRequestRewriteRulesManager&
+    GetUrlRequestRewriteRulesManager() = 0;
   };
 
   ApplicationClient();

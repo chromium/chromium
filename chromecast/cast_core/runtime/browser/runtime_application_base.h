@@ -93,18 +93,18 @@ class RuntimeApplicationBase
   // in |app_config_|.
   void SetContentPermissions(content::WebContents& web_contents);
 
+  // Returns the ApplicationControls associated with this application, if such
+  // controls exist.
+  // TODO(crbug.com/1382907): Change to a callback-based API.
+  cast_receiver::ApplicationClient::ApplicationControls&
+  GetApplicationControls();
+
  private:
   void SetWebVisibilityAndPaint(bool is_visible);
 
   // ContentWindowControls::VisibilityChangeObserver implementation:
   void OnWindowShown() override;
   void OnWindowHidden() override;
-
-  // Returns the ApplicationControls associated with this application, if such
-  // controls exist.
-  // TODO(crbug.com/1382907): Change to a callback-based API.
-  cast_receiver::ApplicationClient::ApplicationControls*
-  GetApplicationControls();
 
   const std::string cast_session_id_;
   const cast_receiver::ApplicationConfig app_config_;

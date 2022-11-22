@@ -10,6 +10,7 @@ source_set("browser") {
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/media_control/browser",
+    "//components/url_rewrite/browser",
     "//components/url_rewrite/mojom",
     "//content/public/browser",
   ]

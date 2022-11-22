@@ -73,15 +73,14 @@ void WebRuntimeApplication::InnerWebContentsCreated(
 
   DLOG(INFO) << "Inner web contents created";
 
-  CastWebContents* outer_cast_contents =
-      CastWebContents::FromWebContents(embedder_application().GetWebContents());
-  DCHECK(outer_cast_contents);
-
-  SetContentPermissions(*inner_web_contents);
-
-  // TODO(crbug.com/1359571): Decouple URL Rewrite support from CastWebContents.
-  outer_cast_contents->url_rewrite_rules_manager()->AddWebContents(
-      inner_web_contents);
+  auto* outer_web_contents = embedder_application().GetWebContents();
+  if (outer_web_contents) {
+    url_rewrite::UrlRequestRewriteRulesManager&
+        url_request_rewrite_rules_manager =
+            GetApplicationControls().GetUrlRequestRewriteRulesManager();
+    SetContentPermissions(*inner_web_contents);
+    url_request_rewrite_rules_manager.AddWebContents(inner_web_contents);
+  }
 }
 
 void WebRuntimeApplication::MediaStartedPlaying(

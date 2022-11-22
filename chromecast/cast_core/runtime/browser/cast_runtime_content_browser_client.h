@@ -52,6 +52,13 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
                                       int child_process_id) override;
   bool IsBufferingEnabled() override;
   void OnWebContentsCreated(content::WebContents* web_contents) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
 
  protected:
   void InitializeCoreComponents(CastWebService* web_service);
