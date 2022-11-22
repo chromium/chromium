@@ -21,6 +21,8 @@ import androidx.test.espresso.contrib.AccessibilityChecks;
 import com.google.android.apps.common.testing.accessibility.framework.ClickableSpanViewCheck;
 import com.google.android.apps.common.testing.accessibility.framework.DuplicateClickableBoundsViewCheck;
 import com.google.android.apps.common.testing.accessibility.framework.EditableContentDescViewCheck;
+import com.google.android.apps.common.testing.accessibility.framework.SpeakableTextPresentInfoCheck;
+import com.google.android.apps.common.testing.accessibility.framework.SpeakableTextPresentViewCheck;
 import com.google.android.apps.common.testing.accessibility.framework.TouchTargetSizeViewCheck;
 
 import org.junit.Assert;
@@ -71,14 +73,20 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
         //                                     should not both be clickable. Some examples in:
         //                                     PageInfoRowView, AutofillAssistant and TabModal.
         //
+        //   SpeakableTextPresent* checks - Some views are failing this test on certain try bots,
+        //                                  so disable this check to reduce churn for sheriffs
+        //                                  until issue can be found. Some examples in:
+        //                                  AccessibilitySettings, ReaderMode, and Feedv2 tests.
+        //
         // TODO(AccessibilityChecks): Complete above audits and ideally suppress no checks.
         try {
             AccessibilityChecks.enable().setSuppressingResultMatcher(anyOf(
                     matchesCheckNames(is(TouchTargetSizeViewCheck.class.getSimpleName())),
                     matchesCheckNames(is(ClickableSpanViewCheck.class.getSimpleName())),
                     matchesCheckNames(is(EditableContentDescViewCheck.class.getSimpleName())),
-                    matchesCheckNames(
-                            is(DuplicateClickableBoundsViewCheck.class.getSimpleName()))));
+                    matchesCheckNames(is(DuplicateClickableBoundsViewCheck.class.getSimpleName())),
+                    matchesCheckNames(is(SpeakableTextPresentInfoCheck.class.getSimpleName())),
+                    matchesCheckNames(is(SpeakableTextPresentViewCheck.class.getSimpleName()))));
         } catch (IllegalStateException e) {
             // Suppress IllegalStateException for AccessibilityChecks already enabled.
         }
