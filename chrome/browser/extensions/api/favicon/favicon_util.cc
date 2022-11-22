@@ -81,8 +81,8 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
     return;
   }
 
-  // Don't make requests to the favicon server if a favicon can't be found.
-  constexpr bool kAllowFaviconServerFallback = false;
+  // Use exact URL match instead of host match
+  constexpr bool kAllowFallbackToHost = false;
 
   int size_in_pixels = parsed.size_in_dip;
 
@@ -92,7 +92,7 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   favicon_service->GetRawFaviconForPageURL(
       GURL(parsed.page_url), {favicon_base::IconType::kFavicon}, size_in_pixels,
-      kAllowFaviconServerFallback,
+      kAllowFallbackToHost,
       base::BindOnce(&favicon_util::OnFaviconAvailable, std::move(callback),
                      size_in_pixels),
       tracker);
