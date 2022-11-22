@@ -9,6 +9,11 @@
 
 @class FindBarView;
 
+@protocol FindBarViewControllerDelegate
+// Called to dismiss the find bar.
+- (void)dismiss;
+@end
+
 @interface FindBarViewController : UIViewController
 
 - (instancetype)initWithDarkAppearance:(BOOL)darkAppearance
@@ -21,6 +26,8 @@
 // The FindBarView managed by this view controller. This is the same as the
 // `view` property.
 @property(nonatomic, strong, readonly) FindBarView* findBarView;
+// The delegate is called to dismiss the find bar.
+@property(nonatomic, weak) id<FindBarViewControllerDelegate> delegate;
 
 @end
 

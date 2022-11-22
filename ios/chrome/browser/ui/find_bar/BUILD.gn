@@ -32,6 +32,7 @@ source_set("find_bar") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/resources:menu_shadow",
     "//ios/chrome/browser/ui/toolbar/accessory",

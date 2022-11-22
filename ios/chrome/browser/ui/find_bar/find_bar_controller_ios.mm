@@ -41,7 +41,8 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 
 #pragma mark - FindBarControllerIOS
 
-@interface FindBarControllerIOS ()<UITextFieldDelegate>
+@interface FindBarControllerIOS () <FindBarViewControllerDelegate,
+                                    UITextFieldDelegate>
 
 // Responds to touches that make editing changes on the text field, triggering
 // find-in-page searches for the field's current value.
@@ -81,6 +82,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
   }
   _findBarViewController =
       [[FindBarViewController alloc] initWithDarkAppearance:self.isIncognito];
+  _findBarViewController.delegate = self;
 
   _findBarViewController.findBarView.inputField.delegate = self;
   [_findBarViewController.findBarView.inputField
@@ -104,8 +106,8 @@ const NSTimeInterval kSearchShortDelay = 0.100;
                 action:@selector(hideKeyboard:)
       forControlEvents:UIControlEventTouchUpInside];
   [_findBarViewController.findBarView.closeButton
-             addTarget:self.commandHandler
-                action:@selector(closeFindInPage)
+             addTarget:self
+                action:@selector(dismiss)
       forControlEvents:UIControlEventTouchUpInside];
 
   return _findBarViewController;
@@ -217,6 +219,12 @@ const NSTimeInterval kSearchShortDelay = 0.100;
                                      selector:@selector(searchFindInPage)
                                      userInfo:nil
                                       repeats:NO];
+}
+
+#pragma mark - FindBarViewControllerDelegate
+
+- (void)dismiss {
+  [self.commandHandler closeFindInPage];
 }
 
 #pragma mark - UITextFieldDelegate
