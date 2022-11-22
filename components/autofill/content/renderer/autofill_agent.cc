@@ -536,10 +536,18 @@ void AutofillAgent::FillOrPreviewForm(int32_t query_id,
                                       mojom::RendererFormDataAction action) {
   // If `element_` is null or not focused, Autofill was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
-  // was moved otherwise. In these cases, we set `element_` to some form field
-  // as if Autofill had been triggered from that field. This is necessary
-  // because currently AutofillAgent relies on `element_` in many places.
-  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused())) {
+  // was moved otherwise.
+  // If `element_` is from a different form than `form`, then Autofill was
+  // triggered from a different form in the same frame, and either this is a
+  // subframe and both forms should be filled, or focus has changed right after
+  // the user accepted the suggestions.
+  //
+  // In these cases, we set `element_` to some form field as if Autofill had
+  // been triggered from that field. This is necessary because currently
+  // AutofillAgent relies on `element_` in many places.
+  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused() ||
+                               form_util::GetFormRendererId(element_.Form()) !=
+                                   form.unique_renderer_id)) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);
