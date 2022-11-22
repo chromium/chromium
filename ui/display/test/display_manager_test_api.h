@@ -46,10 +46,6 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // the format of the display spec.
   void UpdateDisplay(const std::string& display_specs);
 
-  // Sets the display id for internal display and
-  // update the display mode list if necessary.
-  void SetInternalDisplayId(int64_t id);
-
   // Set the 1st display as an internal display and returns the display Id for
   // the internal display.
   int64_t SetFirstDisplayAsInternalDisplay();
@@ -70,6 +66,9 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
 
  private:
   friend class ScopedSetInternalDisplayId;
+  // Sets the display id for internal display and
+  // update the display mode list if necessary.
+  void SetInternalDisplayId(int64_t id);
 
   // Indicate the maximum number of displays that chrome device can support.
   static size_t maximum_support_display_;
