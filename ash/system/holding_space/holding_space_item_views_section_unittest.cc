@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -102,7 +103,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetSectionIdItemTypePairs()));
 
 // Verifies the items are ordered as expected.
-TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
+// https://crbug.com/1392609.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ItemOrder DISABLED_ItemOrder
+#else
+#define MAYBE_ItemOrder ItemOrder
+#endif
+TEST_P(HoldingSpaceItemViewsSectionTest, MAYBE_ItemOrder) {
   const absl::optional<size_t> section_max_views =
       GetHoldingSpaceSection(section_id())->max_visible_item_count;
 
@@ -138,7 +145,16 @@ TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
 
 // Verifies that partially initialized items will not show until they are fully
 // initialized.
-TEST_P(HoldingSpaceItemViewsSectionTest, PartiallyInitializedItemsDontShow) {
+// https://crbug.com/1392609.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_PartiallyInitializedItemsDontShow \
+  DISABLED_PartiallyInitializedItemsDontShow
+#else
+#define MAYBE_PartiallyInitializedItemsDontShow \
+  PartiallyInitializedItemsDontShow
+#endif
+TEST_P(HoldingSpaceItemViewsSectionTest,
+       MAYBE_PartiallyInitializedItemsDontShow) {
   auto* partially_initialized_item =
       AddPartiallyInitializedItem(item_type(), base::FilePath("/tmp/fake1"));
   auto views = item_views_section()->GetHoldingSpaceItemViews();
