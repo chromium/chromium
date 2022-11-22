@@ -2172,7 +2172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
-    expires_after="2023-01-01">
+    expires_after="2023-09-01">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
