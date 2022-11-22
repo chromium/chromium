@@ -878,32 +878,32 @@ void Av1Decoder::SetupFrameParams(
 }
 
 std::set<int> Av1Decoder::RefreshReferenceSlots(
-    const uint8_t refresh_frame_flags,
+    const libgav1::ObuFrameHeader& frame_hdr,
     const libgav1::RefCountedBufferPtr current_frame,
     const scoped_refptr<MmapedBuffer> buffer,
-    const uint32_t last_queued_buffer_index,
-    const uint8_t order_hint) {
-  state_->UpdateReferenceFrames(current_frame,
-                                base::strict_cast<int>(refresh_frame_flags));
+    const uint32_t last_queued_buffer_index) {
+  state_->UpdateReferenceFrames(
+      current_frame, base::strict_cast<int>(frame_hdr.refresh_frame_flags));
 
   static_assert(
-      kAv1NumRefFrames == sizeof(refresh_frame_flags) * CHAR_BIT,
+      kAv1NumRefFrames == sizeof(frame_hdr.refresh_frame_flags) * CHAR_BIT,
       "|refresh_frame_flags| size must be equal to |kAv1NumRefFrames|");
 
-  const std::bitset<kAv1NumRefFrames> refresh_frame_slots(refresh_frame_flags);
+  const std::bitset<kAv1NumRefFrames> refresh_frame_slots(
+      frame_hdr.refresh_frame_flags);
 
   std::set<int> reusable_buffer_ids;
 
-  constexpr uint8_t kRefreshFrameFlagsNone = 0;
-  if (refresh_frame_flags == kRefreshFrameFlagsNone) {
-    // Indicates to reuse currently decoded CAPTURE buffer.
-    reusable_buffer_ids.insert(buffer->buffer_id());
-
-    return reusable_buffer_ids;
-  }
-
   constexpr uint8_t kRefreshFrameFlagsAll = 0xFF;
-  if (refresh_frame_flags == kRefreshFrameFlagsAll) {
+  // If |show_existing_frame| = 1 and the frame to show is a key frame, the
+  // reference frame loading process as specified in section 7.21 of the AV1
+  // spec is invoked.
+  const bool is_show_existing_key_frame =
+      (frame_hdr.show_existing_frame &&
+       (state_->reference_frame[frame_hdr.frame_to_show]->frame_type() ==
+        libgav1::kFrameKey));
+  if (frame_hdr.refresh_frame_flags == kRefreshFrameFlagsAll ||
+      is_show_existing_key_frame) {
     // After decoding a key frame, all CAPTURE buffers can be reused except the
     // CAPTURE buffer corresponding to the key frame.
     for (size_t i = 0; i < kNumberOfBuffersInCaptureQueue; i++)
@@ -919,8 +919,18 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
     // reference frame slots in the reference frames list.
     ref_frames_.fill(buffer);
 
-    // TODO(b/249104479): Update |ref_order_hint_| as needed for all reference
-    // frame slots after finding relevant test vector
+    if (is_show_existing_key_frame) {
+      for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
+        ref_order_hint_[i] = ref_order_hint_[frame_hdr.frame_to_show];
+    }
+
+    return reusable_buffer_ids;
+  }
+
+  constexpr uint8_t kRefreshFrameFlagsNone = 0;
+  if (frame_hdr.refresh_frame_flags == kRefreshFrameFlagsNone) {
+    // Indicates to reuse currently decoded CAPTURE buffer.
+    reusable_buffer_ids.insert(buffer->buffer_id());
 
     return reusable_buffer_ids;
   }
@@ -952,10 +962,22 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
       }
     }
     ref_frames_[i] = buffer;
-    ref_order_hint_[i] = order_hint;
+    ref_order_hint_[i] = frame_hdr.order_hint;
   }
 
   return reusable_buffer_ids;
+}
+
+void Av1Decoder::QueueReusableBuffersInCaptureQueue(
+    const std::set<int> reusable_buffer_ids,
+    const bool is_inter_frame) {
+  for (const auto reusable_buffer_id : reusable_buffer_ids) {
+    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_id))
+      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
+
+    if (is_inter_frame)
+      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_id);
+  }
 }
 
 VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
@@ -1007,6 +1029,22 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                      static_cast<char*>(
                          repeated_frame_buffer->mmaped_planes()[1].start_addr),
                      CAPTURE_queue_->coded_size());
+
+    // Repeated frames normally don't need to update reference frames. But in
+    // this special case when the repeated frame is pointing to a key frame, all
+    // the reference frames have to be updated to the key frame pointed by the
+    // repeated frame.
+    if (state_->reference_frame[current_frame_header.frame_to_show]
+            ->frame_type() == libgav1::kFrameKey) {
+      const std::set<int> reusable_buffer_ids =
+          RefreshReferenceSlots(current_frame_header, current_frame,
+                                ref_frames_[current_frame_header.frame_to_show],
+                                CAPTURE_queue_->last_queued_buffer_index());
+
+      QueueReusableBuffersInCaptureQueue(
+          reusable_buffer_ids,
+          !libgav1::IsIntraFrame(current_frame_header.frame_type));
+    }
 
     return VideoDecoder::kOk;
   }
@@ -1079,19 +1117,13 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                    static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
                    CAPTURE_queue_->coded_size());
 
-  const std::set<int> reusable_buffer_ids =
-      RefreshReferenceSlots(current_frame_header.refresh_frame_flags,
-                            current_frame, CAPTURE_queue_->GetBuffer(index),
-                            CAPTURE_queue_->last_queued_buffer_index(),
-                            current_frame_header.order_hint);
+  const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
+      current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(index),
+      CAPTURE_queue_->last_queued_buffer_index());
 
-  for (const auto reusable_buffer_id : reusable_buffer_ids) {
-    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_id))
-      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
-
-    if (!libgav1::IsIntraFrame(current_frame_header.frame_type))
-      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_id);
-  }
+  QueueReusableBuffersInCaptureQueue(
+      reusable_buffer_ids,
+      !libgav1::IsIntraFrame(current_frame_header.frame_type));
 
   if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
     LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";

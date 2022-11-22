@@ -94,11 +94,17 @@ class Av1Decoder : public VideoDecoder {
   // Returns |reusable_buffer_slots| to indicate which CAPTURE buffers can be
   // reused for VIDIOC_QBUF ioctl call.
   std::set<int> RefreshReferenceSlots(
-      const uint8_t refresh_frame_flags,
+      const libgav1::ObuFrameHeader& frame_hdr,
       const libgav1::RefCountedBufferPtr current_frame,
       const scoped_refptr<MmapedBuffer> buffer,
-      const uint32_t last_queued_buffer_index,
-      const uint8_t order_hint);
+      const uint32_t last_queued_buffer_index);
+
+  // Queues reusable buffers in CAPTURE queue, indicated by
+  // |reusable_buffer_ids|. Saves buffer ids for inter frames to prevent
+  // unnecessary QBUF attempts.
+  void QueueReusableBuffersInCaptureQueue(
+      const std::set<int> reusable_buffer_ids,
+      const bool is_inter_frame);
 
   // Reference frames currently in use.
   std::array<scoped_refptr<MmapedBuffer>, kAv1NumRefFrames> ref_frames_;
