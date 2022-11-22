@@ -10,6 +10,13 @@
 #error "This file requires ARC support."
 #endif
 
+// Note: this class can be called very early on in the start process, before
+// resource bundles are loaded. This means that to get localized strings, one
+// shouldn't use `l10n_util::GetNSString()` and instead should use
+// `NSLocalizedString(@"IDS_IOS_MY_STRING", @"")`, with
+// `IDS_IOS_MY_STRING` present in the allowlist at
+// //ios/chrome/app/resources/chrome_localize_strings_config.plist.
+
 @implementation MenuBuilder
 
 + (void)buildMainMenuWithBuilder:(id<UIMenuBuilder>)builder {
