@@ -169,8 +169,9 @@ void NetworkSectionHeaderView::InitializeLayout() {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   container_ = TrayPopupUtils::CreateSubHeaderRowView(true);
-  container_->AddView(TriView::Container::START,
-                      TrayPopupUtils::CreateMainImageView());
+  container_->AddView(
+      TriView::Container::START,
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
   AddChildView(container_);
 
   network_row_title_view_ = new NetworkRowTitleView(title_id_);

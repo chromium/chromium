@@ -53,8 +53,10 @@ void IMEDetailedView::ResetImeListView() {
 
 void IMEDetailedView::CreateExtraTitleRowButtons() {
   if (ime_controller_->managed_by_policy()) {
-    controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView();
-    if (features::IsQsRevampEnabled()) {
+    const bool is_qs_revamp = features::IsQsRevampEnabled();
+    controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView(
+        /*use_wide_layout=*/is_qs_revamp);
+    if (is_qs_revamp) {
       // Match the size of the settings button. This size matches IconButton
       // kSmall, but IconButton doesn't expose that value, so we inline it here.
       controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));

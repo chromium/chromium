@@ -405,7 +405,7 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
 
 void NetworkListNetworkItemView::AddPolicyView() {
   std::unique_ptr<views::ImageView> controlled_icon(
-      TrayPopupUtils::CreateMainImageView());
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   controlled_icon->SetImage(

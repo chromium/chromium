@@ -685,7 +685,8 @@ views::View* NetworkListView::CreatePolicyView(const NetworkInfo& info) {
   if (source != OncSource::kDevicePolicy && source != OncSource::kUserPolicy)
     return nullptr;
 
-  views::ImageView* controlled_icon = TrayPopupUtils::CreateMainImageView();
+  views::ImageView* controlled_icon =
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
   controlled_icon->SetImage(
       gfx::CreateVectorIcon(kSystemMenuBusinessIcon, GetIconColor()));
   return controlled_icon;
@@ -814,11 +815,13 @@ bool NetworkListView::NeedUpdateViewForNetwork(const NetworkInfo& info) const {
 
 TriView* NetworkListView::CreateConnectionWarning() {
   // Set up layout and apply sticky row property.
-  TriView* connection_warning = TrayPopupUtils::CreateDefaultRowView();
+  TriView* connection_warning = TrayPopupUtils::CreateDefaultRowView(
+      /*use_wide_layout=*/false);
   TrayPopupUtils::ConfigureAsStickyHeader(connection_warning);
 
   // Set 'info' icon on left side.
-  views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();
+  views::ImageView* image_view =
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
   image_view->SetImage(
       gfx::CreateVectorIcon(kSystemMenuInfoIcon, GetIconColor()));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));

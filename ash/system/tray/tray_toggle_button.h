@@ -24,9 +24,13 @@ class ASH_EXPORT TrayToggleButton : public views::ToggleButton {
 
   // Creates a button that invokes `callback` when pressed. Sets the accessible
   // name to the string with resource id `accessible_name_id`, unless that
-  // parameter is nullopt.
+  // parameter is nullopt. If `use_empty_border` is false, adds an empty border
+  // to pad the toggle to 68x48 pixels (for legacy status area). If
+  // `use_empty_border` is true, the toggle button is just the size of the
+  // underlying button.
   TrayToggleButton(PressedCallback callback,
-                   absl::optional<int> accessible_name_id);
+                   absl::optional<int> accessible_name_id,
+                   bool use_empty_border = false);
   TrayToggleButton(const TrayToggleButton&) = delete;
   TrayToggleButton& operator=(const TrayToggleButton&) = delete;
   ~TrayToggleButton() override = default;

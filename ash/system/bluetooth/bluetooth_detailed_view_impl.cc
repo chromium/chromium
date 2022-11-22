@@ -41,13 +41,10 @@
 namespace ash {
 namespace {
 
-constexpr auto kToggleRowTriViewInsets = gfx::Insets::TLBR(8, 4, 8, 4);
+constexpr auto kToggleRowTriViewInsets = gfx::Insets::VH(8, 24);
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kPairNewDeviceIconMargins = gfx::Insets::TLBR(0, 2, 0, 0);
-
-// TODO(b/252872600): Set left inset to 24 once HoverHighlightView and/or
-// TriView support 24 pixel insets.
-constexpr auto kSubHeaderInsets = gfx::Insets::TLBR(10, 18, 10, 24);
+constexpr auto kSubHeaderInsets = gfx::Insets::TLBR(10, 24, 10, 16);
 
 }  // namespace
 
@@ -189,7 +186,8 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   auto toggle = std::make_unique<TrayToggleButton>(
       base::BindRepeating(&BluetoothDetailedViewImpl::OnToggleClicked,
                           weak_factory_.GetWeakPtr()),
-      IDS_ASH_STATUS_TRAY_BLUETOOTH);
+      IDS_ASH_STATUS_TRAY_BLUETOOTH,
+      /*use_empty_border=*/true);
   toggle_button_ = toggle.get();
   toggle_row_->AddRightView(toggle.release());
 

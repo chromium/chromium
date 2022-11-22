@@ -198,7 +198,8 @@ CalendarEventListItemView::CalendarEventListItemView(
 
   // Creates a `TriView` which carries the `color_dot`, `summary_` and
   // `time_range_`.
-  TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+  TriView* tri_view =
+      TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
   tri_view->SetMinSize(
       TriView::Container::START,
       gfx::Size(kColorDotViewSize,

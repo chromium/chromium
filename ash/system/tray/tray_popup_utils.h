@@ -63,7 +63,9 @@ class ASH_EXPORT TrayPopupUtils {
   // the CENTER container if space is required and available.
   //
   // The CENTER container has a flexible width.
-  static TriView* CreateDefaultRowView();
+  //
+  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  static TriView* CreateDefaultRowView(bool use_wide_layout);
 
   // Creates a container view to be used by system menu sub-section header rows.
   // The caller takes over ownership of the created view.
@@ -99,7 +101,9 @@ class ASH_EXPORT TrayPopupUtils {
   //
   // Clients can use ConfigureContainer() to configure their own container views
   // before adding them to the returned TriView.
-  static TriView* CreateMultiTargetRowView();
+  //
+  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  static TriView* CreateMultiTargetRowView(bool use_wide_layout);
 
   // Returns a label that has been configured for system menu layout. This
   // should be used by all rows that require a label, i.e. both default and
@@ -117,19 +121,15 @@ class ASH_EXPORT TrayPopupUtils {
   // default and detailed rows should use this.
   //
   // TODO(bruthig): Update all system menu rows to use this.
-  static views::ImageView* CreateMainImageView();
+  //
+  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  static views::ImageView* CreateMainImageView(bool use_wide_layout);
 
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
   // Sets up |view| to be a sticky header in a tray detail scroll view.
   static void ConfigureAsStickyHeader(views::View* view);
-
-  // Configures |container_view| just like CreateDefaultRowView() would
-  // configure |container| on its returned TriView. To be used when mutliple
-  // targetable areas are required within a single row.
-  static void ConfigureContainer(TriView::Container container,
-                                 views::View* container_view);
 
   // Creates a button for use in the system menu. For MD, this is a prominent
   // text

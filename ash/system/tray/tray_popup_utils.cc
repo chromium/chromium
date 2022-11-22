@@ -47,11 +47,14 @@ namespace {
 
 // Creates a layout manager that positions Views vertically. The Views will be
 // stretched horizontally and centered vertically.
-std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager() {
-  // TODO(bruthig): Use constants instead of magic numbers.
+std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager(
+    bool use_wide_layout) {
+  const auto insets =
+      gfx::Insets::VH(kTrayPopupLabelVerticalPadding,
+                      use_wide_layout ? kQsPopupLabelHorizontalPadding
+                                      : kTrayPopupLabelHorizontalPadding);
   auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(8, kTrayPopupLabelHorizontalPadding));
+      views::BoxLayout::Orientation::kVertical, insets);
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
@@ -72,13 +75,14 @@ std::unique_ptr<views::LayoutManager> CreateDefaultEndsLayoutManager() {
 }
 
 std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(
-    TriView::Container container) {
+    TriView::Container container,
+    bool use_wide_layout) {
   switch (container) {
     case TriView::Container::START:
     case TriView::Container::END:
       return CreateDefaultEndsLayoutManager();
     case TriView::Container::CENTER:
-      return CreateDefaultCenterLayoutManager();
+      return CreateDefaultCenterLayoutManager(use_wide_layout);
   }
   // Required by some compilers.
   NOTREACHED();
@@ -88,17 +92,20 @@ std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(
 // Configures the default size and flex value for the specified |container|
 // of the given |tri_view|. Used by CreateDefaultRowView().
 void ConfigureDefaultSizeAndFlex(TriView* tri_view,
-                                 TriView::Container container) {
+                                 TriView::Container container,
+                                 bool use_wide_layout) {
   int min_width = 0;
   switch (container) {
     case TriView::Container::START:
-      min_width = kTrayPopupItemMinStartWidth;
+      min_width = use_wide_layout ? kQsPopupItemMinStartWidth
+                                  : kTrayPopupItemMinStartWidth;
       break;
     case TriView::Container::CENTER:
       tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
       break;
     case TriView::Container::END:
-      min_width = kTrayPopupItemMinEndWidth;
+      min_width =
+          use_wide_layout ? kQsPopupItemMinEndWidth : kTrayPopupItemMinEndWidth;
       break;
   }
 
@@ -143,24 +150,24 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
 
 }  // namespace
 
-TriView* TrayPopupUtils::CreateDefaultRowView() {
-  TriView* tri_view = CreateMultiTargetRowView();
+TriView* TrayPopupUtils::CreateDefaultRowView(bool use_wide_layout) {
+  TriView* tri_view = CreateMultiTargetRowView(use_wide_layout);
 
   tri_view->SetContainerLayout(
       TriView::Container::START,
-      CreateDefaultLayoutManager(TriView::Container::START));
+      CreateDefaultLayoutManager(TriView::Container::START, use_wide_layout));
   tri_view->SetContainerLayout(
       TriView::Container::CENTER,
-      CreateDefaultLayoutManager(TriView::Container::CENTER));
+      CreateDefaultLayoutManager(TriView::Container::CENTER, use_wide_layout));
   tri_view->SetContainerLayout(
       TriView::Container::END,
-      CreateDefaultLayoutManager(TriView::Container::END));
+      CreateDefaultLayoutManager(TriView::Container::END, use_wide_layout));
 
   return tri_view;
 }
 
 TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
-  TriView* tri_view = CreateDefaultRowView();
+  TriView* tri_view = CreateDefaultRowView(/*use_wide_layout=*/false);
   if (!start_visible) {
     tri_view->SetInsets(gfx::Insets::TLBR(
         0, kTrayPopupPaddingHorizontal - kTrayPopupLabelHorizontalPadding, 0,
@@ -170,14 +177,21 @@ TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
   return tri_view;
 }
 
-TriView* TrayPopupUtils::CreateMultiTargetRowView() {
+TriView* TrayPopupUtils::CreateMultiTargetRowView(bool use_wide_layout) {
   TriView* tri_view = new TriView(0 /* padding_between_items */);
 
-  tri_view->SetInsets(gfx::Insets::TLBR(0, kMenuExtraMarginFromLeftEdge, 0, 0));
+  tri_view->SetInsets(
+      gfx::Insets::TLBR(0,
+                        use_wide_layout ? kQsExtraMarginFromLeftEdge
+                                        : kMenuExtraMarginFromLeftEdge,
+                        0, use_wide_layout ? kQsExtraMarginsFromRightEdge : 0));
 
-  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START);
-  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::CENTER);
-  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::END);
+  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START,
+                              use_wide_layout);
+  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::CENTER,
+                              use_wide_layout);
+  ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::END,
+                              use_wide_layout);
 
   tri_view->SetContainerLayout(TriView::Container::START,
                                std::make_unique<views::FillLayout>());
@@ -203,10 +217,14 @@ UnfocusableLabel* TrayPopupUtils::CreateUnfocusableLabel() {
   return label;
 }
 
-views::ImageView* TrayPopupUtils::CreateMainImageView() {
+views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
   auto* image = new views::ImageView;
-  image->SetPreferredSize(
-      gfx::Size(kTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
+  if (use_wide_layout) {
+    image->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
+  } else {
+    image->SetPreferredSize(
+        gfx::Size(kTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
+  }
   return image;
 }
 
@@ -223,11 +241,6 @@ void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
       gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
   view->layer()->SetFillsBoundsOpaquely(false);
-}
-
-void TrayPopupUtils::ConfigureContainer(TriView::Container container,
-                                        views::View* container_view) {
-  container_view->SetLayoutManager(CreateDefaultLayoutManager(container));
 }
 
 views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(

@@ -19,14 +19,17 @@
 namespace ash {
 
 TrayToggleButton::TrayToggleButton(PressedCallback callback,
-                                   absl::optional<int> accessible_name_id)
+                                   absl::optional<int> accessible_name_id,
+                                   bool use_empty_border)
     : ToggleButton(std::move(callback)) {
-  const gfx::Size toggle_size(GetPreferredSize());
-  const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
-  const int horizontal_padding =
-      (kTrayToggleButtonWidth - toggle_size.width()) / 2;
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
+  if (!use_empty_border) {
+    const gfx::Size toggle_size(GetPreferredSize());
+    const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
+    const int horizontal_padding =
+        (kTrayToggleButtonWidth - toggle_size.width()) / 2;
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(vertical_padding, horizontal_padding)));
+  }
   if (accessible_name_id.has_value())
     SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id.value()));
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);

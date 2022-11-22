@@ -288,7 +288,8 @@ void BluetoothDetailedViewController::AddFakeBluetoothDevices() {
     paired_device_properties->device_properties =
         BluetoothDeviceProperties::New();
     paired_device_properties->device_properties->id = "Video Camera";
-    paired_device_properties->device_properties->public_name = u"Video Camera";
+    paired_device_properties->device_properties->public_name =
+        u"Video Camera with a very very very very very very very long name";
     paired_device_properties->device_properties->device_type =
         DeviceType::kVideoCamera;
     paired_device_properties->device_properties->connection_state =

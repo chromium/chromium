@@ -660,7 +660,8 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
     // Create a non-clickable non-focusable toggle button on the right.
     auto toggle = std::make_unique<TrayToggleButton>(
         views::Button::PressedCallback(),
-        /*accessible_name_id=*/absl::nullopt);
+        /*accessible_name_id=*/absl::nullopt,
+        /*use_empty_border=*/features::IsQsRevampEnabled());
     toggle->SetIsOn(checked);
     toggle->SetCanProcessEventsWithinSubtree(false);
     toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);

@@ -15,7 +15,8 @@ TrayInfoLabel::TrayInfoLabel(int message_id)
     : label_(TrayPopupUtils::CreateDefaultLabel()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+  TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
+      /*use_wide_layout=*/false);
   tri_view->SetInsets(gfx::Insets::TLBR(
       0, kMenuExtraMarginFromLeftEdge + kTrayPopupItemMinStartWidth, 0,
       kTrayPopupPaddingHorizontal));

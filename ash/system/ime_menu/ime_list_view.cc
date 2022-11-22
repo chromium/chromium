@@ -66,7 +66,9 @@ class ImeListItemView : public ActionableView {
         selected_(selected) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+    const bool is_qs_revamp = features::IsQsRevampEnabled();
+    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
+        /*use_wide_layout=*/is_qs_revamp);
     AddChildView(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -105,7 +107,8 @@ class ImeListItemView : public ActionableView {
 
     if (selected) {
       // The checked button indicates the IME is selected.
-      views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView();
+      views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView(
+          /*use_wide_layout=*/is_qs_revamp);
       checked_image->SetImage(gfx::CreateVectorIcon(
           kHollowCheckCircleIcon, kMenuIconSize, button_color));
       tri_view->AddView(TriView::Container::END, checked_image);
@@ -164,18 +167,21 @@ class KeyboardStatusRow : public views::View {
   views::ToggleButton* toggle() const { return toggle_; }
 
   void Init(views::Button::PressedCallback callback) {
+    const bool is_qs_revamp = features::IsQsRevampEnabled();
     // QsRevamp does not use sticky headers.
-    if (!features::IsQsRevampEnabled()) {
+    if (!is_qs_revamp) {
       TrayPopupUtils::ConfigureAsStickyHeader(this);
     }
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
-    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
+        /*use_wide_layout=*/is_qs_revamp);
     AddChildView(tri_view);
 
     auto* color_provider = AshColorProvider::Get();
     // The on-screen keyboard image button.
-    views::ImageView* keyboard_image = TrayPopupUtils::CreateMainImageView();
+    views::ImageView* keyboard_image =
+        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/is_qs_revamp);
     keyboard_image->SetImage(gfx::CreateVectorIcon(
         kImeMenuOnScreenKeyboardIcon, kMenuIconSize,
         color_provider->GetContentLayerColor(
@@ -194,8 +200,8 @@ class KeyboardStatusRow : public views::View {
 
     // The on-screen keyboard toggle button.
     toggle_ = new TrayToggleButton(
-        std::move(callback),
-        IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD);
+        std::move(callback), IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD,
+        /*use_empty_border=*/is_qs_revamp);
     toggle_->SetIsOn(keyboard::IsKeyboardEnabled());
     tri_view->AddView(TriView::Container::END, toggle_);
   }

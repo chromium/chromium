@@ -126,8 +126,9 @@ class VPNListProviderEntry : public views::View {
     TrayPopupUtils::ConfigureAsStickyHeader(this);
     SetLayoutManager(std::make_unique<views::FillLayout>());
     TriView* tri_view = TrayPopupUtils::CreateSubHeaderRowView(true);
-    tri_view->AddView(TriView::Container::START,
-                      TrayPopupUtils::CreateMainImageView());
+    tri_view->AddView(
+        TriView::Container::START,
+        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
     AddChildView(tri_view);
 
     // Add the VPN label.
@@ -176,7 +177,7 @@ class VPNListProviderEntry : public views::View {
  private:
   views::ImageView* GetPolicyIndicatorIcon() {
     views::ImageView* policy_indicator_icon =
-        TrayPopupUtils::CreateMainImageView();
+        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
     policy_indicator_icon->SetImage(gfx::CreateVectorIcon(
         kSystemMenuBusinessIcon,
         AshColorProvider::Get()->GetContentLayerColor(

@@ -502,7 +502,8 @@ TriView* TrayDetailedView::AddScrollListSubHeader(views::View* container,
                                    TrayPopupUtils::FontStyle::kSubHeader);
   header->AddView(TriView::Container::CENTER, sub_header_label_);
 
-  sub_header_image_view_ = TrayPopupUtils::CreateMainImageView();
+  sub_header_image_view_ =
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
   sub_header_icon_ = &icon;
   sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
       icon, color_provider->GetContentLayerColor(

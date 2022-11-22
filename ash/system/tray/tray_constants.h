@@ -44,11 +44,20 @@ constexpr int kTrayPopupButtonEndMargin = 10;
 // in the system menu.
 constexpr int kTrayPopupLabelHorizontalPadding = 4;
 
+// The padding used on the left and right of labels with QsRevamp.
+constexpr int kQsPopupLabelHorizontalPadding = 16;
+
+// The padding used on the top and bottom of labels.
+constexpr int kTrayPopupLabelVerticalPadding = 8;
+
 // The minimum/default height of the rows in the system tray menu.
 constexpr int kTrayPopupItemMinHeight = 48;
 
 // The width used for the first region of the row (which holds an image).
 constexpr int kTrayPopupItemMinStartWidth = 48;
+
+// The width used for the first region of the row (an image) with QsRevamp.
+constexpr int kQsPopupItemMinStartWidth = 20;
 
 // The size of the icons appearing in the material design system menu.
 constexpr int kMenuIconSize = 20;
@@ -56,6 +65,9 @@ constexpr int kMenuIconSize = 20;
 // The width used for the end region of the row (usually a more arrow).
 constexpr int kTrayPopupItemMinEndWidth =
     kMenuIconSize + 2 * kTrayPopupButtonEndMargin;
+
+// The width used for the end region of a row with QsRevamp.
+constexpr int kQsPopupItemMinEndWidth = 20;
 
 // Padding used on right side of labels to keep minimum distance to the next
 // item. This applies to all labels in the system menu.
@@ -84,8 +96,16 @@ constexpr int kUnifiedTrayNetworkIconPadding = 4;
 constexpr int kMenuButtonSize = 48;
 // The vertical padding for the system menu separator.
 constexpr int kMenuSeparatorVerticalPadding = 4;
-// The horizontal padding for the system menu separator.
+
+// Additional margin on the left edge of the tray menu.
 constexpr int kMenuExtraMarginFromLeftEdge = 4;
+
+// Additional margin on the left edge of the quick settings menu with QsRevamp.
+constexpr int kQsExtraMarginFromLeftEdge = 24;
+
+// Default margin on right edge of the quick settings menu with QsRevamp.
+constexpr int kQsExtraMarginsFromRightEdge = 18;
+
 // The visual padding to the left of icons in the system menu.
 constexpr int kMenuEdgeEffectivePadding =
     kMenuExtraMarginFromLeftEdge + (kMenuButtonSize - kMenuIconSize) / 2;

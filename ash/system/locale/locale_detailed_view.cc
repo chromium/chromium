@@ -4,6 +4,7 @@
 
 #include "ash/system/locale/locale_detailed_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -49,7 +50,8 @@ class LocaleItemView : public ActionableView {
         checked_(checked) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+    TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
+        /*use_wide_layout=*/false);
     AddChildView(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -76,7 +78,8 @@ class LocaleItemView : public ActionableView {
     tri_view->AddView(TriView::Container::CENTER, display_name_view);
 
     if (checked_) {
-      views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView();
+      views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView(
+          /*use_wide_layout=*/false);
       checked_image->SetImage(gfx::CreateVectorIcon(
           kCheckCircleIcon, kMenuIconSize,
           color_provider->GetContentLayerColor(

@@ -410,7 +410,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   header_ = header_container->AddChildView(std::move(header));
   temp_header_ = header_container->AddChildView(std::move(temp_header));
 
-  TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+  TriView* tri_view =
+      TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
   tri_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding, 0,
                         kContentHorizontalPadding - kChevronPadding)));

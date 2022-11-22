@@ -617,12 +617,12 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
 void NetworkListViewControllerImpl::ShowConnectionWarning() {
   // Set up layout and apply sticky row property.
   std::unique_ptr<TriView> connection_warning(
-      TrayPopupUtils::CreateDefaultRowView());
+      TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false));
   TrayPopupUtils::ConfigureAsStickyHeader(connection_warning.get());
 
   // Set 'info' icon on left side.
-  std::unique_ptr<views::ImageView> image_view =
-      base::WrapUnique(TrayPopupUtils::CreateMainImageView());
+  std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
   image_view->SetImage(gfx::CreateVectorIcon(
       kSystemMenuInfoIcon,
       AshColorProvider::Get()->GetContentLayerColor(
