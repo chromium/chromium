@@ -61,6 +61,8 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce",
     "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/chrome/browser/commerce/price_notifications",
+    "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/download",

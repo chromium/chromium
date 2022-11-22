@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
@@ -276,4 +278,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   }
 
   CaptivePortalTabHelper::CreateForWebState(web_state);
+
+  if (IsPriceNotificationsEnabled()) {
+    PriceNotificationsTabHelper::CreateForWebState(web_state);
+  }
 }

@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_notifications") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_tab_helper.h",
+    "price_notifications_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:shopping_service",
+    "//ios/chrome/browser/commerce:shopping_service",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+  ]
+}

@@ -32,9 +32,12 @@ using chrome_test_util::SettingsTrackingPriceTableView;
   // parameters.
   std::string params =
       ":enable_price_tracking/true/enable_price_notification/true";
+  std::string priceNotificationsFlag =
+      std::string(commerce::kCommercePriceTracking.name) + params;
+  std::string shoppingListFlag = std::string("ShoppingList");
+
   config.additional_args.push_back(
-      "--enable-features=" +
-      std::string(commerce::kCommercePriceTracking.name) + params);
+      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag);
 
   return config;
 }
