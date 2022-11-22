@@ -68,8 +68,8 @@ enum ShiftKeyModeSwitch {
     kKatakana = 2,
 };
 
-[Stable]
-struct MozcConfig {
+[Stable, RenamedFrom="ash.ime.mojom.MozcConfig"]
+struct JapaneseConfig {
     InputMode input_mode@0;
     PunctuationStyle punctuation_style@1;
     SymbolStyle symbol_style@2;
@@ -94,6 +94,6 @@ struct MozcConfig {
 interface JapaneseDecoder {
     // Retrieve the config used for Mozc which is stored as a file internally.
     // If this file does not exist, this should just return the default config.
-    FetchMozcConfig@0() => (MozcConfig config);
+    FetchJapaneseConfig@0() => (JapaneseConfig config);
 };
 
