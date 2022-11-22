@@ -55,7 +55,7 @@ class Http2Connection : public HttpConnection,
                                    absl::string_view key,
                                    absl::string_view value) override;
   bool OnEndHeadersForStream(StreamId stream_id) override;
-  void OnEndStream(StreamId stream_id) override;
+  bool OnEndStream(StreamId stream_id) override;
   bool OnCloseStream(StreamId stream_id,
                      http2::adapter::Http2ErrorCode error_code) override;
   // Unused functions

@@ -389,8 +389,9 @@ bool Http2Connection::OnEndHeadersForStream(
   return true;
 }
 
-void Http2Connection::OnEndStream(http2::adapter::Http2StreamId stream_id) {
+bool Http2Connection::OnEndStream(http2::adapter::Http2StreamId stream_id) {
   ready_streams_.push(stream_id);
+  return true;
 }
 
 bool Http2Connection::OnFrameHeader(StreamId /*stream_id*/,
