@@ -18,15 +18,20 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/extensions/api/identity_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "crypto/random.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/event_router.h"
@@ -88,6 +93,10 @@ BASE_FEATURE(kPersistentStorageForWebAuthFlow,
              "PersistentStorageForWebAuthFlow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebAuthFlowInBrowserTab,
+             "WebAuthFlowInBrowserTab",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 WebAuthFlow::WebAuthFlow(Delegate* delegate,
                          Profile* profile,
                          const GURL& provider_url,
@@ -97,13 +106,16 @@ WebAuthFlow::WebAuthFlow(Delegate* delegate,
       profile_(profile),
       provider_url_(provider_url),
       mode_(mode),
-      partition_(partition),
-      embedded_window_created_(false) {
+      partition_(partition) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "WebAuthFlow", this);
 }
 
 WebAuthFlow::~WebAuthFlow() {
   DCHECK(!delegate_);
+
+  if (using_auth_with_browser_tab_ && web_contents()) {
+    web_contents()->Close();
+  }
 
   // Stop listening to notifications first since some of the code
   // below may generate notifications.
@@ -121,6 +133,19 @@ WebAuthFlow::~WebAuthFlow() {
 void WebAuthFlow::Start() {
   DCHECK(profile_);
   DCHECK(!profile_->IsOffTheRecord());
+
+  if (partition_ == WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW &&
+      base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab)) {
+    using_auth_with_browser_tab_ = true;
+
+    content::WebContents::CreateParams params(profile_);
+    web_contents_ = content::WebContents::Create(params);
+    WebContentsObserver::Observe(web_contents_.get());
+
+    content::NavigationController::LoadURLParams load_params(provider_url_);
+    web_contents_->GetController().LoadURLWithParams(load_params);
+    return;
+  }
 
   AppWindowRegistry::Get(profile_)->AddObserver(this);
 
@@ -165,6 +190,11 @@ void WebAuthFlow::DetachDelegateAndDelete() {
 }
 
 content::StoragePartition* WebAuthFlow::GetGuestPartition() {
+  // When using the Auth through the Browser Tab, the guest partition shouldn't
+  // be used, consider using `Profile::GetDefaultStoragePartition()` instead.
+  if (base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab))
+    return nullptr;
+
   return profile_->GetStoragePartition(
       GetWebViewPartitionConfig(partition_, profile_));
 }
@@ -211,14 +241,31 @@ void WebAuthFlow::OnAppWindowRemoved(AppWindow* app_window) {
   }
 }
 
+bool WebAuthFlow::IsObservingProviderWebContents() const {
+  return web_contents() &&
+         (embedded_window_created_ || using_auth_with_browser_tab_);
+}
+
 void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
-  if (delegate_ && embedded_window_created_)
+  if (delegate_ && IsObservingProviderWebContents())
     delegate_->OnAuthFlowURLChange(url);
 }
 
 void WebAuthFlow::AfterUrlLoaded() {
-  if (delegate_ && embedded_window_created_ && mode_ == WebAuthFlow::SILENT)
+  if (delegate_ && IsObservingProviderWebContents() &&
+      mode_ == WebAuthFlow::SILENT) {
     delegate_->OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED);
+  }
+
+  // If `web_contents_` is nullptr, this means that the interactive tab has
+  // already been opened once.
+  if (delegate_ && using_auth_with_browser_tab_ &&
+      mode_ == WebAuthFlow::INTERACTIVE && web_contents_) {
+    chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
+    NavigateParams params(browser_displayer.browser(),
+                          std::move(web_contents_));
+    Navigate(&params);
+  }
 }
 
 void WebAuthFlow::InnerWebContentsCreated(
@@ -235,8 +282,17 @@ void WebAuthFlow::InnerWebContentsCreated(
 
 void WebAuthFlow::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  if (delegate_)
+  // When in `using_auth_with_browser_tab_` mode,
+  // `WebAuthFlow::WebContentsDestroyed()` takes care of this flow.
+  if (delegate_ && !using_auth_with_browser_tab_)
     delegate_->OnAuthFlowFailure(WebAuthFlow::WINDOW_CLOSED);
+}
+
+void WebAuthFlow::WebContentsDestroyed() {
+  WebContentsObserver::Observe(nullptr);
+  if (delegate_) {
+    delegate_->OnAuthFlowFailure(WebAuthFlow::WINDOW_CLOSED);
+  }
 }
 
 void WebAuthFlow::TitleWasSet(content::NavigationEntry* entry) {

@@ -7,10 +7,15 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -43,10 +48,14 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
 
   void StartWebAuthFlow(
       const GURL& url,
-      WebAuthFlow::Partition partition = WebAuthFlow::LAUNCH_WEB_AUTH_FLOW) {
+      WebAuthFlow::Partition partition = WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+      WebAuthFlow::Mode mode = WebAuthFlow::Mode::INTERACTIVE,
+      Profile* profile = nullptr) {
+    if (!profile)
+      profile = browser()->profile();
+
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
-        &mock_web_auth_flow_delegate_, browser()->profile(), url,
-        WebAuthFlow::INTERACTIVE, partition);
+        &mock_web_auth_flow_delegate_, profile, url, mode, partition);
     web_auth_flow_->Start();
   }
 
@@ -64,35 +73,62 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
   MockWebAuthFlowDelegate mock_web_auth_flow_delegate_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, OnAuthFlowURLChangeCalled) {
+class WebAuthFlowInBrowserTabParamBrowserTest
+    : public WebAuthFlowBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAuthFlowInBrowserTabParamBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(kWebAuthFlowInBrowserTab,
+                                              use_tab_feature_enabled());
+  }
+
+  bool use_tab_feature_enabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowURLChangeCalled) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
 
   // Observer for waiting until a navigation to a url has finished.
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  StartWebAuthFlow(auth_url);
   // The delegate method OnAuthFlowURLChange should be called
   // by DidStartNavigation.
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url);
 
   navigation_observer.WaitForNavigationFinished();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, OnAuthFlowFailureChangeCalled) {
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowFailureChangeCalled) {
   // Navigate to a url that doesn't exist.
   const GURL error_url = embedded_test_server()->GetURL("/error");
 
   content::TestNavigationObserver navigation_observer(error_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  StartWebAuthFlow(error_url);
   // The delegate method OnAuthFlowFailure should be called
   // by DidFinishNavigation.
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::LOAD_FAILED));
+  StartWebAuthFlow(error_url);
 
   navigation_observer.WaitForNavigationFinished();
 }
+
+INSTANTIATE_TEST_CASE_P(
+    ,
+    WebAuthFlowInBrowserTabParamBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<
+        WebAuthFlowInBrowserTabParamBrowserTest::ParamType>& info) {
+      return base::StrCat(
+          {info.param ? "With" : "Without", "WebAuthFlowInBrowserTab"});
+    });
 
 class WebAuthFlowGuestPartitionParamTest
     : public WebAuthFlowBrowserTest,
@@ -100,16 +136,22 @@ class WebAuthFlowGuestPartitionParamTest
           std::tuple<bool, WebAuthFlow::Partition>> {
  public:
   WebAuthFlowGuestPartitionParamTest() {
-    if (feature_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kPersistentStorageForWebAuthFlow);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kPersistentStorageForWebAuthFlow);
-    }
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    persist_storage_feature_enabled()
+        ? enabled_features.push_back(kPersistentStorageForWebAuthFlow)
+        : disabled_features.push_back(kPersistentStorageForWebAuthFlow);
+
+    // Explicitly disable the `kWebAuthFlowInBrowserTab` feature as it is
+    // incompatible with the Guest Partition tests and
+    // `kPersistentStorageForWebAuthFlow`.
+    disabled_features.push_back(kWebAuthFlowInBrowserTab);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool feature_enabled() { return std::get<0>(GetParam()); }
+  bool persist_storage_feature_enabled() { return std::get<0>(GetParam()); }
 
   WebAuthFlow::Partition partition() { return std::get<1>(GetParam()); }
 
@@ -174,7 +216,8 @@ IN_PROC_BROWSER_TEST_P(WebAuthFlowGuestPartitionParamTest, PersistenceTest) {
   // Read from the cookie store directly rather than execute a script on the
   // auth page because the page URL changes between test (test server doesn't
   // have a fixed port).
-  if (feature_enabled() && partition() == WebAuthFlow::LAUNCH_WEB_AUTH_FLOW) {
+  if (persist_storage_feature_enabled() &&
+      partition() == WebAuthFlow::LAUNCH_WEB_AUTH_FLOW) {
     ASSERT_EQ(1u, cookies.size());
     EXPECT_EQ("testCookie", cookies[0].Name());
     EXPECT_EQ("1", cookies[0].Value());
@@ -197,7 +240,8 @@ INSTANTIATE_TEST_CASE_P(
                ? "WebAuthFlow"
                : "GetAuthToken"});
     });
-class WebAuthFlowFencedFrameTest : public WebAuthFlowBrowserTest {
+class WebAuthFlowFencedFrameTest
+    : public WebAuthFlowInBrowserTabParamBrowserTest {
  public:
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_helper_;
@@ -207,7 +251,7 @@ class WebAuthFlowFencedFrameTest : public WebAuthFlowBrowserTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
+IN_PROC_BROWSER_TEST_P(WebAuthFlowFencedFrameTest,
                        FencedFrameNavigationSuccess) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
 
@@ -218,9 +262,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   navigation_observer.StartWatchingNewWebContents();
 
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   StartWebAuthFlow(auth_url);
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   navigation_observer.Wait();
   testing::Mock::VerifyAndClearExpectations(&mock());
 
@@ -234,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
+IN_PROC_BROWSER_TEST_P(WebAuthFlowFencedFrameTest,
                        FencedFrameNavigationFailure) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
 
@@ -245,9 +289,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   navigation_observer.StartWatchingNewWebContents();
 
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   StartWebAuthFlow(auth_url);
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   navigation_observer.Wait();
   testing::Mock::VerifyAndClearExpectations(&mock());
 
@@ -260,6 +304,109 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
       web_contents()->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
+}
+
+INSTANTIATE_TEST_CASE_P(,
+                        WebAuthFlowFencedFrameTest,
+                        testing::Bool(),
+                        [](const testing::TestParamInfo<
+                            WebAuthFlowFencedFrameTest::ParamType>& info) {
+                          return base::StrCat({info.param ? "With" : "Without",
+                                               "WebAuthFlowInBrowserTab"});
+                        });
+
+class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
+ public:
+  WebAuthFlowWithBrowserTabBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kWebAuthFlowInBrowserTab);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test is in two parts:
+// - First create a WebAuthFlow in interactive mode that will create a new tab
+// with the auth_url.
+// - Close the new created tab, simulating the user declining the consent by
+// closing the tab.
+//
+// These two tests are combined into one in order not to re-test the tab
+// creation twice.
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
+                       InteractiveNewTabCreatedWithAuthURL_ThenCloseTab) {
+  TabStripModel* tabs = browser()->tab_strip_model();
+  int initial_tab_count = tabs->count();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::INTERACTIVE);
+
+  navigation_observer.Wait();
+
+  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
+  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
+
+  //---------------------------------------------------------------------
+  // Part of the test that closes the tab, simulating declining the consent.
+  //---------------------------------------------------------------------
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
+  tabs->CloseWebContentsAt(tabs->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
+                       InteractiveNoBrowser_WebAuthCreatesBrowserWithTab) {
+  Profile* profile = browser()->profile();
+  // Simulates an extension being opened, in order for the profile not to be
+  // added for destruction.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBackgroundMode);
+  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED};
+  CloseBrowserSynchronously(browser());
+  ASSERT_FALSE(chrome::FindBrowserWithProfile(profile));
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::INTERACTIVE, profile);
+
+  navigation_observer.Wait();
+
+  Browser* new_browser = chrome::FindBrowserWithProfile(profile);
+  EXPECT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL(),
+            auth_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
+                       SilentNewTabNotCreated) {
+  TabStripModel* tabs = browser()->tab_strip_model();
+  int initial_tab_count = tabs->count();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(),
+              OnAuthFlowFailure(WebAuthFlow::Failure::INTERACTION_REQUIRED));
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::SILENT);
+
+  navigation_observer.Wait();
+
+  // Tab not created, tab count did not increase.
+  EXPECT_EQ(tabs->count(), initial_tab_count);
 }
 
 }  //  namespace extensions

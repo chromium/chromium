@@ -159,18 +159,30 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
   GaiaRemoteConsentFlowFailed(gaia_failure);
 }
 
+content::StoragePartition* GaiaRemoteConsentFlow::GetStoragePartition() {
+  content::StoragePartition* storage_partition = web_flow_->GetGuestPartition();
+  if (!storage_partition) {
+    // `web_flow_` doesn't have a guest partition only when the Auth Through
+    // Browser Tab flow is used.
+    DCHECK(base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab));
+    storage_partition = profile_->GetDefaultStoragePartition();
+  }
+
+  return storage_partition;
+}
+
 std::unique_ptr<GaiaAuthFetcher>
 GaiaRemoteConsentFlow::CreateGaiaAuthFetcherForPartition(
     GaiaAuthConsumer* consumer,
     const gaia::GaiaSource& source) {
   return std::make_unique<GaiaAuthFetcher>(
       consumer, source,
-      web_flow_->GetGuestPartition()->GetURLLoaderFactoryForBrowserProcess());
+      GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess());
 }
 
 network::mojom::CookieManager*
 GaiaRemoteConsentFlow::GetCookieManagerForPartition() {
-  return web_flow_->GetGuestPartition()->GetCookieManagerForBrowserProcess();
+  return GetStoragePartition()->GetCookieManagerForBrowserProcess();
 }
 
 void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {

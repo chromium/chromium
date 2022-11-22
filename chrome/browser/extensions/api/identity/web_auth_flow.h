@@ -28,6 +28,10 @@ namespace extensions {
 // across browser restarts.
 BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
 
+// When enabled, use authentication through a browser tab, instead of
+// an app window.
+BASE_DECLARE_FEATURE(kWebAuthFlowInBrowserTab);
+
 // Controller class for web based auth flows. The WebAuthFlow creates
 // a dialog window in the scope approval component app by firing an
 // event. A webview embedded in the dialog will navigate to the
@@ -124,6 +128,7 @@ class WebAuthFlow : public content::WebContentsObserver,
       content::WebContents* inner_web_contents) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void WebContentsDestroyed() override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -135,15 +140,28 @@ class WebAuthFlow : public content::WebContentsObserver,
   void BeforeUrlLoaded(const GURL& url);
   void AfterUrlLoaded();
 
-  raw_ptr<Delegate> delegate_;
-  raw_ptr<Profile> profile_;
-  GURL provider_url_;
-  Mode mode_;
-  Partition partition_;
+  bool IsObservingProviderWebContents() const;
 
-  raw_ptr<AppWindow> app_window_;
+  raw_ptr<Delegate> delegate_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  const GURL provider_url_;
+  const Mode mode_;
+  const Partition partition_;
+
+  // Variables used only if displaying the auth flow in an app window.
+  raw_ptr<AppWindow> app_window_ = nullptr;
   std::string app_window_key_;
-  bool embedded_window_created_;
+  bool embedded_window_created_ = false;
+
+  // Variables used only if displaying the auth flow in a browser tab.
+  //
+  // Checks that the auth with browser tab is activated.
+  bool using_auth_with_browser_tab_ = false;
+  // WebContents used to initialize the authentication. It is not displayed
+  // and not owned by browser window. This WebContents is observed by
+  // `this`. When this value becomes nullptr, this means that the browser tab
+  // has taken ownership and the interactive tab was opened.
+  std::unique_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace extensions

@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
@@ -88,6 +89,8 @@ class GaiaRemoteConsentFlow
   void GaiaRemoteConsentFlowFailed(Failure failure);
 
   void DetachWebAuthFlow();
+
+  content::StoragePartition* GetStoragePartition();
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;
