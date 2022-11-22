@@ -46,6 +46,8 @@ class FakeObserver : public MessageReceiver::Observer {
 
   size_t app_stream_update_calls() const { return app_stream_update_calls_; }
 
+  size_t app_list_update_calls() const { return app_list_update_calls_; }
+
   proto::PhoneStatusSnapshot last_snapshot() const { return last_snapshot_; }
 
   proto::PhoneStatusUpdate last_status_update() const {
@@ -58,6 +60,10 @@ class FakeObserver : public MessageReceiver::Observer {
 
   proto::AppStreamUpdate last_app_stream_update() const {
     return last_app_stream_update_;
+  }
+
+  proto::AppListUpdate last_app_list_update() const {
+    return last_app_list_update_;
   }
 
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response()
@@ -107,6 +113,11 @@ class FakeObserver : public MessageReceiver::Observer {
     ++app_stream_update_calls_;
   }
 
+  void OnAppListUpdateReceived(proto::AppListUpdate app_list_update) override {
+    last_app_list_update_ = app_list_update;
+    ++app_list_update_calls_;
+  }
+
  private:
   size_t phone_status_snapshot_updated_num_calls_ = 0;
   size_t phone_status_updated_num_calls_ = 0;
@@ -114,10 +125,12 @@ class FakeObserver : public MessageReceiver::Observer {
   size_t fetch_camera_roll_items_response_calls_ = 0;
   size_t fetch_camera_roll_item_data_response_calls_ = 0;
   size_t app_stream_update_calls_ = 0;
+  size_t app_list_update_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
   proto::PhoneStatusUpdate last_status_update_;
   proto::FeatureSetupResponse last_feature_setup_response_;
   proto::AppStreamUpdate last_app_stream_update_;
+  proto::AppListUpdate last_app_list_update_;
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response_;
   proto::FetchCameraRollItemDataResponse
       last_fetch_camera_roll_item_data_response_;
@@ -180,6 +193,10 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.app_stream_update_calls();
   }
 
+  size_t GetNumAppListUpdateCalls() const {
+    return fake_observer_.app_list_update_calls();
+  }
+
   proto::PhoneStatusSnapshot GetLastSnapshot() const {
     return fake_observer_.last_snapshot();
   }
@@ -206,13 +223,17 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.last_app_stream_update();
   }
 
+  proto::AppListUpdate GetLastAppListUpdate() const {
+    return fake_observer_.last_app_list_update();
+  }
+
   FakeObserver fake_observer_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<MessageReceiverImpl> message_receiver_;
 };
 
-TEST_F(MessageReceiverImplTest, OnPhoneStatusSnapshotReceieved) {
+TEST_F(MessageReceiverImplTest, OnPhoneStatusSnapshotReceived) {
   const int32_t expected_battery_percentage = 15;
   auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
   expected_phone_properties->set_battery_percentage(
@@ -423,7 +444,7 @@ TEST_F(MessageReceiverImplTest,
   EXPECT_EQ(0u, GetNumFetchCameraRollItemDataResponseCalls());
 }
 
-TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceieved) {
+TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceived) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kEcheSWA);
 
@@ -446,6 +467,59 @@ TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceieved) {
             actual_app_stream_update.foreground_app().package_name());
   EXPECT_EQ("visible1",
             actual_app_stream_update.foreground_app().visible_name());
+}
+
+TEST_F(MessageReceiverImplTest, OnAppListUpdateReceived) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEcheSWA);
+
+  proto::AppListUpdate expected_app_list_update;
+  auto* streamable_apps = expected_app_list_update.mutable_all_apps();
+  streamable_apps->add_apps();
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_LIST_UPDATE, &expected_app_list_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::AppListUpdate actual_app_list_update = GetLastAppListUpdate();
+
+  EXPECT_EQ(1u, GetNumAppListUpdateCalls());
+  EXPECT_TRUE(actual_app_list_update.has_all_apps());
+  EXPECT_EQ(1, actual_app_list_update.all_apps().apps_size());
+}
+
+TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedNoStreamableApps) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEcheSWA);
+
+  proto::AppListUpdate expected_app_list_update;
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_LIST_UPDATE, &expected_app_list_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::AppListUpdate actual_app_list_update = GetLastAppListUpdate();
+
+  EXPECT_EQ(1u, GetNumAppListUpdateCalls());
+  EXPECT_FALSE(actual_app_list_update.has_all_apps());
+}
+
+TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEcheSWA);
+
+  proto::AppListUpdate expected_app_list_update;
+  auto* streamable_apps = expected_app_list_update.mutable_all_apps();
+  streamable_apps->add_apps();
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_LIST_UPDATE, &expected_app_list_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumAppListUpdateCalls());
 }
 
 }  // namespace phonehub

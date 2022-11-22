@@ -153,6 +153,19 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     NotifyAppStreamUpdateReceived(app_stream_update);
     return;
   }
+
+  if (features::IsEcheSWAEnabled() &&
+      message_type == proto::MessageType::APP_LIST_UPDATE) {
+    proto::AppListUpdate app_list_update;
+    // Serialized proto is after the first two bytes of |payload|.
+    if (!app_list_update.ParseFromString(payload.substr(2))) {
+      PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
+                    << "AppListUpdate proto message.";
+      return;
+    }
+    NotifyAppListUpdateReceived(app_list_update);
+    return;
+  }
 }
 
 }  // namespace phonehub

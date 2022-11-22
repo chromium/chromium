@@ -55,5 +55,11 @@ void MessageReceiver::NotifyAppStreamUpdateReceived(
     observer.OnAppStreamUpdateReceived(app_stream_update);
 }
 
+void MessageReceiver::NotifyAppListUpdateReceived(
+    const proto::AppListUpdate app_list_update) {
+  for (auto& observer : observer_list_)
+    observer.OnAppListUpdateReceived(app_list_update);
+}
+
 }  // namespace phonehub
 }  // namespace ash

@@ -47,6 +47,10 @@ class MessageReceiver {
     // Called when there is an update in the streamed app.
     virtual void OnAppStreamUpdateReceived(
         const proto::AppStreamUpdate app_stream_update) {}
+
+    // Called when there is an update of streamable apps.
+    virtual void OnAppListUpdateReceived(
+        const proto::AppListUpdate app_list_update) {}
   };
 
   MessageReceiver(const MessageReceiver&) = delete;
@@ -70,6 +74,7 @@ class MessageReceiver {
       const proto::FetchCameraRollItemDataResponse& response);
   void NotifyAppStreamUpdateReceived(
       const proto::AppStreamUpdate app_stream_update);
+  void NotifyAppListUpdateReceived(const proto::AppListUpdate app_list_update);
 
  private:
   base::ObserverList<Observer> observer_list_;
