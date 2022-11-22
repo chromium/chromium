@@ -170,12 +170,16 @@ def GPUParallelJobs(test_config, _, tester_config):
   # we swap which machines we're using.
   is_webgpu_cts = test_name.startswith('webgpu_cts') or test_config.get(
       'telemetry_test_name') == 'webgpu_cts'
-  is_webgl_cts = 'webgl_conformance' in test_name or test_config.get(
-      'telemetry_test_name') == 'webgl_conformance'
+  is_webgl_cts = (any(test_name in n
+                      for n in ('webgl_conformance', 'webgl1_conformance',
+                                'webgl2_conformance'))
+                  or test_config.get('telemetry_test_name') in (
+                      'webgl1_conformance', 'webgl2_conformance'))
   if os_type == 'win' and (is_webgl_cts or is_webgpu_cts):
     for gpu in _GetGpusFromTestConfig(test_config):
       if gpu.startswith('8086'):
-        if is_webgpu_cts:
+        # Especially flaky on '8086:9bc5' per crbug.com/1392149
+        if is_webgpu_cts or gpu.startswith('8086:9bc5'):
           return ['--jobs=1']
         return ['--jobs=2']
 

@@ -202,7 +202,10 @@ class GPUParallelJobs(unittest.TestCase):
     amd_config = CreateConfigWithGpus(['1002:device1-driver'])
     for gpu_config in [intel_config, amd_config]:
       for name, telemetry_test_name in [('webgl_conformance', None),
-                                        (None, 'webgl_conformance')]:
+                                        ('webgl1_conformance', None),
+                                        ('webgl2_conformance', None),
+                                        (None, 'webgl1_conformance'),
+                                        (None, 'webgl2_conformance')]:
         is_intel = intel_config == gpu_config
         c = gpu_config.copy()
         if name:
