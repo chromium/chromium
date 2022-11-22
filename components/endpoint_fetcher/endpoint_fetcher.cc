@@ -201,11 +201,11 @@ void EndpointFetcher::PerformRequest(
   if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
     resource_request->headers.SetHeader(kContentTypeKey, content_type_);
   }
-  DCHECK(headers_.size() % 2 == 0);
+  DCHECK_EQ(headers_.size() % 2, 0UL);
   for (size_t i = 0; i + 1 < headers_.size(); i += 2) {
     resource_request->headers.SetHeader(headers_[i], headers_[i + 1]);
   }
-  DCHECK(cors_exempt_headers_.size() % 2 == 0);
+  DCHECK_EQ(cors_exempt_headers_.size() % 2, 0UL);
   for (size_t i = 0; i + 1 < cors_exempt_headers_.size(); i += 2) {
     resource_request->cors_exempt_headers.SetHeaderIfMissing(
         cors_exempt_headers_[i], cors_exempt_headers_[i + 1]);
@@ -266,6 +266,18 @@ void EndpointFetcher::OnResponseFetched(
 
   auto response = std::make_unique<EndpointResponse>();
   response->http_status_code = http_status_code;
+  if (http_status_code == net::HTTP_UNAUTHORIZED ||
+      http_status_code == net::HTTP_FORBIDDEN) {
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+    // We cannot assume that the response was in JSON, and hence cannot sanitize
+    // the response. Send the respond as-is.
+    // TODO: Think about how to better handle different MIME-types here.
+    response->response = *response_body;
+    std::move(endpoint_fetcher_callback).Run(std::move(response));
+    return;
+  }
+
   if (net_error_code != net::OK) {
     response->error_type =
         absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);

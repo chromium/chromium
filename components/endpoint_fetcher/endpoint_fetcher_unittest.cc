@@ -27,17 +27,19 @@ namespace {
 const char kContentType[] = "mock_content_type";
 const char kEmail[] = "mock_email@gmail.com";
 const char kEndpoint[] = "https://my-endpoint.com";
+const char kEmptyResponse[] = "";
 const char kExpectedResponse[] = "{}";
 const char kExpectedAuthError[] = "There was an authentication error";
 const char kExpectedResponseError[] = "There was a response error";
 const char kExpectedPrimaryAccountError[] = "No primary accounts found";
 const char kExpectedSanitizationError[] = "There was a sanitization error";
-const char kHttpMethod[] = "POST";
+const char kHttpPostMethod[] = "POST";
 const char kMalformedResponse[] = "asdf";
 const char kMockPostData[] = "mock_post_data";
 int64_t kMockTimeoutMs = 1000000;
 const char kOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kScope[] = "mock_scope";
+const char kApiKey[] = "api_key";
 }  // namespace
 
 using ::testing::Field;
@@ -45,21 +47,21 @@ using ::testing::Pointee;
 
 class EndpointFetcherTest : public testing::Test {
  protected:
-  EndpointFetcherTest() {}
+  EndpointFetcherTest() = default;
 
   EndpointFetcherTest(const EndpointFetcherTest& endpoint_fetcher_test) =
       delete;
   EndpointFetcherTest& operator=(
       const EndpointFetcherTest& endpoint_fetcher_test) = delete;
 
-  ~EndpointFetcherTest() override {}
+  ~EndpointFetcherTest() override = default;
 
   void SetUp() override {
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-        kOAuthConsumerName, GURL(kEndpoint), kHttpMethod, kContentType,
+        kOAuthConsumerName, GURL(kEndpoint), kHttpPostMethod, kContentType,
         std::vector<std::string>{kScope}, kMockTimeoutMs, kMockPostData,
         TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager());
@@ -189,5 +191,20 @@ TEST_F(EndpointFetcherTest, FetchOAuthNoPrimaryAccount) {
           Field(&EndpointResponse::http_status_code, -1),
           Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(EndpointFetcherTest, PerformRequestAuthError) {
+  SetMockResponse(GURL(kEndpoint), kEmptyResponse, net::HTTP_UNAUTHORIZED,
+                  net::OK);
+  EXPECT_CALL(
+      endpoint_fetcher_callback(),
+      Run(Pointee(AllOf(
+          Field(&EndpointResponse::response, kEmptyResponse),
+          Field(&EndpointResponse::http_status_code, net::HTTP_UNAUTHORIZED),
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
+
+  endpoint_fetcher()->PerformRequest(endpoint_fetcher_callback().Get(),
+                                     kApiKey);
   base::RunLoop().RunUntilIdle();
 }
