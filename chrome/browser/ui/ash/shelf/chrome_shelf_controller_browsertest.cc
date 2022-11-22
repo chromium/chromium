@@ -121,6 +121,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
@@ -193,6 +194,17 @@ int64_t GetDisplayIdForBrowserWindow(BrowserWindow* window) {
   return display::Screen::GetScreen()
       ->GetDisplayNearestWindow(window->GetNativeWindow())
       .id();
+}
+
+void ExecuteScriptInChromeVox(Browser* browser, const std::string& script) {
+  std::string execute_script = R"JS((async function() {
+      )JS" + script + R"JS(
+      window.domAutomationController.send('done');
+  })())JS";
+
+  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+      browser->profile(), extension_misc::kChromeVoxExtensionId,
+      execute_script);
 }
 
 void ExtendHotseat(Browser* browser) {
@@ -2787,12 +2799,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   speech_monitor.ExpectSpeechPattern("*");
   speech_monitor.Call([this]() {
     // Disable earcons (https://crbug.com/396507).
-    const std::string script("ChromeVox.earcons.playEarcon = function() {};");
-    extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(browser()->profile())
-            ->GetBackgroundHostForExtension(
-                extension_misc::kChromeVoxExtensionId);
-    content::ExecuteScriptAsync(host->host_contents(), script);
+    const std::string script(R"JS(
+        const module = await import('/chromevox/background/chromevox.js');
+        module.ChromeVox.earcons.playEarcon = function() {};
+    )JS");
+    ExecuteScriptInChromeVox(browser(), script);
   });
 
   // Wait for an utterance from the browser before the test starts traversal
