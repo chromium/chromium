@@ -41,7 +41,7 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
    * Initialises the page specific content inside the page.
    */
   connectedCallback(): void {
-    this.innerHTML = getTemplate() as string;
+    this.innerHTML = getTemplate();
     const fileContainerElement =
         this.querySelector('#file-container')! as HTMLElement;
     const fileNameElement = this.querySelector('#file-name')! as HTMLElement;

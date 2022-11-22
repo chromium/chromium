@@ -9,6 +9,7 @@ import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {OfficePwaInstallPageElement} from './office_pwa_install_page.js';
 import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
+import {SignInPageElement} from './sign_in_page.js';
 import {WelcomePageElement} from './welcome_page.js';
 
 /**
@@ -39,6 +40,7 @@ export class CloudUploadElement extends HTMLElement {
       this.processDialogArgs(),
       this.proxy.handler.isOfficePWAInstalled(),
     ]);
+    const odfsMounted = false;
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
     this.pages.push(new WelcomePageElement());
@@ -47,18 +49,21 @@ export class CloudUploadElement extends HTMLElement {
       this.pages.push(new OfficePwaInstallPageElement());
     }
 
+    if (!odfsMounted) {
+      this.pages.push(new SignInPageElement());
+    }
+
     const oneDriveUploadPage = new OneDriveUploadPageElement();
     oneDriveUploadPage.setFileNames(this.fileNames);
     this.pages.push(oneDriveUploadPage);
 
-    for (let i = 0; i < this.pages.length; i++) {
-      this.pages[i]?.setAttribute(
-          'total-pages', (this.pages.length).toString());
-      this.pages[i]?.setAttribute('page-number', i.toString());
-      this.pages[i]?.addEventListener(NEXT_PAGE_EVENT, () => this.goNextPage());
-      this.pages[i]?.addEventListener(
-          CANCEL_SETUP_EVENT, () => this.cancelSetup());
-    }
+    this.pages.forEach((page, index) => {
+      page.setAttribute('total-pages', String(this.pages.length));
+      page.setAttribute('page-number', String(index));
+      page.addEventListener(NEXT_PAGE_EVENT, () => this.goNextPage());
+      page.addEventListener(CANCEL_SETUP_EVENT, () => this.cancelSetup());
+    });
+
     this.switchPage(0);
   }
 

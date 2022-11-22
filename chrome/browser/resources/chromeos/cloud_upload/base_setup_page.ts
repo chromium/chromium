@@ -43,7 +43,7 @@ export class BaseSetupPageElement extends HTMLElement {
     super();
 
     const template = document.createElement('template');
-    template.innerHTML = getTemplate() as string;
+    template.innerHTML = getTemplate();
     this.attachShadow({mode: 'open'})
         .appendChild(template.content.cloneNode(true));
   }

@@ -127,6 +127,8 @@ extern const char kActionIdWebDriveOfficeExcel[];
 extern const char kActionIdWebDriveOfficePowerPoint[];
 extern const char kActionIdOpenInOffice[];
 
+extern const char kODFSExtensionId[];
+
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {
   TASK_TYPE_UNKNOWN = 0,  // Used only for handling errors.

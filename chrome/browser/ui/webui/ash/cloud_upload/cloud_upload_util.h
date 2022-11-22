@@ -19,9 +19,6 @@ namespace ash::cloud_upload {
 // The default folder where the file should be uploaded.
 const char kDestinationFolder[] = "from Chromebook";
 
-// ODFS extension ID.
-const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
-
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,

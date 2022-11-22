@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -88,7 +89,8 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
   io_task_controller_->AddObserver(this);
 
   // Destination url.
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(kODFSExtensionId);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::kODFSExtensionId);
   Service* service = Service::Get(profile_);
   std::vector<ProvidedFileSystemInfo> file_systems =
       service->GetProvidedFileSystemInfoList(provider_id);

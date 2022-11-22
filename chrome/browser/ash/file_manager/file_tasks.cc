@@ -112,6 +112,8 @@ const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 const char kActionIdOpenInOffice[] = "open-in-office";
 
+const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
+
 namespace {
 
 // The values "file" and "app" are confusing, but cannot be changed easily as
@@ -494,19 +496,6 @@ using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProviderId;
 using ash::file_system_provider::Service;
 
-const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
-
-bool ODFSMounted(Profile* profile) {
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(kODFSExtensionId);
-
-  Service* service = Service::Get(profile);
-  std::vector<ProvidedFileSystemInfo> file_systems =
-      service->GetProvidedFileSystemInfoList(provider_id);
-
-  // Assume any file system mounted by ODFS is the correct one.
-  return !file_systems.empty();
-}
-
 bool FileIsOnODFS(const FileSystemURL& url, Profile* profile) {
   ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
@@ -562,25 +551,18 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     // TODO(petermarshall): UMAs.
   }
 
-  if (ODFSMounted(profile)) {
-    if (FileIsOnODFS(file_urls.front(), profile)) {
-      OpenODFSUrl(profile, task, file_urls);
-      LOG(ERROR) << "File is on ODFS";
-      return true;
-    } else {
-      // We need to move the file to ODFS first. This flow will eventually open
-      // the file in the browser, too.
-      // TODO(b/247038054) Add user preference to decide whether or not the
-      // dialog should be shown.
-      LOG(ERROR) << "File can be moved to ODFS";
-      return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
-    }
+  if (FileIsOnODFS(file_urls.front(), profile)) {
+    OpenODFSUrl(profile, task, file_urls);
+    LOG(ERROR) << "File is on ODFS";
+    return true;
   } else {
-    LOG(ERROR) << "ODFS not available/mounted";
-    return GetUserFallbackChoice(
-        profile, task, file_urls,
-        ash::office_fallback::FallbackReason::kOneDriveUnavailable);
+    // We need to move the file to ODFS first. This flow will eventually open
+    // the file in the browser, too.
+    // TODO(b/247038054) Add user preference to decide whether or not the
+    // dialog should be shown.
+    LOG(ERROR) << "File can be moved to ODFS";
+    return ash::cloud_upload::UploadAndOpen(
+        profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
   }
 }
 

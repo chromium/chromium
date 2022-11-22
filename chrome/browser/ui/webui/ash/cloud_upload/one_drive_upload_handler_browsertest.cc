@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -84,9 +85,10 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
     file_system_provider::MountOptions options("odfs", "ODFS");
     const file_system_provider::ProviderId provider_id =
         file_system_provider::ProviderId::CreateFromExtensionId(
-            kODFSExtensionId);
+            file_manager::file_tasks::kODFSExtensionId);
     service->RegisterProvider(
-        file_system_provider::FakeExtensionProvider::Create(kODFSExtensionId));
+        file_system_provider::FakeExtensionProvider::Create(
+            file_manager::file_tasks::kODFSExtensionId));
     EXPECT_EQ(base::File::FILE_OK,
               service->MountFileSystem(provider_id, options));
   }

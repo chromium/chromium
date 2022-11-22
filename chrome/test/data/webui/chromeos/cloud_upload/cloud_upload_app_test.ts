@@ -7,6 +7,10 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {DialogArgs, DialogPage, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import {OfficePwaInstallPageElement} from 'chrome://cloud-upload/office_pwa_install_page.js';
+import {OneDriveUploadPageElement} from 'chrome://cloud-upload/one_drive_upload_page.js';
+import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
+import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -50,7 +54,7 @@ suite('<cloud-upload>', () => {
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
 
-  const setUp = async (options: ProxyOptions) => {
+  async function setUp(options: ProxyOptions) {
     testProxy = new CloudUploadTestBrowserProxy(options);
     CloudUploadBrowserProxy.setInstance(testProxy);
 
@@ -59,11 +63,28 @@ suite('<cloud-upload>', () => {
         document.createElement('cloud-upload') as CloudUploadElement;
     container.appendChild(cloudUploadApp);
     await cloudUploadApp.initPromise;
-  };
+  }
 
-  const doPWAInstallPage = async () => {
+  function checkIsWelcomePage(): void {
+    assertTrue(cloudUploadApp.currentPage instanceof WelcomePageElement);
+  }
+
+  function checkIsInstallPage(): void {
+    assertTrue(
+        cloudUploadApp.currentPage instanceof OfficePwaInstallPageElement);
+  }
+
+  function checkIsSignInPage(): void {
+    assertTrue(cloudUploadApp.currentPage instanceof SignInPageElement);
+  }
+
+  function checkIsOneDriveUploadPage(): void {
+    assertTrue(cloudUploadApp.currentPage instanceof OneDriveUploadPageElement);
+  }
+
+  async function waitForNextPage(): Promise<void> {
     // This promise resolves once a new page appears.
-    const nextPagePromise = new Promise<void>(resolve => {
+    return new Promise<void>(resolve => {
       const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
           if (mutation.addedNodes.length > 0) {
@@ -74,10 +95,28 @@ suite('<cloud-upload>', () => {
       });
       observer.observe(cloudUploadApp.shadowRoot!, {childList: true});
     });
+  }
 
+  async function doWelcomePage(): Promise<void> {
+    checkIsWelcomePage();
+    const nextPagePromise = waitForNextPage();
     cloudUploadApp.$('.action-button').click();
     await nextPagePromise;
-  };
+  }
+
+  async function doPWAInstallPage(): Promise<void> {
+    checkIsInstallPage();
+    const nextPagePromise = waitForNextPage();
+    cloudUploadApp.$('.action-button').click();
+    await nextPagePromise;
+  }
+
+  async function doSignInPage(): Promise<void> {
+    checkIsSignInPage();
+    const nextPagePromise = waitForNextPage();
+    cloudUploadApp.$('.action-button').click();
+    await nextPagePromise;
+  }
 
   /**
    * Runs prior to all the tests running, attaches a div to enable isolated
@@ -107,11 +146,12 @@ suite('<cloud-upload>', () => {
       officePWAInstalled: false,
     });
 
-    // Click the 'next' button on the welcome page.
-    cloudUploadApp.$('.action-button').click();
-
+    // Go to the OneDrive upload page.
+    await doWelcomePage();
     await doPWAInstallPage();
+    await doSignInPage();
 
+    checkIsOneDriveUploadPage();
     const fileContainer = cloudUploadApp.$('#file-container');
     assertFalse(fileContainer.hidden);
   });
@@ -125,11 +165,12 @@ suite('<cloud-upload>', () => {
       officePWAInstalled: false,
     });
 
-    // Click the 'next' button on the welcome page.
-    cloudUploadApp.$('.action-button').click();
-
+    // Go to the OneDrive upload page.
+    await doWelcomePage();
     await doPWAInstallPage();
+    await doSignInPage();
 
+    checkIsOneDriveUploadPage();
     const fileContainer = cloudUploadApp.$('#file-container');
     assertTrue(fileContainer.hidden);
   });
@@ -139,13 +180,17 @@ suite('<cloud-upload>', () => {
       officePWAInstalled: true,
     });
 
-    // Click the 'next' button on the welcome page.
-    cloudUploadApp.$('.action-button').click();
+    await doWelcomePage();
 
     // Make the setup skips the PWA install page and goes to the upload page.
     // TODO(b/251046341): Once the sign in page is ready, this should check for
     // that page instead.
     assertEquals(null, cloudUploadApp.$('office-pwa-install-page'));
+
+    // Go to the OneDrive upload page.
+    await doSignInPage();
+
+    checkIsOneDriveUploadPage();
     assertNotEquals(null, cloudUploadApp.$('upload-page'));
   });
 
@@ -158,12 +203,15 @@ suite('<cloud-upload>', () => {
       fileName: 'file.docx',
       officePWAInstalled: false,
     });
+    checkIsWelcomePage();
 
     // Click the 'next' button on the welcome page.
     cloudUploadApp.$('.action-button').click();
 
     await doPWAInstallPage();
+    await doSignInPage();
 
+    checkIsOneDriveUploadPage();
     cloudUploadApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
@@ -182,11 +230,12 @@ suite('<cloud-upload>', () => {
       officePWAInstalled: false,
     });
 
-    // Click the 'next' button on the welcome page.
-    cloudUploadApp.$('.action-button').click();
-
+    // Go to the OneDrive upload page.
+    await doWelcomePage();
     await doPWAInstallPage();
+    await doSignInPage();
 
+    checkIsOneDriveUploadPage();
     cloudUploadApp.$('.cancel-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
