@@ -51,7 +51,6 @@
       "deprecated-allowed-packages": [
           "cursor",
           "flatland-scene-manager-test-ui-stack",
-          "test_manager",
           "web_engine",
       ],
     },

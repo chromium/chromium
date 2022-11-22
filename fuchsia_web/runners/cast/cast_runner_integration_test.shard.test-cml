@@ -47,7 +47,6 @@
       "deprecated-allowed-packages": [
           "cast_runner",
           "flatland-scene-manager-test-ui-stack",
-          "test_manager",
           "web_engine",
       ],
     },
