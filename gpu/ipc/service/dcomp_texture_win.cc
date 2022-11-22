@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/win/windows_types.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -25,6 +26,7 @@
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/scoped_make_current.h"
 
@@ -32,8 +34,8 @@ namespace gpu {
 
 namespace {
 
-constexpr base::TimeDelta kParentWindowPosPollingPeriod =
-    base::Milliseconds(1000);
+constexpr base::TimeDelta kParentWindowPosPollingPeriod = base::Seconds(1);
+constexpr base::TimeDelta kPowerChangeDetectionGracePeriod = base::Seconds(2);
 
 class DCOMPTextureRepresentation : public OverlayImageRepresentation {
  public:
@@ -129,21 +131,26 @@ DCOMPTexture::DCOMPTexture(
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), runner);
   context_state_->AddContextLostObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
   channel_->AddRoute(route_id, sequence_);
 }
 
 DCOMPTexture::~DCOMPTexture() {
+  DVLOG(1) << __func__;
   // |channel_| is always released before GpuChannel releases its reference to
   // this class.
   DCHECK(!channel_);
 
   context_state_->RemoveContextLostObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+
   if (window_pos_timer_.IsRunning()) {
     window_pos_timer_.Stop();
   }
 }
 
 void DCOMPTexture::ReleaseChannel() {
+  DVLOG(1) << __func__;
   DCHECK(channel_);
 
   receiver_.ResetFromAnotherSequenceUnsafe();
@@ -151,10 +158,43 @@ void DCOMPTexture::ReleaseChannel() {
   channel_->scheduler()->DestroySequence(sequence_);
   sequence_ = SequenceId();
   channel_ = nullptr;
+
+  ResetSizeIfNeeded();
 }
 
 void DCOMPTexture::OnContextLost() {
-  context_lost_ = true;
+  DVLOG(1) << __func__;
+}
+
+// TODO(xhwang): Also observe GPU LUID change.
+void DCOMPTexture::OnResume() {
+  DVLOG(1) << __func__;
+  last_power_change_time_ = base::TimeTicks::Now();
+  ResetSizeIfNeeded();
+}
+
+void DCOMPTexture::ResetSizeIfNeeded() {
+  DVLOG(2) << __func__;
+  // For `kHardwareProtected` video frame, when hardware content reset happens,
+  // e.g. OS suspend/resume or GPU hot swap, existing video frames become stale
+  // and presenting them could cause issues like black screen flash (see
+  // crbug.com/1384544). So we set `size_` to (1, 1) so that DComp surface
+  // resources will be released (see SwapChainPresenter::PresentDCOMPSurface()).
+  // We don't know for sure whether hardware content reset happened. So we check
+  // whether power suspend/resume or GPU change happened recently as a hint.
+  // Since it's a hint, to prevent breaking normal playback, we only do this
+  // when the video frame is orphaned (the media Renderer has been suspended or
+  // destroyed, but we are still showing the last frame), which will trigger
+  // `ReleaseChannel()` and set `channel_` to null.
+  if (!channel_ &&
+      protected_video_type_ == gfx::ProtectedVideoType::kHardwareProtected &&
+      base::TimeTicks::Now() - last_power_change_time_ <
+          kPowerChangeDetectionGracePeriod) {
+    DVLOG(1) << __func__
+             << ": Resetting size to {1,1} to release dcomp surface resources "
+                "and prevent stale content from being displayed";
+    size_ = gfx::Size(1, 1);
+  }
 }
 
 void DCOMPTexture::StartListening(
@@ -256,6 +296,16 @@ void DCOMPTexture::SetRect(const gfx::Rect& window_relative_rect) {
 
   if (should_send_output_rect)
     SendOutputRect();
+}
+
+void DCOMPTexture::SetProtectedVideoType(
+    gfx::ProtectedVideoType protected_video_type) {
+  if (protected_video_type == protected_video_type_)
+    return;
+
+  DVLOG(2) << __func__ << ": protected_video_type="
+           << static_cast<int>(protected_video_type);
+  protected_video_type_ = protected_video_type;
 }
 
 void DCOMPTexture::SendOutputRect() {

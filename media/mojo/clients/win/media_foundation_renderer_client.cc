@@ -204,6 +204,18 @@ void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
 
   SignalMediaPlayingStateChange(false);
+
+  // When hardware context reset happens, presenting the `dcomp_video_frame_`
+  // could cause issues like black screen flash (see crbug.com/1384544).
+  // Render a black frame to avoid this issue. This is fine since the player
+  // is already in an error state and `this` will be recreated.
+  if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && dcomp_video_frame_ &&
+      !IsFrameServerMode()) {
+    dcomp_video_frame_.reset();
+    auto black_frame = media::VideoFrame::CreateBlackFrame(natural_size_);
+    sink_->PaintSingleFrame(black_frame, true);
+  }
+
   // Do not call MediaFoundationRenderer::ReportErrorReason() since it should've
   // already been reported in MediaFoundationRenderer.
   client_->OnError(status);
@@ -542,6 +554,7 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
 
   if (cdm_context_) {
     video_frame->metadata().protected_video = true;
+    video_frame->metadata().hw_protected = true;
   } else {
     DCHECK(SupportMediaFoundationClearPlayback());
     // This video frame is for clear content: setup observation of the mailbox

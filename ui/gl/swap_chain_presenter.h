@@ -247,7 +247,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Whether the current swap chain is presenting protected video, software
   // or hardware protection.
-  gfx::ProtectedVideoType protected_video_type_ =
+  gfx::ProtectedVideoType swap_chain_protected_video_type_ =
       gfx::ProtectedVideoType::kClear;
 
   // Presentation history to track if swap chain was composited or used hardware

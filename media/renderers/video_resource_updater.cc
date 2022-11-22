@@ -63,15 +63,12 @@ base::AtomicSequenceNumber g_next_video_resource_updater_id;
 
 gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
     const VideoFrameMetadata& metadata) {
-  gfx::ProtectedVideoType video_type = gfx::ProtectedVideoType::kClear;
-  if (metadata.protected_video) {
-    if (metadata.hw_protected) {
-      video_type = gfx::ProtectedVideoType::kHardwareProtected;
-    } else {
-      video_type = gfx::ProtectedVideoType::kSoftwareProtected;
-    }
+  if (!metadata.protected_video) {
+    return gfx::ProtectedVideoType::kClear;
   }
-  return video_type;
+
+  return metadata.hw_protected ? gfx::ProtectedVideoType::kHardwareProtected
+                               : gfx::ProtectedVideoType::kSoftwareProtected;
 }
 
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(

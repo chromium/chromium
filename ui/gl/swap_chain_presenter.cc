@@ -1190,7 +1190,7 @@ bool SwapChainPresenter::PresentToSwapChain(
       GetSwapChainFormat(params.protected_video_type, use_hdr_swap_chain);
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
   bool toggle_protected_video =
-      protected_video_type_ != params.protected_video_type;
+      swap_chain_protected_video_type_ != params.protected_video_type;
 
   if (swap_chain_ && !swap_chain_resized && !swap_chain_format_changed &&
       !toggle_protected_video && last_presented_images_ == params.images) {
@@ -1393,6 +1393,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(
                                     visual_clip_rect);
   dcomp_surface_proxy->SetRect(visual_transform->MapRect(
       gfx::Rect(params.quad_rect.origin(), on_screen_size)));
+
+  dcomp_surface_proxy->SetProtectedVideoType(params.protected_video_type);
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the
@@ -1649,7 +1651,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   DCHECK(!swap_chain_size.IsEmpty());
   swap_chain_size_ = swap_chain_size;
-  protected_video_type_ = protected_video_type;
+  swap_chain_protected_video_type_ = protected_video_type;
   gpu_vendor_id_ = 0;
 
   ReleaseSwapChainResources();
