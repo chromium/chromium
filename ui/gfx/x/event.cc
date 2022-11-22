@@ -59,26 +59,23 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   ReadEvent(this, connection, &buf);
 }
 
-Event::Event(Event&& event)
-    : send_event_(event.send_event_),
-      sequence_(event.sequence_),
-      type_id_(event.type_id_),
-      event_(std::move(event.event_)),
-      window_(std::move(event.window_)) {
-  memset(&event, 0, sizeof(Event));
+Event::Event(Event&& event) {
+  operator=(std::move(event));
 }
 
 Event& Event::operator=(Event&& event) {
-  send_event_ = event.send_event_;
-  sequence_ = event.sequence_;
-  type_id_ = event.type_id_;
-  //`window_` is owned by `event_`. Set it to nullptr before calling
-  //`event.reset()` to avoid holding a dangling ptr.
-  window_ = nullptr;
-  event_.reset();
-  event_ = std::move(event.event_);
+  // `window_` borrowed from `event_`, so it must be reset first.
   window_ = std::move(event.window_);
-  memset(&event, 0, sizeof(Event));
+  event_ = std::move(event.event_);
+  type_id_ = event.type_id_;
+  sequence_ = event.sequence_;
+  send_event_ = event.send_event_;
+
+  // Clear the old instance, to make sure an invalid state isn't going to be
+  // used:
+  event.type_id_ = 0;
+  event.sequence_ = 0;
+  event.send_event_ = false;
   return *this;
 }
 
