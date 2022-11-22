@@ -191,7 +191,11 @@ BASE_FEATURE(kPasswordDomainCapabilitiesFetching,
 // Controls the ability to import passwords from Chrome's settings page.
 BASE_FEATURE(kPasswordImport,
              "PasswordImport",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPasswordManagerRedesign,
