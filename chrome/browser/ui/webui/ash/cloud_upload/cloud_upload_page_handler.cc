@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_page_handler.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -57,6 +58,17 @@ void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
   if (callback_) {
     std::move(callback_).Run(action);
   }
+}
+
+void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
+  using file_manager::file_tasks::kActionIdOpenInOffice;
+
+  file_manager::file_tasks::SetWordFileHandler(profile_, kActionIdOpenInOffice);
+  file_manager::file_tasks::SetExcelFileHandler(profile_,
+                                                kActionIdOpenInOffice);
+  file_manager::file_tasks::SetPowerPointFileHandler(profile_,
+                                                     kActionIdOpenInOffice);
+  file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
 }  // namespace ash::cloud_upload

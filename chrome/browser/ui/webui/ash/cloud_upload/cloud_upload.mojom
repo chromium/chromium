@@ -51,4 +51,8 @@ interface PageHandler {
 
   // Returns the user selected action and requests the dialog to be closed.
   RespondAndClose(UserAction response);
+
+  // Set Office as the default file handler for office files and mark the
+  // setup as complete so that it does not need to be started again.
+  SetOfficeAsDefaultHandler();
 };

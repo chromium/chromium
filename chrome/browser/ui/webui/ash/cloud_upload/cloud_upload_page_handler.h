@@ -42,6 +42,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void GetDialogArgs(GetDialogArgsCallback callback) override;
   void IsOfficePWAInstalled(IsOfficePWAInstalledCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
+  void SetOfficeAsDefaultHandler() override;
 
  private:
   Profile* profile_;

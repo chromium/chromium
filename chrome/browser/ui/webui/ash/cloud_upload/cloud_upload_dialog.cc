@@ -81,7 +81,6 @@ void StartUpload(Profile* profile,
 void OnDialogComplete(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
                       const std::string& action) {
-  using file_manager::file_tasks::kActionIdOpenInOffice;
   using file_manager::file_tasks::SetExcelFileHandler;
   using file_manager::file_tasks::SetOfficeSetupComplete;
   using file_manager::file_tasks::SetPowerPointFileHandler;
@@ -97,10 +96,7 @@ void OnDialogComplete(Profile* profile,
     SetOfficeSetupComplete(profile);
     StartUpload(profile, file_urls, CloudProvider::kGoogleDrive);
   } else if (action == kUserActionUploadToOneDrive) {
-    SetWordFileHandler(profile, kActionIdOpenInOffice);
-    SetExcelFileHandler(profile, kActionIdOpenInOffice);
-    SetPowerPointFileHandler(profile, kActionIdOpenInOffice);
-    SetOfficeSetupComplete(profile);
+    // Default handlers have already been set by this point for Office/OneDrive.
     StartUpload(profile, file_urls, CloudProvider::kOneDrive);
   } else if (action == kUserActionSetUpGoogleDrive) {
     CloudUploadDialog::Show(profile, file_urls,

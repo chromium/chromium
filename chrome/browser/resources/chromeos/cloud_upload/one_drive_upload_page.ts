@@ -48,6 +48,8 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     const uploadButton = this.querySelector('.action-button')! as HTMLElement;
     const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
 
+    this.proxy.handler.setOfficeAsDefaultHandler();
+
     // TODO(b/251046341): Show multiple files.
     if (this.fileNames.length > 0) {
       fileContainerElement.hidden = false;
