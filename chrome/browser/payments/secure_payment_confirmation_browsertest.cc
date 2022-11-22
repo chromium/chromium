@@ -145,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_NoAuthenticator) {
             content::EvalJs(GetActiveWebContents(),
                             "getSecurePaymentConfirmationStatus()"));
 
-  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
@@ -162,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
             content::EvalJs(GetActiveWebContents(),
                             "getSecurePaymentConfirmationStatus()"));
 
-  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
@@ -198,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
 
   test_controller()->CloseDialog();
 
-  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 

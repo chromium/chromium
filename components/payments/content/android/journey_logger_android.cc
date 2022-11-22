@@ -162,6 +162,12 @@ void JourneyLoggerAndroid::SetNotShown(
       static_cast<JourneyLogger::NotShownReason>(jreason));
 }
 
+void JourneyLoggerAndroid::SetNoMatchingCredentialsShown(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetNoMatchingCredentialsShown();
+}
+
 void JourneyLoggerAndroid::RecordCheckoutStep(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

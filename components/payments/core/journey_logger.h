@@ -175,6 +175,7 @@ class JourneyLogger {
     kCouldNotShow = 1 << 23,
 
     // Bits for secure-payment-confirmation method.
+    kNoMatchingCredentials = 1 << 29,
     kRequestMethodSecurePaymentConfirmation = 1 << 30,
     kSelectedSecurePaymentConfirmation = 1 << 31,
 
@@ -315,6 +316,9 @@ class JourneyLogger {
   // Records that the Payment Request was not shown to the user, along with the
   // reason.
   void SetNotShown(NotShownReason reason);
+
+  // Records that the SPC No Matching Credentials UX was shown to the user.
+  void SetNoMatchingCredentialsShown();
 
   // Increments the bucket count for the given checkout step.
   void RecordCheckoutStep(CheckoutFunnelStep step);

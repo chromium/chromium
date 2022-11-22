@@ -870,6 +870,7 @@ public class PaymentRequestService
                 // because we download it in all cases, revealing a failure doesn't leak any
                 // information about the user to the site.
                 && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED) {
+            mJourneyLogger.setNoMatchingCredentialsShown();
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             Runnable continueCallback = () -> {

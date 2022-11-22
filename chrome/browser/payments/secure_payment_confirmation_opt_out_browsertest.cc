@@ -244,8 +244,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
 
   // Verify that opt out was recorded as both offered and chosen.
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kOptOutOffered,
-                         Event2::kUserOptedOut,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kOptOutOffered, Event2::kUserOptedOut,
+                         Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
@@ -272,8 +273,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
   EXPECT_EQ(
       GetWebAuthnErrorMessage(),
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
-                         Event2::kOptOutOffered,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kOptOutOffered,
+                         Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
@@ -303,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
   EXPECT_EQ(
       GetWebAuthnErrorMessage(),
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
@@ -329,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
   EXPECT_EQ(
       GetWebAuthnErrorMessage(),
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kNoMatchingCredentials,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 

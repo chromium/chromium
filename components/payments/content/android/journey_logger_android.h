@@ -75,6 +75,9 @@ class JourneyLoggerAndroid {
   void SetNotShown(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jcaller,
                    jint jreason);
+  void SetNoMatchingCredentialsShown(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
   void RecordCheckoutStep(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jcaller,
                           jint jstep);

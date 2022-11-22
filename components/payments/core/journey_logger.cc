@@ -291,6 +291,11 @@ void JourneyLogger::SetNotShown(NotShownReason reason) {
                                 NOT_SHOWN_REASON_MAX);
 }
 
+void JourneyLogger::SetNoMatchingCredentialsShown() {
+  SetShown();
+  SetEvent2Occurred(Event2::kNoMatchingCredentials);
+}
+
 void JourneyLogger::RecordCheckoutStep(CheckoutFunnelStep step) {
   base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel", step);
 }
