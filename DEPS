@@ -104,11 +104,6 @@ vars = {
   # restricted to Googlers only.
   'checkout_chromium_fsc_test_dependencies': False,
 
-  # By default, check out //clank in chromium instead of src-internal. This is
-  # part of an internal migration (see http://go/clank>src) and will be removed
-  # after the migration completes. See https://crbug.com/1315715 for context.
-  'checkout_clank_via_src_internal': False,
-
   # By default, do not check out Google Benchmark. The library is only used by a
   # few specialized benchmarks that most developers do not interact with. Will
   # be overridden by gclient variables.
@@ -817,7 +812,7 @@ deps = {
   'src/clank': {
     'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
     '0ead896b8ba8b10a5443e5328e84461b59d5903f',
-    'condition': 'checkout_android and checkout_src_internal and not checkout_clank_via_src_internal',
+    'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
