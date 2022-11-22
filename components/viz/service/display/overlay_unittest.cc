@@ -4652,6 +4652,39 @@ TEST_F(DelegatedTest, ForwardMultipleBasic) {
   }
 }
 
+// Transparent colors are important for delegating overlays. Overlays that have
+// an alpha channel but are required to be drawn as opaque will have solid black
+// placed behind them. This solid black can interfer with overlay
+// promotion/blend optimizations.
+TEST_F(DelegatedTest, ForwardBackgroundColor) {
+  auto pass = CreateRenderPass();
+
+  auto* quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kOverlayRect);
+  quad->background_color = SkColors::kTransparent;
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  // AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  EXPECT_RECTF_EQ(gfx::RectF(kOverlayRect), candidate_list[0].display_rect);
+  EXPECT_EQ(SkColors::kTransparent, candidate_list[0].color.value());
+}
+
 TEST_F(DelegatedTest, DoNotDelegateCopyRequest) {
   auto pass = CreateRenderPass();
   CreateCandidateQuadAt(resource_provider_.get(),

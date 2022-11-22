@@ -478,15 +478,22 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
   if (quad->nearest_neighbor)
     return CandidateStatus::kFailNearFilter;
 
-  if (quad->background_color != SkColors::kTransparent &&
-      (quad->background_color != SkColors::kBlack ||
-       quad->ShouldDrawWithBlending())) {
-    // This path can also be used by other platforms like Ash/Chrome, which does
-    // not support overlays with background color. Only LaCros/Wayland supports
-    // that.
-    if (!is_delegated_context_)
-      return CandidateStatus::kFailBlending;
+  if (is_delegated_context_) {
+    // Always convey |background_color| even when transparent. This allows for
+    // the wayland server to make blending optimizations even when the quad is
+    // considered opaque. Specifically Exo will try to ensure the opaqueness of
+    // alpha formats by adding a black background which can cause difficulty in
+    // overlay promotion (see the code in the lines below).
     candidate.color = quad->background_color;
+  } else if (quad->background_color != SkColors::kTransparent &&
+             (quad->background_color != SkColors::kBlack ||
+              quad->ShouldDrawWithBlending())) {
+    // The condition above is very specific to the implementation of DRM/KMS
+    // scanout. An opaque plane with buffer that has buffer element component
+    // alpha will default black for the blend. Basically we can simulate a black
+    // background using the default color when blending an opaque overlay. This
+    // trick, of course, only works for black.
+    return CandidateStatus::kFailBlending;
   }
 
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
