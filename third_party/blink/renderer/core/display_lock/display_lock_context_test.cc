@@ -1946,7 +1946,7 @@ TEST_F(DisplayLockContextTest, DescendantNeedsPaintPropertyUpdateBlocked) {
   EXPECT_TRUE(locked_object->DescendantNeedsPaintPropertyUpdate());
   EXPECT_FALSE(handler_object->DescendantNeedsPaintPropertyUpdate());
 
-  locked_object->SetShouldCheckForPaintInvalidationWithoutGeometryChange();
+  locked_object->SetShouldCheckForPaintInvalidationWithoutLayoutChange();
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(ancestor_object->NeedsPaintPropertyUpdate());

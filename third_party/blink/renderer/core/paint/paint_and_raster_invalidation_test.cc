@@ -207,10 +207,10 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
               UnorderedElementsAre(
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 50, 100),
-                                         PaintInvalidationReason::kGeometry},
+                                         PaintInvalidationReason::kLayout},
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 101, 70),
-                                         PaintInvalidationReason::kGeometry}));
+                                         PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -220,10 +220,10 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
               UnorderedElementsAre(
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 50, 100),
-                                         PaintInvalidationReason::kGeometry},
+                                         PaintInvalidationReason::kLayout},
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 101, 70),
-                                         PaintInvalidationReason::kGeometry}));
+                                         PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -242,10 +242,10 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
               UnorderedElementsAre(
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 100, 200),
-                                         PaintInvalidationReason::kGeometry},
+                                         PaintInvalidationReason::kLayout},
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 202, 140),
-                                         PaintInvalidationReason::kGeometry}));
+                                         PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -255,10 +255,10 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
               UnorderedElementsAre(
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 100, 200),
-                                         PaintInvalidationReason::kGeometry},
+                                         PaintInvalidationReason::kLayout},
                   RasterInvalidationInfo{object->Id(), object->DebugName(),
                                          gfx::Rect(0, 0, 202, 140),
-                                         PaintInvalidationReason::kGeometry}));
+                                         PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -274,7 +274,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelWithinPixelsChange) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
                   object->Id(), object->DebugName(), gfx::Rect(0, 0, 50, 100),
-                  PaintInvalidationReason::kGeometry}));
+                  PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -284,7 +284,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelWithinPixelsChange) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
                   object->Id(), object->DebugName(), gfx::Rect(0, 1, 50, 99),
-                  PaintInvalidationReason::kGeometry}));
+                  PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -565,11 +565,10 @@ TEST_P(PaintAndRasterInvalidationTest,
   target->setAttribute(html_names::kStyleAttr, "height: 200px");
   UpdateAllLifecyclePhasesForTest();
   // Border invalidated in the container layer.
-  EXPECT_THAT(
-      container_raster_invalidation_tracking()->Invalidations(),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          target_obj->Id(), target_obj->DebugName(), gfx::Rect(0, 0, 70, 220),
-          PaintInvalidationReason::kGeometry}));
+  EXPECT_THAT(container_raster_invalidation_tracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  target_obj->Id(), target_obj->DebugName(),
+                  gfx::Rect(0, 0, 70, 220), PaintInvalidationReason::kLayout}));
   // No invalidation on scrolling contents for container resize.
   EXPECT_FALSE(contents_raster_invalidation_tracking()->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
@@ -621,11 +620,10 @@ TEST_P(PaintAndRasterInvalidationTest,
   target->setAttribute(html_names::kStyleAttr, "height: 200px");
   UpdateAllLifecyclePhasesForTest();
   // Border invalidated in the container layer.
-  EXPECT_THAT(
-      container_raster_invalidation_tracking()->Invalidations(),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          target_obj->Id(), target_obj->DebugName(), gfx::Rect(0, 0, 70, 220),
-          PaintInvalidationReason::kGeometry}));
+  EXPECT_THAT(container_raster_invalidation_tracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  target_obj->Id(), target_obj->DebugName(),
+                  gfx::Rect(0, 0, 70, 220), PaintInvalidationReason::kLayout}));
   // No invalidation on scrolling contents for container resize.
   EXPECT_FALSE(contents_raster_invalidation_tracking()->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
@@ -753,14 +751,14 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  target->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-      PaintInvalidationReason::kForTesting);
+  target->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+      PaintInvalidationReason::kStyle);
   target->SetShouldDelayFullPaintInvalidation();
   EXPECT_FALSE(target->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(target->ShouldDelayFullPaintInvalidation());
-  EXPECT_EQ(PaintInvalidationReason::kForTesting,
+  EXPECT_EQ(PaintInvalidationReason::kStyle,
             target->FullPaintInvalidationReason());
-  EXPECT_FALSE(target->ShouldCheckGeometryForPaintInvalidation());
+  EXPECT_FALSE(target->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(target->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(target->Parent()->ShouldCheckForPaintInvalidation());
 
@@ -769,9 +767,9 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
   EXPECT_FALSE(GetRasterInvalidationTracking()->HasInvalidations());
   EXPECT_FALSE(target->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(target->ShouldDelayFullPaintInvalidation());
-  EXPECT_EQ(PaintInvalidationReason::kForTesting,
+  EXPECT_EQ(PaintInvalidationReason::kStyle,
             target->FullPaintInvalidationReason());
-  EXPECT_FALSE(target->ShouldCheckGeometryForPaintInvalidation());
+  EXPECT_FALSE(target->ShouldCheckLayoutForPaintInvalidation());
   EXPECT_TRUE(target->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(target->Parent()->ShouldCheckForPaintInvalidation());
   GetDocument().View()->SetTracksRasterInvalidations(false);
@@ -784,13 +782,13 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
       GetRasterInvalidationTracking()->Invalidations(),
       UnorderedElementsAre(RasterInvalidationInfo{
           target->Id(), target->DebugName(), gfx::Rect(0, 4000, 100, 100),
-          PaintInvalidationReason::kForTesting}));
+          PaintInvalidationReason::kStyle}));
   EXPECT_EQ(PaintInvalidationReason::kNone,
             target->FullPaintInvalidationReason());
   EXPECT_FALSE(target->ShouldDelayFullPaintInvalidation());
   EXPECT_FALSE(target->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(target->Parent()->ShouldCheckForPaintInvalidation());
-  EXPECT_FALSE(target->ShouldCheckGeometryForPaintInvalidation());
+  EXPECT_FALSE(target->ShouldCheckLayoutForPaintInvalidation());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -1021,10 +1019,10 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
                                   ->GetScrollCornerDisplayItemClient();
   invalidations.push_back(RasterInvalidationInfo{
       scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(93, 93, 7, 7),
-      PaintInvalidationReason::kGeometry});
+      PaintInvalidationReason::kLayout});
   invalidations.push_back(RasterInvalidationInfo{
       scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(193, 93, 7, 7),
-      PaintInvalidationReason::kGeometry});
+      PaintInvalidationReason::kLayout});
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAreArray(invalidations));
 

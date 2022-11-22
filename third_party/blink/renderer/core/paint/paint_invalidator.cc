@@ -90,7 +90,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     const LayoutObject& object,
     const PaintPropertyTreeBuilderFragmentContext& tree_builder_context,
     PaintInvalidatorContext& context) {
-  if (!object.ShouldCheckGeometryForPaintInvalidation())
+  if (!object.ShouldCheckLayoutForPaintInvalidation())
     return;
 
   if (tree_builder_context.this_or_ancestor_opacity_is_zero ||

@@ -2696,6 +2696,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
           text->InvalidateVisualOverflow();
       }
       PaintingLayer()->SetNeedsVisualOverflowRecalc();
+      // TODO(crbug.com/1385848): This looks like an over-invalidation.
+      // visual overflow change should not require checking for layout change.
       SetShouldCheckForPaintInvalidation();
     }
 #if DCHECK_IS_ON()
@@ -2710,7 +2712,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
     } else {
       // We'll set needing geometry change later if the style change does cause
       // possible layout change or visual overflow change.
-      SetShouldDoFullPaintInvalidationWithoutGeometryChange();
+      SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+          PaintInvalidationReason::kStyle);
     }
   }
 
@@ -2740,7 +2743,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   }
 
   if (!IsText() && diff.CompositablePaintEffectChanged()) {
-    SetShouldDoFullPaintInvalidationWithoutGeometryChange();
+    SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+        PaintInvalidationReason::kStyle);
   }
 }
 
@@ -4564,63 +4568,54 @@ void LayoutObject::SetShouldInvalidateSelection() {
 void LayoutObject::SetShouldDoFullPaintInvalidation(
     PaintInvalidationReason reason) {
   NOT_DESTROYED();
+  DCHECK(IsLayoutPaintInvalidationReason(reason));
   SetShouldCheckForPaintInvalidation();
-  SetShouldDoFullPaintInvalidationWithoutGeometryChange(reason);
+  SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
 }
 
-static PaintInvalidationReason DocumentLifecycleBasedPaintInvalidationReason(
-    const DocumentLifecycle& document_lifecycle) {
-  switch (document_lifecycle.GetState()) {
-    case DocumentLifecycle::kInStyleRecalc:
-      return PaintInvalidationReason::kStyle;
-    case DocumentLifecycle::kInPerformLayout:
-    case DocumentLifecycle::kAfterPerformLayout:
-      return PaintInvalidationReason::kGeometry;
-    default:
-      return PaintInvalidationReason::kFull;
-  }
+void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+    PaintInvalidationReason reason) {
+  NOT_DESTROYED();
+  DCHECK(IsNonLayoutFullPaintInvalidationReason(reason));
+  // Use SetBackgroundNeedsFullPaintInvalidation() instead. See comment of the
+  // function.
+  DCHECK_NE(reason, PaintInvalidationReason::kBackground);
+  SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
 }
 
-void LayoutObject::
-    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
-        PaintInvalidationReason reason) {
+void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
+    PaintInvalidationReason reason) {
   NOT_DESTROYED();
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
-  if (ShouldDoFullPaintInvalidation())
-    return;
-
-  SetShouldCheckForPaintInvalidationWithoutGeometryChange();
-  if (reason == PaintInvalidationReason::kFull) {
-    reason = DocumentLifecycleBasedPaintInvalidationReason(
-        GetDocument().Lifecycle());
-  }
-  full_paint_invalidation_reason_ = static_cast<unsigned>(reason);
-  DCHECK_EQ(reason, FullPaintInvalidationReason());
   bitfields_.SetShouldDelayFullPaintInvalidation(false);
+  if (reason > FullPaintInvalidationReason()) {
+    SetShouldCheckForPaintInvalidationWithoutLayoutChange();
+    full_paint_invalidation_reason_ = static_cast<unsigned>(reason);
+    DCHECK_EQ(reason, FullPaintInvalidationReason());
+  }
 }
 
 void LayoutObject::SetShouldCheckForPaintInvalidation() {
   NOT_DESTROYED();
-  if (ShouldCheckGeometryForPaintInvalidation()) {
+  if (ShouldCheckLayoutForPaintInvalidation()) {
     DCHECK(ShouldCheckForPaintInvalidation());
     return;
   }
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);
-  bitfields_.SetShouldCheckGeometryForPaintInvalidation(true);
+  bitfields_.SetShouldCheckLayoutForPaintInvalidation(true);
   for (LayoutObject* ancestor = Parent();
-       ancestor &&
-       !ancestor->DescendantShouldCheckGeometryForPaintInvalidation();
+       ancestor && !ancestor->DescendantShouldCheckLayoutForPaintInvalidation();
        ancestor = ancestor->Parent()) {
     ancestor->bitfields_.SetShouldCheckForPaintInvalidation(true);
-    ancestor->bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(
+    ancestor->bitfields_.SetDescendantShouldCheckLayoutForPaintInvalidation(
         true);
   }
 }
 
-void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {
+void LayoutObject::SetShouldCheckForPaintInvalidationWithoutLayoutChange() {
   NOT_DESTROYED();
   if (ShouldCheckForPaintInvalidation())
     return;
@@ -4649,7 +4644,7 @@ void LayoutObject::SetMayNeedPaintInvalidationAnimatedBackgroundImage() {
   if (MayNeedPaintInvalidationAnimatedBackgroundImage())
     return;
   bitfields_.SetMayNeedPaintInvalidationAnimatedBackgroundImage(true);
-  SetShouldCheckForPaintInvalidationWithoutGeometryChange();
+  SetShouldCheckForPaintInvalidationWithoutLayoutChange();
 }
 
 void LayoutObject::SetShouldDelayFullPaintInvalidation() {
@@ -4660,7 +4655,7 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
   bitfields_.SetShouldDelayFullPaintInvalidation(true);
   if (!ShouldCheckForPaintInvalidation()) {
     // This will also schedule a visual update.
-    SetShouldCheckForPaintInvalidationWithoutGeometryChange();
+    SetShouldCheckForPaintInvalidationWithoutLayoutChange();
   } else {
     // Schedule visual update for the next document cycle in which we will
     // check if the delayed invalidation should be promoted to a real
@@ -4670,9 +4665,8 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
 }
 
 void LayoutObject::ClearShouldDelayFullPaintInvalidation() {
-  // This will clear ShouldDelayFullPaintInvalidation() flag and enable previous
-  // BackgroundNeedsFullPaintInvalidaiton() if it's set.
-  SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+  // This will clear ShouldDelayFullPaintInvalidation() flag.
+  SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
       FullPaintInvalidationReason());
 }
 
@@ -4692,8 +4686,8 @@ void LayoutObject::ClearPaintInvalidationFlags() {
   bitfields_.SetSubtreeShouldCheckForPaintInvalidation(false);
   bitfields_.SetSubtreeShouldDoFullPaintInvalidation(false);
   bitfields_.SetMayNeedPaintInvalidationAnimatedBackgroundImage(false);
-  bitfields_.SetShouldCheckGeometryForPaintInvalidation(false);
-  bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(false);
+  bitfields_.SetShouldCheckLayoutForPaintInvalidation(false);
+  bitfields_.SetDescendantShouldCheckLayoutForPaintInvalidation(false);
   bitfields_.SetShouldInvalidateSelection(false);
 }
 
@@ -4702,8 +4696,8 @@ bool LayoutObject::PaintInvalidationStateIsDirty() const {
   NOT_DESTROYED();
   return BackgroundNeedsFullPaintInvalidation() ||
          ShouldCheckForPaintInvalidation() || ShouldInvalidateSelection() ||
-         ShouldCheckGeometryForPaintInvalidation() ||
-         DescendantShouldCheckGeometryForPaintInvalidation() ||
+         ShouldCheckLayoutForPaintInvalidation() ||
+         DescendantShouldCheckLayoutForPaintInvalidation() ||
          ShouldDoFullPaintInvalidation() ||
          SubtreeShouldDoFullPaintInvalidation() ||
          MayNeedPaintInvalidationAnimatedBackgroundImage();
@@ -4718,7 +4712,7 @@ void LayoutObject::EnsureIsReadyForPaintInvalidation() {
   // and this object is marked for checking paint invalidation for any reason.
   if (bitfields_.OutlineMayBeAffectedByDescendants() ||
       bitfields_.PreviousOutlineMayBeAffectedByDescendants()) {
-    SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+    SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kOutline);
   }
   bitfields_.SetPreviousOutlineMayBeAffectedByDescendants(

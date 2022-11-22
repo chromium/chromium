@@ -3152,14 +3152,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // background needs full invalidation, use
   // SetBackgroundNeedsFullPaintInvalidation().
   void SetShouldDoFullPaintInvalidation(
-      PaintInvalidationReason = PaintInvalidationReason::kFull);
-  void SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-      PaintInvalidationReason reason = PaintInvalidationReason::kFull) {
-    NOT_DESTROYED();
-    // Use SetBackgroundNeedsFullPaintInvalidation() instead. See comment above.
-    DCHECK_NE(reason, PaintInvalidationReason::kBackground);
-    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(reason);
-  }
+      PaintInvalidationReason = PaintInvalidationReason::kLayout);
+  void SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+      PaintInvalidationReason reason);
 
   void ClearPaintInvalidationFlags();
 
@@ -3168,13 +3163,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.ShouldCheckForPaintInvalidation();
   }
   // Sets both ShouldCheckForPaintInvalidation() and
-  // ShouldCheckGeometryForPaintInvalidation(). Though the setter and the getter
+  // ShouldCheckLayoutForPaintInvalidation(). Though the setter and the getter
   // are asymmetric, this prevents callers from accidentally missing the
-  // geometry checking flag.
+  // layout checking flag.
   void SetShouldCheckForPaintInvalidation();
   // Sets ShouldCheckForPaintInvalidation() only. PaintInvalidator won't require
-  // paint property tree update or other geometry related updates.
-  void SetShouldCheckForPaintInvalidationWithoutGeometryChange();
+  // paint property tree update or other layout related updates.
+  void SetShouldCheckForPaintInvalidationWithoutLayoutChange();
 
   bool SubtreeShouldCheckForPaintInvalidation() const {
     NOT_DESTROYED();
@@ -3182,13 +3177,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetSubtreeShouldCheckForPaintInvalidation();
 
-  bool ShouldCheckGeometryForPaintInvalidation() const {
+  bool ShouldCheckLayoutForPaintInvalidation() const {
     NOT_DESTROYED();
-    return bitfields_.ShouldCheckGeometryForPaintInvalidation();
+    return bitfields_.ShouldCheckLayoutForPaintInvalidation();
   }
-  bool DescendantShouldCheckGeometryForPaintInvalidation() const {
+  bool DescendantShouldCheckLayoutForPaintInvalidation() const {
     NOT_DESTROYED();
-    return bitfields_.DescendantShouldCheckGeometryForPaintInvalidation();
+    return bitfields_.DescendantShouldCheckLayoutForPaintInvalidation();
   }
 
   bool MayNeedPaintInvalidationAnimatedBackgroundImage() const {
@@ -3352,29 +3347,29 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     void SetShouldCheckForPaintInvalidation() {
       DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
                 DocumentLifecycle::kInPrePaint);
-      layout_object_.bitfields_.SetShouldCheckGeometryForPaintInvalidation(
-          true);
+      layout_object_.bitfields_.SetShouldCheckLayoutForPaintInvalidation(true);
       layout_object_.bitfields_.SetShouldCheckForPaintInvalidation(true);
     }
     void SetShouldDoFullPaintInvalidation(PaintInvalidationReason reason) {
       DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
                 DocumentLifecycle::kInPrePaint);
-      if (layout_object_.ShouldDoFullPaintInvalidation())
-        return;
-      SetShouldDoFullPaintInvalidationWithoutGeometryChange(reason);
-      layout_object_.bitfields_.SetShouldCheckGeometryForPaintInvalidation(
-          true);
+      // This call to MutableForPainting::SetShouldCheckForPaintInvaldiation()
+      // prevents LayoutObject::SetShouldDoFullPaintInvalidation() from marking
+      // ancestors for paint invalidation, which is not needed when this is
+      // called during PrePaint.
+      SetShouldCheckForPaintInvalidation();
+      layout_object_.SetShouldDoFullPaintInvalidation(reason);
     }
-    void SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+    void SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason reason) {
       DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
                 DocumentLifecycle::kInPrePaint);
-      if (layout_object_.ShouldDoFullPaintInvalidation())
-        return;
+      DCHECK(IsNonLayoutFullPaintInvalidationReason(reason));
+      // This prevents LayoutObject::SetShouldDoFullPaintInvalidation...()
+      // from marking ancestors for paint invalidation.
       layout_object_.bitfields_.SetShouldCheckForPaintInvalidation(true);
-      layout_object_.bitfields_.SetShouldDelayFullPaintInvalidation(false);
-      layout_object_.full_paint_invalidation_reason_ =
-          static_cast<unsigned>(reason);
+      layout_object_
+          .SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
     }
 
     void SetShouldDelayFullPaintInvalidation() {
@@ -3543,7 +3538,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetBackgroundNeedsFullPaintInvalidation() {
     NOT_DESTROYED();
-    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+    SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
         PaintInvalidationReason::kBackground);
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(true);
   }
@@ -3999,7 +3994,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void MarkSelfPaintingLayerForVisualOverflowRecalc();
 
-  void SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+  void SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(
       PaintInvalidationReason);
 
   // Additional bitfields.
@@ -4090,8 +4085,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           subtree_should_do_full_paint_invalidation_(false),
           may_need_paint_invalidation_animated_background_image_(false),
           should_invalidate_selection_(false),
-          should_check_geometry_for_paint_invalidation_(true),
-          descendant_should_check_geometry_for_paint_invalidation_(true),
+          should_check_layout_for_paint_invalidation_(true),
+          descendant_should_check_layout_for_paint_invalidation_(true),
           needs_paint_property_update_(true),
           descendant_needs_paint_property_update_(true),
           floating_(false),
@@ -4247,11 +4242,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                          MayNeedPaintInvalidationAnimatedBackgroundImage);
     ADD_BOOLEAN_BITFIELD(should_invalidate_selection_,
                          ShouldInvalidateSelection);
-    ADD_BOOLEAN_BITFIELD(should_check_geometry_for_paint_invalidation_,
-                         ShouldCheckGeometryForPaintInvalidation);
-    ADD_BOOLEAN_BITFIELD(
-        descendant_should_check_geometry_for_paint_invalidation_,
-        DescendantShouldCheckGeometryForPaintInvalidation);
+    ADD_BOOLEAN_BITFIELD(should_check_layout_for_paint_invalidation_,
+                         ShouldCheckLayoutForPaintInvalidation);
+    ADD_BOOLEAN_BITFIELD(descendant_should_check_layout_for_paint_invalidation_,
+                         DescendantShouldCheckLayoutForPaintInvalidation);
     // Whether the paint properties need to be updated. For more details, see
     // LayoutObject::NeedsPaintPropertyUpdate().
     ADD_BOOLEAN_BITFIELD(needs_paint_property_update_,

@@ -5,30 +5,67 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 
 #include <sstream>
+
+#include "base/functional/function_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
+namespace {
+
+using ReasonFunction = base::FunctionRef<void(PaintInvalidationReason)>;
+
+PaintInvalidationReason NextReason(PaintInvalidationReason r) {
+  return static_cast<PaintInvalidationReason>(static_cast<unsigned>(r) + 1);
+}
+
+void ForReasons(PaintInvalidationReason min,
+                PaintInvalidationReason max,
+                ReasonFunction f) {
+  for (auto i = min; i <= max; i = NextReason(i))
+    f(i);
+}
 
 TEST(PaintInvalidationReasonTest, ToString) {
-  for (auto i = PaintInvalidationReason::kNone;
-       i <= PaintInvalidationReason::kMax;
-       i = static_cast<PaintInvalidationReason>(static_cast<int>(i) + 1))
-    EXPECT_STRNE("", PaintInvalidationReasonToString(i));
+  ForReasons(PaintInvalidationReason::kNone, PaintInvalidationReason::kMax,
+             [](PaintInvalidationReason r) {
+               EXPECT_STRNE("", PaintInvalidationReasonToString(r));
+             });
 
   EXPECT_STREQ("none",
                PaintInvalidationReasonToString(PaintInvalidationReason::kNone));
-  EXPECT_STREQ("full",
-               PaintInvalidationReasonToString(PaintInvalidationReason::kFull));
+  EXPECT_STREQ("geometry", PaintInvalidationReasonToString(
+                               PaintInvalidationReason::kLayout));
 }
 
-TEST(PaintInvalidationReasonTest, StreamOutput) {
-  for (auto i = PaintInvalidationReason::kNone;
-       i <= PaintInvalidationReason::kMax;
-       i = static_cast<PaintInvalidationReason>(static_cast<int>(i) + 1)) {
-    std::stringstream string_stream;
-    string_stream << i;
-    EXPECT_EQ(PaintInvalidationReasonToString(i), string_stream.str());
-  }
+TEST(PaintInvalidationReasonTest, IsFullGeometryPaintInvalidationReason) {
+  ForReasons(PaintInvalidationReason::kNone,
+             PaintInvalidationReason::kNonFullMax,
+             [](PaintInvalidationReason r) {
+               EXPECT_FALSE(IsFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+             });
+  ForReasons(NextReason(PaintInvalidationReason::kNonFullMax),
+             PaintInvalidationReason::kNonLayoutMax,
+             [](PaintInvalidationReason r) {
+               EXPECT_TRUE(IsFullPaintInvalidationReason(r));
+               EXPECT_TRUE(IsNonLayoutFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+             });
+  ForReasons(NextReason(PaintInvalidationReason::kNonLayoutMax),
+             PaintInvalidationReason::kLayoutMax,
+             [](PaintInvalidationReason r) {
+               EXPECT_TRUE(IsFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
+               EXPECT_TRUE(IsLayoutPaintInvalidationReason(r));
+             });
+  ForReasons(NextReason(PaintInvalidationReason::kLayoutMax),
+             PaintInvalidationReason::kMax, [](PaintInvalidationReason r) {
+               EXPECT_TRUE(IsFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+             });
 }
 
+}  // namespace
 }  // namespace blink

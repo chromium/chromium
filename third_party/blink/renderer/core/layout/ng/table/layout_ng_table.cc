@@ -86,7 +86,7 @@ void LayoutNGTable::GridBordersChanged() {
   NOT_DESTROYED();
   InvalidateCachedTableBorders();
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
-    SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+    SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kStyle);
     // If borders change, table fragment must be regenerated.
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
@@ -99,7 +99,7 @@ void LayoutNGTable::TableGridStructureChanged() {
   // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
-    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
+    SetShouldDoFullPaintInvalidation();
 }
 
 bool LayoutNGTable::HasBackgroundForPaint() const {

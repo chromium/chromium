@@ -298,10 +298,10 @@ bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
 bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
     const LayoutObject& object) {
   return object.NeedsPaintPropertyUpdate() ||
-         object.ShouldCheckGeometryForPaintInvalidation() ||
+         object.ShouldCheckLayoutForPaintInvalidation() ||
          (!object.ChildPrePaintBlockedByDisplayLock() &&
           (object.DescendantNeedsPaintPropertyUpdate() ||
-           object.DescendantShouldCheckGeometryForPaintInvalidation()));
+           object.DescendantShouldCheckLayoutForPaintInvalidation()));
 }
 
 bool PrePaintTreeWalk::ContextRequiresChildTreeBuilderContext(
@@ -329,8 +329,8 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 
   DCHECK(!object.NeedsPaintPropertyUpdate());
   DCHECK(!object.DescendantNeedsPaintPropertyUpdate());
-  DCHECK(!object.DescendantShouldCheckGeometryForPaintInvalidation());
-  DCHECK(!object.ShouldCheckGeometryForPaintInvalidation());
+  DCHECK(!object.DescendantShouldCheckLayoutForPaintInvalidation());
+  DCHECK(!object.ShouldCheckLayoutForPaintInvalidation());
   NOTREACHED() << "Unknown reason.";
 }
 #endif

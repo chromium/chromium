@@ -1157,7 +1157,7 @@ void LayoutTableCell::UpdateCollapsedBorderValues() const {
   auto row_span = ResolvedRowSpan();
   for (auto r = RowIndex(); r < RowIndex() + row_span; ++r) {
     if (auto* row = Section()->RowLayoutObjectAt(r))
-      row->SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
+      row->SetShouldDoFullPaintInvalidation();
   }
   collapsed_borders_need_paint_invalidation_ = false;
 }

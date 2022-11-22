@@ -180,9 +180,9 @@ void LayoutNGFieldset::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   // Fieldset's box decoration painting depends on the legend geometry.
   const LayoutBox* legend_box = LayoutFieldset::FindInFlowLegend(*this);
-  if (legend_box && legend_box->ShouldCheckGeometryForPaintInvalidation()) {
+  if (legend_box && legend_box->ShouldCheckLayoutForPaintInvalidation()) {
     GetMutableForPainting().SetShouldDoFullPaintInvalidation(
-        PaintInvalidationReason::kGeometry);
+        PaintInvalidationReason::kLayout);
   }
   LayoutNGBlockFlow::InvalidatePaint(context);
 }

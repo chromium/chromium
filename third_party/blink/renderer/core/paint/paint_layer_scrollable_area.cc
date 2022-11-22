@@ -2950,7 +2950,7 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
     context.painting_layer->SetNeedsRepaint();
     const auto& box = *GetLayoutBox();
     ObjectPaintInvalidator(box).InvalidateDisplayItemClient(
-        box, PaintInvalidationReason::kGeometry);
+        box, PaintInvalidationReason::kLayout);
   }
 
   previously_was_overlay = is_overlay;
@@ -3022,7 +3022,7 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
     context.painting_layer->SetNeedsRepaint();
     ObjectPaintInvalidator(*GetLayoutBox())
         .InvalidateDisplayItemClient(GetScrollCornerDisplayItemClient(),
-                                     PaintInvalidationReason::kGeometry);
+                                     PaintInvalidationReason::kLayout);
   }
 
   ClearNeedsPaintInvalidationForScrollControls();

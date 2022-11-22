@@ -55,7 +55,7 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
 void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
-    table->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+    table->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kImage);
   }
 }

@@ -31,7 +31,7 @@ void TableCellPaintInvalidator::InvalidateContainerForCellGeometryChange(
   // so we should invalidate the container immediately here instead of setting
   // paint invalidation flags.
   container_context.painting_layer->SetNeedsRepaint();
-  container.InvalidateDisplayItemClients(PaintInvalidationReason::kGeometry);
+  container.InvalidateDisplayItemClients(PaintInvalidationReason::kLayout);
 }
 
 void TableCellPaintInvalidator::InvalidatePaint() {

@@ -173,7 +173,7 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
 
   if (!IsFullPaintInvalidationReason(reason) &&
       old_visual_rect.origin() != new_visual_rect.origin())
-    reason = PaintInvalidationReason::kGeometry;
+    reason = PaintInvalidationReason::kLayout;
 
   if (IsFullPaintInvalidationReason(reason)) {
     GenerateFullRasterInvalidation(client_id, old_visual_rect, new_visual_rect,

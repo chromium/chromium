@@ -166,7 +166,7 @@ void LayoutSVGImage::UpdateLayout() {
 
   const bool bbox_changed = UpdateBoundingBox();
   if (bbox_changed) {
-    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kImage);
+    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
 
     // Invalidate all resources of this client if our reference box changed.
     if (EverHadLayout())
@@ -252,7 +252,8 @@ void LayoutSVGImage::ImageChanged(WrappedImagePtr, CanDeferInvalidation defer) {
   if (CalculateObjectSize() != object_bounding_box_.size())
     SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
 
-  SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kImage);
+  SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+      PaintInvalidationReason::kImage);
 }
 
 }  // namespace blink

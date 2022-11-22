@@ -634,8 +634,7 @@ void LayoutMultiColumnFlowThread::ColumnRuleStyleDidChange() {
   NOT_DESTROYED();
   for (LayoutMultiColumnSet* column_set = FirstMultiColumnSet(); column_set;
        column_set = column_set->NextSiblingMultiColumnSet()) {
-    column_set->SetShouldDoFullPaintInvalidation(
-        PaintInvalidationReason::kStyle);
+    column_set->SetShouldDoFullPaintInvalidation();
   }
 }
 

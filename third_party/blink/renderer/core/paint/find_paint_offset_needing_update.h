@@ -21,7 +21,7 @@ namespace blink {
 // FindPaintOffsetNeedingUpdateScope catches cases where paint offset needed
 // an update but was not marked as such. If paint offset will change, the
 // object must be marked as such by
-// LayoutObject::SetShouldCheckGeometryForPaintInvalidation()
+// LayoutObject::SetShouldCheckLayoutForPaintInvalidation()
 // (which is a private function called by several public paint-invalidation-flag
 // setting functions).
 class FindPaintOffsetNeedingUpdateScope {

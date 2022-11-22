@@ -222,7 +222,7 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
 
   inner_view->SetNeedsLayout("test");
   inner_view->SetShouldDoFullPaintInvalidation(
-      PaintInvalidationReason::kForTesting);
+      PaintInvalidationReason::kLayout);
   inner_view->Layer()->SetNeedsRepaint();
   EXPECT_TRUE(inner_frame_document->View()
                   ->GetLayoutView()

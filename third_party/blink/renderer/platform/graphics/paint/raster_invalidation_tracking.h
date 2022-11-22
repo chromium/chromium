@@ -31,7 +31,7 @@ struct RasterInvalidationInfo {
   // For CAP, this is set in PaintArtifactCompositor when converting chunk
   // raster invalidations to cc raster invalidations.
   gfx::Rect rect;
-  PaintInvalidationReason reason = PaintInvalidationReason::kFull;
+  PaintInvalidationReason reason = PaintInvalidationReason::kLayout;
 };
 
 inline bool operator==(const RasterInvalidationInfo& a,

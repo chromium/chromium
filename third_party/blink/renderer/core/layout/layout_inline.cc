@@ -1905,8 +1905,8 @@ void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   if (!Parent())
     return;
 
-  // FIXME: We can do better.
-  SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kImage);
+  SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+      PaintInvalidationReason::kImage);
 }
 
 void LayoutInline::AddOutlineRects(

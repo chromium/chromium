@@ -57,7 +57,7 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
     GetDocument().View()->UpdateLifecycleToLayoutClean(
         DocumentUpdateReason::kTest);
 
-    EXPECT_EQ(PaintInvalidationReason::kGeometry,
+    EXPECT_EQ(PaintInvalidationReason::kLayout,
               ComputePaintInvalidationReason(box, paint_offset));
   }
 
@@ -114,7 +114,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
 
   // Paint offset change.
   auto old_paint_offset = paint_offset + PhysicalOffset(10, 20);
-  EXPECT_EQ(PaintInvalidationReason::kGeometry,
+  EXPECT_EQ(PaintInvalidationReason::kLayout,
             ComputePaintInvalidationReason(box, old_paint_offset));
 
   // Size change.
@@ -160,15 +160,20 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
-  EXPECT_EQ(PaintInvalidationReason::kGeometry,
+  EXPECT_EQ(PaintInvalidationReason::kLayout,
             ComputePaintInvalidationReason(box, paint_offset));
 
-  // Should use the existing full paint invalidation reason regardless of
-  // geometry change.
-  box.SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
-  EXPECT_EQ(PaintInvalidationReason::kStyle,
+  // Computed kLayout has higher priority than the non-geometry paint
+  // invalidation reason on the LayoutBox.
+  box.SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+      PaintInvalidationReason::kStyle);
+  EXPECT_EQ(PaintInvalidationReason::kLayout,
             ComputePaintInvalidationReason(box, paint_offset));
-  EXPECT_EQ(PaintInvalidationReason::kStyle,
+
+  // If the LayoutBox has a geometry paint invalidation reason, the reason is
+  // returned directly without checking geometry change.
+  box.SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
+  EXPECT_EQ(PaintInvalidationReason::kSVGResource,
             ComputePaintInvalidationReason(box, paint_offset));
 }
 
@@ -230,7 +235,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
                   object->Id(), object->DebugName(), gfx::Rect(0, 0, 72, 142),
-                  PaintInvalidationReason::kStyle}));
+                  PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -240,7 +245,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
                   object->Id(), object->DebugName(), gfx::Rect(0, 0, 122, 142),
-                  PaintInvalidationReason::kGeometry}));
+                  PaintInvalidationReason::kLayout}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 

@@ -376,7 +376,7 @@ void LayoutSVGShape::UpdateNonScalingStrokeData() {
   const AffineTransform transform = ComputeNonScalingStrokeTransform();
   auto& rare_data = EnsureRareData();
   if (rare_data.non_scaling_stroke_transform_ != transform) {
-    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
+    SetShouldDoFullPaintInvalidation();
     rare_data.non_scaling_stroke_transform_ = transform;
   }
 

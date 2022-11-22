@@ -10,8 +10,8 @@
 
 namespace blink {
 
-static_assert(static_cast<uint8_t>(PaintInvalidationReason::kMax) < (1 << 7),
-              "PaintInvalidationReason must fit in 7 bits");
+static_assert(static_cast<uint8_t>(PaintInvalidationReason::kMax) < (1 << 6),
+              "PaintInvalidationReason must fit in 6 bits");
 
 const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
   switch (reason) {
@@ -21,30 +21,26 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "incremental";
     case PaintInvalidationReason::kHitTest:
       return "hit testing change";
-    case PaintInvalidationReason::kFull:
-      return "full";
     case PaintInvalidationReason::kStyle:
       return "style change";
-    case PaintInvalidationReason::kBackplate:
-      return "backplate";
-    case PaintInvalidationReason::kGeometry:
-      return "geometry";
-    case PaintInvalidationReason::kCompositing:
-      return "compositing update";
+    case PaintInvalidationReason::kOutline:
+      return "outline";
+    case PaintInvalidationReason::kImage:
+      return "image";
     case PaintInvalidationReason::kBackground:
       return "background";
+    case PaintInvalidationReason::kBackplate:
+      return "backplate";
+    case PaintInvalidationReason::kLayout:
+      return "geometry";
     case PaintInvalidationReason::kAppeared:
       return "appeared";
     case PaintInvalidationReason::kDisappeared:
       return "disappeared";
-    case PaintInvalidationReason::kScroll:
-      return "scroll";
     case PaintInvalidationReason::kScrollControl:
       return "scroll control";
     case PaintInvalidationReason::kSelection:
       return "selection";
-    case PaintInvalidationReason::kOutline:
-      return "outline";
     case PaintInvalidationReason::kSubtree:
       return "subtree";
     case PaintInvalidationReason::kSVGResource:
@@ -53,8 +49,6 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "caret";
     case PaintInvalidationReason::kDocumentMarker:
       return "DocumentMarker change";
-    case PaintInvalidationReason::kImage:
-      return "image";
     case PaintInvalidationReason::kUncacheable:
       return "uncacheable";
     case PaintInvalidationReason::kJustCreated:
@@ -73,8 +67,6 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "paint property change";
     case PaintInvalidationReason::kFullLayer:
       return "full layer";
-    case PaintInvalidationReason::kForTesting:
-      return "for testing";
   }
   NOTREACHED();
   return "";

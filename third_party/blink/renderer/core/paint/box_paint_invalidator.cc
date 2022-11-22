@@ -121,14 +121,22 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
       ObjectPaintInvalidatorWithContext(box_, context_)
           .ComputePaintInvalidationReason();
 
-  if (reason != PaintInvalidationReason::kIncremental)
+  if (reason == PaintInvalidationReason::kNone)
     return reason;
+
+  if (IsLayoutPaintInvalidationReason(reason))
+    return reason;
+
+  if (IsFullPaintInvalidationReason(reason) &&
+      !box_.ShouldCheckLayoutForPaintInvalidation()) {
+    return reason;
+  }
 
   const ComputedStyle& style = box_.StyleRef();
 
   if (style.MaskLayers().AnyLayerUsesContentBox() &&
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
 #if DCHECK_IS_ON()
   // TODO(crbug.com/1205708): Audit this.
@@ -136,15 +144,18 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 #endif
   if (box_.PreviousSize() == box_.Size() &&
       box_.PreviousPhysicalSelfVisualOverflowRect() ==
-          box_.PhysicalSelfVisualOverflowRect())
-    return PaintInvalidationReason::kNone;
+          box_.PhysicalSelfVisualOverflowRect()) {
+    return IsFullPaintInvalidationReason(reason)
+               ? reason
+               : PaintInvalidationReason::kNone;
+  }
 
   // Incremental invalidation is not applicable if there is visual overflow.
   if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
           PhysicalSizeToBeNoop(box_.PreviousSize()) ||
       box_.PhysicalSelfVisualOverflowRect().size !=
           PhysicalSizeToBeNoop(box_.Size()))
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   // Incremental invalidation is not applicable if paint offset or size has
   // fraction.
@@ -152,34 +163,34 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
       context_.fragment_data->PaintOffset().HasFraction() ||
       PhysicalSizeToBeNoop(box_.PreviousSize()).HasFraction() ||
       PhysicalSizeToBeNoop(box_.Size()).HasFraction())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   // Incremental invalidation is not applicable if there is border in the
   // direction of border box size change because we don't know the border
   // width when issuing incremental raster invalidations.
   if (box_.BorderRight() || box_.BorderBottom())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   if (style.HasVisualOverflowingEffect() || style.HasEffectiveAppearance() ||
       style.HasFilterInducingProperty() || style.HasMask() ||
       style.HasClipPath())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   if (style.HasBorderRadius() || style.CanRenderBorderImage())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   // Needs to repaint frame boundaries.
   if (box_.IsFrameSetIncludingNG())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   // Needs to repaint column rules.
   if (box_.IsLayoutMultiColumnSet())
-    return PaintInvalidationReason::kGeometry;
+    return PaintInvalidationReason::kLayout;
 
   // Background invalidation has been done during InvalidateBackground(), so
   // we don't need to check background in this function.
 
-  return PaintInvalidationReason::kIncremental;
+  return reason;
 }
 
 bool BoxPaintInvalidator::BackgroundGeometryDependsOnLayoutOverflowRect() {
@@ -362,7 +373,7 @@ void BoxPaintInvalidator::InvalidateBackground() {
       (BackgroundPaintsInBorderBoxSpace() &&
        background_invalidation_type == BackgroundInvalidationType::kFull)) {
     box_.GetMutableForPainting()
-        .SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+        .SetShouldDoFullPaintInvalidationWithoutLayoutChange(
             PaintInvalidationReason::kBackground);
   }
 }

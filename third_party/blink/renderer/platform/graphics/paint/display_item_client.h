@@ -54,14 +54,9 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   // cached display items without calling this method.
   // See PaintController::ClientCacheIsValid() for more details.
   void Invalidate(
-      PaintInvalidationReason reason = PaintInvalidationReason::kFull) const {
-    // If a full invalidation reason is already set, do not overwrite it with
-    // a new reason.
-    if (IsFullPaintInvalidationReason(GetPaintInvalidationReason()) &&
-        // However, kUncacheable overwrites any other reason.
-        reason != PaintInvalidationReason::kUncacheable)
-      return;
-    paint_invalidation_reason_ = static_cast<uint8_t>(reason);
+      PaintInvalidationReason reason = PaintInvalidationReason::kLayout) const {
+    if (reason > GetPaintInvalidationReason())
+      paint_invalidation_reason_ = static_cast<uint8_t>(reason);
   }
 
   PaintInvalidationReason GetPaintInvalidationReason() const {
