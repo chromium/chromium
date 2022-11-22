@@ -22,12 +22,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using ash::locale_util::LanguageSwitchResult;
-using ash::locale_util::SwitchLanguageCallback;
-
 namespace ash {
 
 namespace {
+
+using locale_util::LanguageSwitchResult;
+using locale_util::SwitchLanguageCallback;
 
 class LanguageSwitchedWaiter {
  public:

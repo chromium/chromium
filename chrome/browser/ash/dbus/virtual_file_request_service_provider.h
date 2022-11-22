@@ -48,9 +48,4 @@ class VirtualFileRequestServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::VirtualFileRequestServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_

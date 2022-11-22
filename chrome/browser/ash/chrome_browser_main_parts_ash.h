@@ -12,11 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/network_change_manager_client.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
@@ -60,6 +56,7 @@ class LockToSingleUserManager;
 }  // namespace policy
 
 namespace ash {
+
 class AccessibilityEventRewriterDelegateImpl;
 class ArcKioskAppManager;
 class AudioSurveyHandler;
@@ -77,6 +74,7 @@ class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class MultiCaptureNotification;
+class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
 class MemoryMetrics;
@@ -86,6 +84,7 @@ class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class SigninProfileHandler;
+class SystemTokenCertDBInitializer;
 class WebKioskAppManager;
 
 namespace cros_healthd::internal {
@@ -210,8 +209,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;
 
-  std::unique_ptr<ash::ShortcutMappingPrefService>
-      shortcut_mapping_pref_service_;
+  std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 
@@ -257,7 +255,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   // early, this will be false during PostMainMessageLoopRun(), etc.
   // Used to prevent shutting down classes that were not initialized.
   bool pre_profile_init_called_ = false;
-  std::unique_ptr<ash::SigninProfileHandler> signin_profile_handler_;
+  std::unique_ptr<SigninProfileHandler> signin_profile_handler_;
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
   std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
@@ -280,15 +278,14 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
 
-  std::unique_ptr<ash::memory::ZramWritebackController>
-      zram_writeback_controller_;
+  std::unique_ptr<memory::ZramWritebackController> zram_writeback_controller_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should
   // only be used by ChromeFeaturesServiceProvider.
   std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
 
-  std::unique_ptr<ash::traffic_counters::TrafficCountersHandler>
+  std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};

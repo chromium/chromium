@@ -40,9 +40,4 @@ class ClientAppMetadataProviderServiceFactory
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::ClientAppMetadataProviderServiceFactory;
-}
-
 #endif  // CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_

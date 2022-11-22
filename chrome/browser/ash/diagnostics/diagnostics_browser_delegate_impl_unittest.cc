@@ -42,7 +42,7 @@ class DiagnosticsBrowserDelegateImplTest : public testing::Test {
   ~DiagnosticsBrowserDelegateImplTest() override = default;
 
   void SetUp() override {
-    user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
     ProfileHelper::Get()->Initialize();
     LoginState::Initialize();
@@ -104,11 +104,11 @@ class DiagnosticsBrowserDelegateImplTest : public testing::Test {
   }
 
  protected:
-  ash::diagnostics::DiagnosticsBrowserDelegateImpl delegate_;
+  diagnostics::DiagnosticsBrowserDelegateImpl delegate_;
 
  private:
   content::BrowserTaskEnvironment task_env_{};
-  std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
+  std::unique_ptr<FakeChromeUserManager> user_manager_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   TestingPrefServiceSimple local_state_;
 };

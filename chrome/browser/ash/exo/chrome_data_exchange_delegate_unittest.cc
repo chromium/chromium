@@ -73,7 +73,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     ChunneldClient::InitializeFake();
-    ash::CiceroneClient::InitializeFake();
+    CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
 
@@ -119,7 +119,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     profile_.reset();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
-    ash::CiceroneClient::Shutdown();
+    CiceroneClient::Shutdown();
     ChunneldClient::Shutdown();
   }
 
@@ -152,17 +152,17 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
       &delegate_, 0, gfx::Rect(), &container_window);
   arc_toplevel->SetProperty(aura::client::kAppType,
-                            static_cast<int>(ash::AppType::ARC_APP));
-  ASSERT_TRUE(ash::IsArcWindow(arc_toplevel));
+                            static_cast<int>(AppType::ARC_APP));
+  ASSERT_TRUE(IsArcWindow(arc_toplevel));
   aura::Window* arc_window =
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), arc_toplevel);
-  ASSERT_TRUE(ash::IsArcWindow(arc_window->GetToplevelWindow()));
+  ASSERT_TRUE(IsArcWindow(arc_window->GetToplevelWindow()));
 
   // Crostini:
   aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
       &delegate_, 0, gfx::Rect(), &container_window);
   crostini_toplevel->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::CROSTINI_APP));
+                                 static_cast<int>(AppType::CROSTINI_APP));
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
   aura::Window* crostini_window =
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);

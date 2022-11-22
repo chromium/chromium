@@ -50,9 +50,4 @@ class CryptohomeKeyDelegateServiceProvider final
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::CryptohomeKeyDelegateServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_CRYPTOHOME_KEY_DELEGATE_SERVICE_PROVIDER_H_

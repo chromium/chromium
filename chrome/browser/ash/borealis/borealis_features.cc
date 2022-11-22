@@ -226,7 +226,7 @@ AllowStatus BorealisFeatures::MightBeAllowed() {
   if (!profile_ || !profile_->IsRegularProfile())
     return AllowStatus::kBlockedOnIrregularProfile;
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile_))
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile_))
     return AllowStatus::kBlockedOnNonPrimaryProfile;
 
   if (profile_->IsChild())

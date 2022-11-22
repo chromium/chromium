@@ -59,9 +59,4 @@ class DlpFilesPolicyServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::DlpFilesPolicyServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_DLP_FILES_POLICY_SERVICE_PROVIDER_H_

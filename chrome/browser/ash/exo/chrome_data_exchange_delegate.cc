@@ -338,7 +338,7 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
     aura::Window* target) const {
   auto* top_level_window = target->GetToplevelWindow();
 
-  if (ash::IsArcWindow(top_level_window))
+  if (IsArcWindow(top_level_window))
     return ui::EndpointType::kArc;
 
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))

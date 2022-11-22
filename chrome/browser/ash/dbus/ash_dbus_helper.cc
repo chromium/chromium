@@ -207,7 +207,7 @@ void InitializeDBus() {
   // Initialize the device settings service so that we'll take actions per
   // signals sent from the session manager. This needs to happen before
   // g_browser_process initializes BrowserPolicyConnector.
-  chromeos::DeviceSettingsService::Initialize();
+  DeviceSettingsService::Initialize();
   InstallAttributes::Initialize();
 }
 
@@ -237,16 +237,16 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<CfmHotlineClient>(bus);
   }
 #endif
-  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
+  if (shimless_rma::IsShimlessRmaAllowed()) {
     InitializeDBusClient<RmadClient>(bus);
   }
-  if (ash::features::IsRgbKeyboardEnabled()) {
+  if (features::IsRgbKeyboardEnabled()) {
     InitializeDBusClient<RgbkbdClient>(bus);
   }
-  InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
+  InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 
-  if (ash::features::IsSnoopingProtectionEnabled() ||
-      ash::features::IsQuickDimEnabled()) {
+  if (features::IsSnoopingProtectionEnabled() ||
+      features::IsQuickDimEnabled()) {
     InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
 }
@@ -254,11 +254,11 @@ void InitializeFeatureListDependentDBus() {
 void ShutdownDBus() {
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
-  if (ash::features::IsSnoopingProtectionEnabled() ||
-      ash::features::IsQuickDimEnabled()) {
+  if (features::IsSnoopingProtectionEnabled() ||
+      features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();
   }
-  chromeos::WilcoDtcSupportdClient::Shutdown();
+  WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     CfmHotlineClient::Shutdown();
@@ -287,10 +287,10 @@ void ShutdownDBus() {
   SeneschalClient::Shutdown();
   RuntimeProbeClient::Shutdown();
   ResourcedClient::Shutdown();
-  if (ash::features::IsRgbKeyboardEnabled()) {
+  if (features::IsRgbKeyboardEnabled()) {
     RgbkbdClient::Shutdown();
   }
-  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
+  if (shimless_rma::IsShimlessRmaAllowed()) {
     RmadClient::Shutdown();
   }
   chromeos::PowerManagerClient::Shutdown();

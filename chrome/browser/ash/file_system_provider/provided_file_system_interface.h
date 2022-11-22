@@ -284,16 +284,4 @@ class ProvidedFileSystemInterface {
 }  // namespace file_system_provider
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace file_system_provider {
-using ::ash::file_system_provider::Action;
-using ::ash::file_system_provider::EntryMetadata;
-using ::ash::file_system_provider::OPEN_FILE_MODE_READ;
-using ::ash::file_system_provider::OPEN_FILE_MODE_WRITE;
-using ::ash::file_system_provider::OpenedFiles;
-using ::ash::file_system_provider::OpenFileMode;
-}  // namespace file_system_provider
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_INTERFACE_H_

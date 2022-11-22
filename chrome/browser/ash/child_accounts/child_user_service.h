@@ -124,9 +124,4 @@ class ChildUserService : public KeyedService,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::ChildUserService;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_SERVICE_H_

@@ -45,20 +45,20 @@ constexpr char kScreenStateNextStateChangeTime[] = "next_state_change_time";
 constexpr char kScreenStateNextPolicyType[] = "next_active_policy";
 constexpr char kScreenStateNextUnlockTime[] = "next_unlock_time";
 
-ash::AuthDisabledReason ConvertLockReason(
+AuthDisabledReason ConvertLockReason(
     usage_time_limit::PolicyType active_policy) {
   switch (active_policy) {
     case usage_time_limit::PolicyType::kFixedLimit:
-      return ash::AuthDisabledReason::kTimeWindowLimit;
+      return AuthDisabledReason::kTimeWindowLimit;
     case usage_time_limit::PolicyType::kUsageLimit:
-      return ash::AuthDisabledReason::kTimeUsageLimit;
+      return AuthDisabledReason::kTimeUsageLimit;
     case usage_time_limit::PolicyType::kOverride:
-      return ash::AuthDisabledReason::kTimeLimitOverride;
+      return AuthDisabledReason::kTimeLimitOverride;
     case usage_time_limit::PolicyType::kNoPolicy:
       break;
   }
   NOTREACHED();
-  return ash::AuthDisabledReason();
+  return AuthDisabledReason();
 }
 
 }  // namespace
@@ -229,13 +229,13 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
 }
 
 void ScreenTimeController::OnAccessCodeValidation(
-    ash::ParentCodeValidationResult result,
+    ParentCodeValidationResult result,
     absl::optional<AccountId> account_id) {
   AccountId current_user_id =
       ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  if (result != ash::ParentCodeValidationResult::kValid || !account_id ||
+  if (result != ParentCodeValidationResult::kValid || !account_id ||
       account_id.value() != current_user_id)
     return;
 
@@ -266,14 +266,13 @@ void ScreenTimeController::OnScreenLockByPolicy(
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
-      account_id,
-      ash::AuthDisabledData(ConvertLockReason(active_policy), next_unlock_time,
-                            GetScreenTimeDuration(),
-                            true /*disable_lock_screen_media*/));
+      account_id, AuthDisabledData(ConvertLockReason(active_policy),
+                                   next_unlock_time, GetScreenTimeDuration(),
+                                   true /*disable_lock_screen_media*/));
 
   // Add parent access code button.
   // TODO(agawronska): Move showing shelf button to ash.
-  ash::LoginScreen::Get()->ShowParentAccessButton(true);
+  LoginScreen::Get()->ShowParentAccessButton(true);
 }
 
 void ScreenTimeController::OnScreenLockByPolicyEnd() {
@@ -287,7 +286,7 @@ void ScreenTimeController::OnScreenLockByPolicyEnd() {
   ScreenLocker::default_screen_locker()->ReenableAuthForUser(account_id);
 
   // TODO(agawronska): Move showing shelf button to ash.
-  ash::LoginScreen::Get()->ShowParentAccessButton(false);
+  LoginScreen::Get()->ShowParentAccessButton(false);
 }
 
 void ScreenTimeController::OnPolicyChanged() {

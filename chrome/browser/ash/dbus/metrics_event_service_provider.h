@@ -46,9 +46,4 @@ class MetricsEventServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::MetricsEventServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_METRICS_EVENT_SERVICE_PROVIDER_H_

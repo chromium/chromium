@@ -143,7 +143,7 @@ class TestAudioDataObserverImpl : public mojom::AudioDataObserver {
     receiver_.Bind(std::move(receiver));
   }
 
-  // ash::enhanced_network_tts::mojom::AudioDataObserver:
+  // mojom::AudioDataObserver:
   void OnAudioDataReceived(mojom::TtsResponsePtr response) override {
     received_responses_.push_back(std::move(response));
   }

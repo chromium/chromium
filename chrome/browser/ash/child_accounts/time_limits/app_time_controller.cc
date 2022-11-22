@@ -562,7 +562,7 @@ void AppTimeController::ShowNotificationForApp(
       message_center::FullscreenVisibility::OVER_USER;
 
   std::unique_ptr<message_center::Notification> message_center_notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           message, notification_source, GURL(),
           message_center::NotifierId(

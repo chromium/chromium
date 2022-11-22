@@ -22,12 +22,14 @@
 namespace ash {
 
 namespace {
+
 constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 
 constexpr char kExampleUrl[] = "https://example.com";
 constexpr ino_t kInode = 0;
 constexpr char kFilePath[] = "test.txt";
+
 }  // namespace
 
 class DlpFilesPolicyServiceProviderTest
@@ -35,7 +37,7 @@ class DlpFilesPolicyServiceProviderTest
  protected:
   DlpFilesPolicyServiceProviderTest()
       : profile_(std::make_unique<TestingProfile>()),
-        user_manager_(new ash::FakeChromeUserManager()),
+        user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)),
         dlp_policy_service_(std::make_unique<DlpFilesPolicyServiceProvider>()) {
   }
@@ -116,7 +118,7 @@ class DlpFilesPolicyServiceProviderTest
   policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
 
   const std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;

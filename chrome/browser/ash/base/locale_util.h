@@ -96,18 +96,4 @@ bool AddLocaleToPreferredLanguages(const std::string& locale,
 }  // namespace locale_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace locale_util {
-using ::ash::locale_util::GetAllowedFallbackUILanguage;
-using ::ash::locale_util::IsAllowedLanguage;
-using ::ash::locale_util::IsAllowedUILanguage;
-using ::ash::locale_util::LanguageSwitchResult;
-using ::ash::locale_util::RemoveDisallowedLanguagesFromPreferred;
-using ::ash::locale_util::SwitchLanguage;
-using ::ash::locale_util::SwitchLanguageCallback;
-}  // namespace locale_util
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_BASE_LOCALE_UTIL_H_

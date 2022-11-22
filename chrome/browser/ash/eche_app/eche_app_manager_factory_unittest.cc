@@ -46,10 +46,9 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());
     ChromeAshTestBase::SetUp();
-    eche_tray_ =
-        ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
-    phone_hub_tray_ = ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-                          ->phone_hub_tray();
+    eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+    phone_hub_tray_ =
+        StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(GetProfile());
     eche_app_manager_factory_ = EcheAppManagerFactory::GetInstance();
@@ -138,8 +137,7 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());
     ChromeAshTestBase::SetUp();
-    eche_tray_ =
-        ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+    eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
   }
 
   TestingProfile* GetProfile() { return profile_; }

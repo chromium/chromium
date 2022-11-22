@@ -100,6 +100,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -1571,7 +1572,7 @@ AutotestPrivateSetTouchpadSensitivityFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetTouchpadSensitivityFunction " << params->value;
 
-  chromeos::system::InputDeviceSettings::Get()->SetTouchpadSensitivity(
+  ash::system::InputDeviceSettings::Get()->SetTouchpadSensitivity(
       params->value);
   return RespondNow(NoArguments());
 }
@@ -1589,7 +1590,7 @@ ExtensionFunction::ResponseAction AutotestPrivateSetTapToClickFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetTapToClickFunction " << params->enabled;
 
-  chromeos::system::InputDeviceSettings::Get()->SetTapToClick(params->enabled);
+  ash::system::InputDeviceSettings::Get()->SetTapToClick(params->enabled);
   return RespondNow(NoArguments());
 }
 
@@ -1607,8 +1608,7 @@ AutotestPrivateSetThreeFingerClickFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetThreeFingerClickFunction " << params->enabled;
 
-  chromeos::system::InputDeviceSettings::Get()->SetThreeFingerClick(
-      params->enabled);
+  ash::system::InputDeviceSettings::Get()->SetThreeFingerClick(params->enabled);
   return RespondNow(NoArguments());
 }
 
@@ -1625,7 +1625,7 @@ ExtensionFunction::ResponseAction AutotestPrivateSetTapDraggingFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetTapDraggingFunction " << params->enabled;
 
-  chromeos::system::InputDeviceSettings::Get()->SetTapDragging(params->enabled);
+  ash::system::InputDeviceSettings::Get()->SetTapDragging(params->enabled);
   return RespondNow(NoArguments());
 }
 
@@ -1643,8 +1643,7 @@ AutotestPrivateSetNaturalScrollFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetNaturalScrollFunction " << params->enabled;
 
-  chromeos::system::InputDeviceSettings::Get()->SetNaturalScroll(
-      params->enabled);
+  ash::system::InputDeviceSettings::Get()->SetNaturalScroll(params->enabled);
   return RespondNow(NoArguments());
 }
 
@@ -1662,8 +1661,7 @@ AutotestPrivateSetMouseSensitivityFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetMouseSensitivityFunction " << params->value;
 
-  chromeos::system::InputDeviceSettings::Get()->SetMouseSensitivity(
-      params->value);
+  ash::system::InputDeviceSettings::Get()->SetMouseSensitivity(params->value);
   return RespondNow(NoArguments());
 }
 
@@ -1681,8 +1679,7 @@ AutotestPrivateSetPrimaryButtonRightFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   DVLOG(1) << "AutotestPrivateSetPrimaryButtonRightFunction " << params->right;
 
-  chromeos::system::InputDeviceSettings::Get()->SetPrimaryButtonRight(
-      params->right);
+  ash::system::InputDeviceSettings::Get()->SetPrimaryButtonRight(params->right);
   return RespondNow(NoArguments());
 }
 
@@ -1701,7 +1698,7 @@ AutotestPrivateSetMouseReverseScrollFunction::Run() {
   DVLOG(1) << "AutotestPrivateSetMouseReverseScrollFunction "
            << params->enabled;
 
-  chromeos::system::InputDeviceSettings::Get()->SetMouseReverseScroll(
+  ash::system::InputDeviceSettings::Get()->SetMouseReverseScroll(
       params->enabled);
   return RespondNow(NoArguments());
 }

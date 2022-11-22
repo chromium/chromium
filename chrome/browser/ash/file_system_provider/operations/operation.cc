@@ -22,16 +22,16 @@
 namespace ash {
 namespace file_system_provider {
 namespace operations {
+
 namespace {
 
 // This method is only used when Lacros is enabled. It's a callback from Lacros
 // indicating whether the operation was successfully forwarded. If the operation
 // could not be forwarded then the file system request manager must be informed.
-void OperationForwarded(ash::file_system_provider::ProviderId provider_id,
+void OperationForwarded(ProviderId provider_id,
                         const std::string& file_system_id,
                         int request_id,
                         bool delivery_failure) {
-  using ash::file_system_provider::Service;
   // Successful deliveries will go through the FileSystemProvider mojom path.
   if (!delivery_failure)
     return;

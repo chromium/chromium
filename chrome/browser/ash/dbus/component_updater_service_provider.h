@@ -117,9 +117,4 @@ class ComponentUpdaterServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::ComponentUpdaterServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_COMPONENT_UPDATER_SERVICE_PROVIDER_H_

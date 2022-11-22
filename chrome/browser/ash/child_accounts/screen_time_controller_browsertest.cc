@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeLockScreen24HourClock) {
   EXPECT_FALSE(IsAuthEnabled());
 
   EXPECT_EQ(u"Come back at 17:00.",
-            ash::LoginScreenTestApi::GetDisabledAuthMessage(GetAccountId()));
+            LoginScreenTestApi::GetDisabledAuthMessage(GetAccountId()));
 }
 
 // Tests bedtime during timezone changes that make the clock go back in time.

@@ -57,14 +57,14 @@ bool ResizeAndSaveCustomizedDefaultWallpaper(
     gfx::ImageSkia image,
     const base::FilePath& resized_small_path,
     const base::FilePath& resized_large_path) {
-  return SaveResizedWallpaper(image,
-                              gfx::Size(ash::kSmallWallpaperMaxWidth,
-                                        ash::kSmallWallpaperMaxHeight),
-                              resized_small_path) &&
-         SaveResizedWallpaper(image,
-                              gfx::Size(ash::kLargeWallpaperMaxWidth,
-                                        ash::kLargeWallpaperMaxHeight),
-                              resized_large_path);
+  return SaveResizedWallpaper(
+             image,
+             gfx::Size(kSmallWallpaperMaxWidth, kSmallWallpaperMaxHeight),
+             resized_small_path) &&
+         SaveResizedWallpaper(
+             image,
+             gfx::Size(kLargeWallpaperMaxWidth, kLargeWallpaperMaxHeight),
+             resized_large_path);
 }
 
 // Checks the result of |ResizeAndSaveCustomizedDefaultWallpaper| and sends

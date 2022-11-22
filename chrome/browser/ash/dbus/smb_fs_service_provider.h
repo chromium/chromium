@@ -43,9 +43,4 @@ class SmbFsServiceProvider : public CrosDBusService::ServiceProviderInterface {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::SmbFsServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_SMB_FS_SERVICE_PROVIDER_H_

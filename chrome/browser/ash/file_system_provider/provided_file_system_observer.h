@@ -59,11 +59,4 @@ class ProvidedFileSystemObserver {
 }  // namespace file_system_provider
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace file_system_provider {
-using ::ash::file_system_provider::ProvidedFileSystemObserver;
-}  // namespace file_system_provider
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_OBSERVER_H_

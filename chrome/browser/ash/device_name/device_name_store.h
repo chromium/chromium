@@ -125,9 +125,4 @@ class DeviceNameStore {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::DeviceNameStore;
-}
-
 #endif  // CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_H_

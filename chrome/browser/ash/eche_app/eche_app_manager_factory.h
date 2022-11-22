@@ -135,12 +135,4 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
 }  // namespace eche_app
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::EcheAppManagerFactory;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_

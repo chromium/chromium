@@ -52,7 +52,7 @@ void ShowNotification(std::u16string title,
   option_fields.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           message,
           l10n_util::GetStringUTF16(IDS_TIME_LIMIT_NOTIFICATION_DISPLAY_SOURCE),

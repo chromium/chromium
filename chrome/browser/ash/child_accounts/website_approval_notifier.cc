@@ -88,7 +88,7 @@ void WebsiteApprovalNotifier::MaybeShowApprovalNotification(
   option_fields.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kWebsiteApprovalNotificationIdPrefix + allowed_host,
           l10n_util::GetStringUTF16(IDS_WEBSITE_APPROVED_NOTIFICATION_TITLE),

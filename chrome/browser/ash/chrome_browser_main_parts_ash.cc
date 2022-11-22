@@ -274,6 +274,7 @@
 #endif
 
 namespace ash {
+
 namespace {
 
 void ChromeOSVersionCallback(const absl::optional<std::string>& version) {
@@ -303,9 +304,8 @@ void ApplySigninProfileModifications(Profile* profile) {
 }
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
-ash::FakeSessionManagerClient* FakeSessionManagerClient() {
-  ash::FakeSessionManagerClient* fake_session_manager_client =
-      ash::FakeSessionManagerClient::Get();
+FakeSessionManagerClient* FakeSessionManagerClient() {
+  auto* fake_session_manager_client = FakeSessionManagerClient::Get();
   DCHECK(fake_session_manager_client);
   return fake_session_manager_client;
 }
@@ -649,7 +649,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
     if (!command_line->HasSwitch(switches::kLoginProfile)) {
       command_line->AppendSwitchASCII(
           switches::kLoginProfile,
-          ash::BrowserContextHelper::kTestUserBrowserContextDirName);
+          BrowserContextHelper::kTestUserBrowserContextDirName);
     }
     LOG(WARNING)
         << "Running as stub user with profile dir: "
@@ -660,7 +660,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   CHECK(DBusThreadManager::IsInitialized());
 
   // Triggers the installation as earlier as possible.
-  ash::DocumentScannerInstaller::GetInstance()->TriggerInstall();
+  DocumentScannerInstaller::GetInstance()->TriggerInstall();
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
   // USE_REAL_DBUS clients may be undefined even if the device is using real
@@ -870,7 +870,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       std::make_unique<policy::LockToSingleUserManager>();
 
   shortcut_mapping_pref_service_ =
-      std::make_unique<ash::ShortcutMappingPrefService>();
+      std::make_unique<ShortcutMappingPrefService>();
 
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
   input_method::Initialize();
@@ -881,7 +881,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   // ProfileHelper has to be initialized after UserManager instance is created.
   ProfileHelper::Get()->Initialize();
-  signin_profile_handler_ = std::make_unique<ash::SigninProfileHandler>();
+  signin_profile_handler_ = std::make_unique<SigninProfileHandler>();
 
   // If kLoginUser is passed this indicates that user has already
   // logged in and we should behave accordingly.
@@ -1199,7 +1199,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     if (features::IsTrafficCountersEnabled()) {
       // Initialize the TrafficCountersHandler instance.
       traffic_counters_handler_ =
-          std::make_unique<ash::traffic_counters::TrafficCountersHandler>();
+          std::make_unique<traffic_counters::TrafficCountersHandler>();
       traffic_counters_handler_->Start();
     }
 
@@ -1376,8 +1376,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       MemoryMetrics::kDefaultPeriodInSeconds);
   memory_pressure_detail_->Start();
 
-  if (ash::memory::ZramWritebackController::IsSupportedAndEnabled()) {
-    zram_writeback_controller_ = ash::memory::ZramWritebackController::Create();
+  if (memory::ZramWritebackController::IsSupportedAndEnabled()) {
+    zram_writeback_controller_ = memory::ZramWritebackController::Create();
     zram_writeback_controller_->Start();
   }
 

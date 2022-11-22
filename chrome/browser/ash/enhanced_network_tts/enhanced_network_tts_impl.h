@@ -47,7 +47,7 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
       mojo::PendingReceiver<mojom::EnhancedNetworkTts> receiver,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  // ash::enhanced_network_tts::mojom::EnhancedNetworkTts:
+  // mojom::EnhancedNetworkTts:
   void GetAudioData(mojom::TtsRequestPtr request,
                     GetAudioDataCallback callback) override;
 

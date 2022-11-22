@@ -31,6 +31,8 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace ash {
+
 namespace {
 
 // A prefix to apply to all features which Chrome OS platform-side code wishes
@@ -74,11 +76,10 @@ Profile* GetSenderProfile(
     return ProfileManager::GetActiveUserProfile();
 
   return g_browser_process->profile_manager()->GetProfileByPath(
-      ash::ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
+      ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
 }
-}  // namespace
 
-namespace ash {
+}  // namespace
 
 ChromeFeaturesServiceProvider::ChromeFeaturesServiceProvider(
     std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor)

@@ -63,7 +63,6 @@
 
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
-using ::chromeos::PrinterConfigurer;
 
 namespace printing {
 

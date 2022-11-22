@@ -3061,7 +3061,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const std::string* timezone = value.FindString("timezone");
     ASSERT_TRUE(timezone);
     auto* user = user_manager::UserManager::Get()->GetActiveUser();
-    chromeos::system::SetSystemTimezone(user, *timezone);
+    ash::system::SetSystemTimezone(user, *timezone);
     return;
   }
 

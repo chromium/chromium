@@ -70,7 +70,7 @@ void VmSKForwardingServiceProvider::ForwardSecurityKeyMessage(
     return;
   }
 
-  ash::guest_os::VmSKForwardingNativeMessageHost::
+  guest_os::VmSKForwardingNativeMessageHost::
       DeliverMessageToSKForwardingExtension(
           profile, request.message(),
           base::BindOnce(&VmSKForwardingServiceProvider::OnResponse,

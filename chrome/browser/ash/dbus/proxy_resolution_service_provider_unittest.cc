@@ -219,7 +219,7 @@ TEST_F(ProxyResolutionServiceProviderTest,
 }
 
 // Tests the behaviour of system-proxy when enabled via the feature flag
-// `ash::features::kSystemProxyForSystemServices` and via the device policy
+// `features::kSystemProxyForSystemServices` and via the device policy
 // SystemProxySettings.
 class ProxyResolutionServiceWithSystemProxyTest
     : public ProxyResolutionServiceProviderTest {
@@ -232,7 +232,7 @@ class ProxyResolutionServiceWithSystemProxyTest
   // testing::Test
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kSystemProxyForSystemServices);
+        features::kSystemProxyForSystemServices);
     ProxyResolutionServiceProviderTest::SetUp();
 
     SystemProxyClient::InitializeFake();

@@ -51,7 +51,7 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
     LoginManagerTest::SetUpCommandLine(command_line);
     // Allow policy fetches to fail so that these tests retrieve policy from a
     // MockConfigurationPolicyProvider.
-    command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   // If `overrides` is provided, this sets the FirstPartySetsEnabled and
@@ -76,7 +76,7 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
   AccountId test_account_id() { return test_account_id_; }
 
  private:
-  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  LoginManagerMixin login_mixin_{&mixin_host_};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::PolicyMap policy_;
   AccountId test_account_id_;

@@ -109,9 +109,4 @@ class PluginVmServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PluginVmServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_VM_PLUGIN_VM_SERVICE_PROVIDER_H_

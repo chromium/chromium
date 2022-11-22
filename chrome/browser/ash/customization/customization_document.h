@@ -331,10 +331,4 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::ServicesCustomizationDocument;
-using ::ash::StartupCustomizationDocument;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CUSTOMIZATION_CUSTOMIZATION_DOCUMENT_H_

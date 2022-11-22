@@ -41,11 +41,4 @@ class DeviceSyncClientFactory : public ProfileKeyedServiceFactory {
 }  // namespace device_sync
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-namespace device_sync {
-using ::ash::device_sync::DeviceSyncClientFactory;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DEVICE_SYNC_DEVICE_SYNC_CLIENT_FACTORY_H_

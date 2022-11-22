@@ -52,9 +52,4 @@ class DriveFileStreamServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::DriveFileStreamServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_DRIVE_FILE_STREAM_SERVICE_PROVIDER_H_

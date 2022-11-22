@@ -89,12 +89,4 @@ class ParentAccessService {
 }  // namespace parent_access
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace parent_access {
-using ::ash::parent_access::ParentAccessService;
-}  // namespace parent_access
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_SERVICE_H_

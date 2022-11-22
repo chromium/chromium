@@ -42,12 +42,4 @@ class DebugLogsManagerFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace bluetooth {
-using ::ash::bluetooth::DebugLogsManagerFactory;
-}  // namespace bluetooth
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_FACTORY_H_

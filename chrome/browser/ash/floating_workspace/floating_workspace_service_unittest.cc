@@ -12,7 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+
 namespace {
+
 constexpr char local_session_name[] = "local_session";
 constexpr char remote_session_1_name[] = "remote_session_1";
 constexpr char remote_session_2_name[] = "remote_session_2";
@@ -80,12 +83,11 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
 }  // namespace
 
-namespace ash {
-class TestFloatingWorkSpaceService : public ash::FloatingWorkspaceService {
+class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
  public:
   explicit TestFloatingWorkSpaceService(TestingProfile* profile,
                                         TestFloatingWorkspaceVersion version)
-      : ash::FloatingWorkspaceService(profile) {
+      : FloatingWorkspaceService(profile) {
     InitForTest(version);
     mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
   }

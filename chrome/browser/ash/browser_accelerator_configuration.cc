@@ -10,7 +10,7 @@
 namespace ash {
 
 BrowserAcceleratorConfiguration::BrowserAcceleratorConfiguration()
-    : AcceleratorConfiguration(ash::mojom::AcceleratorSource::kBrowser) {}
+    : AcceleratorConfiguration(mojom::AcceleratorSource::kBrowser) {}
 
 BrowserAcceleratorConfiguration::~BrowserAcceleratorConfiguration() = default;
 

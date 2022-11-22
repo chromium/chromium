@@ -108,9 +108,4 @@ class ChromeFeaturesServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::ChromeFeaturesServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_CHROME_FEATURES_SERVICE_PROVIDER_H_

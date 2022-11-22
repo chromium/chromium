@@ -91,7 +91,7 @@ class AppLauncher : public ProfileObserver,
  private:
   explicit AppLauncher(Profile* profile) : profile_(profile) {
     profile->AddObserver(this);
-    ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+    SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
         FROM_HERE, base::BindOnce(&AppLauncher::LaunchHelpApp, AsWeakPtr()));
   }
 
@@ -100,7 +100,7 @@ class AppLauncher : public ProfileObserver,
   AppLauncher& operator=(const AppLauncher&) = delete;
 
   void LaunchHelpApp() {
-    ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
+    LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }
@@ -129,7 +129,7 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppShouldShowGetStarted,
                                   ShouldShowGetStarted(profile, user_manager));
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppTabletModeDuringOobe,
-                                  ash::TabletMode::IsInTabletMode());
+                                  TabletMode::IsInTabletMode());
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();
@@ -147,8 +147,8 @@ bool ShouldLaunchHelpApp(Profile* profile) {
     return true;
   }
 
-  // ash::TabletMode does not exist in some tests.
-  if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())
+  // TabletMode does not exist in some tests.
+  if (TabletMode::Get() && TabletMode::Get()->InTabletMode())
     return false;
 
   if (command_line->HasSwitch(::switches::kTestType))

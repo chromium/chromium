@@ -154,7 +154,7 @@ ash::ParentCodeValidationResult LoginScreenClientImpl::ValidateParentAccessCode(
     const AccountId& account_id,
     const std::string& access_code,
     base::Time validation_time) {
-  return chromeos::parent_access::ParentAccessService::Get()
+  return ash::parent_access::ParentAccessService::Get()
       .ValidateParentAccessCode(account_id, access_code, validation_time);
 }
 
@@ -220,7 +220,7 @@ void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
   auto supervised_action = prefilled_account.empty()
                                ? SupervisedAction::kAddUser
                                : SupervisedAction::kReauth;
-  if (chromeos::parent_access::ParentAccessService::Get().IsApprovalRequired(
+  if (ash::parent_access::ParentAccessService::Get().IsApprovalRequired(
           supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
     // flow in |OnParentAccessValidation| when validation success.

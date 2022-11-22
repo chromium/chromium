@@ -43,6 +43,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
+
 namespace {
 
 const char kNotificationIdPrefix[] = "vm_camera_mic_manager";
@@ -214,8 +215,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
     notifications_.active = new_notification;
 
-    if (ash::features::IsPrivacyIndicatorsEnabled()) {
-      ash::UpdatePrivacyIndicatorsView(
+    if (features::IsPrivacyIndicatorsEnabled()) {
+      UpdatePrivacyIndicatorsView(
           /*app_id=*/GetNotificationId(vm_type_, new_notification),
           /*is_camera_used=*/
           new_notification[static_cast<size_t>(DeviceType::kCamera)],
@@ -275,9 +276,9 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     rich_notification_data.fullscreen_visibility =
         message_center::FullscreenVisibility::OVER_USER;
 
-    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+    if (features::IsPrivacyIndicatorsEnabled()) {
       // We will use the notification id's logic here for `app_id`
-      auto notification = ash::CreatePrivacyIndicatorsNotification(
+      auto notification = CreatePrivacyIndicatorsNotification(
           GetNotificationId(vm_type_, type),
           l10n_util::GetStringUTF16(name_id_),
           type[static_cast<size_t>(DeviceType::kCamera)],
@@ -306,7 +307,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         /*origin_url=*/GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT,
-            ash::kVmCameraMicNotifierId, NotificationCatalogName::kVMCameraMic),
+            kVmCameraMicNotifierId, NotificationCatalogName::kVMCameraMic),
         rich_notification_data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetMutableWeakPtr()));

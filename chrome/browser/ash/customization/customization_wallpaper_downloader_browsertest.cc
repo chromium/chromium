@@ -119,7 +119,7 @@ bool CreateJPEGImage(int width,
   return true;
 }
 
-class TestWallpaperObserver : public ash::WallpaperControllerObserver {
+class TestWallpaperObserver : public WallpaperControllerObserver {
  public:
   TestWallpaperObserver() {
     WallpaperControllerClientImpl::Get()->AddObserver(this);
@@ -132,7 +132,7 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
     WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
 
-  // ash::WallpaperControllerObserver:
+  // WallpaperControllerObserver:
   void OnWallpaperChanged() override {
     finished_ = true;
     base::RunLoop::QuitCurrentWhenIdleDeprecated();

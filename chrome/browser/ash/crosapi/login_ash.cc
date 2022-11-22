@@ -60,8 +60,8 @@ void LoginAsh::LaunchManagedGuestSession(
       context.SetCanLockManagedGuestSession(true);
     }
 
-    chromeos::ExistingUserController* existing_user_controller =
-        chromeos::ExistingUserController::current_controller();
+    auto* existing_user_controller =
+        ash::ExistingUserController::current_controller();
     existing_user_controller->Login(context, ash::SigninSpecifics());
     std::move(callback).Run(absl::nullopt);
     return;
@@ -330,8 +330,8 @@ absl::optional<std::string> LoginAsh::CanLaunchSession() {
     return extensions::login_api_errors::kAlreadyActiveSession;
   }
 
-  chromeos::ExistingUserController* existing_user_controller =
-      chromeos::ExistingUserController::current_controller();
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
   if (existing_user_controller->IsSigninInProgress())
     return extensions::login_api_errors::kAnotherLoginAttemptInProgress;
 

@@ -55,9 +55,4 @@ class LockToSingleUserServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::LockToSingleUserServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_LOCK_TO_SINGLE_USER_SERVICE_PROVIDER_H_

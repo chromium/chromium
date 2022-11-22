@@ -48,8 +48,7 @@ namespace {
 
 namespace em = ::enterprise_management;
 
-using ::ash::attestation::MockTpmChallengeKeySubtle;
-using ::ash::platform_keys::KeyUsage;
+using attestation::MockTpmChallengeKeySubtle;
 using ::base::test::IsJson;
 using ::base::test::ParseJson;
 using ::base::test::RunOnceCallback;
@@ -57,6 +56,7 @@ using ::chromeos::platform_keys::HashAlgorithm;
 using ::chromeos::platform_keys::KeyAttributeType;
 using ::chromeos::platform_keys::Status;
 using ::chromeos::platform_keys::TokenId;
+using platform_keys::KeyUsage;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Mock;

@@ -931,8 +931,8 @@ bool UserSessionManager::RespectLocalePreference(
           : Profile::APP_LOCALE_CHANGED_VIA_LOGIN;
 
   // check if pref_locale is allowed by policy (AllowedLanguages)
-  if (!chromeos::locale_util::IsAllowedUILanguage(pref_locale, prefs)) {
-    pref_locale = chromeos::locale_util::GetAllowedFallbackUILanguage(prefs);
+  if (!locale_util::IsAllowedUILanguage(pref_locale, prefs)) {
+    pref_locale = locale_util::GetAllowedFallbackUILanguage(prefs);
     app_locale_changed_via = Profile::APP_LOCALE_CHANGED_VIA_POLICY;
   }
 

@@ -44,9 +44,4 @@ class FamilyUserMetricsServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::FamilyUserMetricsServiceFactory;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_METRICS_SERVICE_FACTORY_H_

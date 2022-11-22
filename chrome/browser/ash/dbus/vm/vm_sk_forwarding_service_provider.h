@@ -56,9 +56,4 @@ class VmSKForwardingServiceProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::VmSKForwardingServiceProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_DBUS_VM_VM_SK_FORWARDING_SERVICE_PROVIDER_H_

@@ -14,8 +14,8 @@ namespace ash {
 namespace edu_coexistence {
 
 // The first google3 cl number that is sent through a policy which is mapped
-// to |ash::prefs::kEduCoexistenceToSVersion|. All version numbers sent
-// will be greater than or equal to |kMinTOSVersionNumber|.
+// to `prefs::kEduCoexistenceToSVersion`. All version numbers sent
+// will be greater than or equal to `kMinTOSVersionNumber`.
 extern const char kMinTOSVersionNumber[];
 
 // Used to store the gaia id and corresponding accepted terms of
@@ -38,8 +38,8 @@ bool IsConsentVersionLessThan(const std::string& lhs_version,
 // If the account already exists in user's pref, then its accepted tos will be
 // updated. Otherwise, a new entry will be created.
 // The pref that is used to store the UserConsentInfo is defined in:
-// |ash::prefs::kEduCoexistenceToSAcceptedVersion|
-// Unlike |SetUserConsentInfoListForProfile| this doesn't overwrite the entire
+// `prefs::kEduCoexistenceToSAcceptedVersion`
+// Unlike `SetUserConsentInfoListForProfile` this doesn't overwrite the entire
 // stored UserConsentInfo list; it instead updates it.
 void UpdateAcceptedToSVersionPref(Profile* profile,
                                   const UserConsentInfo& user_consent_info);
@@ -50,7 +50,7 @@ void SetUserConsentInfoListForProfile(
     const std::vector<UserConsentInfo>& user_consent_info_list);
 
 // Returns the list of UserConsentInfo stored in
-// |ash::prefs::kEduCoexistenceToSAcceptedVersion|.
+// `prefs::kEduCoexistenceToSAcceptedVersion`.
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(Profile* profile);
 
 // |profile| is the Primary user profile which is the family link user.

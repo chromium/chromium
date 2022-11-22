@@ -33,9 +33,4 @@ class FakeDeviceNameStore : public DeviceNameStore {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::FakeDeviceNameStore;
-}
-
 #endif  // CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_

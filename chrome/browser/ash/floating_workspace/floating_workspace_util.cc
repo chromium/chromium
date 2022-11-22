@@ -16,10 +16,10 @@
 namespace ash {
 
 namespace {
+
 PrefService* GetPrimaryUserPrefService() {
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  auto* user_profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  auto* user_profile = ProfileHelper::Get()->GetProfileByUser(primary_user);
   return user_profile->GetPrefs();
 }
 
@@ -36,13 +36,13 @@ bool IsFloatingWorkspaceV1Enabled() {
   DCHECK(pref_service);
 
   const PrefService::Preference* floating_workspace_pref =
-      pref_service->FindPreference(ash::prefs::kFloatingWorkspaceEnabled);
+      pref_service->FindPreference(prefs::kFloatingWorkspaceEnabled);
 
   DCHECK(floating_workspace_pref);
 
   if (floating_workspace_pref->IsManaged()) {
     // If there is a policy managing the pref, return what is set by policy.
-    return pref_service->GetBoolean(ash::prefs::kFloatingWorkspaceEnabled);
+    return pref_service->GetBoolean(prefs::kFloatingWorkspaceEnabled);
   }
   // If the policy is not set, return feature flag status.
   return features::IsFloatingWorkspaceEnabled();

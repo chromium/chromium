@@ -21,7 +21,7 @@ base::FilePath DiagnosticsBrowserDelegateImpl::GetActiveUserProfileDir() {
 
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user);
-  auto* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  auto* profile = ProfileHelper::Get()->GetProfileByUser(user);
 
   // Profile may be null if called before profile load is complete.
   if (profile == nullptr) {
