@@ -853,6 +853,8 @@ class CONTENT_EXPORT ContentBrowserClient {
     kSource,
     kTrigger,
     kReport,
+    kSourceVerboseDebugReport,
+    kTriggerVerboseDebugReport,
     kAny,
   };
 

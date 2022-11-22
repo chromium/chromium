@@ -3253,11 +3253,13 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
 
   switch (operation) {
     case AttributionReportingOperation::kSource:
+    case AttributionReportingOperation::kSourceVerboseDebugReport:
       DCHECK(source_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->IsAttributionReportingAllowed(
           *source_origin, *reporting_origin);
     case AttributionReportingOperation::kTrigger:
+    case AttributionReportingOperation::kTriggerVerboseDebugReport:
       DCHECK(destination_origin);
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->IsAttributionReportingAllowed(
