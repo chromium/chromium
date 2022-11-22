@@ -296,8 +296,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   State expected_;
   State observed_;
 
-  TimingFieldBitSet observed_page_fields_;
-
   int current_complete_resources_ = 0;
   int64_t current_network_bytes_ = 0;
 
