@@ -34,7 +34,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 Got ResourceReceiveResponse event:
 Object: {
@@ -75,7 +74,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 Got ResourceReceivedData event:
 Object: {
@@ -93,7 +91,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 Got ResourceFinish event:
 Object: {
@@ -113,7 +110,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 All request ids are equal
 

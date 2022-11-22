@@ -119,7 +119,12 @@
     return JSON.stringify(formattedEvents, null, 2);
   }
 
-  logEventShape(evt, excludedProperties) {
+  logEventShape(evt, excludedProperties = []) {
+    // The tts field in trace events is optional, and as such we omit it
+    // to prevent flakiness as it may or not be included on each
+    // occasion an event is dispatched.
+    excludedProperties.push('tts');
+
     const logArray = (prefix, name, array) => {
       let start = name ? `${name}: ` : '';
       start = prefix + start;
@@ -143,14 +148,14 @@
       this._testRunner.log(`${start}{`);
       for (const key in object) {
         const value = object[key];
+        if (excludedProperties.includes(key)) {
+          continue;
+        }
         if (value instanceof Array) {
           logArray(`${prefix}\t`, key, value);
           continue;
         } else if (value instanceof Object) {
           logObject(`${prefix}\t`, key, value)
-          continue;
-        }
-        if (excludedProperties && excludedProperties.includes(key)) {
           continue;
         }
         this._testRunner.log(`${prefix}\t${key}: ${typeof value}`);

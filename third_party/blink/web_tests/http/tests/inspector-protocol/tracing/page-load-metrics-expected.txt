@@ -112,7 +112,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 
 Got firstPaint event:
@@ -149,7 +148,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 
 Got MarkLoad event:
@@ -169,7 +167,6 @@ Object: {
 	s: string
 	tid: number
 	ts: number
-	tts: number
 }
 
 Got RunTask event:
@@ -184,7 +181,6 @@ Object: {
 	tdur: number
 	tid: number
 	ts: number
-	tts: number
 }
 
 Page load events belong to the same navigation.
