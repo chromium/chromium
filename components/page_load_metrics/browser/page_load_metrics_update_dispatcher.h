@@ -89,7 +89,7 @@ enum PageLoadTimingStatus {
   // Longest input delay cannot be less than first input delay.
   INVALID_LONGEST_INPUT_DELAY_LESS_THAN_FIRST_INPUT_DELAY,
 
-  // Activation start should be occur between parse start and first paint.
+  // Deprecated but not removing because it would affect histogram enumeration.
   INVALID_ORDER_PARSE_START_ACTIVATION_START,
   INVALID_ORDER_ACTIVATION_START_FIRST_PAINT,
 

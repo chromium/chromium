@@ -53,8 +53,7 @@ bool EventsInOrder(const absl::optional<base::TimeDelta>& first,
 }
 
 internal::PageLoadTimingStatus IsValidPageLoadTiming(
-    const mojom::PageLoadTiming& timing,
-    bool is_prerendered) {
+    const mojom::PageLoadTiming& timing) {
   if (page_load_metrics::IsEmpty(timing))
     return internal::INVALID_EMPTY_TIMING;
 
@@ -65,6 +64,18 @@ internal::PageLoadTimingStatus IsValidPageLoadTiming(
   }
 
   // Verify proper ordering between the various timings.
+
+  // Note for activation_start
+  //
+  // PaintTiming is composed in MetricsRenderFrameObserver::GetTiming,
+  // which also clamps wall clocks as navigation_start origin.
+  // Majority of wall clocks are taken in render side, but
+  // activation_start is taken in browser side
+  // PageImpl::ActivateForPrerendering. Besides, there is no control
+  // of these events. Therefore, we don't have any order relations
+  // between activation_start and others except for navigation_start.
+  // (Always 0 = navigation_start <= activation_start for main frames as
+  // navigation_start origin TimeDelta.)
 
   if (!EventsInOrder(timing.response_start, timing.parse_timing->parse_start)) {
     // We sometimes get a zero response_start with a non-zero parse start. See
@@ -151,30 +162,11 @@ internal::PageLoadTimingStatus IsValidPageLoadTiming(
     return internal::INVALID_ORDER_DOM_CONTENT_LOADED_LOAD;
   }
 
-  // If the page is prerendered, `parse_start <= activation_start <=
-  // first_paint`.
-  // If the page is non prerendered, `parse_start <= first_paint`.
-  if (is_prerendered) {
-    if (!EventsInOrder(timing.parse_timing->parse_start,
-                       timing.activation_start)) {
-      LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
-                 << " for activation_start " << timing.activation_start;
-      return internal::INVALID_ORDER_PARSE_START_ACTIVATION_START;
-    }
-
-    if (!EventsInOrder(timing.activation_start,
-                       timing.paint_timing->first_paint)) {
-      LOG(ERROR) << "Invalid activation_start " << timing.activation_start
-                 << " for first_paint " << timing.paint_timing->first_paint;
-      return internal::INVALID_ORDER_ACTIVATION_START_FIRST_PAINT;
-    }
-  } else {
-    if (!EventsInOrder(timing.parse_timing->parse_start,
-                       timing.paint_timing->first_paint)) {
-      LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
-                 << " for first_paint " << timing.paint_timing->first_paint;
-      return internal::INVALID_ORDER_PARSE_START_FIRST_PAINT;
-    }
+  if (!EventsInOrder(timing.parse_timing->parse_start,
+                     timing.paint_timing->first_paint)) {
+    LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
+               << " for first_paint " << timing.paint_timing->first_paint;
+    return internal::INVALID_ORDER_PARSE_START_FIRST_PAINT;
   }
 
   if (!EventsInOrder(timing.paint_timing->first_paint,
@@ -711,10 +703,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameTiming(
     return;
   }
 
-  const bool is_prerendered =
-      (client_->GetPrerenderingState() != PrerenderingState::kNoPrerendering);
-  internal::PageLoadTimingStatus status =
-      IsValidPageLoadTiming(*new_timing, is_prerendered);
+  internal::PageLoadTimingStatus status = IsValidPageLoadTiming(*new_timing);
   UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingStatus, status,
                             internal::LAST_PAGE_LOAD_TIMING_STATUS);
   if (status != internal::VALID) {
@@ -892,10 +881,8 @@ void PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates() {
 
   current_merged_page_timing_ = pending_merged_page_timing_->Clone();
 
-  const bool is_prerendered =
-      (client_->GetPrerenderingState() != PrerenderingState::kNoPrerendering);
   internal::PageLoadTimingStatus status =
-      IsValidPageLoadTiming(*pending_merged_page_timing_, is_prerendered);
+      IsValidPageLoadTiming(*pending_merged_page_timing_);
   UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingDispatchStatus, status,
                             internal::LAST_PAGE_LOAD_TIMING_STATUS);
 
