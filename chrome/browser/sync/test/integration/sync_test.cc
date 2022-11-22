@@ -709,20 +709,6 @@ void SyncTest::DisableNotificationsForClient(int index) {
       fake_server_invalidation_observers_[index].get());
 }
 
-void SyncTest::SetEncryptionPassphraseForClient(int index,
-                                                const std::string& passphrase) {
-  // Must be called before client initialization.
-  DCHECK(clients_.empty());
-  client_encryption_passphrases_[index] = passphrase;
-}
-
-void SyncTest::SetDecryptionPassphraseForClient(int index,
-                                                const std::string& passphrase) {
-  // Must be called before client initialization.
-  DCHECK(clients_.empty());
-  client_decryption_passphrases_[index] = passphrase;
-}
-
 void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
   SetURLLoaderFactoryForTest(profile,
                              test_url_loader_factory_.GetSafeWeakWrapper());
@@ -821,32 +807,9 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   for (int client_index = 0; client_index < num_clients_; client_index++) {
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
+    ASSERT_TRUE(client->SetupSyncNoWaitForCompletion())
+        << "SetupSync() failed.";
 
-    auto decryption_passphrase_it =
-        client_decryption_passphrases_.find(client_index);
-    auto encryption_passphrase_it =
-        client_encryption_passphrases_.find(client_index);
-    bool decryption_passphrase_provided =
-        (decryption_passphrase_it != client_decryption_passphrases_.end());
-    bool encryption_passphrase_provided =
-        (encryption_passphrase_it != client_encryption_passphrases_.end());
-    if (decryption_passphrase_provided && encryption_passphrase_provided) {
-      LOG(FATAL) << "Both an encryption and decryption passphrase were "
-                    "provided for the client. This is disallowed.";
-    }
-
-    if (encryption_passphrase_provided) {
-      ASSERT_TRUE(client->SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-          encryption_passphrase_it->second))
-          << "SetupSync() failed.";
-    } else if (decryption_passphrase_provided) {
-      ASSERT_TRUE(client->SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-          decryption_passphrase_it->second))
-          << "SetupSync() failed.";
-    } else {
-      ASSERT_TRUE(client->SetupSyncNoWaitForCompletion())
-          << "SetupSync() failed.";
-    }
     if (TestUsesSelfNotifications()) {
       // On Android, invalidations for Session data type are disabled by
       // default. This may result in test flakiness when using when using
@@ -1311,8 +1274,6 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
     // Session to be committed to prevent unexpected commit requests during
     // test. It shouldn't be called when custom passphrase is enabled because
     // SessionHierarchyMatchChecker doesn't support custom passphrases.
-    DCHECK(client_decryption_passphrases_.find(profile_index) ==
-           client_decryption_passphrases_.end());
     if (!SessionHierarchyMatchChecker(
              fake_server::SessionsHierarchy({{url::kAboutBlankURL}}),
              GetSyncService(profile_index), GetFakeServer())

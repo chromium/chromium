@@ -93,16 +93,6 @@ class SyncServiceImplHarness {
       SetUserSettingsCallback user_settings_callback =
           SetUserSettingsCallback());
 
-  // Same as SetupSyncNoWaitForCompletion(), but also sets the given encryption
-  // passphrase during setup.
-  bool SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-      const std::string& passphrase);
-
-  // Same as SetupSyncNoWaitForCompletion(), but also sets the given decryption
-  // passphrase during setup.
-  bool SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-      const std::string& passphrase);
-
   // Signals that sync setup is complete, and that PSS may begin syncing.
   // Typically SetupSync does this automatically, but if that returned false,
   // then setup may have been left incomplete.
@@ -181,32 +171,10 @@ class SyncServiceImplHarness {
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;
 
  private:
-  enum class EncryptionSetupMode {
-    kNoEncryption,  // Setup sync without encryption support.
-    kDecryption,    // Setup sync with only decryption support. This only
-                    // supports cases where there's already encrypted data on
-                    // the server. Turning on custom passphrase encryption on
-                    // this client is not supported.
-    kEncryption     // Setup sync with full encryption support. This includes
-                    // turning on custom passphrase encryption on the client.
-  };
-
   SyncServiceImplHarness(Profile* profile,
                          const std::string& username,
                          const std::string& password,
                          SigninType signin_type);
-
-  // Sets up sync with custom passphrase support as specified by
-  // |encryption_mode|.
-  // If |encryption_mode| is kDecryption or kEncryption, |encryption_passphrase|
-  // has to have a value which will be used to properly setup sync.
-  // |user_settings_callback| will be called once the engine is initialized, but
-  // before actually starting sync, to give the caller a chance to modify sync
-  // settings (mostly the selected data types).
-  bool SetupSyncImpl(EncryptionSetupMode encryption_mode,
-                     const absl::optional<std::string>& encryption_passphrase,
-                     SetUserSettingsCallback user_settings_callback =
-                         SetUserSettingsCallback());
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();

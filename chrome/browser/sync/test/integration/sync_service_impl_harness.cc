@@ -268,30 +268,6 @@ bool SyncServiceImplHarness::SetupSync(
 
 bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
     SetUserSettingsCallback user_settings_callback) {
-  return SetupSyncImpl(EncryptionSetupMode::kNoEncryption,
-                       /*encryption_passphrase=*/absl::nullopt,
-                       std::move(user_settings_callback));
-}
-
-bool SyncServiceImplHarness::
-    SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-        const std::string& passphrase) {
-  return SetupSyncImpl(EncryptionSetupMode::kEncryption, passphrase);
-}
-
-bool SyncServiceImplHarness::
-    SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-        const std::string& passphrase) {
-  return SetupSyncImpl(EncryptionSetupMode::kDecryption, passphrase);
-}
-
-bool SyncServiceImplHarness::SetupSyncImpl(
-    EncryptionSetupMode encryption_mode,
-    const absl::optional<std::string>& passphrase,
-    SetUserSettingsCallback user_settings_callback) {
-  DCHECK(encryption_mode == EncryptionSetupMode::kNoEncryption ||
-         passphrase.has_value());
-
   if (service() == nullptr) {
     LOG(ERROR) << "SetupSync(): service() is null.";
     return false;
@@ -318,15 +294,6 @@ bool SyncServiceImplHarness::SetupSyncImpl(
     std::move(user_settings_callback).Run(service()->GetUserSettings());
   }
 
-  if (encryption_mode == EncryptionSetupMode::kEncryption) {
-    service()->GetUserSettings()->SetEncryptionPassphrase(passphrase.value());
-  } else if (encryption_mode == EncryptionSetupMode::kDecryption) {
-    if (!service()->GetUserSettings()->SetDecryptionPassphrase(
-            passphrase.value())) {
-      LOG(ERROR) << "WARNING: provided passphrase could not decrypt locally "
-                    "present data.";
-    }
-  }
   // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
@@ -363,13 +330,6 @@ bool SyncServiceImplHarness::StartSyncService() {
     return false;
   }
   DVLOG(1) << "Engine Initialized successfully.";
-
-  if (service()->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    LOG(ERROR) << "A passphrase is required for decryption. Sync cannot proceed"
-                  " until SetDecryptionPassphrase is called.";
-    return false;
-  }
-  DVLOG(1) << "Passphrase decryption success.";
 
   blocker.reset();
   service()->GetUserSettings()->SetFirstSetupComplete(
