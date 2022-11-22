@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_audio_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_bus_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_cpu_sampler_handler.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -44,52 +45,6 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
   }
 
   NOTREACHED();
-}
-
-void HandleCpuResult(OptionalMetricCallback callback,
-                     CrosHealthdMetricSampler::MetricType metric_type,
-                     cros_healthd::TelemetryInfoPtr result) {
-  absl::optional<MetricData> metric_data;
-  const auto& cpu_result = result->cpu_result;
-
-  if (!cpu_result.is_null()) {
-    switch (cpu_result->which()) {
-      case cros_healthd::CpuResult::Tag::kError: {
-        DVLOG(1) << "cros_healthd: Error getting CPU info: "
-                 << cpu_result->get_error()->msg;
-        break;
-      }
-
-      case cros_healthd::CpuResult::Tag::kCpuInfo: {
-        const auto& cpu_info = cpu_result->get_cpu_info();
-        if (cpu_info.is_null()) {
-          DVLOG(1) << "Null CpuInfo from cros_healthd";
-          break;
-        }
-
-        // Gather keylocker info.
-        if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
-          metric_data = absl::make_optional<MetricData>();
-          auto* const keylocker_info_out = metric_data->mutable_info_data()
-                                               ->mutable_cpu_info()
-                                               ->mutable_keylocker_info();
-          const auto* const keylocker_info = cpu_info->keylocker_info.get();
-          if (keylocker_info) {
-            keylocker_info_out->set_supported(true);
-            keylocker_info_out->set_configured(
-                keylocker_info->keylocker_configured);
-          } else {
-            // If keylocker info isn't set, it is not supported on the board.
-            keylocker_info_out->set_supported(false);
-            keylocker_info_out->set_configured(false);
-          }
-        }
-        break;
-      }
-    }
-  }
-
-  std::move(callback).Run(std::move(metric_data));
 }
 
 void HandleBootPerformanceResult(
@@ -417,7 +372,8 @@ void OnHealthdInfoReceived(OptionalMetricCallback callback,
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kCpu: {
-      HandleCpuResult(std::move(callback), metric_type, std::move(result));
+      CrosHealthdCpuSamplerHandler handler = CrosHealthdCpuSamplerHandler();
+      handler.HandleResult(std::move(result), std::move(callback));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kMemory: {
