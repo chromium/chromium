@@ -690,6 +690,10 @@ TEST_F('CrExtensionsErrorPageTest', 'ErrorSelection', function() {
   this.runMochaTest(extension_error_page_tests.TestNames.ErrorSelection);
 });
 
+TEST_F('CrExtensionsErrorPageTest', 'InvalidUrl', function() {
+  this.runMochaTest(extension_error_page_tests.TestNames.InvalidUrl);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Code Section Tests
 

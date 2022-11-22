@@ -19,6 +19,7 @@ const extension_error_page_tests = {
     Layout: 'layout',
     CodeSection: 'code section',
     ErrorSelection: 'error selection',
+    InvalidUrl: 'invalid url',
   },
 };
 
@@ -218,5 +219,23 @@ suite(extension_error_page_tests.suiteName, function() {
         nextRuntimeError.contextUrl,
         ironCollapses[1]!.querySelector<HTMLElement>(
                              '.context-url')!.textContent!.trim());
+  });
+
+  // Tests that the element can still be shown with an invalid URL. Regression
+  // test for crbug.com/1257170, as without the fix, this test would simply
+  // crash when the page tries and fails to create a URL object.
+  test(extension_error_page_tests.TestNames.InvalidUrl, function() {
+    const newRuntimeError = Object.assign(
+        {
+          severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          source: 'invalid_url',
+        },
+        runtimeErrorBase);
+    // Replace the runtime error URL with something malformed, and check that
+    // the error is still displayed and opened.
+    errorPage.set('data.runtimeErrors', [newRuntimeError]);
+    flush();
+
+    assertEquals(extensionData.runtimeErrors[0], errorPage.getSelectedError());
   });
 });
