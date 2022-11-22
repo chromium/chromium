@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = '20221101'
+RUST_REVISION = '20221118'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
@@ -45,13 +45,13 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = 'llvmorg-16-init-9369-g87a20868-1'
+FALLBACK_CLANG_VERSION = None
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    'c0909797c1901c32985a40ec6b54b9ccad8464aa5dbebd20235db094fee1a6bc')
+    '07f4d4ddde6910a70f16f372309525528ff42499fb50317e6ded4bfe1b6ce7cf')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
