@@ -79,7 +79,6 @@ import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ITabClient;
 import org.chromium.weblayer_private.interfaces.IWebMessageCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
-import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 import org.chromium.weblayer_private.interfaces.ScrollNotificationType;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 import org.chromium.weblayer_private.media.MediaSessionManager;
@@ -765,7 +764,8 @@ public final class TabImpl extends ITab.Stub {
             assert unwrappedCallback != null;
 
             if (!verified) {
-                throw new RestrictedAPIException();
+                // TODO(crbug.com/1392110): Pass a RestrictedAPIException.
+                unwrappedCallback.onReceiveValue(null);
             }
 
             Callback<String> nativeCallback = new Callback<String>() {

@@ -13,7 +13,6 @@ import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabObserverDelegate;
 import org.chromium.webengine.interfaces.ITabProxy;
 import org.chromium.webengine.interfaces.IWebMessageCallback;
-import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 
 import java.util.List;
 
@@ -78,19 +77,24 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         mHandler.post(() -> {
-            try {
-                getTab().executeScript(script, useSeparateIsolate, (String result) -> {
-                    try {
-                        callback.onResult(result);
-                    } catch (RemoteException e) {
-                    }
-                });
-            } catch (RestrictedAPIException e) {
+            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
                 try {
-                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
-                } catch (RemoteException re) {
+                    if (result != null) {
+                        callback.onResult(result);
+                    } else {
+                        // TODO(crbug.com/1392110): Pass a useful exception message.
+                        try {
+                            callback.onException(ExceptionType.RESTRICTED_API, "");
+                        } catch (RemoteException e) {
+                        }
+                    }
+                } catch (RemoteException e) {
+                    try {
+                        callback.onException(ExceptionType.UNKNOWN, e.getMessage());
+                    } catch (RemoteException e2) {
+                    }
                 }
-            }
+            });
         });
     }
 

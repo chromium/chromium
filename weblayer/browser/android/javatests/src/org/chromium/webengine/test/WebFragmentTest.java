@@ -4,10 +4,13 @@
 
 package org.chromium.webengine.test;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+
+import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,31 +18,106 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.webengine.Tab;
+import org.chromium.webengine.TabManager;
+import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
-import org.chromium.webengine.shell.InstrumentationActivity;
 
 /**
- * Tests that fragment lifecycle works as expected.
+ * Tests that basic fragment operations work as intended.
  */
+@Batch(Batch.PER_CLASS)
 @RunWith(WebEngineJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
 public class WebFragmentTest {
+    @Rule
+    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
 
+    private EmbeddedTestServer mServer;
     private WebSandbox mWebSandbox;
 
     @Before
     public void setUp() throws Throwable {
-        InstrumentationActivity activity = mActivityTestRule.launchShell();
-        mWebSandbox = activity.getWebSandboxFuture().get();
+        mServer = mTestServerRule.getServer();
+        mActivityTestRule.launchShell();
+        mWebSandbox = mActivityTestRule.getWebSandbox();
+    }
+
+    @After
+    public void tearDown() {
+        mActivityTestRule.finish();
+        runOnUiThreadBlocking(() -> mWebSandbox.shutdown());
+    }
+
+    private String getTestDataURL(String path) {
+        return mServer.getURL("/weblayer/test/data/" + path);
     }
 
     @Test
     @SmallTest
-    public void successfullyCreateFragment() {
-        Assert.assertNotNull(mWebSandbox);
-        Assert.assertNotNull(runOnUiThreadBlockingNoException(() -> mWebSandbox.createFragment()));
+    public void loadsPage() throws Exception {
+        WebFragment fragment = runOnUiThreadBlocking(() -> mWebSandbox.createFragment());
+        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(fragment));
+
+        TabManager tabManager = fragment.getTabManager().get();
+        Tab activeTab = tabManager.getActiveTab().get();
+
+        Assert.assertEquals(activeTab.getDisplayUri(), Uri.EMPTY);
+
+        String url = getTestDataURL("simple_page.html");
+        mActivityTestRule.navigateAndWait(activeTab, url);
+
+        Assert.assertEquals(activeTab.getDisplayUri(), Uri.parse(url));
+    }
+
+    /**
+     * This test is similar to the previous one and just ensures that these unit tests can be
+     * batched.
+     */
+    @Test
+    @SmallTest
+    public void successfullyLoadDifferentPage() throws Exception {
+        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page2.html"));
+    }
+
+    @Test
+    @SmallTest
+    public void fragmentTabCanLoadMultiplePages() throws Exception {
+        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page.html"));
+
+        Tab tab = mActivityTestRule.getActiveTab();
+        mActivityTestRule.navigateAndWait(tab, getTestDataURL("simple_page2.html"));
+
+        Assert.assertTrue(tab.getDisplayUri().toString().endsWith("simple_page2.html"));
+    }
+
+    @Test
+    @SmallTest
+    public void fragmentsCanBeReplaced() throws Exception {
+        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page.html"));
+        // New fragment
+        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page2.html"));
+
+        Tab tab = mActivityTestRule.getActiveTab();
+        Assert.assertTrue(tab.getDisplayUri().toString().endsWith("simple_page2.html"));
+    }
+
+    @Test
+    @SmallTest
+    public void navigationFailure() {
+        try {
+            mActivityTestRule.attachNewFragmentThenNavigateAndWait(
+                    getTestDataURL("missingpage.html"));
+            Assert.fail("exception not thrown");
+        } catch (RuntimeException e) {
+            Assert.assertEquals(e.getMessage(), "Navigation failed.");
+        } catch (Exception e) {
+            Assert.fail("RuntimeException not thrown, instead got: " + e);
+        }
     }
 }

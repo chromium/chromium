@@ -212,10 +212,7 @@ android_aidl("webengine_aidl") {
 }
 
 android_library("webengine_interfaces_java") {
-  sources = [
-    "org/chromium/webengine/interfaces/ExceptionType.java",
-    "org/chromium/webengine/interfaces/RestrictedAPIException.java",
-  ]
+  sources = [ "org/chromium/webengine/interfaces/ExceptionType.java" ]
   deps = [
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
@@ -232,6 +229,7 @@ android_library("webengine_java") {
     "org/chromium/webengine/Navigation.java",
     "org/chromium/webengine/NavigationObserver.java",
     "org/chromium/webengine/NavigationObserverDelegate.java",
+    "org/chromium/webengine/RestrictedAPIException.java",
     "org/chromium/webengine/Tab.java",
     "org/chromium/webengine/TabListObserver.java",
     "org/chromium/webengine/TabListObserverDelegate.java",
