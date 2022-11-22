@@ -35,11 +35,6 @@ typedef NS_OPTIONS(NSUInteger, EnterpriseSignInRestrictions) {
 // Returns YES if some account restrictions are set.
 bool IsRestrictAccountsToPatternsEnabled();
 
-// Returns true if force signIn is set.
-// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
-// TODO(crbug.com/1242320): Need to remove this method.
-bool IsForceSignInEnabled();
-
 // Returns true if the `dataType` is managed by policies (i.e. is not syncable).
 bool IsManagedSyncDataType(PrefService* pref_service,
                            SyncSetupService::SyncableDatatype dataType);

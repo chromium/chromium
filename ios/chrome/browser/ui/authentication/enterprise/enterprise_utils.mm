@@ -43,15 +43,6 @@ bool IsRestrictAccountsToPatternsEnabled() {
               .empty();
 }
 
-// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
-// instead of this when available.
-bool IsForceSignInEnabled() {
-  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
-      GetApplicationContext()->GetLocalState()->GetInteger(
-          prefs::kBrowserSigninPolicy));
-  return policy_mode == BrowserSigninMode::kForced;
-}
-
 bool IsManagedSyncDataType(PrefService* pref_service,
                            SyncSetupService::SyncableDatatype data_type) {
   return pref_service->FindPreference(kSyncableItemTypes.at(data_type))
