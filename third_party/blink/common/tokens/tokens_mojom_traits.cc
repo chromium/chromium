@@ -173,6 +173,12 @@ bool UnionTraits<
       *output = token;
       return ret;
     }
+    case DataView::Tag::kShadowRealmToken: {
+      blink::ShadowRealmToken token;
+      bool ret = input.ReadShadowRealmToken(&token);
+      *output = token;
+      return ret;
+    }
   }
   return false;
 }

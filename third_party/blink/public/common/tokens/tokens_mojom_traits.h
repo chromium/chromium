@@ -203,6 +203,16 @@ struct BLINK_COMMON_EXPORT
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// SHADOW REALM TOKENS
+
+template <>
+struct StructTraits<blink::mojom::ShadowRealmTokenDataView,
+                    blink::ShadowRealmToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::ShadowRealmTokenDataView,
+          blink::ShadowRealmToken> {};
+
+////////////////////////////////////////////////////////////////////////////////
 // OTHER TOKENS
 //
 // Keep this section last.
@@ -255,6 +265,8 @@ struct BLINK_COMMON_EXPORT
         return DataView::Tag::kLayoutWorkletToken;
       case blink::ExecutionContextToken::IndexOf<blink::PaintWorkletToken>():
         return DataView::Tag::kPaintWorkletToken;
+      case blink::ExecutionContextToken::IndexOf<blink::ShadowRealmToken>():
+        return DataView::Tag::kShadowRealmToken;
     }
     base::ImmediateCrash();
   }
@@ -290,6 +302,10 @@ struct BLINK_COMMON_EXPORT
   static const blink::PaintWorkletToken& paint_worklet_token(
       const blink::ExecutionContextToken& token) {
     return token.GetAs<blink::PaintWorkletToken>();
+  }
+  static const blink::ShadowRealmToken& shadow_realm_token(
+      const blink::ExecutionContextToken& token) {
+    return token.GetAs<blink::ShadowRealmToken>();
   }
 };
 

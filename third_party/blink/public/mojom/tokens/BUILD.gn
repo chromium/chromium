@@ -70,6 +70,12 @@ mojom_component("tokens") {
           cpp = "::blink::WorkletToken"
         },
 
+        # SHADOW REALM TOKENS
+        {
+          mojom = "blink.mojom.ShadowRealmToken"
+          cpp = "::blink::ShadowRealmToken"
+        },
+
         # OTHER TOKENS
         #
         # Keep this section last.

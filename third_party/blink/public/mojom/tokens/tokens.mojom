@@ -86,6 +86,13 @@ union WorkletToken {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// SHADOW REALM TOKENS
+
+struct ShadowRealmToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // OTHER TOKENS
 //
 // Keep this section last.
@@ -111,6 +118,7 @@ union ExecutionContextToken {
   AudioWorkletToken audio_worklet_token;
   LayoutWorkletToken layout_worklet_token;
   PaintWorkletToken paint_worklet_token;
+  ShadowRealmToken shadow_realm_token;
 };
 
 struct PortalToken {
