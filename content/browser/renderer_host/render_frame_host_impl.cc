@@ -8664,6 +8664,7 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
+  AssertBrowserContextShutdownHasntStarted();
 
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
@@ -8940,10 +8941,13 @@ void RenderFrameHostImpl::CommitNavigation(
             &non_network_factories);
 
     for (auto& factory : non_network_factories) {
-      // TODO(https://crbug.com/1376879): Remove the ad-hoc debugging code after
-      // the bug is understood and/or fixed.
       const std::string& scheme = factory.first;
-      SCOPED_CRASH_KEY_STRING32("non_network_factories", "scheme", scheme);
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          original_pending_factory = std::move(factory.second);
+      // TODO(https://crbug.com/1376879): Remove the workaround below once the
+      // root cause of the bug has been fixed.
+      if (!original_pending_factory)
+        continue;
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
@@ -8952,8 +8956,9 @@ void RenderFrameHostImpl::CommitNavigation(
       WillCreateURLLoaderFactory(
           subresource_loader_factories_config.origin(), &factory_receiver,
           subresource_loader_factories_config.ukm_source_id());
+
       mojo::Remote<network::mojom::URLLoaderFactory> remote(
-          std::move(factory.second));
+          std::move(original_pending_factory));
       remote->Clone(std::move(factory_receiver));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           scheme, std::move(pending_factory_proxy));
@@ -14006,10 +14011,21 @@ bool RenderFrameHostImpl::ShouldWaitForUnloadHandlers() const {
 }
 
 void RenderFrameHostImpl::AssertNonSpeculativeFrame() const {
-  if (lifecycle_state() != LifecycleStateImpl::kSpeculative)
+  if (LIKELY(lifecycle_state() != LifecycleStateImpl::kSpeculative))
     return;
 
   NOTREACHED();
+  base::debug::DumpWithoutCrashing();
+}
+
+void RenderFrameHostImpl::AssertBrowserContextShutdownHasntStarted() {
+  if (LIKELY(!GetBrowserContext()->ShutdownStarted()))
+    return;
+
+  NOTREACHED() << "BrowserContext->ShutdownStarted() without first closing all "
+                  "WebContents";
+  SCOPED_CRASH_KEY_STRING256("shutdown", "frame->ToDebugString",
+                             ToDebugString());
   base::debug::DumpWithoutCrashing();
 }
 

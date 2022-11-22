@@ -622,6 +622,15 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   }
 
   void Start() {
+    // Owner of BrowserContext should ensure that all WebContents are closed
+    // before starting BrowserContext destruction, but this doesn't stop
+    // incoming URLLoaderFactory IPCs which may still be in-flight until (as
+    // part of BrowserContext destruction sequence) OnBrowserContextDestroyed
+    // below is called (which will prevent future IPCs by calling
+    // DisconnectReceiversAndDestroy).  Note that DisconnectReceiversAndDestroy
+    // will only stop future ExtensionURLLoaderFactory IPCs, but it won't stop
+    // future ExtensionURLLoader IPCs - this is okay, because the loader doesn't
+    // directly interact with the BrowserContext.
     if (browser_context_->ShutdownStarted()) {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
@@ -930,6 +939,11 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
     // Return an unbound |pending_remote| if the |browser_context| has already
     // started shutting down.
+    //
+    // TODO(https://crbug.com/1376879): This should be a DCHECK or a CHECK
+    // (no new ExtensionURLLoaderFactory should be created after BrowserContext
+    // shutdown has started *if* all WebContents got closed before starting the
+    // shutdown).
     if (browser_context->ShutdownStarted())
       return pending_remote;
 
