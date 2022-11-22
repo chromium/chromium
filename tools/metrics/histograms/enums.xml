@@ -107225,9 +107225,22 @@ others/histograms.xml -->
     These values are integers representing a set of flags indicating how the
     PeerConnection is used. For flag values, see header file
     webrtc/pc/peerconnection.h, enum class UsageEvent. Only interesting values
-    are called out with labels.
+    (exceeding 1% usage at last probe) are called out with labels.
   </summary>
   <int value="0" label="Unused and unclosed"/>
+  <int value="1090" label="No media, Stun, SRD, priv IPv4 local"/>
+  <int value="2212" label="Data, remote priv IPv4"/>
+  <int value="3236" label="Data, priv IPv4"/>
+  <int value="3238" label="Data, Stun, priv IPv4"/>
+  <int value="9380" label="Data, priv IPv4, remote MDNS"/>
+  <int value="9382" label="Data, Stun, IPv4, remote MDNS"/>
+  <int value="36004" label="Data, remote MDNS, local IPv6"/>
+  <int value="36006" label="Data, Stun, priv IPv4 local, IPv6 remote"/>
+  <int value="156898" label="No media, Stun, SLD/SRD, local IPv6, remote MDNS"/>
+  <int value="157154" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
+  <int value="157158" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
+  <int value="157414" label="Data, Stun, SLD/SRD, local IPv6, remote MDNS"/>
+  <int value="157670" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
 </enum>
 
 <enum name="WebRtcStunIntegrityOutcome">
