@@ -1,4 +1,44 @@
 <style include="cr-shared-style">
+    @media (min-width: 600px) {
+      :host {
+        --keyboard-key-icon-size: 10px;
+      }
+      #key {
+        font-size: 10px;
+        line-height: 10px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      :host {
+        --keyboard-key-icon-size: 12px;
+      }
+      #key {
+        font-size: 11px;
+        line-height: 16px;
+      }
+    }
+
+    @media (min-width: 960px) {
+      :host {
+        --keyboard-key-icon-size: 14px;
+      }
+      #key {
+        font-size: 12px;
+        line-height: 18px;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      :host {
+        --keyboard-key-icon-size: 20px;
+      }
+      #key {
+        font-size: 13px;
+        line-height: 20px;
+      }
+    }
+
   :host {
     --background-color-pressed: var(--cros-icon-color-selection);
     --background-color-unpressed: var(--cros-highlight-color);
@@ -25,7 +65,7 @@
     bottom: var(--travel);
     color: var(--foreground-color-unpressed);
     display: grid;
-    font-size: calc(max(1.25vw, 13px));
+    font-family: 'Google Sans', sans-serif;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     grid-template-columns: 1fr;

@@ -1,6 +1,26 @@
-<style include="diagnostics-shared">
-  #dialog {
-    --cr-dialog-width: calc(100% - 80px);
+<style>
+  @media (min-width: 600px) {
+    :host {
+      --cr-dialog-width: 416px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :host {
+      --cr-dialog-width: 512px;
+    }
+  }
+
+  @media (min-width: 960px) {
+    :host {
+      --cr-dialog-width: 672px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    :host {
+      --cr-dialog-width: 960px;
+    }
   }
 
   [slot='title'] {
