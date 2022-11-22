@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
@@ -975,6 +976,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [[BackgroundTabAnimationView alloc]
             initWithFrame:CGRectMake(0, 0, kAnimatedViewSize, kAnimatedViewSize)
                 incognito:_isOffTheRecord];
+    animatedView.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
     __weak UIView* weakAnimatedView = animatedView;
     auto completionBlock = ^() {
       self.inNewTabAnimation = NO;

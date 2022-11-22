@@ -6,9 +6,9 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/named_guide_util.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -140,14 +140,13 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 // Returns the destination point for the animation, in the superview
 // coordinates.
 - (CGPoint)destinationPoint {
+  DCHECK(self.layoutGuideCenter);
   UILayoutGuide* tabGridButtonLayoutGuide =
-      [NamedGuide guideWithName:kTabSwitcherGuide view:self.superview];
+      [self.layoutGuideCenter makeLayoutGuideNamed:kTabSwitcherGuide];
+  // Note: adding to the superview, as adding to `self` breaks its layout.
+  [self.superview addLayoutGuide:tabGridButtonLayoutGuide];
   CGRect frame = [tabGridButtonLayoutGuide layoutFrame];
-  CGPoint tabGridButtonCenter =
-      CGPointMake(frame.origin.x + frame.size.width / 2,
-                  frame.origin.y + frame.size.height / 2);
-  return [self.superview convertPoint:tabGridButtonCenter
-                             fromView:tabGridButtonLayoutGuide.owningView];
+  return CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
 }
 
 // Returns the animation duration, based on the `parentSize` and the `yDiff` and
