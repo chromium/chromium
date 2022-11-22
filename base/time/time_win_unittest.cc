@@ -388,6 +388,31 @@ TEST(TimeDelta, ToWinrtDateTime) {
   EXPECT_EQ(100, time_delta.ToWinrtDateTime().UniversalTime);
 }
 
+TEST(TimeDelta, FromWinrtTimeSpan) {
+  ABI::Windows::Foundation::TimeSpan ts;
+  ts.Duration = 0;
+
+  // 0.
+  EXPECT_EQ(TimeDelta(), TimeDelta::FromWinrtTimeSpan(ts));
+
+  ts.Duration = 101;
+
+  // 101 * 100 ns ~= 10.1 microseconds.
+  EXPECT_EQ(Microseconds(10.1), TimeDelta::FromWinrtTimeSpan(ts));
+}
+
+TEST(TimeDelta, ToWinrtTimeSpan) {
+  auto time_delta = Seconds(0);
+
+  // 0.
+  EXPECT_EQ(0, time_delta.ToWinrtTimeSpan().Duration);
+
+  time_delta = Microseconds(10);
+
+  // 10 microseconds = 100 * 100 ns.
+  EXPECT_EQ(100, time_delta.ToWinrtTimeSpan().Duration);
+}
+
 TEST(HighResolutionTimer, GetUsage) {
   Time::ResetHighResolutionTimerUsage();
 

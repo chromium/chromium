@@ -104,6 +104,7 @@ namespace ABI {
 namespace Windows {
 namespace Foundation {
 struct DateTime;
+struct TimeSpan;
 }  // namespace Foundation
 }  // namespace Windows
 }  // namespace ABI
@@ -129,6 +130,7 @@ class BASE_EXPORT TimeDelta {
   // based on absolute time
   static TimeDelta FromFileTime(FILETIME ft);
   static TimeDelta FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt);
+  static TimeDelta FromWinrtTimeSpan(ABI::Windows::Foundation::TimeSpan ts);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static TimeDelta FromTimeSpec(const timespec& ts);
 #endif
@@ -200,6 +202,7 @@ class BASE_EXPORT TimeDelta {
 #endif
 #if BUILDFLAG(IS_WIN)
   ABI::Windows::Foundation::DateTime ToWinrtDateTime() const;
+  ABI::Windows::Foundation::TimeSpan ToWinrtTimeSpan() const;
 #endif
 
   // Returns the frequency in Hertz (cycles per second) that has a period of

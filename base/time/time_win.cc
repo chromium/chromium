@@ -732,6 +732,18 @@ ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
   return date_time;
 }
 
+// static
+TimeDelta TimeDelta::FromWinrtTimeSpan(ABI::Windows::Foundation::TimeSpan ts) {
+  // Duration is 100 ns intervals
+  return Microseconds(ts.Duration / 10);
+}
+
+ABI::Windows::Foundation::TimeSpan TimeDelta::ToWinrtTimeSpan() const {
+  ABI::Windows::Foundation::TimeSpan time_span;
+  time_span.Duration = InMicroseconds() * 10;
+  return time_span;
+}
+
 #if !defined(ARCH_CPU_ARM64)
 namespace time_internal {
 
