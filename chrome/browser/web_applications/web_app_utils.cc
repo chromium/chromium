@@ -242,14 +242,14 @@ content::BrowserContext* GetBrowserContextForWebApps(
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
     content::BrowserContext* context) {
-  // Use original profile to create only one KeyedService instance.
-  Profile* original_profile =
-      Profile::FromBrowserContext(context)->GetOriginalProfile();
-  const bool is_web_app_metrics_enabled =
-      site_engagement::SiteEngagementService::IsEnabled() &&
-      AreWebAppsEnabled(original_profile) &&
-      !original_profile->IsGuestSession();
-  return is_web_app_metrics_enabled ? original_profile : nullptr;
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return nullptr;
+  if (!site_engagement::SiteEngagementService::IsEnabled())
+    return nullptr;
+  if (profile->GetOriginalProfile()->IsGuestSession())
+    return nullptr;
+  return GetBrowserContextForWebApps(context);
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
