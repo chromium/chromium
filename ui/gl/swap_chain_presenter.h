@@ -64,19 +64,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
     kMaxValue = kBindAndVideoProcessorBlit,
   };
 
-  // Mapped to DecodeSwapChainNotUsedReason UMA enum.  Do not remove or remap
-  // existing entries.
-  enum class DecodeSwapChainNotUsedReason {
-    kSoftwareFrame = 0,
-    kNv12NotSupported = 1,
-    kFailedToPresent = 2,
-    kNonDecoderTexture = 3,
-    kSharedTexture = 4,
-    kIncompatibleTransform = 5,
-    kUnitaryTextureArray = 6,
-    kMaxValue = kUnitaryTextureArray,
-  };
-
   // This keeps track of whether the previous 30 frames used Overlays or GPU
   // composition to present.
   class PresentationHistory {

@@ -864,8 +864,6 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
   if (ShouldUseVideoProcessorScaling())
     return false;
 
-  auto not_used_reason = DecodeSwapChainNotUsedReason::kFailedToPresent;
-
   bool nv12_supported =
       (swap_chain_format == DXGI_FORMAT_NV12) &&
       (DXGI_FORMAT_NV12 == GetDirectCompositionSDROverlayFormat());
@@ -922,28 +920,10 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
       }
       ReleaseSwapChainResources();
       failed_to_present_decode_swapchain_ = true;
-      not_used_reason = DecodeSwapChainNotUsedReason::kFailedToPresent;
       DLOG(ERROR)
           << "Present to decode swap chain failed - falling back to blit";
-    } else if (!is_decoder_texture) {
-      not_used_reason = DecodeSwapChainNotUsedReason::kNonDecoderTexture;
-    } else if (is_shared_texture) {
-      not_used_reason = DecodeSwapChainNotUsedReason::kSharedTexture;
-    } else if (is_unitary_texture_array) {
-      not_used_reason = DecodeSwapChainNotUsedReason::kUnitaryTextureArray;
-    } else if (!compatible_transform) {
-      not_used_reason = DecodeSwapChainNotUsedReason::kIncompatibleTransform;
     }
-  } else if (!texture) {
-    not_used_reason = DecodeSwapChainNotUsedReason::kSoftwareFrame;
-  } else if (!nv12_supported) {
-    not_used_reason = DecodeSwapChainNotUsedReason::kNv12NotSupported;
-  } else if (failed_to_present_decode_swapchain_) {
-    not_used_reason = DecodeSwapChainNotUsedReason::kFailedToPresent;
   }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "GPU.DirectComposition.DecodeSwapChainNotUsedReason", not_used_reason);
   return false;
 }
 
@@ -996,8 +976,6 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
         media_factory->CreateDecodeSwapChainForCompositionSurfaceHandle(
             d3d11_device_.Get(), swap_chain_handle_.Get(), &desc,
             decode_resource_.Get(), nullptr, &decode_swap_chain_);
-    base::UmaHistogramSparse(
-        "GPU.DirectComposition.DecodeSwapChainCreationResult", hr);
     if (FAILED(hr)) {
       DLOG(ERROR) << "CreateDecodeSwapChainForCompositionSurfaceHandle failed "
                      "with error 0x"
@@ -1332,9 +1310,6 @@ void SwapChainPresenter::RecordPresentationStatistics() {
   }
   UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.VideoPresentationMode",
                             presentation_mode);
-
-  UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.DecodeSwapChainUsed",
-                        !!decode_swap_chain_);
 
   TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
                        "SwapChain::Present", TRACE_EVENT_SCOPE_THREAD,
@@ -1695,9 +1670,6 @@ bool SwapChainPresenter::ReallocateSwapChain(
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
   desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-  const std::string kSwapChainCreationResultByFormatUmaPrefix =
-      "GPU.DirectComposition.SwapChainCreationResult2.";
-
   const std::string kSwapChainCreationResultByVideoTypeUmaPrefix =
       "GPU.DirectComposition.SwapChainCreationResult3.";
   const std::string protected_video_type_string =
@@ -1711,9 +1683,6 @@ bool SwapChainPresenter::ReallocateSwapChain(
         &swap_chain_);
     failed_to_create_yuv_swapchain_ = FAILED(hr);
 
-    base::UmaHistogramSparse(kSwapChainCreationResultByFormatUmaPrefix +
-                                 DxgiFormatToString(swap_chain_format),
-                             hr);
     base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
                                  protected_video_type_string,
                              hr);
@@ -1747,9 +1716,6 @@ bool SwapChainPresenter::ReallocateSwapChain(
         d3d11_device_.Get(), swap_chain_handle_.Get(), &desc, nullptr,
         &swap_chain_);
 
-    base::UmaHistogramSparse(kSwapChainCreationResultByFormatUmaPrefix +
-                                 DxgiFormatToString(swap_chain_format),
-                             hr);
     base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
                                  protected_video_type_string,
                              hr);

@@ -518,12 +518,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
-    enum="DxgiFramePresentationMode" expires_after="2021-12-31">
+    enum="DxgiFramePresentationMode" expires_after="2023-05-22">
   <owner>sunnyps@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     How the Desktop Window Manager presented Chrome's DirectComposition layers
-    of video or canvas elements to the screen. Only recorded on Windows.
+    of video or canvas elements to the screen. Only recorded on Windows. NOTE:
+    This metric was expired and not collecting data between 2021-12-31 and
+    crrev.com/c/4041850 (M110).
   </summary>
 </histogram>
 
@@ -591,26 +593,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.DecodeSwapChainCreationResult"
-    enum="Hresult" expires_after="M76">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    Result of calling CreateDecodeSwapChainForCompositionSurfaceHandle. Recorded
-    when decode swap chain is created.
-  </summary>
-</histogram>
-
-<histogram name="GPU.DirectComposition.DecodeSwapChainNotUsedReason"
-    enum="DecodeSwapChainNotUsedReason" expires_after="M76">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    The reason decode swap chain wasn't used to present a video frame. Recorded
-    on each present. See also GPU.DirectComposition.VideoPresentationMode.
-  </summary>
-</histogram>
-
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
     enum="BooleanOverlaySupported" expires_after="2023-04-16">
   <owner>magchen@chromium.org</owner>
@@ -663,18 +645,6 @@ chromium-metrics-reviews@google.com.
     True if Chrome will try to use DirectComposition overlays. (Might be lack of
     metrics coverage between 2021-10-04 and 2022-06-24 due to metric
     expiration.)
-  </summary>
-</histogram>
-
-<histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult2"
-    enum="Hresult" expires_after="2019-05-31">
-<!-- Name completed by histogram_suffixes name="GPU.DirectComposition.OverlayFormat" -->
-
-  <owner>sunnyps@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    Whether creating swap chain for overlay format succeeded. Recorded once per
-    swap chain creation.
   </summary>
 </histogram>
 

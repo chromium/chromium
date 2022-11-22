@@ -2166,13 +2166,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GoogleUpdate.Result.TimeWindow.Unknown"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU_DirectComposition_OverlayFormat" separator=".">
-  <suffix name="BGRA" label="BGRA"/>
-  <suffix name="NV12" label="NV12"/>
-  <suffix name="YUY2" label="YUY2"/>
-  <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
   <suffix name="Clear" label="Clear"/>
   <suffix name="HardwareProtected" label="HardwareProtected"/>
