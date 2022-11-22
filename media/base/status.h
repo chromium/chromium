@@ -133,7 +133,7 @@ struct MEDIA_EXPORT StatusData {
 
 NAME_DETECTOR(HasOkCode, kOk);
 NAME_DETECTOR(HasPackExtraData, PackExtraData);
-NAME_DETECTOR(HasSetDefaultOk, DefaultEnumValue);
+NAME_DETECTOR(HasSetDefaultOk, OkEnumValue);
 
 #undef NAME_DETECTOR
 
@@ -144,12 +144,11 @@ struct StatusTraitsHelper {
   static constexpr bool has_default = HasSetDefaultOk<T>::as_method;
   static constexpr bool has_pack = HasPackExtraData<T>::as_method;
 
-  // If T defines DefaultEnumValue(), then return it. Otherwise, return an
+  // If T defines OkEnumValue(), then return it. Otherwise, return an
   // T::Codes::kOk if that's defined, or absl::nullopt if its not.
-  // TODO: rename |DefaultEnumValue| to |OkEnumValue|.
   static constexpr absl::optional<typename T::Codes> OkEnumValue() {
     if constexpr (has_default) {
-      return T::DefaultEnumValue();
+      return T::OkEnumValue();
     } else if constexpr (has_ok) {
       return T::Codes::kOk;
     } else {
@@ -213,7 +212,7 @@ class MEDIA_EXPORT TypedStatus {
     else if constexpr (!internal::StatusTraitsHelper<T>::has_default)
       return true;
     else
-      return T::DefaultEnumValue() == T::Codes::kOk;
+      return T::OkEnumValue() == T::Codes::kOk;
   }
   static_assert(verify_default_okayness(),
                 "If kOk is defined, then either no default, or default==kOk");

@@ -26,7 +26,6 @@ enum class V4L2StatusCodes : StatusCodeType {
 struct V4L2StatusTraits {
   using Codes = V4L2StatusCodes;
   static constexpr StatusGroupType Group() { return "V4L2StatusCode"; }
-  static constexpr V4L2StatusCodes DefaultEnumValue() { return Codes::kOk; }
 };
 using V4L2Status = TypedStatus<V4L2StatusTraits>;
 

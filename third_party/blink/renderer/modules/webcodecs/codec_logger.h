@@ -133,7 +133,7 @@ class MODULES_EXPORT CodecLogger final {
 
   // Records the first media::Status passed to MakeException.
   typename StatusImpl::Codes status_code() const {
-    return status_code_.value_or(StatusImpl::Traits::DefaultEnumValue());
+    return status_code_.value_or(StatusImpl::Codes::kOk);
   }
 
  private:

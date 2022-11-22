@@ -26,7 +26,6 @@ struct EncoderStatusTraits {
     kFormatConversionError = 12,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
 };
 
 using EncoderStatus = TypedStatus<EncoderStatusTraits>;

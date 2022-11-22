@@ -31,7 +31,6 @@ struct MP4StatusTraits {
     kFailedToLookupVPS = 10,
   };
   static constexpr StatusGroupType Group() { return "MP4Status"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
 };
 
 using MP4Status = TypedStatus<MP4StatusTraits>;

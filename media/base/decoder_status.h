@@ -43,7 +43,6 @@ struct DecoderStatusTraits {
     kMediaFoundationNotAvailable = 207,
   };
   static constexpr StatusGroupType Group() { return "DecoderStatus"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
 };
 
 using DecoderStatus = TypedStatus<DecoderStatusTraits>;

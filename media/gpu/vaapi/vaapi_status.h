@@ -30,7 +30,6 @@ enum class VaapiStatusCode : StatusCodeType {
 struct VaapiStatusTraits {
   using Codes = VaapiStatusCode;
   static constexpr StatusGroupType Group() { return "VaapiStatusCode"; }
-  static constexpr VaapiStatusCode DefaultEnumValue() { return Codes::kOk; }
 };
 using VaapiStatus = TypedStatus<VaapiStatusTraits>;
 

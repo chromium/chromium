@@ -41,7 +41,7 @@ struct NoOkStatusTypeTraits {
 struct CustomDefaultValue {
   enum class Codes : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
   static constexpr StatusGroupType Group() { return "CustomOkCode"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kFoo; }
+  static constexpr Codes OkEnumValue() { return Codes::kFoo; }
 };
 
 struct ZeroValueOkTypeTraits {

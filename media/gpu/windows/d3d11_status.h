@@ -66,9 +66,6 @@ enum class D3D11StatusCode : StatusCodeType {
 struct D3D11StatusTraits {
   using Codes = D3D11StatusCode;
   static constexpr StatusGroupType Group() { return "D3D11Status"; }
-  static constexpr D3D11StatusCode DefaultEnumValue() {
-    return D3D11StatusCode::kOk;
-  }
 
   static void OnCreateFrom(TypedStatus<D3D11StatusTraits>* s, HRESULT hresult) {
     // Store it as a string for easy human consumption.

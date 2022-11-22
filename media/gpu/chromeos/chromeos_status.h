@@ -25,7 +25,6 @@ enum class ChromeosStatusCode : StatusCodeType {
 struct CroStatusTraits {
   using Codes = ChromeosStatusCode;
   static constexpr StatusGroupType Group() { return "ChromeosStatusCode"; }
-  static constexpr ChromeosStatusCode DefaultEnumValue() { return Codes::kOk; }
 };
 using CroStatus = TypedStatus<CroStatusTraits>;
 

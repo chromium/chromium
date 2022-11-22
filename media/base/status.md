@@ -23,7 +23,7 @@ struct MyExampleStatusTraits {
   // then the function OkStatus() can be used to return a status with this
   // code. Statuses created with this default code can not have any data,
   // causes, or a message attached.
-  static constexpr Codes DefaultEnumValue() { return Codes::kSomething; }
+  static constexpr Codes OkEnumValue() { return Codes::kSomething; }
 
   // [OPTIONAL] If |OnCreateFrom| is declared, then TypedStatus<T> can be
   // created with {T::Codes, SomeOtherType} or {T::Codes, string, SomeOtherType}
@@ -100,7 +100,7 @@ Define an |TypedStatusTraits|, picking a name for the group of codes:
 struct MyExampleStatusTraits {
   using Codes = MyExampleEnum;
   static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
+  static constexpr Codes OkEnumValue() { return Codes::kDefaultValue; }
 }
 ```
 
@@ -132,7 +132,7 @@ like to encapsulate:
 ```
 // To create an status with the default OK type, there's a helper function that
 // creates any type you want, so long as it actually has a kOk value or
-|DefaultEnumValue| implementation.
+|OkEnumValue| implementation.
 TypedStatus<MyType> ok = OkStatus();
 
 // A status can be implicitly created from a code
@@ -180,7 +180,7 @@ TypedStatus<T> error() &&;
 OtherType value() &&;
 
 // It is invalid to call `code()` on an `Or<D>` type when
-// has_value() is true and TypedStatusTraits<T>::DefaultEnumValue is nullopt.
+// has_value() is true and TypedStatusTraits<T>::OkEnumValue is nullopt.
 T::Codes code();
 ```
 
@@ -258,7 +258,7 @@ struct MyExampleStatusTraits {
   // here, instead of `using`.
   using Codes = MyExampleEnum;
   static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
-  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
+  static constexpr Codes OkEnumValue() { return Codes::kDefaultValue; }
   static uint32_t PackExtraData(const StatusData& info) {
     absl::optional<int> hresult = info.data.GetIntValue("HRESULT");
     return static_cast<uint32_t>(hresult.has_value() ? *hresult : 0);

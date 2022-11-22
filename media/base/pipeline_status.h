@@ -74,7 +74,7 @@ struct PipelineStatusTraits {
   using Codes = PipelineStatusCodes;
 
   static constexpr StatusGroupType Group() { return "PipelineStatus"; }
-  static constexpr Codes DefaultEnumValue() { return PIPELINE_OK; }
+  static constexpr Codes OkEnumValue() { return PIPELINE_OK; }
 };
 
 using PipelineStatus = TypedStatus<PipelineStatusTraits>;
