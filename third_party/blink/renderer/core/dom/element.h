@@ -974,8 +974,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void ResetForceLegacyLayoutForPrinting();
 
-  virtual void BuildPendingResource() {}
-
   void SetCustomElementDefinition(CustomElementDefinition*);
   CustomElementDefinition* GetCustomElementDefinition() const;
   // https://dom.spec.whatwg.org/#concept-element-is-value
