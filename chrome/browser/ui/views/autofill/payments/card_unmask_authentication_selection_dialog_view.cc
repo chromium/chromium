@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_views.h"
+#include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -22,8 +22,8 @@
 
 namespace autofill {
 
-CardUnmaskAuthenticationSelectionDialogViews::
-    CardUnmaskAuthenticationSelectionDialogViews(
+CardUnmaskAuthenticationSelectionDialogView::
+    CardUnmaskAuthenticationSelectionDialogView(
         CardUnmaskAuthenticationSelectionDialogController* controller)
     : controller_(controller) {
   SetShowTitle(true);
@@ -39,8 +39,8 @@ CardUnmaskAuthenticationSelectionDialogViews::
   InitViews();
 }
 
-CardUnmaskAuthenticationSelectionDialogViews::
-    ~CardUnmaskAuthenticationSelectionDialogViews() {
+CardUnmaskAuthenticationSelectionDialogView::
+    ~CardUnmaskAuthenticationSelectionDialogView() {
   // Inform |controller_| of the dialog's destruction. By the time this is
   // called, the |controller_| will not be nullptr only if the dialog is closed
   // by the user. For other cases, the |controller_| should already be reset.
@@ -56,13 +56,13 @@ CardUnmaskAuthenticationSelectionDialog*
 CardUnmaskAuthenticationSelectionDialog::CreateAndShow(
     CardUnmaskAuthenticationSelectionDialogController* controller,
     content::WebContents* web_contents) {
-  CardUnmaskAuthenticationSelectionDialogViews* dialog_view =
-      new CardUnmaskAuthenticationSelectionDialogViews(controller);
+  CardUnmaskAuthenticationSelectionDialogView* dialog_view =
+      new CardUnmaskAuthenticationSelectionDialogView(controller);
   constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
   return dialog_view;
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::Dismiss(
+void CardUnmaskAuthenticationSelectionDialogView::Dismiss(
     bool user_closed_dialog,
     bool server_success) {
   if (controller_) {
@@ -72,29 +72,29 @@ void CardUnmaskAuthenticationSelectionDialogViews::Dismiss(
   GetWidget()->Close();
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::UpdateContent() {
+void CardUnmaskAuthenticationSelectionDialogView::UpdateContent() {
   ReplaceContentWithProgressThrobber();
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
 }
 
-bool CardUnmaskAuthenticationSelectionDialogViews::Accept() {
+bool CardUnmaskAuthenticationSelectionDialogView::Accept() {
   DCHECK(!controller_->GetChallengeOptions().empty());
   controller_->OnOkButtonClicked();
   return false;
 }
 
-std::u16string CardUnmaskAuthenticationSelectionDialogViews::GetWindowTitle()
+std::u16string CardUnmaskAuthenticationSelectionDialogView::GetWindowTitle()
     const {
   return controller_->GetWindowTitle();
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::AddedToWidget() {
+void CardUnmaskAuthenticationSelectionDialogView::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::InitViews() {
+void CardUnmaskAuthenticationSelectionDialogView::InitViews() {
   DCHECK(children().empty());
   // Sets the layout manager for the top level view.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -110,7 +110,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::InitViews() {
   AddFooterText();
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::AddHeaderText() {
+void CardUnmaskAuthenticationSelectionDialogView::AddHeaderText() {
   auto* content = AddChildView(std::make_unique<views::Label>(
       controller_->GetContentHeaderText(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
@@ -118,7 +118,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddHeaderText() {
   content->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionsViews() {
+void CardUnmaskAuthenticationSelectionDialogView::AddChallengeOptionsViews() {
   auto* challenge_options_section =
       AddChildView(std::make_unique<views::View>());
   int horizontal_column_padding =
@@ -188,7 +188,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionsViews() {
   }
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionDetails(
+void CardUnmaskAuthenticationSelectionDialogView::AddChallengeOptionDetails(
     const CardUnmaskChallengeOption& challenge_option,
     views::View* challenge_options_section) {
   // Creates the right side of the challenge option (label and information
@@ -210,7 +210,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionDetails(
       views::style::STYLE_SECONDARY));
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::AddFooterText() {
+void CardUnmaskAuthenticationSelectionDialogView::AddFooterText() {
   auto* content = AddChildView(std::make_unique<views::Label>(
       controller_->GetContentFooterText(),
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -219,7 +219,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::AddFooterText() {
   content->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::
+void CardUnmaskAuthenticationSelectionDialogView::
     ReplaceContentWithProgressThrobber() {
   RemoveAllChildViews();
   AddChildView(std::make_unique<ProgressBarWithTextView>(
@@ -227,7 +227,7 @@ void CardUnmaskAuthenticationSelectionDialogViews::
 }
 
 std::unique_ptr<views::RadioButton>
-CardUnmaskAuthenticationSelectionDialogViews::CreateChallengeOptionRadioButton(
+CardUnmaskAuthenticationSelectionDialogView::CreateChallengeOptionRadioButton(
     CardUnmaskChallengeOption challenge_option) {
   auto radio_button = std::make_unique<views::RadioButton>();
   radio_button->SetCallback(
