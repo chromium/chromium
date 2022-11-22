@@ -84,8 +84,6 @@ PrerenderNavigationThrottle::MaybeCreateThrottleFor(
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   if (frame_tree_node->IsMainFrame() &&
       frame_tree_node->frame_tree()->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
-
     PrerenderHost* prerender_host =
         static_cast<PrerenderHost*>(frame_tree_node->frame_tree()->delegate());
     DCHECK(prerender_host);
@@ -132,8 +130,6 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
-  DCHECK(blink::features::IsPrerender2Enabled());
-
   // Take the root frame tree node of the prerendering page.
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();

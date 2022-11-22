@@ -1468,7 +1468,6 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(&PrerenderTaskBrowserTest::GetActiveWebContents,
                             base::Unretained(this)));
-    EXPECT_TRUE(blink::features::IsPrerender2Enabled());
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {

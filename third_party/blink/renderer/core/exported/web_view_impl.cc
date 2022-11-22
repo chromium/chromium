@@ -3302,8 +3302,6 @@ void WebViewImpl::ActivatePrerenderedPage(
     mojom::blink::PrerenderPageActivationParamsPtr
         prerender_page_activation_params,
     ActivatePrerenderedPageCallback callback) {
-  DCHECK(features::IsPrerender2Enabled());
-
   // From here all new documents will have prerendering false.
   GetPage()->SetIsPrerendering(false);
 

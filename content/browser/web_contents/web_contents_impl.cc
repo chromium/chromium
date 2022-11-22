@@ -922,10 +922,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      prerender_host_registry_(
-          blink::features::IsPrerender2Enabled()
-              ? std::make_unique<PrerenderHostRegistry>(*this)
-              : nullptr),
+      prerender_host_registry_(std::make_unique<PrerenderHostRegistry>(*this)),
       audible_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Audible")) {
@@ -1474,12 +1471,10 @@ std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
   std::vector<FrameTree*> result;
   result.push_back(&GetPrimaryFrameTree());
 
-  if (blink::features::IsPrerender2Enabled()) {
-    const std::vector<FrameTree*> prerender_frame_trees =
-        GetPrerenderHostRegistry()->GetPrerenderFrameTrees();
-    result.insert(result.end(), prerender_frame_trees.begin(),
-                  prerender_frame_trees.end());
-  }
+  const std::vector<FrameTree*> prerender_frame_trees =
+      GetPrerenderHostRegistry()->GetPrerenderFrameTrees();
+  result.insert(result.end(), prerender_frame_trees.begin(),
+                prerender_frame_trees.end());
 
   return result;
 }
@@ -2985,9 +2980,7 @@ void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
   ForEachFrameTree(base::BindRepeating(
       [](FrameTree* frame_tree) { frame_tree->StopLoading(); }));
-  if (blink::features::IsPrerender2Enabled()) {
-    GetPrerenderHostRegistry()->CancelAllHosts(PrerenderFinalStatus::kStop);
-  }
+  GetPrerenderHostRegistry()->CancelAllHosts(PrerenderFinalStatus::kStop);
   observers_.NotifyObservers(&WebContentsObserver::NavigationStopped);
 }
 
@@ -7462,7 +7455,6 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
 }
 
 PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {
-  DCHECK(blink::features::IsPrerender2Enabled());
   DCHECK(prerender_host_registry_);
   return prerender_host_registry_.get();
 }
@@ -9522,9 +9514,6 @@ bool WebContentsImpl::IsPrerender2Disabled() {
 
 bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
                                          PrerenderFinalStatus final_status) {
-  if (!blink::features::IsPrerender2Enabled())
-    return false;
-
   if (!frame_tree_node)
     return false;
 

@@ -41,10 +41,8 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
   // RequestScriptInjectionPermission, GetInstallState, SendRequestIPC, and
   // notifying CSS selector updates. These APIs are used by Chrome Extensions
   // under proper permission managements beyond the page boundaries.
-  if (blink::features::IsPrerender2Enabled()) {
-    policy_map.SetAssociatedPolicy<extensions::mojom::LocalFrameHost>(
-        content::MojoBinderAssociatedPolicy::kGrant);
-  }
+  policy_map.SetAssociatedPolicy<extensions::mojom::LocalFrameHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
 #endif
 }
 

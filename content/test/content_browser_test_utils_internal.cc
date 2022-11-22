@@ -901,11 +901,9 @@ void InactiveRenderFrameHostDeletionObserver::Wait() {
       ->GetController()
       .GetBackForwardCache()
       .Flush();
-  if (blink::features::IsPrerender2Enabled()) {
-    static_cast<WebContentsImpl*>(web_contents())
-        ->GetPrerenderHostRegistry()
-        ->CancelAllHostsForTesting();
-  }
+  static_cast<WebContentsImpl*>(web_contents())
+      ->GetPrerenderHostRegistry()
+      ->CancelAllHostsForTesting();
 
   for (RenderFrameHost* rfh : CollectAllRenderFrameHosts(web_contents())) {
     // Keep track of all currently inactive RenderFrameHosts so that we can wait

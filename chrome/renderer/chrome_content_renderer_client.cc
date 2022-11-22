@@ -1599,10 +1599,9 @@ void ChromeContentRendererClient::
   // One of the features of kOmniboxTriggerForPrerender2 and
   // kSupportSearchSuggestionForPrerender2 should be enabled before telling the
   // blink side that chrome is enrolling the experinment.
-  if (blink::features::IsPrerender2Enabled() &&
-      (base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2) ||
-       base::FeatureList::IsEnabled(
-           features::kSupportSearchSuggestionForPrerender2))) {
+  if (base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2) ||
+      base::FeatureList::IsEnabled(
+          features::kSupportSearchSuggestionForPrerender2)) {
     blink::WebRuntimeFeatures::EnablePrerender2RelatedFeatures(true);
   }
 

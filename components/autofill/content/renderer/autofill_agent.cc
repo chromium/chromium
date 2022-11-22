@@ -1107,8 +1107,7 @@ void AutofillAgent::PasswordFieldReset(const WebInputElement& element) {
 }
 
 bool AutofillAgent::IsPrerendering() const {
-  return blink::features::IsPrerender2Enabled() &&
-         render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
+  return render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
 }
 
 void AutofillAgent::FormControlElementClicked(

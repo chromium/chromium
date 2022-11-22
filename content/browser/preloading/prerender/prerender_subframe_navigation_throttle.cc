@@ -24,8 +24,7 @@ PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  if (!blink::features::IsPrerender2Enabled() ||
-      frame_tree_node->IsMainFrame() ||
+  if (frame_tree_node->IsMainFrame() ||
       !frame_tree_node->frame_tree()->is_prerendering()) {
     return nullptr;
   }
@@ -188,8 +187,6 @@ void PrerenderSubframeNavigationThrottle::OnHostDestroyed(
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
-  DCHECK(blink::features::IsPrerender2Enabled());
-
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   DCHECK(!frame_tree_node->IsMainFrame());

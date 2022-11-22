@@ -633,8 +633,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* render_frame_host);
 
   // Returns the PrerenderHostRegistry to start/cancel prerendering. This
-  // doesn't return nullptr except for some tests. This should only be called
-  // when blink::features::IsPrerender2Enabled() is true.
+  // doesn't return nullptr except for some tests.
   virtual PrerenderHostRegistry* GetPrerenderHostRegistry();
 
 #if BUILDFLAG(ENABLE_PLUGINS)

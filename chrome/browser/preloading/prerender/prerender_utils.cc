@@ -18,14 +18,12 @@ const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 
 bool IsDirectUrlInputPrerenderEnabled() {
-  return blink::features::IsPrerender2Enabled() &&
-         base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);
+  return base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);
 }
 
 bool IsSearchSuggestionPrerenderEnabled() {
-  return blink::features::IsPrerender2Enabled() &&
-         base::FeatureList::IsEnabled(
-             features::kSupportSearchSuggestionForPrerender2);
+  return base::FeatureList::IsEnabled(
+      features::kSupportSearchSuggestionForPrerender2);
 }
 
 bool ShouldUpdateCacheEntryManually() {

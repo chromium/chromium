@@ -54,10 +54,8 @@ Prerenderer::Prerenderer(content::RenderFrameHost& render_frame_host)
     : WebContentsObserver(WebContents::FromRenderFrameHost(&render_frame_host)),
       render_frame_host_(render_frame_host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (blink::features::IsPrerender2Enabled()) {
-    auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
-    registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
-  }
+  auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
+  registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
 }
 Prerenderer::~Prerenderer() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -84,7 +82,6 @@ void Prerenderer::ProcessCandidatesForPrerender(
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   if (!registry_)
     return;
-  DCHECK(blink::features::IsPrerender2Enabled());
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.

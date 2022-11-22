@@ -3549,8 +3549,6 @@ void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
 }
 
 void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
-  DCHECK(blink::features::IsPrerender2Enabled());
-
   // RendererDidActivateForPrerendering() is called after the renderer has
   // notified that it fired the prerenderingchange event on the documents. The
   // browser now runs any binders that were deferred during prerendering. This
@@ -10227,8 +10225,6 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
 
 bool RenderFrameHostImpl::CancelPrerendering(
     const PrerenderCancellationReason& reason) {
-  if (!blink::features::IsPrerender2Enabled())
-    return false;
   // A prerendered page is identified by its root FrameTreeNode id, so if this
   // RenderFrameHost is in any way embedded, we need to iterate up to the
   // prerender root.
@@ -10284,8 +10280,6 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
 }
 
 void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
-  DCHECK(blink::features::IsPrerender2Enabled());
-
   if (audio_service_audio_output_stream_factory_) {
     audio_service_audio_output_stream_factory_->ReleaseRestriction();
   }

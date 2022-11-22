@@ -2068,9 +2068,6 @@ void NavigationRequest::BeginNavigation() {
 }
 
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
-  if (!blink::features::IsPrerender2Enabled())
-    return false;
-
   // Find an available prerendered page for this request. If it's found, this
   // request may activate it instead of loading a page via network.
   int candidate_prerender_frame_tree_node_id =
@@ -2105,8 +2102,6 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
 void NavigationRequest::OnPrerenderingActivationChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
     absl::optional<int> candidate_prerender_frame_tree_node_id) {
-  DCHECK(blink::features::IsPrerender2Enabled());
-
   // Prerendered page activation must run CommitDeferringConditions before
   // StartRequest().
   DCHECK_LT(state_, WILL_START_NAVIGATION);
@@ -6769,8 +6764,7 @@ void NavigationRequest::WriteIntoTrace(
              rfh_restored_from_back_forward_cache_);
   }
 
-  if (blink::features::IsPrerender2Enabled() &&
-      prerender_frame_tree_node_id_.has_value()) {
+  if (prerender_frame_tree_node_id_.has_value()) {
     dict.Add("prerender_frame_tree_node_id",
              prerender_frame_tree_node_id_.value());
   }
@@ -7045,9 +7039,6 @@ bool NavigationRequest::IsInPrerenderedMainFrame() {
 }
 
 bool NavigationRequest::IsPrerenderedPageActivation() const {
-  if (!blink::features::IsPrerender2Enabled())
-    return false;
-
   CHECK(prerender_frame_tree_node_id_.has_value());
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }
@@ -8222,8 +8213,7 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
 }
 
 void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
-  if (blink::features::IsPrerender2Enabled() &&
-      !prerender_frame_tree_node_id_.has_value()) {
+  if (!prerender_frame_tree_node_id_.has_value()) {
     // This navigation won't activate a prerendered page. Otherwise,
     // `prerender_frame_tree_node_id_` should have already been set before this
     // in OnPrerenderingActivationChecksComplete().

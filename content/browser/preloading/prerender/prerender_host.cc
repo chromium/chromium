@@ -146,7 +146,6 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
                                               &web_contents,
                                               &web_contents,
                                               FrameTree::Type::kPrerender)) {
-  DCHECK(blink::features::IsPrerender2Enabled());
   // If the prerendering is browser-initiated, it is expected to have no
   // initiator. All initiator related information should be null or invalid. On
   // the other hand, renderer-initiated prerendering should have valid initiator

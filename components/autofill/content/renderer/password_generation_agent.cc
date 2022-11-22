@@ -283,8 +283,7 @@ bool PasswordGenerationAgent::ShouldIgnoreBlur() const {
 }
 
 bool PasswordGenerationAgent::IsPrerendering() const {
-  return blink::features::IsPrerender2Enabled() &&
-         render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
+  return render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
 }
 
 void PasswordGenerationAgent::GeneratedPasswordAccepted(

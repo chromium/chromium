@@ -75,7 +75,6 @@ PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
   Observe(&web_contents);
-  DCHECK(blink::features::IsPrerender2Enabled());
 }
 
 PrerenderHostRegistry::~PrerenderHostRegistry() {

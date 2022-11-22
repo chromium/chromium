@@ -998,7 +998,6 @@ bool RenderFrameHostManager::DeleteFromPendingList(
 // to ensure that we do not create speculative RFHs for prerender activation.
 void RenderFrameHostManager::ActivatePrerender(
     std::unique_ptr<StoredPage> stored_page) {
-  DCHECK(blink::features::IsPrerender2Enabled());
   if (speculative_render_frame_host_) {
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
         NavigationDiscardReason::kNewNavigation));
