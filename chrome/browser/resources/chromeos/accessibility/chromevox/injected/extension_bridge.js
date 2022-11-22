@@ -184,7 +184,7 @@ ContentExtensionBridge = class {
   }
 };
 
-// Keep these constants in sync with common/extension_bridge.js.
+// Keep these constants in sync with common/content_script_bridge.js.
 
 /**
  * The name of the port between the content script and background page.
