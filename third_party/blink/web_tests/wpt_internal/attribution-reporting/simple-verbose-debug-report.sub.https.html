@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async t => {
+  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+  await registerAttributionSrc(t, {
+    trigger: {
+      debug_reporting: true,
+    },
+    cookie,
+  });
+
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.length, 1);
+  assert_equals(report[0].type, 'trigger-no-matching-source');
+  assert_own_property(report[0], 'body');
+  assert_equals(report[0].body.attribution_destination, `https://{{host}}`);
+}, 'Verbose debug report is received.');
+</script>

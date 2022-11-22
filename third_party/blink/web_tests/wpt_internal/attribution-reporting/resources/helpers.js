@@ -11,6 +11,7 @@ const attribution_reporting_promise_test = (f, name) =>
       t.add_cleanup(() => resetAttributionReports(aggregatableReportsUrl));
       t.add_cleanup(() => resetAttributionReports(eventLevelDebugReportsUrl));
       t.add_cleanup(() => resetAttributionReports(aggregatableDebugReportsUrl));
+      t.add_cleanup(() => resetAttributionReports(verboseDebugReportsUrl));
       return f(t);
     }, name);
 
@@ -22,6 +23,8 @@ const aggregatableReportsUrl =
     '/.well-known/attribution-reporting/report-aggregate-attribution';
 const aggregatableDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/report-aggregate-attribution';
+const verboseDebugReportsUrl =
+    '/.well-known/attribution-reporting/debug/verbose';
 
 /**
  * Method to clear the stash. Takes the URL as parameter. This could be for
@@ -225,6 +228,8 @@ const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
 const pollAggregatableDebugReports = interval =>
     pollAttributionReports(aggregatableDebugReportsUrl, interval);
+const pollVerboseDebugReports = interval =>
+    pollAttributionReports(verboseDebugReportsUrl, interval);
 
 const validateReportHeaders = headers => {
   assert_array_equals(headers['content-type'], ['application/json']);
