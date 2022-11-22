@@ -494,6 +494,7 @@
                 {
                     "name": "Interact30",
                     "params": {
+                        "delay_minutes": "30",
                         "require_interaction": "true"
                     },
                     "enable_features": [
