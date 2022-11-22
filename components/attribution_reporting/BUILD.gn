@@ -127,3 +127,17 @@ fuzzer_test("source_registration_fuzzer") {
   seed_corpus =
       "//components/attribution_reporting/source_registration_fuzzer_corpus"
 }
+
+fuzzer_test("trigger_registration_fuzzer") {
+  sources = [ "trigger_registration_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+    "//base:i18n",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus =
+      "//components/attribution_reporting/trigger_registration_fuzzer_corpus"
+}
