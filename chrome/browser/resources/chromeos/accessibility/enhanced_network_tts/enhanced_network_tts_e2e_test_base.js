@@ -31,17 +31,6 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
   }
 
   /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-#include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-    `);
-  }
-
-  /** @override */
   testGenPreamble() {
     // TODO(leileilei@google.com): Figure out a better way to test Enhanced
     // Network TTS. Currently, loads Select-to-Speak for quick testing purpose.

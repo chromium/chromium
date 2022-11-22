@@ -18,11 +18,6 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
-  #include "ash/accessibility/accessibility_delegate.h"
-  #include "ash/shell.h"
-  #include "base/bind.h"
-  #include "base/callback.h"
-  #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "extensions/common/extension_l10n_util.h"
       `);
   }

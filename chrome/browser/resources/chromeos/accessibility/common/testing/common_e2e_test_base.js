@@ -10,18 +10,6 @@ GEN_INCLUDE(['e2e_test_base.js']);
  */
 CommonE2ETestBase = class extends E2ETestBase {
   /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-#include "ash/accessibility/accessibility_delegate.h"
-#include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-    `);
-  }
-
-  /** @override */
   testGenPreamble() {
     super.testGenPreamble();
     // Note that at least one accessibility common feature has to be enabled for
