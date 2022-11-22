@@ -365,6 +365,11 @@
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
                              syncTimeout:(base::TimeDelta)timeout;
 
+// Waits for the sync feature to be enabled/disabled. See SyncService::
+// IsSyncFeatureEnabled() for details. If not succeeded a GREYAssert is induced.
++ (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled
+                          syncTimeout:(base::TimeDelta)timeout;
+
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
 + (NSString*)syncCacheGUID;

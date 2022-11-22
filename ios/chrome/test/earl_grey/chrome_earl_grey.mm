@@ -892,6 +892,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                        syncTimeout:timeout]);
 }
 
+- (void)waitForSyncFeatureEnabled:(BOOL)isEnabled
+                      syncTimeout:(base::TimeDelta)timeout {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
+      waitForSyncFeatureEnabled:isEnabled
+                    syncTimeout:timeout]);
+}
+
 - (const std::string)syncCacheGUID {
   NSString* cacheGUID = [ChromeEarlGreyAppInterface syncCacheGUID];
   return base::SysNSStringToUTF8(cacheGUID);
