@@ -175,7 +175,7 @@ src/webgpu/api/operation/render_pipeline/primitive_topology.spec.ts
 src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/render_pipeline/vertex_only_render_pipeline.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
-src/webgpu/api/operation/rendering/blending.spec.ts
+src/webgpu/api/operation/rendering/color_target_state.spec.ts
 src/webgpu/api/operation/rendering/depth.spec.ts
 src/webgpu/api/operation/rendering/depth_clip_clamp.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
