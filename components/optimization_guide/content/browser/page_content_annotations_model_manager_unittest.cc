@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/page_entities_model_executor.h"
+#include "components/optimization_guide/core/page_entities_model_handler.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -52,14 +52,14 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
       registered_model_metadata_;
 };
 
-class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
+class FakePageEntitiesModelHandler : public PageEntitiesModelHandler {
  public:
-  explicit FakePageEntitiesModelExecutor(
+  explicit FakePageEntitiesModelHandler(
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entries,
       const base::flat_map<std::string, EntityMetadata>& entity_metadata)
       : entries_(entries), entity_metadata_(entity_metadata) {}
-  ~FakePageEntitiesModelExecutor() override = default;
+  ~FakePageEntitiesModelHandler() override = default;
 
   void ExecuteModelWithInput(
       const std::string& text,
@@ -135,7 +135,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
         AnnotationType::kPageTopics, base::DoNothing());
     // If the feature flag is disabled, the executor won't have been created so
     // skip everything else.
-    if (!model_manager()->page_topics_model_executor_)
+    if (!model_manager()->page_topics_model_handler_)
       return;
 
     proto::Any any_metadata;
@@ -156,7 +156,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
             .SetModelFilePath(model_file_path)
             .SetModelMetadata(any_metadata)
             .Build();
-    model_manager()->page_topics_model_executor_->OnModelUpdated(
+    model_manager()->page_topics_model_handler_->OnModelUpdated(
         proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, *model_info);
     RunUntilIdle();
   }
@@ -187,13 +187,13 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void SetPageEntitiesModelExecutor(
+  void SetPageEntitiesModelHandler(
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entries,
       const base::flat_map<std::string, EntityMetadata>& entity_metadata) {
-    model_manager()->OverridePageEntitiesModelExecutorForTesting(
-        std::make_unique<FakePageEntitiesModelExecutor>(entries,
-                                                        entity_metadata));
+    model_manager()->OverridePageEntitiesModelHandlerForTesting(
+        std::make_unique<FakePageEntitiesModelHandler>(entries,
+                                                       entity_metadata));
   }
 
   absl::optional<EntityMetadata> GetMetadataForEntityId(
@@ -346,7 +346,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageEntities) {
   std::vector<ScoredEntityMetadata> input2_entities = {
       ScoredEntityMetadata(0.7, EntityMetadata("fish", "fish", {})),
   };
-  SetPageEntitiesModelExecutor(
+  SetPageEntitiesModelHandler(
       {
           {"input1", input1_entities},
           {"input2", input2_entities},
@@ -660,7 +660,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
 TEST_F(PageContentAnnotationsModelManagerTest,
        NotifyWhenModelAvailable_EntitiesOnly) {
-  SetPageEntitiesModelExecutor(/*entries=*/{}, /*entity_metadata=*/{});
+  SetPageEntitiesModelHandler(/*entries=*/{}, /*entity_metadata=*/{});
 
   base::RunLoop run_loop;
   bool success = false;
@@ -729,9 +729,9 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   entity_metadata.human_readable_categories = {
       {"category1", 0.5},
   };
-  SetPageEntitiesModelExecutor(/*entries=*/{}, {
-                                                   {"entity1", entity_metadata},
-                                               });
+  SetPageEntitiesModelHandler(/*entries=*/{}, {
+                                                  {"entity1", entity_metadata},
+                                              });
   EXPECT_TRUE(GetMetadataForEntityId("entity1").has_value());
 }
 

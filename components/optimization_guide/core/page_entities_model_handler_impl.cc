@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_entities_model_executor_impl.h"
+#include "components/optimization_guide/core/page_entities_model_handler_impl.h"
 
 #include <algorithm>
 
@@ -28,14 +28,14 @@ const char kPageEntitiesModelMetadataTypeUrl[] =
 // know how much the model is expected to output.
 constexpr size_t kMaxPageEntities = 5;
 
-PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfigInternal() {
-  static base::NoDestructor<PageEntitiesModelExecutorConfig> s_config;
+PageEntitiesModelHandlerConfig& GetPageEntitiesModelHandlerConfigInternal() {
+  static base::NoDestructor<PageEntitiesModelHandlerConfig> s_config;
   return *s_config;
 }
 
 }  // namespace
 
-PageEntitiesModelExecutorConfig::PageEntitiesModelExecutorConfig() {
+PageEntitiesModelHandlerConfig::PageEntitiesModelHandlerConfig() {
   // Override any parameters that may be provided by Finch.
   should_reset_entity_annotator_on_shutdown =
       base::FeatureList::IsEnabled(features::kPageEntitiesModelResetOnShutdown);
@@ -44,17 +44,17 @@ PageEntitiesModelExecutorConfig::PageEntitiesModelExecutorConfig() {
       !base::FeatureList::IsEnabled(features::kPageEntitiesModelBypassFilters);
 }
 
-PageEntitiesModelExecutorConfig::PageEntitiesModelExecutorConfig(
-    const PageEntitiesModelExecutorConfig& other) = default;
-PageEntitiesModelExecutorConfig::~PageEntitiesModelExecutorConfig() = default;
+PageEntitiesModelHandlerConfig::PageEntitiesModelHandlerConfig(
+    const PageEntitiesModelHandlerConfig& other) = default;
+PageEntitiesModelHandlerConfig::~PageEntitiesModelHandlerConfig() = default;
 
-void SetPageEntitiesModelExecutorConfigForTesting(
-    const PageEntitiesModelExecutorConfig& config) {
-  GetPageEntitiesModelExecutorConfigInternal() = config;
+void SetPageEntitiesModelHandlerConfigForTesting(
+    const PageEntitiesModelHandlerConfig& config) {
+  GetPageEntitiesModelHandlerConfigInternal() = config;
 }
 
-const PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfig() {
-  return GetPageEntitiesModelExecutorConfigInternal();
+const PageEntitiesModelHandlerConfig& GetPageEntitiesModelHandlerConfig() {
+  return GetPageEntitiesModelHandlerConfigInternal();
 }
 
 EntityAnnotatorHolder::EntityAnnotatorHolder(
@@ -131,7 +131,7 @@ void EntityAnnotatorHolder::CreateAndSetEntityAnnotatorOnBackgroundThread(
   entity_annotator_ =
       entity_annotator_native_library_->CreateEntityAnnotator(model_info);
   base::UmaHistogramBoolean(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
+      "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully",
       entity_annotator_ != nullptr);
 }
 
@@ -178,7 +178,7 @@ void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(
 
 void EntityAnnotatorHolder::GetMetadataForEntityIdOnBackgroundThread(
     const std::string& entity_id,
-    PageEntitiesModelExecutor::PageEntitiesModelEntityMetadataRetrievedCallback
+    PageEntitiesModelHandler::PageEntitiesModelEntityMetadataRetrievedCallback
         callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
@@ -199,14 +199,14 @@ EntityAnnotatorHolder::GetBackgroundWeakPtr() {
   return background_weak_ptr_factory_.GetWeakPtr();
 }
 
-PageEntitiesModelExecutorImpl::PageEntitiesModelExecutorImpl(
+PageEntitiesModelHandlerImpl::PageEntitiesModelHandlerImpl(
     OptimizationGuideModelProvider* optimization_guide_model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : background_task_runner_(background_task_runner),
       entity_annotator_holder_(std::make_unique<EntityAnnotatorHolder>(
           background_task_runner_,
           base::SequencedTaskRunner::GetCurrentDefault(),
-          GetPageEntitiesModelExecutorConfig()
+          GetPageEntitiesModelHandlerConfig()
               .should_reset_entity_annotator_on_shutdown)) {
   background_task_runner_->PostTask(
       FROM_HERE,
@@ -214,14 +214,14 @@ PageEntitiesModelExecutorImpl::PageEntitiesModelExecutorImpl(
           &EntityAnnotatorHolder::
               InitializeEntityAnnotatorNativeLibraryOnBackgroundThread,
           entity_annotator_holder_->GetBackgroundWeakPtr(),
-          GetPageEntitiesModelExecutorConfig().should_provide_filter_path,
-          base::BindOnce(&PageEntitiesModelExecutorImpl::
+          GetPageEntitiesModelHandlerConfig().should_provide_filter_path,
+          base::BindOnce(&PageEntitiesModelHandlerImpl::
                              OnEntityAnnotatorLibraryInitialized,
                          weak_ptr_factory_.GetWeakPtr(),
                          optimization_guide_model_provider)));
 }
 
-void PageEntitiesModelExecutorImpl::OnEntityAnnotatorLibraryInitialized(
+void PageEntitiesModelHandlerImpl::OnEntityAnnotatorLibraryInitialized(
     OptimizationGuideModelProvider* optimization_guide_model_provider,
     int32_t max_model_format_feature_flag) {
   if (max_model_format_feature_flag <= 0) {
@@ -239,14 +239,14 @@ void PageEntitiesModelExecutorImpl::OnEntityAnnotatorLibraryInitialized(
       any_metadata, this);
 }
 
-PageEntitiesModelExecutorImpl::~PageEntitiesModelExecutorImpl() {
+PageEntitiesModelHandlerImpl::~PageEntitiesModelHandlerImpl() {
   // |entity_annotator_holder_|'s  WeakPtrs are used on the background thread,
   // so that is also where the class must be destroyed.
   background_task_runner_->DeleteSoon(FROM_HERE,
                                       std::move(entity_annotator_holder_));
 }
 
-void PageEntitiesModelExecutorImpl::AddOnModelUpdatedCallback(
+void PageEntitiesModelHandlerImpl::AddOnModelUpdatedCallback(
     base::OnceClosure callback) {
   if (model_info_) {
     std::move(callback).Run();
@@ -257,7 +257,7 @@ void PageEntitiesModelExecutorImpl::AddOnModelUpdatedCallback(
   on_model_updated_callbacks_.AddUnsafe(std::move(callback));
 }
 
-void PageEntitiesModelExecutorImpl::OnModelUpdated(
+void PageEntitiesModelHandlerImpl::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     const ModelInfo& model_info) {
   if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES)
@@ -277,11 +277,11 @@ void PageEntitiesModelExecutorImpl::OnModelUpdated(
   on_model_updated_callbacks_.Notify();
 }
 
-absl::optional<ModelInfo> PageEntitiesModelExecutorImpl::GetModelInfo() const {
+absl::optional<ModelInfo> PageEntitiesModelHandlerImpl::GetModelInfo() const {
   return model_info_;
 }
 
-void PageEntitiesModelExecutorImpl::ExecuteModelWithInput(
+void PageEntitiesModelHandlerImpl::ExecuteModelWithInput(
     const std::string& text,
     PageEntitiesMetadataModelExecutedCallback callback) {
   if (text.empty()) {
@@ -297,7 +297,7 @@ void PageEntitiesModelExecutorImpl::ExecuteModelWithInput(
                      std::move(callback)));
 }
 
-void PageEntitiesModelExecutorImpl::GetMetadataForEntityId(
+void PageEntitiesModelHandlerImpl::GetMetadataForEntityId(
     const std::string& entity_id,
     PageEntitiesModelEntityMetadataRetrievedCallback callback) {
   background_task_runner_->PostTask(

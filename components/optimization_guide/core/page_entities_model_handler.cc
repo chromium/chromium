@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_entities_model_executor.h"
+#include "components/optimization_guide/core/page_entities_model_handler.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 
 namespace optimization_guide {
 
-void PageEntitiesModelExecutor::ExecuteOnSingleInput(
+void PageEntitiesModelHandler::ExecuteOnSingleInput(
     AnnotationType annotation_type,
     const std::string& input,
     base::OnceCallback<void(const BatchAnnotationResult&)> callback) {

@@ -11,7 +11,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_topics_model_executor.h"
+#include "components/optimization_guide/core/page_topics_model_handler.h"
 #include "components/optimization_guide/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +19,7 @@
 namespace optimization_guide {
 
 class OptimizationGuideModelProvider;
-class PageEntitiesModelExecutor;
+class PageEntitiesModelHandler;
 
 // Callback to inform the caller that the metadata for an entity ID has been
 // retrieved.
@@ -102,9 +102,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void SetUpPageVisibilityModel(
       OptimizationGuideModelProvider* optimization_guide_model_provider);
 
-  // Overrides |page_entities_model_executor_| for testing purposes.
-  void OverridePageEntitiesModelExecutorForTesting(
-      std::unique_ptr<PageEntitiesModelExecutor> page_entities_model_executor);
+  // Overrides |page_entities_model_handler_| for testing purposes.
+  void OverridePageEntitiesModelHandlerForTesting(
+      std::unique_ptr<PageEntitiesModelHandler> page_entities_model_handler);
 
   // Runs the next job in |job_queue_| if there is any.
   void MaybeStartNextAnnotationJob();
@@ -112,18 +112,18 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // Called when a |job| finishes executing, just before it is deleted.
   void OnJobExecutionComplete();
 
-  // The model executor responsible for executing the on demand page topics
+  // The model handler responsible for executing the on demand page topics
   // model.
-  std::unique_ptr<PageTopicsModelExecutor> page_topics_model_executor_;
+  std::unique_ptr<PageTopicsModelHandler> page_topics_model_handler_;
 
   // The model handler for the page visibility model.
   std::unique_ptr<PageVisibilityModelHandler> page_visibility_model_handler_;
 
-  // The model executor responsible for executing the page entities model.
+  // The model handler responsible for executing the page entities model.
   //
   // Can be nullptr if the page entities model will not be running for the
   // session.
-  std::unique_ptr<PageEntitiesModelExecutor> page_entities_model_executor_;
+  std::unique_ptr<PageEntitiesModelHandler> page_entities_model_handler_;
 
   // The queue of all jobs to be executed. This data structure supports FIFO
   // ordering for elements of the same priority.
