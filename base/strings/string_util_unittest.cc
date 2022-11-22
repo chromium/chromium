@@ -648,6 +648,11 @@ TEST(StringUtilTest, ToLowerASCII) {
 
   EXPECT_EQ("cc2", ToLowerASCII("Cc2"));
   EXPECT_EQ(u"cc2", ToLowerASCII(u"Cc2"));
+
+  // Non-ASCII characters are unmodified. U+00C4 is LATIN CAPITAL LETTER A WITH
+  // DIAERESIS.
+  EXPECT_EQ('\xc4', ToLowerASCII('\xc4'));
+  EXPECT_EQ(u'\x00c4', ToLowerASCII(u'\x00c4'));
 }
 
 TEST(StringUtilTest, ToUpperASCII) {
@@ -661,6 +666,11 @@ TEST(StringUtilTest, ToUpperASCII) {
 
   EXPECT_EQ("CC2", ToUpperASCII("Cc2"));
   EXPECT_EQ(u"CC2", ToUpperASCII(u"Cc2"));
+
+  // Non-ASCII characters are unmodified. U+00E4 is LATIN SMALL LETTER A WITH
+  // DIAERESIS.
+  EXPECT_EQ('\xe4', ToUpperASCII('\xe4'));
+  EXPECT_EQ(u'\x00e4', ToUpperASCII(u'\x00e4'));
 }
 
 TEST(StringUtilTest, FormatBytesUnlocalized) {
@@ -1475,6 +1485,15 @@ TEST(StringUtilTest, CompareCaseInsensitiveASCII) {
   EXPECT_EQ(-1, CompareCaseInsensitiveASCII("AsdfA", "aSDfb"));
   EXPECT_EQ(1, CompareCaseInsensitiveASCII("Asdfb", "aSDfA"));
 
+  // Non-ASCII bytes are permitted, but they will be compared case-sensitively.
+  EXPECT_EQ(0, CompareCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\xa4"));
+  EXPECT_EQ(-1, CompareCaseInsensitiveASCII("AAA \xc3\x84", "aaa \xc3\xa4"));
+  EXPECT_EQ(1, CompareCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\x84"));
+
+  // ASCII bytes should sort before non-ASCII ones.
+  EXPECT_EQ(-1, CompareCaseInsensitiveASCII("a", "\xc3\xa4"));
+  EXPECT_EQ(1, CompareCaseInsensitiveASCII("\xc3\xa4", "a"));
+
   // For constexpr.
   static_assert(CompareCaseInsensitiveASCII("", "") == 0);
   static_assert(CompareCaseInsensitiveASCII("Asdf", "aSDf") == 0);
@@ -1482,6 +1501,14 @@ TEST(StringUtilTest, CompareCaseInsensitiveASCII) {
   static_assert(CompareCaseInsensitiveASCII("AsdfA", "aSDf") == 1);
   static_assert(CompareCaseInsensitiveASCII("AsdfA", "aSDfb") == -1);
   static_assert(CompareCaseInsensitiveASCII("Asdfb", "aSDfA") == 1);
+  static_assert(CompareCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\xa4") ==
+                0);
+  static_assert(CompareCaseInsensitiveASCII("AAA \xc3\x84", "aaa \xc3\xa4") ==
+                -1);
+  static_assert(CompareCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\x84") ==
+                1);
+  static_assert(CompareCaseInsensitiveASCII("a", "\xc3\xa4") == -1);
+  static_assert(CompareCaseInsensitiveASCII("\xc3\xa4", "a") == 1);
 }
 
 TEST(StringUtilTest, EqualsCaseInsensitiveASCII) {
@@ -1504,6 +1531,10 @@ TEST(StringUtilTest, EqualsCaseInsensitiveASCII) {
   EXPECT_TRUE(EqualsCaseInsensitiveASCII("Asdf", u"aSDF"));
   EXPECT_FALSE(EqualsCaseInsensitiveASCII("bsdf", u"aSDF"));
   EXPECT_FALSE(EqualsCaseInsensitiveASCII("Asdf", u"aSDFz"));
+
+  // Non-ASCII bytes are permitted, but they will be compared case-sensitively.
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII("aaa \xc3\xa4", "AAA \xc3\xa4"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII("aaa \xc3\x84", "AAA \xc3\xa4"));
 
   // The `WStringPiece` overloads are only defined on Windows.
 #if BUILDFLAG(IS_WIN)

@@ -5,6 +5,8 @@
 #ifndef BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 #define BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 
+#include <type_traits>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 
@@ -18,15 +20,18 @@ constexpr CharT ToLowerASCII(CharT c) {
   return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
 }
 
-template <typename T, typename CharT = typename T::value_type>
+template <typename T>
 constexpr int CompareCaseInsensitiveASCIIT(T a, T b) {
   // Find the first characters that aren't equal and compare them.  If the end
   // of one of the strings is found before a nonequal character, the lengths
-  // of the strings are compared.
+  // of the strings are compared. Compare using the unsigned type so the sort
+  // order is independent of the signedness of `char`.
+  static_assert(std::is_integral_v<typename T::value_type>);
+  using UCharT = std::make_unsigned_t<typename T::value_type>;
   size_t i = 0;
   while (i < a.length() && i < b.length()) {
-    CharT lower_a = ToLowerASCII(a[i]);
-    CharT lower_b = ToLowerASCII(b[i]);
+    UCharT lower_a = static_cast<UCharT>(ToLowerASCII(a[i]));
+    UCharT lower_b = static_cast<UCharT>(ToLowerASCII(b[i]));
     if (lower_a < lower_b)
       return -1;
     if (lower_a > lower_b)

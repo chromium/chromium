@@ -135,16 +135,21 @@ CharT ToUpperASCII(CharT c) {
   return (c >= 'a' && c <= 'z') ? static_cast<CharT>(c + 'A' - 'a') : c;
 }
 
-// Converts the given string to it's ASCII-lowercase equivalent.
+// Converts the given string to its ASCII-lowercase equivalent. Non-ASCII
+// bytes (or UTF-16 code units in `StringPiece16`) are permitted but will be
+// unmodified.
 BASE_EXPORT std::string ToLowerASCII(StringPiece str);
 BASE_EXPORT std::u16string ToLowerASCII(StringPiece16 str);
 
-// Converts the given string to it's ASCII-uppercase equivalent.
+// Converts the given string to its ASCII-uppercase equivalent. Non-ASCII
+// bytes (or UTF-16 code units in `StringPiece16`) are permitted but will be
+// unmodified.
 BASE_EXPORT std::string ToUpperASCII(StringPiece str);
 BASE_EXPORT std::u16string ToUpperASCII(StringPiece16 str);
 
-// Functor for case-insensitive ASCII comparisons for STL algorithms like
-// std::search.
+// Functor for ASCII case-insensitive comparisons for STL algorithms like
+// std::search. Non-ASCII bytes (or UTF-16 code units in `StringPiece16`) are
+// permitted but will be compared as-is.
 //
 // Note that a full Unicode version of this functor is not possible to write
 // because case mappings might change the number of characters, depend on
@@ -158,13 +163,17 @@ template<typename Char> struct CaseInsensitiveCompareASCII {
   }
 };
 
-// Like strcasecmp for case-insensitive ASCII characters only. Returns:
+// Like strcasecmp for ASCII case-insensitive comparisons only. Returns:
 //   -1  (a < b)
 //    0  (a == b)
 //    1  (a > b)
-// (unlike strcasecmp which can return values greater or less than 1/-1). For
-// full Unicode support, use base::i18n::ToLower or base::i18n::FoldCase
-// and then just call the normal string operators on the result.
+// (unlike strcasecmp which can return values greater or less than 1/-1). To
+// compare all Unicode code points case-insensitively, use base::i18n::ToLower
+// or base::i18n::FoldCase and then just call the normal string operators on the
+// result.
+//
+// Non-ASCII bytes (or UTF-16 code units in `StringPiece16`) are permitted but
+// will be compared unmodified.
 BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(StringPiece a,
                                                       StringPiece b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
@@ -174,9 +183,11 @@ BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(StringPiece16 a,
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
-// Equality for ASCII case-insensitive comparisons. For full Unicode support,
-// use base::i18n::ToLower or base::i18n::FoldCase and then compare with either
-// == or !=.
+// Equality for ASCII case-insensitive comparisons. Non-ASCII bytes (or UTF-16
+// code units in `StringPiece16`) are permitted but will be compared unmodified.
+// To compare all Unicode code points case-insensitively, use
+// base::i18n::ToLower or base::i18n::FoldCase and then compare with either ==
+// or !=.
 inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
