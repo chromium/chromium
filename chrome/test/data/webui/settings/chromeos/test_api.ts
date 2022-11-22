@@ -4,7 +4,7 @@
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
+import {LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, Lazy, querySelectorShadow, retry, retryUntilSome, sleep} from './utils.js';
 
 enum PinDialogType {
@@ -72,6 +72,45 @@ class PinDialog {
 
   async cancel(): Promise<void> {
     (await retry(() => this.cancelButton())).click();
+  }
+}
+
+class RecoveryDialog {
+  private element: HTMLElement;
+
+  constructor(element: HTMLElement) {
+    this.element = element;
+    assertTrue(this.element.shadowRoot !== null);
+  }
+
+  private shadowRoot(): ShadowRoot {
+    const shadowRoot = this.element.shadowRoot;
+    assertTrue(shadowRoot !== null);
+    return shadowRoot;
+  }
+
+  private cancelButton(): HTMLElement {
+    const cancelButton =
+        this.shadowRoot().getElementById('cancelRecoveryDialogButton');
+    assertTrue(cancelButton !== null);
+    assertTrue(cancelButton instanceof HTMLElement);
+    return cancelButton;
+  }
+
+  private disableButton(): HTMLElement {
+    const disableButton =
+        this.shadowRoot().getElementById('disableRecoveryDialogButton');
+    assertTrue(disableButton !== null);
+    assertTrue(disableButton instanceof HTMLElement);
+    return disableButton;
+  }
+
+  async clickCancel(): Promise<void> {
+    (await retry(() => this.cancelButton())).click();
+  }
+
+  async clickDisable(): Promise<void> {
+    (await retry(() => this.disableButton())).click();
   }
 }
 
@@ -185,25 +224,56 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     await assertForDuration(property);
   }
 
-  async toggleRecoveryConfiguration(): Promise<void> {
-    const toggle = await retryUntilSome(() => this.recoveryToggle());
-    assertTrue(toggle !== null);
-    const previousChecked = toggle.checked;
-    const toggleIsFlipped = () => toggle.checked === previousChecked;
+  private recoveryDisableDialog(): RecoveryDialog|null {
+    const element = this.shadowRoot().getElementById('localDataRecoveryDialog');
+    if (element === null) {
+      return null;
+    }
+    assertTrue(element instanceof HTMLElement);
+    return new RecoveryDialog(element);
+  }
 
+  async enableRecoveryConfiguration(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.recoveryToggle());
+    assertTrue(!toggle.checked);
     toggle.click();
 
     // If the toggle flips immediately, that's OK. Otherwise we need to wait
     // until it flips.
-    if (!toggleIsFlipped()) {
+    if (toggle.checked) {
       return;
     }
-
     assertTrue(hasBooleanProperty(toggle, 'disabled') && toggle.disabled);
     // Click again to see whether something weird happens.
     toggle.click();
+    await assertAsync(() => toggle.checked);
+  }
 
-    await assertAsync(toggleIsFlipped);
+  async disableRecoveryConfiguration(dialogAction: RecoveryDialogAction):
+      Promise<void> {
+    assertTrue(this.recoveryDisableDialog() === null);
+    const toggle = await retryUntilSome(() => this.recoveryToggle());
+    assertTrue(toggle !== null);
+    assertTrue(toggle.checked);
+    toggle.click();
+    // After click on the toggle, the toggle has to be disabled.
+    assertTrue(hasBooleanProperty(toggle, 'disabled') && toggle.disabled);
+    // RecoveryDialog has to be visible.
+    const recoveryDialog =
+        await retryUntilSome(() => this.recoveryDisableDialog());
+    switch (dialogAction) {
+      case RecoveryDialogAction.CancelDialog:
+        recoveryDialog.clickCancel();
+        await assertAsync(() => toggle.checked);
+        break;
+      case RecoveryDialogAction.ConfirmDisabling:
+        recoveryDialog.clickDisable();
+        await assertAsync(() => !toggle.checked);
+        break;
+      default:
+        assertTrue(false);
+    }
+    await assertAsync(() => this.recoveryDisableDialog() === null);
   }
 
   private passwordOnlyToggle(): HTMLElement&{checked: boolean} {

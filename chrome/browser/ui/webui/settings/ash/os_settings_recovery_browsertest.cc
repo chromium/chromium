@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettings();
   lock_screen_settings.AssertRecoveryConfigured(false);
-  lock_screen_settings.ToggleRecoveryConfiguration();
+  lock_screen_settings.EnableRecoveryConfiguration();
 
   EXPECT_TRUE(auth_factor_config.IsConfigured(
       kAuthToken, auth::mojom::AuthFactor::kRecovery));
@@ -123,20 +123,56 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
 
 // TODO(b/239416325): This should eventually check state in fake user data
 // auth, not in the auth factor config mojo service.
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, UncheckingDisables) {
+
+// The following test set the cryptohome recovery toggle is on.
+// Clicks on the recovery toggle, expecting the recovery dialog to show up.
+// Clicks on the cancel button of the dialog.
+// Expected result: the dialog disappears and the toggle is still on.
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
+                       UncheckingDisablesAndCancelClick) {
   auto auth_factor_config = auth::GetAuthFactorConfigForTesting();
   auto recovery_editor = auth::GetRecoveryFactorEditorForTesting();
 
   ASSERT_EQ(auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
-            recovery_editor.Configure(kAuthToken, true));
+            recovery_editor.Configure(/*auth_token=*/kAuthToken,
+                                      /*enabled=*/true));
 
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettings();
   lock_screen_settings.AssertRecoveryConfigured(true);
-  lock_screen_settings.ToggleRecoveryConfiguration();
+  lock_screen_settings.DisableRecoveryConfiguration(
+      mojom::LockScreenSettings::RecoveryDialogAction::CancelDialog);
+  // After the CancelClick on the dialog, the recovery configuration
+  // should remain enabled.
+  EXPECT_TRUE(auth_factor_config.IsConfigured(
+      /*auth_token=*/kAuthToken,
+      /*factor=*/auth::mojom::AuthFactor::kRecovery));
+}
 
+// TODO(b/239416325): This should eventually check state in fake user data
+// auth, not in the auth factor config mojo service.
+
+// The following test set the cryptohome recovery toggle is on.
+// Clicks on the recovery toggle, expecting the recovery dialog to show up.
+// Clicks on the disable button of the dialog.
+// Expected result: the dialog disappears and the toggle is off.
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
+                       UncheckingDisablesAndDisableClick) {
+  auto auth_factor_config = auth::GetAuthFactorConfigForTesting();
+  auto recovery_editor = auth::GetRecoveryFactorEditorForTesting();
+
+  ASSERT_EQ(auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
+            recovery_editor.Configure(/*auth_token=*/kAuthToken,
+                                      /*enabled=*/true));
+
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettings();
+  lock_screen_settings.AssertRecoveryConfigured(true);
+  lock_screen_settings.DisableRecoveryConfiguration(
+      mojom::LockScreenSettings::RecoveryDialogAction::ConfirmDisabling);
   EXPECT_FALSE(auth_factor_config.IsConfigured(
-      kAuthToken, auth::mojom::AuthFactor::kRecovery));
+      /*auth_token=*/kAuthToken,
+      /*factor=*/auth::mojom::AuthFactor::kRecovery));
 }
 
 }  // namespace ash::settings

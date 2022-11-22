@@ -22,14 +22,15 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '../../controls/settings_toggle_button.js';
 import './setup_pin_dialog.js';
 import './pin_autosubmit_dialog.js';
+import './local_data_recovery_dialog.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {AuthFactor, FactorObserverInterface, FactorObserverReceiver, ManagementType, RecoveryFactorEditor_ConfigureResult} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
@@ -234,6 +235,9 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
       /** @private */
       showPinAutosubmitDialog_: Boolean,
+
+      /** @private */
+      showDisableRecoveryDialog_: Boolean,
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
@@ -444,6 +448,13 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         assert(this.shadowRoot.querySelector('#enablePinAutoSubmit')));
   }
 
+  /** @private */
+  onRecoveryDialogClose_() {
+    this.showDisableRecoveryDialog_ = false;
+    this.recoveryChangeInProcess_ = false;
+    focusWithoutInk(assert(this.shadowRoot.querySelector('#recoveryToggle')));
+  }
+
   /**
    * Returns true if the setup pin section should be shown.
    * @param {!string} selectedUnlockType The current unlock type. Used to let
@@ -602,14 +613,20 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    */
   async onRecoveryChange_(event) {
     const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+    // Reset checkbox to its previous state and disable it. If we succeed to
+    // enable/disable recovery, this is updated automatically because the
+    // pref value changes.
+    const shouldEnable = target.checked;
+    target.resetToPrefValue();
+    if (this.recoveryChangeInProcess_) {
+      return;
+    }
+    this.recoveryChangeInProcess_ = true;
+    if (!shouldEnable) {
+      this.showDisableRecoveryDialog_ = true;
+      return;
+    }
     try {
-      const shouldEnable = target.checked;
-      // Reset checkbox to its previous state and disable it. If we succeed to
-      // enable/disable recovery, this is updated automatically because the
-      // pref value changes.
-      target.resetToPrefValue();
-      this.recoveryChangeInProcess_ = true;
-
       if (!this.authToken) {
         console.error('Recovery changed with expired token.');
         return;

@@ -145,6 +145,12 @@
         on-settings-boolean-control-change="onRecoveryChange_">
     </settings-toggle-button>
   </template>
+  <template is="dom-if" if="[[showDisableRecoveryDialog_]]" restamp>
+    <local-data-recovery-dialog id="localDataRecoveryDialog"
+      auth-token="[[authToken]]"
+      on-close="onRecoveryDialogClose_">
+    </local-data-recovery-dialog>
+  </template>
   <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
     <div id="fingerprintDiv" class="settings-box two-line">
       <div class="start">

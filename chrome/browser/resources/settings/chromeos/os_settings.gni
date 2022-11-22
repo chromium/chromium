@@ -399,6 +399,7 @@ generated_web_component_files = [
   "chromeos/os_bluetooth_page/settings_fast_pair_toggle.js",
   "chromeos/os_people_page/account_manager.js",
   "chromeos/os_people_page/fingerprint_list.js",
+  "chromeos/os_people_page/local_data_recovery_dialog.js",
   "chromeos/os_people_page/lock_screen.js",
   "chromeos/os_people_page/lock_screen_password_prompt_dialog.js",
   "chromeos/os_people_page/os_people_page.js",

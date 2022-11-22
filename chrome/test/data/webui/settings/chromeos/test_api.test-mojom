@@ -10,6 +10,12 @@ module ash.settings.mojom;
 
 // The interface to control the lock screen page.
 interface LockScreenSettings {
+
+  enum RecoveryDialogAction {
+    CancelDialog = 0,
+    ConfirmDisabling,
+  };
+
   // Checks whether the lock screen is unlocked or not.
   AssertAuthenticated(bool is_authenticated) => ();
 
@@ -28,10 +34,20 @@ interface LockScreenSettings {
   // control.
   AssertRecoveryConfigured(bool is_configured) => ();
 
-  // Toggles whether recovery is configured or not . Crashes if the control
-  // does not eventually show that recovery configuration has changed as
-  // expected.
-  ToggleRecoveryConfiguration() => ();
+  // Enables the cryptohome recovery configuration.
+  // Crashes if it is already on or after a click on the recovery toggle
+  // the recovery is still disabled.
+  EnableRecoveryConfiguration() => ();
+
+  // The following function expects the cryptohome recovery toggle is on.
+  // Clicks on the recovery toggle, expecting the recovery dialog to show up.
+  // if the param is CancelDialog:
+  // - expects the recovery toggle still enabled state
+  // if the param is ConfirmDisabling:
+  // - expects the recovery toggle changed to disable state
+  // In both cases the function expects the recovery dialog to disappear.
+  // If any of the expectations fail the function crashes.
+  DisableRecoveryConfiguration(RecoveryDialogAction dialogAction) => ();
 
   // Checks whether the user wants to use pin for login and unlock or not. This
   // can be true even though there is no pin if the user has not set up a pin

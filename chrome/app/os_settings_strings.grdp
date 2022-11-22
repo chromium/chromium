@@ -3621,6 +3621,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL" desc="Sub-label of toggle to enable or disable cryptohome recovery.">
     Local data can be restored if you forget your password
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_TITLE" desc="Title for the disable local data recovery dialog">
+    Disable local data recovery?
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_MESSAGE" desc="Text for the notification informing the user that local data recovery will be disabled">
+    You will not be able to recover local data if you forget your password or PIN.
+  </message>
 
   <!-- Kerberos section (OS settings) -->
   <message name="IDS_OS_SETTINGS_KERBEROS" desc="Name of a section in the OS settings page." meaning="Manage Kerberos authetication tickets.">
