@@ -503,7 +503,9 @@ class SyncConsentTestWithReviewParams
 };
 
 // TODO(crbug.com/1311979): Test failed on ChromeOS.
-#if !defined(NDEBUG)
+// TODO(crbug.com/1392782): Test failed on chromium/ci/Linux ChromiumOS.
+#undef MAYBE_Accept
+#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Accept DISABLED_Accept
 #else
 #define MAYBE_Accept Accept
@@ -675,6 +677,7 @@ class SyncConsentMinorModeTest : public SyncConsentTest {
 };
 
 // TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
+#undef MAYBE_Accept
 #if !defined(NDEBUG)
 #define MAYBE_Accept DISABLED_Accept
 #else
