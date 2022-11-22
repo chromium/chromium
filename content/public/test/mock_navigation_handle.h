@@ -50,7 +50,7 @@ class MockNavigationHandle : public NavigationHandle {
     return starting_site_instance_;
   }
   SiteInstance* GetSourceSiteInstance() override {
-    return nullptr;  // Good enough for unit tests...
+    return source_site_instance_;
   }
   bool IsInMainFrame() const override {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
@@ -227,6 +227,9 @@ class MockNavigationHandle : public NavigationHandle {
   void set_starting_site_instance(SiteInstance* site_instance) {
     starting_site_instance_ = site_instance;
   }
+  void set_source_site_instance(SiteInstance* site_instance) {
+    source_site_instance_ = site_instance;
+  }
   void set_page_transition(ui::PageTransition page_transition) {
     page_transition_ = page_transition;
   }
@@ -302,6 +305,7 @@ class MockNavigationHandle : public NavigationHandle {
   GURL url_;
   GURL previous_primary_main_frame_url_;
   raw_ptr<SiteInstance> starting_site_instance_ = nullptr;
+  raw_ptr<SiteInstance> source_site_instance_ = nullptr;
   raw_ptr<WebContents> web_contents_ = nullptr;
   GURL base_url_for_data_url_;
   blink::mojom::Referrer referrer_;
