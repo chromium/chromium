@@ -7,12 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
+#include "ash/wm/window_dimmer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -21,6 +25,7 @@ namespace {
 
 constexpr int kDialogHeightDp = 526;
 constexpr int kDialogWidthDp = 600;
+constexpr float kDimmerOpacity = 0.7f;
 
 }  // namespace
 
@@ -42,7 +47,10 @@ ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
   ParentAccessDialog* dialog =
       new ParentAccessDialog(std::move(params), std::move(callback));
 
+  // Dimmer should be shown before the dialog.
+  dialog->ShowDimmer();
   dialog->ShowSystemDialogForBrowserContext(profile);
+
   return ParentAccessDialogProvider::ShowError::kNone;
 }
 
@@ -110,6 +118,15 @@ ParentAccessDialog::ParentAccessDialog(
                               /*title=*/std::u16string()),
       parent_access_params_(std::move(params)),
       callback_(std::move(callback)) {}
+
+void ParentAccessDialog::ShowDimmer() {
+  DCHECK_EQ(nullptr, dimmer_);
+  dimmer_ = std::make_unique<WindowDimmer>(
+      Shell::GetPrimaryRootWindow()->GetChildById(
+          kShellWindowId_SystemModalContainer));
+  dimmer_->SetDimOpacity(kDimmerOpacity);
+  dimmer_->window()->Show();
+}
 
 ParentAccessDialog::~ParentAccessDialog() {
   std::move(callback_).Run(
