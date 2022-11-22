@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -193,7 +194,20 @@ int PrerenderHostRegistry::CreateAndStartHost(
       attempt->SetEligibility(PreloadingEligibility::kEligible);
 
     // Check for the HoldbackStatus after checking the eligibility.
-    if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
+    // Override Prerender2Holdback for speculation rules when DevTools is
+    // opened to mitigate the cases in which developers are affected by
+    // kPrerender2Holdback.
+    RenderFrameHostImpl* initiator_rfh =
+        attributes.IsBrowserInitiated()
+            ? nullptr
+            : RenderFrameHostImpl::FromFrameToken(
+                  attributes.initiator_process_id,
+                  attributes.initiator_frame_token.value());
+    bool should_prerender2holdback_be_overridden =
+        initiator_rfh &&
+        RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
+    if (!should_prerender2holdback_be_overridden &&
+        base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
       if (attempt)
         attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
       return RenderFrameHost::kNoFrameTreeNodeId;

@@ -242,6 +242,17 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+class PrerenderHoldbackDevToolsProtocolTest
+    : public PrerenderDevToolsProtocolTest {
+ public:
+  PrerenderHoldbackDevToolsProtocolTest() {
+    feature_list_.InitAndEnableFeature(features::kPrerender2Holdback);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class MultiplePrerendersDevToolsProtocolTest
     : public PrerenderDevToolsProtocolTest {
  public:
@@ -3874,6 +3885,29 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
   // as navigating to kPrerenderingUrl2.
   result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
+                       PrerenderActivation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  Attach();
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
+
+  AddPrerender(kPrerenderingUrl);
+
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+  base::Value::Dict result =
+      WaitForNotification("Page.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
