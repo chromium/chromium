@@ -18,7 +18,7 @@
     })`);
 
   await tracingHelper.stopTracing(
-      /loading|(disabled-by-default)?devtools.timeline/);
+      /loading|(disabled-by-default-)?devtools.timeline/);
 
   // Web vitals
   const firstContentfulPaint =

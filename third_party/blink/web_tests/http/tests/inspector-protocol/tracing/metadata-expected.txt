@@ -1,0 +1,123 @@
+Tests the data of metadata trace events
+Recording started
+Tracing complete
+Got TracingStartedInBrowser event:
+Object: {
+	args: {
+		data: {
+			frameTreeNodeId: number
+			frames: [
+				{
+					frame: string
+					name: string
+					processId: number
+					url: string
+				}
+			]
+			persistentIds: boolean
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got Browser process name event:
+Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got GPU process name event:
+Object: {
+}
+Got Renderer process name event:
+Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got GPU thread name event:
+Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got Browser thread name event:
+Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got navigarionStart event:
+Object: {
+	args: {
+		data: {
+			documentLoaderURL: string
+			isLoadingMainFrame: boolean
+			isOutermostMainFrame: boolean
+			navigationId: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got Viewport event:
+Object: {
+	args: {
+		data: {
+			viewport_rect: [
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+			]
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Found 3 unique frames
+
