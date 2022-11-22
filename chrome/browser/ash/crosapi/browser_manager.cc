@@ -1660,4 +1660,19 @@ void BrowserManager::EnableForTesting() {
   g_disabled_for_testing = false;
 }
 
+BrowserManager::ScopedUnsetAllKeepAliveForTesting::
+    ScopedUnsetAllKeepAliveForTesting(BrowserManager* manager)
+    : manager_(manager) {
+  previous_keep_alive_features_ = std::move(manager_->keep_alive_features_);
+  manager_->keep_alive_features_.clear();
+  manager_->UpdateKeepAliveInBrowserIfNecessary(false);
+}
+
+BrowserManager::ScopedUnsetAllKeepAliveForTesting::
+    ~ScopedUnsetAllKeepAliveForTesting() {
+  manager_->keep_alive_features_ = std::move(previous_keep_alive_features_);
+  manager_->UpdateKeepAliveInBrowserIfNecessary(
+      !manager_->keep_alive_features_.empty());
+}
+
 }  // namespace crosapi

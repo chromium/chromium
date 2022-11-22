@@ -77,6 +77,7 @@ BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
 
 class BrowserLoader;
 class FilesAppLauncher;
+class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
 
 using browser_util::LacrosSelection;
@@ -479,6 +480,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Ash. Thus, session controller needs to keep Lacros alive to keep track of
   // smart card status.
   friend class ash::login::SecurityTokenSessionController;
+  // Registers a KeepAlive if there is a force-installed extension that should
+  // always be running.
+  friend class PersistentForcedExtensionKeepAlive;
+  friend class PersistentForcedExtensionKeepAliveTest;
 
   // Processes the action depending on the current state.
   // Ignoring a few exceptional cases, the logic is as follows:
@@ -499,6 +504,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     kApkWebAppService,
     kChromeApps,
     kExtensions,
+    kPersistentForcedExtension,
     kSmartCardSessionController,
   };
 
@@ -516,6 +522,17 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
     BrowserManager* manager_;
     Feature feature_;
+  };
+
+  // De-registers any already existing KeepAlive features for testing.
+  class ScopedUnsetAllKeepAliveForTesting {
+   public:
+    explicit ScopedUnsetAllKeepAliveForTesting(BrowserManager* manager);
+    ~ScopedUnsetAllKeepAliveForTesting();
+
+   private:
+    BrowserManager* manager_;
+    std::set<BrowserManager::Feature> previous_keep_alive_features_;
   };
 
   // Ash features that want Lacros to stay running in the background must be
