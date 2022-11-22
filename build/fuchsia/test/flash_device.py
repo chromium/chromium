@@ -6,6 +6,7 @@
 
 import argparse
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -13,9 +14,9 @@ import time
 
 from typing import Optional, Tuple
 
-from common import register_device_args, run_ffx_command
+from common import register_device_args, run_ffx_command, SDK_ROOT
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
-    running_unattended
+    running_unattended, add_exec_to_file, get_host_arch, find_image_in_sdk
 from ffx_integration import ScopedFfxConfig
 
 
@@ -42,22 +43,57 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
 
 
 def update_required(os_check, system_image_dir: Optional[str],
-                    target: Optional[str]) -> bool:
-    """Returns True if a system updated is required."""
+                    target: Optional[str]) -> Tuple[bool, Optional[str]]:
+    """Returns True if a system update is required and path to image dir."""
 
     if os_check == 'ignore':
-        return False
+        return False, system_image_dir
     if not system_image_dir:
         raise ValueError('System image directory must be specified.')
+    if not os.path.exists(system_image_dir):
+        logging.warning(
+            'System image directory does not exist. Assuming it\'s '
+            'a product-bundle name and dynamically searching for '
+            'image directory')
+        # SDK_ROOT points to third_party/fuchsia-sdk/sdk, but we want the root
+        # of the overall fuchsia-sdk package.
+        sdk_root_parent = os.path.split(SDK_ROOT)[0]
+        path = find_image_in_sdk(system_image_dir,
+                                 product_bundle=True,
+                                 sdk_root=sdk_root_parent)
+        if not path:
+            raise FileNotFoundError(
+                f'System image directory {system_image_dir} could not'
+                'be found')
+        system_image_dir = path
     if (os_check == 'check'
             and get_sdk_hash(system_image_dir) == _get_system_info(target)):
-        return False
-    return True
+        return False, system_image_dir
+    return True, system_image_dir
+
+
+def _add_exec_to_flash_binaries(system_image_dir: str) -> None:
+    """Add exec to required flash files.
+
+    The flash files may vary depending if a product-bundle or a prebuilt images
+    directory is being used.
+    Args:
+      system_image_dir: string path to the directory containing the flash files.
+    """
+    pb_files = [
+        'flash.sh',
+        os.path.join(f'host_{get_host_arch()}', 'fastboot')
+    ]
+    image_files = ['flash.sh', f'fastboot.exe.linux-{get_host_arch()}']
+    use_pb_files = os.path.exists(os.path.join(system_image_dir, pb_files[1]))
+    for f in pb_files if use_pb_files else image_files:
+        add_exec_to_file(os.path.join(system_image_dir, f))
 
 
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
 
+    _add_exec_to_flash_binaries(system_image_dir)
     # TODO(fxb/91843): Remove workaround when ffx has stable support for
     # multiple hardware devices connected via USB.
     if running_unattended():
@@ -114,8 +150,11 @@ def update(system_image_dir: str,
         serial_num: String of serial number of device that should be updated.
         should_pave: Optional bool on whether or not to pave or flash.
     """
+    needs_update, actual_image_dir = update_required(os_check,
+                                                     system_image_dir, target)
 
-    if update_required(os_check, system_image_dir, target):
+    system_image_dir = actual_image_dir
+    if needs_update:
         if should_pave:
             if running_unattended():
                 assert target, ('Target ID must be specified on swarming when'
@@ -130,7 +169,6 @@ def register_update_args(arg_parser: argparse.ArgumentParser,
                          default_os_check: Optional[str] = 'check',
                          default_pave: Optional[bool] = True) -> None:
     """Register common arguments for device updating."""
-
     serve_args = arg_parser.add_argument_group('update',
                                                'device updating arguments')
     serve_args.add_argument('--system-image-dir',

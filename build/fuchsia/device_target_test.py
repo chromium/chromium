@@ -152,7 +152,8 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       self.assertIsNone(device_target_instance._host)
     mock_daemon_stop.assert_called_once()
 
-  def testNoProvisionDeviceIfVersionsMatch(self, mock_daemon_stop):
+  @mock.patch('os.path.exists', return_value=True)
+  def testNoProvisionDeviceIfVersionsMatch(self, unused_mock, mock_daemon_stop):
     self.args.os_check = 'update'
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
@@ -173,7 +174,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       mock_login.assert_called_once()
     mock_daemon_stop.assert_called_once()
 
-  def testRaiseExceptionIfCheckVersionsNoMatch(self, mock_daemon_stop):
+  @mock.patch('os.path.exists', return_value=True)
+  def testRaiseExceptionIfCheckVersionsNoMatch(self, unused_mock,
+                                               mock_daemon_stop):
     self.args.os_check = 'check'
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
@@ -216,7 +219,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       mock_exists.assert_called_once()
       self.assertEqual(mock_shell.call_count, 0)
 
-  def testProvisionIfOneNonDetectableDevice(self, mock_daemon_stop):
+  @mock.patch('os.path.exists', return_value=True)
+  def testProvisionIfOneNonDetectableDevice(self, unused_mock,
+                                            mock_daemon_stop):
     self.args.os_check = 'update'
     self.args.node_name = 'mocknode'
     self.args.system_image_dir = 'mockdir'
@@ -230,6 +235,37 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 1)
     mock_daemon_stop.assert_called_once()
+
+  def testRaiseExceptionIfNoTargetDir(self, mock_daemon_stop):
+    self.args.os_check = 'update'
+    self.args.system_image_dir = ''
+    with self.assertRaises(Exception):
+      DeviceTarget.CreateFromArgs(self.args)
+
+  def testSearchSDKIfImageDirNotFound(self, mock_daemon_stop):
+    self.args.os_check = 'update'
+    self.args.system_image_dir = 'product-bundle-instead-of-image'
+    with mock.patch('os.path.exists', return_value=False), \
+        mock.patch('device_target.find_image_in_sdk',
+                   return_value='some/path/to/image') as mock_find, \
+        mock.patch('device_target.SDK_ROOT', 'some/path/to/sdk'), \
+        self.assertLogs():
+      target = DeviceTarget.CreateFromArgs(self.args)
+      mock_find.assert_called_once_with('product-bundle-instead-of-image',
+                                        product_bundle=True,
+                                        sdk_root='some/path/to')
+      self.assertEqual(target._system_image_dir, 'some/path/to/image')
+
+  def testSearchSDKThrowsExceptionIfNoPathReturned(self, mock_daemon_stop):
+    self.args.os_check = 'update'
+    self.args.system_image_dir = 'product-bundle-instead-of-image'
+    with mock.patch('os.path.exists', return_value=False), \
+        mock.patch('device_target.find_image_in_sdk',
+                   return_value=None), \
+        mock.patch('device_target.SDK_ROOT', 'some/path/to/sdk'), \
+        self.assertLogs(), \
+        self.assertRaises(FileNotFoundError):
+      target = DeviceTarget.CreateFromArgs(self.args)
 
 
 if __name__ == '__main__':

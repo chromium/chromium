@@ -37,6 +37,55 @@ class FlashDeviceTest(unittest.TestCase):
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
 
+    def test_update_required_on_ignore_returns_immediately(self) -> None:
+        """Test |os_check|='ignore' skips all checks."""
+        result, new_image_dir = flash_device.update_required(
+            'ignore', 'some-image-dir', None)
+
+        self.assertFalse(result)
+        self.assertEqual(new_image_dir, 'some-image-dir')
+
+    def test_update_required_raises_value_error_if_no_image_dir(self) -> None:
+        """Test |os_check|!='ignore' checks that image dir is non-Falsey."""
+        with self.assertRaises(ValueError):
+            flash_device.update_required('update', None, None)
+
+    def test_update_required_logs_missing_image_dir(self) -> None:
+        """Test |os_check|!='ignore' warns if image dir does not exist."""
+        with mock.patch('os.path.exists', return_value=False), \
+                mock.patch('flash_device.find_image_in_sdk'), \
+                mock.patch('flash_device._get_system_info'), \
+                self.assertLogs() as logger:
+            flash_device.update_required('update', 'some/image/dir', None)
+            self.assertIn('image directory does not exist', logger.output[0])
+
+    def test_update_required_searches_and_returns_sdk_if_image_found(self
+                                                                     ) -> None:
+        """Test |os_check|!='ignore' searches for image dir in SDK."""
+        with mock.patch('os.path.exists', return_value=False), \
+                mock.patch('flash_device.find_image_in_sdk') as mock_find, \
+                mock.patch('flash_device._get_system_info'), \
+                mock.patch('flash_device.SDK_ROOT', 'path/to/sdk/dir'), \
+                self.assertLogs():
+            mock_find.return_value = 'path/to/image/dir'
+            update_required, new_image_dir = flash_device.update_required(
+                'update', 'product-bundle', None)
+            self.assertTrue(update_required)
+            self.assertEqual(new_image_dir, 'path/to/image/dir')
+            mock_find.assert_called_once_with('product-bundle',
+                                              product_bundle=True,
+                                              sdk_root='path/to/sdk')
+
+    def test_update_required_raises_file_not_found_error(self) -> None:
+        """Test |os_check|!='ignore' raises FileNotFoundError if no path."""
+        with mock.patch('os.path.exists', return_value=False), \
+                mock.patch('flash_device.find_image_in_sdk',
+                           return_value=None), \
+                mock.patch('flash_device.SDK_ROOT', 'path/to/sdk/dir'), \
+                self.assertLogs(), \
+                self.assertRaises(FileNotFoundError):
+            flash_device.update_required('update', 'product-bundle', None)
+
     def test_update_ignore(self) -> None:
         """Test setting |os_check| to 'ignore'."""
 
@@ -53,35 +102,95 @@ class FlashDeviceTest(unittest.TestCase):
     def test_update_system_info_match(self) -> None:
         """Test no update when |os_check| is 'check' and system info matches."""
 
-        self._ffx_mock.return_value.stdout = \
-            '[{"title": "Build", "child": [{"value": "%s"}, ' \
-            '{"value": "%s"}]}]' % (_TEST_VERSION, _TEST_PRODUCT)
-        flash_device.update(_TEST_IMAGE_DIR, 'check', None)
-        self.assertEqual(self._ffx_mock.call_count, 1)
-        self.assertEqual(self._sdk_hash_mock.call_count, 1)
+        with mock.patch('os.path.exists', return_value=True):
+            self._ffx_mock.return_value.stdout = \
+                '[{"title": "Build", "child": [{"value": "%s"}, ' \
+                '{"value": "%s"}]}]' % (_TEST_VERSION, _TEST_PRODUCT)
+            flash_device.update(_TEST_IMAGE_DIR, 'check', None)
+            self.assertEqual(self._ffx_mock.call_count, 1)
+            self.assertEqual(self._sdk_hash_mock.call_count, 1)
 
     def test_update_system_info_mismatch(self) -> None:
         """Test update when |os_check| is 'check' and system info does not
         match."""
 
-        self._ffx_mock.return_value.stdout = \
-            '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
-            '{"value": "wrong_product"}]}]'
-        flash_device.update(_TEST_IMAGE_DIR, 'check', None, should_pave=False)
-        self.assertEqual(self._ffx_mock.call_count, 3)
+        with mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device._add_exec_to_flash_binaries'):
+            self._ffx_mock.return_value.stdout = \
+                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
+                '{"value": "wrong_product"}]}]'
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'check',
+                                None,
+                                should_pave=False)
+            self.assertEqual(self._ffx_mock.call_count, 3)
+
+    def test_update_system_info_mismatch_adds_exec_to_flash_binaries(self
+                                                                     ) -> None:
+        """Test update adds exec bit to flash binaries if flashing."""
+
+        with mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device.get_host_arch',
+                           return_value='foo_arch'), \
+                mock.patch('flash_device.add_exec_to_file') as add_exec:
+            self._ffx_mock.return_value.stdout = \
+                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
+                '{"value": "wrong_product"}]}]'
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'check',
+                                None,
+                                should_pave=False)
+            add_exec.assert_has_calls([
+                mock.call(os.path.join(_TEST_IMAGE_DIR, 'flash.sh')),
+                mock.call(
+                    os.path.join(_TEST_IMAGE_DIR, 'host_foo_arch', 'fastboot'))
+            ],
+                                      any_order=True)
+
+    def test_update_adds_exec_to_flash_binaries_depending_on_location(
+            self) -> None:
+        """Test update adds exec bit to flash binaries if flashing."""
+
+        # First exists is for image dir, second is for fastboot binary.
+        # Missing this fastboot binary means that the test will default to a
+        # different path.
+        with mock.patch('os.path.exists', side_effect=[True, False]), \
+                mock.patch('flash_device.get_host_arch',
+                           return_value='foo_arch'), \
+                mock.patch('flash_device.add_exec_to_file') as add_exec:
+            self._ffx_mock.return_value.stdout = \
+                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
+                '{"value": "wrong_product"}]}]'
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'check',
+                                None,
+                                should_pave=False)
+            add_exec.assert_has_calls([
+                mock.call(os.path.join(_TEST_IMAGE_DIR, 'flash.sh')),
+                mock.call(
+                    os.path.join(_TEST_IMAGE_DIR,
+                                 'fastboot.exe.linux-foo_arch'))
+            ],
+                                      any_order=True)
 
     def test_incorrect_target_info(self) -> None:
         """Test update when |os_check| is 'check' and system info was not
         retrieved."""
-
-        self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
-        flash_device.update(_TEST_IMAGE_DIR, 'check', None, should_pave=False)
-        self.assertEqual(self._ffx_mock.call_count, 3)
+        with mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device._add_exec_to_flash_binaries'):
+            self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'check',
+                                None,
+                                should_pave=False)
+            self.assertEqual(self._ffx_mock.call_count, 3)
 
     def test_update_with_serial_num(self) -> None:
         """Test update when |serial_num| is specified."""
 
-        with mock.patch('time.sleep'):
+        with mock.patch('time.sleep'), \
+                mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device._add_exec_to_flash_binaries'):
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',
                                 None,
@@ -93,7 +202,8 @@ class FlashDeviceTest(unittest.TestCase):
     def test_update_calls_paving_if_specified(self) -> None:
         """Test update calls pave if specified."""
         with mock.patch('time.sleep'), \
-            mock.patch('flash_device.pave') as mock_pave:
+                mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device.pave') as mock_pave:
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',
                                 'some-target-id',
@@ -107,6 +217,7 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update calls pave if specified."""
         with mock.patch('time.sleep'), \
             mock.patch('flash_device.pave'), \
+            mock.patch('os.path.exists', return_value=True), \
             mock.patch('flash_device.running_unattended', return_value=True):
             self.assertRaises(AssertionError,
                               flash_device.update,
@@ -119,6 +230,8 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update on swarming bots."""
 
         with mock.patch('time.sleep'), \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('flash_device._add_exec_to_flash_binaries'), \
              mock.patch('flash_device.running_unattended',
                         return_value = True), \
              mock.patch('subprocess.run'):

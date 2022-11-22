@@ -6,7 +6,6 @@
 import json
 import logging
 import os
-import platform
 import re
 import subprocess
 import time
@@ -14,24 +13,12 @@ import time
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional
 
-from compatible_utils import get_ssh_prefix
+from compatible_utils import get_ssh_prefix, get_host_arch
 
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 REPO_ALIAS = 'fuchsia.com'
 SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
-
-
-def get_host_arch() -> str:
-    """Retrieve CPU architecture of the host machine. """
-    host_arch = platform.machine()
-    # platform.machine() returns AMD64 on 64-bit Windows.
-    if host_arch in ['x86_64', 'AMD64']:
-        return 'x64'
-    if host_arch == 'aarch64':
-        return 'arm64'
-    raise Exception('Unsupported host architecture: %s' % host_arch)
-
 
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')

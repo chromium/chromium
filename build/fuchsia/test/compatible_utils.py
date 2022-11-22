@@ -4,7 +4,9 @@
 """Functions used in both v1 and v2 scripts."""
 
 import os
+import platform
 import re
+import stat
 import subprocess
 
 from typing import List, Optional, Tuple
@@ -12,6 +14,7 @@ from typing import List, Optional, Tuple
 
 # File indicating version of an image downloaded to the host
 _BUILD_ARGS = "buildargs.gn"
+_ARGS_FILE = 'args.gn'
 
 _FILTER_DIR = 'testing/buildbot/filters'
 _SSH_KEYS = os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
@@ -37,10 +40,52 @@ def running_unattended() -> bool:
     return 'CHROME_HEADLESS' in os.environ
 
 
+def get_host_arch() -> str:
+    """Retrieve CPU architecture of the host machine. """
+    host_arch = platform.machine()
+    # platform.machine() returns AMD64 on 64-bit Windows.
+    if host_arch in ['x86_64', 'AMD64']:
+        return 'x64'
+    if host_arch == 'aarch64':
+        return 'arm64'
+    raise NotImplementedError('Unsupported host architecture: %s' % host_arch)
+
+
+def add_exec_to_file(file: str) -> None:
+    """Add execution bits to a file.
+
+    Args:
+        file: path to the file.
+    """
+    file_stat = os.stat(file)
+    os.chmod(file, file_stat.st_mode | stat.S_IXUSR)
+
+
+def _add_exec_to_pave_binaries(system_image_dir: str):
+    """Add exec to required pave files.
+
+    The pave files may vary depending if a product-bundle or a prebuilt images
+    directory is being used.
+    Args:
+      system_image_dir: string path to the directory containing the pave files.
+    """
+    pb_files = [
+        'pave.sh',
+        os.path.join(f'host_{get_host_arch()}', 'bootserver')
+    ]
+    image_files = [
+        'pave.sh',
+        os.path.join(f'bootserver.exe.linux-{get_host_arch()}')
+    ]
+    use_pb_files = os.path.exists(os.path.join(system_image_dir, pb_files[1]))
+    for f in pb_files if use_pb_files else image_files:
+        add_exec_to_file(os.path.join(system_image_dir, f))
+
+
 def pave(image_dir: str, target_id: Optional[str])\
         -> subprocess.CompletedProcess:
     """"Pave a device using the pave script inside |image_dir|."""
-
+    _add_exec_to_pave_binaries(image_dir)
     pave_command = [
         os.path.join(image_dir, 'pave.sh'), '--authorized-keys',
         get_ssh_keys(), '-1'
@@ -105,10 +150,19 @@ def get_sdk_hash(system_image_dir: str) -> Tuple[str, str]:
     """
 
     # TODO(crbug.com/1261961): Stop processing buildargs.gn directly.
-    with open(os.path.join(system_image_dir, _BUILD_ARGS)) as f:
+    args_file = os.path.join(system_image_dir, _BUILD_ARGS)
+    if not os.path.exists(args_file):
+        args_file = os.path.join(system_image_dir, _ARGS_FILE)
+
+    if not os.path.exists(args_file):
+        raise VersionNotFoundError(
+            f'Dir {system_image_dir} did not contain {_BUILD_ARGS} or '
+            f'{_ARGS_FILE}')
+
+    with open(args_file) as f:
         contents = f.readlines()
     if not contents:
-        raise VersionNotFoundError('Could not retrieve %s' % _BUILD_ARGS)
+        raise VersionNotFoundError('Could not retrieve %s' % args_file)
     version_key = 'build_info_version'
     product_key = 'build_info_product'
     info_keys = [product_key, version_key]
@@ -121,6 +175,64 @@ def get_sdk_hash(system_image_dir: str) -> Tuple[str, str]:
     if not (version_key in version_info and product_key in version_info):
         raise VersionNotFoundError(
             'Could not extract version info from %s. Contents: %s' %
-            (_BUILD_ARGS, contents))
+            (args_file, contents))
 
     return (version_info[product_key], version_info[version_key])
+
+
+def find_in_dir(target_name: str,
+                parent_dir: str,
+                search_for_dir: bool = False) -> Optional[str]:
+    """Finds path in SDK.
+
+    Args:
+      target_name: Name of target to find, as a string.
+      parent_dir: Directory to start search in.
+      search_for_dir: boolean, whether to search for a directory or file.
+
+    Returns:
+      Optional full path to the target, if found. None if not found.
+    """
+    # Doesn't make sense to look for a full path. Only extract the basename.
+    target_name = os.path.basename(target_name)
+    for root, dirs, files in os.walk(parent_dir):
+        # Removing these parens causes the following equivalent operation order:
+        # if (target_name in dirs) if search_for_dir else files, which is
+        # incorrect.
+        #pylint: disable=superfluous-parens
+        if target_name in (dirs if search_for_dir else files):
+            return os.path.abspath(os.path.join(root, target_name))
+        #pylint: enable=superfluous-parens
+
+    return None
+
+
+def find_image_in_sdk(product_name: str, product_bundle: bool,
+                      sdk_root: str) -> Optional[str]:
+    """Finds image dir in SDK for product given.
+
+    Args:
+      product_name: Name of product's image directory to find.
+      product_bundle: boolean, whether image will be in a product-bundle or not.
+        Product bundle images use a different directory format.
+      sdk_root: String path to root of SDK (third_party/fuchsia-sdk).
+
+    Returns:
+      Optional full path to the target, if found. None if not found.
+    """
+    if product_bundle:
+        top_image_dir = os.path.join(sdk_root, 'images')
+        path = find_in_dir(product_name,
+                           parent_dir=top_image_dir,
+                           search_for_dir=True)
+        return find_in_dir('images', parent_dir=path, search_for_dir=True)
+
+    # Non-product-bundle directories take some massaging.
+    top_image_dir = os.path.join(sdk_root, 'images-internal')
+    product, board = product_name.split('.')
+    board_dir = find_in_dir(board,
+                            parent_dir=top_image_dir,
+                            search_for_dir=True)
+
+    #  The board dir IS the images dir
+    return find_in_dir(product, parent_dir=board_dir, search_for_dir=True)

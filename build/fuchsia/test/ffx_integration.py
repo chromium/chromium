@@ -14,8 +14,9 @@ import tempfile
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional
 
-from common import get_host_arch, run_ffx_command, run_continuous_ffx_command, \
+from common import run_ffx_command, run_continuous_ffx_command, \
                    SDK_ROOT
+from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
 RUN_SUMMARY_SCHEMA = \
