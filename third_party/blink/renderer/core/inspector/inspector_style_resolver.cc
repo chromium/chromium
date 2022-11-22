@@ -42,7 +42,12 @@ InspectorStyleResolver::InspectorStyleResolver(
       element_, element_pseudo_id, view_transition_name,
       StyleResolver::kAllCSSRules);
 
-  if (element_pseudo_id)
+  // Skip only if the pseudo element is not tree-abiding.
+  // ::placeholder and ::file-selector-button are treated as regular elements
+  // and hence don't need to be included here.
+  if (element_pseudo_id && !(element_pseudo_id == kPseudoIdBefore ||
+                             element_pseudo_id == kPseudoIdAfter ||
+                             element_pseudo_id == kPseudoIdMarker))
     return;
 
   const bool has_active_view_transition =
@@ -75,7 +80,8 @@ InspectorStyleResolver::InspectorStyleResolver(
   }
 
   // Parent rules.
-  Element* parent_element = FlatTreeTraversal::ParentElement(*element);
+  Element* parent_element =
+      element_pseudo_id ? element : FlatTreeTraversal::ParentElement(*element);
   while (parent_element) {
     RuleIndexList* parent_matched_rules = style_resolver.CssRulesForElement(
         parent_element, StyleResolver::kAllCSSRules);
