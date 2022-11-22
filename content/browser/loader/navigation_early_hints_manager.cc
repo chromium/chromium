@@ -428,9 +428,8 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
     const network::ResourceRequest& request_for_navigation) {
   // Ignore the second and subsequent responses to avoid situations where
   // policies such as CSP are inconsistent among the first and following
-  // responses.
-  // TODO(https://crbug.com/1305896): Refer to a relevant specification once the
-  // spec discussion is settled.
+  // responses. This behavior is specified by the step 19.5 of
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#create-navigation-params-by-fetching
   if (was_first_early_hints_received_)
     return;
 
