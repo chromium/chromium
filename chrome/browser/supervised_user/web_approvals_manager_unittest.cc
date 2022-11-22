@@ -20,9 +20,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/supervised_user/android/website_parent_approval.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -210,6 +214,7 @@ TEST_F(WebApprovalsManagerTest, CreatePermissionRequest) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   base::HistogramTester histogram_tester;
 
@@ -223,13 +228,13 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   // Check that duration metric is recorded.
   base::TimeDelta elapsed_time = base::Minutes(1);
   task_environment().FastForwardBy(elapsed_time);
-  web_approvals_manager().OnLocalApprovalRequestCompleted(
+  web_approvals_manager().OnLocalApprovalRequestCompletedAndroid(
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kRejected);
 
   histogram_tester.ExpectBucketCount(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kDeclined, 1);
+      WebApprovalsManager::LocalApprovalResult::kDeclined, 1);
   histogram_tester.ExpectTotalCount(
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
   histogram_tester.ExpectTimeBucketCount(
@@ -238,12 +243,12 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
-  web_approvals_manager().OnLocalApprovalRequestCompleted(
+  web_approvals_manager().OnLocalApprovalRequestCompletedAndroid(
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kIncomplete);
   histogram_tester.ExpectBucketCount(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kCanceled, 1);
+      WebApprovalsManager::LocalApprovalResult::kCanceled, 1);
   histogram_tester.ExpectTotalCount(
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
 
@@ -256,12 +261,12 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   elapsed_time =
       elapsed_time + fast_forward_by;  // Elapsed time since the start time.
   task_environment().FastForwardBy(fast_forward_by);
-  web_approvals_manager().OnLocalApprovalRequestCompleted(
+  web_approvals_manager().OnLocalApprovalRequestCompletedAndroid(
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kApproved);
   histogram_tester.ExpectBucketCount(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kApproved, 1);
+      WebApprovalsManager::LocalApprovalResult::kApproved, 1);
   histogram_tester.ExpectTotalCount(
       WebApprovalsManager::GetLocalApprovalResultHistogram(), 3);
 
@@ -271,6 +276,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
       elapsed_time, 1);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
@@ -297,7 +303,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
 
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kApproved, 1);
+      WebApprovalsManager::LocalApprovalResult::kApproved, 1);
   histogram_tester.ExpectTotalCount(
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
   histogram_tester.ExpectTimeBucketCount(
@@ -330,7 +336,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
 
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kDeclined, 1);
+      WebApprovalsManager::LocalApprovalResult::kDeclined, 1);
   histogram_tester.ExpectTotalCount(
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
   histogram_tester.ExpectTimeBucketCount(
@@ -366,7 +372,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalCanceledChromeOSTest) {
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 0);
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kCanceled, 1);
+      WebApprovalsManager::LocalApprovalResult::kCanceled, 1);
 }
 
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
@@ -397,6 +403,6 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 0);
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
-      WebApprovalsManager::LocalApprovalResultMetric::kError, 1);
+      WebApprovalsManager::LocalApprovalResult::kError, 1);
 }
 #endif

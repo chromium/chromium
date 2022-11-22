@@ -15,11 +15,16 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+enum class AndroidLocalWebApprovalFlowOutcome;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class GURL;
 class PermissionRequestCreator;
@@ -50,12 +55,12 @@ class WebApprovalsManager {
   // successfully.
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
 
-  // The result of local web approval flow used for metrics.
-  // Those values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with
-  // "FamilyLinkUserLocalWebApprovalResult" in
+  // The result of local web approval flow.
+  // Used for metrics. Those values are logged to UMA. Entries should not be
+  // renumbered and numeric values should never be reused. Please keep in sync
+  // with "FamilyLinkUserLocalWebApprovalResult" in
   // src/tools/metrics/histograms/enums.xml.
-  enum class LocalApprovalResultMetric {
+  enum class LocalApprovalResult {
     kApproved = 0,
     kDeclined = 1,
     kCanceled = 2,
@@ -125,13 +130,25 @@ class WebApprovalsManager {
       size_t index,
       bool success);
 
-  // Called to indicate that a URL access request has completed (either
-  // successfully or not).
-  void OnLocalApprovalRequestCompleted(
+  // Processes the outcome of the local approval request.
+  // Shared between the platforms. Should be called by platform specific
+  // completion callback.
+  void CompleteLocalApprovalRequest(
+      SupervisedUserSettingsService* settings_service,
+      const GURL& url,
+      base::TimeTicks start_time,
+      LocalApprovalResult approval_result);
+
+  // Platform specific callbacks used to indicate approval request completion.
+  // Can implement platform specific operations needed to handle the result.
+  // Should call `CompleteLocalApprovalRequest` to complete the request.
+#if BUILDFLAG(IS_ANDROID)
+  void OnLocalApprovalRequestCompletedAndroid(
       SupervisedUserSettingsService* settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       AndroidLocalWebApprovalFlowOutcome request_outcome);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnLocalApprovalRequestCompletedChromeOS(
@@ -139,7 +156,7 @@ class WebApprovalsManager {
       const GURL& url,
       base::TimeTicks start_time,
       std::unique_ptr<ash::ParentAccessDialog::Result> result);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Helpers for private method testing.
   FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
