@@ -26,6 +26,8 @@ constexpr CGFloat kCornerRadius = 12;
 constexpr CGFloat kSeparatorLeadingMargin = 60;
 constexpr CGFloat kSeparatorHeight = 0.5;
 constexpr CGFloat kIconLabelWidth = 30;
+// Height minimum for a line.
+constexpr CGFloat kMinimumLineHeight = 44;
 
 // Creates a view with `icon` in it.
 UIView* CreateIconView(UIImage* icon) {
@@ -202,6 +204,8 @@ UIView* CreateIconView(UIImage* icon) {
                                                     constant:-kVerticalMargin];
   minimumLabelBottomMargin.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
+    [line.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kMinimumLineHeight],
     [bulletPointView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
                                                   constant:kLeadingMargin],
     [bulletPointView.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
