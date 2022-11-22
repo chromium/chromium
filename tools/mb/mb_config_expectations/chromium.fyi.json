@@ -1353,6 +1353,14 @@
       "use_remoteexec": true
     }
   },
+  "mac-12-wpt-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_remoteexec": true
+    }
+  },
   "mac-arm64-on-arm64-rel-reclient": {
     "gn_args": {
       "dcheck_always_on": false,

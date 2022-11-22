@@ -94805,6 +94805,39 @@
       }
     ]
   },
+  "mac-12-wpt-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--child-processes=8",
+          "--log-wptreport",
+          "--xvfb"
+        ],
+        "experiment_percentage": 100,
+        "isolate_name": "wpt_tests_isolate_content_shell",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+      }
+    ]
+  },
   "mac-arm64-on-arm64-rel-reclient": {
     "additional_compile_targets": [
       "all"

@@ -1503,6 +1503,30 @@ fyi_mac_builder(
     reclient_jobs = None,
 )
 
+fyi_mac_builder(
+    name = "mac-12-wpt-fyi-rel",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+    ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
+    schedule = "triggered",
+    triggered_by = [],
+    os = os.MAC_12,
+)
+
 ci.builder(
     name = "chromeos-amd64-generic-rel (reclient)",
     console_view_entry = consoles.console_view_entry(
