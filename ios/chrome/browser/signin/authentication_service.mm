@@ -239,9 +239,12 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
                               loginMethodAndSyncState,
                               LOGIN_METHOD_AND_SYNC_STATE_COUNT);
   }
-  UMA_HISTOGRAM_COUNTS_100(
-      "Signin.IOSNumberOfDeviceAccounts",
-      [account_manager_service_->GetAllIdentities() count]);
+  if (GetServiceStatus() !=
+      AuthenticationService::ServiceStatus::SigninDisabledByInternal) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Signin.IOSNumberOfDeviceAccounts",
+        [account_manager_service_->GetAllIdentities() count]);
+  }
 
   // Clear signin errors on the accounts that had a specific MDM device status.
   // This will trigger services to fetch data for these accounts again.
