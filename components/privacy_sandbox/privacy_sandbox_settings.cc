@@ -95,6 +95,11 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
 bool PrivacySandboxSettings::IsTopicsAllowed() const {
+  // M1 specific
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    return pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  }
+
   // Topics API calculation should be prevented if the user has blocked 3PC
   // cookies, as there will be no context specific check.
   const auto cookie_controls_mode =
@@ -113,6 +118,11 @@ bool PrivacySandboxSettings::IsTopicsAllowed() const {
 bool PrivacySandboxSettings::IsTopicsAllowedForContext(
     const GURL& url,
     const absl::optional<url::Origin>& top_frame_origin) const {
+  // M1 specific
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    return IsTopicsAllowed() && IsSiteDataAllowed(url);
+  }
+
   // If the Topics API is disabled completely, it is not available in any
   // context.
   return IsTopicsAllowed() &&
@@ -418,6 +428,17 @@ void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
 
   for (auto& observer : observers_)
     observer.OnTopicsDataAccessibleSinceUpdated();
+}
+
+bool PrivacySandboxSettings::IsSiteDataAllowed(const GURL& url) const {
+  // Relying on |host_content_settings_map_| instead of |cookie_settings_|
+  // allows to query whether the site associated with the |url| is allowed to
+  // access Site data (aka ContentSettingsType::COOKIES) from a stand-alone
+  // point of view. This is not possible via |cookies_settings_|, which _also_
+  // takes into account third party context.
+  return host_content_settings_map_->GetContentSetting(
+             url, GURL(), ContentSettingsType::COOKIES) !=
+         ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
 }  // namespace privacy_sandbox

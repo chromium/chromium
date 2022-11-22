@@ -23,6 +23,31 @@ MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
     default;
 
+void SetupMinimialTestStateForM1(
+    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
+    HostContentSettingsMap* map,
+    ContentSetting default_cookie_setting,
+    const std::vector<CookieContentSettingException>& user_cookie_exceptions) {
+  // Setup cookie content settings.
+  auto user_provider = std::make_unique<content_settings::MockProvider>();
+
+  if (default_cookie_setting != kNoSetting) {
+    user_provider->SetWebsiteSetting(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        ContentSettingsType::COOKIES, base::Value(default_cookie_setting));
+  }
+
+  for (const auto& exception : user_cookie_exceptions) {
+    user_provider->SetWebsiteSetting(
+        ContentSettingsPattern::FromString(exception.primary_pattern),
+        ContentSettingsPattern::FromString(exception.secondary_pattern),
+        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
+  }
+
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(user_provider), HostContentSettingsMap::DEFAULT_PROVIDER);
+}
+
 void SetupTestState(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,

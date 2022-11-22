@@ -25,7 +25,7 @@ namespace privacy_sandbox {
 
 using Topic = browsing_topics::Topic;
 
-class PrivacySandboxSettingsTest : public testing::Test {
+class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  public:
   PrivacySandboxSettingsTest()
       : browser_task_environment_(
@@ -958,6 +958,140 @@ class PrivacySandboxSettingLocalOverrideTest
 TEST_F(PrivacySandboxSettingLocalOverrideTest, FollowsOverrideBehavior) {
   privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+}
+
+/**
+ * A test fixture for privacy sandbox M1 for Topics.
+ */
+class PrivacySandboxSettingsTopicsM1Test : public PrivacySandboxSettingsTest {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list_.InitWithFeatureState(
+        privacy_sandbox::kPrivacySandboxSettings4, GetParam());
+  }
+
+  void InitializePrefsBeforeStart() override {
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsTestM1Instance,
+                         PrivacySandboxSettingsTopicsM1Test,
+                         testing::Bool());
+
+TEST_P(PrivacySandboxSettingsTopicsM1Test, IsTopicsAllowed_M1) {
+  bool is_topics_pref_enabled =
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  // Update the underlying topics prefs to disable.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
+  // Topics should always be disabled is the underlying pref is disabled.
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
+}
+
+// Test that CookieControlsMode has not affect on whether Topics is allowed or
+// not.
+TEST_P(PrivacySandboxSettingsTopicsM1Test,
+       IsTopicAllowed_CookieControlsMode_M1) {
+  bool is_topics_pref_enabled =
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       base::Value(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+}
+
+// Test that the Topics API is blocked for a site if its corresponding Site data
+// setting is blocked, regardless if the default content setting is allowed.
+TEST_P(PrivacySandboxSettingsTopicsM1Test,
+       IsTopicAllowedForContext_CookieContentSetting_PrimaryPattern_Block_M1) {
+  bool is_topics_pref_enabled =
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  // Allow default cookie content setting but block on primary pattern.
+  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
+      prefs(), host_content_settings_map(),
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/
+      {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      GURL("https://embedded.com"), {}));
+}
+
+// Test that the Topics API is allowed for a site if its corresponding Site data
+// setting is allowed, regardless if the default content setting is blocked.
+TEST_P(PrivacySandboxSettingsTopicsM1Test,
+       IsTopicAllowedForContext_CookieContentSetting_PrimaryPattern_Allow_M1) {
+  bool is_topics_pref_enabled =
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  bool is_topics_allowed = privacy_sandbox_settings()->IsTopicsAllowed();
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  // Block default cookie content setting but allow on primary pattern.
+  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
+      prefs(), host_content_settings_map(),
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/
+      {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_ALLOW}});
+
+  // Should allow topics for the context, as long as the low level Topics API is
+  // allowed.
+  EXPECT_EQ(is_topics_allowed,
+            privacy_sandbox_settings()->IsTopicsAllowedForContext(
+                GURL("https://embedded.com"), {}));
+}
+
+// Test that the Topics API is allowed by default for any site without any
+// corresponding Site data exception.
+TEST_P(PrivacySandboxSettingsTopicsM1Test,
+       IsTopicAllowedForContext_CookieContentSetting_Default_Allow_M1) {
+  bool is_topics_pref_enabled =
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  bool is_topics_allowed = privacy_sandbox_settings()->IsTopicsAllowed();
+  EXPECT_EQ(is_topics_pref_enabled,
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  // Allow default cookie content setting.
+  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
+      prefs(), host_content_settings_map(),
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{});
+
+  // Should allow topics for the context, as long as the low level Topics API is
+  // allowed.
+  EXPECT_EQ(is_topics_allowed,
+            privacy_sandbox_settings()->IsTopicsAllowedForContext(
+                GURL("https://embedded.com"), {}));
+}
+
+// Test that the Topics API is blocked by default for any site without any
+// corresponding Site data exception.
+TEST_P(PrivacySandboxSettingsTopicsM1Test,
+       IsTopicAllowedForContext_CookieContentSetting_Default_Block_M1) {
+  EXPECT_EQ(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled),
+            privacy_sandbox_settings()->IsTopicsAllowed());
+
+  // Block default cookie content setting.
+  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
+      prefs(), host_content_settings_map(),
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      GURL("https://embedded.com"), {}));
 }
 
 }  // namespace privacy_sandbox

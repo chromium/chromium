@@ -220,6 +220,10 @@ class PrivacySandboxSettings : public KeyedService {
   void SetTopicsDataAccessibleFromNow() const;
 
  private:
+  // Whether the site associated with the URL is allowed to access site data or
+  // not, as a primary context.
+  bool IsSiteDataAllowed(const GURL& url) const;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
