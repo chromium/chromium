@@ -123,7 +123,7 @@ class BaselineOptimizerTest(unittest.TestCase):
             self.fs.join(web_tests_dir, 'VirtualTestSuites'),
             '[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
             '"bases": ["fast/canvas", "slow/canvas/mock-test.html"], '
-            '"args": ["--foo"]}]')
+            '"args": ["--foo"], "expires": "never"}]')
         self.fs.write_text_file(
             self.fs.join(web_tests_dir, 'FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'

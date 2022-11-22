@@ -41,6 +41,7 @@ import sys
 import tempfile
 from collections import defaultdict
 from copy import deepcopy
+from datetime import datetime
 
 import six
 from six.moves import zip_longest
@@ -2238,9 +2239,15 @@ class Port(object):
                     self._filesystem.read_text_file(
                         path_to_virtual_test_suites))
                 self._virtual_test_suites = []
+                current_time = datetime.now()
                 for json_config in test_suite_json:
                     # Strings are treated as comments.
                     if isinstance(json_config, str):
+                        continue
+                    expires = json_config.get("expires")
+                    if (expires.lower() != 'never' and datetime.strptime(
+                            expires, '%b %d, %Y') <= current_time):
+                        # do not load expired virtual suites
                         continue
                     vts = VirtualTestSuite(**json_config)
                     if any(vts.full_prefix == s.full_prefix
@@ -2576,7 +2583,8 @@ class VirtualTestSuite(object):
                  platforms=None,
                  bases=None,
                  exclusive_tests=None,
-                 args=None):
+                 args=None,
+                 expires=None):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
         assert isinstance(platforms, list)

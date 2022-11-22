@@ -229,7 +229,7 @@ class PortTest(LoggingTestCase):
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'VirtualTestSuites',
             '[{ "prefix": "bar", "platforms": ["Linux", "Mac", "Win"],'
-            ' "bases": ["fast"], "args": ["--bar"]}]')
+            ' "bases": ["fast"], "args": ["--bar"], "expires": "never"}]')
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'FlagSpecificConfig',
             '[{"name": "special-flag", "args": ["--special"]}]')
@@ -316,7 +316,7 @@ class PortTest(LoggingTestCase):
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'VirtualTestSuites',
             '[{ "prefix": "flag", "platforms": ["Linux", "Mac", "Win"],'
-            ' "bases": ["fast"], "args": ["--flag"]}]')
+            ' "bases": ["fast"], "args": ["--flag"], "expires": "never"}]')
 
         # The default baseline for base test
         self.assertEqual(
@@ -1465,7 +1465,7 @@ class PortTest(LoggingTestCase):
             port.host.filesystem.join(port.web_tests_dir(),
                                       'VirtualTestSuites'),
             '[{"prefix": "bar", "platforms": ["Linux", "Mac", "Win"], '
-            '"bases": ["fast/bar"], "args": ["--bar"]}]')
+            '"bases": ["fast/bar"], "args": ["--bar"], "expires": "never"}]')
 
         # If this call returns successfully, we found and loaded the web_tests/VirtualTestSuites.
         _ = port.virtual_test_suites()
@@ -1475,8 +1475,10 @@ class PortTest(LoggingTestCase):
         port.host.filesystem.write_text_file(
             port.host.filesystem.join(port.web_tests_dir(),
                                       'VirtualTestSuites'), '['
-            '{"prefix": "bar", "platforms": ["Linux"], "bases": ["fast/bar"], "args": ["--bar"]},'
-            '{"prefix": "bar", "platforms": ["Linux"], "bases": ["fast/foo"], "args": ["--bar"]}'
+            '{"prefix": "bar", "platforms": ["Linux"], "bases": ["fast/bar"], '
+            '"args": ["--bar"], "expires": "never"},'
+            '{"prefix": "bar", "platforms": ["Linux"], "bases": ["fast/foo"], '
+            '"args": ["--bar"], "expires": "never"}'
             ']')
 
         self.assertRaises(ValueError, port.virtual_test_suites)
@@ -1581,6 +1583,24 @@ class PortTest(LoggingTestCase):
         port = self.make_port()
         self.assertRaises(AssertionError, port.virtual_test_suites)
 
+    def test_virtual_test_expires(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-a"], "expires": "Jul 1, 2022"},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-b"], "expires": "Jul 1, 2222"},'
+            '{"prefix": "v3", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-c"], "expires": "never"}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'test', 'test.html'), '')
+        self.assertTrue("virtual/v1/test/test.html" not in port.tests())
+        self.assertTrue("virtual/v2/test/test.html" in port.tests())
+        self.assertTrue("virtual/v3/test/test.html" in port.tests())
+
     def test_virtual_exclusive_tests(self):
         port = self.make_port()
         fs = port.host.filesystem
@@ -1588,11 +1608,13 @@ class PortTest(LoggingTestCase):
         fs.write_text_file(
             fs.join(web_tests_dir, 'VirtualTestSuites'), '['
             '{"prefix": "v1", "platforms": ["Linux"], "bases": ["b1", "b2"],'
-            ' "exclusive_tests": "ALL", "args": ["-a"]},'
+            ' "exclusive_tests": "ALL", '
+            '"args": ["-a"], "expires": "never"},'
             '{"prefix": "v2", "platforms": ["Linux"], "bases": ["b2"],'
-            ' "exclusive_tests": ["b2/test.html"], "args": ["-b"]},'
+            ' "exclusive_tests": ["b2/test.html"], '
+            '"args": ["-b"], "expires": "never"},'
             '{"prefix": "v3", "platforms": ["Linux"], "bases": ["b3"],'
-            ' "args": ["-c"]}'
+            ' "args": ["-c"], "expires": "never"}'
             ']')
         fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test.html'), '')
         fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test2.html'), '')

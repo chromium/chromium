@@ -24,6 +24,11 @@
 #   will be part of the path should a baseline be needed, and will cause
 #   trouble at that time.
 #
+# - The expiration date of the virtual test suite usually should be 6 month
+#   from the creatation of the test suite. The expiration date can be set to
+#   'never' when it is not expected to expire. In this case an explanation is
+#   required.
+#
 # [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
 
 dom@chromium.org

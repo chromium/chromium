@@ -26,7 +26,8 @@ class ImportNotifierTest(unittest.TestCase):
         self.host.filesystem = MockFileSystem({
             MOCK_WEB_TESTS + 'VirtualTestSuites':
             b'[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
-            b'"bases": ["external/wpt/foo"], "args": ["--foo"]}]'
+            b'"bases": ["external/wpt/foo"], "args": ["--foo"], '
+            b'"expires": "never"}]'
         })
         self.git = self.host.git()
         self.local_wpt = MockLocalWPT()
