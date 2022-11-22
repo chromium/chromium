@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/chrome/browser/reading_list/url_downloader.h"
@@ -113,6 +114,13 @@ class ReadingListDownloadService
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory_;
   std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
+
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      model_observation_{this};
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      network_observation_{this};
 
   base::WeakPtrFactory<ReadingListDownloadService> weak_ptr_factory_;
 };

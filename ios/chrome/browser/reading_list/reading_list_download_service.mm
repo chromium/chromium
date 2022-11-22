@@ -88,20 +88,14 @@ ReadingListDownloadService::ReadingListDownloadService(
                           base::Unretained(this)),
       base::BindRepeating(&ReadingListDownloadService::OnDeleteEnd,
                           base::Unretained(this)));
-
-  GetApplicationContext()
-      ->GetNetworkConnectionTracker()
-      ->AddNetworkConnectionObserver(this);
+  network_observation_.Observe(
+      GetApplicationContext()->GetNetworkConnectionTracker());
 }
 
-ReadingListDownloadService::~ReadingListDownloadService() {
-  GetApplicationContext()
-      ->GetNetworkConnectionTracker()
-      ->RemoveNetworkConnectionObserver(this);
-}
+ReadingListDownloadService::~ReadingListDownloadService() = default;
 
 void ReadingListDownloadService::Initialize() {
-  reading_list_model_->AddObserver(this);
+  model_observation_.Observe(reading_list_model_);
 }
 
 base::FilePath ReadingListDownloadService::OfflineRoot() const {
@@ -109,7 +103,8 @@ base::FilePath ReadingListDownloadService::OfflineRoot() const {
 }
 
 void ReadingListDownloadService::Shutdown() {
-  reading_list_model_->RemoveObserver(this);
+  model_observation_.Reset();
+  network_observation_.Reset();
 }
 
 void ReadingListDownloadService::ReadingListModelLoaded(
