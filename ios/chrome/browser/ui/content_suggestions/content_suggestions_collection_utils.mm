@@ -178,15 +178,18 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 
   [voice_search_button setAdjustsImageWhenHighlighted:NO];
 
-  UIImage* mic_image =
-      UseSymbols() ? DefaultSymbolWithPointSize(
-                         kMicrophoneSymbol, kSymbolContentSuggestionsPointSize)
-                   : [UIImage imageNamed:@"location_bar_voice"];
-  mic_image =
-      [mic_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* mic_image;
+  if (UseSymbols()) {
+    mic_image = DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                           kSymbolContentSuggestionsPointSize);
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  } else {
+    mic_image = [[UIImage imageNamed:@"location_bar_voice"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  }
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
-  voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
   [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
                                                  IDS_IOS_ACCNAME_VOICE_SEARCH)];
   [voice_search_button setAccessibilityIdentifier:@"Voice Search"];
