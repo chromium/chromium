@@ -70,6 +70,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -153,9 +154,10 @@ const message_center::Notification* GetPreviewNotification() {
   const message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   for (const auto* notification : notifications) {
-    if (notification->id().starts_with(
-            capture_mode_util::kScreenCaptureNotificationId))
+    if (base::StartsWith(notification->id(),
+                         capture_mode_util::kScreenCaptureNotificationId)) {
       return notification;
+    }
   }
   return nullptr;
 }
@@ -459,9 +461,10 @@ class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override {
-    if (notification_id.starts_with(
-            capture_mode_util::kScreenCaptureNotificationId))
+    if (base::StartsWith(notification_id,
+                         capture_mode_util::kScreenCaptureNotificationId)) {
       run_loop_.Quit();
+    }
   }
 
  private:
