@@ -184,6 +184,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Enable Omnibox Debugging</string>
+			<key>Key</key>
+			<string>EnableOmniboxDebugging</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Use Mobile Safari UA</string>
 			<key>Key</key>
 			<string>UseMobileSafariUA</string>

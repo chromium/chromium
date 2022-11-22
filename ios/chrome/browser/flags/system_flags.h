@@ -58,6 +58,9 @@ bool ShouldAlwaysShowFollowIPH();
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
+// Whether omnibox debugging tools are enabled.
+bool IsOmniboxDebuggingEnabled();
+
 // Whether startup crash is enabled.
 bool IsStartupCrashEnabled();
 

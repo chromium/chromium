@@ -94,6 +94,11 @@ bool IsMemoryDebuggingEnabled() {
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
+bool IsOmniboxDebuggingEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"EnableOmniboxDebugging"];
+}
+
 bool IsStartupCrashEnabled() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableStartupCrash];
 }
