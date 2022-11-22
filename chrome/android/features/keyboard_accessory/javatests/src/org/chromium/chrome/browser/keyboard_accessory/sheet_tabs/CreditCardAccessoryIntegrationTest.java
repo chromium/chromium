@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -144,7 +145,7 @@ public class CreditCardAccessoryIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1182626
+    @DisabledTest(message = "https://crbug.com/1392789, https://crbug.com/1182626")
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("CREDIT_CARD_NAME_FULL", 1);
