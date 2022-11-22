@@ -360,7 +360,7 @@ class IntegrationTest : public ::testing::Test {
 // Tests the setup and teardown of the fixture.
 TEST_F(IntegrationTest, DoNothing) {}
 
-TEST_F(IntegrationTest, InstallUninstall) {
+TEST_F(IntegrationTest, Install) {
   Install();
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
@@ -785,7 +785,7 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, InstallUninstallLowerVersion) {
+TEST_F(IntegrationTest, InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
