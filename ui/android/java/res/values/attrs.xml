@@ -33,10 +33,9 @@ found in the LICENSE file.
     </declare-styleable>
 
     <!-- The attributes prefixed with 'global' are used to control the button, link and URL colors
-         throughout the app. They are defined in ThemeOverlay.DynamicButtons and are applied to the
-         activity theme. This enables us to apply dynamic colors to the mentioned UI elements. These
-         attributes may not be set in the themes, so the code dealing with them should handle their
-         absence. -->
+         throughout the app and are defined in the activity theme. This enables us to apply
+         dynamic colors to the mentioned UI elements. These attributes may not be set in some
+         contexts, e.g. WebView, so the code dealing with them should handle their absence. -->
     <attr name="globalFilledButtonBgColor" format="color"/>
     <attr name="globalFilledButtonTextColor" format="reference"/>
     <attr name="globalTextButtonTextColor" format="reference"/>

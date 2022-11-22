@@ -47,15 +47,14 @@ found in the LICENSE file.
         <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
 
-        <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to
-             prevent crashes when the DynamicColorCTAAndroid flag is disabled. -->
-        <item name="globalFilledButtonBgColor">@color/filled_button_bg</item>
-        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_baseline_list</item>
-        <item name="globalTextButtonTextColor">@color/blue_when_enabled_list</item>
-        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list_baseline</item>
-        <item name="globalOutlinedButtonBorderColor">@color/divider_line_bg_color_baseline</item>
-        <item name="globalLinkTextColor">@color/default_text_color_link_baseline</item>
-        <item name="globalClickableSpanColor">@color/default_text_color_blue_baseline</item>
+        <!-- Dynamic colors that are applied to the buttons and links. -->
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
+        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
+        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalLinkTextColor">?attr/colorPrimary</item>
+        <item name="globalClickableSpanColor">?attr/colorPrimary</item>
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
@@ -137,15 +136,14 @@ found in the LICENSE file.
         <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
 
-        <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to
-             prevent crashes when the DynamicColorCTAAndroid flag is disabled. -->
-        <item name="globalFilledButtonBgColor">@color/filled_button_bg</item>
-        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_baseline_list</item>
-        <item name="globalTextButtonTextColor">@color/blue_when_enabled_list</item>
-        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list_baseline</item>
-        <item name="globalOutlinedButtonBorderColor">@color/divider_line_bg_color_baseline</item>
-        <item name="globalLinkTextColor">@color/default_text_color_link_baseline</item>
-        <item name="globalClickableSpanColor">@color/default_text_color_blue_baseline</item>
+        <!-- Dynamic colors that are applied to the buttons and links. -->
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
+        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
+        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalLinkTextColor">?attr/colorPrimary</item>
+        <item name="globalClickableSpanColor">?attr/colorPrimary</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>

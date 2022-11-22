@@ -244,15 +244,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                 && !ChromeFeatureList.sElasticOverscroll.isEnabled()) {
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
-
-        // TODO(https://crbug.com/1345778): Remove these overlays.
-        // We apply an extra theme overlay to override some of the dynamic colors. For example,
-        // android:textColorHighlight is overridden by dynamic colors, preventing us from specifying
-        // the alpha for the selected text highlight. In this case, the overridden colors should
-        // still use dynamic colors, as in the android:textColorHighlight example where we use a
-        // color state list that depends on colorPrimary.
-        setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
-        setTheme(R.style.ThemeOverlay_DynamicButtons);
     }
 
     /**
