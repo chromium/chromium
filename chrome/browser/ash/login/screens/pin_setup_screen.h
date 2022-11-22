@@ -12,13 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/wizard_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 class PinSetupScreenView;
+class WizardContext;
 
 class PinSetupScreen : public BaseScreen {
  public:
@@ -90,11 +89,5 @@ class PinSetupScreen : public BaseScreen {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::PinSetupScreen;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_

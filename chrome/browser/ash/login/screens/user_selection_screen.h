@@ -13,8 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
@@ -31,8 +29,10 @@
 class AccountId;
 
 namespace ash {
-struct LoginUserInfo;
+
+class EasyUnlockService;
 class UserBoardView;
+struct LoginUserInfo;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
 
@@ -190,12 +190,5 @@ class UserSelectionScreen
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::DisplayedScreen;
-using ::ash::UserSelectionScreen;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_

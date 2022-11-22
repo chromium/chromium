@@ -9,6 +9,7 @@
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "components/prefs/pref_service.h"
@@ -17,6 +18,7 @@
 namespace ash {
 
 namespace {
+
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSelect[] = "select";
 

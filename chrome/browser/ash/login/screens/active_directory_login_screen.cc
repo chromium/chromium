@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
@@ -73,7 +74,7 @@ void ActiveDirectoryLoginScreen::HideImpl() {
     view_->Reset();
   authpolicy_login_helper_->CancelRequestsAndRestart();
   error_screen_visible_ = false;
-  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   error_screen_->Hide();
 }
 
@@ -191,7 +192,7 @@ void ActiveDirectoryLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
     if (error_screen_visible_ && error_screen_->GetParentScreen() ==
                                      ActiveDirectoryLoginView::kScreenId) {
       error_screen_visible_ = false;
-      error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+      error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
       error_screen_->Hide();
       if (view_)
         view_->Show();

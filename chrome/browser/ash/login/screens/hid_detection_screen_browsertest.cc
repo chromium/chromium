@@ -39,14 +39,13 @@
 #include "services/device/public/mojom/input_service.mojom.h"
 
 namespace ash {
+
 namespace {
 
 using ::testing::_;
 using HidType = hid_detection::HidType;
 using HidsMissing = hid_detection::HidsMissing;
 using InputState = hid_detection::HidDetectionManager::InputState;
-using NiceMockDevice =
-    std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>;
 
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
@@ -91,7 +90,7 @@ class HIDDetectionScreenChromeboxTest
   HIDDetectionScreenChromeboxTest() {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kOobeHidDetectionRevamp);
+          features::kOobeHidDetectionRevamp);
 
       auto fake_hid_detection_manager =
           std::make_unique<hid_detection::FakeHidDetectionManager>();
@@ -102,7 +101,7 @@ class HIDDetectionScreenChromeboxTest
     }
 
     scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kOobeHidDetectionRevamp);
+        features::kOobeHidDetectionRevamp);
   }
 
   HIDDetectionScreenChromeboxTest(const HIDDetectionScreenChromeboxTest&) =
@@ -828,7 +827,7 @@ class HIDDetectionScreenChromebaseTest
   HIDDetectionScreenChromebaseTest() {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kOobeHidDetectionRevamp);
+          features::kOobeHidDetectionRevamp);
 
       auto fake_hid_detection_manager =
           std::make_unique<hid_detection::FakeHidDetectionManager>();
@@ -841,7 +840,7 @@ class HIDDetectionScreenChromebaseTest
     }
 
     scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kOobeHidDetectionRevamp);
+        features::kOobeHidDetectionRevamp);
 
     hid_controller_.set_wait_until_idle_after_device_update(false);
     hid_controller_.AddTouchscreen();

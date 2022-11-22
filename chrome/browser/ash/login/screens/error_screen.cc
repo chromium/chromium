@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
@@ -45,6 +46,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {
+
 namespace {
 
 // TODO(https://crbug.com/1241511): Remove this global.
@@ -342,7 +344,7 @@ void ErrorScreen::PolicyLoadFailed() {
 }
 
 void ErrorScreen::DefaultHideCallback() {
-  if (parent_screen_ != ash::OOBE_SCREEN_UNKNOWN && view_)
+  if (parent_screen_ != OOBE_SCREEN_UNKNOWN && view_)
     view_->ShowOobeScreen(parent_screen_);
 
   // TODO(antrim): Due to potential race with GAIA reload and hiding network

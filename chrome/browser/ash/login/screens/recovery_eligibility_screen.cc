@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/callback.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 

@@ -100,10 +100,4 @@ class FingerprintSetupScreen : public BaseScreen,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::FingerprintSetupScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_FINGERPRINT_SETUP_SCREEN_H_

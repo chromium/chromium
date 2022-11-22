@@ -37,6 +37,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 // Possible ui-states for device-blocks.
@@ -147,7 +148,7 @@ HIDDetectionScreen::HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
     : BaseScreen(HIDDetectionView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (features::IsOobeHidDetectionRevampEnabled()) {
     VLOG(1) << "OOBE HID detection revamped flow started";
     const auto& hid_detection_manager_override =
         GetHidDetectionManagerOverrideForTesting();
@@ -166,7 +167,7 @@ HIDDetectionScreen::HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
 }
 
 HIDDetectionScreen::~HIDDetectionScreen() {
-  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (features::IsOobeHidDetectionRevampEnabled()) {
     return;
   }
 
@@ -191,7 +192,7 @@ void HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
 }
 
 void HIDDetectionScreen::OnContinueButtonClicked() {
-  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (features::IsOobeHidDetectionRevampEnabled()) {
     hid_detection_manager_->StopHidDetection();
   } else {
     hid_detection::RecordBluetoothPairingAttempts(num_pairing_attempts_);
@@ -218,7 +219,7 @@ bool HIDDetectionScreen::ShouldEnableContinueButton() {
 
 void HIDDetectionScreen::CheckIsScreenRequired(
     base::OnceCallback<void(bool)> on_check_done) {
-  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (features::IsOobeHidDetectionRevampEnabled()) {
     hid_detection_manager_->GetIsHidDetectionRequired(std::move(on_check_done));
     return;
   }
@@ -243,7 +244,7 @@ void HIDDetectionScreen::ShowImpl() {
   if (!is_hidden())
     return;
 
-  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (features::IsOobeHidDetectionRevampEnabled()) {
     if (view_)
       view_->Show();
 
@@ -274,7 +275,7 @@ void HIDDetectionScreen::HideImpl() {
   if (is_hidden())
     return;
 
-  if (!ash::features::IsOobeHidDetectionRevampEnabled()) {
+  if (!features::IsOobeHidDetectionRevampEnabled()) {
     if (discovery_session_.get())
       discovery_session_->Stop();
 

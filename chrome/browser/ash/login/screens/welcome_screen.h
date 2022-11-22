@@ -15,25 +15,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-// TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
-// after this file is moved to ash.
-#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 
+class InputEventsBlocker;
 class WelcomeView;
+
+namespace locale_util {
+struct LanguageSwitchResult;
+}
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,
                       public ChromeVoxHintDetector::Observer,
-                      public ash::SystemTrayObserver {
+                      public SystemTrayObserver {
  public:
   using TView = WelcomeView;
 
@@ -181,7 +181,7 @@ class WelcomeScreen : public BaseScreen,
   void UpdateChromadMigrationOobeFlow(bool exists);
 
   void OnAccessibilityStatusChanged(
-      const ash::AccessibilityStatusEventDetails& details);
+      const AccessibilityStatusEventDetails& details);
   void UpdateA11yState();
 
   // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
@@ -207,7 +207,7 @@ class WelcomeScreen : public BaseScreen,
 
   base::CallbackListSubscription accessibility_subscription_;
 
-  base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;
 
   // WeakPtrFactory used to schedule and cancel tasks related to language update
@@ -219,17 +219,5 @@ class WelcomeScreen : public BaseScreen,
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::WelcomeScreen;
-}
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::WelcomeScreen;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_WELCOME_SCREEN_H_

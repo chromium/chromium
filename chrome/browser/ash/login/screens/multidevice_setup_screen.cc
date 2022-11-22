@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +22,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 constexpr const char kAcceptedSetupUserAction[] = "setup-accepted";

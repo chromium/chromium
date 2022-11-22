@@ -98,10 +98,4 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ResetScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RESET_SCREEN_H_

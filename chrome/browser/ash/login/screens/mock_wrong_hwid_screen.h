@@ -34,11 +34,4 @@ class MockWrongHWIDScreenView : public WrongHWIDScreenView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockWrongHWIDScreen;
-using ::ash::MockWrongHWIDScreenView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_WRONG_HWID_SCREEN_H_

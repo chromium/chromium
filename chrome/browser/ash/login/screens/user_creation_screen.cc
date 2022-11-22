@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kUserActionSignIn[] = "signin";
@@ -108,7 +109,7 @@ void UserCreationScreen::ShowImpl() {
 void UserCreationScreen::HideImpl() {
   scoped_observation_.Reset();
   error_screen_visible_ = false;
-  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   error_screen_->Hide();
 }
 
@@ -158,7 +159,7 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
     if (error_screen_visible_ &&
         error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
       error_screen_visible_ = false;
-      error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+      error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
       error_screen_->Hide();
       view_->Show();
       histogram_helper_->OnErrorHide();

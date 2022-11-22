@@ -42,11 +42,4 @@ class MockConsolidatedConsentScreenView : public ConsolidatedConsentScreenView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockConsolidatedConsentScreen;
-using ::ash::MockConsolidatedConsentScreenView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_CONSOLIDATED_CONSENT_SCREEN_H_

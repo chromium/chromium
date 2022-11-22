@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
@@ -34,6 +35,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 constexpr char kUserActionSelectNetworkButtonClicked[] = "select-network";
@@ -416,7 +418,7 @@ void UpdateRequiredScreen::OnConnectRequested() {
 }
 
 void UpdateRequiredScreen::OnErrorScreenHidden() {
-  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   // Return to the default state.
   error_screen_->SetIsPersistentError(false /* is_persistent */);
   Show(context());

@@ -6,11 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
 namespace {
 
 constexpr const char kUserActionFeatureTurnOn[] = "continue-feature-on";
@@ -46,7 +48,7 @@ bool SmartPrivacyProtectionScreen::MaybeSkip(WizardContext& context) {
   // SnoopingProtection and QuickDim. The screen should be skipped if none of
   // them is enabled.
   if (!context.skip_post_login_screens_for_tests &&
-      ash::features::IsQuickDimEnabled()) {
+      features::IsQuickDimEnabled()) {
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);
@@ -65,7 +67,7 @@ void SmartPrivacyProtectionScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionFeatureTurnOn) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     profile->GetPrefs()->SetBoolean(prefs::kPowerQuickDimEnabled,
-                                    ash::features::IsQuickDimEnabled());
+                                    features::IsQuickDimEnabled());
     exit_callback_.Run(Result::PROCEED_WITH_FEATURE_ON);
   } else if (action_id == kUserActionFeatureTurnOff) {
     Profile* profile = ProfileManager::GetActiveUserProfile();

@@ -39,11 +39,4 @@ class MockEulaView : public EulaView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockEulaScreen;
-using ::ash::MockEulaView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_EULA_SCREEN_H_

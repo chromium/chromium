@@ -90,10 +90,4 @@ class UserCreationScreen
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::UserCreationScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_USER_CREATION_SCREEN_H_

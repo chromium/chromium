@@ -54,10 +54,4 @@ class FamilyLinkNoticeScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::FamilyLinkNoticeScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_FAMILY_LINK_NOTICE_SCREEN_H_

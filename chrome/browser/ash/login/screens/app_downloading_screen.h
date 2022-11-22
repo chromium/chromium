@@ -44,10 +44,4 @@ class AppDownloadingScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// migration is finished.
-namespace chromeos {
-using ::ash::AppDownloadingScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_APP_DOWNLOADING_SCREEN_H_

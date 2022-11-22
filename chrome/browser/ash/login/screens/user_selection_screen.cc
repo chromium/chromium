@@ -74,6 +74,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 const char kWakeLockReason[] = "TPMLockedIssue";
@@ -748,14 +749,14 @@ void UserSelectionScreen::ShowBannerMessage(const std::u16string& message,
 void UserSelectionScreen::ShowUserPodCustomIcon(
     const AccountId& account_id,
     const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
     return;
 
   view_->ShowUserPodCustomIcon(account_id, icon_info);
 }
 
 void UserSelectionScreen::HideUserPodCustomIcon(const AccountId& account_id) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
     return;
 
   view_->HideUserPodCustomIcon(account_id);
@@ -763,14 +764,14 @@ void UserSelectionScreen::HideUserPodCustomIcon(const AccountId& account_id) {
 
 void UserSelectionScreen::SetSmartLockState(const AccountId& account_id,
                                             SmartLockState state) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
     view_->SetSmartLockState(account_id, state);
   }
 }
 
 void UserSelectionScreen::NotifySmartLockAuthResult(const AccountId& account_id,
                                                     bool success) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
     view_->NotifySmartLockAuthResult(account_id, success);
   }
 }

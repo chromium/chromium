@@ -48,11 +48,4 @@ class MockArcTermsOfServiceScreenView : public ArcTermsOfServiceScreenView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockArcTermsOfServiceScreen;
-using ::ash::MockArcTermsOfServiceScreenView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ARC_TERMS_OF_SERVICE_SCREEN_H_

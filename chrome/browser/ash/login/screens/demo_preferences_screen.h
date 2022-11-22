@@ -51,16 +51,4 @@ class DemoPreferencesScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::DemoPreferencesScreen;
-}
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::DemoPreferencesScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_DEMO_PREFERENCES_SCREEN_H_

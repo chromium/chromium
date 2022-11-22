@@ -47,16 +47,18 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 
-using ArcBackupAndRestoreConsent =
-    sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
-using ArcGoogleLocationServiceConsent =
-    sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
-using ArcPlayTermsOfServiceConsent =
-    sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
-using sync_pb::UserConsentTypes;
-
 namespace ash {
+
 namespace {
+
+using ArcBackupAndRestoreConsent =
+    ::sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
+using ArcGoogleLocationServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
+using ArcPlayTermsOfServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
+using ::sync_pb::UserConsentTypes;
+
 constexpr const char kBackDemoButtonClicked[] = "back";
 constexpr const char kAcceptButtonClicked[] = "tos-accept";
 
@@ -269,9 +271,8 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // If the user is not the owner and the owner disabled metrics, the user
   // is not allowed to update the usage opt-in.
   if (view_) {
-    view_->SetUsageOptinHidden(
-        !is_owner_.value_or(false) &&
-        !ash::StatsReportingController::Get()->IsEnabled());
+    view_->SetUsageOptinHidden(!is_owner_.value_or(false) &&
+                               !StatsReportingController::Get()->IsEnabled());
   }
 
   const bool is_demo = arc::IsArcDemoModeSetupFlow();
@@ -303,7 +304,7 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
       is_enabled = *metrics_service->GetCurrentUserMetricsConsent();
     } else {
       DCHECK(g_browser_process->local_state());
-      is_enabled = ash::StatsReportingController::Get()->IsEnabled();
+      is_enabled = StatsReportingController::Get()->IsEnabled();
     }
 
     UpdateMetricsMode(is_enabled, is_managed);
@@ -374,7 +375,7 @@ void ConsolidatedConsentScreen::RecordConsents(
 void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
   DCHECK(is_owner_.has_value());
   if (is_owner_.value()) {
-    ash::StatsReportingController::Get()->SetEnabled(
+    StatsReportingController::Get()->SetEnabled(
         ProfileManager::GetActiveUserProfile(), is_enabled);
     return;
   }

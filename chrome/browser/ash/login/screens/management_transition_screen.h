@@ -66,10 +66,4 @@ class ManagementTransitionScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ManagementTransitionScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_

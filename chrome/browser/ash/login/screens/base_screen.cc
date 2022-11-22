@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 
 namespace ash {
 

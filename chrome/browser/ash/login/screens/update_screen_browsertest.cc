@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   // If the network is a captive portal network, error message is shown with a
   // delay.
   EXPECT_TRUE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
-  EXPECT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
+  EXPECT_EQ(OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
 
   // If network goes back online, the error message timer should be canceled.
   network_portal_detector_.SimulateDefaultNetworkState(
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestAPReselection) {
       "fake_path", base::DoNothing(), base::DoNothing(),
       false /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
 
-  ASSERT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
+  ASSERT_EQ(OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
   if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed()) {
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
     update_screen_->GetShowTimerForTesting()->FireNow();

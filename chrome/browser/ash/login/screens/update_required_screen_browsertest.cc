@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   // process should start.
   network_state_test_helper_->SetServiceProperty(
       wifi_path, shill::kStateProperty, base::Value(shill::kStateOnline));
-  EXPECT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
+  EXPECT_EQ(OOBE_SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
 
   SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
   SetUpdateEngineStatus(update_engine::Operation::UPDATE_AVAILABLE);

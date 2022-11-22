@@ -34,6 +34,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL

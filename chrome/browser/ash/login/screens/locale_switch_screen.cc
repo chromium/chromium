@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

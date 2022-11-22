@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/child_accounts/family_features.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
@@ -19,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kUserActionNext[] = "next";

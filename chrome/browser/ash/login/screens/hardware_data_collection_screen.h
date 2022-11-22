@@ -54,10 +54,4 @@ class HWDataCollectionScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::HWDataCollectionScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_HARDWARE_DATA_COLLECTION_SCREEN_H_

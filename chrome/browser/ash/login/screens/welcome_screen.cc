@@ -47,6 +47,7 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace ash {
+
 namespace {
 
 constexpr const char kRemoraRequisitionIdentifier[] = "remora";
@@ -305,7 +306,7 @@ void WelcomeScreen::SetTimezone(const std::string& timezone_id) {
     return;
 
   timezone_ = timezone_id;
-  chromeos::system::SetSystemAndSigninScreenTimezone(timezone_id);
+  system::SetSystemAndSigninScreenTimezone(timezone_id);
 }
 
 std::string WelcomeScreen::GetTimezone() const {
@@ -329,8 +330,8 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
     // CfM devices default to static timezone.
     g_browser_process->local_state()->SetInteger(
         ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
-        static_cast<int>(chromeos::system::TimeZoneResolverManager::
-                             TimeZoneResolveMethod::DISABLED));
+        static_cast<int>(
+            system::TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED));
   }
 
   // Exit Chrome to force the restart as soon as a new requisition is set.
@@ -409,7 +410,7 @@ void WelcomeScreen::HideImpl() {
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
-    DCHECK(ash::features::IsOobeQuickStartEnabled());
+    DCHECK(features::IsOobeQuickStartEnabled());
     Exit(Result::QUICK_START);
     return;
   }
@@ -693,9 +694,9 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 }
 
 void WelcomeScreen::OnAccessibilityStatusChanged(
-    const ash::AccessibilityStatusEventDetails& details) {
+    const AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
-      ash::AccessibilityNotificationType::kManagerShutdown) {
+      AccessibilityNotificationType::kManagerShutdown) {
     accessibility_subscription_ = {};
   } else {
     UpdateA11yState();

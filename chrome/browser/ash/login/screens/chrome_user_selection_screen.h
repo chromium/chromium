@@ -78,10 +78,4 @@ class ChromeUserSelectionScreen
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ChromeUserSelectionScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_CHROME_USER_SELECTION_SCREEN_H_

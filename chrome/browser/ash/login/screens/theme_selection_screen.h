@@ -58,12 +58,7 @@ class ThemeSelectionScreen : public BaseScreen {
   base::WeakPtr<ThemeSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
-}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ThemeSelectionScreen;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_THEME_SELECTION_SCREEN_H_

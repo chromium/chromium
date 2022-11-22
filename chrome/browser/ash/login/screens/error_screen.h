@@ -12,16 +12,15 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chromeos/ash/components/login/auth/login_performer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
 namespace ash {
 
+class CaptivePortalWindowProxy;
 class ErrorScreenView;
 
 // Controller for the error screen.
@@ -56,8 +55,7 @@ class ErrorScreen : public BaseScreen,
   NetworkError::ErrorState GetErrorState() const;
 
   // Returns id of the screen behind error screen ("caller" screen).
-  // Returns ash::OOBE_SCREEN_UNKNOWN if error screen isn't the current
-  // screen.
+  // Returns `OOBE_SCREEN_UNKNOWN` if error screen isn't the current screen.
   OobeScreenId GetParentScreen() const;
 
   // Called when we're asked to hide captive portal dialog.
@@ -173,7 +171,7 @@ class ErrorScreen : public BaseScreen,
   NetworkError::UIState ui_state_ = NetworkError::UI_STATE_UNKNOWN;
   NetworkError::ErrorState error_state_ = NetworkError::ERROR_STATE_UNKNOWN;
 
-  OobeScreenId parent_screen_ = ash::OOBE_SCREEN_UNKNOWN;
+  OobeScreenId parent_screen_ = OOBE_SCREEN_UNKNOWN;
 
   // Optional callback that is called when NetworkError screen is hidden.
   base::OnceClosure on_hide_callback_;
@@ -188,11 +186,5 @@ class ErrorScreen : public BaseScreen,
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ErrorScreen;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ERROR_SCREEN_H_

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

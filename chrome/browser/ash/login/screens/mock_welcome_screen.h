@@ -55,11 +55,4 @@ class MockWelcomeView : public WelcomeView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockWelcomeScreen;
-using ::ash::MockWelcomeView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_WELCOME_SCREEN_H_

@@ -19,10 +19,4 @@ enum class EncryptionMigrationMode {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::EncryptionMigrationMode;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ENCRYPTION_MIGRATION_MODE_H_

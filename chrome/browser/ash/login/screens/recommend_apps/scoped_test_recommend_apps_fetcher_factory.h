@@ -23,10 +23,4 @@ class ScopedTestRecommendAppsFetcherFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ScopedTestRecommendAppsFetcherFactory;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_SCOPED_TEST_RECOMMEND_APPS_FETCHER_FACTORY_H_

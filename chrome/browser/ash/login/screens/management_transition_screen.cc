@@ -21,15 +21,12 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
 
+namespace ash {
+
 namespace {
 
 constexpr base::TimeDelta kWaitingTimeout = base::Minutes(2);
 
-}  // namespace
-
-namespace ash {
-
-namespace {
 // Management transition screen step names.
 constexpr const char kUserActionfinishManagementTransition[] =
     "finish-management-transition";
@@ -68,9 +65,9 @@ void ManagementTransitionScreen::ShowImpl() {
   // Disable system tray, shutdown button and prevent login as guest when
   // management transition screen is shown.
   SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(false);
-  ash::LoginScreen::Get()->EnableShutdownButton(false);
-  ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
+  LoginScreen::Get()->EnableShutdownButton(false);
+  LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  LoginScreen::Get()->SetIsFirstSigninStep(false);
 
   arc::ArcManagementTransition arc_management_transition =
       arc::GetManagementTransition(profile);

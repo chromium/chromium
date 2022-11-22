@@ -70,10 +70,4 @@ class PackagedLicenseScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::PackagedLicenseScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PACKAGED_LICENSE_SCREEN_H_

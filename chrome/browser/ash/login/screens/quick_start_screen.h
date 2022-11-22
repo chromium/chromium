@@ -52,16 +52,10 @@ class QuickStartScreen
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;
 
-  base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::QuickStartScreen;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_QUICK_START_SCREEN_H_

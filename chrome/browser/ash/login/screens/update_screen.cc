@@ -35,6 +35,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 constexpr const char kUserActionAcceptUpdateOverCellular[] =
@@ -90,7 +91,7 @@ void RecordUpdateStages(const base::TimeDelta check_time,
   RecordFinalizeTime(finalize_time);
 }
 
-}  // anonymous namespace
+}  // namespace
 
 // static
 std::string UpdateScreen::GetResultString(Result result) {
@@ -129,7 +130,7 @@ bool UpdateScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  if (ash::IsRollbackFlow(context)) {
+  if (IsRollbackFlow(context)) {
     LOG(WARNING)
         << "Skip OOBE Update because enterprise rollback just happened.";
     exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
@@ -522,7 +523,7 @@ void UpdateScreen::OnAccessibilityStatusChanged(
 }
 
 void UpdateScreen::OnErrorScreenHidden() {
-  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   Show(context());
 }
 
