@@ -69,6 +69,11 @@ void CartHandler::RestoreRemovedCart(const GURL& cart_url,
 void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
                                       bool success,
                                       std::vector<CartDB::KeyAndValue> res) {
+  DCHECK(success);
+  if (!success) {
+    std::move(callback).Run({});
+    return;
+  }
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
   bool show_discount = cart_service_->IsCartDiscountEnabled();
   for (CartDB::KeyAndValue proto_pair : res) {
