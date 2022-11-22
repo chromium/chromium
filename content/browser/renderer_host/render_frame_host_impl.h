@@ -45,7 +45,6 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
@@ -237,6 +236,7 @@ class FileSystemManagerImpl;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
+class PrerenderCancellationReason;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
@@ -1996,11 +1996,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // frame is in, which destroys this frame.
   // Returns true if a prerender was canceled. Does nothing and returns false if
   // `this` is not prerendered.
-  bool CancelPrerendering(PrerenderFinalStatus status);
+  bool CancelPrerendering(const PrerenderCancellationReason& reason);
   // Called by MojoBinderPolicyApplier when it receives a kCancel interface.
   void CancelPrerenderingByMojoBinderPolicy(const std::string& interface_name);
 
-  // Prerender2:
   // Called when the Activate IPC is sent to the renderer. Puts the
   // MojoPolicyBinderApplier in "loose" mode via PrepareToGrantAll() until
   // DidActivateForPrerending() is called.

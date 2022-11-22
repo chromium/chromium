@@ -11,10 +11,9 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -48,6 +47,39 @@ enum class PrerenderCrossOriginRedirectionMismatch {
   kMaxValue = kSchemeHostPortMismatch
 };
 
+// Assembles PrerenderHostFinalStatus with a detailed explanation if applicable.
+// Some FinalStatus enums cover multiple sub cases. To explain them in detail,
+// some explanations can be attached to the status.
+class PrerenderCancellationReason {
+ public:
+  using DetailedReasonVariant =
+      absl::variant<absl::monostate, uint64_t, std::string>;
+
+  static PrerenderCancellationReason BuildForDisallowActivationState(
+      uint64_t disallow_activation_reason);
+
+  static PrerenderCancellationReason BuildForMojoBinderPolicy(
+      const std::string& interface_name);
+
+  explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
+  ~PrerenderCancellationReason();
+
+  PrerenderCancellationReason(PrerenderCancellationReason&& reason);
+
+  void ReportMetrics(PrerenderTriggerType trigger_type,
+                     const std::string& embedder_histogram_suffix) const;
+
+  PrerenderFinalStatus final_status() const { return final_status_; }
+
+ private:
+  PrerenderCancellationReason(PrerenderFinalStatus final_status,
+                              DetailedReasonVariant explanation);
+
+  const PrerenderFinalStatus final_status_;
+
+  const DetailedReasonVariant explanation_;
+};
+
 // Used by PrerenderNavigationThrottle. This is a breakdown enum for
 // PrerenderCrossOriginRedirectionMismatch.kSchemePortMismatch.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -68,14 +100,6 @@ enum class PrerenderCrossOriginRedirectionDomain {
   kCrossDomain = 2,
   kMaxValue = kCrossDomain
 };
-
-void RecordPrerenderCancelledInterface(
-    const std::string& interface_name,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
-
-void RecordPrerenderReasonForInactivePageRestriction(uint16_t reason,
-                                                     RenderFrameHostImpl& rfh);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 

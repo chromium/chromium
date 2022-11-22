@@ -77,6 +77,7 @@
 #include "content/browser/portal/portal.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -1833,7 +1834,8 @@ void WebContentsImpl::SetUserAgentOverride(
       // page may not allow another navigation including a reload, depending
       // on conditions.
       frame_tree->GetMainFrame()->CancelPrerendering(
-          PrerenderFinalStatus::kUaChangeRequiresReload);
+          PrerenderCancellationReason(
+              PrerenderFinalStatus::kUaChangeRequiresReload));
     } else {
       frame_tree->controller().Reload(ReloadType::BYPASSING_CACHE, true);
     }
@@ -9533,7 +9535,7 @@ bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
   // the prerender root.
   if (frame_tree_node->GetParentOrOuterDocumentOrEmbedder()) {
     return frame_tree_node->GetParentOrOuterDocumentOrEmbedder()
-        ->CancelPrerendering(final_status);
+        ->CancelPrerendering(PrerenderCancellationReason(final_status));
   }
   return GetPrerenderHostRegistry()->CancelHost(
       frame_tree_node->frame_tree_node_id(), final_status);

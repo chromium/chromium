@@ -78,8 +78,6 @@ void ReportHeaderMismatch(const std::string& key,
       HeaderMismatchHasher(base::ToLowerASCII(key), mismatch_type));
 }
 
-}  // namespace
-
 // Called by MojoBinderPolicyApplier. This function records the Mojo interface
 // that causes MojoBinderPolicyApplier to cancel prerendering.
 void RecordPrerenderCancelledInterface(
@@ -105,20 +103,62 @@ void RecordPrerenderCancelledInterface(
   }
 }
 
-void RecordPrerenderReasonForInactivePageRestriction(uint16_t reason,
-                                                     RenderFrameHostImpl& rfh) {
-  FrameTreeNode* outermost_frame =
-      rfh.GetOutermostMainFrameOrEmbedder()->frame_tree_node();
-  PrerenderHost* prerender_host =
-      rfh.delegate()->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          outermost_frame->frame_tree_node_id());
-  if (prerender_host) {
-    base::UmaHistogramSparse(
-        GenerateHistogramName("Prerender.CanceledForInactivePageRestriction."
-                              "DisallowActivationReason",
-                              prerender_host->trigger_type(),
-                              prerender_host->embedder_histogram_suffix()),
-        reason);
+}  // namespace
+
+// static
+PrerenderCancellationReason
+PrerenderCancellationReason::BuildForDisallowActivationState(
+    uint64_t disallow_activation_reason) {
+  return PrerenderCancellationReason(
+      PrerenderFinalStatus::kInactivePageRestriction,
+      disallow_activation_reason);
+}
+
+// static
+PrerenderCancellationReason
+PrerenderCancellationReason::BuildForMojoBinderPolicy(
+    const std::string& interface_name) {
+  return PrerenderCancellationReason(PrerenderFinalStatus::kMojoBinderPolicy,
+                                     interface_name);
+}
+
+PrerenderCancellationReason::PrerenderCancellationReason(
+    PrerenderFinalStatus final_status)
+    : PrerenderCancellationReason(final_status, DetailedReasonVariant()) {}
+
+PrerenderCancellationReason::PrerenderCancellationReason(
+    PrerenderCancellationReason&& reason) = default;
+
+PrerenderCancellationReason::~PrerenderCancellationReason() = default;
+
+PrerenderCancellationReason::PrerenderCancellationReason(
+    PrerenderFinalStatus final_status,
+    DetailedReasonVariant explanation)
+    : final_status_(final_status), explanation_(std::move(explanation)) {}
+
+void PrerenderCancellationReason::ReportMetrics(
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) const {
+  switch (final_status_) {
+    case PrerenderFinalStatus::kInactivePageRestriction:
+      DCHECK(absl::holds_alternative<uint64_t>(explanation_));
+      base::UmaHistogramSparse(
+          GenerateHistogramName("Prerender.CanceledForInactivePageRestriction."
+                                "DisallowActivationReason",
+                                trigger_type, embedder_histogram_suffix),
+
+          absl::get<uint64_t>(explanation_));
+      break;
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+      DCHECK(absl::holds_alternative<std::string>(explanation_));
+      RecordPrerenderCancelledInterface(absl::get<std::string>(explanation_),
+                                        trigger_type,
+                                        embedder_histogram_suffix);
+      break;
+    default:
+      DCHECK(absl::holds_alternative<absl::monostate>(explanation_));
+      // Other types need not to report.
+      break;
   }
 }
 

@@ -30,6 +30,7 @@
 namespace content {
 
 class RenderFrameHostImpl;
+class PrerenderCancellationReason;
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created per
@@ -97,6 +98,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // for self destruction.
   // Returns true if a cancelation has occurred.
   bool CancelHost(int frame_tree_node_id, PrerenderFinalStatus final_status);
+  // Same as CancelHost, but can pass a detailed reason for recording if given.
+  bool CancelHost(int frame_tree_node_id,
+                  const PrerenderCancellationReason& reason);
 
   // Cancels the existing hosts specified in the vector with the same final
   // status.

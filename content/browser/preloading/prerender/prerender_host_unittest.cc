@@ -497,13 +497,13 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
 
-  // Registry keeps alive through this test, so it is safe to use
-  // base::Unretained.
+  // Registry keeps alive through this test, so it is safe to capture the
+  // reference to `registry`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&PrerenderHostRegistry::CancelHost),
-                     base::Unretained(registry), prerender_frame_tree_node_id,
-                     PrerenderFinalStatus::kTriggerDestroyed));
+      FROM_HERE, base::BindOnce(base::BindLambdaForTesting([&]() {
+        registry->CancelHost(prerender_frame_tree_node_id,
+                             PrerenderFinalStatus::kTriggerDestroyed);
+      })));
 
   // For some reasons triggers want to set the failure reason by themselves,
   // this would happen together with cancelling prerender.

@@ -2995,9 +2995,10 @@ void RenderFrameHostImpl::RenderProcessGone(
                   kRendererProcessKilled);
   }
 
-  CancelPrerendering(info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
-                         ? PrerenderFinalStatus::kRendererProcessCrashed
-                         : PrerenderFinalStatus::kRendererProcessKilled);
+  CancelPrerendering(PrerenderCancellationReason(
+      info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+          ? PrerenderFinalStatus::kRendererProcessCrashed
+          : PrerenderFinalStatus::kRendererProcessKilled));
 
   if (owned_render_widget_host_)
     owned_render_widget_host_->RendererExited();
@@ -4237,7 +4238,8 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
   // a case as the embedders are unaware of prerender page yet and shouldn't
   // show any user-visible changes from an inactive RenderFrameHost.
   if (!GetParentOrOuterDocument() &&
-      CancelPrerendering(PrerenderFinalStatus::kDidFailLoad)) {
+      CancelPrerendering(
+          PrerenderCancellationReason(PrerenderFinalStatus::kDidFailLoad))) {
     return;
   }
 
@@ -5336,7 +5338,8 @@ void RenderFrameHostImpl::DownloadURL(
   // TODO(crbug.com/1205359): We should defer the download until the
   // prerendering page is activated, and it will comply with the prerendering
   // spec.
-  if (CancelPrerendering(PrerenderFinalStatus::kDownload)) {
+  if (CancelPrerendering(
+          PrerenderCancellationReason(PrerenderFinalStatus::kDownload))) {
     return;
   }
 
@@ -6242,8 +6245,8 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     }
       return true;
     case LifecycleStateImpl::kPrerendering:
-      RecordPrerenderReasonForInactivePageRestriction(reason, *this);
-      CancelPrerendering(PrerenderFinalStatus::kInactivePageRestriction);
+      CancelPrerendering(
+          PrerenderCancellationReason::BuildForDisallowActivationState(reason));
       return true;
     case LifecycleStateImpl::kSpeculative:
       // We do not expect speculative or pending commit RenderFrameHosts to
@@ -10170,7 +10173,8 @@ void RenderFrameHostImpl::CreateAudioOutputStreamFactory(
         base::BindOnce(
             base::IgnoreResult(&RenderFrameHostImpl::CancelPrerendering),
             base::Unretained(this),
-            PrerenderFinalStatus::kAudioOutputDeviceRequested));
+            PrerenderCancellationReason(
+                PrerenderFinalStatus::kAudioOutputDeviceRequested)));
   } else {
     audio_service_audio_output_stream_factory_.emplace(
         this, audio_system, media_stream_manager, std::move(receiver),
@@ -10221,7 +10225,8 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
       .WithArgs(std::move(receiver));
 }
 
-bool RenderFrameHostImpl::CancelPrerendering(PrerenderFinalStatus status) {
+bool RenderFrameHostImpl::CancelPrerendering(
+    const PrerenderCancellationReason& reason) {
   if (!blink::features::IsPrerender2Enabled())
     return false;
   // A prerendered page is identified by its root FrameTreeNode id, so if this
@@ -10237,11 +10242,8 @@ bool RenderFrameHostImpl::CancelPrerendering(PrerenderFinalStatus status) {
   if (outermost_frame->GetFrameType() != FrameType::kPrerenderMainFrame)
     return false;
 
-  // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
-  // method when MojoInterface control, or IsInactiveAndDisallowActivation are
-  // called.
   return delegate_->GetPrerenderHostRegistry()->CancelHost(
-      outermost_frame->frame_tree_node_id(), status);
+      outermost_frame->frame_tree_node_id(), reason);
 }
 
 void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
@@ -10249,6 +10251,8 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   // A prerendered page is identified by its root FrameTreeNode id, so if this
   // RenderFrameHost is in any way embedded, we need to iterate up to the
   // prerender root.
+  // TODO(https://crbug.com/1363996): Move the devtools logic to
+  // PrerenderHostRegistry, as it knows the detailed cancellation reason now.
   FrameTreeNode* outermost_frame =
       GetOutermostMainFrameOrEmbedder()->frame_tree_node();
   PrerenderHost* prerender_host =
@@ -10257,11 +10261,8 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   if (!prerender_host)
     return;
 
-  RecordPrerenderCancelledInterface(
-      interface_name, prerender_host->trigger_type(),
-      prerender_host->embedder_histogram_suffix());
-
-  bool canceled = CancelPrerendering(PrerenderFinalStatus::kMojoBinderPolicy);
+  bool canceled = CancelPrerendering(
+      PrerenderCancellationReason::BuildForMojoBinderPolicy(interface_name));
   // This function is called from MojoBinderPolicyApplier, which should only be
   // active during prerendering. It would be an error to call this while not
   // prerendering, as it could mean an interface request is never resolved for
