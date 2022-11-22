@@ -55,7 +55,7 @@ void ChromeClassTester::CheckTag(TagDecl* tag) {
     return;
 
   if (CXXRecordDecl* record = dyn_cast<CXXRecordDecl>(tag)) {
-    // We sadly need to maintain a blacklist of types that violate these
+    // We sadly need to maintain a blocklist of types that violate these
     // rules, but do so for good reason or due to limitations of this
     // checker (i.e., we don't handle extern templates very well).
     std::string base_name = record->getNameAsString();

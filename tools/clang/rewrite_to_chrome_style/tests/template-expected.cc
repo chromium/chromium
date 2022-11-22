@@ -327,7 +327,7 @@ class Class {
 
 }  // namespace cxx_dependent_scope_member_expr_testing
 
-namespace blacklisting_of_renaming_of_begin_method {
+namespace blocklisting_of_renaming_of_begin_method {
 
 template <typename T>
 class IntrusiveHeap {
@@ -336,7 +336,7 @@ class IntrusiveHeap {
   const T* begin() const { return nullptr; }
 };
 
-}  // namespace blacklisting_of_renaming_of_begin_method
+}  // namespace blocklisting_of_renaming_of_begin_method
 
 namespace specializations {
 

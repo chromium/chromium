@@ -40,7 +40,7 @@ void MightBeCollectedVisitor::VisitCollection(Collection* edge) {
 }  // namespace
 
 CheckFinalizerVisitor::CheckFinalizerVisitor(RecordCache* cache)
-    : blacklist_context_(false),
+    : blocklist_context_(false),
       cache_(cache) {
 }
 
@@ -50,7 +50,7 @@ CheckFinalizerVisitor::Errors& CheckFinalizerVisitor::finalized_fields() {
 
 bool CheckFinalizerVisitor::WalkUpFromCXXOperatorCallExpr(
     CXXOperatorCallExpr* expr) {
-  // Only continue the walk-up if the operator is a blacklisted one.
+  // Only continue the walk-up if the operator is a blocklisted one.
   switch (expr->getOperator()) {
     case OO_Arrow:
     case OO_Subscript:
@@ -62,12 +62,12 @@ bool CheckFinalizerVisitor::WalkUpFromCXXOperatorCallExpr(
 }
 
 bool CheckFinalizerVisitor::WalkUpFromCallExpr(CallExpr* expr) {
-  // We consider all non-operator calls to be blacklisted contexts.
-  bool prev_blacklist_context = blacklist_context_;
-  blacklist_context_ = true;
+  // We consider all non-operator calls to be blocklisted contexts.
+  bool prev_blocklist_context = blocklist_context_;
+  blocklist_context_ = true;
   for (size_t i = 0; i < expr->getNumArgs(); ++i)
     this->TraverseStmt(expr->getArg(i));
-  blacklist_context_ = prev_blacklist_context;
+  blocklist_context_ = prev_blocklist_context;
   return true;
 }
 
@@ -87,7 +87,7 @@ bool CheckFinalizerVisitor::VisitMemberExpr(MemberExpr* member) {
   if (seen_members_.find(member) != seen_members_.end())
     return true;
 
-  if (blacklist_context_ &&
+  if (blocklist_context_ &&
       MightBeCollected(&it->second)) {
     finalized_fields_.push_back(
         Error(member, &it->second));

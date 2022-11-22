@@ -1,19 +1,19 @@
-ipc.cpp:83:26: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t'.
+ipc.cpp:83:26: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t'.
     WriteParam(pickle, p.size); // ERROR
                          ^
-ipc.cpp:107:24: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:107:24: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
     WriteParam(pickle, static_cast<long>(container.value)); // ERROR
                        ^
-ipc.cpp:135:29: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t'.
+ipc.cpp:135:29: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t'.
     IPC::WriteParam(pickle, size_t(0)); // ERROR
                             ^
-ipc.cpp:145:29: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'time_t'.
+ipc.cpp:145:29: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'time_t'.
     IPC::WriteParam(pickle, time_t(0)); // ERROR
                             ^
-ipc.cpp:156:27: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:156:27: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
   IPC::WriteParam(pickle, long(0)); // ERROR
                           ^
-ipc.cpp:162:29: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'clock_t'.
+ipc.cpp:162:29: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'clock_t'.
     IPC::WriteParam(pickle, clock_t(0)); // ERROR
                             ^
 ipc.cpp:194:1: error: [chromium-ipc] IPC tuple references banned type 'size_t'.
@@ -65,103 +65,103 @@ ipc.cpp:190:3: note: expanded from macro 'IPC_TEST_MESSAGE'
 ipc.cpp:186:5: note: expanded from macro 'IPC_MESSAGE_DECL'
     using InTuple = in_tuple; \
     ^
-ipc.cpp:216:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:216:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
   CALL_WRITEPARAM(long) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:217:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long'.
+ipc.cpp:217:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'unsigned long'.
   CALL_WRITEPARAM(unsigned long) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:218:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'intmax_t'.
+ipc.cpp:218:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'intmax_t'.
   CALL_WRITEPARAM(intmax_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:219:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'uintmax_t'.
+ipc.cpp:219:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'uintmax_t'.
   CALL_WRITEPARAM(uintmax_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:220:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'intptr_t'.
+ipc.cpp:220:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'intptr_t'.
   CALL_WRITEPARAM(intptr_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:221:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'uintptr_t'.
+ipc.cpp:221:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'uintptr_t'.
   CALL_WRITEPARAM(uintptr_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:222:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'wint_t'.
+ipc.cpp:222:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'wint_t'.
   CALL_WRITEPARAM(wint_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:223:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t'.
+ipc.cpp:223:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t'.
   CALL_WRITEPARAM(size_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:224:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'rsize_t'.
+ipc.cpp:224:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'rsize_t'.
   CALL_WRITEPARAM(rsize_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:225:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'ssize_t'.
+ipc.cpp:225:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'ssize_t'.
   CALL_WRITEPARAM(ssize_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:226:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'ptrdiff_t'.
+ipc.cpp:226:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'ptrdiff_t'.
   CALL_WRITEPARAM(ptrdiff_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:227:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'dev_t'.
+ipc.cpp:227:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'dev_t'.
   CALL_WRITEPARAM(dev_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:228:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'off_t'.
+ipc.cpp:228:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'off_t'.
   CALL_WRITEPARAM(off_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:229:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'clock_t'.
+ipc.cpp:229:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'clock_t'.
   CALL_WRITEPARAM(clock_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:230:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'time_t'.
+ipc.cpp:230:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'time_t'.
   CALL_WRITEPARAM(time_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:231:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'suseconds_t'.
+ipc.cpp:231:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'suseconds_t'.
   CALL_WRITEPARAM(suseconds_t) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:235:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'my_size'.
+ipc.cpp:235:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t' via 'my_size'.
   CALL_WRITEPARAM(my_size) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
@@ -170,7 +170,7 @@ ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
 ipc.cpp:234:18: note: see here
   typedef size_t my_size;
                  ^
-ipc.cpp:249:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'my_size'.
+ipc.cpp:249:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t' via 'my_size'.
     IPC::WriteParam(nullptr, p); // ERROR
                              ^
 ipc.cpp:246:32: note: see here
@@ -179,43 +179,43 @@ ipc.cpp:246:32: note: see here
 ipc.cpp:245:20: note: see here
     typedef size_t my_size_base;
                    ^
-ipc.cpp:253:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long' via 'std::vector<long>'.
+ipc.cpp:253:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long' via 'std::vector<long>'.
   CALL_WRITEPARAM(std::vector<long>) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:254:3: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'std::vector<size_t>'.
+ipc.cpp:254:3: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t' via 'std::vector<size_t>'.
   CALL_WRITEPARAM(std::vector<size_t>) // ERROR
   ^
 ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
       IPC::WriteParam(nullptr, p); \
                                ^
-ipc.cpp:324:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:324:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
   IPC::WriteParam(nullptr, p.get<long>()); // ERROR
                              ^
-ipc.cpp:325:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:325:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
   IPC::WriteParam(nullptr, p.get_long()); // ERROR
                              ^
-ipc.cpp:326:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'long'.
+ipc.cpp:326:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'long'.
   IPC::WriteParam(nullptr, p.long_data); // ERROR
                              ^
-ipc.cpp:331:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t'.
+ipc.cpp:331:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t'.
   IPC::WriteParam(nullptr, p.get_size()); // ERROR
                              ^
-ipc.cpp:332:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t'.
+ipc.cpp:332:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t'.
   IPC::WriteParam(nullptr, p.size_data); // ERROR
                              ^
-ipc.cpp:336:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long'.
+ipc.cpp:336:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'unsigned long'.
   IPC::WriteParam(nullptr, p.get<uint64_t>()); // ERROR
                              ^
-ipc.cpp:341:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long' via 'struct std::vector<unsigned long>'.
+ipc.cpp:341:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'unsigned long' via 'struct std::vector<unsigned long>'.
   IPC::WriteParam(nullptr, p.get<std::vector<uint64_t>>()); // ERROR
                              ^
-ipc.cpp:348:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'std::vector<size_t>'.
+ipc.cpp:348:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t' via 'std::vector<size_t>'.
   IPC::WriteParam(nullptr, p.get_sizes()); // ERROR
                              ^
-ipc.cpp:349:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'std::vector<size_t>'.
+ipc.cpp:349:30: error: [chromium-ipc] IPC::WriteParam() is called on blocklisted type 'size_t' via 'std::vector<size_t>'.
   IPC::WriteParam(nullptr, p.sizes_data); // ERROR
                              ^
 40 errors generated.

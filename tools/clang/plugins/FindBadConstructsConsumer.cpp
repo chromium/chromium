@@ -671,7 +671,7 @@ void FindBadConstructsConsumer::CheckVirtualBodies(
         SourceLocation loc = cs->getLBracLoc();
         // CR_BEGIN_MSG_MAP_EX and BEGIN_SAFE_MSG_MAP_EX try to be compatible
         // to BEGIN_MSG_MAP(_EX).  So even though they are in chrome code,
-        // we can't easily fix them, so explicitly whitelist them here.
+        // we can't easily fix them, so explicitly allowlist them here.
         bool emit = true;
         if (loc.isMacroID()) {
           SourceManager& manager = instance().getSourceManager();

@@ -11,7 +11,7 @@ namespace chrome_checker {
 namespace {
 
 const char kWriteParamBadType[] =
-    "[chromium-ipc] IPC::WriteParam() is called on blacklisted type '%0'%1.";
+    "[chromium-ipc] IPC::WriteParam() is called on blocklisted type '%0'%1.";
 
 const char kTupleBadType[] =
     "[chromium-ipc] IPC tuple references banned type '%0'%1.";
@@ -36,7 +36,7 @@ CheckIPCVisitor::CheckIPCVisitor(CompilerInstance& compiler)
   note_see_here_ = diagnostics.getCustomDiagID(
       DiagnosticsEngine::Note, kNoteSeeHere);
 
-  blacklisted_typedefs_ = llvm::StringSet<>({
+  blocklisted_typedefs_ = llvm::StringSet<>({
       "intmax_t",
       "uintmax_t",
       "intptr_t",
@@ -172,11 +172,11 @@ bool CheckIPCVisitor::IsBlacklistedType(QualType type) const {
 }
 
 bool CheckIPCVisitor::IsBlacklistedTypedef(const TypedefNameDecl* tdef) const {
-  return blacklisted_typedefs_.find(tdef->getName()) !=
-      blacklisted_typedefs_.end();
+  return blocklisted_typedefs_.find(tdef->getName()) !=
+      blocklisted_typedefs_.end();
 }
 
-// Checks that integer type is allowed (not blacklisted).
+// Checks that integer type is allowed (not blocklisted).
 bool CheckIPCVisitor::CheckIntegerType(QualType type,
                                        CheckDetails* details) const {
   bool seen_typedef = false;
@@ -203,7 +203,7 @@ bool CheckIPCVisitor::CheckIntegerType(QualType type,
   return seen_typedef || !IsBlacklistedType(type);
 }
 
-// Checks that |type| is allowed (not blacklisted), recursively visiting
+// Checks that |type| is allowed (not blocklisted), recursively visiting
 // template specializations.
 bool CheckIPCVisitor::CheckType(QualType type, CheckDetails* details) const {
   if (type->isReferenceType()) {

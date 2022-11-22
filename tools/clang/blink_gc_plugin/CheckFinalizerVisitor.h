@@ -44,7 +44,7 @@ class CheckFinalizerVisitor
  private:
   bool MightBeCollected(FieldPoint* point);
 
-  bool blacklist_context_;
+  bool blocklist_context_;
   Errors finalized_fields_;
   std::set<clang::MemberExpr*> seen_members_;
   RecordCache* cache_;

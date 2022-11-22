@@ -9,15 +9,15 @@
 // typedefs, because their definitions rely on the preprocessor. For
 // example uintptr_t is either unsigned int or unsigned long.
 //
-// So we're not trying to be accurate, and just blacklisting some types
+// So we're not trying to be accurate, and just blocklisting some types
 // that are known to be unstable:
 // 1. Types: long / unsigned long (but not typedefs to)
 // 2. Typedefs: intmax_t, uintmax_t, intptr_t, uintptr_t, wint_t,
 //    size_t, rsize_t, ssize_t, ptrdiff_t, dev_t, off_t, clock_t,
 //    time_t, suseconds_t (including typedefs to)
 //
-// Additionally, templates referencing blacklisted types (e.g. vector<long>)
-// are also blacklisted.
+// Additionally, templates referencing blocklisted types (e.g. vector<long>)
+// are also blocklisted.
 //
 // Blacklisted types are checked in:
 // 1. IPC::WriteParam() calls
@@ -91,7 +91,7 @@ class CheckIPCVisitor {
 
   std::vector<const clang::Decl*> decl_stack_;
 
-  llvm::StringSet<> blacklisted_typedefs_;
+  llvm::StringSet<> blocklisted_typedefs_;
 };
 
 }  // namespace chrome_checker

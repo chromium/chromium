@@ -235,10 +235,10 @@ class PaintLayerStackingNode {
 
 }  // namespace get_prefix_vs_inheritance
 
-namespace blacklisting_of_method_and_function_names {
+namespace blocklisting_of_method_and_function_names {
 
 class Foo {
-  // Expecting |swap| method to be renamed to |Swap| - we blacklist renaming of
+  // Expecting |swap| method to be renamed to |Swap| - we blocklist renaming of
   // |swap| *function*, because it needs to have the same casing as std::swap,
   // so that ADL can kick-in and pull it from another namespace depending on the
   // bargument.  We have a choice to rename or not rename |swap| *methods* - we
@@ -266,7 +266,7 @@ class Foo {
 void Begin(int x) {}
 void swap(Foo& x, Foo& y) {}
 
-}  // blacklisting_of_method_and_function_names
+}  // blocklisting_of_method_and_function_names
 
 }  // namespace blink
 
