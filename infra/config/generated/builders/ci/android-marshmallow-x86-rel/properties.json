@@ -28,8 +28,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "android",
-                  "enable_wpr_tests",
-                  "enable_reclient"
+                  "enable_wpr_tests"
                 ],
                 "config": "chromium"
               }

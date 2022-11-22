@@ -224,7 +224,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "fuchsia_x64",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(

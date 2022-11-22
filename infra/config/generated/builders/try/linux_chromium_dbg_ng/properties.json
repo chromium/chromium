@@ -22,9 +22,6 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "enable_reclient"
-                ],
                 "config": "chromium"
               }
             }
@@ -48,9 +45,6 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "enable_reclient"
-                ],
                 "config": "chromium"
               },
               "parent": {

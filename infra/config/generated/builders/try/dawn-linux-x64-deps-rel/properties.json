@@ -23,9 +23,6 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "enable_reclient"
-                ],
                 "config": "chromium"
               },
               "run_tests_serially": true
