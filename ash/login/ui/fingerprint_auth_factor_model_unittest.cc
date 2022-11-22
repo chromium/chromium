@@ -63,6 +63,11 @@ class FingerprintAuthFactorModelTest : public AshTestBase {
                              base::Unretained(this)));
   }
 
+  void TearDown() override {
+    FingerprintAuthFactorModel::Factory::SetFactoryForTesting(nullptr);
+    AshTestBase::TearDown();
+  }
+
   void OnStateChanged() { on_state_changed_called_ = true; }
 
   std::unique_ptr<FakeFingerprintAuthFactorModelFactory>
