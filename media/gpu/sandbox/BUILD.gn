@@ -30,4 +30,9 @@ source_set("sandbox") {
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]
   }
+  if (current_cpu != "s390x" && current_cpu != "ppc64" && is_linux &&
+      !is_castos) {
+    # For DRI_DRIVER_DIR.
+    configs += [ "//build/config/linux/dri" ]
+  }
 }
