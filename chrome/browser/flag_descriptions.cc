@@ -3473,6 +3473,11 @@ const char kCCTResizable90MaximumHeightDescription[] =
     "of the screen height, otherwise the maximum height is 100% of the screen "
     "height. In both cases, Custom Tabs will yield to the top status bar when "
     "at full stop";
+const char kCCTResizableAlwaysShowNavBarButtonsName[] =
+    "Always show the navigation bar buttons";
+const char kCCTResizableAlwaysShowNavBarButtonsDescription[] =
+    "The navigation bar buttons will remain visible while a Partial Chrome "
+    "Custom Tab is being resized.";
 const char kCCTResizableAllowResizeByUserGestureName[] =
     "Bottom sheet Custom Tabs allow resize by user gesture";
 const char kCCTResizableAllowResizeByUserGestureDescription[] =
@@ -3485,11 +3490,10 @@ const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
-const char kCCTResizableAlwaysShowNavBarButtonsName[] =
-    "Always show the navigation bar buttons";
-const char kCCTResizableAlwaysShowNavBarButtonsDescription[] =
-    "The navigation bar buttons will remain visible while a Partial Chrome "
-    "Custom Tab is being resized.";
+const char kCCTResizableSideSheetName[] = "Side sheet Custom Tabs";
+const char kCCTResizableSideSheetDescription[] =
+    "Enable side sheet Custom Tabs";
+
 const char kCCTRetainingStateInMemoryName[] =
     "Enable restoring of previous Custom Tab session";
 const char kCCTRetainingStateInMemoryDescription[] =

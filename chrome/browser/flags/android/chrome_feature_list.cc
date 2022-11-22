@@ -207,6 +207,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableAlwaysShowNavBarButtons,
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
+    &kCCTResizableSideSheet,
     &kCCTRetainingState,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
@@ -621,6 +622,10 @@ BASE_FEATURE(kCCTResizableForFirstParties,
 BASE_FEATURE(kCCTResizableForThirdParties,
              "CCTResizableForThirdParties",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTResizableSideSheet,
+             "CCTResizableSideSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResourcePrefetch,
              "CCTResourcePrefetch",

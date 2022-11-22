@@ -60624,6 +60624,7 @@ from previous Chrome versions.
   <int value="43995010" label="FedCmMultipleIdentityProviders:enabled"/>
   <int value="44088203" label="ExpensiveBackgroundTimerThrottling:enabled"/>
   <int value="44240181" label="SharingQRCodeGenerator:disabled"/>
+  <int value="45681371" label="CCTResizableSideSheet:enabled"/>
   <int value="46334141"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:enabled"/>
   <int value="48159177" label="reduced-referrer-granularity"/>
@@ -64107,6 +64108,7 @@ from previous Chrome versions.
   <int value="2129639191" label="ArcWindowPredictor:disabled"/>
   <int value="2129814401" label="SyncTrustedVaultPassphrasePromo:enabled"/>
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
+  <int value="2130479056" label="CCTResizableSideSheet:disabled"/>
   <int value="2132335798" label="EcheSWA:disabled"/>
   <int value="2132595171" label="OmniboxSearchEngineLogo:enabled"/>
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>

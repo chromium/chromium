@@ -87,6 +87,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons);
                 add(ChromeFeatureList.sCctResizableForFirstParties);
                 add(ChromeFeatureList.sCctResizableForThirdParties);
+                add(ChromeFeatureList.sCctResizableSideSheet);
                 add(ChromeFeatureList.sCctRetainableStateInMemory);
                 add(ChromeFeatureList.sCctToolbarCustomizations);
                 add(ChromeFeatureList.sCloseTabSuggestions);

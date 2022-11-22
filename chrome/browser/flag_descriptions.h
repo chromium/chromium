@@ -1989,6 +1989,8 @@ extern const char kCCTResizableForFirstPartiesName[];
 extern const char kCCTResizableForFirstPartiesDescription[];
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
+extern const char kCCTResizableSideSheetName[];
+extern const char kCCTResizableSideSheetDescription[];
 
 extern const char kCCTRetainingStateInMemoryName[];
 extern const char kCCTRetainingStateInMemoryDescription[];
