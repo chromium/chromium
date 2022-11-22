@@ -245,9 +245,10 @@ public class ViewTransitionPixelTest {
 
         final CallbackHelper ch = new CallbackHelper();
         final AtomicReference<String> screenshotOutputPath = new AtomicReference<>();
+        String file = context.getCacheDir().getAbsolutePath();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getWebContents().getRenderWidgetHostView().writeContentBitmapToDiskAsync(
-                    /*width=*/0, /*height=*/0, context.getCacheDir().getAbsolutePath(), path -> {
+                    /*width=*/0, /*height=*/0, file, path -> {
                         screenshotOutputPath.set(path);
                         ch.notifyCalled();
                     });
