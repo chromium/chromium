@@ -227,7 +227,7 @@ struct StatusCallbackObserver {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
+TEST_F(KeystoreServiceAshTest, UserKeystoreRsaAlgoGenerateKeySuccess) {
   const unsigned int modulus_length = 2048;
 
   EXPECT_CALL(
@@ -245,7 +245,7 @@ TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
-TEST_F(KeystoreServiceAshTest, GenerateDeviceEcKeySuccess) {
+TEST_F(KeystoreServiceAshTest, DeviceKeystoreEcAlgoGenerateKeySuccess) {
   const std::string named_curve = "test_named_curve";
 
   EXPECT_CALL(platform_keys_service_,
@@ -261,7 +261,7 @@ TEST_F(KeystoreServiceAshTest, GenerateDeviceEcKeySuccess) {
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
-TEST_F(KeystoreServiceAshTest, GenerateKeyFail) {
+TEST_F(KeystoreServiceAshTest, UserKeystoreUnsupportedEcCurveGenerateKeyFail) {
   EXPECT_CALL(platform_keys_service_, GenerateECKey)
       .WillOnce(RunOnceCallback<2>("", Status::kErrorInternal));
 
@@ -316,7 +316,26 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
   AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, SignFail) {
+TEST_F(KeystoreServiceAshTest, UsingkRsassaPkcs1V15NoneSignSuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              SignRSAPKCS1Raw(absl::optional<TokenId>(TokenId::kSystem),
+                              GetDataStr(), GetPublicKeyStr(),
+                              /*callback=*/_))
+      .WillOnce(RunOnceCallback<3>(GetDataStr(), Status::kSuccess));
+
+  mojom::KeystoreSigningScheme sign_scheme =
+      mojom::KeystoreSigningScheme::kRsassaPkcs1V15None;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
+
+  keystore_service_.Sign(
+      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
+      GetPublicKeyBin(), sign_scheme, GetDataBin(), observer.GetCallback());
+
+  ASSERT_TRUE(observer.result.has_value());
+  AssertBlobEq(observer.result.value(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
   EXPECT_CALL(platform_keys_service_, SignECDSADigest)
       .WillOnce(RunOnceCallback<4>("", Status::kErrorKeyNotAllowedForSigning));
 
@@ -329,6 +348,21 @@ TEST_F(KeystoreServiceAshTest, SignFail) {
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertErrorEq(observer.result.value(),
                 mojom::KeystoreError::kKeyNotAllowedForSigning);
+}
+
+TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
+  mojom::KeystoreSigningScheme unknown_sign_scheme =
+      mojom::KeystoreSigningScheme::kUnknown;
+
+  keystore_service_.Sign(
+      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
+      GetPublicKeyBin(), unknown_sign_scheme, GetDataBin(),
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result.has_value());
+  AssertErrorEq(observer.result.value(),
+                mojom::KeystoreError::kUnsupportedAlgorithmType);
 }
 
 //------------------------------------------------------------------------------
@@ -497,7 +531,7 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
   EXPECT_EQ(params->public_exponent, (std::vector<uint8_t>{1, 0, 1}));
 }
 
-TEST_F(KeystoreServiceAshTest, GetPublicKeyFail) {
+TEST_F(KeystoreServiceAshTest, WrongAlgoGetPublicKeyFail) {
   const std::vector<uint8_t> cert_bin =
       CertToBlob(GetCertificateList()->front());
 
@@ -509,6 +543,20 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeyFail) {
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertErrorEq(observer.result.value(),
                 mojom::KeystoreError::kAlgorithmNotPermittedByCertificate);
+}
+
+TEST_F(KeystoreServiceAshTest, BadCertificateGetPublicKeyFail) {
+  // Using some random sequence as certificate
+  const std::vector<uint8_t> bad_cert_bin = {10, 11, 12, 13, 14, 15};
+  CallbackObserver<mojom::GetPublicKeyResultPtr> observer;
+
+  keystore_service_.GetPublicKey(
+      bad_cert_bin, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result.has_value());
+  AssertErrorEq(observer.result.value(),
+                mojom::KeystoreError::kCertificateInvalid);
 }
 
 //------------------------------------------------------------------------------
@@ -910,6 +958,22 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
   ASSERT_TRUE(observer.result.value()->is_error_message());
   EXPECT_EQ(observer.result.value()->get_error_message(),
             challenge_result.GetErrorMessage());
+}
+
+TEST_F(KeystoreServiceAshTest, WrongKeystoreTypeChallengeFail) {
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+
+  auto wrong_keystore_type = static_cast<mojom::KeystoreType>(3);
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      wrong_keystore_type, /*challenge=*/GetDataBin(),
+      /*migrate=*/false, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result.has_value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kUnsupportedKeystoreType));
 }
 
 //------------------------------------------------------------------------------

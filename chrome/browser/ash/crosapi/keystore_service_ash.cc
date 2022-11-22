@@ -669,7 +669,7 @@ void KeystoreServiceAsh::GetPublicKey(
           crosapi::mojom::KeystoreError::kUnsupportedAlgorithmType);
     }
   } else {
-    result_ptr->set_error(
+    result_ptr = mojom::GetPublicKeyResult::NewError(
         chromeos::platform_keys::StatusToKeystoreError(output.status));
   }
   std::move(callback).Run(std::move(result_ptr));
