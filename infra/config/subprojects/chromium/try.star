@@ -151,15 +151,19 @@ exec("./try/tryserver.chromium.win.star")
 def chrome_internal_verifier(
         *,
         builder,
+        include_owner_whitelist = True,
         **kwargs):
+    owner_whitelist = []
+    if include_owner_whitelist:
+        owner_whitelist = [
+            "googlers",
+            "project-chromium-robot-committers",
+        ]
     branches.cq_tryjob_verifier(
         builder = "{}:try/{}".format(settings.chrome_project, builder),
         cq_group = "cq",
         includable_only = True,
-        owner_whitelist = [
-            "googlers",
-            "project-chromium-robot-committers",
-        ],
+        owner_whitelist = owner_whitelist,
         **kwargs
     )
 
@@ -274,6 +278,13 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chromeos-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "linux-chromeos-compile-chrome",
+    # We skip the owner_whitelist here since the recipe it runs enforces the
+    # restrictions outlined in http://shortn/_ulOm5v8gA2.
+    include_owner_whitelist = False,
 )
 
 chrome_internal_verifier(
