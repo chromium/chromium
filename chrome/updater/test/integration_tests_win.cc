@@ -552,8 +552,8 @@ void PrintProcesses() {
   for (const base::ProcessEntry& entry : process_entries) {
     VLOG(0) << entry.exe_file() << ", cmdline=" << [](base::ProcessId pid) {
       std::unique_ptr<ProcessInspector> process_inspector =
-          ProcessInspector::Create(
-              base::Process::OpenWithAccess(pid, PROCESS_ALL_ACCESS));
+          ProcessInspector::Create(base::Process::OpenWithAccess(
+              pid, PROCESS_ALL_ACCESS | PROCESS_VM_READ));
       return process_inspector ? process_inspector->command_line() : L"n/a";
     }(entry.pid());
   }
