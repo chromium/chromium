@@ -72,6 +72,10 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   String sub_message_;
   TextDirection message_dir_;
   TextDirection sub_message_dir_;
+
+  // Used by CreatePage() to determine if this has been deleted in the middle of
+  // the function.
+  bool* destroyed_ptr_ = nullptr;
 };
 
 }  // namespace blink
