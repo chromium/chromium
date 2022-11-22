@@ -164,13 +164,10 @@ class CallbacksHelper {
 
 class WaylandSurfaceFactoryTest : public WaylandTest {
  public:
-  WaylandSurfaceFactoryTest()
-      : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-
+  WaylandSurfaceFactoryTest() = default;
   WaylandSurfaceFactoryTest(const WaylandSurfaceFactoryTest&) = delete;
   WaylandSurfaceFactoryTest& operator=(const WaylandSurfaceFactoryTest&) =
       delete;
-
   ~WaylandSurfaceFactoryTest() override = default;
 
   void SetUp() override {

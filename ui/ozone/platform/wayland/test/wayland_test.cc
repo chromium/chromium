@@ -33,11 +33,9 @@ using ::testing::SaveArg;
 
 namespace ui {
 
-WaylandTestBase::WaylandTestBase(wl::ServerConfig config,
-                                 TestServerMode server_mode)
+WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                         base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      server_mode_(server_mode),
       config_(config) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
@@ -84,19 +82,10 @@ void WaylandTestBase::SetUp() {
   window_->Show(false);
 
   // Wait for the client to flush all pending requests from initialization.
-  base::RunLoop().RunUntilIdle();
-
-  // Pause the server after it has responded to all incoming events.
-  server_.Pause();
-
-  auto id = window_->root_surface()->get_surface_id();
-  surface_ = server_.GetObject<wl::MockSurface>(id);
-  ASSERT_TRUE(surface_);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // The surface must be activated before buffers are attached.
-  ActivateSurface(server_.GetObject<wl::MockSurface>(id)->xdg_surface());
-
-  Sync();
+  ActivateSurface(window_->root_surface()->get_surface_id());
 
   EXPECT_EQ(0u,
             DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
@@ -105,32 +94,11 @@ void WaylandTestBase::SetUp() {
   EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetTouchpadDevices().size());
 
   initialized_ = true;
-
-  // TODO(crbug.com/1365887): this must be removed once all tests switch to
-  // asynchronous mode.
-  if (server_mode_ == TestServerMode::kAsync)
-    server_.SetServerAsync();
 }
 
 void WaylandTestBase::TearDown() {
-  if (initialized_) {
-    if (server_mode_ != TestServerMode::kAsync)
-      Sync();
-    else
-      wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
-  }
-}
-
-void WaylandTestBase::Sync() {
-  // Resume the server, flushing its pending events.
-  server_.Resume();
-
-  // Wait for the client to finish processing these events.
-  base::RunLoop().RunUntilIdle();
-
-  // Pause the server, after it has finished processing any follow-up requests
-  // from the client.
-  server_.Pause();
+  if (initialized_)
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 }
 
 void WaylandTestBase::PostToServerAndWait(
@@ -166,30 +134,10 @@ void WaylandTestBase::SetKeyboardFocusedWindow(WaylandWindow* window) {
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(window);
 }
 
-void WaylandTestBase::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                                         const gfx::Size& size,
-                                         uint32_t serial,
-                                         struct wl_array* states) {
-  const int32_t width = size.width();
-  const int32_t height = size.height();
-  // Please note that toplevel surfaces may not exist if the surface was created
-  // for the popup role.
-  if (xdg_surface->xdg_toplevel()) {
-    xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(), width,
-                                height, states);
-  } else {
-    ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
-    xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0, width,
-                             height);
-  }
-  xdg_surface_send_configure(xdg_surface->resource(), serial);
-}
-
 void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
                                          const gfx::Size& size,
                                          const wl::ScopedWlArray& states,
                                          absl::optional<uint32_t> serial) {
-  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
   PostToServerAndWait([size, surface_id, states,
                        serial](wl::TestWaylandServerThread* server) {
     auto* surface = server->GetObject<wl::MockSurface>(surface_id);
@@ -218,26 +166,16 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
   });
 }
 
-void WaylandTestBase::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
+void WaylandTestBase::ActivateSurface(uint32_t surface_id,
+                                      absl::optional<uint32_t> serial) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(xdg_surface, {0, 0}, 1, state.get());
-}
-
-void WaylandTestBase::ActivateSurface(uint32_t surface_id) {
-  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
-  wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(surface_id, {0, 0}, state);
+  SendConfigureEvent(surface_id, {0, 0}, state, serial);
 }
 
 void WaylandTestBase::InitializeSurfaceAugmenter() {
-  if (server_mode_ == TestServerMode::kAsync) {
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      server->EnsureSurfaceAugmenter();
-    });
-  } else {
-    server_.EnsureSurfaceAugmenter();
-    Sync();
-  }
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    server->EnsureSurfaceAugmenter();
+  });
 }
 
 void WaylandTestBase::MaybeSetUpXkb() {
@@ -295,8 +233,7 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
   return window;
 }
 
-WaylandTest::WaylandTest(WaylandTestBase::TestServerMode server_mode)
-    : WaylandTestBase(GetParam(), server_mode) {}
+WaylandTest::WaylandTest() : WaylandTestBase(GetParam()) {}
 
 WaylandTest::~WaylandTest() = default;
 
@@ -308,9 +245,7 @@ void WaylandTest::TearDown() {
   WaylandTestBase::TearDown();
 }
 
-WaylandTestSimple::WaylandTestSimple(
-    WaylandTestBase::TestServerMode server_mode)
-    : WaylandTestBase({}, server_mode) {}
+WaylandTestSimple::WaylandTestSimple() : WaylandTestBase({}) {}
 
 WaylandTestSimple::~WaylandTestSimple() = default;
 

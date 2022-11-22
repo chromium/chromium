@@ -94,13 +94,9 @@ class TestDisplayObserver : public display::DisplayObserver {
 
 class WaylandScreenTest : public WaylandTest {
  public:
-  // TODO(crbug.com/1365887): TestServerMode::kAsync must be removed once all
-  // tests switch to asynchronous mode.
-  WaylandScreenTest() : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-
+  WaylandScreenTest() = default;
   WaylandScreenTest(const WaylandScreenTest&) = delete;
   WaylandScreenTest& operator=(const WaylandScreenTest&) = delete;
-
   ~WaylandScreenTest() override = default;
 
   void SetUp() override {
@@ -1044,10 +1040,7 @@ class LazilyConfiguredScreenTest
     : public WaylandTest,
       public wl::TestWaylandServerThread::OutputDelegate {
  public:
-  // TODO(crbug.com/1365887): TestServerMode::kAsync must be removed once all
-  // tests switch to asynchronous mode.
-  LazilyConfiguredScreenTest()
-      : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
+  LazilyConfiguredScreenTest() = default;
   LazilyConfiguredScreenTest(const LazilyConfiguredScreenTest&) = delete;
   LazilyConfiguredScreenTest& operator=(const LazilyConfiguredScreenTest&) =
       delete;

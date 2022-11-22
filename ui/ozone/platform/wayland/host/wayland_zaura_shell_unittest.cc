@@ -13,16 +13,7 @@ using testing::Values;
 
 namespace ui {
 
-// TODO(crbug.com/1365887): change this to
-// `using WaylandZAuraShellTest = WaylandTest`
-// once the default mode becomes asynchronous.
-class WaylandZAuraShellTest : public WaylandTest {
- public:
-  WaylandZAuraShellTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandZAuraShellTest(const WaylandZAuraShellTest&) = delete;
-  WaylandZAuraShellTest& operator=(const WaylandZAuraShellTest&) = delete;
-  ~WaylandZAuraShellTest() override = default;
-};
+using WaylandZAuraShellTest = WaylandTest;
 
 TEST_P(WaylandZAuraShellTest, BugFix) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

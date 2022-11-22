@@ -14,13 +14,13 @@
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
+using ::testing::Values;
+
 namespace ui {
 
-using ::testing::Values;
-namespace {
 class WaylandZAuraOutputTest : public WaylandTest {
  public:
-  WaylandZAuraOutputTest() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandZAuraOutputTest() = default;
   WaylandZAuraOutputTest(const WaylandZAuraOutputTest&) = delete;
   WaylandZAuraOutputTest& operator=(const WaylandZAuraOutputTest&) = delete;
   ~WaylandZAuraOutputTest() override = default;
@@ -50,8 +50,6 @@ class WaylandZAuraOutputTest : public WaylandTest {
   raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
-
-}  // namespace
 
 TEST_P(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();

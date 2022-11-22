@@ -19,13 +19,7 @@ namespace {
 
 using ::testing::ElementsAre;
 
-class WaylandSurfaceTest : public WaylandTest {
- public:
-  WaylandSurfaceTest() : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-  WaylandSurfaceTest(const WaylandSurfaceTest&) = delete;
-  WaylandSurfaceTest& operator=(const WaylandSurfaceTest&) = delete;
-  ~WaylandSurfaceTest() override = default;
-};
+using WaylandSurfaceTest = WaylandTest;
 
 TEST_P(WaylandSurfaceTest, SurfaceReenterOutput) {
   WaylandSurface* wayland_surface = window_->root_surface();
@@ -35,26 +29,21 @@ TEST_P(WaylandSurfaceTest, SurfaceReenterOutput) {
   const uint32_t output_id =
       screen_->GetOutputIdForDisplayId(screen_->GetPrimaryDisplay().id());
 
-  // Shared wl_resource ids.
-  const uint32_t wl_surface_id = wl_resource_get_id(surface_->resource());
-  const uint32_t wl_output_id =
-      wl_resource_get_id(server_.output()->resource());
+  const uint32_t surface_id_ = window_->root_surface()->get_surface_id();
 
-  PostToServerAndWait(
-      [wl_surface_id, wl_output_id](wl::TestWaylandServerThread* server) {
-        wl_surface_send_enter(
-            server->GetObject<wl::MockSurface>(wl_surface_id)->resource(),
-            server->GetObject<wl::TestOutput>(wl_output_id)->resource());
-      });
+  PostToServerAndWait([surface_id_](wl::TestWaylandServerThread* server) {
+    wl_surface_send_enter(
+        server->GetObject<wl::MockSurface>(surface_id_)->resource(),
+        server->output()->resource());
+  });
   EXPECT_THAT(wayland_surface->entered_outputs(), ElementsAre(output_id));
 
   // Send enter again, but entered outputs should not have duplicate values.
-  PostToServerAndWait(
-      [wl_surface_id, wl_output_id](wl::TestWaylandServerThread* server) {
-        wl_surface_send_enter(
-            server->GetObject<wl::MockSurface>(wl_surface_id)->resource(),
-            server->GetObject<wl::TestOutput>(wl_output_id)->resource());
-      });
+  PostToServerAndWait([surface_id_](wl::TestWaylandServerThread* server) {
+    wl_surface_send_enter(
+        server->GetObject<wl::MockSurface>(surface_id_)->resource(),
+        server->output()->resource());
+  });
   EXPECT_THAT(wayland_surface->entered_outputs(), ElementsAre(output_id));
 }
 

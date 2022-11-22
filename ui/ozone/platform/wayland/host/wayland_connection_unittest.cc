@@ -15,13 +15,7 @@ using ::testing::Values;
 
 namespace ui {
 
-class WaylandConnectionTest : public WaylandTest {
- public:
-  WaylandConnectionTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandConnectionTest(const WaylandConnectionTest&) = delete;
-  WaylandConnectionTest& operator=(const WaylandConnectionTest&) = delete;
-  ~WaylandConnectionTest() override = default;
-};
+using WaylandConnectionTest = WaylandTest;
 
 TEST_P(WaylandConnectionTest, Ping) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

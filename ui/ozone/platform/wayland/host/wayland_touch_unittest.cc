@@ -353,8 +353,6 @@ TEST_F(WaylandTouchTest, CheckTouchFocus) {
     wl_touch_send_cancel(touch);
   });
 
-  Sync();
-
   EXPECT_FALSE(window_->has_touch_focus());
 }
 

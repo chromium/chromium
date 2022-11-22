@@ -25,7 +25,7 @@ constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
 
 class WaylandWindowManagerTest : public WaylandTest {
  public:
-  WaylandWindowManagerTest() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandWindowManagerTest() = default;
   WaylandWindowManagerTest(const WaylandWindowManagerTest&) = delete;
   WaylandWindowManagerTest& operator=(const WaylandWindowManagerTest&) = delete;
   ~WaylandWindowManagerTest() override = default;

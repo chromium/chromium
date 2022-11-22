@@ -76,7 +76,7 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
                 base::ScopedFD write_fd) override {
     gtk_primary_selection_source_send_send(source->resource(),
                                            mime_type.c_str(), write_fd.get());
-    TestWaylandServerThread::FlushClientForResource(source->resource());
+    wl_client_flush(wl_resource_get_client(source->resource()));
   }
 
   void SendFinished() override {

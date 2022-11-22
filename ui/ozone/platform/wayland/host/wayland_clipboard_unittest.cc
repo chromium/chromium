@@ -91,7 +91,7 @@ wl::TestSelectionSource* GetSelectionSource(wl::TestWaylandServerThread* server,
 
 class WaylandClipboardTestBase : public WaylandTest {
  public:
-  WaylandClipboardTestBase() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandClipboardTestBase() = default;
   WaylandClipboardTestBase(const WaylandClipboardTestBase&) = delete;
   WaylandClipboardTestBase& operator=(const WaylandClipboardTestBase&) = delete;
   ~WaylandClipboardTestBase() override = default;

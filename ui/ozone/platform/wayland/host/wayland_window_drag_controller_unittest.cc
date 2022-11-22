@@ -1171,7 +1171,6 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
 
       self->SendDndMotion(p1);
-      self->Sync();
 
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
       self->PostToServerAndWait([surface_id, output_id](

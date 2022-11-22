@@ -202,12 +202,12 @@ void MockSurface::ReleaseBuffer(wl_resource* buffer) {
   if (linux_buffer_releases_.find(buffer) != linux_buffer_releases_.end()) {
     ReleaseBufferFenced(buffer, {});
     wl_buffer_send_release(buffer);
-    TestWaylandServerThread::FlushClientForResource(buffer);
+    wl_client_flush(wl_resource_get_client(buffer));
   }
 
   DCHECK(buffer);
   wl_buffer_send_release(buffer);
-  TestWaylandServerThread::FlushClientForResource(buffer);
+  wl_client_flush(wl_resource_get_client(buffer));
 
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
@@ -227,7 +227,7 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
   } else {
     zwp_linux_buffer_release_v1_send_immediate_release(linux_buffer_release);
   }
-  TestWaylandServerThread::FlushClientForResource(linux_buffer_release);
+  wl_client_flush(wl_resource_get_client(linux_buffer_release));
   linux_buffer_releases_.erase(iter);
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
@@ -242,7 +242,7 @@ void MockSurface::SendFrameCallback() {
   wl_callback_send_done(
       frame_callback_,
       0 /* trequest-specific data for the callback. not used */);
-  TestWaylandServerThread::FlushClientForResource(frame_callback_);
+  wl_client_flush(wl_resource_get_client(frame_callback_));
   wl_resource_destroy(frame_callback_);
   frame_callback_ = nullptr;
 }

@@ -38,22 +38,22 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
                 base::ScopedFD write_fd) override {
     wl_data_source_send_send(source_->resource(), mime_type.c_str(),
                              write_fd.get());
-    TestWaylandServerThread::FlushClientForResource(source_->resource());
+    wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
   void SendFinished() override {
     wl_data_source_send_dnd_finished(source_->resource());
-    TestWaylandServerThread::FlushClientForResource(source_->resource());
+    wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
   void SendCancelled() override {
     wl_data_source_send_cancelled(source_->resource());
-    TestWaylandServerThread::FlushClientForResource(source_->resource());
+    wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
   void SendDndAction(uint32_t action) override {
     wl_data_source_send_action(source_->resource(), action);
-    TestWaylandServerThread::FlushClientForResource(source_->resource());
+    wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
   void OnDestroying() override { delete this; }

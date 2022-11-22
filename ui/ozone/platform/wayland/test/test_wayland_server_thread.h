@@ -13,7 +13,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_libevent.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
@@ -89,15 +88,6 @@ class TestWaylandServerThread : public base::Thread,
 
   ~TestWaylandServerThread() override;
 
-  // TODO(1365887): This shouldn't really exist.
-  static void FlushClientForResource(wl_resource* resource);
-
-  // Makes server to be asynchronous. In other words, Pause/Resume do nothing
-  // and the server thread is constantly running.
-  // TODO(crbug.com/1365887): this must be removed once all tests switch to
-  // asynchronous mode.
-  void SetServerAsync();
-
   // Starts the test Wayland server thread. If this succeeds, the WAYLAND_SOCKET
   // environment variable will be set to the string representation of a file
   // descriptor that a client can connect to. The caller is responsible for
@@ -106,12 +96,6 @@ class TestWaylandServerThread : public base::Thread,
   // Instantiates an xdg_shell of version |shell_version|; versions 6 and 7
   // (stable) are supported.
   bool Start(const ServerConfig& config);
-
-  // Pauses the server thread when it becomes idle.
-  void Pause();
-
-  // Resumes the server thread after flushing client connections.
-  void Resume();
 
   // Runs 'callback' or 'closure' on the server thread; blocks until the
   // callable is run and all pending Wayland requests and events are delivered.
@@ -126,13 +110,8 @@ class TestWaylandServerThread : public base::Thread,
 
   template <typename T>
   T* GetObject(uint32_t id) {
-    // When the server is running in asynchronous mode, all the protocol calls
-    // must be made on the correct thread.
-    // TODO(crbug.com/1365887): this must always do thread check once all the
-    // tests are refactored.
-    if (is_async_) {
-      DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    }
+    // All the protocol calls must be made on the correct thread.
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     wl_resource* resource = wl_client_get_object(client_, id);
     return resource ? T::FromResource(resource) : nullptr;
   }
@@ -192,7 +171,6 @@ class TestWaylandServerThread : public base::Thread,
   bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);
   bool SetupExplicitSynchronizationProtocol(
       ShouldUseExplicitSynchronizationProtocol usage);
-  void DoPause();
 
   std::unique_ptr<base::MessagePump> CreateMessagePump();
 
@@ -218,9 +196,6 @@ class TestWaylandServerThread : public base::Thread,
   raw_ptr<wl_client> client_ = nullptr;
   raw_ptr<wl_event_loop> event_loop_ = nullptr;
   raw_ptr<wl_protocol_logger> protocol_logger_ = nullptr;
-
-  base::WaitableEvent pause_event_;
-  base::WaitableEvent resume_event_;
 
   // Represent Wayland global objects
   // Compositor version is selected dynamically by server config but version is
@@ -253,16 +228,6 @@ class TestWaylandServerThread : public base::Thread,
   base::MessagePumpLibevent::FdWatchController controller_;
 
   raw_ptr<OutputDelegate> output_delegate_ = nullptr;
-
-  // Makes the server to run asynchronously - the server is resumed and
-  // processes events as soon as there is something to read from the event
-  // queue. The client is not required to call Resume/Pause anymore. This cannot
-  // be set in ctor as the WaylandTest needs the first operations to be done
-  // synchronously. Otherwise, it'll crash in WaylandTest::SetUp. And given this
-  // is used temporarily, it's fine to have it as it is now.
-  // TODO(crbug.com/1365887): this must be removed once all tests switch to
-  // asynchronous mode.
-  bool is_async_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };

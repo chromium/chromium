@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
@@ -26,9 +25,6 @@
 namespace wl {
 
 namespace {
-// TODO(1365887): This is a lock that workarounds a problem when wl_client_flush
-// is called from multiple threads.
-static base::Lock g_global_lock_;
 
 void handle_client_destroyed(struct wl_listener* listener, void* data) {
   TestServerListener* destroy_listener =
@@ -48,10 +44,6 @@ void DisplayDeleter::operator()(wl_display* display) {
 TestWaylandServerThread::TestWaylandServerThread()
     : Thread("test_wayland_server"),
       client_destroy_listener_(this),
-      pause_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED),
-      resume_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                    base::WaitableEvent::InitialState::NOT_SIGNALED),
       compositor_v4_(4),
       compositor_v3_(3),
       controller_(FROM_HERE) {
@@ -59,21 +51,16 @@ TestWaylandServerThread::TestWaylandServerThread()
 }
 
 TestWaylandServerThread::~TestWaylandServerThread() {
-  // TODO(crbug.com/1365887): remove this condition once all the tests are
-  // refactored.
-  if (is_async_) {
-    // Stop watching the descriptor here to guarantee that no new events
-    // will come during or after the destruction of the display. This must be
-    // done on the correct thread to avoid data races.
-    auto stop_controller_on_server_thread =
-        [](wl::TestWaylandServerThread* server) {
-          server->controller_.StopWatchingFileDescriptor();
-        };
-    RunAndWait(base::BindLambdaForTesting(
-        std::move(stop_controller_on_server_thread)));
-  }
+  // Stop watching the descriptor here to guarantee that no new events
+  // will come during or after the destruction of the display. This must be
+  // done on the correct thread to avoid data races.
+  auto stop_controller_on_server_thread =
+      [](wl::TestWaylandServerThread* server) {
+        server->controller_.StopWatchingFileDescriptor();
+      };
+  RunAndWait(
+      base::BindLambdaForTesting(std::move(stop_controller_on_server_thread)));
 
-  Resume();
   Stop();
 
   if (protocol_logger_)
@@ -88,23 +75,6 @@ TestWaylandServerThread::~TestWaylandServerThread() {
   if (client_)
     wl_client_destroy(client_);
   client_ = nullptr;
-}
-
-// static
-void TestWaylandServerThread::FlushClientForResource(wl_resource* resource) {
-  DCHECK(resource);
-  base::AutoLock scoped_lock(g_global_lock_);
-  wl_client_flush(wl_resource_get_client(resource));
-}
-
-void TestWaylandServerThread::SetServerAsync() {
-  // Resume and Pause the server to ensure it's paused. Calling just Pause may
-  // result in a deadlock if the server has already been paused.
-  Resume();
-  Pause();
-  is_async_ = true;
-  // Now resume the server thread so that it runs and processed the events.
-  resume_event_.Signal();
 }
 
 bool TestWaylandServerThread::Start(const ServerConfig& config) {
@@ -194,27 +164,6 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   return true;
 }
 
-void TestWaylandServerThread::Pause() {
-  if (is_async_)
-    return;
-
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&TestWaylandServerThread::DoPause,
-                                         base::Unretained(this)));
-  pause_event_.Wait();
-}
-
-void TestWaylandServerThread::Resume() {
-  if (is_async_)
-    return;
-
-  if (display_) {
-    base::AutoLock scoped_lock(g_global_lock_);
-    wl_display_flush_clients(display_.get());
-  }
-  resume_event_.Signal();
-}
-
 void TestWaylandServerThread::RunAndWait(
     base::OnceCallback<void(TestWaylandServerThread*)> callback) {
   base::OnceClosure closure =
@@ -234,6 +183,7 @@ void TestWaylandServerThread::RunAndWait(base::OnceClosure closure) {
 }
 
 MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (wp_presentation_.resource())
     return &wp_presentation_;
   if (wp_presentation_.Initialize(display_.get()))
@@ -242,6 +192,7 @@ MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
 }
 
 TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (surface_augmenter_.Initialize(display_.get()))
     return &surface_augmenter_;
   return nullptr;
@@ -305,14 +256,6 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
   return false;
 }
 
-void TestWaylandServerThread::DoPause() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!is_async_);
-  base::RunLoop().RunUntilIdle();
-  pause_event_.Signal();
-  resume_event_.Wait();
-}
-
 std::unique_ptr<base::MessagePump>
 TestWaylandServerThread::CreateMessagePump() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -326,17 +269,14 @@ TestWaylandServerThread::CreateMessagePump() {
 void TestWaylandServerThread::DoRun(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::move(closure).Run();
-  base::AutoLock scoped_lock(g_global_lock_);
   wl_display_flush_clients(display_.get());
 }
 
 void TestWaylandServerThread::OnFileCanReadWithoutBlocking(int fd) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   wl_event_loop_dispatch(event_loop_, 0);
-  if (display_) {
-    base::AutoLock scoped_lock(g_global_lock_);
+  if (display_)
     wl_display_flush_clients(display_.get());
-  }
 }
 
 void TestWaylandServerThread::OnFileCanWriteWithoutBlocking(int fd) {}
@@ -348,11 +288,8 @@ void TestWaylandServerThread::ProtocolLogger(
     const struct wl_protocol_logger_message* message) {
   auto* test_server = static_cast<TestWaylandServerThread*>(user_data);
   DCHECK(test_server);
-  // When the server is running in asynchronous mode, all the protocol calls
-  // must be made on the correct thread.
-  if (test_server->is_async_) {
-    DCHECK_CALLED_ON_VALID_THREAD(test_server->thread_checker_);
-  }
+  // All the protocol calls must be made on the correct thread.
+  DCHECK_CALLED_ON_VALID_THREAD(test_server->thread_checker_);
 }
 
 }  // namespace wl

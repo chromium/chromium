@@ -155,8 +155,7 @@ constexpr BoundsChange kDefaultBoundsChange{false};
 class WaylandWindowTest : public WaylandTest {
  public:
   WaylandWindowTest()
-      : WaylandTest(WaylandTest::TestServerMode::kAsync),
-        test_mouse_event_(ET_MOUSE_PRESSED,
+      : test_mouse_event_(ET_MOUSE_PRESSED,
                           gfx::Point(10, 15),
                           gfx::Point(10, 15),
                           ui::EventTimeStampFromSeconds(123456),
@@ -336,13 +335,15 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
     auto* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
         .Times(0);
-    EXPECT_CALL(*xdg_surface, AckConfigure(1)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
     EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
     EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
   });
 
   auto state = InitializeWlArrayWithActivatedState();
-  SendConfigureEvent(surface_id_, kNormalBounds.size(), state);
+  constexpr uint32_t kConfigureSerial = 2u;
+  SendConfigureEvent(surface_id_, kNormalBounds.size(), state,
+                     kConfigureSerial);
 
   PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
                           wl::TestWaylandServerThread* server) {
@@ -350,7 +351,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
     ASSERT_TRUE(mock_surface);
     auto* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())));
-    EXPECT_CALL(*xdg_surface, AckConfigure(1));
+    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial));
     EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
     EXPECT_CALL(*mock_surface, SetInputRegion(_));
   });

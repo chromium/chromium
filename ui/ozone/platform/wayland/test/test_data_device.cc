@@ -105,7 +105,7 @@ void TestDataDevice::StartDrag(TestDataSource* source,
   drag_serial_ = serial;
   manager_->set_data_source(source);
   SendOfferAndEnter(origin, {});
-  TestWaylandServerThread::FlushClientForResource(resource());
+  wl_client_flush(wl_resource_get_client(resource()));
 }
 
 void TestDataDevice::SendOfferAndEnter(MockSurface* origin,

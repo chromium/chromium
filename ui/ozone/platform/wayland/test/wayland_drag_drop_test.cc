@@ -43,8 +43,7 @@ TestWaylandOSExchangeDataProvideFactory::CreateProvider() {
   return std::make_unique<WaylandExchangeDataProvider>();
 }
 
-WaylandDragDropTest::WaylandDragDropTest()
-    : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
+WaylandDragDropTest::WaylandDragDropTest() = default;
 
 WaylandDragDropTest::~WaylandDragDropTest() = default;
 
