@@ -172,7 +172,7 @@ constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
-constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, -1};
+constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, 6, 7, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
