@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -438,7 +437,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         if (Intent.ACTION_VIEW.equals(newIntent.getAction())
                 && !IntentHandler.wasIntentSenderChrome(newIntent)) {
-            long time = SystemClock.elapsedRealtime();
             if (!chromeTabbedTaskExists()) {
                 newIntent.putExtra(IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, true);
             }
@@ -448,8 +446,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                 // the flag to take effect only once.
                 newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
-            RecordHistogram.recordTimesHistogram("Startup.Android.ChromeTabbedTaskExistsTime",
-                    SystemClock.elapsedRealtime() - time);
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -533,13 +529,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
      * Records metrics gleaned from the Intent.
      */
     private void recordIntentMetrics() {
-        @IntentHandler.ExternalAppId
-        int source = IntentHandler.determineExternalIntentSource(mIntent);
-        if (mIntent.getPackage() == null && source != IntentHandler.ExternalAppId.CHROME) {
-            int flagsOfInterest = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
-            int maskedFlags = mIntent.getFlags() & flagsOfInterest;
-            RecordHistogram.recordSparseHistogram("Launch.IntentFlags", maskedFlags);
-        }
         MediaNotificationUma.recordClickSource(mIntent);
     }
 

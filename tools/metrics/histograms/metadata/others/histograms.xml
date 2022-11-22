@@ -7885,15 +7885,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.IntentFlags" enum="LaunchIntentFlags"
-    expires_after="2020-10-04">
-  <owner>dfalcantara@chromium.org</owner>
-  <summary>
-    Records flags (and combinations of flags) that were attached to the Intent
-    that started ChromeLauncherActivity.
-  </summary>
-</histogram>
-
 <histogram name="Launch.Mode2" enum="LaunchMode" expires_after="never">
 <!-- expires-never: used from time to time on Windows to measure the value of the various Chrome shortcuts (davidbienvenu@) -->
 
