@@ -777,11 +777,7 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
 const base::FeatureParam<int> kOmniboxLocalZeroSuggestAgeThresholdParam(
     &omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
     "OmniboxLocalZeroSuggestAgeThreshold",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    60);
-#else
     90);
-#endif
 
 base::Time GetLocalHistoryZeroSuggestAgeThreshold() {
   return (base::Time::Now() -
@@ -795,11 +791,7 @@ const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
 const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "PrefixSuggestIgnoreDuplicateVisits",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    false);
-#else
     true);
-#endif
 
 // Short bookmarks.
 

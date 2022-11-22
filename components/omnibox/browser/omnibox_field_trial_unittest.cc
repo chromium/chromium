@@ -358,11 +358,7 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Verify the default value.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const int expected_age_threshold_days = 60;
-#else
   const int expected_age_threshold_days = 90;
-#endif
   base::Time age_threshold =
       OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
   EXPECT_EQ(expected_age_threshold_days,

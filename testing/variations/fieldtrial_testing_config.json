@@ -7242,22 +7242,17 @@
                     "params": {
                         "MaxNumRepeatableQueries": "4",
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "8",
-                        "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "PrivilegeRepeatableQueries": "true",
                         "ScaleRepeatableQueriesScore": "true",
-                        "UIMaxAutocompleteMatches": "10",
-                        "ZeroSuggestIgnoreDuplicateVisits": "false"
+                        "UIMaxAutocompleteMatches": "10"
                     },
                     "enable_features": [
                         "AndroidAuxiliarySearch",
-                        "LocalHistorySuggestRevamp",
                         "NewTabPageTilesTitleWrapAround",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxHeaderPaddingUpdate",
-                        "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
                         "OmniboxMostVisitedTilesDynamicSpacing",
                         "OmniboxMostVisitedTilesFadingOnTablet",
@@ -7279,15 +7274,8 @@
             "experiments": [
                 {
                     "name": "IOSExperiments",
-                    "params": {
-                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
-                        "PrefixSuggestIgnoreDuplicateVisits": "true",
-                        "ZeroSuggestIgnoreDuplicateVisits": "false"
-                    },
-                    "enable_features": [
-                        "LocalHistorySuggestRevamp",
-                        "OmniboxLocalZeroSuggestAgeThreshold"
-                    ]
+                    "params": {},
+                    "enable_features": []
                 }
             ]
         }
