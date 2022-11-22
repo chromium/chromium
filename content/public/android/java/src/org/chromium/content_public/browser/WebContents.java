@@ -555,4 +555,11 @@ public interface WebContents extends Parcelable {
      * this. Min-height is the minimum visible height the controls can have.
      */
     void notifyBrowserControlsHeightChanged();
+
+    /**
+     * Called before the dialog overlay dismissing e.g. Activity.onUserLeaveHint. It's a signal to
+     * cleanup the tasks depending on the overlay surface, because the surface destroy may happen
+     * before SurfaceHolder.Callback2.surfaceDestroyed returns.
+     */
+    void tearDownDialogOverlays();
 }

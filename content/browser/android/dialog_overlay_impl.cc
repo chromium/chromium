@@ -124,6 +124,9 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
   // ever AndroidOverlayProviderImpl.MAX_OVERLAYS > 1.
   delegate->SetOverlayMode(true);
 
+  Java_DialogOverlayImpl_onWebContents(env, obj,
+                                       web_contents()->GetJavaWebContents());
+
   // Send the initial token, if there is one.  The observer will notify us about
   // changes only.
   if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {

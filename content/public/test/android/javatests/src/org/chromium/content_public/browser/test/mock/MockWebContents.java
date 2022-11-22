@@ -319,4 +319,7 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void notifyBrowserControlsHeightChanged() {}
+
+    @Override
+    public void tearDownDialogOverlays() {}
 }

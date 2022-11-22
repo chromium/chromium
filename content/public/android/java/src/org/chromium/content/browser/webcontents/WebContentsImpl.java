@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
@@ -67,6 +68,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -206,6 +208,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     // Remember the stack for clearing native the native stack for debugging use after destroy.
     private Throwable mNativeDestroyThrowable;
+
+    private ObserverList<Runnable> mTearDownDialogOverlaysHandlers;
 
     private static class WebContentsInternalsImpl implements WebContentsInternals {
         public UserDataHost userDataHost;
@@ -1072,6 +1076,32 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public void notifyBrowserControlsHeightChanged() {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().notifyBrowserControlsHeightChanged(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public void tearDownDialogOverlays() {
+        if (mTearDownDialogOverlaysHandlers == null) return;
+        Iterator<Runnable> it = mTearDownDialogOverlaysHandlers.iterator();
+        while (it.hasNext()) {
+            Runnable handler = it.next();
+            handler.run();
+        }
+    }
+
+    public void addTearDownDialogOverlaysHandler(Runnable handler) {
+        if (mTearDownDialogOverlaysHandlers == null) {
+            mTearDownDialogOverlaysHandlers = new ObserverList<>();
+        }
+
+        assert !mTearDownDialogOverlaysHandlers.hasObserver(handler);
+        mTearDownDialogOverlaysHandlers.addObserver(handler);
+    }
+
+    public void removeTearDownDialogOverlaysHandler(Runnable handler) {
+        assert mTearDownDialogOverlaysHandlers != null;
+        assert mTearDownDialogOverlaysHandlers.hasObserver(handler);
+
+        mTearDownDialogOverlaysHandlers.removeObserver(handler);
     }
 
     private void checkNotDestroyed() {
