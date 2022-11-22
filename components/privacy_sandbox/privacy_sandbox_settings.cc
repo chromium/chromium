@@ -339,49 +339,25 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   if (delegate_->IsPrivacySandboxRestricted())
     return false;
 
+  if (incognito_profile_)
+    return false;
+
   // For Measurement and Relevance APIs, we explicitly do not require the
   // underlying pref to be enabled if there is a local flag enabling the APIs to
   // allow for local testing.
-  bool should_override_setting_for_local_testing = base::FeatureList::IsEnabled(
-      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting);
-
-  // Which preference is consulted is dependent on whether release 3 of the
-  // settings is available.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    // For Privacy Sandbox Settings 3, APIs are disabled in incognito.
-    if (incognito_profile_)
-      return false;
-
-    if (should_override_setting_for_local_testing) {
-      return true;
-    }
-
-    // For Privacy Sandbox Settings 3, APIs may be restricted via the delegate.
-    // The V2 pref was introduced with the 3rd Privacy Sandbox release.
-    return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
+    return true;
   }
 
-  if (should_override_setting_for_local_testing)
-    return true;
-
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
 
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
-  // Only apply the decision to the appropriate preference.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
-  } else {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
-  }
+  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
 bool PrivacySandboxSettings::IsTrustTokensAllowed() {
-  // The PrivacySandboxSettings is only involved in Trust Token access
-  // decisions when the Release 3 flag is enabled.
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
-    return true;
-
   return IsPrivacySandboxEnabled();
 }
 
@@ -394,11 +370,6 @@ void PrivacySandboxSettings::OnCookiesCleared() {
 }
 
 void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
-  // The PrivacySandboxSettings is only involved in Trust Token access
-  // decisions when the Release 3 flag is enabled.
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
-    return;
-
   for (auto& observer : observers_)
     observer.OnTrustTokenBlockingChanged(!IsTrustTokensAllowed());
 }

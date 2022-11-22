@@ -279,17 +279,10 @@ void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
 }
 
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {
-  return base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)
-             ? pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
-             : pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
 
 bool PrivacySandboxService::IsPrivacySandboxManaged() {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxSettings3)) {
-    return pref_service_->IsManagedPreference(
-        prefs::kPrivacySandboxApisEnabled);
-  }
   return pref_service_->IsManagedPreference(
       prefs::kPrivacySandboxApisEnabledV2);
 }
@@ -299,11 +292,7 @@ bool PrivacySandboxService::IsPrivacySandboxRestricted() {
 }
 
 void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
-  pref_service_->SetBoolean(
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)
-          ? prefs::kPrivacySandboxManuallyControlledV2
-          : prefs::kPrivacySandboxManuallyControlled,
-      true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, true);
   privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);
 }
 
@@ -490,9 +479,7 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   RecordFirstPartySetsStateHistogram(fps_status);
 
   // Start by recording any metrics for Privacy Sandbox 3.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    RecordPrivacySandbox3StartupMetrics();
-  }
+  RecordPrivacySandbox3StartupMetrics();
 
   // Check policy status first.
   std::string default_cookie_setting_provider;

@@ -1908,8 +1908,6 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoticeDisabled) {
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledEnabled) {
   base::HistogramTester histogram_tester;
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   prefs()->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kPrivacySandboxNoConfirmationManuallyControlled,
@@ -1923,8 +1921,6 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledEnabled) {
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledDisabled) {
   base::HistogramTester histogram_tester;
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   prefs()->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
                        std::make_unique<base::Value>(false));
   prefs()->SetUserPref(prefs::kPrivacySandboxNoConfirmationManuallyControlled,
@@ -1938,8 +1934,6 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledDisabled) {
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoPromptDisabled) {
   base::HistogramTester histogram_tester;
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   prefs()->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
                        std::make_unique<base::Value>(false));
   CreateService();
@@ -1950,8 +1944,6 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoPromptDisabled) {
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoPromptEnabled) {
   base::HistogramTester histogram_tester;
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   prefs()->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
                        std::make_unique<base::Value>(true));
   CreateService();
@@ -2765,8 +2757,6 @@ TEST_F(PrivacySandboxServicePromptTest, ManuallyControlledNoPrompt) {
 TEST_F(PrivacySandboxServicePromptTest, NoParamNoPrompt) {
   // Confirm that if neither the consent or notice parameter is set, no prompt
   // is required.
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   EXPECT_EQ(
       PrivacySandboxService::PromptType::kNone,
       PrivacySandboxService::GetRequiredPromptTypeInternal(
