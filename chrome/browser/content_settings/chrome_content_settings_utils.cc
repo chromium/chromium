@@ -43,8 +43,6 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
   if (location_bar)
     location_bar->UpdateContentSettingsIcons();
 
-// TODO(https://crbug.com/1346734): Enable this on all platforms.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The document PiP window does not have a location bar, but has some content
   // setting views that need to be updated too.
   if (browser->is_type_picture_in_picture()) {
@@ -53,8 +51,6 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
         browser_view->frame()->GetFrameView());
     frame_view->UpdateContentSettingsIcons();
   }
-#endif
-
 #endif
 }
 

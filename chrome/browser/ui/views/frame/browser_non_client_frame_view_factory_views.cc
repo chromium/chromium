@@ -72,11 +72,10 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
-// TODO(https://crbug.com/1346734): Enable it on all platforms.
-#if BUILDFLAG(IS_LINUX)
   if (browser_view->browser()->is_type_picture_in_picture()) {
     auto view =
         std::make_unique<PictureInPictureBrowserFrameView>(frame, browser_view);
+#if BUILDFLAG(IS_LINUX)
     auto* profile = browser_view->browser()->profile();
     auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
     auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
@@ -87,9 +86,9 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
       view->SetWindowFrameProvider(
           linux_ui_theme->GetWindowFrameProvider(solid_frame));
     }
+#endif  // BUILDFLAG(IS_LINUX)
     return view;
   }
-#endif
 
 #if BUILDFLAG(IS_WIN)
   if (frame->ShouldUseNativeFrame())

@@ -38,15 +38,12 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
             browser_view->GetLocationBarView()->location_icon_view(),
             views::BubbleBorder::TOP_LEFT};
 
-// TODO(https://crbug.com/1346734): Enable this on all platforms.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (anchor == kLocationBar && browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->frame()->GetFrameView());
     return {frame_view->GetLocationIconView(),
             frame_view->GetLocationIconView(), views::BubbleBorder::TOP_LEFT};
   }
-#endif
 
   if (anchor == kCustomTabBar && browser_view->toolbar()->custom_tab_bar())
     return {browser_view->toolbar()->custom_tab_bar(),
