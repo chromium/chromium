@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -350,7 +351,10 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         resource_provider_->GetSurfaceId(resource_id).frame_sink_id();
   }
 
-  if (is_delegated_context_) {
+  // |kAggregatedRenderPass| must be clipped in 'PrepareRenderPassOverlay' as
+  // filters can expand display size.
+  if (is_delegated_context_ &&
+      quad->material != DrawQuad::Material::kAggregatedRenderPass) {
     // The delegate might not support specifying |clip_rect| so if not, apply it
     // to the |display_rect| and |uv_rect| directly.
     if (!supports_clip_rect_) {
