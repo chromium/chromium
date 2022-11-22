@@ -24,7 +24,7 @@ bluetooth_test(
             // object to get garbage collected.
             error_descriptor.characteristic.service.device.gatt.disconnect();
           })
-          .then(runGarbageCollection)
+          .then(garbageCollect)
           .then(() => promise);
     },
     'Garbage Collection ran during a FUNCTION_NAME call that fails. ' +

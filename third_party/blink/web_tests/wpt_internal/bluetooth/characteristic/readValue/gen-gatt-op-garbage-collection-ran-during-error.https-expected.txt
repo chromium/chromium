@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Garbage Collection ran during a readValue call that fails. Should not crash. promise_test: Unhandled rejection with value: object "ReferenceError: runGarbageCollection is not defined"
-Harness: the test ran to completion.
-

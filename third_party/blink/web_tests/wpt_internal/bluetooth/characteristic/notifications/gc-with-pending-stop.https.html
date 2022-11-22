@@ -5,6 +5,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/bluetooth/resources/bluetooth-test.js"></script>
 <script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/common/gc.js"></script>
 <script>
 'use strict';
 bluetooth_test(() => {
@@ -22,7 +23,7 @@ bluetooth_test(() => {
         // goes out of scope while the request is still pending.
       });
     })
-    .then(() => runGarbageCollection())
+    .then(() => garbageCollect())
     .then(() => stop_promise);
   // TODO(ortuno): Assert that notifications are not active.
   // http://crbug.com/600762

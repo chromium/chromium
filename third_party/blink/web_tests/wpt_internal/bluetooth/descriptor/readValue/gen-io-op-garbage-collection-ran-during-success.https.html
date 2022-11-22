@@ -6,6 +6,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/bluetooth/resources/bluetooth-test.js"></script>
 <script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/common/gc.js"></script>
 <script>
 'use strict';
 bluetooth_test(
@@ -34,7 +35,7 @@ bluetooth_test(
             // object to get garbage collected.
             descriptor.characteristic.service.device.gatt.disconnect();
           })
-          .then(runGarbageCollection)
+          .then(garbageCollect)
           .then(() => promise);
     },
     'Garbage collection ran during a readValue call that succeeds. ' +

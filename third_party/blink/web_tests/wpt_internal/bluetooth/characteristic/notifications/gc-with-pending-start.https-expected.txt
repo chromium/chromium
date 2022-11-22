@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Object gets garbage collected while start request is pending. Make sure we don' crash. promise_test: Unhandled rejection with value: object "ReferenceError: runGarbageCollection is not defined"
-Harness: the test ran to completion.
-

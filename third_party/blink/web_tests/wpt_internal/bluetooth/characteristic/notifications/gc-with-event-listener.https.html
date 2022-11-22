@@ -5,6 +5,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/bluetooth/resources/bluetooth-test.js"></script>
 <script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/common/gc.js"></script>
 <script>
 'use strict';
 bluetooth_test(async () => {
@@ -39,7 +40,7 @@ bluetooth_test(async () => {
 
   // At this point all the variables above should be out of scope and so this
   // will free them.
-  GCController.collect();
+  garbageCollect();
 
   // The event listener should still be active.
   expectingEvent = true;
