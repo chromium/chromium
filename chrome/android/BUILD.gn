@@ -956,6 +956,9 @@ if (current_toolchain == default_toolchain) {
     # Needed by androidx.test.core.app.ActivityScenario
     android_manifest = "//chrome/android/junit/AndroidManifest.xml"
 
+    # This target OOMs with the default 1G (also OOMS with 2G).
+    max_heap_size = "4G"
+
     data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
 
     package_name = chrome_public_manifest_package

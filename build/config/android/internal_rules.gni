@@ -1419,6 +1419,11 @@ if (enable_java_templates) {
       _main_class = invoker.main_class
       _build_config = invoker.build_config
       _script_name = invoker.script_name
+      if (defined(invoker.max_heap_size)) {
+        _max_heap_size = invoker.max_heap_size
+      } else {
+        _max_heap_size = "1G"
+      }
 
       script = "//build/android/gyp/create_java_binary_script.py"
       inputs = [ _build_config ]
@@ -1431,6 +1436,7 @@ if (enable_java_templates) {
         "--main-class",
         _main_class,
         "--classpath=@FileArg($_rebased_build_config:deps_info:host_classpath)",
+        "--max-heap-size=$_max_heap_size",
       ]
       data = []
 
@@ -4037,6 +4043,7 @@ if (enable_java_templates) {
                                [
                                  "tiered_stop_at_level_one",
                                  "main_class",
+                                 "max_heap_size",
                                  "wrapper_script_args",
                                ])
         build_config = _build_config
