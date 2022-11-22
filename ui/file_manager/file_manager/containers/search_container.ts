@@ -388,7 +388,7 @@ export class SearchContainer extends EventTarget {
    * open the widget and thus the widget it not fully opened until the CSS
    * transition finishes.
    */
-  private openSearch() {
+  openSearch() {
     // Do not initiate open transition if we are not closed. This would leave us
     // in the OPENING state, without ever getting to OPEN state.
     if (this.inputState_ === SearchInputState.CLOSED) {

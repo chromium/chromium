@@ -2156,11 +2156,8 @@ CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
   execute(event, fileManager) {
     // Cancel item selection.
     fileManager.directoryModel.clearSelection();
-
-    // Focus and unhide the search box.
-    const element = fileManager.document.querySelector('#search-box cr-input');
-    element.disabled = false;
-    (/** @type {!CrInputElement} */ (element)).select();
+    // Open the query input via the search container.
+    fileManager.ui.searchContainer.openSearch();
   }
 
   /** @override */

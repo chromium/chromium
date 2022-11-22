@@ -18,9 +18,16 @@ testcase.tabindexSearchBoxFocus = async () => {
   // Check that the file list has the focus on launch.
   await remoteCall.waitForElement(appId, ['#file-list:focus']);
 
+  // Check that the search UI is in the collapsed state (hidden from the user).
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
   // Press the Ctrl-F key.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['body', 'f', true, false, false]));
+
+  // Wait for the search box to fully open. Only once the search wrapper
+  // is fully expanded the collapsed attribute is removed.
+  await remoteCall.waitForElementLost(appId, '#search-wrapper[collapsed]');
 
   // Check that the search box has the focus.
   await remoteCall.waitForElement(appId, ['#search-box cr-input:focus-within']);
