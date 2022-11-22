@@ -34,7 +34,7 @@ default_closure_args = strict_error_checking_closure_args + [
                          "extra_annotation_name=demo",
                          "extra_annotation_name=element",
 
-                         "language_in=ECMASCRIPT_2017",
+                         "language_in=ECMASCRIPT_2020",
                          "language_out=ECMASCRIPT5_STRICT",
 
                          "jscomp_off=duplicate",

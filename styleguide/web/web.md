@@ -325,6 +325,22 @@ Guide](https://google.github.io/styleguide/jsguide.html) as well as
   instead of always using an arrow function wrapper, when it makes the code less
   verbose without compromising type safety (for example in TypeScript files).
 
+* When using `?.` be aware that information about the original location of the
+  null/undefined value can be lost. You should avoid cases like this and instead
+  prefer explicit error checking:
+```js
+const enterKey = keyboards.getCurrentKeyboard()?.getKeys()?.getEnterKey();
+// ... Lots of code here.
+if (!enterKey) {
+  // Something has gone wrong here, but it is unclear what.
+}
+```
+
+* Don't use `?.` as a way to silence TypeScript "object is possibly null"
+  errors. Instead use `assert()` statements. Only use the optional chaining
+  feature when the code needs to handle null/undefined gracefully.
+
+
 ### Closure compiler
 
 * Closure compiler should only be used by legacy code that has not yet been

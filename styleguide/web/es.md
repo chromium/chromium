@@ -1097,3 +1097,28 @@ console.log(Object.entries(object2)[1]);
 **Discussion Notes / Link to Thread:**
 
 ---
+
+# ES2020 Support in Chromium
+
+## Allowed features
+
+### Optional Chaining (?.)
+
+The optional chaining operator makes it easy to chain multiple functions /
+property accesses that may return null or undefined.
+
+**Usage Example:**
+
+```js
+// Before:
+const currentKeyboard = keyboards.getCurrentKeyboard();
+const keys = currentKeyboard && currentKeyboard.getKeys();
+const enterKey = keys && keys.getEnterKey();
+
+// After:
+const enterKey = keyboards.getCurrentKeyboard()?.getKeys()?.getEnterKey();
+```
+
+**Documentation:** [link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+
+**Discussion Notes / Link to Thread:** [link](https://groups.google.com/a/chromium.org/g/chromium-dev/c/DHLSm05HHlo)
