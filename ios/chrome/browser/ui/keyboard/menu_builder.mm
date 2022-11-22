@@ -49,24 +49,26 @@
   [builder insertChildMenu:viewMenu atStartOfMenuForIdentifier:UIMenuView];
 
   // History
-  UIMenu* historyMenu = [UIMenu menuWithTitle:@"History"
-                                     children:@[
-                                       UIKeyCommand.cr_back,
-                                       UIKeyCommand.cr_forward,
-                                       UIKeyCommand.cr_reopenLastClosedTab,
-                                       UIKeyCommand.cr_showHistory,
-                                       UIKeyCommand.cr_clearBrowsingData,
-                                     ]];
+  UIMenu* historyMenu =
+      [UIMenu menuWithTitle:NSLocalizedString(@"IDS_IOS_KEYBOARD_HISTORY", @"")
+                   children:@[
+                     UIKeyCommand.cr_back,
+                     UIKeyCommand.cr_forward,
+                     UIKeyCommand.cr_reopenLastClosedTab,
+                     UIKeyCommand.cr_showHistory,
+                     UIKeyCommand.cr_clearBrowsingData,
+                   ]];
   [builder insertSiblingMenu:historyMenu afterMenuForIdentifier:UIMenuView];
 
   // Bookmarks
-  UIMenu* bookmarksMenu = [UIMenu menuWithTitle:@"Bookmarks"
-                                       children:@[
-                                         UIKeyCommand.cr_showBookmarks,
-                                         UIKeyCommand.cr_addToBookmarks,
-                                         UIKeyCommand.cr_showReadingList,
-                                         UIKeyCommand.cr_addToReadingList,
-                                       ]];
+  UIMenu* bookmarksMenu = [UIMenu
+      menuWithTitle:NSLocalizedString(@"IDS_IOS_KEYBOARD_BOOKMARKS", @"")
+           children:@[
+             UIKeyCommand.cr_showBookmarks,
+             UIKeyCommand.cr_addToBookmarks,
+             UIKeyCommand.cr_showReadingList,
+             UIKeyCommand.cr_addToReadingList,
+           ]];
   [builder insertSiblingMenu:bookmarksMenu
       afterMenuForIdentifier:historyMenu.identifier];
 
