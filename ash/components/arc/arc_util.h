@@ -22,10 +22,6 @@ namespace aura {
 class Window;
 }  // namespace aura
 
-namespace base {
-struct SystemMemoryInfoKB;
-}  // namespace base
-
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -61,9 +57,6 @@ enum class ArcVmUreadaheadMode {
   // ARCVM ureadahead is turned off for disabled mode.
   DISABLED,
 };
-
-using SystemMemoryInfoCallback =
-    base::RepeatingCallback<bool(base::SystemMemoryInfoKB*)>;
 
 // Upstart Job Description
 struct JobDesc {
@@ -131,7 +124,7 @@ bool IsUreadaheadDisabled();
 
 // Returns mode of operation for ureadahead during the ARCVM boot flow.
 // Valid modes are readahead, generate, or disabled.
-ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback);
+ArcVmUreadaheadMode GetArcVmUreadaheadMode();
 
 // Returns true if ARC should always start within the primary user session
 // (opted in user or not), and other supported mode such as guest and Kiosk

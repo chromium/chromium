@@ -206,8 +206,7 @@ std::vector<std::string> GenerateKernelCmdline(const StartParams& start_params,
       base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
   };
 
-  const ArcVmUreadaheadMode mode =
-      GetArcVmUreadaheadMode(base::BindRepeating(&base::GetSystemMemoryInfo));
+  const ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
   switch (mode) {
     case ArcVmUreadaheadMode::READAHEAD:
       result.push_back("androidboot.arcvm_ureadahead_mode=readahead");
@@ -611,8 +610,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       break;
   }
 
-  const ArcVmUreadaheadMode mode =
-      GetArcVmUreadaheadMode(base::BindRepeating(&base::GetSystemMemoryInfo));
+  const ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
   switch (mode) {
     using StartArcVmRequest = vm_tools::concierge::StartArcVmRequest;
     case ArcVmUreadaheadMode::READAHEAD:

@@ -55,12 +55,6 @@ constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
 
-// Do not run ureadahead in vm for devices with less than 8GB due to memory
-// pressure issues since system will likely drop caches in this case.
-// The value should match platform2/arc/vm/scripts/init/arcvm-ureadahead.conf
-// in Chrome OS.
-constexpr int kReadaheadTotalMinMemoryInKb = 7500000;
-
 // Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
 // and returns a decoded string.
 std::string DecodeJobName(const std::string& raw_job_name) {
@@ -163,18 +157,10 @@ bool IsUreadaheadDisabled() {
       ash::switches::kArcDisableUreadahead);
 }
 
-ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
-  base::SystemMemoryInfoKB mem_info;
-  DCHECK(callback);
-  if (!callback.Run(&mem_info)) {
-    LOG(ERROR) << "Failed to get system memory info";
-    return ArcVmUreadaheadMode::DISABLED;
-  }
-  ArcVmUreadaheadMode mode = (mem_info.total > kReadaheadTotalMinMemoryInKb)
-                                 ? IsUreadaheadDisabled()
-                                       ? ArcVmUreadaheadMode::DISABLED
-                                       : ArcVmUreadaheadMode::READAHEAD
-                                 : ArcVmUreadaheadMode::DISABLED;
+ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
+  ArcVmUreadaheadMode mode = IsUreadaheadDisabled()
+                                 ? ArcVmUreadaheadMode::DISABLED
+                                 : ArcVmUreadaheadMode::READAHEAD;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcVmUreadaheadMode)) {
     const std::string value =

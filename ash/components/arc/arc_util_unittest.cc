@@ -335,41 +335,26 @@ TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
 }
 
 TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
-  constexpr char kArcMemProfile4GbName[] = "4G";
-  constexpr char kArcMemProfile8GbName[] = "8G";
-  auto callback_disabled = base::BindRepeating(&GetSystemMemoryInfoForTesting,
-                                               kArcMemProfile4GbName);
-  auto callback_readahead = base::BindRepeating(&GetSystemMemoryInfoForTesting,
-                                                kArcMemProfile8GbName);
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   command_line->InitFromArgv({""});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
-            GetArcVmUreadaheadMode(callback_readahead));
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
 
   command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
-            GetArcVmUreadaheadMode(callback_readahead));
-
-  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
-            GetArcVmUreadaheadMode(callback_disabled));
+  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED, GetArcVmUreadaheadMode());
 
   command_line->InitFromArgv(
       {"", "--arc-disable-ureadahead", "--arcvm-ureadahead-mode=readahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
-            GetArcVmUreadaheadMode(callback_readahead));
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=readahead"});
-  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
-            GetArcVmUreadaheadMode(callback_readahead));
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=generate"});
-  EXPECT_EQ(ArcVmUreadaheadMode::GENERATE,
-            GetArcVmUreadaheadMode(callback_readahead));
+  EXPECT_EQ(ArcVmUreadaheadMode::GENERATE, GetArcVmUreadaheadMode());
 
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=disabled"});
-  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
-            GetArcVmUreadaheadMode(callback_readahead));
+  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED, GetArcVmUreadaheadMode());
 }
 
 TEST_F(ArcUtilTest, UreadaheadDefault) {
