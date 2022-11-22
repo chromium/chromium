@@ -95,8 +95,8 @@ class DIPSDatabase {
   // (useful for debugging).
   size_t GarbageCollect();
 
-  // Removes entries for sites without user interaction or site storage within
-  // |kMaxAge|. Returns the number of entries deleted.
+  // Removes entries for sites without user interaction within |kMaxAge|.
+  // Returns the number of entries deleted.
   size_t GarbageCollectExpired();
 
   // Removes the |purge_goal| entries with the oldest

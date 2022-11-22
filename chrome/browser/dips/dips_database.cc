@@ -684,7 +684,8 @@ size_t DIPSDatabase::GarbageCollect() {
   num_deleted += GarbageCollectExpired();
 
   // If expiration did not purge enough entries, remove entries with the oldest
-  // |last_user_interaction_time| until the |purge_goal| is satisfied.
+  // |MAX(last_user_interaction_time,last_site_storage_time)| values until the
+  // |purge_goal| is satisfied.
   if (num_deleted < static_cast<size_t>(purge_goal)) {
     num_deleted += GarbageCollectOldest(purge_goal - num_deleted);
   }
