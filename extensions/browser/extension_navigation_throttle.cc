@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -30,6 +31,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -277,19 +279,31 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
-  // A browser-initiated navigation is always considered trusted, and thus
-  // allowed.
-  if (!navigation_handle()->IsRendererInitiated())
-    return content::NavigationThrottle::PROCEED;
-
-  // A renderer-initiated request without an initiator origin is a history
-  // traversal to an entry that was originally loaded in a browser-initiated
-  // navigation. Those are trusted, too.
+  // Automatically trusted navigation:
+  // * Browser-initiated navigations without an initiator origin happen when a
+  //   user directly triggers a navigation (e.g. using the omnibox, or the
+  //   bookmark bar).
+  // * Renderer-initiated navigations without an initiator origin represent a
+  //   history traversal to an entry that was originally loaded in a
+  //   browser-initiated navigation.
   if (!navigation_handle()->GetInitiatorOrigin().has_value())
     return content::NavigationThrottle::PROCEED;
 
+  // Not automatically trusted navigation:
+  // * Some browser-initiated navigations with an initiator origin are not
+  //   automatically trusted and allowed. For example, see the scenario where
+  //   a frame-reload is triggered from the context menu in crbug.com/1343610.
+  // * An initiator origin matching an extension. There are some MIME type
+  //   handlers in an allow list. For example, there are a variety of mechanisms
+  //   that can initiate navigations from the PDF viewer. The extension isn't
+  //   navigated, but the page that contains the PDF can be.
   const url::Origin& initiator_origin =
       navigation_handle()->GetInitiatorOrigin().value();
+  if (initiator_origin.scheme() == kExtensionScheme &&
+      base::Contains(MimeTypesHandler::GetMIMETypeAllowlist(),
+                     initiator_origin.host())) {
+    return content::NavigationThrottle::PROCEED;
+  }
 
   // Navigations from chrome://, devtools:// or chrome-search:// pages need to
   // be allowed, even if the target |url| is not web-accessible.  See also:

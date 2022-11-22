@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
@@ -709,6 +710,110 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     ResultCatcher catcher;
     ASSERT_TRUE(content::ExecuteScript(extension_tab, kScript));
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  }
+}
+
+// Verify extension resource access if it's in an iframe. Regression test for
+// crbug.com/1343610.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  // Load an extension which has one resource that is web accessible and one
+  // that is not.
+  TestExtensionDir extension_dir;
+  static constexpr char kManifestStub[] = R"({
+    "name": "Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "web_accessible_resources": [
+      {
+        "resources": [ "web_accessible_resource.html" ],
+        "matches": [ "<all_urls>" ]
+      }
+    ]
+  })";
+  extension_dir.WriteManifest(kManifestStub);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("web_accessible_resource.html"),
+                          "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("extension_resource.html"), "");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  EXPECT_TRUE(extension);
+
+  // Allow navigation from a web frame to a web accessible resource.
+  {
+    // Navigate the main frame with a renderer initiated navigation to a blank
+    // web page. This should succeed.
+    const GURL gurl = embedded_test_server()->GetURL("/iframe_blank.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
+    EXPECT_TRUE(iframe);
+
+    // Navigate the iframe with a renderer initiated navigation to a web
+    // accessible resource. This should succeed.
+    GURL target = extension->GetResourceURL("web_accessible_resource.html");
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+    iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    EXPECT_EQ(target, iframe->GetLastCommittedURL());
+  }
+
+  // Prevent navigation from a web frame to a non-web accessible resource.
+  {
+    // Navigate the main frame with a renderer initiated navigation to a blank
+    // web page. This should succeed.
+    const GURL gurl = embedded_test_server()->GetURL("/iframe_blank.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
+    EXPECT_TRUE(iframe);
+    GURL target = extension->GetResourceURL("extension_resource.html");
+
+    // Navigate the iframe with a renderer initiated navigation to an extension
+    // resource that isn't a web accessible resource. This should be blocked.
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+    EXPECT_EQ(GURL("chrome-extension://invalid/"),
+              iframe->GetLastCommittedURL());
+
+    // Navigate the iframe with a browser initiated navigation to an extension
+    // resource. This should be blocked because the origin is not opaque, as
+    // it's embedded in a web context.
+    content::TestNavigationObserver reload_observer(web_contents);
+    EXPECT_TRUE(iframe->Reload());
+    reload_observer.Wait();
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+              reload_observer.last_net_error_code());
+    iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    EXPECT_FALSE(reload_observer.last_navigation_succeeded());
+    EXPECT_EQ(GURL("chrome-extension://invalid/"),
+              iframe->GetLastCommittedURL());
+
+    // Verify iframe browser initiated navigation (to test real UI behavior).
+    iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    content::TestNavigationObserver browser_initiated_observer(target);
+    NavigateParams params(browser(), target, ui::PAGE_TRANSITION_RELOAD);
+    params.frame_tree_node_id = iframe->GetFrameTreeNodeId();
+    params.is_renderer_initiated = false;
+    params.initiator_origin = embedded_test_server()->GetOrigin();
+    browser_initiated_observer.WatchExistingWebContents();
+    ui_test_utils::NavigateToURL(&params);
+    browser_initiated_observer.Wait();
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+              browser_initiated_observer.last_net_error_code());
+    EXPECT_FALSE(browser_initiated_observer.last_navigation_succeeded());
+    iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    EXPECT_EQ(target, iframe->GetLastCommittedURL());
   }
 }
 
