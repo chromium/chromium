@@ -63,8 +63,8 @@ if (target_cpu == "x64") {
   targetarch = "arm64"
 }
 
-# Prepares a CIPD archive, produces a corresponding LICENSE file and generates
-# a manifest file.
+# Prepares a CIPD archive, produces a corresponding LICENSE file,
+# LICENSE.spdx.json file and generates a manifest file.
 #
 # Parameters:
 #   package_subdirectory: Specify the subdirectory relative to
@@ -92,19 +92,19 @@ template("cipd_archive") {
                            "testonly",
                          ])
 
+  _license_path = "${target_gen_dir}/${target_name}/LICENSE"
+  _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
+  _license_target = "${_invoker_dir}:${invoker.target_name}${_archive_suffix}"
+
+  # GN is used by the script and is thus an input.
+  if (host_os == "mac") {
+    _gn_path = "//buildtools/mac/gn"
+  } else if (host_os == "linux") {
+    _gn_path = "//buildtools/linux64/gn"
+  }
+
   # Produces a consolidated license file.
   action("${target_name}_license") {
-    _license_path = "${target_gen_dir}/${target_name}/LICENSE"
-    _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
-    _license_target = "${_invoker_dir}:${invoker.target_name}${_archive_suffix}"
-
-    # GN is used by the script and is thus an input.
-    if (host_os == "mac") {
-      _gn_path = "//buildtools/mac/gn"
-    } else if (host_os == "linux") {
-      _gn_path = "//buildtools/linux64/gn"
-    }
-
     script = "//tools/licenses/licenses.py"
     inputs = [ "$_gn_path" ]
     outputs = [ _license_path ]
@@ -118,10 +118,34 @@ template("cipd_archive") {
     ]
   }
 
+  # Produces a consolidated license file in spdx format.
+  action("${target_name}_license_spdx") {
+    _license_path_spdx = "${_license_path}.spdx.json"
+
+    script = "//tools/licenses/licenses.py"
+    inputs = [ "$_gn_path" ]
+    outputs = [ _license_path_spdx ]
+    args = [
+      "license_file",
+      rebase_path(_license_path_spdx, root_build_dir),
+      "--gn-target",
+      _license_target,
+      "--gn-out-dir",
+      ".",
+      "--format",
+      "spdx",
+      "--spdx-doc-name",
+      "${invoker.target_name}",
+    ]
+  }
+
   if (!defined(deps)) {
     deps = []
   }
-  deps += [ ":${target_name}_license" ]
+  deps += [
+    ":${target_name}_license",
+    ":${target_name}_license_spdx",
+  ]
 
   if (!defined(sources)) {
     sources = []
