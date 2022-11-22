@@ -429,8 +429,12 @@ void ChipController::CollapsePrompt(bool allow_restart) {
 }
 
 void ChipController::HideChip() {
+  if (!chip_->GetVisible())
+    return;
+
   chip_->SetVisible(false);
-  // When the chip is hidden the locationbar layout should be updated.
+  // When the chip visibility changed from visible -> hidden, the locationbar
+  // layout should be updated.
   GetLocationBarView()->InvalidateLayout();
 }
 
