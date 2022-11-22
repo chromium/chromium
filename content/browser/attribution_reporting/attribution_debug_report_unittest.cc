@@ -442,7 +442,7 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
            "source_type": "navigation",
            "trigger_data": "0"
          },
-         "type": "trigger-event-low-prioirty"
+         "type": "trigger-event-low-priority"
        }])json"},
       {EventLevelResult::kDroppedForNoise,
        /*replaced_event_level_report=*/absl::nullopt,

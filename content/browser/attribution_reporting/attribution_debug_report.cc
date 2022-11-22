@@ -167,7 +167,7 @@ std::string SerializeReportDataType(DebugDataType data_type) {
     case DebugDataType::kTriggerEventNoise:
       return "trigger-event-noise";
     case DebugDataType::kTriggerEventLowPriority:
-      return "trigger-event-low-prioirty";
+      return "trigger-event-low-priority";
     case DebugDataType::kTriggerEventExcessiveReports:
       return "trigger-event-excessive-reports";
     case DebugDataType::kTriggerEventStorageLimit:
