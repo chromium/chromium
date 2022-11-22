@@ -20,13 +20,17 @@
 class ReadAnythingButtonView : public views::View {
  public:
   ReadAnythingButtonView(const views::ImageButton::PressedCallback callback,
-                         const gfx::ImageSkia& icon,
+                         const gfx::VectorIcon& icon,
+                         int icon_size,
+                         SkColor icon_color,
                          const std::u16string& tooltip);
   ReadAnythingButtonView(const ReadAnythingButtonView&) = delete;
   ReadAnythingButtonView& operator=(const ReadAnythingButtonView&) = delete;
   ~ReadAnythingButtonView() override;
 
-  void UpdateIcon(const gfx::ImageSkia& icon);
+  void UpdateIcon(const gfx::VectorIcon& icon,
+                  int icon_size,
+                  SkColor icon_color);
 
  private:
   raw_ptr<views::ImageButton> button_;

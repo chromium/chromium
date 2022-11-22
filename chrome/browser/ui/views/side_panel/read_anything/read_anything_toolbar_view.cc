@@ -51,16 +51,14 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      gfx::CreateVectorIcon(kTextDecreaseIcon, kSmallIconSize,
-                            gfx::kPlaceholderColor),
+      kTextDecreaseIcon, kSmallIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      gfx::CreateVectorIcon(kTextIncreaseIcon, kLargeIconSize,
-                            gfx::kPlaceholderColor),
+      kTextIncreaseIcon, kLargeIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
@@ -162,11 +160,11 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_combobox_->SetBackground(
       views::CreateSolidBackground(new_theme->background_color));
 
-  decrease_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
-      kTextDecreaseIcon, kSmallIconSize, new_theme->foreground_color));
+  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kSmallIconSize,
+                                         new_theme->foreground_color);
 
-  increase_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
-      kTextIncreaseIcon, kLargeIconSize, new_theme->foreground_color));
+  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kLargeIconSize,
+                                         new_theme->foreground_color);
 
   for (views::Separator* separator : separators_) {
     separator->SetColorId(delegate_->GetForegroundColorId());

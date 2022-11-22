@@ -6,11 +6,15 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 
 ReadAnythingButtonView::ReadAnythingButtonView(
     views::ImageButton::PressedCallback callback,
-    const gfx::ImageSkia& icon,
+    const gfx::VectorIcon& icon,
+    int icon_size,
+    SkColor icon_color,
     const std::u16string& tooltip) {
   // Create and set a BoxLayout with insets to hold the button.
   auto button_layout_manager = std::make_unique<views::BoxLayout>(
@@ -25,19 +29,21 @@ ReadAnythingButtonView::ReadAnythingButtonView(
   SetLayoutManager(std::move(button_layout_manager));
 
   // Create the image button.
-  auto button = std::make_unique<views::ImageButton>(std::move(callback));
-  button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button->SetImageModel(views::Button::STATE_NORMAL,
-                        ui::ImageModel::FromImageSkia(icon));
+  auto button = views::CreateVectorImageButton(std::move(callback));
+  views::SetImageFromVectorIconWithColor(button.get(), icon, icon_size,
+                                         icon_color, icon_color);
+  views::InstallCircleHighlightPathGenerator(button.get());
   button->SetTooltipText(tooltip);
 
   // Add the button to the view.
   button_ = AddChildView(std::move(button));
 }
 
-void ReadAnythingButtonView::UpdateIcon(const gfx::ImageSkia& icon) {
-  button_->SetImage(views::Button::STATE_NORMAL, icon);
+void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
+                                        int icon_size,
+                                        SkColor icon_color) {
+  views::SetImageFromVectorIconWithColor(button_, icon, icon_size, icon_color,
+                                         icon_color);
 }
 
 ReadAnythingButtonView::~ReadAnythingButtonView() = default;
