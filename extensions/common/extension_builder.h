@@ -120,9 +120,7 @@ class ExtensionBuilder {
     return *this;
   }
   template <typename T>
-  ExtensionBuilder& SetManifestPath(
-      std::initializer_list<base::StringPiece> path,
-      T&& value) {
+  ExtensionBuilder& SetManifestPath(base::StringPiece path, T&& value) {
     SetManifestPathImpl(path, base::Value(std::forward<T>(value)));
     return *this;
   }
@@ -135,9 +133,8 @@ class ExtensionBuilder {
     return *this;
   }
   template <typename T>
-  ExtensionBuilder& SetManifestPath(
-      std::initializer_list<base::StringPiece> path,
-      std::unique_ptr<T> value) {
+  ExtensionBuilder& SetManifestPath(base::StringPiece path,
+                                    std::unique_ptr<T> value) {
     SetManifestPathImpl(path, std::move(*value));
     return *this;
   }
@@ -189,8 +186,7 @@ class ExtensionBuilder {
   struct ManifestData;
 
   void SetManifestKeyImpl(base::StringPiece key, base::Value value);
-  void SetManifestPathImpl(std::initializer_list<base::StringPiece> path,
-                           base::Value value);
+  void SetManifestPathImpl(base::StringPiece path, base::Value value);
 
   // Information for constructing the manifest; either metadata about the
   // manifest which will be used to construct it, or the dictionary itself. Only

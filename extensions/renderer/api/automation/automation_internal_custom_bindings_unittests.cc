@@ -29,7 +29,7 @@ class AutomationInternalCustomBindingsTest
     // Bootstrap a simple extension with desktop automation permissions.
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("testExtension")
-            .SetManifestPath({"automation", "desktop"}, true)
+            .SetManifestPath("automation.desktop", true)
             .SetLocation(mojom::ManifestLocation::kComponent)
             .Build();
     RegisterExtension(extension);

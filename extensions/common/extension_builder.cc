@@ -33,9 +33,9 @@ struct ExtensionBuilder::ManifestData {
   using ContentScriptEntry = std::pair<std::string, std::vector<std::string>>;
   std::vector<ContentScriptEntry> content_scripts;
 
-  absl::optional<base::Value> extra;
+  absl::optional<base::Value::Dict> extra;
 
-  std::unique_ptr<base::DictionaryValue> GetValue() const {
+  base::Value::Dict GetValue() const {
     DictionaryBuilder manifest;
     manifest.Set(manifest_keys::kName, name)
         .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
@@ -106,20 +106,17 @@ struct ExtensionBuilder::ManifestData {
                    scripts_value.Build());
     }
 
-    std::unique_ptr<base::DictionaryValue> result = manifest.Build();
-    if (extra) {
-      const base::DictionaryValue* extra_dict = nullptr;
-      extra->GetAsDictionary(&extra_dict);
-      result->MergeDictionary(extra_dict);
-    }
+    base::Value::Dict result = manifest.BuildDict();
+    if (extra)
+      result.Merge(extra->Clone());
 
     return result;
   }
 
-  base::Value* get_extra() {
+  base::Value::Dict& get_extra() {
     if (!extra)
-      extra.emplace(base::Value::Type::DICTIONARY);
-    return &extra.value();
+      extra.emplace();
+    return *extra;
   }
 };
 
@@ -149,8 +146,9 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
   std::string error;
   scoped_refptr<const Extension> extension = Extension::Create(
       path_, location_,
-      manifest_data_ ? *manifest_data_->GetValue() : *manifest_value_, flags_,
-      id_, &error);
+      manifest_data_ ? base::DictAdapterForMigration(manifest_data_->GetValue())
+                     : *manifest_value_,
+      flags_, id_, &error);
 
   CHECK(error.empty()) << error;
   CHECK(extension);
@@ -160,9 +158,8 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
 
 base::Value ExtensionBuilder::BuildManifest() {
   CHECK(manifest_data_ || manifest_value_);
-  return manifest_data_
-             ? base::Value::FromUniquePtrValue(manifest_data_->GetValue())
-             : manifest_value_->Clone();
+  return manifest_data_ ? base::Value(manifest_data_->GetValue())
+                        : manifest_value_->Clone();
 }
 
 ExtensionBuilder& ExtensionBuilder::AddPermission(
@@ -249,7 +246,7 @@ ExtensionBuilder& ExtensionBuilder::SetManifest(base::Value::Dict manifest) {
 ExtensionBuilder& ExtensionBuilder::MergeManifest(const base::Value& to_merge) {
   CHECK(to_merge.is_dict());
   if (manifest_data_) {
-    manifest_data_->get_extra()->MergeDictionary(&to_merge);
+    manifest_data_->get_extra().Merge(to_merge.GetDict().Clone());
   } else {
     manifest_value_->MergeDictionary(&to_merge);
   }
@@ -274,14 +271,13 @@ ExtensionBuilder& ExtensionBuilder::SetID(const std::string& id) {
 void ExtensionBuilder::SetManifestKeyImpl(base::StringPiece key,
                                           base::Value value) {
   CHECK(manifest_data_);
-  manifest_data_->get_extra()->SetKey(key, std::move(value));
+  manifest_data_->get_extra().Set(key, std::move(value));
 }
 
-void ExtensionBuilder::SetManifestPathImpl(
-    std::initializer_list<base::StringPiece> path,
-    base::Value value) {
+void ExtensionBuilder::SetManifestPathImpl(base::StringPiece path,
+                                           base::Value value) {
   CHECK(manifest_data_);
-  manifest_data_->get_extra()->SetPath(path, std::move(value));
+  manifest_data_->get_extra().SetByDottedPath(path, std::move(value));
 }
 
 }  // namespace extensions

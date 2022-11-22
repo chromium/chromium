@@ -58,8 +58,7 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
         .AddPermission(kPermission2)
         .AddPermission(kPermission3);
     if (is_app) {
-      extensionBuilder.SetManifestPath({"app", "launch", "web_url"},
-                                       kAppLaunchUrl);
+      extensionBuilder.SetManifestPath("app.launch.web_url", kAppLaunchUrl);
     }
     if (from_webstore) {
       extensionBuilder.AddFlags(extensions::Extension::FROM_WEBSTORE);

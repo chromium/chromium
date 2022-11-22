@@ -176,7 +176,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   // happen because of https://crbug.com/782959.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetManifestPath({"chrome_url_overrides", "newtab"}, "newtab.html")
+          .SetManifestPath("chrome_url_overrides.newtab", "newtab.html")
           .Build();
 
   const GURL newtab_url = extension->GetResourceURL("newtab.html");
