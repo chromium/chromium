@@ -30,7 +30,7 @@
   sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);
 
   [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
-  Promise<USVString> deprecatedURNToURL(USVString uuid_url);
+  Promise<USVString> deprecatedURNToURL(USVString uuid_url, optional boolean send_reports = false);
 
   [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
   Promise<void> deprecatedReplaceInURN(USVString uuid_url, record<USVString, USVString> replacements);

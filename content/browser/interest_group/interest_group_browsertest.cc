@@ -1000,13 +1000,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   absl::optional<GURL> ConvertFencedFrameURNToURLInJS(
       const GURL& urn_url,
+      bool send_reports = false,
       const absl::optional<ToRenderFrameHost> execution_target =
           absl::nullopt) {
     ToRenderFrameHost adapter(execution_target ? *execution_target : shell());
-    EvalJsResult result = EvalJs(adapter, JsReplace(R"(
-      navigator.deprecatedURNToURL($1)
-    )",
-                                                    urn_url));
+    EvalJsResult result =
+        EvalJs(adapter, JsReplace("navigator.deprecatedURNToURL($1, $2)",
+                                  urn_url, send_reports));
     if (!result.error.empty() || result.value.is_none())
       return absl::nullopt;
     return GURL(result.ExtractString());
@@ -8560,9 +8560,78 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
 }
 
 // navigator.deprecatedURNToURL returns null for an invalid URN.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, InvalidURN) {
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLInvalidURN) {
   GURL invalid_urn("urn:uuid:c36973b5-e5d9-de59-e4c4-364f137b3c7a");
   EXPECT_EQ(absl::nullopt, ConvertFencedFrameURNToURLInJS(invalid_urn));
+}
+
+// Tests navigator.deprecatedURNToURL for a valid URN. Covers both the cases
+// where sendReports is false and true. Both are done in the same test because
+// there's no way to wait until reports aren't sent, so first run a case that
+// doesn't send reports, then run a case that does, and finally make sure that
+// reports were only sent for the first case.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
+  const struct {
+    bool send_reports;
+    // Host for buyer, seller, and publisher. Use a different hostname for each
+    // loop iteration so they can use different interest groups.
+    const char* host;
+    // Path for reports. Have to be different so can make reports are only send
+    // when `send_reports` is true.
+    GURL report_url;
+  } kTestCases[] = {
+      {
+          /*send_reports=*/false,
+          /*host=*/"a.test",
+          /*report_path=*/https_server_->GetURL("c.test", "/report_for_a"),
+      },
+      {
+          /*send_reports=*/true,
+          /*host=*/"b.test",
+          /*report_path=*/https_server_->GetURL("c.test", "/report_for_b"),
+      }};
+
+  for (const auto& test_case : kTestCases) {
+    GURL test_url = https_server_->GetURL(test_case.host, "/echo");
+    ASSERT_TRUE(NavigateToURL(shell(), test_url));
+    url::Origin test_origin = url::Origin::Create(test_url);
+    GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+    EXPECT_EQ(kSuccess,
+              JoinInterestGroupAndVerify(
+                  /*owner=*/test_origin,
+                  // This test uses a script that sends reports to name of the
+                  // interest group, so use the report URL as the name.
+                  /*name=*/test_case.report_url.spec(),
+                  /*priority=*/0.0, /*execution_mode=*/
+                  blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                  /*bidding_url=*/
+                  https_server_->GetURL(
+                      test_case.host,
+                      "/interest_group/bidding_logic_report_to_name.js"),
+                  /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+    std::string auction_config = JsReplace(
+        R"({
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1]
+        })",
+        test_origin,
+        https_server_->GetURL(test_case.host,
+                              "/interest_group/decision_logic.js"));
+    auto result = RunAuctionAndWait(auction_config);
+    GURL urn_url = GURL(result.ExtractString());
+    EXPECT_TRUE(urn_url.is_valid());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    EXPECT_EQ(ad_url,
+              ConvertFencedFrameURNToURLInJS(urn_url, test_case.send_reports));
+  }
+
+  // Only the `send_reports` == true case should have sent a report. Wait for
+  // it, and then check that the report URL for the first case was not seen.
+  WaitForURL(kTestCases[1].report_url);
+  EXPECT_FALSE(HasServerSeenUrl(kTestCases[0].report_url));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {

@@ -1505,6 +1505,7 @@ Vector<String> NavigatorAuction::adAuctionComponents(
 ScriptPromise NavigatorAuction::deprecatedURNToURL(
     ScriptState* script_state,
     const String& uuid_url_string,
+    bool send_reports,
     ExceptionState& exception_state) {
   KURL uuid_url(uuid_url_string);
   if (!blink::IsValidUrnUuidURL(GURL(uuid_url))) {
@@ -1515,7 +1516,7 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->DeprecatedGetURLFromURN(
-      std::move(uuid_url),
+      std::move(uuid_url), send_reports,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::GetURLFromURNComplete, WrapPersistent(this))));
   return promise;
@@ -1525,9 +1526,11 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
     ScriptState* script_state,
     Navigator& navigator,
     const String& uuid_url,
+    bool send_reports,
     ExceptionState& exception_state) {
   return From(ExecutionContext::From(script_state), navigator)
-      .deprecatedURNToURL(script_state, uuid_url, exception_state);
+      .deprecatedURNToURL(script_state, uuid_url, send_reports,
+                          exception_state);
 }
 
 ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
