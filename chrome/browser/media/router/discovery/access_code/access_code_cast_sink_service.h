@@ -194,6 +194,8 @@ class AccessCodeCastSinkService : public KeyedService,
                            RefreshStoredDeviceInfo);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RefreshStoredDeviceTimer);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           HandleMediaRouteAdded);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -220,6 +222,9 @@ class AccessCodeCastSinkService : public KeyedService,
   // Handles removal from media router via expiration if a route with an access
   // code cast sink has ended.
   void HandleMediaRouteRemovedByAccessCode(const MediaSinkInternal* sink);
+
+  // Reports to metrics whenever the added route is to an access code sink.
+  void HandleMediaRouteAdded(const MediaSinkInternal* sink);
 
   void OnAccessCodeRouteRemoved(const MediaSinkInternal* sink);
   void OpenChannelIfNecessary(const MediaSinkInternal& sink,

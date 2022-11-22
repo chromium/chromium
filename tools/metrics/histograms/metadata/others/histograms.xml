@@ -220,6 +220,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Discovery.DeviceDurationOnRoute"
+    units="seconds" expires_after="2023-03-12">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The duration in seconds an access code device will stay in the list of cast
+    devices. Recorded on successful creation of a cast session to an access code
+    device. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Discovery.RememberedDevicesCount"
     units="cast devices" expires_after="2023-05-07">
   <owner>bzielinski@google.com</owner>

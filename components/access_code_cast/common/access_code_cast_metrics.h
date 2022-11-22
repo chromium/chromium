@@ -82,6 +82,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramAddSinkResultNew[];
   static const char kHistogramAddSinkResultRemembered[];
   static const char kHistogramCastModeOnSuccess[];
+  static const char kHistogramDeviceDurationOnRoute[];
   static const char kHistogramDialogCloseReason[];
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
@@ -94,6 +95,10 @@ class AccessCodeCastMetrics {
 
   // Records the count of ACCESS_CODE_NOT_FOUND errors per instance of dialog.
   static void RecordAccessCodeNotFoundCount(int count);
+
+  // Records the value of the device duration pref on successful creation of
+  // an access code route.
+  static void RecordAccessCodeRouteStarted(base::TimeDelta duration);
 
   // Records the result of adding an access code sink.
   static void RecordAddSinkResult(bool is_remembered,

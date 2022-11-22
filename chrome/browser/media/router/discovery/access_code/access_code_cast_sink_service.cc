@@ -172,7 +172,27 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
                       new_routes.begin(), new_routes.end(),
                       std::inserter(removed_routes, removed_routes.end()));
 
+  std::vector<MediaRoute::Id> added_routes;
+  std::set_difference(new_routes.begin(), new_routes.end(),
+                      previous_routes_.begin(), previous_routes_.end(),
+                      std::inserter(added_routes, removed_routes.end()));
+
   previous_routes_ = new_routes;
+
+  if (added_routes.size() > 0) {
+    base::PostTaskAndReplyWithResult(
+        access_code_sink_service_->GetCastMediaSinkServiceImpl()
+            ->task_runner()
+            .get(),
+        FROM_HERE,
+        base::BindOnce(
+            &CastMediaSinkServiceImpl::GetSinkById,
+            base::Unretained(
+                access_code_sink_service_->GetCastMediaSinkServiceImpl()),
+            MediaRoute::GetSinkIdFromMediaRouteId(*added_routes.begin())),
+        base::BindOnce(&AccessCodeCastSinkService::HandleMediaRouteAdded,
+                       access_code_sink_service_->GetWeakPtr()));
+  }
 
   // No routes were removed.
   if (removed_routes.empty())
@@ -232,6 +252,15 @@ void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCode(
       base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeRouteRemoved,
                      weak_ptr_factory_.GetWeakPtr(), sink),
       kExpirationDelay);
+}
+
+void AccessCodeCastSinkService::HandleMediaRouteAdded(
+    const MediaSinkInternal* sink) {
+  if (!IsSinkValidAccessCodeSink(sink))
+    return;
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      GetAccessCodeDeviceDurationPref(profile_));
 }
 
 void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(

@@ -119,6 +119,27 @@ TEST(AccessCodeCastMetricsTest, RecordAccessCodeNotFoundCount) {
                                     3);
 }
 
+TEST(AccessCodeCastMetricsTest, RecordAccessCodeRouteStarted) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(base::Seconds(0));
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0, 1);
+
+  // Ensure the functions properly converts duration to seconds
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Milliseconds(10000));
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Milliseconds(20000));
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 20, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 3);
+}
+
 TEST(AccessCodeCastMetricsTest, RecordDialogLoadTime) {
   base::HistogramTester histogram_tester;
 

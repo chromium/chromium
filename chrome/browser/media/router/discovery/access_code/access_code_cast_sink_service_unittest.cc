@@ -1387,4 +1387,69 @@ TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceTimer) {
                    ->IsRunning());
 }
 
+TEST_F(AccessCodeCastSinkServiceTest, HandleMediaRouteAdded) {
+  // Initialize histogram tester so we can ensure metrics are collected.
+  base::HistogramTester histogram_tester;
+
+  // Set duration pref since it will be recorded in metrics.
+  SetDeviceDurationPrefForTest(base::Seconds(10));
+
+  // Create fake sinks for the test.
+
+  // cast_sink1 is not an access code sink.
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  auto cast_data1 = cast_sink1.cast_data();
+  cast_data1.discovery_type = CastDiscoveryType::kMdns;
+  cast_sink1.set_cast_data(cast_data1);
+
+  // cast_sink2 is a new access code sink.
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  auto cast_data2 = cast_sink2.cast_data();
+  cast_data2.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  cast_sink2.set_cast_data(cast_data2);
+
+  // cast_sink3 is a saved access code sink.
+  MediaSinkInternal cast_sink3 = CreateCastSink(3);
+  auto cast_data3 = cast_sink3.cast_data();
+  cast_data3.discovery_type = CastDiscoveryType::kAccessCodeRememberedDevice;
+  cast_sink3.set_cast_data(cast_data3);
+
+  // The histogram should start with nothing logged.
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
+
+  access_code_cast_sink_service_->HandleMediaRouteAdded(&cast_sink1);
+
+  // The histogram should not be logged to after a non access code route starts.
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
+
+  access_code_cast_sink_service_->HandleMediaRouteAdded(&cast_sink2);
+
+  // The histogram should log when a route starts to a new access code device.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
+
+  access_code_cast_sink_service_->HandleMediaRouteAdded(&cast_sink3);
+
+  // The histogram should log when a route starts to a saved access code device.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 2);
+
+  // Ensure various pref values are can be logged.
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+  access_code_cast_sink_service_->HandleMediaRouteAdded(&cast_sink2);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 100, 1);
+
+  SetDeviceDurationPrefForTest(base::Seconds(1000));
+  access_code_cast_sink_service_->HandleMediaRouteAdded(&cast_sink2);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 1000, 1);
+
+  // Histogram logs should not have been lost.
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 4);
+}
+
 }  // namespace media_router

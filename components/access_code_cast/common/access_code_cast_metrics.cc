@@ -18,6 +18,8 @@ const char AccessCodeCastMetrics::kHistogramAddSinkResultRemembered[] =
     "AccessCodeCast.Discovery.AddSinkResult.Remembered";
 const char AccessCodeCastMetrics::kHistogramCastModeOnSuccess[] =
     "AccessCodeCast.Discovery.CastModeOnSuccess";
+const char AccessCodeCastMetrics::kHistogramDeviceDurationOnRoute[] =
+    "AccessCodeCast.Discovery.DeviceDurationOnRoute";
 const char AccessCodeCastMetrics::kHistogramDialogCloseReason[] =
     "AccessCodeCast.Ui.DialogCloseReason";
 const char AccessCodeCastMetrics::kHistogramDialogLoadTime[] =
@@ -42,6 +44,15 @@ void AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(int count) {
     return;
 
   base::UmaHistogramCounts100(kHistogramAccessCodeNotFoundCount, count);
+}
+
+// static
+void AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+    base::TimeDelta duration) {
+  int64_t duration_seconds = duration.InSeconds();
+  // Duration can take one of five values, ranging from zero (0 sec), up to
+  // a year (31536000 sec). So, recording as a sparse histogram is best.
+  base::UmaHistogramSparse(kHistogramDeviceDurationOnRoute, duration_seconds);
 }
 
 // static
