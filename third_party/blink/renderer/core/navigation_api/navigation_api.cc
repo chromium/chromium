@@ -776,10 +776,14 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   init->setNavigationType(navigation_type);
 
   SerializedScriptValue* destination_state = nullptr;
-  if (params->destination_item)
+  if (params->destination_item) {
     destination_state = params->destination_item->GetNavigationApiState();
-  else if (ongoing_navigation_)
+  } else if (ongoing_navigation_) {
     destination_state = ongoing_navigation_->GetSerializedState();
+  } else if (navigation_type == "reload") {
+    HistoryItem* current_item = window_->document()->Loader()->GetHistoryItem();
+    destination_state = current_item->GetNavigationApiState();
+  }
   NavigationDestination* destination =
       MakeGarbageCollected<NavigationDestination>(
           params->url, params->event_type != NavigateEventType::kCrossDocument,
