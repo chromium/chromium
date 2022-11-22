@@ -143,6 +143,9 @@
       .title-container {
         display: flex;
         flex: 1;
+        font-size: inherit;
+        font-weight: inherit;
+        margin: 0;
         outline: none;
       }
 
@@ -159,9 +162,9 @@
         erroneously played when the user clicks on the outer-most scrollbar. -->
       <div id="content-wrapper" part="wrapper">
         <div class="top-container">
-          <div id="title" class="title-container" tabindex="-1">
+          <h2 id="title" class="title-container" tabindex="-1">
             <slot name="title"></slot>
-          </div>
+          </h2>
           <cr-icon-button id="close" class="icon-clear"
               hidden$="[[!showCloseButton]]" aria-label$="[[closeText]]"
               on-click="cancel" on-keypress="onCloseKeypress_">

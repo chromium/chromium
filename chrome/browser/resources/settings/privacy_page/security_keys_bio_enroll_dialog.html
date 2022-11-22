@@ -13,6 +13,14 @@
         flex: auto;
       }
 
+      h3 {
+        font-size: inherit;
+        font-weight: 500;
+        margin: 0;
+        padding-bottom: 12px;
+        padding-top: 32px;
+      }
+
       iron-icon {
         padding-inline-end: 12px;
       }
@@ -63,8 +71,7 @@
 
           <div id="enrollments">
             <div id="header" class="list-item column-header">
-              <h2 class="header-label">[[enrollmentsHeader_(enrollments_)]]</h2>
-
+              <h3 class="header-label">[[enrollmentsHeader_(enrollments_)]]</h3>
               <cr-button id="addButton" on-click="addButtonClick_"
                   class="secondary-button header-aligned-button">
                 $i18n{add}

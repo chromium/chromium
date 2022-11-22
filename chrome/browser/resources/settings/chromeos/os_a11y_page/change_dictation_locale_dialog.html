@@ -8,8 +8,10 @@
     padding-inline-start: 0;
   }
 
-  h2 {
+  h3 {
     color: var(--cros-text-color-secondary);
+    font-size: inherit;
+    margin: 0;
     min-height: 36px;
     padding-bottom: 0;
     padding-top: 0;
@@ -78,9 +80,9 @@
         clear-label="$i18n{dictationChangeLanguageDialogSearchClear}"
         on-keydown="onKeydown_" autofocus>
     </cr-search-field>
-    <h2 class="padded" hidden$="[[recommendedLocalesEmpty_]]">
+    <h3 class="padded" hidden$="[[recommendedLocalesEmpty_]]">
       $i18n{dictationChangeLanguageDialogRecommended}
-    </h2>
+    </h3>
     <iron-list id="recommendedLocalesList"
         items="[[recommendedLocales_]]" selection-enabled
         selected-item="{{selectedRecommendedLocale_}}"
@@ -105,9 +107,9 @@
         </div>
       </template>
     </iron-list>
-    <h2 class="padded" hidden$="[[displayedLocalesEmpty_]]">
+    <h3 class="padded" hidden$="[[displayedLocalesEmpty_]]">
       $i18n{dictationChangeLanguageDialogAll}
-    </h2>
+    </h3>
     <iron-list id="allLocalesList"
         items="[[displayedLocales_]]" selection-enabled
         selected-item="{{selectedLocale_}}"

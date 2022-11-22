@@ -15,9 +15,7 @@
   }
 </style>
 <cr-dialog id="dialog">
-  <h2 slot="title">
-    $i18n{nearbyShareDeviceNameDialogTitle}
-  </h2>
+  <div slot="title">$i18n{nearbyShareDeviceNameDialogTitle}</div>
   <div slot="body">
     <cr-input value="[[settings.deviceName]]"
         on-input="onDeviceNameInput_"

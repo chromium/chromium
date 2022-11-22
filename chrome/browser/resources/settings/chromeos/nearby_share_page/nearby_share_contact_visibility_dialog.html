@@ -1,5 +1,5 @@
 <style>
-  h1.title {
+  .title {
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans';
     font-weight: normal;
@@ -8,7 +8,7 @@
     padding-block-start: 24px;
   }
 
-  h2.header {
+  h3.header {
     color: var(--cr-secondary-text-color);
     font-size: inherit;
     font-weight: inherit;
@@ -27,12 +27,12 @@
   }
 </style>
 <cr-dialog id="dialog" show-on-attach>
-  <h1 slot="title" class="title">
+  <div slot="title" class="title">
     $i18n{nearbyShareVisibilityDialogTitle}
-  </h1>
-  <h2 slot="header" class="header">
+  </div>
+  <h3 slot="header" class="header">
     $i18n{nearbyShareVisibilityPageSubtitle}
-  </h2>
+  </h3>
   <div slot="body">
     <nearby-contact-visibility id="contactVisibility"
         settings="{{settings}}">

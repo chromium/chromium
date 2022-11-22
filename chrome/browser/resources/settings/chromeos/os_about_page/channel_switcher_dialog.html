@@ -2,6 +2,10 @@
   #warningSelector > :not(.iron-selected) {
     display: none;
   }
+
+  h3 {
+    font-size: inherit;
+  }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">$i18n{aboutChangeChannel}</div>
@@ -22,7 +26,7 @@
     </cr-radio-group>
     <iron-selector id="warningSelector">
       <div>
-        <h2>$i18n{aboutDelayedWarningTitle}</h2>
+        <h3>$i18n{aboutDelayedWarningTitle}</h3>
         <div>[[substituteString_(
             '$i18nPolymer{aboutDelayedWarningMessage}',
             '$i18nPolymer{aboutOsProductTitle}')]]</div>

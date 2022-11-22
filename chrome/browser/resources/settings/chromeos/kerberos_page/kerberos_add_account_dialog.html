@@ -52,15 +52,22 @@
     padding-inline-end: 8px;
     white-space: nowrap;
   }
+
+  h3 {
+    font-size: inherit;
+    font-weight: 500;
+    margin-block-end: 12px;
+    margin-block-start: 0;
+  }
 </style>
 
 <cr-dialog id="addDialog" hidden="[[showAdvancedConfig_]]">
   <div slot="title">[[title_]]</div>
 
   <div slot="body" spellcheck="false">
-    <h2 class="start first">
+    <h3 class="start first">
       $i18n{addKerberosAccountDescription}
-    </h2>
+    </h3>
 
     <div id="general-error-container"
         hidden="[[!showError_(generalErrorText_)]]">
@@ -120,14 +127,14 @@
     <div slot="title">$i18n{kerberosAdvancedConfigTitle}</div>
 
     <div slot="body">
-      <h2 class="first" id="advancedConfigDesc">
+      <h3 class="first" id="advancedConfigDesc">
         $i18n{kerberosAdvancedConfigDesc}
         <template is="dom-if" if="[[isManaged_]]">
           <cr-policy-indicator id="advancedConfigPolicyIndicator"
               indicator-type="userPolicy">
           </cr-policy-indicator>
         </template>
-      </h2>
+      </h3>
 
       <settings-textarea id="config" value="{{editableConfig_}}" rows=12
           spellcheck="false" disabled="[[isManaged_]]">

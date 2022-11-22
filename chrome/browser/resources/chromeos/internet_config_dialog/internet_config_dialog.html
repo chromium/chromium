@@ -12,22 +12,13 @@
     height: 480px;
   }
 
-  #title {
-    font-size: inherit;
-    font-weight: 400;
-    margin: 0;
-    padding: 0;
-  }
-
   .error {
     color: red;
     font-weight: 500;
   }
 </style>
 <cr-dialog id="dialog" no-cancel>
-  <div slot="title">
-    <h2 id="title">[[getDialogTitle_(type_)]]</h2>
-  </div>
+  <div slot="title">[[getDialogTitle_(type_)]]</div>
   <div slot="body">
     <network-config id="networkConfig" class="flex"
         guid="[[guid_]]" type="{{type_}}"
