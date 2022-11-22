@@ -338,6 +338,20 @@ TEST(CommandLineTest, HasSingleArgument) {
   EXPECT_TRUE(cl_for_shell.HasSingleArgumentSwitch());
 }
 
+// Test that creating a new command line from the string version of a single
+// argument command line maintains the single argument switch, and the
+// argument.
+TEST(CommandLineTest, MaintainSingleArgument) {
+  // Putting a space in the file name will force escaping of the argument.
+  static const CommandLine::StringType kCommandLine =
+      FILE_PATH_LITERAL("program --switch --single-argument foo bar.html");
+  CommandLine cl = CommandLine::FromString(kCommandLine);
+  CommandLine cl_for_shell = CommandLine::FromString(cl.GetCommandLineString());
+  EXPECT_TRUE(cl_for_shell.HasSingleArgumentSwitch());
+  // Verify that we command line survives the round trip with an escaped arg.
+  EXPECT_EQ(kCommandLine, cl_for_shell.GetCommandLineString());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Tests that when AppendArguments is called that the program is set correctly
