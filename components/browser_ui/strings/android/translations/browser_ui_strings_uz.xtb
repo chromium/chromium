@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL manzil qisqartirildi</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="1446450296470737166">MIDI qurilmalarini boshqarishga to‘liq ruxsat berish</translation>
+<translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Aloqador saytlar</translation>
 <translation id="1644574205037202324">Tarix</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Tovush</translation>
 <translation id="2107397443965016585">Himoyalangan kontentni ijro etishdan avval ruxsat soʻralsin (tavsiya etiladi)</translation>
 <translation id="2148716181193084225">Bugun</translation>
+<translation id="216989819110952009">Doroti va uning doʻstlari boshida hatto himoya koʻzoynagi bilan ham koʻra olmas edi</translation>
 <translation id="2182457891543959921">Saytlar atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatish oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="2212565012507486665">Cookie fayllariga ruxsat berish</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> kameradan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2379925928934107488">Chrome tungi mavzudan foydalansa, saytlarga ham u tatbiq etiladi</translation>
 <translation id="2387895666653383613">Matn hajmi</translation>
+<translation id="2390272837142897736">Kattalashtirish</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="2434158240863470628">Yuklab olindi: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Bu sayt boshqa saytlar reklama chiqarishda ishlata oladigan qiziqishlarni ifodalaydi. Bu sayt ham mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="3277252321222022663">Saytlarga sensorlardan foydalanish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="3285500645985761267">Aloqador saytlarga guruhdagi faoliyatni koʻrishga ruxsat berish</translation>
+<translation id="3295019059349372795">11-bob: Oz mamlakatining zumrad shahri</translation>
 <translation id="3295602654194328831">Ma’lumotlarni yashirish</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3333961966071413176">Barcha kontaktlar</translation>
 <translation id="3362437373201486687">Bluetooth qurilmalar qidirilmoqda</translation>
 <translation id="3386292677130313581">Joylashuv ma’lumotini ko‘rishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domenidagi saytlar</translation>
 <translation id="3538390592868664640">Saytlarni atrofingizning 3D xaritasini yaratish yoki kamera joylashuvini aniqlashdan bloklash</translation>
 <translation id="3544058026430919413">Kompaniya saytlar guruhini jamlashi va cookielar yordamida guruhdagi faoliyatni ulashishi mumkin. Inkognito rejimidan chiqish.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">Video ovozini oʻchirish</translation>
 <translation id="3596414637720633074">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="3600792891314830896">Saytlardagi ovozni o‘chirib qo‘yish</translation>
+<translation id="3602290021589620013">Razm solish</translation>
 <translation id="3628308229821498208">Tavsiya etilgan qidiruvlar</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3763247130972274048">10 soniya oʻtkazish uchun chap yoki oʻng tomoniga ikki marta bosing</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
+<translation id="4779083564647765204">Masshtab</translation>
 <translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="483914009762354899">Bu domen ichidagi barcha saytlar</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
+<translation id="6453641458248223456">Sahifadagi zumni asosiy menyu orqali kichikroq yoki kattaroq qiling</translation>
 <translation id="6467852467360539617">Maʼlumotlarni tozalash va ruxsatlarni tiklash</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">Brauzer tarixini tozalash…</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
+<translation id="7667547420449112975">Oz mamlakati sehrgari</translation>
+<translation id="7690549345586282764">Zumni ochish</translation>
+<translation id="7719367874908701697">Sahifa masshtabi</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="780301667611848630">Kerak emas</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Muayyan saytlar uchun cookie-fayllarni bloklang.</translation>
 <translation id="8959122750345127698">Sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Olib tashlash</translation>
+<translation id="900095568014372589">Saytlardagi matn va rasmlarni standart holatda kichikroq yoki kattaroq qilish</translation>
 <translation id="9019902583201351841">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Bu sayt guruhga kiradi va u guruhdagi faoliyatni koʻra oladi. Guruh <ph name="FPS_OWNER" /> tomonidan belgilangan</translation>
 <translation id="9106233582039520022">Cookie fayllar oʻchirilsinmi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
+<translation id="9138217887606523162">Joriy zum: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="930525582205581608">Bu sayt olib tashlansinmi?</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>

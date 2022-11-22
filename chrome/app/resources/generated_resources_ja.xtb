@@ -2366,6 +2366,7 @@
 <translation id="3143515551205905069">同期をキャンセル</translation>
 <translation id="3143754809889689516">最初から再生</translation>
 <translation id="3144647712221361880">別のユーザーとしてリンクを開く</translation>
+<translation id="3144896554017119333">拡張機能など</translation>
 <translation id="3149510190863420837">Chrome アプリ</translation>
 <translation id="3150693969729403281">安全確認を今すぐ実行</translation>
 <translation id="3150927491400159470">ハード再読み込み</translation>
@@ -2474,6 +2475,7 @@
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> を表示しない</translation>
+<translation id="3269175001434213183">他のデバイスで使用できるように同期をオンにしてデータをバックアップ</translation>
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="326999365752735949">差分のダウンロード中</translation>
@@ -4268,6 +4270,7 @@
 <translation id="4950993567860689081">セッションは組織によって管理されています。管理者はあなたのプロフィールを削除することや、ネットワークトラフィックを監視することができます。</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="495170559598752135">操作</translation>
+<translation id="4951966678293618079">今後このサイトのパスワードを保存しない</translation>
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
@@ -4297,6 +4300,7 @@
 <translation id="4981449534399733132">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
 <translation id="4982111327868342436">どのデバイスでも作業を続けられます</translation>
 <translation id="4982236238228587209">デバイスのソフトウェア</translation>
+<translation id="4986706507552097681">同期する項目はいつでも [設定] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4986728572522335985">セキュリティ キーに保存されているすべてのデータ（PIN を含む）が削除されます</translation>
 <translation id="4988526792673242964">ページ</translation>
 <translation id="49896407730300355">反時計回りに回転(&amp;O)</translation>

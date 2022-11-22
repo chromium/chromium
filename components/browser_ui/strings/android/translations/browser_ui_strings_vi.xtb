@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="1446450296470737166">Cho phép kiểm soát hoàn toàn thiết bị MIDI</translation>
+<translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1633720957382884102">Các trang web liên quan</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Âm thanh</translation>
 <translation id="2107397443965016585">Hỏi trước khi cho phép trang web phát nội dung được bảo vệ (khuyên dùng)</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
+<translation id="216989819110952009">Ngay cả khi đôi mắt được bảo vệ bởi cặp kính xanh lục, thoạt tiên Dorothy và bạn bè vẫn cảm thấy loá mắt bởi</translation>
 <translation id="2182457891543959921">Hỏi trước khi cho phép các trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
 <translation id="2212565012507486665">Cho phép cookie</translation>
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2379925928934107488">Áp dụng giao diện tối cho các trang web khi Chrome sử dụng giao diện tối, nếu có thể</translation>
 <translation id="2387895666653383613">Chia tỷ lệ văn bản</translation>
+<translation id="2390272837142897736">Tăng mức thu phóng</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Trang web này xác định các mối quan tâm mà các trang web khác có thể sử dụng để hiển thị quảng cáo cho bạn. Trang web này cũng lấy thông tin về mối quan tâm của bạn qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
 <translation id="3285500645985761267">Cho phép các trang web liên quan xem hoạt động của bạn trong nhóm</translation>
+<translation id="3295019059349372795">Chương 11: Thành phố ngọc lục bảo của xứ Oz</translation>
 <translation id="3295602654194328831">Ẩn thông tin</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
 <translation id="3333961966071413176">Tất cả người liên hệ</translation>
 <translation id="3362437373201486687">Đang quét tìm thiết bị Bluetooth</translation>
 <translation id="3386292677130313581">Hỏi trước khi cho phép các trang web biết vị trí của bạn (được đề xuất)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">Các trang web trong <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3544058026430919413">Một công ty có thể xác định nhóm các trang web được sử dụng cookie để chia sẻ hoạt động của bạn trong nhóm. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">Tắt tiếng video</translation>
 <translation id="3596414637720633074">Chặn các cookie của bên thứ ba trong chế độ Ẩn danh</translation>
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
+<translation id="3602290021589620013">Xem trước</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
+<translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="483914009762354899">Bao gồm tất cả trang web trong miền này</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6453641458248223456">Phóng to hoặc thu nhỏ trang từ trình đơn chính</translation>
 <translation id="6467852467360539617">Xoá dữ liệu và đặt lại quyền</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">Xóa dữ liệu duyệt web…</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>
+<translation id="7667547420449112975">Phù thủy xứ Oz</translation>
+<translation id="7690549345586282764">Hiện mục thu phóng</translation>
+<translation id="7719367874908701697">Thu phóng trang</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Chặn cookie của một trang web cụ thể.</translation>
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Quên</translation>
+<translation id="900095568014372589">Thu nhỏ hoặc phóng to văn bản và hình ảnh mặc định trên các trang web</translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Trang web này nằm trong nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="FPS_OWNER" /> xác định</translation>
 <translation id="9106233582039520022">Xoá cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Mức thu phóng hiện tại là <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="930525582205581608">Xóa trang web này?</translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>

@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
 <translation id="1552525382687785070">Администратор је онемогућио синхронизацију</translation>
 <translation id="1554477036522844996">Нови прозор</translation>
+<translation id="1565371473877914088">Нова картица без архивирања</translation>
 <translation id="1580715474678097352">Увек будите заштићени од опасних веб-сајтова</translation>
 <translation id="1580783302095112590">Имејл је послата.</translation>
 <translation id="1582732959743469162">На тај начин ћете потпуно зауставити тренутно преузимање.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Мобилни уређај</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="199425419756152024">Прикажи лозинку</translation>
+<translation id="2010008505735295285">Поново учитај</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="2021670401941426298">Погледајте упутства претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="202292859882676807">Приступ микрофону је дозвољен</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
 <translation id="3285962946108803577">Дели страницу…</translation>
+<translation id="3289505634533552500">Гласовна претрага</translation>
 <translation id="3290875554372353449">Изаберите налог</translation>
 <translation id="3305294846493618482">још</translation>
 <translation id="3311748811247479259">Искључено</translation>
@@ -646,6 +649,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="5988097621740394599">Прегледајте снижења на картицама.</translation>
 <translation id="5988851877894965432">Отварајте URL-ове у Chrome-у</translation>
+<translation id="6006672969046233841">Нова картица</translation>
 <translation id="6012140227487808125">Шифрује се…</translation>
 <translation id="6021332621416007159">Отвори у...</translation>
 <translation id="6027945736510816438">Да ли сте мислили <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7207023858769244910">Синхронизујте да бисте добијали садржај на основу интересовања.</translation>
 <translation id="721597782417389033">Неважећи надимак картице</translation>
 <translation id="7221173315674413369">Истражите нове функције и савете у одељку Шта је ново</translation>
+<translation id="7223102419539744003">Затвори картицу</translation>
 <translation id="722454870747268814">Нова картица без архивирањa</translation>
 <translation id="7265758999917665941">Никада за овај сајт</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
@@ -1027,6 +1032,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Подразумевани приказ сајта</translation>
 <translation id="8820817407110198400">Обележивачи</translation>
+<translation id="882557203579758546">Пронађи на страници…</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8843129975935593190">Ваша организација ограничава садржај који можете да синхронизујете.</translation>
 <translation id="8849001918648564819">Скривено</translation>

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
+<translation id="374923079891132274">תצוגה מקדימה ממוזערת לשיתוף גיליון.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}many{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="3882834874697329510">כדי לקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה, יש להפעיל את ההתראות בהגדרות.</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5558362125926932819">סגירת קבוצת הכרטיסיות עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> כרטיסיות מקובצות</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏קישור אחד (<ph name="TABS_COUNT_ONE" />) מ-Chrome}two{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}many{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}other{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}}</translation>
 <translation id="575494663145460764">רוצה לקבל התראות על הנחות?</translation>
 <translation id="58326064309361797">ניתן לגרור כרטיסיות כדי לקבץ אותן</translation>
 <translation id="5846292395804797011">סגירה של הקבוצה <ph name="TITLE_OF_GROUP" /> עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>

@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">ຕັດ URL ໃຫ້ສັ້ນລົງແລ້ວ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1446450296470737166">ອະ​ນຸ​ຍາດ​ການ​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ MIDI ເຕັມ</translation>
+<translation id="1448064542941920355">ຫຼຸດການຊູມ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1633720957382884102">ເວັບໄຊທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">ສຽງ</translation>
 <translation id="2107397443965016585">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງ (ແນະນຳ)</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
+<translation id="216989819110952009">ເຖິງແມ່ນວ່າມີຕາທີ່ປ້ອງກັນດ້ວຍແວ່ນສາຍຕາສີຂຽວ, ທຳອິດໂດໂຣທີ ແລະ ໝູ່ຂອງລາວກໍຕື່ນຕາຕື່ນໃຈກັບ</translation>
 <translation id="2182457891543959921">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕາມຕຳແໜ່ງກ້ອງ (ແນະນຳ)</translation>
 <translation id="2212565012507486665">ອະນຸຍາດຄຸກກີ້</translation>
 <translation id="2228071138934252756">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານ, ກະລຸນາເປີດກ້ອງຖ່າຍຮູບໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2379925928934107488">ນຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊເມື່ອ Chrome ໃຊ້ຮູບແບບສີສັນມືດ, ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="2387895666653383613">ຂະໜາດໂຕໜັງສື</translation>
+<translation id="2390272837142897736">ເພີ່ມການຊູມ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{ອະນຸຍາດ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການແລ້ວ}other{ອະນຸຍາດ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການແລ້ວ}}</translation>
 <translation id="2434158240863470628">ການດາວໂຫຼດສຳເລັດແລ້ວ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">ເວັບໄຊນີ້ກຳນົດຄວາມສົນໃຈຂອງເວັບໄຊອື່ນທີ່ສາມາດໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ. ນອກຈາກນັ້ນ, ເວັບໄຊນີ້ຍັງໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳ.</translation>
 <translation id="3277252321222022663">ອະນຸຍາດໃຫ້ເວັບໄຊເຂົ້າເຖິງເຊັນເຊີ (ແນະນຳ)</translation>
 <translation id="3285500645985761267">ອະນຸຍາດເວັບໄຊທີ່ກ່ຽວຂ້ອງໃຫ້ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້</translation>
+<translation id="3295019059349372795">ບົດທີ 11: ເມືອງມໍລະກົດອັນໜ້າອັດສະຈັນຂອງອອດຊ໌</translation>
 <translation id="3295602654194328831">ເຊື່ອງຂໍ້ມູນ</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="3333961966071413176">ລາຍຊື່ຜູ້ຕິດຕໍ່ທັງໝົດ</translation>
 <translation id="3362437373201486687">ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth</translation>
 <translation id="3386292677130313581">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊຮູ້ສະຖານທີ່ຂອງທ່ານ (ແນະນຳ)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">ເວັບໄຊພາຍໃຕ້ <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">ບລັອກເວັບໄຊບໍ່ໃຫ້ສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="3544058026430919413">ບໍລິສັດສາມາດກຳນົດກຸ່ມເວັບໄຊທີ່ສາມາດໃຊ້ຄຸກກີ້ເພື່ອແບ່ງປັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມ. ສິ່ງນີ້ຖືກປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">ປິດສຽງວິດີໂອ</translation>
 <translation id="3596414637720633074">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3600792891314830896">ປິດສຽງເວັບໄຊທີ່ຫຼິ້ນສຽງ</translation>
+<translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3628308229821498208">ການຊອກຫາທີ່ແນະນຳ</translation>
 <translation id="3744111561329211289">ການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງ</translation>
 <translation id="3763247130972274048">ແຕະວິດີໂອຊ້າຍ ຫຼື ຂວາສອງເທື່ອເພື່ອຂ້າມ 10 ວິ</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="4670064810192446073">ເວີຊົວ ຣິອາຣິທີ</translation>
 <translation id="4751476147751820511">ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ</translation>
+<translation id="4779083564647765204">ຊູມ</translation>
 <translation id="4811450222531576619">ສຶກສາກ່ຽວກັບແຫຼ່ງທີ່ມາ ແລະ ຫົວຂໍ້ຂອງມັນ</translation>
 <translation id="4836046166855586901">ຖາມເມື່ອເວັບໄຊຕ້ອງການຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢູ່</translation>
 <translation id="483914009762354899">ຮວບຮວມເວັບໄຊທັງໝົດໄວ້ພາຍໃຕ້ໂດເມນນີ້</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ບລັອກບໍ່ໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີຂອງທ່ານ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
+<translation id="6453641458248223456">ຊູມເຂົ້າ ຫຼື ອອກໃນໜ້າຈາກເມນູຫຼັກ</translation>
 <translation id="6467852467360539617">ລຶບລ້າງຂໍ້ມູນ ແລະ ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
+<translation id="7667547420449112975">ພໍ່ມົດອັດສະຈັນແຫ່ງອອດຊ໌</translation>
+<translation id="7690549345586282764">ສະແດງຊູມ</translation>
+<translation id="7719367874908701697">ຊູມໜ້າ</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">ບລັອກຄຸກກີ້ສຳລັບເວັບໄຊສະເພາະ.</translation>
 <translation id="8959122750345127698">ການນຳທາງແມ່ນບໍ່ສາມາດເຂົ້າເຖິງໄດ້: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ລືມ</translation>
+<translation id="900095568014372589">ເຮັດໃຫ້ຂໍ້ຄວາມ ແລະ ຮູບພາບເລີ່ມຕົ້ນຢູ່ໃນເວັບໄຊນ້ອຍລົງ ຫຼື ໃຫຍ່ຂຶ້ນ</translation>
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້. ກຸ່ມນີ້ແມ່ນກຳນົດໂດຍ <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">ລຶບຄຸກກີ້ອອກບໍ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}}</translation>
 <translation id="913657688200966289">ເປີດການອະນຸຍາດສຳລັບ <ph name="APP_NAME" /> ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">ຊູມປັດຈຸບັນແມ່ນ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ໜ້ານີ້ອັນຕະລາຍ</translation>
 <translation id="930525582205581608">ລືມເວັບໄຊນີ້ບໍ?</translation>
 <translation id="967624055006145463">ເກັບຂໍ້ມູນໄວ້ແລ້ວ</translation>

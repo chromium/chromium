@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
 <translation id="1552525382687785070">तुमच्या ॲडमिनिस्ट्रेटरने सिंक बंद केले आहे</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
+<translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
 <translation id="1580715474678097352">धोकादायक वेबसाइटपासून सुरक्षित राहा</translation>
 <translation id="1580783302095112590">मेल पाठवले.</translation>
 <translation id="1582732959743469162">यामुळे तुमच्या सुरू असलेल्या डाउनलोडची पुढची सर्व प्रगती थांबेल.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="199425419756152024">पासवर्ड पहा</translation>
+<translation id="2010008505735295285">रीलोड करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="2021670401941426298">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा.</translation>
 <translation id="202292859882676807">मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3277021493514034324">साइट पत्ता कॉपी केला</translation>
 <translation id="3285962946108803577">पेज शेअर करा...</translation>
+<translation id="3289505634533552500">व्हॉइस शोध</translation>
 <translation id="3290875554372353449">एक खाते निवडा</translation>
 <translation id="3305294846493618482">आणखी</translation>
 <translation id="3311748811247479259">बंद</translation>
@@ -647,6 +650,7 @@
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
 <translation id="5988097621740394599">तुमच्या टॅबवर कमी झालेली किंमत पहा.</translation>
 <translation id="5988851877894965432">Chrome URL उघडा</translation>
+<translation id="6006672969046233841">नवीन टॅब</translation>
 <translation id="6012140227487808125">कूटबद्ध करीत आहे...</translation>
 <translation id="6021332621416007159">यामध्ये उघडा...</translation>
 <translation id="6027945736510816438">तुम्हाला <ph name="WEBSITE" /> म्हणायचे आहे का?</translation>
@@ -834,6 +838,7 @@
 <translation id="7207023858769244910">तुमच्या स्वारस्यांनुसार आशय मिळवण्यासाठी सिंक करा.</translation>
 <translation id="721597782417389033">कार्डाचे चुकीचे टोपणनाव</translation>
 <translation id="7221173315674413369">नवीन काय आहे मधील नवीन वैशिष्ट्ये आणि टिपा एक्सप्लोर करा</translation>
+<translation id="7223102419539744003">टॅब बंद करा</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
 <translation id="7265758999917665941">या साइटसाठी कधीही नाही</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
@@ -1029,6 +1034,7 @@
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">डीफॉल्ट साइट दृश्य</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
+<translation id="882557203579758546">पेजमध्ये शोधा…</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="8843129975935593190">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="8849001918648564819">लपवलेली</translation>

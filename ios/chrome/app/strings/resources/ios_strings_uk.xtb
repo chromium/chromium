@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Сканувати QR-код</translation>
 <translation id="1552525382687785070">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="1554477036522844996">Нове вікно</translation>
+<translation id="1565371473877914088">Нова анонімна вкладка</translation>
 <translation id="1580715474678097352">Захист від небезпечних веб-сайтів</translation>
 <translation id="1580783302095112590">Лист надіслано.</translation>
 <translation id="1582732959743469162">Поточне завантаження зупиниться.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Режим для мобільного пристрою</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="199425419756152024">Показати пароль</translation>
+<translation id="2010008505735295285">Оновити</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="2021670401941426298">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="202292859882676807">Доступ до мікрофона надано</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3277021493514034324">Адресу сайту скопійовано</translation>
 <translation id="3285962946108803577">Поділитися сторінкою…</translation>
+<translation id="3289505634533552500">Голосовий пошук</translation>
 <translation id="3290875554372353449">Виберіть обліковий запис</translation>
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
@@ -646,6 +649,7 @@
 <translation id="5984222099446776634">Нещодавно відвідані</translation>
 <translation id="5988097621740394599">Переглядайте зниження цін на вкладках.</translation>
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
+<translation id="6006672969046233841">Нова вкладка</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
 <translation id="6021332621416007159">Відкрити в...</translation>
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@
 <translation id="7207023858769244910">Увімкніть синхронізацію, щоб отримувати контент на основі ваших інтересів.</translation>
 <translation id="721597782417389033">Недійсний псевдонім картки</translation>
 <translation id="7221173315674413369">Дізнайтеся про нові функції та поради в розділі "Що нового"</translation>
+<translation id="7223102419539744003">Закрити вкладку</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7265758999917665941">Ніколи для цього сайту</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
@@ -1027,6 +1032,7 @@
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Режим перегляду сайту за умовчанням</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="882557203579758546">Знайти на сторінці…</translation>
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
 <translation id="8843129975935593190">Ваша організація обмежила дані, які можна синхронізувати.</translation>
 <translation id="8849001918648564819">Приховано</translation>

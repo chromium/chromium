@@ -507,6 +507,7 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
       Trenne mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="1488724823347505879">Freigabe zwischen Android-Apps und Webanwendungen aktivieren</translation>
 <translation id="1494138678487405397">Hohen Kontrast auf dem Anmeldebildschirm deaktivieren</translation>
+<translation id="1499129134689253257">Das neue Verhalten von „<ph name="OFFSET_PARENT" />“ steuern</translation>
 <translation id="1501644502684303995">Online-Anmeldungen nur auf dem Anmeldebildschirm erzwingen</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
 <translation id="1503969899251962413">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.
@@ -2359,6 +2360,17 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="3211426942294667684">Einstellungen für die Anmeldung im Browser</translation>
+<translation id="3217774577897351942">Die <ph name="OFFSET_PARENT" /> API wird bei <ph name="PRODUCT_NAME" /> geändert, um den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen zu entsprechen. Mit dieser Richtlinie wird das alte Verhalten bis zur Einführung von M120 wiederhergestellt.
+
+Durch das neue Verhalten können unter Umständen einige <ph name="PRODUCT_NAME" />-Websites beeinträchtigt werden, bei denen „<ph name="OFFSET_PARENT" />“, „<ph name="OFFSET_TOP" />“ oder „<ph name="OFFSET_LEFT" />“ in Verbindung mit Shadow DOM verwendet wird.
+
+Hier sind einige Polyfills, mit denen das alte Verhalten für die Migration wiederhergestellt werden kann: https://github.com/josepharhar/offsetparent-polyfills
+
+Wenn diese Richtlinie aktiviert ist, wird das neue Verhalten verwendet.
+
+Ist die Richtlinie deaktiviert, wird das alte Verhalten verwendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chromium-Nutzern das neue Verhalten verwendet.</translation>
 <translation id="3219421230122020860">Inkognitomodus verfügbar</translation>
 <translation id="3220624000494482595">Wenn die Kiosk-App eine Android-App ist, hat sie keine Kontrolle über die <ph name="PRODUCT_OS_NAME" />-Version, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
 <translation id="3222088741899353813">Linke Maustaste auf dem Anmeldebildschirm als primäre Taste festlegen</translation>
@@ -2765,6 +2777,7 @@ Jede Regel hat folgende Bestandteile:
 <translation id="3589193811812796052">Verhindern, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
 <translation id="3591527072193107424">Funktion für die Unterstützung älterer Browser aktivieren.</translation>
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
+<translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
 <translation id="3596112486106491038">Befehlszeilenzugriff auf virtuellen Maschinen aktivieren</translation>
 <translation id="3603469950773500315">Einschränkungen von <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung erlauben, wodurch Erweiterungen kompatibles Verhalten beibehalten können und <ph name="PRODUCT_NAME" /> angegebene Header ohne <ph name="CORS" />-Prüfungen senden kann.
 
@@ -3063,6 +3076,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3891357445869647828">JavaScript aktivieren</translation>
 <translation id="3891769546914233112">„PDF als Bild drucken“ verfügbar</translation>
 <translation id="3897218615484393758">Zeit beschränken, während der sich ein über SAML authentifizierter Nutzer offline auf dem Sperrbildschirm anmelden kann</translation>
+<translation id="3897860452756794695">Das neue „offsetParent“-Verhalten wird verwendet.</translation>
 <translation id="3898345958122666461">NTLMv2 deaktivieren</translation>
 <translation id="3898795800259311780">Bildschirmaufnahme gestatten oder ablehnen</translation>
 <translation id="3903313632842363082">Melden der Nutzer auf Geräten deaktivieren</translation>
@@ -4832,6 +4846,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="5838452040629810808">„Mauszeiger hervorheben“ aktivieren</translation>
+<translation id="5842283830553218200">Bei deaktivierten Formularsteuerelementen wird standardmäßig die neue Ereignisweiterleitung verwendet.</translation>
 <translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>
 <translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
@@ -5316,6 +5331,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Nutzer selbst entscheiden, ob sie die <ph name="CHROME_SYNC_NAME" /> verwenden möchten.
 
       Hinweis: Aktiviere diese Richtlinie nicht, wenn „<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />“ aktiviert ist, da diese Funktion über dieselbe clientseitige Funktion verfügt. Die von Google gehostete Synchronisierung ist in diesem Fall vollständig deaktiviert.</translation>
+<translation id="6320935916601887506">Standardmäßig wird das neue „offsetParent“-Verhalten verwendet.</translation>
 <translation id="6327643515544933974">Web USB-Einstellungen</translation>
 <translation id="6330882599388782338">Websites den Zugriff auf Sensoren erlauben</translation>
 <translation id="6331167725613770725">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
@@ -5451,6 +5467,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6464074037294098618">Autofill für Adressdaten zulassen</translation>
 <translation id="6467613372414922590">Hosts für natives Messaging, die ohne Berechtigung des Administrators installiert wurden, auf Nutzerebene zulassen</translation>
 <translation id="6473623140202114570">Hiermit wird die Liste der Domains konfiguriert, auf denen durch Safe Browsing keine Warnungen ausgelöst werden.</translation>
+<translation id="6474194795370862403">Das alte „offsetParent“-Verhalten wird verwendet.</translation>
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> aktivieren und als primären Browser festlegen</translation>
 <translation id="647698599569353771">Aktivieren von Nearby Share zulassen.</translation>
 <translation id="6477685422297715670">Tastaturbeleuchtungsfarbe „Grün“</translation>
@@ -7463,6 +7480,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8417305981081876834">Maximale Länge der Sperrbildschirm-PIN festlegen</translation>
 <translation id="841977920223099909">Auslöser für Passwortschutzwarnung</translation>
 <translation id="8420426128163801949">Nutzern erlauben, Bluetooth zu aktivieren oder zu deaktivieren</translation>
+<translation id="8422658829373743789">Neues Verhalten für die Ereignisweiterleitung bei deaktivierten Formularsteuerelementen festlegen</translation>
 <translation id="8422866312638683210">Wenn diese Richtlinie konfiguriert ist, versucht <ph name="PRODUCT_NAME" />, sich bei <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> zu registrieren. Der Wert dieser Richtlinie ist ein Registrierungstoken, das über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> abgerufen werden kann.
 
       Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
@@ -8010,6 +8028,19 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8947415621777543415">Gerätestandort melden</translation>
 <translation id="8948062138228904066">Zulassungsliste für Authentifizierungsserver</translation>
 <translation id="8951350807133946005">Datenträger-Cache-Verzeichnis festlegen</translation>
+<translation id="8952611478149810182">Die Weiterleitung von Ereignissen bei deaktivierten Formularsteuerelementen wird in Chromium geändert, um die Kompatibilität mit anderen Browsern zu verbessern und die Arbeit von Entwicklern zu vereinfachen.
+
+Durch diese Änderung werden „MouseEvents“ bei deaktivierten Formularsteuerelementen weitergeleitet, mit Ausnahme von „click“, „mouseup“ und „mousedown“. Zu den neuen Ereignissen gehören beispielsweise „mousemove“, „mouseenter“ und „mouseleave“.
+
+Durch diese Änderung wird auch der Ereignispfad von „click“, „mouseup“ und „mousedown“ abgeschnitten, wenn sie bei untergeordneten Elementen der deaktivierten Formularsteuerelemente weitergeleitet werden. Dadurch werden sie bei den deaktivierten Formularsteuerelementen oder deren Ancestors nicht weitergeleitet.
+
+Durch das neue Verhalten können einige Websites beeinträchtigt werden.
+
+Wenn diese Richtlinie aktiviert ist, wird das neue Verhalten verwendet.
+
+Ist die Richtlinie deaktiviert, wird das alte Verhalten verwendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chromium-Nutzern das neue Verhalten verwendet.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
 <translation id="8970205333161758602">Hinweis auf Einstellung von <ph name="PRODUCT_FRAME_NAME" /> unterdrücken</translation>
@@ -8195,6 +8226,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" />-Proxy aktivieren</translation>
 <translation id="9136212796239682721">Benutzeroberfläche für Download-Infofeld deaktivieren</translation>
 <translation id="9136399279941091445">Intervalle für Abwesenheitszeiten, wenn die angegebenen Geräterichtlinien veröffentlicht werden</translation>
+<translation id="9142561920976791097">Bei deaktivierten Formularsteuerelementen wird die neue Ereignisweiterleitung verwendet.</translation>
 <translation id="9148720248753722892">SHA-1-signierte Zertifikate nicht zulassen</translation>
 <translation id="9149678135092892302">Erfassen von Versionsinformationen deaktivieren</translation>
 <translation id="9150416707757015439">Diese Richtlinie ist veraltet. Bitte verwende stattdessen "IncognitoModeAvailability". Aktiviert den Inkognitomodus in <ph name="PRODUCT_NAME" />. Wenn diese Einstellung aktiviert oder nicht konfiguriert ist, können Nutzer Webseiten im Inkognitomodus öffnen. Sollte die Einstellung deaktiviert sein, können Nutzer Webseiten nicht im Inkognitomodus öffnen. Ist die Richtlinie nicht konfiguriert, so ist die Funktion aktiviert, sodass Nutzer den Inkognitomodus verwenden können.</translation>

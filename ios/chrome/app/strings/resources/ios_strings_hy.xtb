@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
 <translation id="1552525382687785070">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="1554477036522844996">Նոր պատուհան</translation>
+<translation id="1565371473877914088">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="1580715474678097352">Եղեք պաշտպանված վտանգավոր կայքերից</translation>
 <translation id="1580783302095112590">Նամակն ուղարկվեց:</translation>
 <translation id="1582732959743469162">Ընթացիկ ներբեռնումը կընդհատվի։</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Շարժական սարքի ռեժիմ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="199425419756152024">Դիտել գաղտնաբառը</translation>
+<translation id="2010008505735295285">Նորից բեռնել</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="2021670401941426298">Որոնումների պատմությունը ջնջելու համար կարդացեք ձեր որոնողական համակարգի համապատասխան ցուցումները։</translation>
 <translation id="202292859882676807">Խոսափողի օգտագործումը թույլատրված է</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Չեղարկել</translation>
 <translation id="3277021493514034324">Կայքի հասցեն պատճենվել է</translation>
 <translation id="3285962946108803577">Կիսվել էջով...</translation>
+<translation id="3289505634533552500">Ձայնային որոնում</translation>
 <translation id="3290875554372353449">Ընտրեք հաշիվ</translation>
 <translation id="3305294846493618482">ավելին</translation>
 <translation id="3311748811247479259">Անջատված է</translation>
@@ -646,6 +649,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5988097621740394599">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները։</translation>
 <translation id="5988851877894965432">Բացել URL-ները Chrome-ում</translation>
+<translation id="6006672969046233841">Նոր ներդիր</translation>
 <translation id="6012140227487808125">Գաղտնագրում…</translation>
 <translation id="6021332621416007159">Բացել այս հավելվածում…</translation>
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
@@ -832,6 +836,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7207023858769244910">Միացրեք համաժամացումը՝ ձեր հետաքրքրություններին համապատասխան բովանդակություն ստանալու համար։</translation>
 <translation id="721597782417389033">Քարտի կեղծանունն անվավեր է</translation>
 <translation id="7221173315674413369">Բացահայտեք նոր գործառույթներ և ստացեք խորհուրդներ «Նորություններ» բաժնում</translation>
+<translation id="7223102419539744003">Փակել ներդիրը</translation>
 <translation id="722454870747268814">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="7265758999917665941">Երբեք չպահել այս կայքի համար</translation>
 <translation id="7272437679830969316">Չհաջողվեց հաստատել ձեր ինքնությունը: Գաղտնաբառը չի պատճենվել:</translation>
@@ -1027,6 +1032,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Կայքերի ցուցադրման կանխադրված ռեժիմ</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
+<translation id="882557203579758546">Գտնել էջում…</translation>
 <translation id="8840513115188359703">Դուք դուրս չեք գա ձեր Google հաշվից:</translation>
 <translation id="8843129975935593190">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարելի է համաժամացնել։</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>

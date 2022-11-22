@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="1552525382687785070">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="1554477036522844996">కొత్త విండో</translation>
+<translation id="1565371473877914088">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="1580715474678097352">ప్రమాదకర వెబ్‌సైట్‌ల నుండి సురక్షితంగా ఉండండి</translation>
 <translation id="1580783302095112590">మెయిల్ పంపబడింది.</translation>
 <translation id="1582732959743469162">ఇది మీ ప్రస్తుత డౌన్‌లోడ్ యొక్క మొత్తం ప్రోగ్రెస్‌ను ఆపివేస్తుంది.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">మొబైల్</translation>
 <translation id="1989112275319619282">బ్రౌజ్ చేయి</translation>
 <translation id="199425419756152024">పాస్‌వర్డ్‌ను చూడండి</translation>
+<translation id="2010008505735295285">మళ్లీ లోడ్ చేయండి</translation>
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="2021670401941426298">వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి మీ సెర్చ్ ఇంజిన్ సూచనలను చూడండి.</translation>
 <translation id="202292859882676807">మైక్రోఫోన్ యాక్సెస్ అనుమతించబడింది</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">రద్దు చేయండి</translation>
 <translation id="3277021493514034324">సైట్ అడ్రస్‌ కాపీ చేయబడింది</translation>
 <translation id="3285962946108803577">పేజీని షేర్ చేయి...</translation>
+<translation id="3289505634533552500">వాయిస్ సెర్చ్</translation>
 <translation id="3290875554372353449">ఖాతాను ఎంచుకోండి</translation>
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
@@ -646,6 +649,7 @@
 <translation id="5984222099446776634">ఇటీవల సందర్శించినవి</translation>
 <translation id="5988097621740394599">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి.</translation>
 <translation id="5988851877894965432">URLలను Chromeలో తెరవండి</translation>
+<translation id="6006672969046233841">కొత్త ట్యాబ్</translation>
 <translation id="6012140227487808125">గుప్తీకరిస్తోంది…</translation>
 <translation id="6021332621416007159">దీనిలో తెరువు...</translation>
 <translation id="6027945736510816438">మీరు <ph name="WEBSITE" /> గురించి అడిగారా?</translation>
@@ -832,6 +836,7 @@
 <translation id="7207023858769244910">సింక్ చేసి, మీ ఆసక్తుల ఆధారంగా కంటెంట్‌ను పొందండి.</translation>
 <translation id="721597782417389033">కార్డ్ మారుపేరు చెల్లదు</translation>
 <translation id="7221173315674413369">'కొత్తగా ఏమి ఉన్నాయి' విభాగంలో కొత్త ఫీచర్‌లు, చిట్కాలను అన్వేషించండి</translation>
+<translation id="7223102419539744003">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="722454870747268814">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="7265758999917665941">ఈ సైట్ కోసం ఎప్పటికీ వద్దు</translation>
 <translation id="7272437679830969316">మీ గుర్తింపును ధృవీకరించడం సాధ్యపడలేదు. పాస్‌వర్డ్ కాపీ చేయబడలేదు.</translation>
@@ -1027,6 +1032,7 @@
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ఆటోమేటిక్ సైట్ వీక్షణ సెట్టింగ్</translation>
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
+<translation id="882557203579758546">పేజీలో కనుగొనండి…</translation>
 <translation id="8840513115188359703">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
 <translation id="8843129975935593190">మీరు సింక్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>

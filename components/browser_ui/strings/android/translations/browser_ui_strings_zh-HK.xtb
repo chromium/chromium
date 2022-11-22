@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1446450296470737166">允許全權控制 MIDI 裝置。</translation>
+<translation id="1448064542941920355">縮小</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">音效</translation>
 <translation id="2107397443965016585">網站播放受保護內容前先詢問您 (建議)</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="216989819110952009">即使有綠色眼鏡保護眼睛，這座奇妙之城的璀璨光輝一開始還是讓桃樂絲和朋友看得眼都花了</translation>
 <translation id="2182457891543959921">在允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置前先詢問您 (建議)</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2379925928934107488">當 Chrome 採用深色主題背景時，盡可能對網站套用深色主題背景</translation>
 <translation id="2387895666653383613">文字大小</translation>
+<translation id="2390272837142897736">放大</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">其他網站可使用此網站定義的興趣來向您展示廣告。此網站亦會從 Chrome 取得您的興趣，以便為您顯示更相關的廣告。</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
+<translation id="3295019059349372795">第 11 章：奧茲國的奇妙翡翠城</translation>
 <translation id="3295602654194328831">隱藏資料</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3362437373201486687">正在掃瞄藍牙裝置</translation>
 <translation id="3386292677130313581">允許網站存取您的位置前先詢問您 (建議)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 下的網站</translation>
 <translation id="3538390592868664640">禁止網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站可使用 Cookie 分享您在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">將影片靜音</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
+<translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
+<translation id="4779083564647765204">縮放</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
 <translation id="4836046166855586901">在網站要求知道您是否正在使用此裝置時詢問您</translation>
 <translation id="483914009762354899">包含此網域下的所有網站</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止網站使用您的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6453641458248223456">在頁面上透過主選單放大或縮小</translation>
 <translation id="6467852467360539617">清除資料並重設權限</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7667547420449112975">《綠野仙蹤》</translation>
+<translation id="7690549345586282764">顯示縮放</translation>
+<translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">禁止特定網站存取 Cookie。</translation>
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
+<translation id="900095568014372589">讓網站上的預設文字和圖片縮小或放大</translation>
 <translation id="9019902583201351841">由您的家長管理</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9090268041676521955">此網站所屬的群組可查看您的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
+<translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="930525582205581608">要清除此網站的資料嗎？</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

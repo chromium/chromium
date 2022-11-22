@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="1552525382687785070">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಿಂಕ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
+<translation id="1565371473877914088">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="1580715474678097352">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿ</translation>
 <translation id="1580783302095112590">ಮೇಲ್ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="1582732959743469162">ಇದು ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೌನ್‌ಲೋಡ್‌ಗಾಗಿ ಎಲ್ಲಾ ಪ್ರಕ್ರಿಯೆಗಳನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">ಮೊಬೈಲ್</translation>
 <translation id="1989112275319619282">ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="199425419756152024">ಪಾಸ್‌ವರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
+<translation id="2010008505735295285">ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2015722694326466240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವಡ್‌ ಅನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="2021670401941426298">ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ನ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="202292859882676807">ಮೈಕ್ರೊಫೋನ್ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">ರದ್ದುಮಾಡಿ</translation>
 <translation id="3277021493514034324">ಸೈಟ್‌ ವಿಳಾಸವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3285962946108803577">ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ...</translation>
+<translation id="3289505634533552500">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="3290875554372353449">ಖಾತೆಯೊಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3311748811247479259">ಆಫ್ ಆಗಿದೆ</translation>
@@ -646,6 +649,7 @@
 <translation id="5984222099446776634">ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದವು</translation>
 <translation id="5988097621740394599">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆ ಕುಸಿತಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="5988851877894965432">Chrome ನಲ್ಲಿ URL ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="6006672969046233841">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="6012140227487808125">ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6021332621416007159">ಇದರಲ್ಲಿ ತೆರೆಯಿರಿ...</translation>
 <translation id="6027945736510816438">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="WEBSITE" /> ತಾನೇ?</translation>
@@ -832,6 +836,7 @@
 <translation id="7207023858769244910">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ವಿಷಯವನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="721597782417389033">ಕಾರ್ಡ್ ಅಡ್ಡಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="7221173315674413369">'ಹೊಸತೇನಿದೆ' ಎಂಬಲ್ಲಿ ಹೊಸ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಸಲಹೆಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
+<translation id="7223102419539744003">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="722454870747268814">ಹೊಸ ಅದೃಶ್ಯ ಟ್ಯಾಬ್</translation>
 <translation id="7265758999917665941">ಈ ಸೈಟ್‌ಗೆ ಎಂದಿಗೂ ಬೇಡ</translation>
 <translation id="7272437679830969316">ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನಕಲಿಸಲಾಗಿಲ್ಲ.</translation>
@@ -1027,6 +1032,7 @@
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ಡೀಫಾಲ್ಟ್ ಸೈಟ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="8820817407110198400">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
+<translation id="882557203579758546">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ…</translation>
 <translation id="8840513115188359703">ನಿಮ್ಮನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="8843129975935593190">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀವು ಸಿಂಕ್ ಮಾಡಬಹುದಾಗಿರುವುದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>

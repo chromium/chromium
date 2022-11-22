@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Volledig beheer van MIDI-apparaten toestaan</translation>
+<translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Geluid</translation>
 <translation id="2107397443965016585">Vragen voordat sites beschermde content mogen afspelen (aanbevolen)</translation>
 <translation id="2148716181193084225">Vandaag</translation>
+<translation id="216989819110952009">Hoewel hun ogen werden beschermd door de groene bril, werden Dorothy en haar vrienden eerst verblind door de</translation>
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2379925928934107488">Donker thema zo mogelijk toepassen op sites als Chrome het donkere thema gebruikt</translation>
 <translation id="2387895666653383613">Tekstgrootte</translation>
+<translation id="2390272837142897736">Zoomniveau vergroten</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}}</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Deze site definieert interesses waarmee andere sites je advertenties kunnen laten zien. Deze site krijgt ook je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
+<translation id="3295019059349372795">Hoofdstuk 11: De prachtige Smaragden Stad van Oz</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
 <translation id="3333961966071413176">Alle contacten</translation>
 <translation id="3362437373201486687">Scannen naar bluetooth-apparaten</translation>
 <translation id="3386292677130313581">Eerst vragen voordat sites toegang krijgen tot je locatie (aanbevolen)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="3521663503435878242">Sites onder <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">Geluid van video uitzetten</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
+<translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
+<translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="483914009762354899">Alle sites in dit domein opnemen</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6453641458248223456">In- of uitzoomen op een pagina vanuit het hoofdmenu</translation>
 <translation id="6467852467360539617">Gegevens wissen en rechten resetten</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">Browsegegevens wissen</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Annuleren</translation>
+<translation id="7667547420449112975">De tovenaar van Oz</translation>
+<translation id="7690549345586282764">Zoomniveau tonen</translation>
+<translation id="7719367874908701697">Zoomen op pagina</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Cookies voor een specifieke site blokkeren.</translation>
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeten</translation>
+<translation id="900095568014372589">De standaardtekst en afbeeldingen op sites kleiner of groter maken</translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Cookies verwijderen?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Huidig zoomniveau is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="930525582205581608">Deze site vergeten?</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>

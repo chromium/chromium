@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="1446450296470737166">Payagan ganap na kontrol sa MIDI device</translation>
+<translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Mga kaugnay na site</translation>
 <translation id="1644574205037202324">History</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Tunog</translation>
 <translation id="2107397443965016585">Magtanong bago pahintulutan ang mga site na mag-play ng pinoprotektahang content (inirerekomenda)</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
+<translation id="216989819110952009">Kahit na pinoprotektahan ng berdeng salamin ang mga mata, sa una ay nasilaw si Dorothy at ang kanyang mga kaibigan sa</translation>
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
 <translation id="2212565012507486665">Payagan ang cookies</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2379925928934107488">Ilapat ang madilim na tema sa mga site kapag ginagamit ng Chrome ang madilim na tema, kapag posible</translation>
 <translation id="2387895666653383613">Pag-scale ng text</translation>
+<translation id="2390272837142897736">Dagdagan ang pag-zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="2434158240863470628">Tapos nang mag-download <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Tinutukoy ng site na ito ang mga interes na magagamit ng iba pang site para magpakita sa iyo ng mga ad. Kinukuha rin ng site na ito ang mga interes mo mula sa Chrome para makapagpakita sa iyo ng higit pang nauugnay na ad.</translation>
 <translation id="3277252321222022663">Payagan ang mga site na i-access ang mga sensor (inirerekomenda)</translation>
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
+<translation id="3295019059349372795">Kabanata 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Itago ang Impormasyon</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="3333961966071413176">Lahat ng contact</translation>
 <translation id="3362437373201486687">Nagsa-scan ng mga Bluetooth device</translation>
 <translation id="3386292677130313581">Magtanong bago payagan ang mga site na malaman ang iyong lokasyon (inirerekomenda)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">Mga site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">I-block ang mga site sa paggawa ng 3D na mapa ng iyong kapaligiran o pagsubaybay sa posisyon ng camera</translation>
 <translation id="3544058026430919413">Puwedeng tukuyin ng isang kumpanya ang grupo ng mga site na puwedeng gumamit ng cookies para i-share ang iyong aktibidad sa grupo. Naka-off ito sa Incognito.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">I-mute ang video</translation>
 <translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3600792891314830896">I-mute ang mga site na nagpe-play ng tunog</translation>
+<translation id="3602290021589620013">I-preview</translation>
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
+<translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
 <translation id="4836046166855586901">Magtanong kapag gusto ng site na alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="483914009762354899">Isama ang lahat ng site sa ilalim ng domain na ito</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">I-block ang mga site sa paggamit sa iyong virtual reality device at data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6453641458248223456">Mag-zoom in o mag-zoom out sa isang page mula sa pangunahing menu</translation>
 <translation id="6467852467360539617">I-clear ang data at i-reset ang mga pahintulot</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">I-clear ang data sa pag-browse...</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7690549345586282764">Ipakita ang pag-zoom</translation>
+<translation id="7719367874908701697">Pag-zoom ng page</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Mag-block ng cookies para sa isang partikular na site.</translation>
 <translation id="8959122750345127698">Hindi gumagana ang navigation: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Kalimutan</translation>
+<translation id="900095568014372589">Gawing mas maliit o mas malaki ang default na text at mga larawan</translation>
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ni <ph name="FPS_OWNER" /> ang grupo</translation>
 <translation id="9106233582039520022">I-delete ang cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162"><ph name="ZOOM_LEVEL" /> %% ang kasalukuyang pag-zoom</translation>
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="930525582205581608">Kalimutan ang site na ito?</translation>
 <translation id="967624055006145463">Naka-store na data</translation>

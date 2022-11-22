@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="1446450296470737166">Lejo kontrollin e plotë të pajisjeve MIDI</translation>
+<translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Sajtet e lidhura</translation>
 <translation id="1644574205037202324">Historiku</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Tingulli</translation>
 <translation id="2107397443965016585">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura (rekomandohet)</translation>
 <translation id="2148716181193084225">Sot</translation>
+<translation id="216989819110952009">Edhe pse mbanin syzet e gjelbra mbi sy, në fillim Dorotia dhe miqtë e saj u verbuan nga</translation>
 <translation id="2182457891543959921">Pyet përpara se të lejosh krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës (rekomandohet)</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2379925928934107488">Kur është e mundur, zbato temën e errët për sajtet kur Chrome përdor temën e errët</translation>
 <translation id="2387895666653383613">Shkallëzimi i tekstit</translation>
+<translation id="2390272837142897736">Rrit zmadhimin</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama. Gjithashtu, ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="3277252321222022663">Lejoju faqeve të të hapin sensorët (rekomandohet)</translation>
 <translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
+<translation id="3295019059349372795">Kapitulli 11: Qyteti i mrekullueshëm i smeraldtë i Ozit</translation>
 <translation id="3295602654194328831">Fshih informacionin</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="3333961966071413176">Të gjitha kontaktet</translation>
 <translation id="3362437373201486687">Po skanon për pajisje me Bluetooth</translation>
 <translation id="3386292677130313581">Pyet përpara se sajtet të lejohen të dinë vendndodhjen tënde (rekomandohet)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">Sajtet nën <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Blloko krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës</translation>
 <translation id="3544058026430919413">Një kompani mund të përcaktojë një grup sajtesh që mund të përdorin kukit për ta ndarë aktivitetin tënd te grupi. Kjo është joaktive në modalitetin "e fshehtë".</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">Çaktivizo zërin e videos</translation>
 <translation id="3596414637720633074">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="3600792891314830896">Hiq zërin për sajtet që luajnë tinguj</translation>
+<translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
 <translation id="4751476147751820511">Sensorët e lëvizjes ose të dritës</translation>
+<translation id="4779083564647765204">Zmadho</translation>
 <translation id="4811450222531576619">Mëso rreth burimit të saj dhe temës</translation>
 <translation id="4836046166855586901">Pyet kur një sajt kërkon të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="483914009762354899">Përfshi të gjitha sajtet nën këtë domen</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blloko sajtet që të mos përdorin pajisjen e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="6447842834002726250">Kukit</translation>
+<translation id="6453641458248223456">Zmadho ose zvogëlo në një faqe nga menyja kryesore</translation>
 <translation id="6467852467360539617">Pastro të dhënat dhe rivendos lejet</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>
+<translation id="7667547420449112975">Magjistari i mrekullueshëm i Ozit</translation>
+<translation id="7690549345586282764">Shfaq zmadhimin</translation>
+<translation id="7719367874908701697">Zmadhimi i faqes</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Blloko kukit për një sajt specifik.</translation>
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Harro</translation>
+<translation id="900095568014372589">Bëji më të vogla ose më të mëdha imazhet dhe tekstet e parazgjedhura në sajte</translation>
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9090268041676521955">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Të fshihen kukit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
 <translation id="930525582205581608">Të harrohet ky sajt?</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>

@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR кодун скандоо</translation>
 <translation id="1552525382687785070">Шайкештирүү функциясын администраторуңуз өчүрүп койгон</translation>
 <translation id="1554477036522844996">Жаңы Терезе</translation>
+<translation id="1565371473877914088">Жаңы жашыруун өтмөк</translation>
 <translation id="1580715474678097352">Кооптуу вебсайттардан коргойт</translation>
 <translation id="1580783302095112590">Кат жөнөтүлдү.</translation>
 <translation id="1582732959743469162">Ушуну менен учурдагы жүктөп алууңуз токтотулат.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Мобилдик түзмөк</translation>
 <translation id="1989112275319619282">Серептөө</translation>
 <translation id="199425419756152024">Сырсөздү көрүү</translation>
+<translation id="2010008505735295285">Кайрадан жүктөө</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="2021670401941426298">Издөө таржымалын өчүрүү үчүн, бар болсо, издөө каражатындагы нускамаларды караңыз.</translation>
 <translation id="202292859882676807">Микрофонду колдонууга уруксат берилди</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Жокко чыгаруу</translation>
 <translation id="3277021493514034324">Сайттын дареги көчүрүлдү</translation>
 <translation id="3285962946108803577">Баракты бөлүшүү...</translation>
+<translation id="3289505634533552500">Айтып издөө</translation>
 <translation id="3290875554372353449">Аккаунт тандаңыз</translation>
 <translation id="3305294846493618482">дагы</translation>
 <translation id="3311748811247479259">Өчүк</translation>
@@ -646,6 +649,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5984222099446776634">Жакында каралгандар</translation>
 <translation id="5988097621740394599">Төмөндөгөн бааларды өтмөктөрдө көрүңүз.</translation>
 <translation id="5988851877894965432">URL'дерди Chrome'до ачуу</translation>
+<translation id="6006672969046233841">Жаңы өтмөк</translation>
 <translation id="6012140227487808125">Шифрленүүдө…</translation>
 <translation id="6021332621416007159">Төмнкүдө ачуу…</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> эмес беле?</translation>
@@ -832,6 +836,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7207023858769244910">Контентти кызыккан нерселериңиздин негизинде көрүү үчүн шайкештириңиз.</translation>
 <translation id="721597782417389033">Картанын ылакап аты туура эмес</translation>
 <translation id="7221173315674413369">Эмне жаңылык бөлүмүнөн жаңы функцияларды жана кеңештерди караңыз</translation>
+<translation id="7223102419539744003">Өтмөктү жабуу</translation>
 <translation id="722454870747268814">Жаңы жашыруун өтмөк</translation>
 <translation id="7265758999917665941">Бул сайт үчүн эч качан</translation>
 <translation id="7272437679830969316">Аныктыгыңыз тастыкталган жок. Сырсөз көчүрүлгөн жок.</translation>
@@ -1027,6 +1032,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Сайттын демейки көрүнүшү</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
+<translation id="882557203579758546">Барактан табуу…</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
 <translation id="8843129975935593190">Шайкештире алган нерселер уюмуңуз тарабынан чектелген.</translation>
 <translation id="8849001918648564819">Жашырылды</translation>

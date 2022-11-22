@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">開いているタブの商品が値下げされた場合にアラートを受け取ることができます</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="3882834874697329510">開いているタブの商品が値下げされた場合にアラートを受け取るには、[設定] で通知をオンにします。</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
 <translation id="5558362125926932819">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> 個のタブがグループ化されました</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome からの <ph name="TABS_COUNT_ONE" /> 件のリンク}other{Chrome からの <ph name="TABS_COUNT_MANY" /> 件のリンク}}</translation>
 <translation id="575494663145460764">値下げアラートを受け取りますか？</translation>
 <translation id="58326064309361797">タブをグループ化するにはドラッグします</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> グループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>

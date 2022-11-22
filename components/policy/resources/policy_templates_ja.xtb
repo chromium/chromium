@@ -491,6 +491,7 @@
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="1488724823347505879">Android アプリからウェブアプリへの共有を有効にする</translation>
 <translation id="1494138678487405397">ログイン画面でハイ コントラストを無効にする</translation>
+<translation id="1499129134689253257"><ph name="OFFSET_PARENT" /> の新しい動作を管理する</translation>
 <translation id="1501644502684303995">ログイン画面でのみオンライン ログインを強制適用する</translation>
 <translation id="1502843533062797703">第三者ソフトウェアからのコードの挿入をブロックする</translation>
 <translation id="1503969899251962413">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。
@@ -2227,6 +2228,17 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> はインストールされたネイティブ メッセージング ホストをすべて読み込みます。</translation>
 <translation id="3211426942294667684">ブラウザのログイン設定</translation>
+<translation id="3217774577897351942"><ph name="FIREFOX_PRODUCT_NAME" /> と <ph name="SAFARI_PRODUCT_NAME" /> で行われた変更に合わせるため、<ph name="PRODUCT_NAME" /> で <ph name="OFFSET_PARENT" /> API が変更されています。このポリシーでは、M120 までの従来の動作に戻すよう設定できます。
+
+この新しい動作によって、Shadow DOM とともに <ph name="OFFSET_PARENT" />、<ph name="OFFSET_TOP" />、または <ph name="OFFSET_LEFT" /> を使用する <ph name="PRODUCT_NAME" /> 専用ウェブサイトの一部が正常に動作しなくなる可能性があります。
+
+移行をスムーズに行うため従来の動作に戻されるポリフィルの例については、こちらの URL をご覧ください。https://github.com/josepharhar/offsetparent-polyfills
+
+このポリシーを有効に設定した場合は、新しい動作が使用されます。
+
+このポリシーを無効に設定した場合は、従来の動作が使用されます。
+
+このポリシーを未設定のままにした場合は、他の Chromium ユーザーと同じように新しい動作が使用されます。</translation>
 <translation id="3219421230122020860">シークレット モードを利用可能にする</translation>
 <translation id="3220624000494482595">キオスクアプリが Android アプリの場合は、このポリシーを <ph name="TRUE" /> に設定しても、アプリによって <ph name="PRODUCT_OS_NAME" /> のバージョンを制御することはできません。</translation>
 <translation id="3222088741899353813">ログイン画面で左ボタンをメインにする</translation>
@@ -2627,6 +2639,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="3589193811812796052">WebAssembly モジュールのクロスオリジン送信を許可しない</translation>
 <translation id="3591527072193107424">従来のブラウザのサポート機能を有効にする。</translation>
 <translation id="3591584750136265240">ログイン認証の動作を設定する</translation>
+<translation id="3593905652755912452">無効化されたフォーム コントロールでのイベントのディスパッチで従来の動作を使用する。</translation>
 <translation id="3596112486106491038">仮想マシンのコマンドライン アクセスを有効にする</translation>
 <translation id="3603469950773500315">新しい <ph name="CORS" /> の実装で <ph name="CORS" /> チェックの緩和措置を有効にして、拡張機能の互換性のある動作が保たれるように、また <ph name="PRODUCT_NAME" /> で <ph name="CORS" /> チェックなしに指定ヘッダーが送信されるようにします。
 
@@ -2924,6 +2937,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="3891357445869647828">JavaScript を有効にする</translation>
 <translation id="3891769546914233112">PDF を画像として印刷可能にする</translation>
 <translation id="3897218615484393758">SAML 経由で認証されたユーザーがロック画面でのログインをオフラインで行える期間を制限する</translation>
+<translation id="3897860452756794695">新しい offsetParent の動作を使用する。</translation>
 <translation id="3898345958122666461">NTLMv2 を無効にする</translation>
 <translation id="3898795800259311780">画面のキャプチャを許可または拒否する</translation>
 <translation id="3903313632842363082">デバイスのユーザーの報告を無効にする</translation>
@@ -3918,6 +3932,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       * <ph name="MODE_ENUM_PRE_MOUNT" />: <ph name="SHARE_URL_FIELD_NAME" /> がマウントされます。</translation>
 <translation id="5025239932007658691">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は正確なタイムスタンプを取得するため、Google サーバーに不定期のクエリを送信します。このポリシーを無効に設定すると、<ph name="PRODUCT_NAME" /> がこれらのクエリを送信するのを停止できます。</translation>
+<translation id="5033070732967197381">TLS 証明書が破損しているサイトで WebAuthn API リクエストを許可する。</translation>
 <translation id="5034504101537897433">デバイスの障害レポート情報の報告を有効にする</translation>
 <translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
@@ -4624,6 +4639,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       ユーザーはこの設定を変更できません。</translation>
 <translation id="5838452040629810808">カーソルのハイライト表示を有効にする</translation>
+<translation id="5842283830553218200">無効化されたフォーム コントロールでのイベントのディスパッチで新しい動作をデフォルトで使用する。</translation>
 <translation id="5848438019586925019">鍵ペアの生成に使用するアルゴリズムです。</translation>
 <translation id="5851248808417680865">ダークモードを使用する</translation>
 <translation id="585270638818921943">信頼できない提供元の Android アプリの使用をユーザーに許可しない</translation>
@@ -5087,6 +5103,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="CHROME_SYNC_NAME" /> を使用するかどうかを選択できます。
 
       注: <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> が有効に設定されている場合は、同じクライアントサイドの機能が共有されるため、このポリシーを有効にしないでください。この場合、Google でホストされる同期は完全に無効になります。</translation>
+<translation id="6320935916601887506">新しい offsetParent の動作をデフォルトで使用する。</translation>
 <translation id="6327643515544933974">ウェブ USB 設定</translation>
 <translation id="6330882599388782338">サイトにセンサーへのアクセスを許可する</translation>
 <translation id="6331167725613770725">このポリシーはサポートが終了しており、<ph name="PRODUCT_OS_NAME" /> バージョン 85 で削除されます。代わりに <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> を使用してください。
@@ -5218,6 +5235,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="6464074037294098618">住所の自動入力を有効にします</translation>
 <translation id="6467613372414922590">ユーザーレベルのネイティブ メッセージング ホスト（管理者権限なしでインストールされたホスト）を許可する</translation>
 <translation id="6473623140202114570">セーフ ブラウジングによる警告の表示を行わないドメインのリストを設定する。</translation>
+<translation id="6474194795370862403">従来の offsetParent の動作を使用する。</translation>
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> を有効にし、メインのブラウザとして設定する</translation>
 <translation id="647698599569353771">ニアバイシェアを有効にできるようにします。</translation>
 <translation id="6477685422297715670">緑色のキーボード バックライト</translation>
@@ -5397,6 +5415,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       - このポリシーが無効の場合、管理者はそのことをデバイスのエンドユーザーに知らせる必要があります。</translation>
 <translation id="6609867253856597039">無効にした機能のユーザー エクスペリエンスを設定する</translation>
 <translation id="6614557704487944013">ユーザーに <ph name="LACROS_NAME" /> ブラウザの使用を許可する</translation>
+<translation id="661610294649586421">TLS 証明書が破損しているサイトで WebAuthn API リクエストを許可しない。</translation>
 <translation id="6617589895942747919">間隔の開始時間です（この時間も含まれます）。</translation>
 <translation id="6621830999036927230">このポリシーを設定した場合、リモート アクセス ホストは、この URL を使用してリモート アクセス クライアントからの認証トークンを検証し、接続を受け入れるかどうかを判断します。このポリシーを空白にした場合または設定しない場合、この機能は無効になります。
 
@@ -5682,6 +5701,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="6907778402784621686">指定サイトで安全でないコンテンツをブロックする</translation>
 <translation id="6908640907898649429">デフォルトの検索プロバイダを設定します。ユーザーが使用するデフォルトの検索プロバイダを指定するか、既定の検索を無効にすることができます。</translation>
 <translation id="6913068954484253496">すべての IP アドレスのキャスト デバイスに接続することを <ph name="PRODUCT_NAME" /> に許可する</translation>
+<translation id="6915493311660114995">有効に設定した場合、<ph name="PRODUCT_NAME" /> では、TLS 証明書にエラーがあるウェブサイト（ウェブサイトが安全でないと判断されるなど）でウェブ認証リクエストを許可します。このポリシーを無効に設定するか未設定のままにした場合、このようなリクエストをブロックするデフォルトの動作が適用されます。</translation>
 <translation id="6919819553978815392">このポリシーを true に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> ではゲストモードでのログインが可能です。ゲストモードでのログインには、すべてのウィンドウをシークレット モードで表示する <ph name="PRODUCT_NAME" /> プロフィールが適用されます。
 
       このポリシーを false に設定した場合、ゲストモードのプロフィールで <ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> を使用することはできません。
@@ -6548,6 +6568,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="782661371433719637">どのサイトにも File System API 経由でのファイルとディレクトリへの読み取りアクセスの要求を許可しない</translation>
 <translation id="7827127381981620448">プラットフォーム アプリ</translation>
 <translation id="7829436838673974723">ページの終了中にページから同期 XHR リクエストを送信することを許可する</translation>
+<translation id="782978857350824974">TLS 証明書が破損しているサイトでウェブ認証リクエストを許可する。</translation>
 <translation id="7832225468415136704">Chrome クリーンアップによるシステムの定期的なスキャンを許可せず、手動スキャンを無効にする</translation>
 <translation id="7833148823006528332">Android アプリの識別子（例: Gmail の場合は "com.google.android.gm"）</translation>
 <translation id="7835218570504220753">自動クリックを無効にする</translation>
@@ -7114,6 +7135,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="8417305981081876834">ロック画面の PIN の最大桁数を設定する</translation>
 <translation id="841977920223099909">パスワード保護について警告する場合のトリガー</translation>
 <translation id="8420426128163801949">ユーザーによる Bluetooth のオンとオフの切り替えを許可する</translation>
+<translation id="8422658829373743789">無効化されたフォーム コントロールでのイベントのディスパッチに関する新しい動作を管理する</translation>
 <translation id="8422866312638683210">このポリシーを設定した場合、<ph name="PRODUCT_NAME" /> は <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> への自己登録を試みます。このポリシーの値は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> から取得できる登録トークンになります。
 
       詳しくは、https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 をご覧ください。</translation>
@@ -7649,6 +7671,19 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="8947415621777543415">デバイスの位置をレポート</translation>
 <translation id="8948062138228904066">認証サーバーの許可リスト</translation>
 <translation id="8951350807133946005">ディスクのキャッシュ ディレクトリの設定</translation>
+<translation id="8952611478149810182">他のブラウザとの互換性を高め、デベロッパーの開発環境を改善するため、無効化されたフォーム コントロールでのイベントのディスパッチの動作が Chromium で変更されています。
+
+具体的には、無効化されたフォーム コントロール要素で、クリック、マウスアップ、マウスダウン以外の MouseEvents がディスパッチされるようになります。新たにディスパッチされるイベントには、マウス移動、マウスエンター、マウスリーブなどが含まれます。
+
+また、クリック、マウスアップ、マウスダウンのイベントパスも、無効化されたフォーム コントロールの子でディスパッチされた場合は切り捨てられ、無効化されたフォーム コントロールやその祖先でディスパッチされなくなります。
+
+この新しい動作によって、一部のウェブサイトが正常に動作しなくなる可能性があります。
+
+このポリシーを有効に設定した場合は、新しい動作が使用されます。
+
+このポリシーを無効に設定した場合は、従来の動作が使用されます。
+
+このポリシーを未設定のままにした場合は、他の Chromium ユーザーと同じように新しい動作が使用されます。</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
 <translation id="8970205333161758602"><ph name="PRODUCT_FRAME_NAME" /> のサポート終了メッセージを抑制する</translation>
@@ -7832,6 +7867,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> プロキシを有効にする</translation>
 <translation id="9136212796239682721">ダウンロードのバブル UI を無効にする</translation>
 <translation id="9136399279941091445">指定されたデバイスポリシーが解除されたときの管理外時間の間隔</translation>
+<translation id="9142561920976791097">無効化されたフォーム コントロールでのイベントのディスパッチで新しい動作を使用する。</translation>
 <translation id="9148720248753722892">SHA-1 署名済み証明書を許可しない</translation>
 <translation id="9149678135092892302">バージョン情報のレポートを無効にする</translation>
 <translation id="9150416707757015439">このポリシーは今後使用できなくなりますので、IncognitoModeAvailability をご使用ください。<ph name="PRODUCT_NAME" /> でシークレット モードを有効にします。この設定が有効または設定されていない場合、ユーザーはシークレット モードでウェブページを開くことができます。この設定を無効にすると、ユーザーはシークレット モードでウェブページを開くことができません。このポリシーが未設定の場合は有効になり、ユーザーはシークレット モードを使用できます。</translation>

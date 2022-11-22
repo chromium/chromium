@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2. [デフォルトのブラウザアプリ] をタップする</translation>
 <translation id="2820289420301699633">Chrome は管理者の制御下にあり、管理者は Chrome のデータにアクセスできます</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
+<translation id="2834399722155632105">3. [パスワードのオプション] をタップします</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />、<ph name="STATE" />、<ph name="URL" /></translation>
 <translation id="2843803966603263712">翻訳設定をリセット</translation>
 <translation id="2848086008667475748">[設定] でデフォルトにする…</translation>
@@ -370,6 +371,7 @@
 <translation id="3861486700625780712">フォローを解除</translation>
 <translation id="3863769054730344136">お使いのデバイスに送信</translation>
 <translation id="387280738075653372">こちらから Chrome をダウンロードできます。</translation>
+<translation id="3888863481921783344">予定の招待者の候補を表示するために使用されます。</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3904829425754749514">同期は組織によってオフにされています。このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
@@ -630,6 +632,7 @@
 <translation id="5899314093904173337">近くのユーザーと共有するには、カメラまたは QR スキャンアプリで、この QR コードをスキャンしてもらいます</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5913600720976431809">ページ翻訳のオプション</translation>
+<translation id="5933515656458364246">すべてのデバイスでデータを同期します。</translation>
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
 <translation id="5951816930277761335">リンクを共有します</translation>
@@ -711,6 +714,7 @@
 
 データは <ph name="TIME" /> に同期パスフレーズで暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6418346271604475326">PDF を準備しています</translation>
+<translation id="6429213933892582367">[パスワードのオプション] を開きます</translation>
 <translation id="6434591244308415567">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6435236283694032571">リーディング リストに追加する</translation>
 <translation id="6439338047467462846">すべて許可</translation>
@@ -826,6 +830,7 @@
 <translation id="7203585745079012652">回答を音声で聞く</translation>
 <translation id="7207023858769244910">同期すると、興味や関心に基づくコンテンツを取得できます。</translation>
 <translation id="721597782417389033">無効なカード ニックネーム</translation>
+<translation id="7221173315674413369">「新機能」で新しい機能とヒントをチェック</translation>
 <translation id="722454870747268814">新しいシークレット タブ</translation>
 <translation id="7265758999917665941">このサイトでは保存しない</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
@@ -859,6 +864,7 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7531345132340165516">現在のサイト</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
+<translation id="7553234618121028547">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードのオプション] に移動します。</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
@@ -939,7 +945,9 @@
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">オフにする</translation>
 <translation id="8114753159095730575">ファイルのダウンロードが利用可能です。画面の下の方にオプションがあります。</translation>
+<translation id="81313319706244542">2. パスワードをタップします</translation>
 <translation id="8132598642024322408">今なら <ph name="PREVIOUS_PRICE" /> が <ph name="PRICE" /></translation>
+<translation id="8136856065410661948">Chrome や Google レンズから Apple カレンダーの予定を作成するために使用されます。</translation>
 <translation id="8156478151976189188">パスワード同期が機能していません</translation>
 <translation id="8157532349231307196">アカウント数: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -960,6 +968,7 @@
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8323906514956095947">長押しすると、タブのオプションがさらに表示されます</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>
+<translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8386068868580335421">リセット</translation>
 <translation id="8407669440184693619">このサイト用のパスワードが見つかりません</translation>

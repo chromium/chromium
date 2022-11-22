@@ -506,6 +506,7 @@
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
 <translation id="1494138678487405397">为登录屏幕停用高对比度模式</translation>
+<translation id="1499129134689253257">控制 <ph name="OFFSET_PARENT" /> 的新行为</translation>
 <translation id="1501644502684303995">仅在登录页面强制执行在线登录</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
 <translation id="1503969899251962413">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。
@@ -2333,6 +2334,17 @@
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="3211426942294667684">浏览器登录设置</translation>
+<translation id="3217774577897351942">我们正在 <ph name="PRODUCT_NAME" /> 中更改 <ph name="OFFSET_PARENT" /> API，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中发生的变更。此政策可用于恢复旧行为，直到 M120。
+
+新行为可能会导致下述类型的某些网站无法正常运作：仅支持 <ph name="PRODUCT_NAME" />，且将 <ph name="OFFSET_PARENT" />、<ph name="OFFSET_TOP" /> 或 <ph name="OFFSET_LEFT" /> 与 Shadow DOM 配合使用。
+
+如需了解哪些 polyfill 可用于恢复旧行为以便迁移，请参阅 https://github.com/josepharhar/offsetparent-polyfills
+
+如果此政策已启用，系统将会使用新行为。
+
+如果此政策已停用，系统将会使用旧行为。
+
+如果此政策未设置，系统则会像其余 Chromium 用户一样使用新行为。</translation>
 <translation id="3219421230122020860">可使用无痕模式</translation>
 <translation id="3220624000494482595">如果自助服务终端应用是一款 Android 应用，它将无法控制 <ph name="PRODUCT_OS_NAME" />版本，即使此政策设为 <ph name="TRUE" /> 也是如此。</translation>
 <translation id="3222088741899353813">在登录屏幕上，鼠标左键是主按键</translation>
@@ -2729,6 +2741,7 @@
 <translation id="3589193811812796052">禁止跨源发送 WebAssembly 模块</translation>
 <translation id="3591527072193107424">启用“旧版浏览器支持”功能。</translation>
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
+<translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
 
@@ -3028,6 +3041,7 @@
 <translation id="3891357445869647828">启用 JavaScript</translation>
 <translation id="3891769546914233112">提供“以图片形式打印 PDF 文件”选项</translation>
 <translation id="3897218615484393758">限制通过 SAML 验证身份的用户可在锁定屏幕上离线登录的时长</translation>
+<translation id="3897860452756794695">系统将使用新的 offsetParent 行为。</translation>
 <translation id="3898345958122666461">开启 NTLMv2</translation>
 <translation id="3898795800259311780">允许或拒绝屏幕截图</translation>
 <translation id="3903313632842363082">停用设备用户报告功能</translation>
@@ -4796,6 +4810,7 @@
 
       用户无法更改此设置。</translation>
 <translation id="5838452040629810808">允许使用光标突出显示</translation>
+<translation id="5842283830553218200">系统将默认使用针对已停用的表单控件分派事件的新行为。</translation>
 <translation id="5848438019586925019">用于生成密钥对的算法。</translation>
 <translation id="5851248808417680865">使用深色主题</translation>
 <translation id="585270638818921943">禁止用户使用来源不受信任的 Android 应用</translation>
@@ -5278,6 +5293,7 @@
       如果此政策已停用或未设置，用户便可以选择是否使用 <ph name="CHROME_SYNC_NAME" />。
 
       注意：如果 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 已启用，请勿开启此政策，因为此功能具有相同的客户端功能。在这种情况下，由 Google 托管的同步服务会完全关闭。</translation>
+<translation id="6320935916601887506">系统将默认使用新的 offsetParent 行为。</translation>
 <translation id="6327643515544933974">网络 USB 设置</translation>
 <translation id="6330882599388782338">允许网站使用传感器</translation>
 <translation id="6331167725613770725">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
@@ -5413,6 +5429,7 @@
 <translation id="6464074037294098618">自动填充地址信息</translation>
 <translation id="6467613372414922590">允许使用用户级本地消息传递主机（安装时没有管理员权限）</translation>
 <translation id="6473623140202114570">配置安全浏览功能在哪些网域中不会触发警告。</translation>
+<translation id="6474194795370862403">系统将使用旧的 offsetParent 行为。</translation>
 <translation id="647645276885673708">启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器</translation>
 <translation id="647698599569353771">允许启用“附近分享”功能。</translation>
 <translation id="6477685422297715670">键盘背光颜色：绿色</translation>
@@ -7404,6 +7421,7 @@
 <translation id="8417305981081876834">设置锁定屏幕 PIN 码的长度上限</translation>
 <translation id="841977920223099909">密码保护服务警告功能触发条件</translation>
 <translation id="8420426128163801949">允许用户开启或关闭蓝牙</translation>
+<translation id="8422658829373743789">控制针对已停用的表单控件分派事件的新行为</translation>
 <translation id="8422866312638683210">如果您设置了此政策，<ph name="PRODUCT_NAME" /> 会尝试向 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />注册自身。此政策的值是一个可从 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />检索的注册令牌。
 
       如需了解详情，请访问 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
@@ -7948,6 +7966,19 @@
 <translation id="8947415621777543415">报告设备位置</translation>
 <translation id="8948062138228904066">身份验证服务器许可名单</translation>
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
+<translation id="8952611478149810182">我们正在 Chromium 中更改针对已停用的表单控件分派事件的行为，以便更好地兼容其他浏览器并提升开发者体验。
+
+这项变更会针对已停用的表单控件元素分派除 click、mouseup 和 mousedown 之外的 MouseEvent。例如，新事件将包括 mousemove、mouseenter 和 mouseleave。
+
+另外，在系统针对已停用的表单控件的子项分派 click、mouseup 和 mousedown 时，这项变更还会截断相应的事件路径，以确保系统不会针对此类控件或其任何祖先分派这三种事件。
+
+新行为可能会导致某些网站无法正常运作。
+
+如果此政策已启用，系统将会使用新行为。
+
+如果此政策已停用，系统将会使用旧行为。
+
+如果此政策未设置，系统则会像其余 Chromium 用户一样使用新行为。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8970205333161758602">阻止显示 <ph name="PRODUCT_FRAME_NAME" />停止支持的提示</translation>
@@ -8133,6 +8164,7 @@
 <translation id="9135033364005346124">启用“<ph name="CLOUD_PRINT_NAME" />”代理</translation>
 <translation id="9136212796239682721">停用下载气泡界面</translation>
 <translation id="9136399279941091445">发布指定设备政策后的非工作时间的间隔</translation>
+<translation id="9142561920976791097">系统将使用针对已停用的表单控件分派事件的新行为。</translation>
 <translation id="9148720248753722892">禁止使用 SHA-1 签名证书</translation>
 <translation id="9149678135092892302">停用关于版本信息的报告</translation>
 <translation id="9150416707757015439">此政策已弃用，请改用 IncognitoModeAvailability。在 <ph name="PRODUCT_NAME" />中启用隐身模式。如果已启用或未配置此设置，用户就可以在隐身模式下打开网页。如果停用此设置，用户就无法在隐身模式下打开网页。如果未设置此政策，将会启用此设置，用户便能使用隐身模式。</translation>

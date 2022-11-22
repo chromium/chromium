@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">បានបង្រួម URL</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="1446450296470737166">អនុញ្ញាតឲ្យមានការគ្រប់គ្រងពេញលេញលើឧបករណ៍ MIDI</translation>
+<translation id="1448064542941920355">បន្ថយការពង្រីកបង្រួម</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1633720957382884102">គេហទំព័រដែលពាក់ព័ន្ធ</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">សំឡេង</translation>
 <translation id="2107397443965016585">សួរ​មុនពេល​អនុញ្ញតឱ្យគេហទំព័រ​ចាក់ខ្លឹមសារ​ដែលមាន​ការការពារ (បានណែនាំ)</translation>
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
+<translation id="216989819110952009">សូម្បី​តែ​មានពាក់​វ៉ែនតាពណ៌​បៃតងការពារភ្នែកក៏ដោយ ក៏ដំបូងឡើយ Dorothy និងមិត្តភ័ក្តិ​របស់​គាត់​មានភាពភ្ញាក់ផ្អើលដោយ</translation>
 <translation id="2182457891543959921">សួរ​មុនពេល​អនុញ្ញាតឱ្យ​គេហទំព័របង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក ឬតាមដានទីតាំងកាមេរ៉ា (បានណែនាំ)</translation>
 <translation id="2212565012507486665">អនុញ្ញាត​ខូគី</translation>
 <translation id="2228071138934252756">ដើម្បីអនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ចូលប្រើកាមេរ៉ា​របស់អ្នក អ្នកក៏ត្រូវបើក​កាមេរ៉ា​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2379925928934107488">ប្រើរចនាប័ទ្មងងឹតលើគេហទំព័រ នៅពេល Chrome ប្រើរចនាប័ទ្មងងឹត នៅពេលអាចប្រើបាន</translation>
 <translation id="2387895666653383613">ការប្ដូរទំហំអក្សរ</translation>
+<translation id="2390272837142897736">បង្កើនការពង្រីកបង្រួម</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{បានអនុញ្ញាត <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}other{បានអនុញ្ញាត <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}}</translation>
 <translation id="2434158240863470628">ការទាញយក​បានបញ្ចប់ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">គេហទំព័រនេះកំណត់ចំណាប់អារម្មណ៍ដែលគេហទំព័រផ្សេងទៀតអាចប្រើ ដើម្បីបង្ហាញការផ្សាយពាណិជ្ជកម្មដល់អ្នក។ គេហទំព័រនេះក៏ប្រមូលចំណាប់អារម្មណ៍របស់អ្នកពី Chrome ផងដែរ ដើម្បីបង្ហាញការផ្សាយពាណិជ្ជកម្មកាន់តែពាក់ព័ន្ធដល់អ្នក។</translation>
 <translation id="3277252321222022663">អនុញ្ញាត​ឱ្យ​គេហទំព័រ​ចូលប្រើ​ឧបករណ៍​ចាប់សញ្ញា (បាន​ណែនាំ)</translation>
 <translation id="3285500645985761267">អនុញ្ញាត​គេហទំព័រ​ដែល​ពាក់ព័ន្ធ ដើម្បី​មើល​ឃើញសកម្មភាព​របស់​អ្នក​នៅ​ក្នុង​ក្រុម</translation>
+<translation id="3295019059349372795">ជំពូកទី 11៖ The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">លាក់ព័ត៌មាន</translation>
 <translation id="3328801116991980348">ព័ត៌មានគេហទំព័រ</translation>
 <translation id="3333961966071413176">ទំនាក់​ទំនង​ទាំងអស់</translation>
 <translation id="3362437373201486687">កំពុងស្កេនរកឧបករណ៍ប៊្លូធូស</translation>
 <translation id="3386292677130313581">សួរមុនពេលអនុញ្ញាតឲ្យគេហទំព័រស្គាល់ទីតាំងរបស់អ្នក (បានណែនាំ)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">គេហទំព័រ​នៅក្រោម <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">ទប់ស្កាត់គេហទំព័រមិនឱ្យបង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក ឬតាមដានទីតាំងកាមេរ៉ា</translation>
 <translation id="3544058026430919413">ក្រុមហ៊ុន​អាច​កំណត់​ក្រុម​គេហទំព័រ​ដែល​អាច​ប្រើប្រាស់​ខូគី ដើម្បី​ចែករំលែក​សកម្មភាព​របស់​អ្នក​នៅ​ក្នុងក្រុមនេះ។ ជម្រើសនេះត្រូវ​បានបិទ​នៅ​ក្នុង​មុខងារឯកជន។</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">បិទ​សំឡេង​វីដេអូ</translation>
 <translation id="3596414637720633074">ទប់ស្កាត់​ខូគីភាគីទីបីក្នុងមុខងារឯកជន</translation>
 <translation id="3600792891314830896">បិទសំឡេងទំព័រដែលចាក់សំឡេង</translation>
+<translation id="3602290021589620013">ពិនិត្យមើល</translation>
 <translation id="3628308229821498208">ការស្វែងរក​ដែលបាន​ណែនាំ</translation>
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
 <translation id="3763247130972274048">ចុច​ខាងឆ្វេង ឬ​ខាងស្ដាំពីរដង​​លើវីដេអូ ដើម្បី​រំលង 10 វិ</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">គ្រប់គ្រងដោយឪពុកម្តាយរបស់អ្នក</translation>
 <translation id="4670064810192446073">VR</translation>
 <translation id="4751476147751820511">ឧបករណ៍​ចាប់​សញ្ញាពន្លឺ ឬ​ចលនា</translation>
+<translation id="4779083564647765204">ពង្រីក</translation>
 <translation id="4811450222531576619">ស្វែងយល់​អំពី​ប្រភព និង​ប្រធានបទ​របស់ទំព័រ​នេះ</translation>
 <translation id="4836046166855586901">សួរ​នៅពេល​គេហទំព័រ​ចង់ដឹងអំពីពេលវេលាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះយ៉ាងសកម្ម</translation>
 <translation id="483914009762354899">រួមបញ្ចូល​គេហទំព័រ​ទាំង​អស់​នៅ​ក្រោម​ដែន​នេះ</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក</translation>
 <translation id="6447842834002726250">ខុកឃី</translation>
+<translation id="6453641458248223456">ពង្រីក ឬបង្រួមនៅលើទំព័រពីម៉ឺនុយដើម</translation>
 <translation id="6467852467360539617">សម្អាតទិន្នន័យ និងកំណត់ការអនុញ្ញាតឡើងវិញ</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
 <translation id="6545864417968258051">ការស្កេនប៊្លូធូស</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">សម្អាត​ទិន្នន័យ​រុករក​…</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
+<translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7690549345586282764">បង្ហាញការពង្រីកបង្រួម</translation>
+<translation id="7719367874908701697">ពង្រីកទំព័រ</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">ទប់ស្កាត់​ខូគីសម្រាប់​គេហទំព័រ​ជាក់លាក់។</translation>
 <translation id="8959122750345127698">ការុករកមិនអាចភ្ជាប់បានទេ៖ <ph name="URL" /></translation>
 <translation id="8986362086234534611">បំភ្លេច</translation>
+<translation id="900095568014372589">ធ្វើឱ្យអក្សរ និងរូបភាពលំនាំដើមនៅលើគេហទំព័រតូចជាង ឬធំជាងនេះ</translation>
 <translation id="9019902583201351841">គ្រប់គ្រងដោយឪពុកម្តាយរបស់អ្នក</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9090268041676521955">គេហទំព័រនេះ​ស្ថិតនៅក្នុង​ក្រុម​ដែល​អាច​មើលឃើញ​សកម្មភាពរបស់អ្នក។ ក្រុមត្រូវបានកំណត់ដោយ <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">លុប​ខូគី​ឬ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}}</translation>
 <translation id="913657688200966289">បើក​ការអនុញ្ញាត​សម្រាប់ <ph name="APP_NAME" /> នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>
+<translation id="9138217887606523162">ការពង្រីកបង្រួមបច្ចុប្បន្នគឺ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ទំព័រនេះ​មានគ្រោះថ្នាក់</translation>
 <translation id="930525582205581608">បំភ្លេច​គេហទំព័រនេះឬ?</translation>
 <translation id="967624055006145463">​ទិន្នន័យដែល​បាន​រក្សា​ទុក</translation>

@@ -87,6 +87,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1552525382687785070">Sinhronizacijo je onemogočil skrbnik</translation>
 <translation id="1554477036522844996">Novo okno</translation>
+<translation id="1565371473877914088">Nov anonimni zavihek</translation>
 <translation id="1580715474678097352">Bodite zaščiteni pred nevarnimi spletnimi mesti</translation>
 <translation id="1580783302095112590">Pošta je poslana.</translation>
 <translation id="1582732959743469162">S tem boste prekinili trenutni prenos.</translation>
@@ -133,6 +134,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1981118202195772574">Mobilna naprava</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="199425419756152024">Prikaži geslo</translation>
+<translation id="2010008505735295285">Znova naloži</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="2021670401941426298">Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="202292859882676807">Dostop do mikrofona je odobren</translation>
@@ -299,6 +301,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3277021493514034324">Kopiran naslov spletnega mesta</translation>
 <translation id="3285962946108803577">Deljenje strani …</translation>
+<translation id="3289505634533552500">Glasovno iskanje</translation>
 <translation id="3290875554372353449">Izberite račun</translation>
 <translation id="3305294846493618482">več</translation>
 <translation id="3311748811247479259">Izklopljeno</translation>
@@ -646,6 +649,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5984222099446776634">Nedavno obiskano</translation>
 <translation id="5988097621740394599">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="5988851877894965432">Odpiranje URL-jev v Chromu</translation>
+<translation id="6006672969046233841">Nov zavihek</translation>
 <translation id="6012140227487808125">Šifriranje ...</translation>
 <translation id="6021332621416007159">Odpri v ...</translation>
 <translation id="6027945736510816438">Ali ste mislili <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7207023858769244910">Sinhronizirajte, da boste deležni vsebine glede na vaša zanimanja.</translation>
 <translation id="721597782417389033">Neveljaven vzdevek za kartico</translation>
 <translation id="7221173315674413369">Raziščite nove funkcije in nasvete v »Novosti«</translation>
+<translation id="7223102419539744003">Zapri zavihek</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>
 <translation id="7265758999917665941">Nikoli za to spletno mesto</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
@@ -1027,6 +1032,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Privzeti pogled spletnega mesta</translation>
 <translation id="8820817407110198400">Zaznamki</translation>
+<translation id="882557203579758546">Najdi na strani …</translation>
 <translation id="8840513115188359703">Iz Google Računa ne boste odjavljeni.</translation>
 <translation id="8843129975935593190">Vaša organizacija omejuje, kaj lahko sinhronizirate.</translation>
 <translation id="8849001918648564819">Skrito</translation>

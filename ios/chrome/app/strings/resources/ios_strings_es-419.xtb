@@ -87,6 +87,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1552525382687785070">Tu administrador inhabilitó la sincronización</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
+<translation id="1565371473877914088">Nueva pestaña de incógnito</translation>
 <translation id="1580715474678097352">Protégete de sitios web peligrosos</translation>
 <translation id="1580783302095112590">Correo enviado</translation>
 <translation id="1582732959743469162">Esta acción detendrá el progreso de la descarga actual.</translation>
@@ -133,6 +134,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
+<translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="202292859882676807">Acceso al micrófono permitido</translation>
@@ -299,6 +301,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Se copió la dirección del sitio</translation>
 <translation id="3285962946108803577">Compartir página…</translation>
+<translation id="3289505634533552500">Búsqueda por voz</translation>
 <translation id="3290875554372353449">Elegir una cuenta</translation>
 <translation id="3305294846493618482">más</translation>
 <translation id="3311748811247479259">No</translation>
@@ -646,6 +649,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5984222099446776634">Visitados recientemente</translation>
 <translation id="5988097621740394599">Visualiza los descuentos en las pestañas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
+<translation id="6006672969046233841">Nueva pestaña</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
 <translation id="6021332621416007159">Abrir en...</translation>
 <translation id="6027945736510816438">¿Quisiste decir <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7207023858769244910">Activa la sincronización para obtener contenido en función de tus intereses.</translation>
 <translation id="721597782417389033">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="7221173315674413369">Explora nuevas funciones y sugerencias en Novedades</translation>
+<translation id="7223102419539744003">Cerrar pestaña</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
@@ -1027,6 +1032,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Vista predeterminada de sitios</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="882557203579758546">Buscar en la página…</translation>
 <translation id="8840513115188359703">No saldrás de tu cuenta de Google.</translation>
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculta</translation>

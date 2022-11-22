@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">更新してログアウト</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
 <translation id="1869497990620230175">クイック ファイル</translation>
+<translation id="1871703283152909317">両方のアクセスをオンにする</translation>
 <translation id="1879018240766558464">シークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
@@ -923,6 +924,7 @@
 <translation id="6095008505822982596">話す速さ</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
+<translation id="6107292179555508368">このデバイスでは、マイクとカメラへのアクセスがオフになっています</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6116825164611323644">このデバイスでは、カメラへのアクセスが無効になっています。</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@
 <translation id="6259254695169772643">タッチペンを使って選択してください</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: 有効にしています...</translation>
 <translation id="6274202259872570803">スクリーンキャスト</translation>
+<translation id="6282694724099204652">アクセスをオンにすると、アプリやウェブページにこのデバイスのマイクとカメラの使用を許可します。</translation>
 <translation id="6283712521836204486">サイレント モードはオフです。</translation>
 <translation id="6284232397434400372">解像度が変更されました</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> は、保護者の許可があれば後から追加できます。</translation>

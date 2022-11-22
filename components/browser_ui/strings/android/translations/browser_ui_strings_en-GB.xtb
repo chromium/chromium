@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
+<translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Related sites</translation>
 <translation id="1644574205037202324">History</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2107397443965016585">Ask before allowing sites to play protected content (recommended)</translation>
 <translation id="2148716181193084225">Today</translation>
+<translation id="216989819110952009">Even with eyes protected by the green spectacles, Dorothy and her friends were at first dazzled by the</translation>
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2387895666653383613">Text scaling</translation>
+<translation id="2390272837142897736">Increase zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">This site defines interests that other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.</translation>
 <translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
+<translation id="3295019059349372795">Chapter 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Hide info</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3333961966071413176">All contacts</translation>
 <translation id="3362437373201486687">Scanning for Bluetooth devices</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">Sites under <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Block sites from creating a 3D map of your surroundings or tracking camera position</translation>
 <translation id="3544058026430919413">A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.</translation>
@@ -125,6 +130,7 @@
 <translation id="3594780231884063836">Mute video</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3600792891314830896">Mute sites that play sound</translation>
+<translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
@@ -171,6 +177,7 @@
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
+<translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="483914009762354899">Include all sites under this domain</translation>
@@ -259,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6453641458248223456">Zoom in or out on a page from the main menu</translation>
 <translation id="6467852467360539617">Clear data and reset permissions</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
@@ -312,6 +320,9 @@
 <translation id="7641339528570811325">Clear browsing data…</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7690549345586282764">Show zoom</translation>
+<translation id="7719367874908701697">Page zoom</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -387,12 +398,14 @@
 <translation id="8958424370300090006">Block cookies for a specific site.</translation>
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Forget</translation>
+<translation id="900095568014372589">Make the default text and images on sites smaller or larger</translation>
 <translation id="9019902583201351841">Managed by your parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Delete cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}}</translation>
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="930525582205581608">Forget this site?</translation>
 <translation id="967624055006145463">Data stored</translation>

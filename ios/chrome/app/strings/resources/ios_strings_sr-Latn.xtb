@@ -87,6 +87,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
 <translation id="1552525382687785070">Administrator je onemogućio sinhronizaciju</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
+<translation id="1565371473877914088">Nova kartica bez arhiviranja</translation>
 <translation id="1580715474678097352">Uvek budite zaštićeni od opasnih veb-sajtova</translation>
 <translation id="1580783302095112590">Imejl je poslata.</translation>
 <translation id="1582732959743469162">Na taj način ćete potpuno zaustaviti trenutno preuzimanje.</translation>
@@ -133,6 +134,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1981118202195772574">Mobilni uređaj</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="199425419756152024">Prikaži lozinku</translation>
+<translation id="2010008505735295285">Ponovo učitaj</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="2021670401941426298">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="202292859882676807">Pristup mikrofonu je dozvoljen</translation>
@@ -299,6 +301,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
 <translation id="3285962946108803577">Deli stranicu…</translation>
+<translation id="3289505634533552500">Glasovna pretraga</translation>
 <translation id="3290875554372353449">Izaberite nalog</translation>
 <translation id="3305294846493618482">još</translation>
 <translation id="3311748811247479259">Isključeno</translation>
@@ -646,6 +649,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5984222099446776634">Nedavno posećeno</translation>
 <translation id="5988097621740394599">Pregledajte sniženja na karticama.</translation>
 <translation id="5988851877894965432">Otvarajte URL-ove u Chrome-u</translation>
+<translation id="6006672969046233841">Nova kartica</translation>
 <translation id="6012140227487808125">Šifruje se…</translation>
 <translation id="6021332621416007159">Otvori u...</translation>
 <translation id="6027945736510816438">Da li ste mislili <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7207023858769244910">Sinhronizujte da biste dobijali sadržaj na osnovu interesovanja.</translation>
 <translation id="721597782417389033">Nevažeći nadimak kartice</translation>
 <translation id="7221173315674413369">Istražite nove funkcije i savete u odeljku Šta je novo</translation>
+<translation id="7223102419539744003">Zatvori karticu</translation>
 <translation id="722454870747268814">Nova kartica bez arhiviranja</translation>
 <translation id="7265758999917665941">Nikada za ovaj sajt</translation>
 <translation id="7272437679830969316">Verifikacija identiteta nije uspela. Lozinka nije kopirana.</translation>
@@ -1027,6 +1032,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Podrazumevani prikaz sajta</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
+<translation id="882557203579758546">Pronađi na stranici…</translation>
 <translation id="8840513115188359703">Nećemo vas odjaviti sa Google naloga.</translation>
 <translation id="8843129975935593190">Vaša organizacija ograničava sadržaj koji možete da sinhronizujete.</translation>
 <translation id="8849001918648564819">Skriveno</translation>

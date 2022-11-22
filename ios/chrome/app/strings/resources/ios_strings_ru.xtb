@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
 <translation id="1552525382687785070">Синхронизация отключена администратором</translation>
 <translation id="1554477036522844996">Новое окно</translation>
+<translation id="1565371473877914088">Новая вкладка инкогнито</translation>
 <translation id="1580715474678097352">Защищает от опасных сайтов</translation>
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Мобильная версия</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="199425419756152024">Посмотреть пароль</translation>
+<translation id="2010008505735295285">Перезагрузить</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="2021670401941426298">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="202292859882676807">Доступ к микрофону разрешен</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
 <translation id="3285962946108803577">Поделиться страницей</translation>
+<translation id="3289505634533552500">Голосовой поиск</translation>
 <translation id="3290875554372353449">Выберите аккаунт</translation>
 <translation id="3305294846493618482">ещё</translation>
 <translation id="3311748811247479259">Отключено</translation>
@@ -646,6 +649,7 @@
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5988097621740394599">Показывать скидки на вкладках</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
+<translation id="6006672969046233841">Новая вкладка</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
 <translation id="6021332621416007159">Открыть в…</translation>
 <translation id="6027945736510816438">Вам нужен домен <ph name="WEBSITE" />?</translation>
@@ -832,6 +836,7 @@
 <translation id="7207023858769244910">Включите синхронизацию и смотрите интересный контент.</translation>
 <translation id="721597782417389033">Недопустимое название карты</translation>
 <translation id="7221173315674413369">Прочитайте новости и рекомендации на вкладке "Что нового"</translation>
+<translation id="7223102419539744003">Закрыть вкладку</translation>
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7265758999917665941">Никогда для этого сайта</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
@@ -1027,6 +1032,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Режим просмотра сайтов по умолчанию</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="882557203579758546">Найти на странице…</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
 <translation id="8849001918648564819">Скрытые</translation>
