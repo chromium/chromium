@@ -24,6 +24,7 @@ class Widget;
 namespace ash {
 
 class NotificationCenterBubble;
+class NotificationListView;
 class NotificationCenterTray;
 
 // Utility class to facilitate easier testing of the notification center.
@@ -64,6 +65,10 @@ class NotificationCenterTestApi {
   // otherwise.
   bool IsTrayShown();
 
+  // Returns the notification view associated with the provided notification id.
+  // Should be only used when the notifications bubble is open.
+  views::View* GetNotificationViewForId(const std::string& id);
+
   // Returns the popup view associated with the provided notification id,
   // nullptr otherwise.
   views::View* GetPopupViewForId(const std::string& id);
@@ -88,6 +93,8 @@ class NotificationCenterTestApi {
 
  private:
   std::string GenerateNotificationId();
+
+  NotificationListView* GetNotificationListView();
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,

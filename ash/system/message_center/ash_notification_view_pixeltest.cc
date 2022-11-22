@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/time/time.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -22,11 +21,11 @@ constexpr char kLongTitleString[] =
     "Very Very Very Very Very Very Very Very Very Very Very Very Very Very "
     "Very Very Very Very Long Multiline Title";
 
-constexpr char kShortTitleScreenshot[] = "ash_notification_short_title.rev_0";
+constexpr char kShortTitleScreenshot[] = "ash_notification_short_title.rev_1";
 constexpr char kMediumTitleScreenshot[] =
-    "ash_notification_multiline_medium_title.rev_0";
+    "ash_notification_multiline_medium_title.rev_1";
 constexpr char kLongTitleScreenshot[] =
-    "ash_notification_multiline_long_title.rev_0";
+    "ash_notification_multiline_long_title.rev_1";
 
 }  // namespace
 
@@ -37,14 +36,6 @@ class AshNotificationViewTitlePixelTest
           std::pair<const char* /*notification title string*/,
                     const char* /*screenshot name*/>> {
  public:
-  AshNotificationViewTitlePixelTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  AshNotificationViewTitlePixelTest(const AshNotificationViewTitlePixelTest&) =
-      delete;
-  AshNotificationViewTitlePixelTest& operator=(
-      const AshNotificationViewTitlePixelTest&) = delete;
-  ~AshNotificationViewTitlePixelTest() override = default;
-
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
@@ -56,8 +47,7 @@ class AshNotificationViewTitlePixelTest
     AshTestBase::SetUp();
 
     // The `NotificationCenterTray` does not exist until the `QsRevamp` feature
-    // is enabled. We're only using the `NotificationCenterTestApi` in this file
-    // to create notifications, do not use for any other purpose.
+    // is enabled.
     test_api_ = std::make_unique<NotificationCenterTestApi>(
         /*notification_center_tray=*/nullptr);
   }
@@ -89,18 +79,17 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
       ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
           gfx::Size(/*width=*/45, /*height=*/45), SK_ColorGREEN)));
 
-  // Allow `MessagePopupCollection` animations to complete.
-  task_environment()->FastForwardBy(base::Seconds(1));
+  test_api()->ToggleBubble();
 
-  // Make sure the popup exists and is visible.
-  views::View* notification_popup = test_api()->GetPopupViewForId(id);
-  ASSERT_TRUE(notification_popup);
-  EXPECT_TRUE(notification_popup->GetVisible());
+  // Make sure the notification view exists and is visible.
+  views::View* notification_view = test_api()->GetNotificationViewForId(id);
+  ASSERT_TRUE(notification_view);
+  EXPECT_TRUE(notification_view->GetVisible());
 
   // Compare pixels.
   const std::string screenshot = GetParam().second;
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot, notification_popup));
+      screenshot, notification_view));
 }
 
 }  // namespace ash
