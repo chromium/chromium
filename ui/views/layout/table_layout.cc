@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -757,7 +758,7 @@ void TableLayout::Resize(int delta) const {
 void TableLayout::ResizeUsingMin(int total_delta) const {
   struct ColumnMinResizeData {
     // The column being resized.
-    Column* column;
+    raw_ptr<Column> column;
 
     // The remaining amount of space available (the difference between the
     // preferred and minimum).

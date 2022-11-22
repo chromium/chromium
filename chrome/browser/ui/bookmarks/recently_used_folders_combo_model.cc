@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -37,7 +38,7 @@ struct RecentlyUsedFoldersComboModel::Item {
 
   bool operator==(const Item& item) const;
 
-  const BookmarkNode* node;
+  raw_ptr<const BookmarkNode> node;
   Type type;
 };
 
@@ -229,7 +230,7 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(const BookmarkNode* node,
 }
 
 const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
-  return (index < items_.size()) ? items_[index].node : nullptr;
+  return (index < items_.size()) ? items_[index].node.get() : nullptr;
 }
 
 void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {

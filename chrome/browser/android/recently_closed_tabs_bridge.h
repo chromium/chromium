@@ -57,8 +57,8 @@ class TabIterator {
 
   const sessions::TabRestoreService::Entries& entries_;
   sessions::TabRestoreService::Entries::const_iterator current_entry_;
-  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>* tabs_ =
-      nullptr;
+  raw_ptr<const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>>
+      tabs_ = nullptr;
   absl::optional<std::vector<std::unique_ptr<
       sessions::TabRestoreService::Tab>>::const_reverse_iterator>
       current_tab_ = absl::nullopt;

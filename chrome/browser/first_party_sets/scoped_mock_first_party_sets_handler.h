@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -76,7 +77,7 @@ class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
   }
 
  private:
-  content::FirstPartySetsHandler* previous_;
+  raw_ptr<content::FirstPartySetsHandler> previous_;
   net::GlobalFirstPartySets global_sets_;
   net::FirstPartySetsContextConfig config_;
   net::FirstPartySetsCacheFilter cache_filter_;

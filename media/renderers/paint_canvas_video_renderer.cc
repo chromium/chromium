@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
@@ -159,8 +160,8 @@ class ScopedSharedImageAccess {
   }
 
  private:
-  gpu::gles2::GLES2Interface* gl;
-  gpu::raster::RasterInterface* ri;
+  raw_ptr<gpu::gles2::GLES2Interface> gl;
+  raw_ptr<gpu::raster::RasterInterface> ri;
   GLuint texture;
   bool is_shared_image;
 };

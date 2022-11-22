@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -200,7 +201,7 @@ class InitialPreferences {
   std::string ExtractPrefString(const std::string& name);
 
   absl::optional<base::Value::Dict> initial_dictionary_;
-  base::Value::Dict* distribution_ = nullptr;
+  raw_ptr<base::Value::Dict> distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
 };
 

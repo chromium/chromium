@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -70,7 +71,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
  private:
   void OutcomeDetermined(Outcome type);
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountInfo account_;
 
   base::ScopedObservation<signin::IdentityManager,

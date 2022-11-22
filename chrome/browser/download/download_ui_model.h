@@ -71,7 +71,7 @@ class DownloadUIModel {
         offline_items_collection::FailState fail_state) const;
 
     // Unknowned model to create statuses.
-    DownloadUIModel* model_ = nullptr;
+    raw_ptr<DownloadUIModel> model_ = nullptr;
   };
 
   // Used in Download shelf and page, default option.

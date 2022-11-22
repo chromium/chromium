@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -125,7 +126,7 @@ class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
 };
 
 struct CurrentTurnSyncOnHelperUserData : public base::SupportsUserData::Data {
-  TurnSyncOnHelper* current_helper = nullptr;
+  raw_ptr<TurnSyncOnHelper> current_helper = nullptr;
 };
 
 TurnSyncOnHelper* GetCurrentTurnSyncOnHelper(Profile* profile) {

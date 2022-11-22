@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
@@ -132,7 +133,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
   raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
-  FakePowerMonitorSource* power_monitor_source_;
+  raw_ptr<FakePowerMonitorSource> power_monitor_source_;
   bool throttling_enabled_ = false;
   std::unique_ptr<UserPerformanceTuningManager> manager_;
 };

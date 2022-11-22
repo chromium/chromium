@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -66,7 +67,7 @@ struct StartupProfilePathInfo {
 // TODO(https://crbug.com/1150326): return a guest profile for the Guest mode
 // and return nullptr for kProfilePicker.
 struct StartupProfileInfo {
-  Profile* profile;
+  raw_ptr<Profile> profile;
   StartupProfileMode mode;
 };
 

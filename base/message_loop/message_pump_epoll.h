@@ -100,7 +100,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     // this entry. This is set immediately upon returning from epoll_wait() and
     // cleared again immediately before dispatching to any registered interests,
     // so long as this entry isn't destroyed in the interim.
-    epoll_event* active_event = nullptr;
+    raw_ptr<epoll_event> active_event = nullptr;
   };
 
   // State which lives on the stack within Run(), to support nested run loops.

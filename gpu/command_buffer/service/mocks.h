@@ -61,7 +61,7 @@ class AsyncAPIMock : public AsyncAPIInterface {
 
    private:
     unsigned int arg_count_;
-    volatile CommandBufferEntry* args_;
+    raw_ptr<volatile CommandBufferEntry> args_;
   };
 
   void BeginDecoding() override {}

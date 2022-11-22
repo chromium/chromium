@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -114,7 +115,7 @@ class PersistentSystemProfile {
     bool ReadData(RecordType* type, std::string* record) const;
 
     // This never changes but can't be "const" because vector calls operator=().
-    base::PersistentMemoryAllocator* allocator_;  // Storage location.
+    raw_ptr<base::PersistentMemoryAllocator> allocator_;  // Storage location.
 
     // Indicates if a complete profile has been stored.
     bool has_complete_profile_;

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -93,7 +94,7 @@ class FeedHandlerTest : public testing::Test {
 
  protected:
   std::unique_ptr<FeedHandler> handler_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

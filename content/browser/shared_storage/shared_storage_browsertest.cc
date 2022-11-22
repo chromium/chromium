@@ -3895,7 +3895,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         std::make_unique<TestPrivateAggregationManagerImpl>(
             std::make_unique<MockPrivateAggregationBudgeter>(),
             base::WrapUnique<PrivateAggregationHost>(
-                private_aggregation_host_)));
+                private_aggregation_host_.get())));
 
     EXPECT_TRUE(NavigateToURL(
         shell(), https_server()->GetURL("a.test", kSimplePagePath)));
@@ -3915,7 +3915,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   url::Origin a_test_origin_;
 
  private:
-  PrivateAggregationHost* private_aggregation_host_;
+  raw_ptr<PrivateAggregationHost> private_aggregation_host_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

@@ -80,7 +80,7 @@ class AXScreenAIAnnotator : public KeyedService,
 
   // AXScreenAIAnnotator is created by a factory on this browser context and
   // will be destroyed before browser context gets destroyed.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   mojo::Remote<mojom::ScreenAIAnnotator> screen_ai_annotator_;
   mojo::Receiver<mojom::ScreenAIAnnotatorClient> screen_ai_service_client_;

@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 #include "device/fido/win/authenticator.h"
 
@@ -46,8 +47,8 @@ class LocalCredentialManagementWin : public LocalCredentialManagement {
             base::OnceCallback<void(bool)> callback) override;
 
  private:
-  device::WinWebAuthnApi* const api_;
-  Profile* profile_;
+  const raw_ptr<device::WinWebAuthnApi> api_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_WIN_H_

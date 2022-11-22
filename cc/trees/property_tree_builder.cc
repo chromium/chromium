@@ -48,8 +48,8 @@ struct DataForRecursion {
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
   gfx::Transform compound_transform_since_render_target;
-  bool* subtree_has_rounded_corner;
-  bool* subtree_has_gradient_mask;
+  raw_ptr<bool> subtree_has_rounded_corner;
+  raw_ptr<bool> subtree_has_gradient_mask;
 };
 
 class PropertyTreeBuilderContext {

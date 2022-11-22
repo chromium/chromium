@@ -259,7 +259,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
     int shm_id;
 
     // Address of shared memory
-    void* shm_memory;
+    raw_ptr<void> shm_memory;
 
     // Offset of shared memory
     unsigned int shm_offset;

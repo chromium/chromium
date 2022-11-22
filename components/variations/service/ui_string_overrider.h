@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace variations {
 
 // Provides a mapping from hashes of generated resource names to their IDs. The
@@ -43,8 +45,8 @@ class UIStringOverrider {
   int GetResourceIndex(uint32_t hash);
 
  private:
-  const uint32_t* const resource_hashes_;
-  const int* const resource_indices_;
+  const raw_ptr<const uint32_t> resource_hashes_;
+  const raw_ptr<const int> resource_indices_;
   size_t const num_resources_;
 };
 

@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -122,8 +123,8 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
 
 struct ShortcutOverrideForTestingState {
   base::Lock lock;
-  ShortcutOverrideForTesting* global_shortcut_override GUARDED_BY(lock) =
-      nullptr;
+  raw_ptr<ShortcutOverrideForTesting> global_shortcut_override
+      GUARDED_BY(lock) = nullptr;
 };
 
 ShortcutOverrideForTestingState& GetMutableShortcutOverrideStateForTesting() {
@@ -287,7 +288,7 @@ ShortcutOverrideForTesting::~ShortcutOverrideForTesting() {
 scoped_refptr<ShortcutOverrideForTesting> GetShortcutOverrideForTesting() {
   auto& state = GetMutableShortcutOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
-  return base::WrapRefCounted(state.global_shortcut_override);
+  return base::WrapRefCounted(state.global_shortcut_override.get());
 }
 
 ShortcutInfo::ShortcutInfo() = default;

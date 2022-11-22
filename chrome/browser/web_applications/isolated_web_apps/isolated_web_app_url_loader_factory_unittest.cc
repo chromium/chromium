@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -239,7 +240,7 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   bool enable_isolated_web_apps_feature_flag_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  FakeWebAppProvider* provider_;
+  raw_ptr<FakeWebAppProvider> provider_;
   std::unique_ptr<ScopedUrlHandler> url_handler_;
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

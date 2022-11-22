@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -85,8 +86,8 @@ struct PendingSyncMsg {
       : id(id), deserializer(d), done_event(e), send_result(false) {}
 
   int id;
-  MessageReplyDeserializer* deserializer;
-  base::WaitableEvent* done_event;
+  raw_ptr<MessageReplyDeserializer> deserializer;
+  raw_ptr<base::WaitableEvent> done_event;
   bool send_result;
 };
 

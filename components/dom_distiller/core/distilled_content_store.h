@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 
@@ -68,7 +69,7 @@ class InMemoryContentStore : public DistilledContentStore {
     void operator()(DistilledArticleProto* proto);
 
    private:
-    InMemoryContentStore* store_;
+    raw_ptr<InMemoryContentStore> store_;
   };
 
   void AddUrlToIdMapping(const ArticleEntry& entry,

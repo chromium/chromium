@@ -238,7 +238,7 @@ class WebViewImplHolder {
 
  private:
   struct Item {
-    WebViewImpl* web_view;
+    raw_ptr<WebViewImpl> web_view;
     bool was_locked;
   };
   std::vector<Item> items_;

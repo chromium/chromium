@@ -147,8 +147,8 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
     PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
     PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
 
-    const PasswordForm* similar_saved_form_from_profile_store = nullptr;
-    const PasswordForm* similar_saved_form_from_account_store = nullptr;
+    raw_ptr<const PasswordForm> similar_saved_form_from_profile_store = nullptr;
+    raw_ptr<const PasswordForm> similar_saved_form_from_account_store = nullptr;
   };
   static PendingCredentialsStates ComputePendingCredentialsStates(
       const PasswordForm& parsed_submitted_form,

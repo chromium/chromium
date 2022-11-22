@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace sandbox {
 
 const wchar_t kNtdllName[] = L"ntdll.dll";
@@ -38,7 +40,7 @@ class CountedBuffer {
 
  private:
   uint32_t size_;
-  void* buffer_;
+  raw_ptr<void> buffer_;
 };
 
 // Helper class to convert void-pointer packed ints for both

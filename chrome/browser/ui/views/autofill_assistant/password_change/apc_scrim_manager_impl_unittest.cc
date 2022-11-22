@@ -57,7 +57,7 @@ class ApcScrimManagerImplTest : public TestWithBrowserView {
 
  private:
   std::unique_ptr<TestApcScrimManagerImpl> apc_scrim_manager_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(ApcScrimManagerImplTest,

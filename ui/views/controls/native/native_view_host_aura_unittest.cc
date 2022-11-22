@@ -44,7 +44,7 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
 
   struct EventDetails {
     EventType type;
-    aura::Window* window;
+    raw_ptr<aura::Window> window;
     gfx::Rect bounds;
     bool operator!=(const EventDetails& rhs) {
       return type != rhs.type || window != rhs.window || bounds != rhs.bounds;

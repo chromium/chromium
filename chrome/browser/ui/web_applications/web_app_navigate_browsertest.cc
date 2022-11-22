@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -169,7 +170,7 @@ class WebAppNavigatePrerenderingBrowserTest : public WebAppNavigateBrowserTest {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::HistogramTester histogram_tester_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;

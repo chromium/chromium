@@ -215,7 +215,7 @@ class AURA_EXPORT Env : public ui::EventTarget {
 
   std::vector<aura::WindowTreeHost*> window_tree_hosts_;
 
-  client::CursorShapeClient* cursor_shape_client_ = nullptr;
+  raw_ptr<client::CursorShapeClient> cursor_shape_client_ = nullptr;
 };
 
 }  // namespace aura

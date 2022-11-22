@@ -627,8 +627,8 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
 };
 
 struct DrawQuadWithSharedQuadState {
-  const viz::DrawQuad* quad;
-  const viz::SharedQuadState* shared_quad_state;
+  raw_ptr<const viz::DrawQuad> quad;
+  raw_ptr<const viz::SharedQuadState> shared_quad_state;
 };
 
 template <>
@@ -647,7 +647,7 @@ struct StructTraits<viz::mojom::DrawQuadDataView, DrawQuadWithSharedQuadState> {
   }
 
   static OptSharedQuadState sqs(const DrawQuadWithSharedQuadState& input) {
-    return {input.shared_quad_state};
+    return {input.shared_quad_state.get()};
   }
 
   static const viz::DrawQuad& draw_quad_state(

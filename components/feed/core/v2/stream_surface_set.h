@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -23,7 +24,7 @@ class StreamSurfaceSet {
   // Entry in the surface set. Holds the surface and information about it.
   struct Entry {
     // The surface.
-    FeedStreamSurface* surface;
+    raw_ptr<FeedStreamSurface> surface;
     // Whether or not the feed content was ever reported as viewed.
     bool feed_viewed = false;
   };

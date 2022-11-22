@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -45,7 +46,7 @@ class SimpleFileTrackerTest : public DiskCacheTest {
     }
 
    private:
-    SimpleFileTrackerTest* fixture_;
+    raw_ptr<SimpleFileTrackerTest> fixture_;
   };
 
   using SyncEntryPointer =

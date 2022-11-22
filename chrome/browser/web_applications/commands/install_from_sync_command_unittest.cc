@@ -677,7 +677,7 @@ TEST_F(InstallFromSyncTest, ShutdownDoesNotCrash) {
       command_manager_->Shutdown();
     }
 
-    WebAppCommandManager* const command_manager_;
+    const raw_ptr<WebAppCommandManager> command_manager_;
   };
 
   class CustomWebAppDataRetriever : public WebAppDataRetriever {
@@ -697,7 +697,7 @@ TEST_F(InstallFromSyncTest, ShutdownDoesNotCrash) {
       std::move(callback).Run(std::make_unique<WebAppInstallInfo>());
     }
 
-    WebAppCommandManager* const command_manager_;
+    const raw_ptr<WebAppCommandManager> command_manager_;
   };
 
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);

@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -112,7 +113,7 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
   };
   struct GpuDiscardableEntryKey {
     uint32_t texture_id;
-    gles2::TextureManager* texture_manager;
+    raw_ptr<gles2::TextureManager> texture_manager;
   };
   struct GpuDiscardableEntryKeyCompare {
     bool operator()(const GpuDiscardableEntryKey& lhs,

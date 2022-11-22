@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
 namespace {
@@ -42,7 +43,7 @@ class SevenZipDelegateImpl : public seven_zip::Delegate {
   bool CreateDirectory(const base::FilePath& dir);
 
   const base::FilePath location_;
-  base::FilePath* const output_file_;
+  const raw_ptr<base::FilePath> output_file_;
 
   std::set<base::FilePath> directories_created_;
   absl::optional<DWORD> error_code_;

@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
@@ -1350,7 +1351,7 @@ class UserContextGatedTest : public ExtensionApiUnittest {
         enterprise_signals::features::kNewEvSignalsEnabled);
   }
 
-  device_signals::MockSignalsAggregator* mock_aggregator_;
+  raw_ptr<device_signals::MockSignalsAggregator> mock_aggregator_;
   base::test::ScopedFeatureList scoped_features_;
   base::HistogramTester histogram_tester_;
 };

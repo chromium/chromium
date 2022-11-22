@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
@@ -62,7 +63,7 @@ class TabMemoryMetricsReporter : public TabLoadTracker::Observer {
     base::TimeTicks page_loaded_time;
     base::TimeTicks next_emit_time;
     ReportState state;
-    content::WebContents* web_contents;
+    raw_ptr<content::WebContents> web_contents;
   };
 
   struct WebContentsDataComparator {

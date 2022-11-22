@@ -5,6 +5,7 @@
 #include "chrome/common/safe_browsing/seven_zip_analyzer.h"
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -114,7 +115,7 @@ class SevenZipDelegate : public seven_zip::Delegate {
   bool success() const { return success_; }
 
  private:
-  ArchiveAnalyzerResults* const results_;
+  const raw_ptr<ArchiveAnalyzerResults> results_;
   base::File temp_file_;
   base::File temp_file2_;
   const base::TimeTicks start_time_{base::TimeTicks::Now()};

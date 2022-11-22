@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -61,7 +62,8 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  testing::StrictMock<MockOsIntegrationManager>* os_integration_manager_;
+  raw_ptr<testing::StrictMock<MockOsIntegrationManager>>
+      os_integration_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
   base::HistogramTester histogram_tester_;
 };

@@ -96,8 +96,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
           TabStripModelObserverAction action)
         : dst_contents(dst_contents), dst_index(dst_index), action(action) {}
 
-    WebContents* src_contents = nullptr;
-    WebContents* dst_contents;
+    raw_ptr<WebContents> src_contents = nullptr;
+    raw_ptr<WebContents> dst_contents;
     absl::optional<size_t> src_index;
     absl::optional<size_t> dst_index;
     int change_reason = CHANGE_REASON_NONE;

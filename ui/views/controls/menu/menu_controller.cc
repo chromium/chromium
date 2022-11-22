@@ -729,7 +729,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
         part.menu = source->GetMenuItem();
       else
         mouse_menu = part.menu;
-      SetSelection(part.menu ? part.menu : state_.item.get(),
+      SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                    SELECTION_OPEN_SUBMENU);
     }
   } else if (part.type == MenuPart::Type::kNone) {
@@ -833,7 +833,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     }
   } else if (part.type == MenuPart::Type::kMenuItem) {
     // User either clicked on empty space, or a menu that has children.
-    SetSelection(part.menu ? part.menu : state_.item.get(),
+    SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                  SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
   }
   SendMouseCaptureLostToActiveView();
@@ -889,7 +889,7 @@ bool MenuController::OnMouseWheel(SubmenuView* source,
                                   const ui::MouseWheelEvent& event) {
   MenuPart part = GetMenuPart(source, event.location());
 
-  SetSelection(part.menu ? part.menu : state_.item.get(),
+  SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
 
   return part.submenu && part.submenu->OnMouseWheel(event);
@@ -953,7 +953,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
       event->StopPropagation();
     } else if (part.type == MenuPart::Type::kMenuItem) {
       // User either tapped on empty space, or a menu that has children.
-      SetSelection(part.menu ? part.menu : state_.item.get(),
+      SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                    SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
       event->StopPropagation();
     }

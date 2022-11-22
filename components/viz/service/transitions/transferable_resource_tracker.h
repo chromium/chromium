@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -103,7 +104,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   const uint32_t starting_id_;
   uint32_t next_id_;
 
-  SharedBitmapManager* const shared_bitmap_manager_;
+  const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
 
   struct TransferableResourceHolder {
     using ResourceReleaseCallback =

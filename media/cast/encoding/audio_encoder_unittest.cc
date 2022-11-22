@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -89,7 +90,7 @@ class TestEncodedAudioFrameReceiver {
 };
 
 struct TestScenario {
-  const int64_t* durations_in_ms;
+  raw_ptr<const int64_t> durations_in_ms;
   size_t num_durations;
 
   TestScenario(const int64_t* d, size_t n)

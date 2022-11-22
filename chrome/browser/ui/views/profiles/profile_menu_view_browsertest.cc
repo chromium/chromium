@@ -192,7 +192,7 @@ class ProfileMenuViewTestBase {
   }
 
  private:
-  Browser* target_browser_ = nullptr;
+  raw_ptr<Browser> target_browser_ = nullptr;
 };
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,

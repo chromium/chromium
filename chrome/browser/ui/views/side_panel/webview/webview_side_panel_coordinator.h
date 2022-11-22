@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_WEBVIEW_WEBVIEW_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_WEBVIEW_WEBVIEW_SIDE_PANEL_COORDINATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -43,8 +44,8 @@ class WebViewSidePanelCoordinator
 
   std::unique_ptr<views::View> CreateView();
 
-  views::Textfield* location_;
-  views::WebView* webview_;
+  raw_ptr<views::Textfield> location_;
+  raw_ptr<views::WebView> webview_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

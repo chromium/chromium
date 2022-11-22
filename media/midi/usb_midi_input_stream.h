@@ -42,7 +42,7 @@ class USB_MIDI_EXPORT UsbMidiInputStream {
     bool operator==(const JackUniqueKey& that) const;
     bool operator<(const JackUniqueKey& that) const;
 
-    UsbMidiDevice* device;
+    raw_ptr<UsbMidiDevice> device;
     int endpoint_number;
     int cable_number;
   };

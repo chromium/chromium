@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
@@ -139,7 +140,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
       return consumer < other.consumer;
     }
 
-    GamepadConsumer* consumer;
+    raw_ptr<GamepadConsumer> consumer;
     mutable bool is_active = false;
     mutable bool did_observe_user_gesture = false;
   };

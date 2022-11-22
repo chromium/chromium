@@ -109,7 +109,7 @@ class FaviconFetcherTest : public ::testing::Test {
 
  protected:
   MockLargeIconService mock_large_icon_service_;
-  MockFaviconFetcher* favicon_fetcher_ =
+  raw_ptr<MockFaviconFetcher> favicon_fetcher_ =
       new MockFaviconFetcher(&mock_large_icon_service_);
 };
 

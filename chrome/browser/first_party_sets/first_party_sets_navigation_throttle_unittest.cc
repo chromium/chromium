@@ -5,6 +5,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -67,7 +68,7 @@ class FirstPartySetsNavigationThrottleTest
   base::test::ScopedFeatureList features_;
   raw_ptr<content::RenderFrameHost> subframe_;
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
-  FirstPartySetsPolicyService* service_;
+  raw_ptr<FirstPartySetsPolicyService> service_;
 };
 
 TEST_F(FirstPartySetsNavigationThrottleTest,

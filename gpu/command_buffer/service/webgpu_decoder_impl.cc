@@ -1050,7 +1050,7 @@ WebGPUDecoder* CreateWebGPUDecoderImpl(
   std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface =
       nullptr;
   if (auto* caching_interface_factory =
-          dawn_cache_options.caching_interface_factory) {
+          dawn_cache_options.caching_interface_factory.get()) {
     if (dawn_cache_options.handle) {
       dawn_caching_interface = caching_interface_factory->CreateInstance(
           *dawn_cache_options.handle, client);

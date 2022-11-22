@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_web_contents.h"
@@ -61,7 +62,7 @@ class AnchorElementInteractionHostImplTest : public RenderViewHostTestHarness {
  private:
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
-  PreloadingObserverImpl* observer_;
+  raw_ptr<PreloadingObserverImpl> observer_;
 };
 
 TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {

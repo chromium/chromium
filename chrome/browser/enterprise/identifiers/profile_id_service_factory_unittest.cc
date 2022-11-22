@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
@@ -108,7 +109,7 @@ class ProfileIdServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  ProfileIdService* service_;
+  raw_ptr<ProfileIdService> service_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||                \
     BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \

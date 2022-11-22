@@ -59,7 +59,7 @@ using base::trace_event::Backtrace;
 using base::trace_event::StackFrame;
 
 size_t hash<StackFrame>::operator()(const StackFrame& frame) const {
-  return hash<const void*>()(frame.value);
+  return hash<const void*>()(frame.value.get());
 }
 
 size_t hash<Backtrace>::operator()(const Backtrace& backtrace) const {

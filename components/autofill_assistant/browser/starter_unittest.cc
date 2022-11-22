@@ -250,7 +250,7 @@ class StarterTest : public testing::Test {
   raw_ptr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
 
   signin::IdentityTestEnvironment identity_test_environment;
-  signin::IdentityManager* identity_manager_ =
+  raw_ptr<signin::IdentityManager> identity_manager_ =
       identity_test_environment.identity_manager();
   FakeStarterPlatformDelegate fake_platform_delegate_ =
       FakeStarterPlatformDelegate(

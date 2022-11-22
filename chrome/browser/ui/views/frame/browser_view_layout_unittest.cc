@@ -237,7 +237,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   }
 
  private:
-  BrowserViewLayout* layout_;
+  raw_ptr<BrowserViewLayout> layout_;
   raw_ptr<MockBrowserViewLayoutDelegate> delegate_;  // Owned by |layout_|.
   std::unique_ptr<views::View> browser_view_;
 

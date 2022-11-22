@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_instances_android.h"
@@ -245,7 +246,7 @@ void HprofParser::ResolveSuperClassFields() {
 }
 
 struct HprofParser::RegisteredNativeSize {
-  Instance* referent = nullptr;
+  raw_ptr<Instance> referent = nullptr;
   uint64_t native_size = 0;
 };
 

@@ -665,7 +665,7 @@ struct URLLoaderOptions {
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
   bool third_party_cookies_enabled = true;
-  CacheTransparencySettings* cache_transparency_settings = nullptr;
+  raw_ptr<CacheTransparencySettings> cache_transparency_settings = nullptr;
 
  private:
   bool used = false;

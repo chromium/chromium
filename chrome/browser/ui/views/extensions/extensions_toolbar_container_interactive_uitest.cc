@@ -921,7 +921,7 @@ class ExtensionsToolbarContainerFeatureUITest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 // Tests that clicking the request access button grants one time access to the

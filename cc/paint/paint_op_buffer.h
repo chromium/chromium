@@ -217,17 +217,17 @@ class CC_PAINT_EXPORT PaintOp {
                        std::vector<uint8_t>* scratch_buffer,
                        bool is_privileged,
                        SharedImageProvider* shared_image_provider);
-    TransferCacheDeserializeHelper* transfer_cache = nullptr;
-    ServicePaintCache* paint_cache = nullptr;
-    SkStrikeClient* strike_client = nullptr;
+    raw_ptr<TransferCacheDeserializeHelper> transfer_cache = nullptr;
+    raw_ptr<ServicePaintCache> paint_cache = nullptr;
+    raw_ptr<SkStrikeClient> strike_client = nullptr;
     // Do a DumpWithoutCrashing when serialization fails.
     bool crash_dump_on_failure = false;
     // Used to memcpy Skia flattenables into to avoid TOCTOU issues.
-    std::vector<uint8_t>* scratch_buffer = nullptr;
+    raw_ptr<std::vector<uint8_t>> scratch_buffer = nullptr;
     // True if the deserialization is happening on a privileged gpu channel.
     // e.g. in the case of UI.
     bool is_privileged = false;
-    SharedImageProvider* shared_image_provider = nullptr;
+    raw_ptr<SharedImageProvider> shared_image_provider = nullptr;
   };
 
   // Indicates how PaintImages are serialized.

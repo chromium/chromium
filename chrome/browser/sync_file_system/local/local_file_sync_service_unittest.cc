@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -119,7 +120,7 @@ struct PostStatusAndRecordChangeFunctor {
 
  private:
   SyncStatusCode status_;
-  std::vector<FileChange>* changes_;
+  raw_ptr<std::vector<FileChange>> changes_;
 };
 
 }  // namespace

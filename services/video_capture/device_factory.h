@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 #define SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/video_capture/device.h"
 #include "services/video_capture/public/mojom/device_factory.mojom-shared.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
@@ -14,7 +15,7 @@ namespace video_capture {
 class DeviceFactory : public mojom::DeviceFactory {
  public:
   struct DeviceInProcessInfo {
-    Device* device;
+    raw_ptr<Device> device;
     media::VideoCaptureError result_code;
   };
   using CreateDeviceInProcessCallback =

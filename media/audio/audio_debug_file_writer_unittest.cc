@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
@@ -252,7 +253,7 @@ class AudioDebugFileWriterTest
   AudioDebugFileWriter::Ptr debug_writer_;
 
   // Pointer to the AudioBusPool of the most recently created writer.
-  MockAudioBusPool* mock_audio_bus_pool_;
+  raw_ptr<MockAudioBusPool> mock_audio_bus_pool_;
 
   // AudioBus parameters.
   AudioParameters params_;

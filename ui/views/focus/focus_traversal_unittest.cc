@@ -175,7 +175,7 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 };
 
 }  // namespace

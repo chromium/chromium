@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -36,7 +37,7 @@ class RefCountedClosureListTest : public ::testing::Test {
     void Run() { (*count_)--; }
 
    private:
-    std::atomic<size_t>* const count_;
+    const raw_ptr<std::atomic<size_t>> count_;
     const scoped_refptr<RefCountedClosureList> callback_;
   };
 

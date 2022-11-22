@@ -763,7 +763,7 @@ class ChannelAssociatedGroupController
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
     base::circular_deque<std::pair<uint32_t, MessageWrapper>> sync_messages_;
-    ExclusiveSyncWait* exclusive_wait_ = nullptr;
+    raw_ptr<ExclusiveSyncWait> exclusive_wait_ = nullptr;
     uint32_t next_sync_message_id_ = 0;
   };
 

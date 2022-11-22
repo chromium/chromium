@@ -95,8 +95,8 @@ class InterpolatingLayoutManager : public views::LayoutManagerBase {
   // Describes an interpolation between two layouts as a pointer to each and
   // a percentage of distance between them to interpolate linearly to.
   struct LayoutInterpolation {
-    LayoutManagerBase* first = nullptr;
-    LayoutManagerBase* second = nullptr;
+    raw_ptr<LayoutManagerBase> first = nullptr;
+    raw_ptr<LayoutManagerBase> second = nullptr;
 
     // The closer this number is to zero, the more of |first| is used; the
     // closer to 1.0f, the more of |second|. If the value is 0, |second| may be

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -457,7 +458,7 @@ class TextInputManagerStateObserver : public TextInputManagerObserverBase {
       std::move(quit_callback_).Run();
   }
 
-  RenderWidgetHostView* last_updated_active_view_ = nullptr;
+  raw_ptr<RenderWidgetHostView> last_updated_active_view_ = nullptr;
   base::OnceClosure quit_callback_;
 };
 

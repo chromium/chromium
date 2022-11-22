@@ -69,7 +69,7 @@ class CreditCardFIDOAuthenticator
     bool did_succeed = false;
     // The fetched credit card if the authentication was successful. Can be
     // nullptr if authentication failed.
-    const CreditCard* card = nullptr;
+    raw_ptr<const CreditCard> card = nullptr;
     // The CVC of the fetched credit card. Can be empty string.
     std::u16string cvc = std::u16string();
     // The type of the failure of the full card request.

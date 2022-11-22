@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -49,7 +50,7 @@ class WebContentsViewDelegate : public content::WebContentsViewDelegate {
         create_window_func_.Run(frontend->frontend_url()));
   }
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   CreateContentWindowFunc create_window_func_;
 };
 

@@ -11,6 +11,7 @@
 #include <functional>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace trace_event {
@@ -42,7 +43,7 @@ struct BASE_EXPORT StackFrame {
   }
 
   Type type;
-  const void* value;
+  raw_ptr<const void> value;
 };
 
 bool BASE_EXPORT operator < (const StackFrame& lhs, const StackFrame& rhs);

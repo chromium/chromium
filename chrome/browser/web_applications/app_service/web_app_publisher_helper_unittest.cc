@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/traits_bag.h"
@@ -96,7 +97,7 @@ class WebAppPublisherHelperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;
-  WebAppProvider* provider_;
+  raw_ptr<WebAppProvider> provider_;
   std::unique_ptr<WebAppPublisherHelper> publisher_;
 };
 

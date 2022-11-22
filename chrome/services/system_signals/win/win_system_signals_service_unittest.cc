@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/task_environment.h"
@@ -60,9 +61,9 @@ class WinSystemSignalsServiceTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   absl::optional<base::test::ScopedOSInfoOverride> os_info_override_;
 
-  MockFileSystemService* file_system_service_;
-  MockWmiClient* wmi_client_;
-  MockWscClient* wsc_client_;
+  raw_ptr<MockFileSystemService> file_system_service_;
+  raw_ptr<MockWmiClient> wmi_client_;
+  raw_ptr<MockWscClient> wsc_client_;
   std::unique_ptr<WinSystemSignalsService> win_system_signals_service_;
 };
 

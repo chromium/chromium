@@ -248,7 +248,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
 
     // Now call the TrapFnc callback associated with this particular instance
     // of SECCOMP_RET_TRAP.
-    rc = trap.fnc(data, const_cast<void*>(trap.aux));
+    rc = trap.fnc(data, const_cast<void*>(trap.aux.get()));
   }
 
   // Update the CPU register that stores the return code of the system call

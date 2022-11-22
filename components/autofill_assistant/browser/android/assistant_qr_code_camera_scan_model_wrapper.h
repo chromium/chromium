@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/android/assistant_qr_code_native_delegate.h"
 
 namespace autofill_assistant {
@@ -34,7 +35,7 @@ class AssistantQrCodeCameraScanModelWrapper {
       const std::string& camera_preview_security_text) const;
 
  private:
-  JNIEnv* jni_env_;
+  raw_ptr<JNIEnv> jni_env_;
   // Java-side AssistantQrCodeCameraScanModelWrapper object.
   base::android::ScopedJavaGlobalRef<jobject>
       java_assistant_camera_scan_model_wrapper_;

@@ -10650,7 +10650,7 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
   }
 
  private:
-  TestLayerTreeFrameSink* layer_tree_frame_sink_;
+  raw_ptr<TestLayerTreeFrameSink> layer_tree_frame_sink_;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestBeginFramePausedChanged);
 

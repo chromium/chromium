@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +25,7 @@ class DestructorCounter {
   ~DestructorCounter() { ++(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 }  // namespace

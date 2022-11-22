@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf::Record {
  private:
   friend class Emf;
   friend class Enumerator;
-  const ENHMETARECORD* record_;
+  raw_ptr<const ENHMETARECORD> record_;
 };
 
 // Retrieves individual records out of a Emf buffer. The main use is to skip

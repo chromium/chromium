@@ -55,7 +55,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
  private:
-  PageActionIconView* highlight_icon_button_ = nullptr;
+  raw_ptr<PageActionIconView> highlight_icon_button_ = nullptr;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   chrome::AppInstallationAcceptanceCallback callback_;
 

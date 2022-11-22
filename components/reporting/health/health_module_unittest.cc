@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
@@ -65,7 +66,7 @@ class HealthModuleTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<MockHealthModuleDelegate> delegate_;
-  MockHealthModuleDelegate* mock_delegate_ = nullptr;
+  raw_ptr<MockHealthModuleDelegate> mock_delegate_ = nullptr;
   scoped_refptr<HealthModule> module_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
@@ -77,7 +78,7 @@ class PreloadingAttemptAccessor {
   PreloadingFailureReason GetFailureReason();
 
  private:
-  PreloadingAttempt* preloading_attempt_;
+  raw_ptr<PreloadingAttempt> preloading_attempt_;
 };
 
 }  // namespace content::test

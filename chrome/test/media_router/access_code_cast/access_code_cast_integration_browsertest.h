@@ -184,7 +184,7 @@ class AccessCodeCastIntegrationBrowserTest
   std::unique_ptr<cast_channel::MockCastSocketService,
                   base::OnTaskRunnerDeleter>
       mock_cast_socket_service_;
-  MockCastMediaSinkServiceImpl* impl_ = nullptr;
+  raw_ptr<MockCastMediaSinkServiceImpl> impl_ = nullptr;
 
   std::unique_ptr<TestMediaSinkService> mock_dual_media_sink_service_;
 

@@ -114,7 +114,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   PrerenderWebContentsDelegate web_contents_delegate_;
-  PreloadingObserverImpl* observer_;
+  raw_ptr<PreloadingObserverImpl> observer_;
 };
 
 // Tests that SpeculationHostImpl dispatches the candidates to

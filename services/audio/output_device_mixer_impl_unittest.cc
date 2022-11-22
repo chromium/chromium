@@ -198,9 +198,9 @@ class OutputDeviceMixerImplTestBase {
   // Helper.
   struct StreamUnderTest {
     // MixableOutputStream produced by OutputMixerImpl.
-    AudioOutputStream* mixable_stream;
+    raw_ptr<AudioOutputStream> mixable_stream;
     // All the mocks associated with it.
-    MixTrackMock* mix_track_mock;
+    raw_ptr<MixTrackMock> mix_track_mock;
   };
 
   OutputDeviceMixerImplTestBase() {

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_prefs_scope.h"
 
@@ -70,8 +71,8 @@ class ExtensionPrefsHelper : public KeyedService {
   const ExtensionPrefs* prefs() const { return prefs_; }
 
  private:
-  ExtensionPrefs* const prefs_;
-  ExtensionPrefValueMap* const value_map_;
+  const raw_ptr<ExtensionPrefs> prefs_;
+  const raw_ptr<ExtensionPrefValueMap> value_map_;
 };
 
 }  // namespace extensions

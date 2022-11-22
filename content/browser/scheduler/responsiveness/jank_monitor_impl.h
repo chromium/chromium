@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -86,7 +87,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
       ~TaskMetadata();
 
       base::TimeTicks execution_start_time;
-      const void* identifier;
+      raw_ptr<const void> identifier;
     };
     std::vector<TaskMetadata> task_execution_metadata_;
 

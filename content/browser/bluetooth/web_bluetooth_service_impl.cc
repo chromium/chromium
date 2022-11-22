@@ -496,10 +496,10 @@ struct CacheQueryResult {
     return blink::mojom::WebBluetoothResult::DEVICE_NO_LONGER_IN_RANGE;
   }
 
-  BluetoothDevice* device = nullptr;
-  BluetoothRemoteGattService* service = nullptr;
-  BluetoothRemoteGattCharacteristic* characteristic = nullptr;
-  BluetoothRemoteGattDescriptor* descriptor = nullptr;
+  raw_ptr<BluetoothDevice> device = nullptr;
+  raw_ptr<BluetoothRemoteGattService> service = nullptr;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic = nullptr;
+  raw_ptr<BluetoothRemoteGattDescriptor> descriptor = nullptr;
   CacheQueryOutcome outcome;
 };
 

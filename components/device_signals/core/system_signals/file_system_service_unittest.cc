@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -92,8 +93,8 @@ class FileSystemServiceTest : public testing::Test {
         .WillOnce(Return(true));
   }
 
-  testing::StrictMock<MockPlatformDelegate>* mock_platform_delegate_;
-  testing::StrictMock<MockExecutableMetadataService>*
+  raw_ptr<testing::StrictMock<MockPlatformDelegate>> mock_platform_delegate_;
+  raw_ptr<testing::StrictMock<MockExecutableMetadataService>>
       mock_executable_metadata_service_;
   std::unique_ptr<FileSystemService> file_system_service_;
 };

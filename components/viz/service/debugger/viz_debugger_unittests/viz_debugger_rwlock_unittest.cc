@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/debugger/rwlock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,7 @@ rwlock::RWLock RWLockTest::test_rwlock;
 // slate for the reader threads to continue working on.
 class WriterThread : public base::PlatformThread::Delegate {
  private:
-  std::vector<int>* array_;
+  raw_ptr<std::vector<int>> array_;
   int size_;
   volatile int delay_counter = 0;
   static const unsigned kNumWriterTries = 100;
@@ -71,7 +72,7 @@ class ReaderThread : public base::PlatformThread::Delegate {
  private:
   static const unsigned kNumTimeDelay = 100;
   volatile int delay_counter = 0;
-  std::vector<int>* array_;
+  raw_ptr<std::vector<int>> array_;
   int array_index;
 
  public:

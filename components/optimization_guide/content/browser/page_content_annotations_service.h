@@ -311,7 +311,7 @@ class PageContentAnnotationsService : public KeyedService,
   // are set.
   std::unique_ptr<PageContentAnnotationsValidator> validator_;
 
-  OptimizationGuideLogger* optimization_guide_logger_ = nullptr;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_ = nullptr;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

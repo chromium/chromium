@@ -1195,7 +1195,7 @@ class DnsTransactionImpl : public DnsTransaction,
         : rv(rv), attempt(attempt) {}
 
     int rv;
-    const DnsAttempt* attempt;
+    raw_ptr<const DnsAttempt> attempt;
   };
 
   // Used in UMA (DNS.AttemptType). Do not renumber or remove values.

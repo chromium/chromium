@@ -189,7 +189,7 @@ struct HistoryURLProviderParams {
   // we aren't allowed to read user preferences from the History sequence.
   const bool allow_deleting_browser_history;
 
-  const TemplateURL* starter_pack_engine;
+  raw_ptr<const TemplateURL> starter_pack_engine;
 };
 
 // This class is an autocomplete provider and is also a pseudo-internal

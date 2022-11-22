@@ -199,7 +199,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     std::unique_ptr<WebAppUrlLoader> url_loader;
     std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolationData> isolation_data;
-    WebAppInstallFinalizer* install_finalizer = nullptr;
+    raw_ptr<WebAppInstallFinalizer> install_finalizer = nullptr;
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,

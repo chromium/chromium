@@ -65,7 +65,7 @@ base::flat_map<UIResourceId, gfx::Size> UIResourceManager::GetUIResourceSizes()
     const {
   base::flat_map<UIResourceId, gfx::Size>::container_type items(
       ui_resource_client_map_.size());
-  for (const auto pair : ui_resource_client_map_)
+  for (const auto& pair : ui_resource_client_map_)
     items.push_back({pair.first, pair.second.size});
   return base::flat_map<UIResourceId, gfx::Size>(std::move(items));
 }

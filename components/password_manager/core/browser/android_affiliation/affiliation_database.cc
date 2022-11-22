@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -36,9 +37,9 @@ const int kCompatibleVersion = 1;
 // Struct to hold table builder for "eq_classes", "eq_class_members",
 // and "eq_class_groups" tables.
 struct SQLTableBuilders {
-  SQLTableBuilder* eq_classes;
-  SQLTableBuilder* eq_class_members;
-  SQLTableBuilder* eq_class_groups;
+  raw_ptr<SQLTableBuilder> eq_classes;
+  raw_ptr<SQLTableBuilder> eq_class_members;
+  raw_ptr<SQLTableBuilder> eq_class_groups;
 };
 
 // Seals the version of the given builders. This is method should be always used

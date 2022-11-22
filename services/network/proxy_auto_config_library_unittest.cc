@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -262,7 +263,7 @@ class MockUDPSocket : public net::DatagramClientSocket {
   net::IPAddress local_ip_;
   net::Error connect_error_;
   bool connect_async_ = false;
-  base::OnceClosure* connect_callback_;
+  raw_ptr<base::OnceClosure> connect_callback_;
 };
 
 class MockSocketFactory : public net::ClientSocketFactory {

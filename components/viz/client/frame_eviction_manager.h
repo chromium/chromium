@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -117,7 +118,7 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
   absl::optional<size_t> pending_unlocked_frame_limit_;
 
   base::RepeatingTimer idle_frames_culling_timer_;
-  const base::TickClock* clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> clock_ = base::DefaultTickClock::GetInstance();
 };
 
 }  // namespace viz

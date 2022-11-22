@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -383,8 +384,8 @@ struct DNRHeaderAction {
   }
 
   // Non-owning pointers to HeaderInfo and ExtensionId.
-  const DNRRequestAction::HeaderInfo* header_info;
-  const extensions::ExtensionId* extension_id;
+  raw_ptr<const DNRRequestAction::HeaderInfo> header_info;
+  raw_ptr<const extensions::ExtensionId> extension_id;
 };
 
 // Helper to modify request headers from

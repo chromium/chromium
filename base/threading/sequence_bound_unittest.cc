@@ -722,7 +722,7 @@ class NoArgsVoidReturn {
   void set_loop(RunLoop* loop) { loop_ = loop; }
 
  private:
-  RunLoop* loop_ = nullptr;
+  raw_ptr<RunLoop> loop_ = nullptr;
 };
 
 class NoArgsIntReturn {

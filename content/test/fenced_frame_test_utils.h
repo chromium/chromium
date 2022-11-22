@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_FENCED_FRAME_TEST_UTILS_H_
 #define CONTENT_TEST_FENCED_FRAME_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "net/base/net_errors.h"
 
@@ -95,7 +96,7 @@ class FencedFrameURLMappingTestPeer {
   void FillMap(const GURL& url);
 
  private:
-  FencedFrameURLMapping* fenced_frame_url_mapping_;
+  raw_ptr<FencedFrameURLMapping> fenced_frame_url_mapping_;
 };
 
 }  // namespace content

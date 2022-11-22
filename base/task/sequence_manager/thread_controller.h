@@ -357,7 +357,7 @@ class BASE_EXPORT ThreadController {
       bool current_work_item_is_native_ = true;
 
       // non-null when recording is enabled.
-      HistogramBase* histogram_ = nullptr;
+      raw_ptr<HistogramBase> histogram_ = nullptr;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
       absl::optional<perfetto::Track> perfetto_track_;
 
@@ -397,7 +397,7 @@ class BASE_EXPORT ThreadController {
 
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.
-      LazyNow* exit_lazy_now_ = nullptr;
+      raw_ptr<LazyNow> exit_lazy_now_ = nullptr;
 
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;

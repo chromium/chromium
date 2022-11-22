@@ -1134,7 +1134,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged>
       mock_privacy_sandbox_service_;
 };

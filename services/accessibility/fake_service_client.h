@@ -5,6 +5,7 @@
 #ifndef SERVICES_ACCESSIBILITY_FAKE_SERVICE_CLIENT_H_
 #define SERVICES_ACCESSIBILITY_FAKE_SERVICE_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -36,7 +37,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool AutomationIsBound();
 
  private:
-  mojom::AccessibilityService* service_;
+  raw_ptr<mojom::AccessibilityService> service_;
 
   base::OnceClosure automation_bound_closure_;
 

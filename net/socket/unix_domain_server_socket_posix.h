@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -91,10 +92,10 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
 
   struct SocketDestination {
     // Non-null while a call to Accept is pending.
-    std::unique_ptr<StreamSocket>* stream = nullptr;
+    raw_ptr<std::unique_ptr<StreamSocket>> stream = nullptr;
 
     // Non-null while a call to AcceptSocketDescriptor is pending.
-    SocketDescriptor* descriptor = nullptr;
+    raw_ptr<SocketDescriptor> descriptor = nullptr;
   };
   SocketDestination out_socket_;
 };

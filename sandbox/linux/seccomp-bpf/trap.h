@@ -10,6 +10,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
@@ -49,7 +50,7 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
     TrapKey() : fnc(nullptr), aux(nullptr), safe(false) {}
     TrapKey(TrapFnc f, const void* a, bool s) : fnc(f), aux(a), safe(s) {}
     TrapFnc fnc;
-    const void* aux;
+    raw_ptr<const void> aux;
     bool safe;
     bool operator<(const TrapKey&) const;
   };

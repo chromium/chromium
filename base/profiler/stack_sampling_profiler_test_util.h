@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -50,7 +51,7 @@ class TargetThread : public PlatformThread::Delegate {
 // Addresses near the start and end of a function.
 struct FunctionAddressRange {
   const void* start;
-  const void* end;
+  raw_ptr<const void> end;
 };
 
 // Represents a stack unwind scenario to be sampled by the

@@ -605,7 +605,7 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
 // CoreAudioUtil::WaveFormatWrapper implementation.
 WAVEFORMATEXTENSIBLE* CoreAudioUtil::WaveFormatWrapper::GetExtensible() const {
   CHECK(IsExtensible());
-  return reinterpret_cast<WAVEFORMATEXTENSIBLE*>(ptr_);
+  return reinterpret_cast<WAVEFORMATEXTENSIBLE*>(ptr_.get());
 }
 
 bool CoreAudioUtil::WaveFormatWrapper::IsExtensible() const {

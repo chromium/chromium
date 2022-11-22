@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
@@ -132,7 +133,7 @@ class MEDIA_EXPORT AudioRenditionGroup
   base::flat_map<std::string, const AudioRendition*> renditions_map_;
 
   // Default rendition, `nullptr` if none.
-  const AudioRendition* default_rendition_ = nullptr;
+  raw_ptr<const AudioRendition> default_rendition_ = nullptr;
 };
 
 }  // namespace media::hls

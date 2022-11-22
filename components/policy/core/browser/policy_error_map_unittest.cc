@@ -4,6 +4,7 @@
 
 #include "components/policy/core/browser/policy_error_map.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -34,7 +35,7 @@ class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
 
  private:
   bool has_resource_bundle_;
-  ui::ResourceBundle* original_resource_bundle_;
+  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
 TEST_P(PolicyErrorMapTestResourceBundle, CheckForErrorsWithoutFatalErrors) {

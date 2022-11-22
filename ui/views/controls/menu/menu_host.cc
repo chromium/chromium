@@ -172,7 +172,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
 #endif
 
   DCHECK(!owner_);
-  owner_ = init_params.parent;
+  owner_ = init_params.parent.get();
   if (owner_)
     owner_->AddObserver(this);
 

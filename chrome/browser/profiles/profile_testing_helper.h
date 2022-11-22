@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_TESTING_HELPER_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_TESTING_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 
@@ -46,15 +47,15 @@ class ProfileTestingHelper {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 
-  TestingProfile* regular_profile_ = nullptr;
-  Profile* incognito_profile_ = nullptr;
+  raw_ptr<TestingProfile> regular_profile_ = nullptr;
+  raw_ptr<Profile> incognito_profile_ = nullptr;
 
-  TestingProfile* guest_profile_ = nullptr;
-  Profile* guest_profile_otr_ = nullptr;
+  raw_ptr<TestingProfile> guest_profile_ = nullptr;
+  raw_ptr<Profile> guest_profile_otr_ = nullptr;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  TestingProfile* system_profile_ = nullptr;
-  Profile* system_profile_otr_ = nullptr;
+  raw_ptr<TestingProfile> system_profile_ = nullptr;
+  raw_ptr<Profile> system_profile_otr_ = nullptr;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

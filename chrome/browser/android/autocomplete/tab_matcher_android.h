@@ -30,7 +30,7 @@ class TabMatcherAndroid : public TabMatcher {
   GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos(
       const bool keep_search_intent_params) const;
 
-  const TemplateURLService* template_url_service_;
+  raw_ptr<const TemplateURLService> template_url_service_;
   raw_ptr<Profile> profile_;
 };
 

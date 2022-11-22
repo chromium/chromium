@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,8 +116,8 @@ class TreeIDWrapper : public V8HandlerFunctionWrapper {
  private:
   ~TreeIDWrapper() override = default;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   TreeIDFunction function_;
 };
 
@@ -173,8 +174,8 @@ class NodeIDWrapper : public V8HandlerFunctionWrapper {
 
   friend class base::RefCountedThreadSafe<NodeIDWrapper>;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDFunction function_;
 };
 
@@ -235,8 +236,8 @@ class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
  private:
   ~NodeIDPlusAttributeWrapper() override = default;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDPlusAttributeFunction function_;
 };
 
@@ -302,8 +303,8 @@ class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
  private:
   ~NodeIDPlusRangeWrapper() override = default;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDPlusRangeFunction function_;
 };
 
@@ -360,8 +361,8 @@ class NodeIDPlusStringBoolWrapper : public V8HandlerFunctionWrapper {
  private:
   ~NodeIDPlusStringBoolWrapper() override = default;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDPlusStringBoolFunction function_;
 };
 
@@ -424,8 +425,8 @@ class NodeIDPlusDimensionsWrapper : public V8HandlerFunctionWrapper {
 
   friend class base::RefCountedThreadSafe<NodeIDPlusDimensionsWrapper>;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDPlusDimensionsFunction function_;
 };
 
@@ -497,8 +498,8 @@ class NodeIDPlusEventWrapper : public V8HandlerFunctionWrapper {
  private:
   ~NodeIDPlusEventWrapper() override = default;
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_router_;
   NodeIDPlusEventFunction function_;
 };
 

@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -103,7 +104,7 @@ class UnusedSitePermissionsService
 
   const scoped_refptr<HostContentSettingsMap> hcsm_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace permissions

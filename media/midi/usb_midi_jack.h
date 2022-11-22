@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "media/midi/usb_midi_export.h"
 
 namespace midi {
@@ -31,7 +32,7 @@ struct USB_MIDI_EXPORT UsbMidiJack {
         cable_number(cable_number),
         endpoint_address(endpoint_address) {}
   // Not owned
-  UsbMidiDevice* device;
+  raw_ptr<UsbMidiDevice> device;
   // The id of this jack unique in the interface.
   uint8_t jack_id;
   // The cable number of this jack in the associated endpoint.

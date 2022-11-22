@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
@@ -102,11 +103,11 @@ class ParameterSet {
   // it works with pointer while the former works only with references.
   template <typename T>
   T Void2TypePointerCopy() const {
-    return *(reinterpret_cast<const T*>(address_));
+    return *(reinterpret_cast<const T*>(address_.get()));
   }
 
   ArgType real_type_;
-  const void* address_;
+  raw_ptr<const void> address_;
 };
 
 // To safely infer the type, we use a set of template specializations

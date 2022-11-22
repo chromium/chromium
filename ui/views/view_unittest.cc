@@ -5216,7 +5216,7 @@ class WidgetWithCustomTheme : public Widget {
   const ui::NativeTheme* GetNativeTheme() const override { return theme_; }
 
  private:
-  ui::TestNativeTheme* theme_;
+  raw_ptr<ui::TestNativeTheme> theme_;
 };
 
 // See comment above test for details.

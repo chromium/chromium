@@ -40,7 +40,7 @@ class MediaRemotingDialogCoordinatorViews
   bool IsShowing() const override;
 
  private:
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   views::ViewTracker tracker_;
 };
 

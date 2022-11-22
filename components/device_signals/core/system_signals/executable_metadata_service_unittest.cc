@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/system_signals/mock_platform_delegate.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
@@ -41,7 +42,7 @@ class ExecutableMetadataServiceTest : public testing::Test {
         ExecutableMetadataService::Create(std::move(mock_platform_delegate));
   }
 
-  MockPlatformDelegate* mock_platform_delegate_;
+  raw_ptr<MockPlatformDelegate> mock_platform_delegate_;
   std::unique_ptr<ExecutableMetadataService> executable_metadata_service_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -50,7 +51,7 @@ class PaintPreviewBaseService : public KeyedService {
   };
 
   struct CaptureParams {
-    content::WebContents* web_contents = nullptr;
+    raw_ptr<content::WebContents> web_contents = nullptr;
 
     // In case of specifying, an individual |render_frame_host| and its
     // descendents will be captured. In case of nullptr, full page contents will
@@ -59,7 +60,7 @@ class PaintPreviewBaseService : public KeyedService {
     // Generally, leaving this as nullptr is what you should be doing for most
     // features. Specifying a |render_frame_host| is intended for capturing
     // individual subframes and should be used for only a few use cases.
-    content::RenderFrameHost* render_frame_host = nullptr;
+    raw_ptr<content::RenderFrameHost> render_frame_host = nullptr;
 
     // Store artifacts in the file system or in memory buffers.
     RecordingPersistence persistence;
@@ -73,7 +74,7 @@ class PaintPreviewBaseService : public KeyedService {
     // - a number of SKPs listed as <guid>.skp (one per frame)
     //
     // Will be ignored if persistence = kMemoryBuffer
-    const base::FilePath* root_dir = nullptr;
+    raw_ptr<const base::FilePath> root_dir = nullptr;
 
     // The captured area is clipped to |clip_rect| if it is non-zero.
     gfx::Rect clip_rect;

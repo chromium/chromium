@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
@@ -85,8 +86,8 @@ class RotateUtilTest : public testing::Test {
     return command_line;
   }
 
-  MockKeyNetworkDelegate* mock_network_delegate_;
-  MockKeyPersistenceDelegate* mock_persistence_delegate_;
+  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_;
+  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_;
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   base::test::TaskEnvironment task_environment_;

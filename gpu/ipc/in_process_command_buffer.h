@@ -179,10 +179,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
  private:
   struct InitializeOnGpuThreadParams {
     const ContextCreationAttribs& attribs;
-    Capabilities* capabilities;  // Ouptut.
-    ImageFactory* image_factory;
-    gpu::raster::GrShaderCache* gr_shader_cache;
-    GpuProcessActivityFlags* activity_flags;
+    raw_ptr<Capabilities> capabilities;  // Ouptut.
+    raw_ptr<ImageFactory> image_factory;
+    raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
+    raw_ptr<GpuProcessActivityFlags> activity_flags;
 
     InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
                                 Capabilities* capabilities,

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -28,7 +29,7 @@ struct RootWindowSettings {
 
   // RootWindowController for the root window. This may be NULL
   // for the root window used for mirroring.
-  RootWindowController* controller;
+  raw_ptr<RootWindowController> controller;
 };
 
 // Initializes and returns RootWindowSettings for |root|.

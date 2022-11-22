@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -207,7 +208,7 @@ class CoreIpczTest : public test::MojoTestBase {
     }
   }
 
-  const MojoSystemThunks2* const mojo_{GetMojoIpczImpl()};
+  const raw_ptr<const MojoSystemThunks2> mojo_{GetMojoIpczImpl()};
 };
 
 // Watches a PlatformChannel endpoint handle for its peer's closure.

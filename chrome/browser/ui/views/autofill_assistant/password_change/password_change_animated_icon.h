@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_ANIMATED_ICON_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -75,7 +76,7 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   bool animation_ended_ = true;
 
   // A raw pointer to the delegate for this icon that must outlive `this`.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_ANIMATED_ICON_H_

@@ -511,7 +511,7 @@ class ShinglePattern {
       Shingle::PointerLess resolve_ties;
     };
    private:
-    const Shingle* instance_;
+    raw_ptr<const Shingle> instance_;
   };
 
   typedef std::set<FreqView, FreqView::Greater> Histogram;

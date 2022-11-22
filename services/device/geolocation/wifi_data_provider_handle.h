@@ -17,6 +17,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "services/device/geolocation/wifi_data.h"
@@ -80,7 +81,7 @@ class WifiDataProviderHandle {
   static ImplFactoryFunction factory_function_;
 
   scoped_refptr<WifiDataProvider> impl_;
-  WifiDataUpdateCallback* callback_;
+  raw_ptr<WifiDataUpdateCallback> callback_;
 };
 
 }  // namespace device

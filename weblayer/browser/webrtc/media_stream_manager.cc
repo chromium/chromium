@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/media_stream_request.h"
@@ -24,7 +25,7 @@ namespace {
 constexpr int kWebContentsUserDataKey = 0;
 
 struct UserData : public base::SupportsUserData::Data {
-  MediaStreamManager* manager = nullptr;
+  raw_ptr<MediaStreamManager> manager = nullptr;
 };
 
 }  // namespace

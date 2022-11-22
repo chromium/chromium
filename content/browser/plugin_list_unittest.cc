@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -67,7 +68,7 @@ class PluginListTest : public testing::Test {
 
   // Owns the PluginList but cannot be a std::unique_ptr due to private
   // ctor/dtor.
-  PluginList* plugin_list_;
+  raw_ptr<PluginList> plugin_list_;
   WebPluginInfo foo_plugin_;
   WebPluginInfo bar_plugin_;
 };

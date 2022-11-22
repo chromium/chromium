@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -50,7 +51,7 @@ class MojoIpczInProcessTestNodeController
 
    private:
     std::unique_ptr<ipcz::test::TestNode> node_;
-    ipcz::test::TestDriver* const driver_;
+    const raw_ptr<ipcz::test::TestDriver> driver_;
   };
 
   MojoIpczInProcessTestNodeController(

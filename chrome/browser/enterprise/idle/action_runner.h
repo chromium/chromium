@@ -49,7 +49,7 @@ class ActionRunner {
   void OnActionFinished(ActionQueue remaining_actions, bool succeeded);
 
   raw_ptr<Profile> profile_;
-  ActionFactory* action_factory_;
+  raw_ptr<ActionFactory> action_factory_;
   base::WeakPtrFactory<ActionRunner> weak_ptr_factory_{this};
 };
 

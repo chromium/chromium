@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -122,7 +123,7 @@ class ExtensionInstallEventRouterTest : public testing::Test {
 
   scoped_refptr<extensions::Extension> extension_chrome_;
   ReportingSettings settings;
-  MockRealtimeReportingClient* mockRealtimeReportingClient_;
+  raw_ptr<MockRealtimeReportingClient> mockRealtimeReportingClient_;
   std::unique_ptr<ExtensionInstallEventRouter> extensionInstallEventRouter_;
 };
 

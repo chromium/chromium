@@ -58,7 +58,7 @@ class ExtensionsToolbarButton : public ToolbarButton,
   // This can be nullptr before ExtensionsTabbedMenu is fully rolled out.
   // TODO(crbug.com/1279986): Remove this disclaimer once ExtensionsTabbedMenu
   // is rolled out.
-  ExtensionsTabbedMenuCoordinator* extensions_tabbed_menu_coordinator_;
+  raw_ptr<ExtensionsTabbedMenuCoordinator> extensions_tabbed_menu_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BUTTON_H_

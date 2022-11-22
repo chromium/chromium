@@ -475,7 +475,7 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   }
 
  private:
-  const Profile* profile_;
+  raw_ptr<const Profile> profile_;
   const AppId app_id_;
   bool uninstall_complete_ = false;
   base::RunLoop run_loop_;

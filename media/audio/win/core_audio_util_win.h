@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_name.h"
 #include "media/base/audio_parameters.h"
@@ -52,7 +53,7 @@ class MEDIA_EXPORT CoreAudioUtil {
     size_t size() const;
 
    private:
-    WAVEFORMATEX* ptr_;
+    raw_ptr<WAVEFORMATEX> ptr_;
   };
 
   CoreAudioUtil() = delete;

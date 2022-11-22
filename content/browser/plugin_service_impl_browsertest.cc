@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -48,7 +49,7 @@ class TestPluginClient : public PpapiPluginProcessHost::PluginClient {
 
  private:
   base::ProcessId plugin_pid_ = 0;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 

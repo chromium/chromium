@@ -68,7 +68,7 @@ class VisibilityComparator {
   }
 
  private:
-  BookmarkClient* client_;
+  raw_ptr<BookmarkClient> client_;
 };
 
 // Comparator used when sorting bookmarks. Folders are sorted first, then
@@ -92,7 +92,7 @@ class SortComparator {
   }
 
  private:
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 // Delegate that does nothing.

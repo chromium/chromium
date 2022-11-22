@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +42,7 @@ struct TestParam {
 
   const char* url;
   const char* settings_value;
-  AnalysisSettings* expected_settings;
+  raw_ptr<AnalysisSettings> expected_settings;
 };
 
 constexpr char kNormalSettings[] = R"({

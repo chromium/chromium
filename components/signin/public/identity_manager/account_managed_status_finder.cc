@@ -121,7 +121,7 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
     } else {
       // Extended account info isn't (fully) available yet. Observe the
       // IdentityManager to get notified once it is.
-      identity_manager_observation_.Observe(identity_manager_);
+      identity_manager_observation_.Observe(identity_manager_.get());
       callback_ = std::move(async_callback);
       // TODO(crbug.com/1378553): Add a timeout mechanism.
     }

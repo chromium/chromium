@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/image_editor/image_editor_component_info.h"
 #include "chrome/browser/share/share_features.h"
@@ -98,8 +99,8 @@ class ScreenshotCapturedBubbleTest : public ChromeViewsTestBase {
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  ScreenshotCapturedBubble* bubble_;
-  views::Widget* bubble_widget_;
+  raw_ptr<ScreenshotCapturedBubble> bubble_;
+  raw_ptr<views::Widget> bubble_widget_;
 };
 
 TEST_F(ScreenshotCapturedBubbleTest, EditNavigatesToImageEditorWebUI) {

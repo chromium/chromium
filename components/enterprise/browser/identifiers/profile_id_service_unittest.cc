@@ -8,6 +8,7 @@
 
 #include "base/base64url.h"
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/enterprise/browser/identifiers/mock_profile_id_delegate.h"
@@ -41,7 +42,7 @@ class ProfileIdServiceTest : public testing::Test {
                                                   &profile_prefs_);
   }
 
-  MockProfileIdDelegate* mock_delegate_ = nullptr;
+  raw_ptr<MockProfileIdDelegate> mock_delegate_ = nullptr;
   TestingPrefServiceSimple profile_prefs_;
   std::unique_ptr<ProfileIdService> service_;
   base::HistogramTester histogram_tester_;

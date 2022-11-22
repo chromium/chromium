@@ -15,6 +15,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -61,7 +62,7 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
   media::VideoCaptureParams params() const { return params_; }
 
  private:
-  VideoCaptureController* const controller_;
+  const raw_ptr<VideoCaptureController> controller_;
   const base::UnguessableToken session_id_;
   const media::VideoCaptureParams params_;
 };

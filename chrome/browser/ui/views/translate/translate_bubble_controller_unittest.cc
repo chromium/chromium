@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -249,9 +250,9 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<translate::testing::MockTranslateMetricsLogger>
       mock_translate_metrics_logger_;
 
-  FakeTranslateBubbleModel* fake_translate_bubble_model_ = nullptr;
-  FakePartialTranslateBubbleModel* fake_partial_translate_bubble_model_ =
-      nullptr;
+  raw_ptr<FakeTranslateBubbleModel> fake_translate_bubble_model_ = nullptr;
+  raw_ptr<FakePartialTranslateBubbleModel>
+      fake_partial_translate_bubble_model_ = nullptr;
 
   // Owned by WebContents.
   raw_ptr<TranslateBubbleController> controller_;

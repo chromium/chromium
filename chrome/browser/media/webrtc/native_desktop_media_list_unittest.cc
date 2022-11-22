@@ -834,7 +834,7 @@ class DelegatedFakeScreenCapturer
   int ensure_hidden_call_count() const { return ensure_hidden_call_count_; }
 
  private:
-  webrtc::DelegatedSourceListController::Observer* observer_ = nullptr;
+  raw_ptr<webrtc::DelegatedSourceListController::Observer> observer_ = nullptr;
   int ensure_visible_call_count_ = 0;
   int ensure_hidden_call_count_ = 0;
 };

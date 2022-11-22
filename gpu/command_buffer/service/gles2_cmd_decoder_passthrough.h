@@ -57,7 +57,7 @@ struct MappedBuffer {
   GLsizeiptr size;
   GLbitfield original_access;
   GLbitfield filtered_access;
-  uint8_t* map_ptr;
+  raw_ptr<uint8_t> map_ptr;
   int32_t data_shm_id;
   uint32_t data_shm_offset;
 };

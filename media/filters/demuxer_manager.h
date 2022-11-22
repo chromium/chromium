@@ -5,6 +5,7 @@
 #ifndef MEDIA_FILTERS_DEMUXER_MANAGER_H_
 #define MEDIA_FILTERS_DEMUXER_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
 
@@ -31,7 +32,7 @@ class MEDIA_EXPORT DemuxerManager {
 
  private:
   // This is usually just the WebMediPlayerImpl.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // Weak pointer implementation.
   base::WeakPtrFactory<DemuxerManager> weak_factory_{this};

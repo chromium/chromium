@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -146,7 +147,7 @@ class DseImageView : public views::ImageView {
   }
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // Subscription to change notifications to the default search icon source.
   base::CallbackListSubscription icon_changed_subscription_;

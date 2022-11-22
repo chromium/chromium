@@ -61,7 +61,7 @@ namespace content {
 struct ShellPlatformDelegate::ShellData {
   gfx::Size content_size;
   // Self-owned Widget, destroyed through CloseNow().
-  views::Widget* window_widget = nullptr;
+  raw_ptr<views::Widget> window_widget = nullptr;
 };
 
 struct ShellPlatformDelegate::PlatformData {

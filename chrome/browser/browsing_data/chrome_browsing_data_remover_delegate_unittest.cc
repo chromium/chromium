@@ -717,7 +717,7 @@ class RemoveDIPSEventsTester {
   }
 
  private:
-  base::SequenceBound<DIPSStorage>* storage_;
+  raw_ptr<base::SequenceBound<DIPSStorage>> storage_;
 };
 
 class RemoveSecurePaymentConfirmationCredentialsTester {

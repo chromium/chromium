@@ -561,7 +561,7 @@ class StorageQueueTest
     const int64_t uploader_id_;
 
     absl::optional<int64_t> generation_id_;
-    absl::optional<int64_t>* const last_upload_generation_id_;
+    const raw_ptr<absl::optional<int64_t>> last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
     const raw_ptr<const MockUpload> mock_upload_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -195,7 +196,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeTailoredSecurityService>

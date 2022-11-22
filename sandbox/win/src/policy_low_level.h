@@ -103,7 +103,7 @@ class LowLevelPolicy {
 
  private:
   struct RuleNode {
-    const PolicyRule* rule;
+    raw_ptr<const PolicyRule> rule;
     IpcTag service;
   };
   std::list<RuleNode> rules_;

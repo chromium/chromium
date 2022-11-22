@@ -498,7 +498,7 @@ class BASE_EXPORT FeatureList {
     // An optional associated field trial, which will be activated when the
     // state of the feature is queried for the first time. Weak pointer to the
     // FieldTrial object that is owned by the FieldTrialList singleton.
-    base::FieldTrial* field_trial;
+    raw_ptr<base::FieldTrial> field_trial;
 
     // Specifies whether the feature's state is overridden by |field_trial|.
     // If it's not, and |field_trial| is not null, it means it is simply an

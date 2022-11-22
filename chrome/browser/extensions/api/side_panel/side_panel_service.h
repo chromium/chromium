@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_SERVICE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -50,7 +51,7 @@ class SidePanelService : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "SidePanelService"; }

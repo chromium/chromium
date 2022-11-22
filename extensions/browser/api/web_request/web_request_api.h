@@ -625,7 +625,7 @@ class ExtensionWebRequestEventRouter {
     // BrowserContext. That is, if this context is incognito, `cross_context`
     // will point to the original context; if this context is the original,
     // `cross_context` will point to the incognito context (if any).
-    content::BrowserContext* cross_context = nullptr;
+    raw_ptr<content::BrowserContext> cross_context = nullptr;
   };
 
   using DataMap = std::map<content::BrowserContext*, BrowserContextData>;

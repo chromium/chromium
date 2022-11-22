@@ -201,7 +201,7 @@ class ScreenEnumeratorMock : public media::ScreenEnumerator {
   }
 
  private:
-  const size_t* screen_count_;
+  raw_ptr<const size_t> screen_count_;
 };
 
 class MediaStreamProviderListenerMock
@@ -240,7 +240,7 @@ class TestBrowserClient : public ContentBrowserClient {
 
  private:
   raw_ptr<MediaObserver> media_observer_;
-  const size_t* screen_count_;
+  raw_ptr<const size_t> screen_count_;
 };
 
 class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {

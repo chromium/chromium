@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -417,7 +418,7 @@ class BeaconTestBase : public PendingBeaconHostTestBase {
 
  private:
   // Owned by `main_rfh()`.
-  PendingBeaconHost* host_;
+  raw_ptr<PendingBeaconHost> host_;
   std::unique_ptr<MockClientBeacon> beacon_;
 };
 

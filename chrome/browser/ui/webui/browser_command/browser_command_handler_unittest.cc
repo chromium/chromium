@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -108,7 +109,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   bool BrowserHasTabGroups() override { return has_tab_groups_; }
 
  private:
-  user_education::TutorialService* tutorial_service_;
+  raw_ptr<user_education::TutorialService> tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;

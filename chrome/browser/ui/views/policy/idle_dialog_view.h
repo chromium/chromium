@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_POLICY_IDLE_DIALOG_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/idle_dialog.h"
@@ -84,7 +85,7 @@ class IdleDialogImpl : public IdleDialog, public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 }  // namespace policy

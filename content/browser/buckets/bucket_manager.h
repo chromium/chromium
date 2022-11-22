@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
@@ -66,7 +67,7 @@ class CONTENT_EXPORT BucketManager {
   std::map<blink::StorageKey, std::unique_ptr<BucketManagerHost>> hosts_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  StoragePartitionImpl* storage_partition_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
 }  // namespace content

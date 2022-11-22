@@ -5,6 +5,7 @@
 #include <set>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -184,7 +185,7 @@ struct TestParam {
 
   const char* url;
   const char* settings_value;
-  std::set<std::string>* expected_mime_types;
+  raw_ptr<std::set<std::string>> expected_mime_types;
 };
 
 class FileSystemServiceSettingsTest : public testing::TestWithParam<TestParam> {

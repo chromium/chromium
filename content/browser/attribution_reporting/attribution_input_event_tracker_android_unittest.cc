@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -81,7 +82,7 @@ class AttributionInputEventTrackerAndroidTest
     return static_cast<bool>(env_->IsSameObject(a.obj(), b.obj()));
   }
 
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   std::unique_ptr<AttributionInputEventTrackerAndroid> input_event_tracker_;
 };
 

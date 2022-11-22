@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -123,12 +124,12 @@ class KidsManagementServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_ =
       MakeTestingProfile(test_url_loader_factory_);
-  KidsManagementService* under_test_ =
+  raw_ptr<KidsManagementService> under_test_ =
       KidsManagementServiceFactory::GetForProfile(profile_.get());
   IdentityTestEnvironmentProfileAdaptor
       identity_test_environment_profile_adaptor_{
           profile_.get()};  // Must be owned by test fixture.
-  IdentityTestEnvironment* identity_test_environment{
+  raw_ptr<IdentityTestEnvironment> identity_test_environment{
       identity_test_environment_profile_adaptor_.identity_test_env()};
 };
 

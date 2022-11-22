@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/system_impl_export.h"
@@ -51,7 +52,7 @@ class MOJO_SYSTEM_IMPL_EXPORT SharedBufferMapping
   ~SharedBufferMapping() override;
 
   std::unique_ptr<base::SharedMemoryMapping> mapping_;
-  void* memory_;
+  raw_ptr<void> memory_;
 };
 
 }  // namespace mojo::core::ipcz_driver

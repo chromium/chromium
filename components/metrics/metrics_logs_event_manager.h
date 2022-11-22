@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_METRICS_LOGS_EVENT_MANAGER_H_
 #define COMPONENTS_METRICS_METRICS_LOGS_EVENT_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
@@ -58,7 +59,7 @@ class MetricsLogsEventManager {
     ~ScopedNotifyLogType();
 
    private:
-    MetricsLogsEventManager* const logs_event_manager_;
+    const raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
     // Used to ensure that only one instance of this class exists at a time.
     static bool instance_exists_;

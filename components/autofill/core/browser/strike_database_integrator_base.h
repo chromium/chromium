@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_database_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -129,7 +130,7 @@ class StrikeDatabaseIntegratorBase {
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
 
-  StrikeDatabaseBase* strike_database_;
+  raw_ptr<StrikeDatabaseBase> strike_database_;
 
   // For projects in which strikes don't have unique identifiers, the
   // id suffix is set to |kSharedId|. This makes sure that projects requiring

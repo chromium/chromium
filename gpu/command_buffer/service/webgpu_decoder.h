@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_WEBGPU_DECODER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_DECODER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"
@@ -31,7 +32,7 @@ class DawnCachingInterfaceFactory;
 
 // Options specifically passed for Dawn caching;
 struct DawnCacheOptions {
-  DawnCachingInterfaceFactory* caching_interface_factory = nullptr;
+  raw_ptr<DawnCachingInterfaceFactory> caching_interface_factory = nullptr;
   absl::optional<GpuDiskCacheHandle> handle = {};
 };
 

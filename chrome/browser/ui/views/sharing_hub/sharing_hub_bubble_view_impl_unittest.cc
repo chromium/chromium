@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/share/share_features.h"
@@ -124,12 +125,12 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_{share::kDesktopSharePreview};
 
-  sharing_hub::SharingHubBubbleViewImpl* bubble_;
+  raw_ptr<sharing_hub::SharingHubBubbleViewImpl> bubble_;
   testing::NiceMock<sharing_hub::FakeSharingHubBubbleController> controller_{
       kFirstPartyActions, kThirdPartyActions};
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  views::Widget* bubble_widget_;
+  raw_ptr<views::Widget> bubble_widget_;
 };
 
 TEST_F(SharingHubBubbleTest, AllFirstPartyActionsAppearInOrder) {

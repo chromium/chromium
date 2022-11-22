@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -637,7 +638,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   //   |scroll_node|. This can be nullptr if no layer was hit and there are no
   //   viewport nodes (e.g. OOPIF, UI compositor).
   struct ScrollHitTestResult {
-    ScrollNode* scroll_node;
+    raw_ptr<ScrollNode> scroll_node;
     bool hit_test_successful;
   };
   ScrollHitTestResult HitTestScrollNode(

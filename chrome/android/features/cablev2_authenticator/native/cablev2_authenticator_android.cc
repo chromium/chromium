@@ -230,7 +230,7 @@ std::vector<uint8_t> JavaByteArrayToByteVector(
 // there are ultimately only one human user, concurrent requests are not
 // supported.
 struct GlobalData {
-  JNIEnv* env = nullptr;
+  raw_ptr<JNIEnv> env = nullptr;
   // instance_num is incremented for each new |Transaction| created and returned
   // to Java to serve as a "handle". This prevents commands intended for a
   // previous transaction getting applied to a replacement. The zero value is
@@ -244,14 +244,14 @@ struct GlobalData {
 
   absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
-  network::mojom::NetworkContext* network_context = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context = nullptr;
 
   // event_to_record_if_stopped contains an event to record with UMA if the
   // activity is stopped. This is updated as a transaction progresses.
   absl::optional<CableV2MobileEvent> event_to_record_if_stopped;
 
   // registration is a non-owning pointer to the global |Registration|.
-  device::cablev2::authenticator::Registration* registration = nullptr;
+  raw_ptr<device::cablev2::authenticator::Registration> registration = nullptr;
 
   // current_transaction holds the |Transaction| that is currently active.
   std::unique_ptr<device::cablev2::authenticator::Transaction>

@@ -1153,7 +1153,8 @@ class GPU_GLES2_EXPORT TextureManager
     GLint border;
     GLenum format;
     GLenum type;
-    const void* pixels;
+    // `pixels` is not a raw_ptr<...> to avoid adding an out-of-line destructor.
+    RAW_PTR_EXCLUSION const void* pixels;
     uint32_t pixels_size;
     uint32_t padding;
     CommandType command_type;
@@ -1190,7 +1191,8 @@ class GPU_GLES2_EXPORT TextureManager
     GLsizei depth;
     GLenum format;
     GLenum type;
-    const void* pixels;
+    // `pixels` is not a raw_ptr<...> to avoid adding an out-of-line destructor.
+    RAW_PTR_EXCLUSION const void* pixels;
     uint32_t pixels_size;
     uint32_t padding;
     CommandType command_type;

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -200,7 +201,7 @@ void OpenCaptivePortalLoginTabInWebContents(
 constexpr int kWebContentsUserDataKey = 0;
 
 struct UserData : public base::SupportsUserData::Data {
-  TabImpl* tab = nullptr;
+  raw_ptr<TabImpl> tab = nullptr;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -478,7 +479,7 @@ TabImpl* TabImpl::FromWebContents(content::WebContents* web_contents) {
 
   UserData* user_data = reinterpret_cast<UserData*>(
       web_contents->GetUserData(&kWebContentsUserDataKey));
-  return user_data ? user_data->tab : nullptr;
+  return user_data ? user_data->tab.get() : nullptr;
 }
 
 // static

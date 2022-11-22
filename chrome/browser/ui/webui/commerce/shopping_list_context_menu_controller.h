@@ -45,7 +45,7 @@ class ShoppingListContextMenuController {
  private:
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
-  const bookmarks::BookmarkNode* bookmark_node_;
+  raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
   raw_ptr<ui::SimpleMenuModel> menu_model_;
 };
 

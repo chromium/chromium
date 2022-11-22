@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_util_win.h"
@@ -39,7 +40,7 @@ struct PlatformCredentialListDeleter {
   inline void operator()(PWEBAUTHN_CREDENTIAL_DETAILS_LIST ptr) const {
     win_api_->FreePlatformCredentialList(ptr);
   }
-  WinWebAuthnApi* win_api_;
+  raw_ptr<WinWebAuthnApi> win_api_;
 };
 
 }  // namespace

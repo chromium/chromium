@@ -33,7 +33,7 @@ struct WebContentsStateByteBuffer {
   // needed. Outside of this scope, this struct is not meant to be used for any
   // other purposes. Please do not attempt to use this struct anywhere else
   // except for in the provided callstack/use case.
-  void* byte_buffer_data;
+  raw_ptr<void> byte_buffer_data;
   int byte_buffer_size;
   int state_version;
 };

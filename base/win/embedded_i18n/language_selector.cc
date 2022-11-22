@@ -13,6 +13,7 @@
 #include <functional>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,16 +31,16 @@ using LangToOffset = LanguageSelector::LangToOffset;
 // targets of exceptions (where one language is mapped to another) or wildcards
 // (where a raw language identifier is mapped to a specific localization).
 struct AvailableLanguageAliases {
-  const LangToOffset* en_gb_language_offset;
-  const LangToOffset* en_us_language_offset;
-  const LangToOffset* es_language_offset;
-  const LangToOffset* es_419_language_offset;
-  const LangToOffset* fil_language_offset;
-  const LangToOffset* iw_language_offset;
-  const LangToOffset* no_language_offset;
-  const LangToOffset* pt_br_language_offset;
-  const LangToOffset* zh_cn_language_offset;
-  const LangToOffset* zh_tw_language_offset;
+  raw_ptr<const LangToOffset> en_gb_language_offset;
+  raw_ptr<const LangToOffset> en_us_language_offset;
+  raw_ptr<const LangToOffset> es_language_offset;
+  raw_ptr<const LangToOffset> es_419_language_offset;
+  raw_ptr<const LangToOffset> fil_language_offset;
+  raw_ptr<const LangToOffset> iw_language_offset;
+  raw_ptr<const LangToOffset> no_language_offset;
+  raw_ptr<const LangToOffset> pt_br_language_offset;
+  raw_ptr<const LangToOffset> zh_cn_language_offset;
+  raw_ptr<const LangToOffset> zh_tw_language_offset;
 };
 
 #if DCHECK_IS_ON()

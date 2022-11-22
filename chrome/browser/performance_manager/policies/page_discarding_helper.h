@@ -57,7 +57,7 @@ class PageNodeSortProxy {
   }
 
  private:
-  const PageNode* page_node_;
+  raw_ptr<const PageNode> page_node_;
   bool is_marked_;
   bool is_protected_;
   // Delta between current time and last visibility change time.

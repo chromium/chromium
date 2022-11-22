@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -47,7 +48,7 @@ enum class Interactability {
 // parsing.
 struct ProcessedField {
   // This points to the wrapped FormFieldData.
-  const autofill::FormFieldData* field;
+  raw_ptr<const autofill::FormFieldData> field;
 
   // The flag derived from field->autocomplete_attribute.
   AutocompleteFlag autocomplete_flag = AutocompleteFlag::kNone;

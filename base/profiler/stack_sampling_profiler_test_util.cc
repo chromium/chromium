@@ -397,7 +397,7 @@ void ExpectStackContains(const std::vector<Frame>& stack,
     if (frame_it->instruction_pointer >=
             reinterpret_cast<uintptr_t>(function_it->start) &&
         frame_it->instruction_pointer <=
-            reinterpret_cast<uintptr_t>(function_it->end)) {
+            reinterpret_cast<uintptr_t>(function_it->end.get())) {
       ++function_it;
     }
   }
@@ -443,7 +443,7 @@ void ExpectStackDoesNotContain(
       if (frame.instruction_pointer >=
               reinterpret_cast<uintptr_t>(function.start) &&
           frame.instruction_pointer <=
-              reinterpret_cast<uintptr_t>(function.end)) {
+              reinterpret_cast<uintptr_t>(function.end.get())) {
         seen_functions.insert(function);
       }
     }

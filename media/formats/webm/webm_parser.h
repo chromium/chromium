@@ -93,8 +93,8 @@ class MEDIA_EXPORT WebMListParser {
     int id_;
     int64_t size_;
     int64_t bytes_parsed_;
-    const ListElementInfo* element_info_;
-    WebMParserClient* client_;
+    raw_ptr<const ListElementInfo> element_info_;
+    raw_ptr<WebMParserClient> client_;
   };
 
   void ChangeState(State new_state);

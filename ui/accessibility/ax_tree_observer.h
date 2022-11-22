@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_OBSERVER_H_
 #define UI_ACCESSIBILITY_AX_TREE_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -156,7 +157,7 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
       this->node = node;
       this->type = type;
     }
-    AXNode* node;
+    raw_ptr<AXNode> node;
     ChangeType type;
   };
 

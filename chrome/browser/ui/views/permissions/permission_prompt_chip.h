@@ -49,7 +49,7 @@ class PermissionPromptChip : public PermissionPromptDesktop {
 
  private:
   // The controller handling the chip view
-  ChipController* chip_controller_;
+  raw_ptr<ChipController> chip_controller_;
 
   // Delegate representing a permission request
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;

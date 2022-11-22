@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_IBAN_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -70,7 +71,7 @@ class IBANManager : public SingleFieldFormFiller,
   void SendIBANSuggestions(const std::vector<IBAN*>& ibans,
                            const QueryHandler& query_handler);
 
-  PersonalDataManager* personal_data_manager_ = nullptr;
+  raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 
   bool is_off_the_record_ = false;
 

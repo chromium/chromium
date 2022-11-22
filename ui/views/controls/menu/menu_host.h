@@ -42,15 +42,15 @@ class MenuControllerTest;
 class MenuHost : public Widget, public WidgetObserver {
  public:
   struct InitParams {
-    Widget* parent = nullptr;
+    raw_ptr<Widget> parent = nullptr;
     gfx::Rect bounds;
-    View* contents_view = nullptr;
+    raw_ptr<View> contents_view = nullptr;
     bool do_capture = false;
     gfx::NativeView native_view_for_gestures;
     ui::MenuType menu_type = ui::MenuType::kRootContextMenu;
     // Window that is stacked below a new menu window (can be different from the
     // |parent|).
-    Widget* context = nullptr;
+    raw_ptr<Widget> context = nullptr;
 
     // Additional information that helps to position anchored windows in such
     // backends as Wayland.

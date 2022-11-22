@@ -332,7 +332,7 @@ class AddressSorterPosix::SortContext {
   std::vector<DestinationInfo> sort_list_;
   AddressSorter::CallbackType callback_;
 
-  const AddressSorterPosix* sorter_;
+  raw_ptr<const AddressSorterPosix> sorter_;
 };
 
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)

@@ -5,6 +5,7 @@
 #include "components/translate/content/browser/partial_translate_manager.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +55,7 @@ class PartialTranslateManagerTest : public testing::Test {
 
  protected:
   // Owned by manager_.
-  FakeContextualSearchDelegate* delegate_;
+  raw_ptr<FakeContextualSearchDelegate> delegate_;
   std::unique_ptr<PartialTranslateManager> manager_;
 };
 

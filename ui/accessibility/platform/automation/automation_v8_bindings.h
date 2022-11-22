@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
@@ -242,8 +243,8 @@ class AX_EXPORT AutomationV8Bindings {
   void StopCachingAccessibilityTrees(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  AutomationTreeManagerOwner* automation_tree_manager_owner_;
-  AutomationV8Router* automation_v8_router_;
+  raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
+  raw_ptr<AutomationV8Router> automation_v8_router_;
 };
 }  // namespace ui
 

@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -135,7 +136,7 @@ struct IEOrderBookmarkComparator {
     }
     return lhs.path.size() < rhs.path.size();
   }
-  const std::map<base::FilePath, uint32_t>* sort_index_;
+  raw_ptr<const std::map<base::FilePath, uint32_t>> sort_index_;
 };
 
 // IE stores the order of the Favorites menu in registry under:

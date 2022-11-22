@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,7 +58,7 @@ class EntityImageService : public KeyedService {
                       ResultCallback callback,
                       const GURL& image_url);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   ChromeAutocompleteProviderClient autocomplete_provider_client_;
 
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>

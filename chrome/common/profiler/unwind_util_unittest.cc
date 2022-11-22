@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -98,7 +99,7 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
 
   struct {
     version_info::Channel channel;
-    UnwindPrerequisitesDelegate* delegate;
+    raw_ptr<UnwindPrerequisitesDelegate> delegate;
     bool are_unwind_prerequisites_expected;
   } test_cases[] = {
     {version_info::Channel::CANARY, &true_mock_delegate, true},

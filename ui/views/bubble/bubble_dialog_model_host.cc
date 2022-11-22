@@ -908,8 +908,8 @@ BubbleDialogModelHost::FindDialogModelHostField(View* view) {
 
 View* BubbleDialogModelHost::GetTargetView(
     const DialogModelHostField& field_view_info) {
-  return field_view_info.focusable_view ? field_view_info.focusable_view
-                                        : field_view_info.field_view;
+  return field_view_info.focusable_view ? field_view_info.focusable_view.get()
+                                        : field_view_info.field_view.get();
 }
 
 bool BubbleDialogModelHost::DialogModelLabelRequiresStyledLabel(

@@ -43,8 +43,8 @@ class OmniboxView {
   // state changes.  See OmniboxEditModel::OnAfterPossibleChange().
   struct StateChanges {
     // |old_text| and |new_text| are not owned.
-    const std::u16string* old_text;
-    const std::u16string* new_text;
+    raw_ptr<const std::u16string> old_text;
+    raw_ptr<const std::u16string> new_text;
     size_t new_sel_start;
     size_t new_sel_end;
     bool selection_differs;

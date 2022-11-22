@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -116,7 +117,7 @@ class WinKeyNetworkDelegateTest : public testing::Test {
     EXPECT_EQ(response_code, future.Get());
   }
 
-  MockWinNetworkFetcherFactory* mock_network_fetcher_factory_ = nullptr;
+  raw_ptr<MockWinNetworkFetcherFactory> mock_network_fetcher_factory_ = nullptr;
   std::unique_ptr<WinKeyNetworkDelegate> network_delegate_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

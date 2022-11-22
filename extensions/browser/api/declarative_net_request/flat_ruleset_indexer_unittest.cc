@@ -11,6 +11,7 @@
 
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
@@ -260,22 +261,22 @@ std::vector<const flat_rule::UrlRule*> GetAllRulesFromIndex(
 void VerifyIndexEquality(const std::vector<const IndexedRule*>& rules,
                          const flat_rule::UrlPatternIndex* index) {
   struct RulePair {
-    const IndexedRule* indexed_rule = nullptr;
-    const flat_rule::UrlRule* url_rule = nullptr;
+    raw_ptr<const IndexedRule> indexed_rule = nullptr;
+    raw_ptr<const flat_rule::UrlRule> url_rule = nullptr;
   };
 
   // Build a map from rule IDs to RulePair(s).
   std::map<uint32_t, RulePair> map;
 
   for (const auto* rule : rules) {
-    EXPECT_EQ(nullptr, map[rule->id].indexed_rule);
+    EXPECT_EQ(nullptr, map[rule->id].indexed_rule.get());
     map[rule->id].indexed_rule = rule;
   }
 
   std::vector<const flat_rule::UrlRule*> flat_rules =
       GetAllRulesFromIndex(index);
   for (const auto* rule : flat_rules) {
-    EXPECT_EQ(nullptr, map[rule->id()].url_rule);
+    EXPECT_EQ(nullptr, map[rule->id()].url_rule.get());
     map[rule->id()].url_rule = rule;
   }
 
@@ -294,8 +295,8 @@ void VerifyExtensionMetadata(
     const ::flatbuffers::Vector<flatbuffers::Offset<flat::UrlRuleMetadata>>*
         extension_metdata) {
   struct MetadataPair {
-    const IndexedRule* indexed_rule = nullptr;
-    const flat::UrlRuleMetadata* metadata = nullptr;
+    raw_ptr<const IndexedRule> indexed_rule = nullptr;
+    raw_ptr<const flat::UrlRuleMetadata> metadata = nullptr;
   };
 
   // Build a map from IDs to MetadataPair(s).
@@ -311,7 +312,7 @@ void VerifyExtensionMetadata(
 
   int previous_id = kMinValidID - 1;
   for (const auto* metadata : *extension_metdata) {
-    EXPECT_EQ(nullptr, map[metadata->id()].metadata);
+    EXPECT_EQ(nullptr, map[metadata->id()].metadata.get());
     map[metadata->id()].metadata = metadata;
 
     // Also verify that the metadata vector is sorted by ID.

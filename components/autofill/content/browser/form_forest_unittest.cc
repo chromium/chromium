@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1683,7 +1684,7 @@ class ForEachInSetDifferenceTest
   class Dummy {
    public:
     size_t val = 0;
-    size_t* num_equals_calls = nullptr;
+    raw_ptr<size_t> num_equals_calls = nullptr;
   };
 
   std::vector<Dummy> ToDummies(const std::vector<size_t>& vec) {

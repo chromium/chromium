@@ -23,6 +23,12 @@ cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
 ServiceProcessState::state_
 
+# Populated manually - used with gmock Field() that expects a raw pointer.
+base::Frame::module
+
+# Populated manually - requires a rewrite in a generated file
+gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
+
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
 DownloadItemView::review_button_
@@ -302,6 +308,7 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 # Populated manually - to avoid out-of-line destructor
 base::LockFreeAddressHashSet::Node::next
 gpu::gles2::TextureManager::DoTexSubImageArguments::pixels
+gpu::gles2::TextureManager::DoTexImageArguments::pixels
 
 # Populated manually - on-stack pointer + a large number of non-PA pointees
 base::AutoReset::scoped_variable_

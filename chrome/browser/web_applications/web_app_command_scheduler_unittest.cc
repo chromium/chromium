@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -32,7 +33,7 @@ class WebAppCommandSchedulerTest : public WebAppTest {
   }
 
  private:
-  FakeWebAppProvider* provider_;
+  raw_ptr<FakeWebAppProvider> provider_;
 };
 
 TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {

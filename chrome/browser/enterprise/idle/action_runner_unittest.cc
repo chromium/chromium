@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/idle/action_runner.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/enterprise/idle/action.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,7 +17,7 @@ namespace enterprise_idle {
 namespace {
 
 struct RunEntry {
-  Profile* profile;
+  raw_ptr<Profile> profile;
   base::flat_set<std::string> action_names;
 };
 

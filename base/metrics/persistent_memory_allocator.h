@@ -903,7 +903,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // The underlying object that does the actual allocation of memory. Its
   // lifetime must exceed that of all DelayedPersistentAllocation objects
   // that use it.
-  PersistentMemoryAllocator* const allocator_;
+  const raw_ptr<PersistentMemoryAllocator> allocator_;
 
   // The desired type and size of the allocated segment plus the offset
   // within it for the defined request.
@@ -918,7 +918,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // stored once the allocation is complete. If multiple delayed allocations
   // share the same pointer then an allocation on one will amount to an
   // allocation for all.
-  volatile std::atomic<Reference>* const reference_;
+  const raw_ptr<volatile std::atomic<Reference>> reference_;
 
   // No DISALLOW_COPY_AND_ASSIGN as it's okay to copy/move these objects.
 };

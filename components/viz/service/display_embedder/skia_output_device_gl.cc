@@ -109,7 +109,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   int alpha_bits = 0;
   glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
   gr_context->resetContext(kRenderTarget_GrGLBackendState);
-  const auto* version = current_gl->Version;
+  const auto* version = current_gl->Version.get();
   if (version->is_desktop_core_profile) {
     glGetFramebufferAttachmentParameterivEXT(
         GL_FRAMEBUFFER, GL_BACK_LEFT, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,

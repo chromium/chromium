@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -42,7 +43,7 @@ class OnDeviceModelUpdateListenerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  OnDeviceModelUpdateListener* listener_;
+  raw_ptr<OnDeviceModelUpdateListener> listener_;
 };
 
 TEST_F(OnDeviceModelUpdateListenerTest, OnHeadModelUpdate) {

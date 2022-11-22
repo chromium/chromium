@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -46,8 +47,8 @@ class HoverListView : public views::View {
 
  private:
   struct ListItemViews {
-    WebAuthnHoverButton* item_view;
-    views::Separator* separator_view;
+    raw_ptr<WebAuthnHoverButton> item_view;
+    raw_ptr<views::Separator> separator_view;
   };
 
   void AppendListItemView(const ui::ImageModel& icon,

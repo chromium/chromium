@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_PROFILE_MANAGER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_PROFILE_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +26,7 @@ class KidsProfileManager {
     bool GetBool() const;
 
    private:
-    KidsProfileManager* manager_;
+    raw_ptr<KidsProfileManager> manager_;
     base::StringPiece property_path_;
   };
 
@@ -40,6 +41,7 @@ class KidsProfileManager {
               base::StringPiece gaiaID_property_path,
               base::StringPiece profileURL_property_path,
               base::StringPiece imageURL_property_path);
+    ~Custodian();
     void Clear();
     void Update(const kids_chrome_management::FamilyMember& family_member);
 
@@ -55,6 +57,7 @@ class KidsProfileManager {
   KidsProfileManager(PrefService& pref_service,
 
                      Profile& profile);
+  ~KidsProfileManager();
   void UpdateChildAccountStatus(bool is_child_account);
   bool IsChildAccountStatusKnown() const;
   bool IsChildAccount() const;

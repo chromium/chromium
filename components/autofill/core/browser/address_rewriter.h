@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
@@ -28,7 +29,7 @@ class AddressRewriter {
 
  private:
   // A handle to the internal rewrite rules this instance is using.
-  const void* impl_ = nullptr;
+  raw_ptr<const void> impl_ = nullptr;
 };
 
 }  // namespace autofill

@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -167,7 +168,7 @@ class ItemSuggestCache {
   // List of callbacks to run when results are updated.
   OnResultsCallbackList on_results_callback_list_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

@@ -4,6 +4,7 @@
 
 #include "content/browser/client_hints/client_hints.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -282,7 +283,7 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
     std::string description;
     absl::optional<std::string> origin_trial_token;
     std::string accept_ch_str;
-    FrameTreeNode* frame_tree_node;
+    raw_ptr<FrameTreeNode> frame_tree_node;
     absl::optional<ClientHintsVector> expect_hints;
     ClientHintsVector expect_commit_hints;
   } tests[] = {

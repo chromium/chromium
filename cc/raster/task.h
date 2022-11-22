@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 
@@ -131,8 +132,8 @@ struct CC_EXPORT TaskGraph {
     Edge(const Task* task, Task* dependent)
         : task(task), dependent(dependent) {}
 
-    const Task* task;
-    Task* dependent;
+    raw_ptr<const Task> task;
+    raw_ptr<Task> dependent;
   };
 
   TaskGraph();

@@ -469,7 +469,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
     base::OneShotTimer throttle_timeout_;
 
-    RenderWidgetHostViewAndroid* rwhva_;
+    raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
   };
 
   bool ShouldReportAllRootScrolls();

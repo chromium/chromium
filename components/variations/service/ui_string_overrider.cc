@@ -32,7 +32,7 @@ int UIStringOverrider::GetResourceIndex(uint32_t hash) {
   if (!num_resources_)
     return -1;
   const uint32_t* end = resource_hashes_ + num_resources_;
-  const uint32_t* element = std::lower_bound(resource_hashes_, end, hash);
+  const uint32_t* element = std::lower_bound(resource_hashes_.get(), end, hash);
   if (element == end || *element != hash)
     return -1;
   return resource_indices_[element - resource_hashes_];

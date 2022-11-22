@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
@@ -124,7 +125,7 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
  private:
-  MockIdleTimeProvider* time_provider_ = nullptr;
+  raw_ptr<MockIdleTimeProvider> time_provider_ = nullptr;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest> scoped_idle_provider_;
 };

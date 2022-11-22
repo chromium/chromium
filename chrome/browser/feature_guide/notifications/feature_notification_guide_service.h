@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
@@ -77,7 +78,7 @@ class FeatureNotificationGuideService : public KeyedService,
     virtual ~Delegate();
 
    private:
-    FeatureNotificationGuideService* service_{nullptr};
+    raw_ptr<FeatureNotificationGuideService> service_{nullptr};
   };
 
   using NotificationDataCallback = base::OnceCallback<void(

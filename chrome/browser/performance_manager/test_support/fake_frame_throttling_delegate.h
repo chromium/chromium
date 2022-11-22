@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_FRAME_THROTTLING_DELEGATE_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_FRAME_THROTTLING_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
 namespace performance_manager {
@@ -19,7 +20,7 @@ class FakeFrameThrottlingDelegate
   explicit FakeFrameThrottlingDelegate(bool* throttling_enabled);
   ~FakeFrameThrottlingDelegate() override = default;
 
-  bool* throttling_enabled_;
+  raw_ptr<bool> throttling_enabled_;
 };
 
 }  // namespace performance_manager

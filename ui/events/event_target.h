@@ -113,7 +113,7 @@ class EVENTS_EXPORT EventTarget {
 
   // A handler with a priority.
   struct PrioritizedHandler {
-    EventHandler* handler = nullptr;
+    raw_ptr<EventHandler> handler = nullptr;
     Priority priority = Priority::kDefault;
 
     bool operator<(const PrioritizedHandler& ph) const {

@@ -82,7 +82,7 @@ class DependentIterator {
 
     // Now find the node for the dependent of this edge.
     auto it = base::ranges::find(graph_->nodes,
-                                 graph_->edges[current_index_].dependent,
+                                 graph_->edges[current_index_].dependent.get(),
                                  &TaskGraph::Node::task);
     DCHECK(it != graph_->nodes.end());
     current_node_ = &(*it);
@@ -178,7 +178,7 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (base::Contains(task_namespace.running_tasks, node.task,
+    if (base::Contains(task_namespace.running_tasks, node.task.get(),
                        &CategorizedTask::second)) {
       continue;
     }
@@ -208,12 +208,12 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (base::Contains(task_namespace.running_tasks, node.task,
+    if (base::Contains(task_namespace.running_tasks, node.task.get(),
                        &CategorizedTask::second)) {
       continue;
     }
 
-    DCHECK(!base::Contains(task_namespace.completed_tasks, node.task));
+    DCHECK(!base::Contains(task_namespace.completed_tasks, node.task.get()));
     node.task->state().DidCancel();
     task_namespace.completed_tasks.push_back(node.task);
   }

@@ -2687,7 +2687,7 @@ class DOMMessageQueue::MessageObserver : public WebContentsObserver {
     queue_->OnBackingWebContentsDestroyed(this);
   }
 
-  DOMMessageQueue* queue_;
+  raw_ptr<DOMMessageQueue> queue_;
 };
 
 DOMMessageQueue::DOMMessageQueue() {

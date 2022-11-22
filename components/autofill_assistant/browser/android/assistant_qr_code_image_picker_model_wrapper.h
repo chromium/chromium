@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/android/assistant_qr_code_native_delegate.h"
 
 namespace autofill_assistant {
@@ -30,7 +31,7 @@ class AssistantQrCodeImagePickerModelWrapper {
       const std::string& open_settings_button_text) const;
 
  private:
-  JNIEnv* jni_env_;
+  raw_ptr<JNIEnv> jni_env_;
   // Java-side AssistantQrCodeImagePickerModelWrapper object.
   base::android::ScopedJavaGlobalRef<jobject>
       java_assistant_image_picker_model_wrapper_;

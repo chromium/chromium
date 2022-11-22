@@ -15,6 +15,7 @@
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -160,9 +161,9 @@ struct SurfaceControlMethods {
   void InitWithStubs() {
     struct TransactionStub {
       ASurfaceTransaction_OnComplete on_complete = nullptr;
-      void* on_complete_ctx = nullptr;
+      raw_ptr<void> on_complete_ctx = nullptr;
       ASurfaceTransaction_OnCommit on_commit = nullptr;
-      void* on_commit_ctx = nullptr;
+      raw_ptr<void> on_commit_ctx = nullptr;
     };
 
     ASurfaceTransaction_createFn = []() {

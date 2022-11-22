@@ -131,8 +131,8 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
 // Represents target of an IPC (render frame, ServiceWorker or render process).
 struct ExtensionMessagePort::IPCTarget {
-  content::RenderProcessHost* render_process_host;
-  content::RenderFrameHost* render_frame_host;
+  raw_ptr<content::RenderProcessHost> render_process_host;
+  raw_ptr<content::RenderFrameHost> render_frame_host;
   int worker_thread_id;
 };
 

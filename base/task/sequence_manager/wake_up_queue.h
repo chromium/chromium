@@ -87,7 +87,7 @@ class BASE_EXPORT WakeUpQueue {
 
   struct ScheduledWakeUp {
     WakeUp wake_up;
-    internal::TaskQueueImpl* queue;
+    raw_ptr<internal::TaskQueueImpl> queue;
 
     bool operator>(const ScheduledWakeUp& other) const {
       return wake_up.latest_time() > other.wake_up.latest_time();

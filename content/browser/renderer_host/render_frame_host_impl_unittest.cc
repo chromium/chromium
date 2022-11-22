@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -708,7 +709,7 @@ class TestWebAuthnContentBrowserClientImpl : public ContentBrowserClient {
   }
 
  private:
-  TestWebAuthenticationDelegate* delegate_;
+  raw_ptr<TestWebAuthenticationDelegate> delegate_;
 };
 
 class RenderFrameHostImplWebAuthnTest : public RenderFrameHostImplTest {
@@ -729,7 +730,7 @@ class RenderFrameHostImplWebAuthnTest : public RenderFrameHostImplTest {
   }
 
  protected:
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
   std::unique_ptr<TestWebAuthnContentBrowserClientImpl> browser_client_;
   std::unique_ptr<TestWebAuthenticationDelegate> webauthn_delegate_ =
       std::make_unique<TestWebAuthenticationDelegate>();

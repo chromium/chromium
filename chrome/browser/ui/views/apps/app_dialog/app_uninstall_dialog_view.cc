@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -110,7 +111,7 @@ class UninstallCheckboxView : public views::View,
   views::Checkbox* checkbox() { return checkbox_; }
 
  private:
-  views::Checkbox* checkbox_;
+  raw_ptr<views::Checkbox> checkbox_;
   std::unique_ptr<CheckboxTargeter> checkbox_targeter_;
 };
 

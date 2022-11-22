@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -81,17 +82,17 @@ class PrivateAggregationManagerImplTest : public testing::Test {
       : budgeter_(new testing::StrictMock<MockPrivateAggregationBudgeter>()),
         host_(new testing::StrictMock<MockPrivateAggregationHost>()),
         aggregation_service_(new testing::StrictMock<MockAggregationService>()),
-        manager_(base::WrapUnique(budgeter_),
-                 base::WrapUnique(host_),
-                 base::WrapUnique(aggregation_service_)) {}
+        manager_(base::WrapUnique(budgeter_.get()),
+                 base::WrapUnique(host_.get()),
+                 base::WrapUnique(aggregation_service_.get())) {}
 
  protected:
   BrowserTaskEnvironment task_environment_;
 
   // Keep pointers around for EXPECT_CALL.
-  MockPrivateAggregationBudgeter* budgeter_;
-  MockPrivateAggregationHost* host_;
-  MockAggregationService* aggregation_service_;
+  raw_ptr<MockPrivateAggregationBudgeter> budgeter_;
+  raw_ptr<MockPrivateAggregationHost> host_;
+  raw_ptr<MockAggregationService> aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
 };

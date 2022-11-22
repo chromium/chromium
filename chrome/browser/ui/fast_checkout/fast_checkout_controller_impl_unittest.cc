@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -53,7 +54,7 @@ class TestFastCheckoutControllerImpl : public FastCheckoutControllerImpl {
   FastCheckoutView* GetOrCreateView() override { return view_; }
 
  private:
-  FastCheckoutView* view_;
+  raw_ptr<FastCheckoutView> view_;
 };
 
 }  // namespace

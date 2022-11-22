@@ -1979,7 +1979,7 @@ class WindowObserverTest : public WindowTest,
 
   struct WindowBoundsInfo {
     int changed_count = 0;
-    Window* window = nullptr;
+    raw_ptr<Window> window = nullptr;
     gfx::Rect old_bounds;
     gfx::Rect new_bounds;
     ui::PropertyChangeReason reason =
@@ -1988,27 +1988,27 @@ class WindowObserverTest : public WindowTest,
 
   struct WindowOpacityInfo {
     int changed_count = 0;
-    Window* window = nullptr;
+    raw_ptr<Window> window = nullptr;
     ui::PropertyChangeReason reason =
         ui::PropertyChangeReason::NOT_FROM_ANIMATION;
   };
 
   struct WindowTargetTransformChangingInfo {
     int changed_count = 0;
-    Window* window = nullptr;
+    raw_ptr<Window> window = nullptr;
     gfx::Transform new_transform;
   };
 
   struct WindowTransformedInfo {
     int changed_count = 0;
-    Window* window = nullptr;
+    raw_ptr<Window> window = nullptr;
     ui::PropertyChangeReason reason =
         ui::PropertyChangeReason::NOT_FROM_ANIMATION;
   };
 
   struct CountAndWindow {
     int count = 0;
-    Window* window = nullptr;
+    raw_ptr<Window> window = nullptr;
   };
 
   WindowObserverTest() = default;
@@ -2379,7 +2379,7 @@ TEST_F(WindowObserverTest, WindowAlphaShapeChanged) {
   shape->emplace_back(0, 0, 10, 20);
 
   EXPECT_EQ(0, alpha_shape_info().count);
-  EXPECT_EQ(nullptr, alpha_shape_info().window);
+  EXPECT_EQ(nullptr, alpha_shape_info().window.get());
   window->layer()->SetAlphaShape(std::move(shape));
   EXPECT_EQ(1, alpha_shape_info().count);
   EXPECT_EQ(window.get(), alpha_shape_info().window);

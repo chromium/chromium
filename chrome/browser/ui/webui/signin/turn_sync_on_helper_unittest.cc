@@ -278,7 +278,7 @@ class FakePolicyService : public policy::MockPolicyService {
   }
 
  private:
-  policy::PolicyService::ProviderUpdateObserver* observer_ = nullptr;
+  raw_ptr<policy::PolicyService::ProviderUpdateObserver> observer_ = nullptr;
 };
 
 std::unique_ptr<KeyedService> BuildMockSyncService(

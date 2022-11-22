@@ -87,7 +87,7 @@ class MetadataWriter {
       const raw_ptr<const UkmMetricHash> metrics{nullptr};
       const size_t metrics_size{0};
     };
-    const EventAndMetrics* const events{nullptr};
+    const raw_ptr<const EventAndMetrics> events{nullptr};
     const size_t events_size{0};
   };
 

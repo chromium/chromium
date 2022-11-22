@@ -37,7 +37,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents = capture_params.web_contents;
   content::RenderFrameHost* render_frame_host =
-      capture_params.render_frame_host ? capture_params.render_frame_host
+      capture_params.render_frame_host ? capture_params.render_frame_host.get()
                                        : web_contents->GetPrimaryMainFrame();
   if (policy_ && !policy_->SupportedForContents(web_contents)) {
     std::move(callback).Run(CaptureStatus::kContentUnsupported, {});

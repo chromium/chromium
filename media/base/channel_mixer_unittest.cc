@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -87,7 +88,7 @@ struct ChannelMixerTestData {
   int input_channels;
   ChannelLayout output_layout;
   int output_channels;
-  const float* channel_values;
+  raw_ptr<const float> channel_values;
   int num_channel_values;
   float scale;
 };

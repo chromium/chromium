@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
@@ -26,7 +27,7 @@ struct VIEWS_EXPORT ChildLayout {
 
   std::string ToString() const;
 
-  View* child_view = nullptr;
+  raw_ptr<View> child_view = nullptr;
   bool visible = false;
   gfx::Rect bounds;
   SizeBounds available_size;

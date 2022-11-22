@@ -184,7 +184,7 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
 
   // Used for testing to access the file writer having to go through the
   // internal |file_writer_lock_|.
-  MockAudioDebugFileWriter* mock_audio_file_writer_;
+  raw_ptr<MockAudioDebugFileWriter> mock_audio_file_writer_;
 
   std::vector<base::FilePath> paths_;
 };

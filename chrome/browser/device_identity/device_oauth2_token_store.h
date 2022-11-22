@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -86,7 +87,7 @@ class DeviceOAuth2TokenStore {
   Observer* observer() { return observer_; }
 
  private:
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_STORE_H_

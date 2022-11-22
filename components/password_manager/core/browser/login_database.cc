@@ -181,11 +181,11 @@ enum DatabaseInitError {
 // Struct to hold table builder for "logins", "insecure_credentials",
 // "sync_entities_metadata", and "sync_model_metadata" tables.
 struct SQLTableBuilders {
-  SQLTableBuilder* logins;
-  SQLTableBuilder* insecure_credentials;
-  SQLTableBuilder* password_notes;
-  SQLTableBuilder* sync_entities_metadata;
-  SQLTableBuilder* sync_model_metadata;
+  raw_ptr<SQLTableBuilder> logins;
+  raw_ptr<SQLTableBuilder> insecure_credentials;
+  raw_ptr<SQLTableBuilder> password_notes;
+  raw_ptr<SQLTableBuilder> sync_entities_metadata;
+  raw_ptr<SQLTableBuilder> sync_model_metadata;
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {

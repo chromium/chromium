@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -121,7 +122,7 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
     host_ = std::make_unique<ThirdPartyHostAuthenticator>(
         base::BindRepeating(&V2Authenticator::CreateForHost, host_cert_,
                             key_pair_),
-        base::WrapUnique(token_validator_));
+        base::WrapUnique(token_validator_.get()));
     client_ = std::make_unique<ThirdPartyClientAuthenticator>(
         base::BindRepeating(&V2Authenticator::CreateForClient),
         base::BindRepeating(&FakeTokenFetcher::FetchThirdPartyToken,
@@ -129,7 +130,7 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
   }
 
   FakeTokenFetcher token_fetcher_;
-  FakeTokenValidator* token_validator_;
+  raw_ptr<FakeTokenValidator> token_validator_;
 };
 
 TEST_F(ThirdPartyAuthenticatorTest, SuccessfulAuth) {

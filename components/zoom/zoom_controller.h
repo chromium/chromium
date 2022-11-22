@@ -84,7 +84,7 @@ class ZoomController : public content::WebContentsObserver,
           new_zoom_level(new_zoom_level),
           zoom_mode(zoom_mode),
           can_show_bubble(can_show_bubble) {}
-    content::WebContents* web_contents;
+    raw_ptr<content::WebContents> web_contents;
     double old_zoom_level;
     double new_zoom_level;
     ZoomController::ZoomMode zoom_mode;

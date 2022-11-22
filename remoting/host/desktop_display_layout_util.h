@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/proto/control.pb.h"
 
 namespace remoting {
@@ -15,7 +16,7 @@ namespace remoting {
 // platform-specific representation of the display.
 struct VideoTrackLayoutWithContext {
   protocol::VideoTrackLayout layout;
-  void* context;
+  raw_ptr<void> context;
 };
 
 struct DisplayLayoutDiff {

@@ -82,7 +82,8 @@ class ScopedFakeAshProxy : public AshProxy {
 
   DisplayId primary_display_id_ = -1;
   std::vector<display::Display> displays_;
-  mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver_ = nullptr;
+  raw_ptr<mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>> receiver_ =
+      nullptr;
 
   base::test::TestFuture<ScreenshotRequest> screenshot_request_;
 

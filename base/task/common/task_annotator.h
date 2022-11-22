@@ -156,7 +156,7 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
 
   // For tracking task duration
-  const TickClock* tick_clock_;  // Not owned.
+  raw_ptr<const TickClock> tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
 
   // Tracing variables.
@@ -173,7 +173,7 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
   PendingTask& pending_task_;
-  TaskAnnotator* task_annotator_;
+  raw_ptr<TaskAnnotator> task_annotator_;
 };
 
 }  // namespace base

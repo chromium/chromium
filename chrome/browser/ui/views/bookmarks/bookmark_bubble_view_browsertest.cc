@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -90,7 +91,7 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  commerce::MockShoppingService* mock_shopping_service_;
+  raw_ptr<commerce::MockShoppingService> mock_shopping_service_;
   base::test::ScopedFeatureList test_features_;
 };
 

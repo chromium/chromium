@@ -105,7 +105,7 @@ class StateStore {
   raw_ptr<Profile> profile_;
 
   // A read-only view on the profile's incidents_sent preference.
-  const base::Value::Dict* incidents_sent_ = nullptr;
+  raw_ptr<const base::Value::Dict> incidents_sent_ = nullptr;
 
 #if DCHECK_IS_ON()
   // True when a Transaction instance is outstanding.

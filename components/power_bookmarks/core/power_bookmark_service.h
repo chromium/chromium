@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -122,7 +123,7 @@ class PowerBookmarkService : public KeyedService,
   void BookmarkModelChanged() override {}
 
  private:
-  bookmarks::BookmarkModel* model_;
+  raw_ptr<bookmarks::BookmarkModel> model_;
   base::SequenceBound<PowerBookmarkBackend> backend_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

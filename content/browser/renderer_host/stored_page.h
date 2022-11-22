@@ -8,6 +8,7 @@
 #include <set>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/browser/site_instance_group.h"
 #include "content/public/browser/site_instance.h"
@@ -122,7 +123,7 @@ class StoredPage : public SiteInstanceGroup::Observer {
   // we're restoring a page from the back-forward cache.
   blink::mojom::PageRestoreParamsPtr page_restore_params_;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace content

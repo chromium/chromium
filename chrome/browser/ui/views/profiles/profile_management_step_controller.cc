@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -199,7 +200,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   }
 
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<content::WebContents> contents_;
   absl::optional<SkColor> profile_color_;
   FinishFlowCallback finish_flow_callback_;

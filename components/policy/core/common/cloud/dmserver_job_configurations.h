@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -29,7 +30,7 @@ class CloudPolicyClient;
 // Struct containing the result data for a given job.
 struct DMServerJobResult {
   // Unowned pointer the return value of `DeviceManagementService::CreateJob`.
-  const DeviceManagementService::Job* job = nullptr;
+  raw_ptr<const DeviceManagementService::Job> job = nullptr;
 
   // net::Error value cast to int.
   int net_error = 0;

@@ -5,6 +5,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -221,9 +222,9 @@ class FirstPartySetsPolicyServiceTest
  private:
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::test::ScopedFeatureList features_;
-  FirstPartySetsPolicyService* service_;
+  raw_ptr<FirstPartySetsPolicyService> service_;
 };
 
 TEST_F(FirstPartySetsPolicyServiceTest, IsSiteInManagedSet_WithoutConfig) {

@@ -331,7 +331,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       // RasterDecoder uses the shared context.
       use_virtualized_gl_context_ = false;
 
-      gr_shader_cache_ = params.gr_shader_cache;
+      gr_shader_cache_ = params.gr_shader_cache.get();
 
       if (!context_state_ ||
           !context_state_->MakeCurrent(nullptr, /*needs_gl=*/true)) {

@@ -264,7 +264,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         : mode(mode), packet(packet) {}
     PacketToWrite(IoMode mode, int rv) : mode(mode), packet(nullptr), rv(rv) {}
     IoMode mode;
-    quic::QuicReceivedPacket* packet;
+    raw_ptr<quic::QuicReceivedPacket> packet;
     int rv;
   };
 
