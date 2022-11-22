@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -286,5 +286,26 @@ suite('WallpaperGridItemTest', function() {
     assertEquals(
         'false', wallpaperGridItemElement.getAttribute('aria-disabled'),
         'disabled false sets aria-disabled attribute false');
+  });
+
+  test('collage shows up to four images', async () => {
+    const src: Url[] =
+        [0, 1, 2, 3, 4, 5].map(i => ({url: createSvgDataUrl(`${i}`)}));
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        2, wallpaperGridItemElement.shadowRoot!.querySelectorAll('img').length,
+        'only 2 images shown by default');
+
+    wallpaperGridItemElement.collage = true;
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    const images = Array.from(
+        wallpaperGridItemElement.shadowRoot!.querySelectorAll('img'));
+    assertEquals(4, images.length, 'collage shows 4 images');
+    assertDeepEquals(
+        src.slice(0, 4).map(({url}) => url), images.map(img => img.src),
+        'first four image urls are shown');
   });
 });

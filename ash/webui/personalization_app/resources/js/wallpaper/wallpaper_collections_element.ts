@@ -29,6 +29,7 @@ import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} fro
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {initializeBackdropData} from './wallpaper_controller.js';
+import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const kGooglePhotosCollectionId = 'google_photos_';
@@ -72,11 +73,13 @@ interface OnlineTile {
 
 type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile;
 
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: Tile,
-  };
-}
+/**
+ * Before switching entirely to WallpaperGridItem, have to deal with a mix of
+ * keyboard and mouse events and a custom WallpaperGridItemSelected event.
+ */
+type OnCollectionSelectedEvent =
+    (MouseEvent|KeyboardEvent|WallpaperGridItemSelectedEvent)&
+    {model: {item: Tile}};
 
 function collectionsError(
     collections: WallpaperCollection[]|null,
@@ -436,16 +439,14 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.set('tiles_.0', tile);
   }
 
-  private getClassForTile_(tile: LocalTile|OnlineTile|null): string {
+  private getClassForTile_(tile: OnlineTile|null): string {
     if (!tile) {
       return '';
     }
+    assert(this.isOnlineTile_(tile), 'only online tile allowed');
     const classes = ['photo-inner-container'];
     if (tile.disabled) {
       classes.push('photo-loading-failure');
-    }
-    if (this.isLocalTile_(tile)) {
-      classes.push('local');
     }
     return classes.join(' ');
   }
@@ -477,9 +478,18 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /** Navigate to the correct route based on user selection. */
-  private onCollectionSelected_(e: RepeaterEvent) {
+  private onCollectionSelected_(e: OnCollectionSelectedEvent) {
     const tile = e.model.item;
-    if (!isSelectionEvent(e) || !this.isSelectableTile_(tile)) {
+    assert(!!tile, 'tile must be set to select');
+    if (!this.isSelectableTile_(tile)) {
+      // Ignore all events from disabled/loading tiles.
+      return;
+    }
+    if (!(e instanceof WallpaperGridItemSelectedEvent) &&
+        !isSelectionEvent(e)) {
+      // While refactoring is in progress, may receive either a
+      // `WallpaperGridItemSelectedEvent` or a mouse/keyboard selection event.
+      // If not one of those two event types, ignore it and let it propagate.
       return;
     }
     switch (tile.id) {

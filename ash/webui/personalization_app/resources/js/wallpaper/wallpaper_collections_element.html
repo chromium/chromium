@@ -125,9 +125,8 @@
   }
 
   .photo-gradient-mask {
-    background: linear-gradient(
-      rgba(var(--google-grey-900-rgb), 0),
-      rgba(var(--google-grey-900-rgb), 55%));
+    background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 55%));
     border-radius: 0 0 12px 12px;
     height: 50%;
     left: 0;
@@ -142,6 +141,26 @@
     display: none;
   }
 
+  .outer-container {
+    height: calc(var(--personalization-app-grid-item-height) +
+      var(--personalization-app-grid-item-spacing));
+    /* Media queries in trusted and untrusted code will resize to 25% at
+     * correct widths.  Subtract 0.34px to fix subpixel rounding issues with
+     * iron-list. This makes sure all photo containers on a row add up to at
+     * least 1px smaller than the parent width.*/
+    width: calc(100% / 3 - 0.34px);
+  }
+
+  @media(min-width: 720px) {
+    .outer-container {
+      width: calc(100% / 4 - 0.25px);
+    }
+  }
+
+  wallpaper-grid-item {
+    --wallpaper-grid-item-width: 100%;
+  }
+
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
@@ -152,67 +171,87 @@
       items="[[tiles_]]"
       role="listbox">
     <template>
-      <div class="photo-container">
+      <div class="outer-container">
         <template is="dom-if" if="[[isLoadingTile_(item)]]" restamp>
-          <div aria-disabled="true"
-              aria-label="$i18n{ariaLabelLoading}"
-              aria-posinset$="[[getAriaIndex_(index)]]"
-              class="photo-inner-container placeholder"
-              role="option"
-              style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
-              tabindex$="[[tabIndex]]">
+          <div class="photo-container">
+            <div aria-disabled="true"
+                aria-label="$i18n{ariaLabelLoading}"
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                class="photo-inner-container placeholder"
+                role="option"
+                style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
+                tabindex$="[[tabIndex]]">
+            </div>
           </div>
         </template>
         <template is="dom-if" if="[[isGooglePhotosTile_(item)]]">
-          <div aria-disabled$="[[getAriaDisabled_(item)]]"
-              aria-posinset$="[[getAriaIndex_(index)]]"
-              class="photo-inner-container google-photos"
-              on-click="onCollectionSelected_"
-              on-keypress="onCollectionSelected_"
-              role="option"
-              tabindex$="[[tabIndex]]">
-            <div class="photo-images-container photo-images-container-0">
-              <div class="photo-images-border"></div>
-              <img src="//personalization/images/google_photos.svg"
-                  aria-hidden="true">
+          <div class="photo-container">
+            <div aria-disabled$="[[getAriaDisabled_(item)]]"
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                class="photo-inner-container google-photos"
+                on-click="onCollectionSelected_"
+                on-keypress="onCollectionSelected_"
+                role="option"
+                tabindex$="[[tabIndex]]">
+              <div class="photo-images-container photo-images-container-0">
+                <div class="photo-images-border"></div>
+                <img src="//personalization/images/google_photos.svg"
+                    aria-hidden="true">
+              </div>
+              <div class="photo-text-container">
+                <iron-icon icon="personalization:managed"
+                    title$="$i18n{managedSetting}">
+                </iron-icon>
+                <p title$="[[item.name]]">[[item.name]]</p>
+              </div>
+              <div class="photo-gradient-mask"></div>
             </div>
-            <div class="photo-text-container">
-              <iron-icon icon="personalization:managed"
-                  title$="$i18n{managedSetting}">
-              </iron-icon>
-              <p title$="[[item.name]]">[[item.name]]</p>
-            </div>
-            <div class="photo-gradient-mask"></div>
           </div>
         </template>
-        <template is="dom-if" if="[[isLocalOrOnlineTile_(item)]]">
-          <div aria-disabled$="[[getAriaDisabled_(item)]]"
+        <template is="dom-if" if="[[isLocalTile_(item)]]">
+          <wallpaper-grid-item
               aria-posinset$="[[getAriaIndex_(index)]]"
-              class$="[[getClassForTile_(item)]]"
-              on-click="onCollectionSelected_"
-              on-keypress="onCollectionSelected_"
+              collage
+              disabled="[[!isSelectableTile_(item)]]"
+              index="[[index]]"
+              on-wallpaper-grid-item-selected="onCollectionSelected_"
+              primary-text="[[item.name]]"
               role="option"
+              secondary-text="[[item.count]]"
+              src="[[item.preview]]"
               tabindex$="[[tabIndex]]">
-            <div class$="[[getClassForImagesContainer_(item)]]">
-              <div class="photo-images-border"></div>
-              <template is="dom-repeat" items="[[item.preview]]" as="preview">
-                <img aria-hidden="true"
-                    auto-src="[[preview.url]]"
-                    class$="[[getClassForImg_(index, item)]]"
-                    clear-src
-                    data-collection-id$="[[item.id]]"
-                    is="cr-auto-img"
-                    on-error="onImgLoad_"
-                    on-load="onImgLoad_">
-              </template>
-            </div>
-            <div class="photo-text-container"
-                hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
-              <p title$="[[item.name]]">[[item.name]]</p>
-              <p title$="[[item.count]]">[[item.count]]</p>
-            </div>
-            <div class="photo-gradient-mask"
-                hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+          </wallpaper-grid-item>
+        </template>
+        <template is="dom-if" if="[[isOnlineTile_(item)]]">
+          <div class="photo-container">
+            <div aria-disabled$="[[getAriaDisabled_(item)]]"
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                class$="[[getClassForTile_(item)]]"
+                on-click="onCollectionSelected_"
+                on-keypress="onCollectionSelected_"
+                role="option"
+                tabindex$="[[tabIndex]]">
+              <div class$="[[getClassForImagesContainer_(item)]]">
+                <div class="photo-images-border"></div>
+                <template is="dom-repeat" items="[[item.preview]]" as="preview">
+                  <img aria-hidden="true"
+                      auto-src="[[preview.url]]"
+                      class$="[[getClassForImg_(index, item)]]"
+                      clear-src
+                      data-collection-id$="[[item.id]]"
+                      is="cr-auto-img"
+                      on-error="onImgLoad_"
+                      on-load="onImgLoad_">
+                </template>
+              </div>
+              <div class="photo-text-container"
+                  hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+                <p title$="[[item.name]]">[[item.name]]</p>
+                <p title$="[[item.count]]">[[item.count]]</p>
+              </div>
+              <div class="photo-gradient-mask"
+                  hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+              </div>
             </div>
           </div>
         </template>

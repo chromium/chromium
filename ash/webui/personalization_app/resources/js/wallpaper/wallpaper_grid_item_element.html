@@ -8,7 +8,7 @@
     /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
      * ensures all grid items in a row add up to at least 1px smaller than the
      * parent width. */
-    width: calc(100% / 3 - 0.34px);
+    width: var(--wallpaper-grid-item-width, calc(100% / 3 - 0.34px));
   }
 
   @media(min-width: 720px) {
@@ -16,7 +16,7 @@
       /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
        * ensures all grid items in a row add up to at least 1px smaller than the
        * parent width. */
-      width: calc(100% / 4 - 0.25px) !important;
+      width: var(--wallpaper-grid-item-width, calc(100% / 4 - 0.25px)) !important;
     }
   }
 
@@ -43,6 +43,7 @@
     box-sizing: border-box;
     cursor: pointer;
     display: flex;
+    flex-flow: row wrap;
     height: 100%;
     justify-content: center;
     overflow: hidden;
@@ -63,21 +64,33 @@
   }
 
   img {
-    border-radius: var(--personalization-app-grid-item-border-radius);
-    flex: 1 1 0;
-    height: 100%;
-    min-width: 50%;
     object-fit: cover;
+  }
+
+  :host(:not([collage])) img {
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    height: 100%;
     position: absolute;
     width: 100%;
   }
 
-  img:has(+ img) {
+  :host(:not([collage])) img:has(+ img) {
     clip-path: inset(0 50% 0 0);
   }
 
-  img+img {
+  :host(:not([collage])) img+img {
     clip-path: inset(0 0 0 50%);
+  }
+
+  :host([collage]) img {
+    flex: 1 1 0;
+    height: 100%;
+    min-width: 50%;
+  }
+
+  :host([collage]) img:first-of-type:nth-last-of-type(n+3),
+  :host([collage]) img:first-of-type:nth-last-of-type(n+3) ~ img {
+    height: 50%;
   }
 
   :host([aria-selected='true']) img {
@@ -165,7 +178,7 @@
 
 </style>
 <div class="item" style$="[[getItemPlaceholderAnimationDelay_(index)]]">
-  <template is="dom-repeat" items="[[getSrcArray_(src)]]">
+  <template is="dom-repeat" items="[[getSrcArray_(src, collage)]]">
     <img aria-hidden="true"
         auto-src="[[item.url]]"
         clear-src

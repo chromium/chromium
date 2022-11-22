@@ -9,17 +9,6 @@
  * import=chrome://resources/polymer/v3_0/paper-styles/color.js
  * #css_wrapper_metadata_end */
 
-/* Use !important to make sure there are no css ordering issues.
- * Subtract 0.25px to fix subpixel rounding issues with iron-list. This
- * makes sure all photo containers on a row add up to at least 1px smaller
- * than the parent width.*/
-
-@media (min-width: 720px) {
-  .photo-container {
-    width: calc(25% - 0.25px) !important;
-  }
-}
-
 main {
   height: 100%;
   width: 100%;

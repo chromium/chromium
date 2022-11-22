@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, kDefaultImageSymbol, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, kDefaultImageSymbol, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -114,19 +114,26 @@ suite('WallpaperCollectionsTest', function() {
     wallpaperCollectionsElement = initElement(WallpaperCollections);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertEquals(
-        'chrome://personalization/images/no_images.svg',
-        wallpaperCollectionsElement.shadowRoot!
-            .querySelector<HTMLImageElement>('.local img')
-            ?.src,
+    const localTile = wallpaperCollectionsElement.shadowRoot!
+                          .querySelector<WallpaperGridItem>(
+                              `${WallpaperGridItem.is}[collage]`);
+
+    assertTrue(!!localTile, 'local tile is present');
+
+    assertDeepEquals(
+        [{url: 'chrome://personalization/images/no_images.svg'}], localTile.src,
         'no local images present');
+
+    assertEquals(
+        loadTimeData.getString('myImagesLabel'), localTile.primaryText,
+        'correct local tile primary text');
 
     assertEquals(
         loadTimeData.getString('zeroImages'),
         wallpaperCollectionsElement.shadowRoot!
-            .querySelector<HTMLParagraphElement>(
-                '.local .photo-text-container p:last-child')
-            ?.textContent,
+            .querySelector<WallpaperGridItem>(
+                `${WallpaperGridItem.is}[collage]`)
+            ?.secondaryText,
         'no images text is displayed');
   });
 
@@ -139,19 +146,15 @@ suite('WallpaperCollectionsTest', function() {
     wallpaperCollectionsElement = initElement(WallpaperCollections);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertEquals(
-        'data:image/png;base64,qqqq',
-        wallpaperCollectionsElement.shadowRoot!
-            .querySelector<HTMLImageElement>('.local img')
-            ?.src,
-        'default image thumbnail present');
+    const localTile = wallpaperCollectionsElement.shadowRoot!
+                          .querySelector<WallpaperGridItem>(
+                              `${WallpaperGridItem.is}[collage]`);
 
-    assertEquals(
-        1,
-        wallpaperCollectionsElement.shadowRoot!
-            .querySelectorAll<HTMLImageElement>('.local img')
-            .length,
-        'only 1 local image preview');
+    assertTrue(!!localTile, 'local tile is present');
+
+    assertDeepEquals(
+        [{url: 'data:image/png;base64,qqqq'}], localTile.src,
+        'default image thumbnail present');
   });
 
   test('mixes local images in with default image thumbnail', async () => {
@@ -171,16 +174,18 @@ suite('WallpaperCollectionsTest', function() {
     wallpaperCollectionsElement = initElement(WallpaperCollections);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
+    const localTile = wallpaperCollectionsElement.shadowRoot!
+                          .querySelector<WallpaperGridItem>(
+                              `${WallpaperGridItem.is}[collage]`);
+
+    assertTrue(!!localTile, 'local tile is present');
+
     assertDeepEquals(
         [
-          'data:image/png;base64,qqqq',
-          'data:image/png;base64,asdf',
-          'data:image/png;base64,qwer',
+          {url: 'data:image/png;base64,qqqq'},
+          {url: 'data:image/png;base64,asdf'},
+          {url: 'data:image/png;base64,qwer'},
         ],
-        Array
-            .from(wallpaperCollectionsElement.shadowRoot
-                      ?.querySelectorAll<HTMLImageElement>('.local img')!)
-            .map(img => img.src),
-        'all three images are displayed');
+        localTile.src, 'all three images are displayed');
   });
 });
