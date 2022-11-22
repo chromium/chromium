@@ -4295,7 +4295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.Radio.PossibleWakeupTrigger.{ProtocolType}WriteAnnotationId"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2023-01-01">
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2023-02-22">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
