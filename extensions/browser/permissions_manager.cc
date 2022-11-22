@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -404,16 +405,10 @@ bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
   if (!util::CanWithholdPermissionsFromExtension(extension))
     return false;
 
-  // The extension can be affected if it currently has host permissions, or if
-  // it did and they are actively withheld.
-  return !extension.permissions_data()
-              ->active_permissions()
-              .effective_hosts()
-              .is_empty() ||
-         !extension.permissions_data()
-              ->withheld_permissions()
-              .effective_hosts()
-              .is_empty();
+  // The extension can be affected by runtime host permissions if it requests
+  // host permissions.
+  return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
+         !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
 }
 
 bool PermissionsManager::HasGrantedHostPermission(const Extension& extension,
