@@ -143,7 +143,6 @@ chromevox_es6_modules = [
   "common/role_type.js",
   "common/spannable.js",
   "common/tree_dumper.js",
-  "common/tts_base.js",
   "common/tts_interface.js",
   "common/tts_types.js",
   "learn_mode/learn_mode.js",

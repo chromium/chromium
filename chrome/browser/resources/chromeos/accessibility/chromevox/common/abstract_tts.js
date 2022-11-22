@@ -12,6 +12,15 @@ import {TtsInterface} from './tts_interface.js';
 import * as ttsTypes from './tts_types.js';
 
 /**
+ * @typedef {{
+ *     pitch: number,
+ *     rate: number,
+ *     volume: number,
+ * }}
+ */
+let PropertyValues;
+
+/**
  * Creates a new instance.
  * @implements {TtsInterface}
  */
@@ -23,39 +32,67 @@ export class AbstractTts {
      * Default value for TTS properties.
      * Note that these as well as the subsequent properties might be different
      * on different host platforms (like Chrome, Android, etc.).
-     * @type {{pitch : number,
-     *         rate: number,
-     *         volume: number}}
-     * @protected
+     * @protected {PropertyValues}
      */
-    this.propertyDefault = {'rate': 0.5, 'pitch': 0.5, 'volume': 0.5};
+    this.propertyDefault;
 
     /**
      * Min value for TTS properties.
-     * @type {{pitch : number,
-     *         rate: number,
-     *         volume: number}}
-     * @protected
+     * @protected {PropertyValues}
      */
-    this.propertyMin = {'rate': 0.0, 'pitch': 0.0, 'volume': 0.0};
+    this.propertyMin;
 
     /**
      * Max value for TTS properties.
-     * @type {{pitch : number,
-     *         rate: number,
-     *         volume: number}}
-     * @protected
+     * @protected {PropertyValues}
      */
-    this.propertyMax = {'rate': 1.0, 'pitch': 1.0, 'volume': 1.0};
+    this.propertyMax;
 
     /**
      * Step value for TTS properties.
-     * @type {{pitch : number,
-     *         rate: number,
-     *         volume: number}}
-     * @protected
+     * @protected {PropertyValues}
      */
-    this.propertyStep = {'rate': 0.1, 'pitch': 0.1, 'volume': 0.1};
+    this.propertyStep;
+
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
+    const pitchDefault = 1;
+    const pitchMin = 0.2;
+    const pitchMax = 2.0;
+    const pitchStep = 0.1;
+
+    const rateDefault = 1;
+    const rateMin = 0.2;
+    const rateMax = 5.0;
+    const rateStep = 0.1;
+
+    const volumeDefault = 1;
+    const volumeMin = 0.2;
+    const volumeMax = 1.0;
+    const volumeStep = 0.1;
+
+    this.propertyDefault = {
+      pitch: pitchDefault,
+      rate: rateDefault,
+      volume: volumeDefault,
+    };
+
+    this.propertyMin = {
+      pitch: pitchMin,
+      rate: rateMin,
+      volume: volumeMin,
+    };
+
+    this.propertyMax = {
+      pitch: pitchMax,
+      rate: rateMax,
+      volume: volumeMax,
+    };
+
+    this.propertyStep = {rate: rateStep, pitch: pitchStep, volume: volumeStep};
 
     if (AbstractTts.substitutionDictionaryRegexp_ === undefined) {
       // Create an expression that matches all words in the substitution

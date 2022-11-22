@@ -8,12 +8,12 @@
  */
 
 import {constants} from '../../common/constants.js';
+import {AbstractTts} from '../common/abstract_tts.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {CompositeTts} from '../common/composite_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {ChromeTtsBase} from '../common/tts_base.js';
 import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
 import * as ttsTypes from '../common/tts_types.js';
 
@@ -108,7 +108,7 @@ Utterance.nextUtteranceId_ = 1;
 /**
  * This class is the default implementation for TTS in the background context.
  */
-export class PrimaryTts extends ChromeTtsBase {
+export class PrimaryTts extends AbstractTts {
   constructor() {
     super();
 
