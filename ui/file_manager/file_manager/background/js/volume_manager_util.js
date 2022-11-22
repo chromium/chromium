@@ -41,7 +41,7 @@ volumeManagerUtil.TIMEOUT_STR_RESOLVE_ISOLATED_ENTRIES =
     'timeout(resolveIsolatedEntries)';
 
 /**
- * Throws an Error when the given error is not in
+ * Logs a warning message if the given error is not in
  * VolumeManagerCommon.VolumeError.
  *
  * @param {string} error Status string usually received from APIs.
@@ -53,7 +53,7 @@ volumeManagerUtil.validateError = error => {
     }
   }
 
-  throw new Error('Invalid mount error: ' + error);
+  console.warn(`Invalid mount error: ${error}`);
 };
 
 /**
