@@ -8,7 +8,8 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import 'chrome://resources/js/action_link.js';
 import './strings.m.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
 
@@ -213,7 +214,7 @@ function toggleDevDetails(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  addWebUIListener('update-crash-list', updateCrashList);
+  addWebUiListener('update-crash-list', updateCrashList);
   $('uploadCrashes').onclick = requestCrashUpload;
   $('showDevDetails').onclick = toggleDevDetails;
   requestCrashes();
