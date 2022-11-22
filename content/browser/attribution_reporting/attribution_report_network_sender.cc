@@ -65,12 +65,16 @@ void AttributionReportNetworkSender::SendReport(
                             is_debug_report, std::move(sent_callback)));
 }
 
-void AttributionReportNetworkSender::SendReport(AttributionDebugReport report) {
+void AttributionReportNetworkSender::SendReport(
+    AttributionDebugReport report,
+    DebugReportSentCallback callback) {
   GURL url = report.ReportURL();
   base::Value::List body = report.ReportBody();
-  SendReport(std::move(url), body,
-             base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
-                            base::Unretained(this)));
+  SendReport(
+      std::move(url), body,
+      base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
+                     base::Unretained(this),
+                     base::BindOnce(std::move(callback), std::move(report))));
 }
 
 void AttributionReportNetworkSender::SendReport(GURL url,
@@ -228,9 +232,13 @@ void AttributionReportNetworkSender::OnReportSent(
 }
 
 void AttributionReportNetworkSender::OnDebugReportSent(
+    base::OnceCallback<void(int status)> callback,
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
+  // HTTP statuses are positive; network errors are negative.
+  int status = headers ? headers->response_code() : (*it)->NetError();
   loaders_in_progress_.erase(it);
+  std::move(callback).Run(status);
 
   // TODO(crbug.com/1371970): Consider recording metric for debug report
   // sending.

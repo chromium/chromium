@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -1313,6 +1314,45 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     ClickRefreshButton();
     EXPECT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       VerboseDebugReport) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  absl::optional<AttributionDebugReport> report =
+      AttributionDebugReport::Create(
+          SourceBuilder().SetDebugReporting(true).Build(),
+          /*is_debug_cookie_set=*/true,
+          AttributionStorage::StoreSourceResult(
+              StorableSource::Result::kInternalError));
+  ASSERT_TRUE(report);
+
+  static constexpr char wait_script[] = R"(
+    const table = document.querySelector('#debugReportTable')
+        .shadowRoot.querySelector('tbody');
+
+    const url = 'https://report.test/.well-known/attribution-reporting/debug/verbose';
+
+    let obs = new MutationObserver((_, obs) => {
+      if (table.children.length === 1 &&
+          table.children[0].children.length >= 4 &&
+          table.children[0].children[1].innerText === url &&
+          table.children[0].children[2].innerText === 'HTTP 200' &&
+          table.children[0].children[3].innerText.includes('source-unknown-error')
+      ) {
+        obs.disconnect();
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+
+  manager()->NotifyDebugReportSent(*report, /*status=*/200, base::Time::Now());
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
 }  // namespace content

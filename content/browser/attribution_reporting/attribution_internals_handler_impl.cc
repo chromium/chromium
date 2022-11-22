@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -59,6 +60,8 @@ using SourceOrTrigger = ::attribution_internals::mojom::ClearedDebugKey::Type;
 using Empty = ::attribution_internals::mojom::Empty;
 using ReportStatus = ::attribution_internals::mojom::ReportStatus;
 using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
+
+using ::attribution_internals::mojom::WebUIDebugReport;
 
 attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
     absl::optional<uint64_t> debug_key) {
@@ -371,6 +374,30 @@ void AttributionInternalsHandlerImpl::OnReportSent(
   for (auto& observer : observers_) {
     observer->OnReportSent(web_report.Clone());
   }
+}
+
+void AttributionInternalsHandlerImpl::OnDebugReportSent(
+    const AttributionDebugReport& report,
+    int status,
+    base::Time time) {
+  if (observers_.empty())
+    return;
+
+  auto web_report = WebUIDebugReport::New();
+  web_report->url = report.ReportURL();
+  web_report->time = time.ToJsTime();
+  web_report->body =
+      SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true);
+
+  web_report->status =
+      status > 0
+          ? attribution_internals::mojom::DebugReportStatus::
+                NewHttpResponseCode(status)
+          : attribution_internals::mojom::DebugReportStatus::NewNetworkError(
+                net::ErrorToShortString(status));
+
+  for (auto& observer : observers_)
+    observer->OnDebugReportSent(web_report.Clone());
 }
 
 // TODO(crbug/1351843): Consider surfacing this error in devtools instead of

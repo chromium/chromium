@@ -77,6 +77,18 @@ struct WebUIReport {
   WebUIReportData data;
 };
 
+union DebugReportStatus {
+  int32 http_response_code;
+  string network_error;
+};
+
+struct WebUIDebugReport {
+  url.mojom.Url url;
+  double time;
+  string body;
+  DebugReportStatus status;
+};
+
 struct DebugKey {
   uint64 value;
 };
@@ -217,6 +229,9 @@ interface Observer {
 
   // Called when a report is sent, regardless of success.
   OnReportSent(WebUIReport report);
+
+  // Called when a verbose debug report is sent, regardless of success.
+  OnDebugReportSent(WebUIDebugReport report);
 
   // Called when a report is dropped from storage or prevented from being
   // created in the first place.

@@ -225,7 +225,9 @@ class FakeReportSender : public AttributionReportSender {
                                            /*http_response_code=*/200));
   }
 
-  void SendReport(AttributionDebugReport report) override {
+  void SendReport(AttributionDebugReport report,
+                  DebugReportSentCallback done) override {
+    std::move(done).Run(std::move(report), /*status=*/200);
     // TODO(crbug.com/1371970): Consider supporting debug reports in the
     // simulator.
   }

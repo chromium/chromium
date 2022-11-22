@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ClearedDebugKey, ClearedDebugKey_Type, FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {ClearedDebugKey, ClearedDebugKey_Type, FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
@@ -711,6 +711,69 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
   }
 }
 
+class DebugReport {
+  body: string;
+  url: string;
+  time: Date;
+  status: string;
+
+  constructor(mojo: WebUIDebugReport) {
+    this.body = mojo.body;
+    this.url = mojo.url.url;
+    this.time = new Date(mojo.time);
+
+    if (mojo.status.httpResponseCode !== undefined) {
+      this.status = `HTTP ${mojo.status.httpResponseCode}`;
+    } else if (mojo.status.networkError !== undefined) {
+      this.status = `Network error: ${mojo.status.networkError}`;
+    } else {
+      throw new Error('invalid DebugReportStatus union');
+    }
+  }
+}
+
+class DebugReportTableModel extends TableModel<DebugReport> {
+  debugReports: DebugReport[] = [];
+
+  constructor() {
+    super();
+
+    this.cols = [
+      new DateColumn<DebugReport>('Time', (e) => e.time),
+      new ValueColumn<DebugReport, string>('URL', (e) => e.url),
+      new ValueColumn<DebugReport, string>('Status', (e) => e.status),
+      new CodeColumn<DebugReport>('Body', (e) => e.body),
+    ];
+
+    // Sort by report time by default.
+    this.sortIdx = 0;
+
+    this.emptyRowText = 'No verbose debug reports.';
+  }
+
+  // TODO(apaseltiner): Style error rows like `ReportTableModel`
+
+  override getRows() {
+    return this.debugReports;
+  }
+
+  add(report: DebugReport) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.debugReports.length >= 1000) {
+      this.debugReports = [];
+    }
+
+    this.debugReports.push(report);
+    this.notifyRowsChanged();
+  }
+
+  clear() {
+    this.debugReports = [];
+    this.notifyRowsChanged();
+  }
+}
+
 abstract class Log {
   readonly timestamp: Date;
   readonly reportTo: string;
@@ -922,6 +985,8 @@ let logTableModel: LogTableModel|null = null;
 let aggregatableAttributionReportTableModel:
     AggregatableAttributionReportTableModel|null = null;
 
+let debugReportTableModel: DebugReportTableModel|null = null;
+
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
  * @param origin Origin to convert
@@ -1105,6 +1170,8 @@ function clearStorage() {
   aggregatableAttributionReportTableModel.clear();
   assert(logTableModel);
   logTableModel.clear();
+  assert(debugReportTableModel);
+  debugReportTableModel.clear();
   assert(pageHandler);
   pageHandler.clearStorage();
 }
@@ -1137,6 +1204,11 @@ class Observer implements ObserverInterface {
 
   onReportSent(mojo: WebUIReport) {
     addSentOrDroppedReport(mojo);
+  }
+
+  onDebugReportSent(mojo: WebUIDebugReport) {
+    assert(debugReportTableModel);
+    debugReportTableModel.add(new DebugReport(mojo));
   }
 
   onReportDropped(mojo: WebUIReport) {
@@ -1193,6 +1265,7 @@ document.addEventListener('DOMContentLoaded', function() {
       new AggregatableAttributionReportTableModel(
           showDebugAggregatableReports, sendAggregatableReports);
   logTableModel = new LogTableModel();
+  debugReportTableModel = new DebugReportTableModel();
 
   const tabBox = document.querySelector('cr-tab-box');
   assert(tabBox);
@@ -1213,6 +1286,9 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelector<HTMLElement>('#aggregatable-reports-tab'));
   installUnreadIndicator(
       logTableModel, document.querySelector<HTMLElement>('#logs-tab'));
+  installUnreadIndicator(
+      debugReportTableModel,
+      document.querySelector<HTMLElement>('#debug-reports-tab'));
 
   const refresh = document.querySelector('#refresh');
   assert(refresh);
@@ -1226,26 +1302,36 @@ document.addEventListener('DOMContentLoaded', function() {
           '#sourceTable');
   assert(sourceTable);
   sourceTable.setModel(sourceTableModel!);
+
   const triggerTable =
       document.querySelector<AttributionInternalsTableElement<Trigger>>(
           '#triggerTable');
   assert(triggerTable);
   triggerTable.setModel(triggerTableModel!);
+
   const reportTable =
       document.querySelector<AttributionInternalsTableElement<Report>>(
           '#reportTable');
   assert(reportTable);
   reportTable.setModel(eventLevelReportTableModel!);
+
   const aggregatableReportTable =
       document.querySelector<AttributionInternalsTableElement<Report>>(
           '#aggregatableReportTable');
   assert(aggregatableReportTable);
   aggregatableReportTable.setModel(aggregatableAttributionReportTableModel!);
+
   const logTable =
       document.querySelector<AttributionInternalsTableElement<Log>>(
           '#logTable');
   assert(logTable);
   logTable.setModel(logTableModel);
+
+  const debugReportTable =
+      document.querySelector<AttributionInternalsTableElement<DebugReport>>(
+          '#debugReportTable');
+  assert(debugReportTable);
+  debugReportTable.setModel(debugReportTableModel);
 
   tabBox.hidden = false;
 

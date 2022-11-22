@@ -50,6 +50,7 @@ class AggregatableReport;
 class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
+class AttributionDebugReport;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
@@ -231,6 +232,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::Type report_type);
   void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
+  void NotifyDebugReportSent(AttributionDebugReport, int status);
 
   bool IsReportAllowed(const AttributionReport&) const;
 

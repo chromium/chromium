@@ -412,6 +412,14 @@ void MockAttributionManager::NotifyTriggerHandled(
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);
 }
 
+void MockAttributionManager::NotifyDebugReportSent(
+    const AttributionDebugReport& report,
+    const int status,
+    const base::Time time) {
+  for (auto& observer : observers_)
+    observer.OnDebugReportSent(report, status, time);
+}
+
 void MockAttributionManager::SetDataHostManager(
     std::unique_ptr<AttributionDataHostManager> manager) {
   data_host_manager_ = std::move(manager);

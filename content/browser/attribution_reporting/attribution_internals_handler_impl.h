@@ -81,6 +81,9 @@ class AttributionInternalsHandlerImpl
   void OnReportSent(const AttributionReport& report,
                     bool is_debug_report,
                     const SendResult& info) override;
+  void OnDebugReportSent(const AttributionDebugReport&,
+                         int status,
+                         base::Time) override;
   void OnTriggerHandled(const AttributionTrigger& trigger,
                         absl::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;

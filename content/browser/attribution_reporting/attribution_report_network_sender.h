@@ -53,7 +53,8 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override;
-  void SendReport(AttributionDebugReport report) override;
+  void SendReport(AttributionDebugReport report,
+                  DebugReportSentCallback) override;
 
  private:
   // This is a std::list so that iterators remain valid during modifications.
@@ -75,7 +76,8 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                     scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Called when headers are available for a sent debug report.
-  void OnDebugReportSent(UrlLoaderList::iterator it,
+  void OnDebugReportSent(base::OnceCallback<void(int status)> callback,
+                         UrlLoaderList::iterator it,
                          scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Reports that are actively being sent.

@@ -139,8 +139,9 @@ class MockReportSender : public AttributionReportSender {
     callbacks_.emplace_back(std::move(report), std::move(callback));
   }
 
-  void SendReport(AttributionDebugReport report) override {
-    verbose_debug_calls_.push_back(std::move(report));
+  void SendReport(AttributionDebugReport report,
+                  DebugReportSentCallback callback) override {
+    verbose_debug_calls_.emplace_back(std::move(report), std::move(callback));
   }
 
   const std::vector<AttributionReport>& calls() const { return calls_; }
@@ -149,7 +150,8 @@ class MockReportSender : public AttributionReportSender {
     return debug_calls_;
   }
 
-  const std::vector<AttributionDebugReport>& verbose_debug_calls() const {
+  const std::vector<std::pair<AttributionDebugReport, DebugReportSentCallback>>&
+  verbose_debug_calls() const {
     return verbose_debug_calls_;
   }
 
@@ -182,11 +184,25 @@ class MockReportSender : public AttributionReportSender {
     Reset();
   }
 
+  void RunVerboseDebugCallbacks(std::initializer_list<int> statuses) {
+    ASSERT_THAT(verbose_debug_calls_, SizeIs(statuses.size()));
+
+    const auto* status_it = statuses.begin();
+
+    for (auto& callback : verbose_debug_calls_) {
+      std::move(callback.second).Run(std::move(callback.first), *status_it);
+      status_it++;
+    }
+
+    verbose_debug_calls_.clear();
+  }
+
  private:
   std::vector<AttributionReport> calls_;
   std::vector<AttributionReport> debug_calls_;
   std::vector<std::pair<AttributionReport, ReportSentCallback>> callbacks_;
-  std::vector<AttributionDebugReport> verbose_debug_calls_;
+  std::vector<std::pair<AttributionDebugReport, DebugReportSentCallback>>
+      verbose_debug_calls_;
 };
 
 class MockCookieChecker : public AttributionCookieChecker {
@@ -2236,7 +2252,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
     EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
 
     base::Value::List report_body =
-        report_sender_->verbose_debug_calls().front().ReportBody();
+        report_sender_->verbose_debug_calls().front().first.ReportBody();
     ASSERT_EQ(report_body.size(), 1u);
     ASSERT_TRUE(report_body.front().is_dict());
     const base::Value::Dict* report_data =
@@ -2291,6 +2307,14 @@ class AttributionManagerImplCookieBasedDebugReportTest
 
 TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
        VerboseDebugReport_ReportSent) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  const int kExpectedStatus = 200;
+  EXPECT_CALL(observer, OnDebugReportSent(_, kExpectedStatus, _));
+
   url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -2330,6 +2354,8 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
                                          .Build());
   task_environment_.RunUntilIdle();
   EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+
+  report_sender_->RunVerboseDebugCallbacks({kExpectedStatus});
 }
 
 }  // namespace content

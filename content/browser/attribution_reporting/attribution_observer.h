@@ -19,6 +19,7 @@ class SuitableOrigin;
 
 namespace content {
 
+class AttributionDebugReport;
 class AttributionTrigger;
 class CreateReportResult;
 
@@ -46,6 +47,13 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnReportSent(const AttributionReport& report,
                             bool is_debug_report,
                             const SendResult& info) {}
+
+  // Called when a verbose debug report is sent, regardless of success.
+  // If `status` is positive, it is the HTTP response code. Otherwise, it is the
+  // network error.
+  virtual void OnDebugReportSent(const AttributionDebugReport&,
+                                 int status,
+                                 base::Time) {}
 
   // Called when a trigger is registered, regardless of success.
   virtual void OnTriggerHandled(const AttributionTrigger& trigger,

@@ -945,6 +945,15 @@ void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,
     observer.OnReportSent(report, /*is_debug_report=*/is_debug_report, info);
 }
 
+void AttributionManagerImpl::NotifyDebugReportSent(
+    const AttributionDebugReport report,
+    const int status) {
+  // Use the same time for all observers.
+  const base::Time time = base::Time::Now();
+  for (auto& observer : observers_)
+    observer.OnDebugReportSent(report, status, time);
+}
+
 void AttributionManagerImpl::AssembleAggregatableReport(
     AttributionReport report,
     bool is_debug_report,
@@ -1042,7 +1051,10 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 
   if (absl::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(source, is_debug_cookie_set, result)) {
-    report_sender_->SendReport(std::move(*debug_report));
+    report_sender_->SendReport(
+        std::move(*debug_report),
+        base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -1065,7 +1077,10 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   if (absl::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(trigger, is_debug_cookie_set,
                                          result)) {
-    report_sender_->SendReport(std::move(*debug_report));
+    report_sender_->SendReport(
+        std::move(*debug_report),
+        base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

@@ -24,12 +24,17 @@ class AttributionReportSender {
   using ReportSentCallback =
       base::OnceCallback<void(AttributionReport, SendResult)>;
 
+  // If `status` is positive, it is the HTTP response code. Otherwise, it is the
+  // network error.
+  using DebugReportSentCallback =
+      base::OnceCallback<void(AttributionDebugReport, int status)>;
+
   // Sends `report` and runs `sent_callback` when done.
   virtual void SendReport(AttributionReport report,
                           bool is_debug_report,
                           ReportSentCallback sent_callback) = 0;
 
-  virtual void SendReport(AttributionDebugReport report) = 0;
+  virtual void SendReport(AttributionDebugReport, DebugReportSentCallback) = 0;
 };
 
 }  // namespace content
