@@ -72,27 +72,27 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // Sets the error handler to receive notifications when an error is
   // encountered.
   void set_connection_error_handler(base::OnceClosure error_handler) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(sequence_checker_.CalledOnValidSequence());
     error_handler_ = std::move(error_handler);
     error_with_reason_handler_.Reset();
   }
 
   void set_connection_error_with_reason_handler(
       ConnectionErrorWithReasonCallback error_handler) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(sequence_checker_.CalledOnValidSequence());
     error_with_reason_handler_ = std::move(error_handler);
     error_handler_.Reset();
   }
 
   // Returns true if an error was encountered.
   bool encountered_error() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(sequence_checker_.CalledOnValidSequence());
     return encountered_error_;
   }
 
   // Returns true if this endpoint has any pending callbacks.
   bool has_pending_responders() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(sequence_checker_.CalledOnValidSequence());
     base::AutoLock lock(async_responders_lock_);
     return !async_responders_.empty() || !sync_responses_.empty();
   }
@@ -354,7 +354,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   base::Location next_call_location_;
 #endif
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // We use SequenceCheckerImpl directly, to assert some sequence checks even in
+  // release builds. See https://crbug.com/1325096.
+  base::SequenceCheckerImpl sequence_checker_;
 
   base::WeakPtrFactory<InterfaceEndpointClient> weak_ptr_factory_{this};
 };
