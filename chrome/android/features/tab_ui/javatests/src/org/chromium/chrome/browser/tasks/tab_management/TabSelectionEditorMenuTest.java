@@ -43,7 +43,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -86,7 +85,7 @@ import java.util.concurrent.TimeoutException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Features.EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS,
         TAB_GROUPS_FOR_TABLETS, TAB_SELECTION_EDITOR_V2})
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;
     private static final Integer TAB_ID_0 = 0;
@@ -314,7 +313,6 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1348710")
     @Feature({"RenderTest"})
     public void testSingleActionView_Click() throws Exception {
         List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
