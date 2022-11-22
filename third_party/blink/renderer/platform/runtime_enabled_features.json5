@@ -602,12 +602,6 @@
       name: "CorsRFC1918",
     },
     {
-      name: "CrossOriginOpenerPolicyReporting",
-      origin_trial_feature_name: "CrossOriginOpenerPolicyReporting",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
-    },
-    {
       // Allows positioning a positioned element relative to another one.
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
