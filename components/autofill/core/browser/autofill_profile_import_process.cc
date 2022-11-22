@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -20,6 +22,29 @@ AutofillProfileImportId GetImportId() {
   static AutofillProfileImportId next_import_id(0);
   next_import_id.value()++;
   return next_import_id;
+}
+
+// When the profile is observed without explicit country information, Autofill
+// guesses it's country. Detecting a profile as a duplicate can fail if we guess
+// incorrectly. This function checks if we have reason to believe that the
+// country of `profile` was guessed incorrectly. It does so by checking whether
+// any of the `existing_profiles` becomes mergeable after removing the country
+// of `profile`.
+// Comparisons are done using `comparator`.
+bool ShouldCountryApproximationBeRemoved(
+    const AutofillProfile& profile,
+    const std::vector<AutofillProfile*>& existing_profiles,
+    const AutofillProfileComparator& comparator) {
+  auto IsMergeableWithExistingProfiles = [&](const AutofillProfile& profile) {
+    return base::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
+      return comparator.AreMergeable(profile, *existing_profile);
+    });
+  };
+  if (IsMergeableWithExistingProfiles(profile))
+    return false;
+  AutofillProfile without_country = profile;
+  without_country.ClearFields({ADDRESS_HOME_COUNTRY});
+  return IsMergeableWithExistingProfiles(without_country);
 }
 
 }  // namespace
@@ -77,6 +102,15 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   const std::vector<AutofillProfile*> existing_profiles =
       personal_data_manager_->GetProfiles();
+
+  // If we have reason to believe that the country was complemented incorrectly,
+  // remove it.
+  if (import_metadata_.did_complement_country &&
+      ShouldCountryApproximationBeRemoved(observed_profile_, existing_profiles,
+                                          comparator)) {
+    observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
+    import_metadata_.did_complement_country = false;
+  }
 
   for (const auto* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
