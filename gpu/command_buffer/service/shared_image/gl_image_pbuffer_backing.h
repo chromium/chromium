@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
 
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -15,7 +16,7 @@
 
 namespace gpu {
 
-// Overlay representation for a GLImageBacking.
+// Overlay representation for a GLImagePbufferBacking.
 class OverlayGLImageRepresentation : public OverlayImageRepresentation {
  public:
   OverlayGLImageRepresentation(SharedImageManager* manager,
@@ -47,18 +48,20 @@ class MemoryGLImageRepresentation : public MemoryImageRepresentation {
   scoped_refptr<gl::GLImageMemory> image_memory_;
 };
 
-// Implementation of SharedImageBacking that creates a GL Texture that is backed
-// by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
-// mailbox implementation.
-class GPU_GLES2_EXPORT GLImageBacking
+// Implementation of SharedImageBacking that takes in a caller-created GL
+// Texture and GLImagePbuffer, scopes their lifetime, and exposes the texture
+// via SharedImageRepresentations. Used with the legacy mailbox implementation
+// in //media's DXVA video decoder. DO NOT USE FOR ANY OTHER PURPOSE.
+// TODO(crbug.com/1384438): Remove this class.
+class GPU_GLES2_EXPORT GLImagePbufferBacking
     : public SharedImageBacking,
       public GLTextureImageRepresentationClient {
  public:
-  // Used when GLImageBacking is serving as a temporary SharedImage
+  // Used when GLImagePbufferBacking is serving as a temporary SharedImage
   // wrapper to an already-allocated texture. The returned backing will not
   // create any new textures.
-  static std::unique_ptr<GLImageBacking> CreateFromGLTexture(
-      scoped_refptr<gl::GLImage> image,
+  static std::unique_ptr<GLImagePbufferBacking> CreateFromGLTexture(
+      scoped_refptr<GLImagePbuffer> image,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -69,9 +72,9 @@ class GPU_GLES2_EXPORT GLImageBacking
       GLenum texture_target,
       scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
 
-  GLImageBacking(const GLImageBacking& other) = delete;
-  GLImageBacking& operator=(const GLImageBacking& other) = delete;
-  ~GLImageBacking() override;
+  GLImagePbufferBacking(const GLImagePbufferBacking& other) = delete;
+  GLImagePbufferBacking& operator=(const GLImagePbufferBacking& other) = delete;
+  ~GLImagePbufferBacking() override;
 
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
@@ -79,8 +82,8 @@ class GPU_GLES2_EXPORT GLImageBacking
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
  private:
-  GLImageBacking(
-      scoped_refptr<gl::GLImage> image,
+  GLImagePbufferBacking(
+      scoped_refptr<GLImagePbuffer> image,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -127,7 +130,7 @@ class GPU_GLES2_EXPORT GLImageBacking
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
   void GLTextureImageRepresentationRelease(bool have_context) override;
 
-  scoped_refptr<gl::GLImage> image_;
+  scoped_refptr<GLImagePbuffer> image_;
 
   // If |image_bind_or_copy_needed_| is true, then either bind or copy |image_|
   // to the GL texture, and un-set |image_bind_or_copy_needed_|.
@@ -150,9 +153,9 @@ class GPU_GLES2_EXPORT GLImageBacking
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
 
-  base::WeakPtrFactory<GLImageBacking> weak_factory_;
+  base::WeakPtrFactory<GLImagePbufferBacking> weak_factory_;
 };
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_

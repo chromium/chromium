@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/gl_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer_backing.h"
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -47,7 +47,7 @@ OverlayGLImageRepresentation::~OverlayGLImageRepresentation() = default;
 
 bool OverlayGLImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
-  auto* gl_backing = static_cast<GLImageBacking*>(backing());
+  auto* gl_backing = static_cast<GLImagePbufferBacking*>(backing());
   std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
   if (fence)
     acquire_fence = fence->GetGpuFenceHandle().Clone();
@@ -56,7 +56,7 @@ bool OverlayGLImageRepresentation::BeginReadAccess(
 
 void OverlayGLImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
-  auto* gl_backing = static_cast<GLImageBacking*>(backing());
+  auto* gl_backing = static_cast<GLImagePbufferBacking*>(backing());
   gl_backing->SetReleaseFence(std::move(release_fence));
 }
 
@@ -65,11 +65,12 @@ gl::GLImage* OverlayGLImageRepresentation::GetGLImage() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// GLImageBacking
+// GLImagePbufferBacking
 
 // static
-std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
-    scoped_refptr<gl::GLImage> image,
+std::unique_ptr<GLImagePbufferBacking>
+GLImagePbufferBacking::CreateFromGLTexture(
+    scoped_refptr<GLImagePbuffer> image,
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -88,9 +89,10 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
   params.target = texture_target;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  auto shared_image = base::WrapUnique<GLImageBacking>(new GLImageBacking(
-      std::move(image), mailbox, si_format, size, color_space, surface_origin,
-      alpha_type, usage, params));
+  auto shared_image =
+      base::WrapUnique<GLImagePbufferBacking>(new GLImagePbufferBacking(
+          std::move(image), mailbox, si_format, size, color_space,
+          surface_origin, alpha_type, usage, params));
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
   shared_image->image_bind_or_copy_needed_ = false;
@@ -98,15 +100,16 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
   return shared_image;
 }
 
-GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
-                               const Mailbox& mailbox,
-                               viz::SharedImageFormat format,
-                               const gfx::Size& size,
-                               const gfx::ColorSpace& color_space,
-                               GrSurfaceOrigin surface_origin,
-                               SkAlphaType alpha_type,
-                               uint32_t usage,
-                               const InitializeGLTextureParams& params)
+GLImagePbufferBacking::GLImagePbufferBacking(
+    scoped_refptr<GLImagePbuffer> image,
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    const InitializeGLTextureParams& params)
     : SharedImageBacking(
           mailbox,
           format,
@@ -124,11 +127,11 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
   DCHECK(image_);
 }
 
-GLImageBacking::~GLImageBacking() {
+GLImagePbufferBacking::~GLImagePbufferBacking() {
   ReleaseGLTexture(have_context());
 }
 
-void GLImageBacking::ReleaseGLTexture(bool have_context) {
+void GLImagePbufferBacking::ReleaseGLTexture(bool have_context) {
   // If the cached promise texture is referencing the GL texture, then it needs
   // to be deleted, too.
   if (cached_promise_texture_) {
@@ -153,29 +156,29 @@ void GLImageBacking::ReleaseGLTexture(bool have_context) {
   }
 }
 
-GLenum GLImageBacking::GetGLTarget() const {
+GLenum GLImagePbufferBacking::GetGLTarget() const {
   return gl_params_.target;
 }
 
-GLuint GLImageBacking::GetGLServiceId() const {
+GLuint GLImagePbufferBacking::GetGLServiceId() const {
   if (passthrough_texture_)
     return passthrough_texture_->service_id();
   return 0;
 }
 
-std::unique_ptr<gfx::GpuFence> GLImageBacking::GetLastWriteGpuFence() {
+std::unique_ptr<gfx::GpuFence> GLImagePbufferBacking::GetLastWriteGpuFence() {
   return last_write_gl_fence_ ? last_write_gl_fence_->GetGpuFence() : nullptr;
 }
 
-void GLImageBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
+void GLImagePbufferBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
   release_fence_ = std::move(release_fence);
 }
 
-scoped_refptr<gfx::NativePixmap> GLImageBacking::GetNativePixmap() {
+scoped_refptr<gfx::NativePixmap> GLImagePbufferBacking::GetNativePixmap() {
   return image_->GetNativePixmap();
 }
 
-void GLImageBacking::OnMemoryDump(
+void GLImagePbufferBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -193,40 +196,40 @@ void GLImageBacking::OnMemoryDump(
   image_->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
-SharedImageBackingType GLImageBacking::GetType() const {
+SharedImageBackingType GLImagePbufferBacking::GetType() const {
   return SharedImageBackingType::kGLImage;
 }
 
-gfx::Rect GLImageBacking::ClearedRect() const {
+gfx::Rect GLImagePbufferBacking::ClearedRect() const {
   return cleared_rect_;
 }
 
-void GLImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
+void GLImagePbufferBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   cleared_rect_ = cleared_rect;
 }
 
-std::unique_ptr<GLTextureImageRepresentation> GLImageBacking::ProduceGLTexture(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+GLImagePbufferBacking::ProduceGLTexture(SharedImageManager* manager,
+                                        MemoryTypeTracker* tracker) {
   NOTREACHED();
   return nullptr;
 }
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
-GLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
-                                            MemoryTypeTracker* tracker) {
+GLImagePbufferBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                                   MemoryTypeTracker* tracker) {
   DCHECK(passthrough_texture_);
   return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
       manager, this, this, tracker, passthrough_texture_);
 }
 
-std::unique_ptr<OverlayImageRepresentation> GLImageBacking::ProduceOverlay(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation>
+GLImagePbufferBacking::ProduceOverlay(SharedImageManager* manager,
+                                      MemoryTypeTracker* tracker) {
   return std::make_unique<OverlayGLImageRepresentation>(manager, this, tracker,
                                                         image_);
 }
 
-std::unique_ptr<DawnImageRepresentation> GLImageBacking::ProduceDawn(
+std::unique_ptr<DawnImageRepresentation> GLImagePbufferBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
@@ -240,7 +243,7 @@ std::unique_ptr<DawnImageRepresentation> GLImageBacking::ProduceDawn(
       factory(), manager, tracker, device, backend_type, this, true);
 }
 
-std::unique_ptr<SkiaImageRepresentation> GLImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> GLImagePbufferBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -277,7 +280,7 @@ SkPixmap MemoryGLImageRepresentation::BeginReadAccess() {
                   image_memory_->stride());
 }
 
-std::unique_ptr<MemoryImageRepresentation> GLImageBacking::ProduceMemory(
+std::unique_ptr<MemoryImageRepresentation> GLImagePbufferBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   gl::GLImageMemory* image_memory =
@@ -289,7 +292,7 @@ std::unique_ptr<MemoryImageRepresentation> GLImageBacking::ProduceMemory(
       manager, this, tracker, base::WrapRefCounted(image_memory));
 }
 
-void GLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     // TODO(dcastagna): Don't wait for the fence if the SharedImage is going
     // to be scanned out as an HW overlay. Currently we don't know that at
@@ -302,7 +305,8 @@ void GLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   image_bind_or_copy_needed_ = true;
 }
 
-bool GLImageBacking::GLTextureImageRepresentationBeginAccess(bool readonly) {
+bool GLImagePbufferBacking::GLTextureImageRepresentationBeginAccess(
+    bool readonly) {
   if (!release_fence_.is_null()) {
     auto fence = gfx::GpuFence(std::move(release_fence_));
     if (gl::GLFence::IsGpuFenceSupported()) {
@@ -314,7 +318,8 @@ bool GLImageBacking::GLTextureImageRepresentationBeginAccess(bool readonly) {
   return BindOrCopyImageIfNeeded();
 }
 
-void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
+void GLImagePbufferBacking::GLTextureImageRepresentationEndAccess(
+    bool readonly) {
   // If the image will be used for an overlay, we insert a fence that can be
   // used by OutputPresenter to synchronize image writes with presentation.
   if (!readonly && usage() & SHARED_IMAGE_USAGE_SCANOUT &&
@@ -336,12 +341,13 @@ void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
   }
 }
 
-void GLImageBacking::GLTextureImageRepresentationRelease(bool has_context) {
+void GLImagePbufferBacking::GLTextureImageRepresentationRelease(
+    bool has_context) {
   // No action needed: This class retains the passed-in texture for its
   // lifetime, and releases it in its destructor.
 }
 
-bool GLImageBacking::BindOrCopyImageIfNeeded() {
+bool GLImagePbufferBacking::BindOrCopyImageIfNeeded() {
   // This is called by code that has retained the GL texture.
   DCHECK(passthrough_texture_);
   if (!image_bind_or_copy_needed_)

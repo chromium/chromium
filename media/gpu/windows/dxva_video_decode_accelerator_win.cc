@@ -41,7 +41,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -3262,8 +3262,11 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
           kPremul_SkAlphaType, shared_image_usage, gl_image_dxgi->texture(),
           std::move(gl_texture));
     } else {
-      shared_image = gpu::GLImageBacking::CreateFromGLTexture(
-          picture_buffer->gl_image(), mailbox, viz_formats[texture_idx],
+      auto* gl_image_pbuffer =
+          gpu::GLImagePbuffer::FromGLImage(picture_buffer->gl_image().get());
+      DCHECK(gl_image_pbuffer);
+      shared_image = gpu::GLImagePbufferBacking::CreateFromGLTexture(
+          gl_image_pbuffer, mailbox, viz_formats[texture_idx],
           picture_buffer->size(), picture_buffer->color_space(),
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
           GetTextureTarget(), std::move(gl_texture));
