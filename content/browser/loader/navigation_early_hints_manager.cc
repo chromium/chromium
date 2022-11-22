@@ -147,13 +147,13 @@ network::mojom::RequestDestination LinkAsAttributeToRequestDestination(
     const network::mojom::LinkHeaderPtr& link) {
   switch (link->as) {
     case network::mojom::LinkAsAttribute::kUnspecified:
-      // For modulepreload destination should be "script" when `as` is not
-      // specified.
+      // For modulepreload, the request destination should be "script" when `as`
+      // is not specified.
+      // https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
       if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
         return network::mojom::RequestDestination::kScript;
-      } else {
-        return network::mojom::RequestDestination::kEmpty;
       }
+      return network::mojom::RequestDestination::kEmpty;
     case network::mojom::LinkAsAttribute::kImage:
       return network::mojom::RequestDestination::kImage;
     case network::mojom::LinkAsAttribute::kFont:
@@ -163,8 +163,6 @@ network::mojom::RequestDestination LinkAsAttributeToRequestDestination(
     case network::mojom::LinkAsAttribute::kStyleSheet:
       return network::mojom::RequestDestination::kStyle;
   }
-  NOTREACHED();
-  return network::mojom::RequestDestination::kEmpty;
 }
 
 // Used to determine a priority for a speculative subresource request.
@@ -527,6 +525,13 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   if (!ShouldHandleResourceHints(link))
     return;
 
+  network::mojom::RequestDestination destination =
+      LinkAsAttributeToRequestDestination(link);
+  // Step 2. If options's destination is not a destination, then return null.
+  // https://html.spec.whatwg.org/multipage/semantics.html#create-a-link-request
+  if (destination == network::mojom::RequestDestination::kEmpty)
+    return;
+
   if (!CheckContentSecurityPolicyForPreload(link, content_security_policies))
     return;
 
@@ -542,7 +547,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   network::ResourceRequest request;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.priority = CalculateRequestPriority(link);
-  request.destination = LinkAsAttributeToRequestDestination(link);
+  request.destination = destination;
   request.url = link->href;
   request.site_for_cookies = site_for_cookies;
   request.request_initiator = origin_;
