@@ -30,10 +30,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // bool parameter is true if the refresh was successful (no error).
   using RefreshPolicyCallback = base::OnceCallback<void(bool)>;
 
-  // Callback invoked once the unregister attempt has completed. Passed bool
-  // parameter is true if unregistering was successful (no error).
-  using UnregisterCallback = base::OnceCallback<void(bool)>;
-
   class POLICY_EXPORT Observer {
    public:
     // Invoked when CloudPolicyService has finished initializing (any initial
@@ -60,11 +56,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // Refreshes policy. |callback| will be invoked after the operation completes
   // or aborts because of errors.
   virtual void RefreshPolicy(RefreshPolicyCallback callback);
-
-  // Unregisters the device. |callback| will be invoked after the operation
-  // completes or aborts because of errors. All pending refresh policy requests
-  // will be aborted, and no further refresh policy requests will be allowed.
-  void Unregister(UnregisterCallback callback);
 
   // Adds/Removes an Observer for this object.
   void AddObserver(Observer* observer);
@@ -103,10 +94,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // is passed through to the refresh callbacks.
   void RefreshCompleted(bool success);
 
-  // Invokes the unregister callback and clears unregister state. The |success|
-  // flag is passed through to the unregister callback.
-  void UnregisterCompleted(bool success);
-
   // Assert non-concurrent usage in debug builds.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -131,16 +118,8 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
     REFRESH_POLICY_STORE,
   } refresh_state_;
 
-  // Tracks the state of a pending unregister operation, if any.
-  enum {
-    UNREGISTER_NONE,
-    UNREGISTER_PENDING,
-  } unregister_state_;
-
   // Callbacks to invoke upon policy refresh.
   std::vector<RefreshPolicyCallback> refresh_callbacks_;
-
-  UnregisterCallback unregister_callback_;
 
   // Set to true once the service is initialized (initial policy load/refresh
   // is complete).

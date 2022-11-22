@@ -355,20 +355,6 @@ em::DeviceManagementRequest GetEnrollmentRequest() {
 }
 #endif
 
-em::DeviceManagementRequest GetUnregistrationRequest() {
-  em::DeviceManagementRequest unregistration_request;
-  // Accessing the field sets the type of the request.
-  unregistration_request.mutable_unregister_request();
-  return unregistration_request;
-}
-
-em::DeviceManagementResponse GetUnregistrationResponse() {
-  em::DeviceManagementResponse unregistration_response;
-  // Accessing the field sets the type of the response.
-  unregistration_response.mutable_unregister_response();
-  return unregistration_response;
-}
-
 em::DeviceManagementRequest GetUploadMachineCertificateRequest() {
   em::DeviceManagementRequest upload_machine_certificate_request;
   upload_machine_certificate_request.mutable_cert_upload_request()
@@ -1235,59 +1221,6 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
             job_type);
   EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-}
-
-TEST_F(CloudPolicyClientTest, Unregister) {
-  RegisterClient();
-
-  ExpectAndCaptureJob(GetUnregistrationResponse());
-  EXPECT_CALL(observer_, OnRegistrationStateChanged);
-  client_->Unregister();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetUnregistrationRequest().SerializePartialAsString());
-  EXPECT_FALSE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-}
-
-TEST_F(CloudPolicyClientTest, UnregisterEmpty) {
-  RegisterClient();
-
-  DeviceManagementService::JobConfiguration::JobType job_type;
-  em::DeviceManagementResponse unregistration_response =
-      GetUnregistrationResponse();
-  unregistration_response.clear_unregister_response();
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
-                      service_.SendJobOKAsync(unregistration_response)));
-  EXPECT_CALL(observer_, OnRegistrationStateChanged);
-  client_->Unregister();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type);
-  EXPECT_FALSE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-}
-
-TEST_F(CloudPolicyClientTest, UnregisterFailure) {
-  RegisterClient();
-
-  DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(
-          service_.CaptureJobType(&job_type),
-          service_.SendJobResponseAsync(
-              net::ERR_FAILED, DeviceManagementService::kInvalidArgument)));
-  EXPECT_CALL(observer_, OnClientError);
-  client_->Unregister();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type);
-  EXPECT_TRUE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
@@ -2188,37 +2121,6 @@ TEST_F(CloudPolicyClientTest, UploadStatusFailure) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
             job_type);
   EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
-}
-
-TEST_F(CloudPolicyClientTest, RequestCancelOnUnregister) {
-  RegisterClient();
-
-  // Set up pending upload status job.
-  DeviceManagementService::JobConfiguration::JobType upload_type;
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(service_.CaptureJobType(&upload_type)));
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&callback_observer_));
-  em::DeviceStatusReportRequest device_status;
-  em::SessionStatusReportRequest session_status;
-  em::ChildStatusReportRequest child_status;
-  client_->UploadDeviceStatus(&device_status, &session_status, &child_status,
-                              std::move(callback));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
-  EXPECT_CALL(observer_, OnRegistrationStateChanged);
-  ExpectAndCaptureJob(GetUnregistrationResponse());
-  client_->Unregister();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
-            upload_type);
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetUnregistrationRequest().SerializePartialAsString());
-  EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
 TEST_F(CloudPolicyClientTest, ShouldRejectUnsignedCommands) {

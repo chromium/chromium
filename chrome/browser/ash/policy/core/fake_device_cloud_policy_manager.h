@@ -30,14 +30,8 @@ class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerAsh {
 
   ~FakeDeviceCloudPolicyManager() override;
 
-  void set_unregister_result(bool value) { unregister_result_ = value; }
-
   // DeviceCloudPolicyManagerAsh:
-  void Unregister(UnregisterCallback callback) override;
   void Disconnect() override;
-
- private:
-  bool unregister_result_;
 };
 
 }  // namespace policy

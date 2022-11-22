@@ -550,23 +550,6 @@ void CloudPolicyClient::FetchRobotAuthCodes(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::Unregister() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(service_);
-
-  std::unique_ptr<DMServerJobConfiguration> config =
-      std::make_unique<DMServerJobConfiguration>(
-          DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION, this,
-          /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/absl::nullopt,
-          base::BindOnce(&CloudPolicyClient::OnUnregisterCompleted,
-                         weak_ptr_factory_.GetWeakPtr()));
-
-  config->request()->mutable_unregister_request();
-
-  unique_request_job_ = service_->CreateJob(std::move(config));
-}
-
 void CloudPolicyClient::UploadEnterpriseMachineCertificate(
     const std::string& certificate_data,
     CloudPolicyClient::StatusCallback callback) {
@@ -1299,27 +1282,6 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
       dm_token_.clear();
       NotifyRegistrationStateChanged();
     }
-  }
-}
-
-void CloudPolicyClient::OnUnregisterCompleted(DMServerJobResult result) {
-  if (result.dm_status == DM_STATUS_SUCCESS &&
-      !result.response.has_unregister_response()) {
-    // Assume unregistration has succeeded either way.
-    LOG(WARNING) << "Empty unregistration response.";
-  }
-
-  last_dm_status_ = result.dm_status;
-  if (result.dm_status == DM_STATUS_SUCCESS) {
-    dm_token_.clear();
-    // Cancel all outstanding jobs.
-    request_jobs_.clear();
-    app_install_report_request_job_ = nullptr;
-    extension_install_report_request_job_ = nullptr;
-    device_dm_token_.clear();
-    NotifyRegistrationStateChanged();
-  } else {
-    NotifyClientError();
   }
 }
 

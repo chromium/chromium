@@ -422,20 +422,6 @@ TEST_P(DeviceManagementServiceFailedRequestTest, ApiAuthCodeFetchRequest) {
                GetParam().response_);
 }
 
-TEST_P(DeviceManagementServiceFailedRequestTest, UnregisterRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
-  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
-  EXPECT_CALL(*this,
-              OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
-  std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartUnregistrationJob());
-  auto* request = GetPendingRequest();
-  ASSERT_TRUE(request);
-
-  SendResponse(GetParam().error_, GetParam().http_status_,
-               GetParam().response_);
-}
-
 TEST_P(DeviceManagementServiceFailedRequestTest, PolicyRequest) {
   EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
@@ -741,37 +727,6 @@ TEST_F(DeviceManagementServiceTest, ApiAuthCodeFetchRequest) {
   SendResponse(net::OK, 200, expected_data);
 }
 
-TEST_F(DeviceManagementServiceTest, UnregisterRequest) {
-  em::DeviceManagementResponse expected_response;
-  expected_response.mutable_unregister_response();
-  std::string expected_data;
-  ASSERT_TRUE(expected_response.SerializeToString(&expected_data));
-
-  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, expected_data));
-  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
-  EXPECT_CALL(*this, OnShouldJobRetry(200, expected_data));
-  std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartUnregistrationJob(expected_data));
-  auto* request = GetPendingRequest();
-  ASSERT_TRUE(request);
-
-  // Check the data the fetcher received.
-  const GURL& request_url(request->request.url);
-  const GURL service_url(kServiceUrl);
-  EXPECT_EQ(service_url.scheme(), request_url.scheme());
-  EXPECT_EQ(service_url.host(), request_url.host());
-  EXPECT_EQ(service_url.port(), request_url.port());
-  EXPECT_EQ(service_url.path(), request_url.path());
-
-  CheckURLAndQueryParams(request, dm_protocol::kValueRequestUnregister,
-                         kClientID, "");
-
-  EXPECT_EQ(expected_data, network::GetUploadData(request->request));
-
-  // Generate the response.
-  SendResponse(net::OK, 200, expected_data);
-}
-
 TEST_F(DeviceManagementServiceTest, CancelRegisterRequest) {
   EXPECT_CALL(*this, OnJobDone(_, _, _, _)).Times(0);
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
@@ -817,19 +772,6 @@ TEST_F(DeviceManagementServiceTest, CancelApiAuthCodeFetch) {
   EXPECT_CALL(*this, OnShouldJobRetry(_, _)).Times(0);
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartApiAuthCodeFetchJob());
-  auto* request = GetPendingRequest();
-  ASSERT_TRUE(request);
-
-  // There shouldn't be any callbacks.
-  request_job.reset();
-}
-
-TEST_F(DeviceManagementServiceTest, CancelUnregisterRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, _, _, _)).Times(0);
-  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
-  EXPECT_CALL(*this, OnShouldJobRetry(_, _)).Times(0);
-  std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartUnregistrationJob());
   auto* request = GetPendingRequest();
   ASSERT_TRUE(request);
 

@@ -30,7 +30,6 @@ class CloudPolicyServiceTest : public testing::Test {
         service_(policy_type_, std::string(), &client_, &store_) {}
 
   MOCK_METHOD1(OnPolicyRefresh, void(bool));
-  MOCK_METHOD1(OnUnregister, void(bool));
 
  protected:
   std::string policy_type_;
@@ -197,46 +196,6 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyConcurrent) {
   // Corresponding store operation finishes, all _three_ callbacks fire.
   EXPECT_CALL(*this, OnPolicyRefresh(true)).Times(3);
   store_.NotifyStoreLoaded();
-}
-
-TEST_F(CloudPolicyServiceTest, UnregisterSucceeds) {
-  EXPECT_CALL(client_, Unregister());
-  EXPECT_CALL(*this, OnUnregister(true));
-
-  service_.Unregister(base::BindOnce(&CloudPolicyServiceTest::OnUnregister,
-                                     base::Unretained(this)));
-  client_.NotifyRegistrationStateChanged();
-}
-
-TEST_F(CloudPolicyServiceTest, UnregisterFailsOnClientError) {
-  EXPECT_CALL(client_, Unregister());
-  EXPECT_CALL(*this, OnUnregister(false));
-
-  service_.Unregister(base::BindOnce(&CloudPolicyServiceTest::OnUnregister,
-                                     base::Unretained(this)));
-  client_.NotifyClientError();
-}
-
-TEST_F(CloudPolicyServiceTest, UnregisterRevokesAllOnGoingPolicyRefreshes) {
-  EXPECT_CALL(client_, Unregister());
-  EXPECT_CALL(*this, OnPolicyRefresh(false)).Times(2);
-
-  service_.RefreshPolicy(base::BindOnce(
-      &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
-  service_.RefreshPolicy(base::BindOnce(
-      &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
-  service_.Unregister(base::BindOnce(&CloudPolicyServiceTest::OnUnregister,
-                                     base::Unretained(this)));
-}
-
-TEST_F(CloudPolicyServiceTest, RefreshPolicyFailsWhenUnregistering) {
-  EXPECT_CALL(client_, Unregister());
-  EXPECT_CALL(*this, OnPolicyRefresh(false));
-
-  service_.Unregister(base::BindOnce(&CloudPolicyServiceTest::OnUnregister,
-                                     base::Unretained(this)));
-  service_.RefreshPolicy(base::BindOnce(
-      &CloudPolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
 }
 
 TEST_F(CloudPolicyServiceTest, StoreAlreadyInitialized) {

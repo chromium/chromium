@@ -304,9 +304,6 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::set<std::string>& oauth_scopes,
       RobotAuthCodeCallback callback);
 
-  // Sends an unregistration request to the server.
-  virtual void Unregister();
-
   // Upload a machine certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must
   // hold the X.509 certificate data to be sent to the server.  The |callback|
@@ -669,9 +666,6 @@ class POLICY_EXPORT CloudPolicyClient {
   void OnFetchRobotAuthCodesCompleted(RobotAuthCodeCallback callback,
                                       DMServerJobResult result);
 
-  // Callback for unregistration requests.
-  void OnUnregisterCompleted(DMServerJobResult result);
-
   // Callback for certificate upload requests.
   void OnCertificateUploadCompleted(StatusCallback callback,
                                     DMServerJobResult result);
@@ -782,8 +776,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // requests have been started, only the last one will be kept.
   std::unique_ptr<DeviceManagementService::Job> unique_request_job_;
 
-  // All of the outstanding non-policy-fetch request jobs. These jobs are
-  // silently cancelled if Unregister() is called.
+  // All of the outstanding non-policy-fetch request jobs.
   std::vector<std::unique_ptr<DeviceManagementService::Job>> request_jobs_;
 
   // Only one outstanding app push-install report upload is allowed, and it must

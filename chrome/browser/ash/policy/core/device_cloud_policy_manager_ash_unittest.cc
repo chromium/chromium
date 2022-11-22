@@ -596,8 +596,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     done_ = true;
   }
 
-  MOCK_METHOD1(OnUnregistered, void(bool));
-
  protected:
   DeviceCloudPolicyManagerAshEnrollmentTest()
       : register_status_(DM_STATUS_SUCCESS),
@@ -1010,55 +1008,6 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, LoadError) {
   RunTest();
   ExpectFailedEnrollment(EnrollmentStatus::STORE_ERROR);
   EXPECT_EQ(CloudPolicyStore::STATUS_LOAD_ERROR, status_.store_status());
-}
-
-TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterSucceeds) {
-  // Enroll first.
-  RunTest();
-  ExpectSuccessfulEnrollment();
-
-  // Set up mock objects for the upcoming unregistration job.
-  em::DeviceManagementResponse response;
-  response.mutable_unregister_response();
-  DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
-                      device_management_service_.SendJobOKAsync(response)));
-  AllowUninterestingRemoteCommandFetches();
-  EXPECT_CALL(*this, OnUnregistered(true));
-
-  // Start unregistering.
-  manager_->Unregister(
-      base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::OnUnregistered,
-                     base::Unretained(this)));
-
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type);
-}
-
-TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterFails) {
-  // Enroll first.
-  RunTest();
-  ExpectSuccessfulEnrollment();
-
-  // Set up mock objects for the upcoming unregistration job.
-  DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
-                      device_management_service_.SendJobResponseAsync(
-                          net::ERR_FAILED, DeviceManagementService::kSuccess)));
-  AllowUninterestingRemoteCommandFetches();
-  EXPECT_CALL(*this, OnUnregistered(false));
-
-  // Start unregistering.
-  manager_->Unregister(
-      base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::OnUnregistered,
-                     base::Unretained(this)));
-
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
-            job_type);
 }
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {

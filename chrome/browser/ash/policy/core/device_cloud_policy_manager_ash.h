@@ -71,8 +71,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
     virtual void OnDeviceCloudPolicyManagerGotRegistry() = 0;
   };
 
-  using UnregisterCallback = base::OnceCallback<void(bool)>;
-
   // |task_runner| is the runner for policy refresh, heartbeat, and status
   // upload tasks.
   DeviceCloudPolicyManagerAsh(
@@ -116,10 +114,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   // Called when policy store is ready.
   void OnPolicyStoreReady(ash::InstallAttributes* install_attributes);
-
-  // Sends the unregister request. |callback| is invoked with a boolean
-  // parameter indicating the result when done.
-  virtual void Unregister(UnregisterCallback callback);
 
   // Disconnects the manager.
   virtual void Disconnect();

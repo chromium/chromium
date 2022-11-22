@@ -273,17 +273,6 @@ void DeviceCloudPolicyManagerAsh::OnPolicyStoreReady(
   CreateManagedSessionServiceAndReporters();
 }
 
-void DeviceCloudPolicyManagerAsh::Unregister(UnregisterCallback callback) {
-  if (!service()) {
-    LOG(ERROR) << "Tried to unregister but DeviceCloudPolicyManagerAsh is "
-               << "not connected.";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  service()->Unregister(std::move(callback));
-}
-
 void DeviceCloudPolicyManagerAsh::Disconnect() {
   status_uploader_.reset();
   syslog_uploader_.reset();
