@@ -305,7 +305,11 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     this.inputDataProvider.observeKeyEvents(
         this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
     this.addEventListeners();
+    const title: HTMLElement|null =
+        this.shadowRoot!.querySelector('div[slot="title"]');
+    this.$.dialog.getNative().removeAttribute('aria-describedby');
     this.$.dialog.showModal();
+    title?.focus();
   }
 
   // Prevent the default behavior for keydown/keyup only when the keyboard
