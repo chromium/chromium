@@ -240,7 +240,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   // the input page to the navigation panel.
   private createInputSelector(): SelectorItem {
     return this.$.navigationPanel.createSelectorItem(
-        loadTimeData.getString('inputText'), 'input-list',
+        loadTimeData.getString('keyboardText'), 'input-list',
         getDiagnosticsIcon('keyboard'), 'input');
   }
 }

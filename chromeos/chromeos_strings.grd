@@ -1033,8 +1033,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CONNECTIVITY" desc="The label for the connectivity navigation panel item.">
         Connectivity
       </message>
-      <message name="IDS_DIAGNOSTICS_INPUT" desc="The label for the input navigation panel item, which when clicked shows a page offering testers for keyboards, touchpads, and touchscreens.">
-        Input
+      <message name="IDS_DIAGNOSTICS_KEYBOARD" desc="The label for the keyboard navigation panel item, which when clicked shows a page offering testers for keyboards.">
+        Keyboard
       </message>
       <message name="IDS_DIAGNOSTICS_NAME_SERVERS"  desc="Name servers label.">
         {0, plural,
