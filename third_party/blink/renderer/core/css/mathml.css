@@ -29,14 +29,14 @@
 
 /* Universal rules */
 * {
-    font-size: math;
-    display: block math;
+  font-size: math;
+  display: block math;
+  writing-mode: horizontal-tb !important;
 }
 
 /* The <math> element */
 math {
   direction: ltr;
-  writing-mode: horizontal-tb;
   text-indent: 0;
   letter-spacing: normal;
   line-height: normal;

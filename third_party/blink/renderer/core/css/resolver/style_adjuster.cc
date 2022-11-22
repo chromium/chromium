@@ -971,13 +971,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       // https://drafts.csswg.org/css-display/#unbox-mathml
       builder.SetDisplay(EDisplay::kNone);
     }
-
-    if (style.GetWritingMode() != WritingMode::kHorizontalTb) {
-      // TODO(rbuis): this will not work with logical CSS properties.
-      // Disable vertical writing-mode for now.
-      builder.SetWritingMode(WritingMode::kHorizontalTb);
-      builder.UpdateFontOrientation();
-    }
   }
 
   // If this node is sticky it marks the creation of a sticky subtree, which we
