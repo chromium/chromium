@@ -35,25 +35,18 @@ namespace {{namespace}} {
 {% set is_alias = property.alias_for %}
 // {{property.name}}
 
-  {% if property.is_internal or property.runtime_flag and not property.in_origin_trial%}
-CSSExposure {{class_name}}::Exposure() const {
+  {% if not property.known_exposed %}
+CSSExposure {{class_name}}::Exposure(const ExecutionContext* execution_context) const {
     {% if property.runtime_flag %}
-  if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled())
+  if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled(execution_context)) {
     return CSSExposure::kNone;
+  }
     {% endif %}
     {% if property.is_internal %}
   return CSSExposure::kUA;
     {% else %}
   return CSSExposure::kWeb;
     {% endif %}
-}
-  {% endif %}
-
-  {% if property.in_origin_trial %}
-CSSExposure {{class_name}}::Exposure(const ExecutionContext* execution_context) const {
-  if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled(execution_context))
-    return CSSExposure::kNone;
-  return CSSExposure::kWeb;
 }
   {% endif %}
 

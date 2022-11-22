@@ -13,7 +13,10 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -47,6 +50,10 @@ class CSSPropertyTest : public PageTestBase {
     StyleBuilder::ApplyProperty(property, state,
                                 ScopedCSSValue(value, &GetDocument()));
     return state.TakeStyle();
+  }
+
+  const ExecutionContext* GetExecutionContext() const {
+    return GetDocument().GetExecutionContext();
   }
 };
 
@@ -149,6 +156,51 @@ TEST_F(CSSPropertyTest, PairsWithIdenticalValues) {
 TEST_F(CSSPropertyTest, StaticVariableInstanceFlags) {
   EXPECT_FALSE(GetCSSPropertyVariable().IsShorthand());
   EXPECT_FALSE(GetCSSPropertyVariable().IsRepeated());
+}
+
+TEST_F(CSSPropertyTest, OriginTrialTestProperty) {
+  const CSSProperty& property = GetCSSPropertyOriginTrialTestProperty();
+
+  {
+    ScopedOriginTrialsSampleAPIForTest scoped_feature(false);
+
+    EXPECT_FALSE(property.IsWebExposed());
+    EXPECT_FALSE(property.IsUAExposed());
+    EXPECT_EQ(CSSExposure::kNone, property.Exposure());
+  }
+
+  {
+    ScopedOriginTrialsSampleAPIForTest scoped_feature(true);
+
+    EXPECT_TRUE(property.IsWebExposed());
+    EXPECT_TRUE(property.IsUAExposed());
+    EXPECT_EQ(CSSExposure::kWeb, property.Exposure());
+  }
+}
+
+TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
+  const CSSProperty& property = GetCSSPropertyOriginTrialTestProperty();
+
+  // Origin trial not enabled:
+  EXPECT_FALSE(property.IsWebExposed(GetExecutionContext()));
+  EXPECT_FALSE(property.IsUAExposed(GetExecutionContext()));
+  EXPECT_EQ(CSSExposure::kNone, property.Exposure(GetExecutionContext()));
+
+  // Enable it:
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  OriginTrialContext* context = window->GetOriginTrialContext();
+  context->AddFeature(OriginTrialFeature::kOriginTrialsSampleAPI);
+
+  // Context-aware exposure functions should now report the property as
+  // exposed.
+  EXPECT_TRUE(property.IsWebExposed(GetExecutionContext()));
+  EXPECT_TRUE(property.IsUAExposed(GetExecutionContext()));
+  EXPECT_EQ(CSSExposure::kWeb, property.Exposure(GetExecutionContext()));
+
+  // Context-agnostic exposure functions should still report kNone:
+  EXPECT_FALSE(property.IsWebExposed());
+  EXPECT_FALSE(property.IsUAExposed());
+  EXPECT_EQ(CSSExposure::kNone, property.Exposure());
 }
 
 }  // namespace blink

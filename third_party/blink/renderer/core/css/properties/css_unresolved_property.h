@@ -24,21 +24,18 @@ class CORE_EXPORT CSSUnresolvedProperty {
   static const CSSUnresolvedProperty& Get(CSSPropertyID);
   static const CSSUnresolvedProperty* GetAliasProperty(CSSPropertyID);
 
-  bool IsWebExposed() const { return blink::IsWebExposed(Exposure()); }
-  bool IsUAExposed() const { return blink::IsUAExposed(Exposure()); }
-  virtual CSSExposure Exposure() const { return CSSExposure::kWeb; }
-  // Takes origin trial into account
-  bool IsWebExposed(const ExecutionContext* context) const {
+  // Origin trials are taken into account only when a non-nullptr
+  // ExecutionContext is provided.
+  bool IsWebExposed(const ExecutionContext* context = nullptr) const {
     return blink::IsWebExposed(Exposure(context));
   }
-  bool IsUAExposed(const ExecutionContext* context) const {
+  bool IsUAExposed(const ExecutionContext* context = nullptr) const {
     return blink::IsUAExposed(Exposure(context));
   }
-  virtual CSSExposure Exposure(const ExecutionContext* context) const {
-    // css properties that does not override this function should return
-    // the same value as Exposure()
-    return Exposure();
+  virtual CSSExposure Exposure(const ExecutionContext* = nullptr) const {
+    return CSSExposure::kWeb;
   }
+
   virtual bool IsResolvedProperty() const { return false; }
   virtual const char* GetPropertyName() const {
     NOTREACHED();

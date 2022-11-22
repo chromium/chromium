@@ -73,10 +73,7 @@ class {{class_name}} final : public {{property.superclass}} {
   const char* GetPropertyName() const override;
   const WTF::AtomicString& GetPropertyNameAtomicString() const override;
   const char* GetJSPropertyName() const override;
-  {% if property.is_internal or property.runtime_flag and not property.in_origin_trial%}
-  CSSExposure Exposure() const override;
-  {% endif %}
-  {% if property.in_origin_trial %}
+  {% if not property.known_exposed %}
   CSSExposure Exposure(const ExecutionContext*) const override;
   {% endif %}
   {% if not is_alias %}
