@@ -10733,5 +10733,108 @@ class LayerTreeHostUpdateViewportContainerSize : public LayerTreeHostTest {
 
 MULTI_THREAD_TEST_F(LayerTreeHostUpdateViewportContainerSize);
 
+// Ensures that a change in LCD text status forces tilings to be recreated on
+// the pending tree even during accelerated gestures (scrolling and pinch zoom)
+// and animations.
+class LayerTreeHostTestForceRecreateTilingForLCDText
+    : public LayerTreeHostTestWithHelper {
+ public:
+  LayerTreeHostTestForceRecreateTilingForLCDText() {}
+
+  void SetupTree() override {
+    client_.set_fill_with_nonsolid_color(true);
+    client_.set_has_draw_text_op();
+
+    scoped_refptr<FakePictureLayer> root_layer =
+        FakePictureLayer::Create(&client_);
+    root_layer->SetBounds(gfx::Size(150, 150));
+    root_layer->SetIsDrawable(true);
+
+    layer_on_main_ =
+        CreateAndAddFakePictureLayer(gfx::Size(30, 30), root_layer.get());
+
+    layer_tree_host()->SetRootLayer(root_layer);
+    LayerTreeHostTest::SetupTree();
+    client_.set_bounds(root_layer->bounds());
+
+    layer_id_ = layer_on_main_->id();
+  }
+
+  void WillCommit(const CommitState&) override {
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 0:
+        // First frame enables LCD text by marking the layer opaque.
+        layer_on_main_->SetContentsOpaque(true);
+        layer_on_main_->SetBackgroundColor(SkColor4f::FromColor(SK_ColorBLACK));
+        break;
+      case 1:
+        // Now mark the layer non-opaque to disable LCD text.
+        layer_on_main_->SetContentsOpaque(false);
+        break;
+      case 2:
+        // Back to LCD text.
+        layer_on_main_->SetContentsOpaque(true);
+        break;
+      case 3:
+        // Disable LCD text from non-opaque background.
+        layer_on_main_->SetContentsOpaque(false);
+        layer_on_main_->SetBackgroundColor(
+            SkColor4f::FromColor(SK_ColorTRANSPARENT));
+        break;
+    }
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
+        host_impl->pending_tree()->LayerById(layer_id_));
+
+    switch (host_impl->pending_tree()->source_frame_number()) {
+      case 0:
+        ASSERT_FALSE(host_impl->IsPinchGestureActive());
+        EXPECT_TRUE(layer_impl->can_use_lcd_text());
+        EXPECT_TRUE(layer_impl->HighResTiling()->can_use_lcd_text());
+        host_impl->GetInputHandler().PinchGestureBegin(
+            gfx::Point(1, 1), ui::ScrollInputType::kWheel);
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 1:
+        ASSERT_TRUE(host_impl->IsPinchGestureActive());
+        EXPECT_FALSE(layer_impl->can_use_lcd_text());
+        EXPECT_EQ(layer_impl->lcd_text_disallowed_reason(),
+                  LCDTextDisallowedReason::kContentsNotOpaque);
+        EXPECT_FALSE(layer_impl->HighResTiling()->can_use_lcd_text());
+        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1));
+        break;
+      case 2:
+        ASSERT_FALSE(host_impl->IsPinchGestureActive());
+        EXPECT_TRUE(layer_impl->can_use_lcd_text());
+        EXPECT_TRUE(layer_impl->HighResTiling()->can_use_lcd_text());
+        host_impl->GetInputHandler().PinchGestureBegin(
+            gfx::Point(1, 1), ui::ScrollInputType::kWheel);
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 3:
+        ASSERT_TRUE(host_impl->IsPinchGestureActive());
+        EXPECT_FALSE(layer_impl->can_use_lcd_text());
+        EXPECT_EQ(layer_impl->lcd_text_disallowed_reason(),
+                  LCDTextDisallowedReason::kBackgroundColorNotOpaque);
+        EXPECT_FALSE(layer_impl->HighResTiling()->can_use_lcd_text());
+        EndTest();
+        break;
+    }
+  }
+
+ protected:
+  // main and impl thread.
+  int layer_id_;
+
+  // main thread only
+  FakeContentLayerClient client_;
+  scoped_refptr<FakePictureLayer> layer_on_main_;
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestForceRecreateTilingForLCDText);
+
 }  // namespace
 }  // namespace cc

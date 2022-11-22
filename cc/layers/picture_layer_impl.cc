@@ -1229,6 +1229,25 @@ void PictureLayerImpl::RemoveAllTilings() {
 
 bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
     const PictureLayerTiling& high_res) const {
+  // Prefer re-rasterization for a change in LCD status from the following
+  // reasons since visual artifacts of LCD text on non-opaque background are
+  // very noticeable. This state also only changes during a commit and is likely
+  // to be discrete as opposed to every frame of the animation.
+  if (high_res.can_use_lcd_text() &&
+      (lcd_text_disallowed_reason_ ==
+           LCDTextDisallowedReason::kBackgroundColorNotOpaque ||
+       lcd_text_disallowed_reason_ ==
+           LCDTextDisallowedReason::kContentsNotOpaque)) {
+    // LCD text state changes require a commit and the existing tiling is
+    // invalidated before scheduling rasterization work for the new pending
+    // tree. So it shouldn't be possible for the new pending tree to be ready to
+    // activate before we have invalidated the existing high rest tiling. This
+    // is important to avoid activating a tree with missing tiles which can
+    // cause flickering.
+    DCHECK(!layer_tree_impl()->IsSyncTree() ||
+           !layer_tree_impl()->IsReadyToActivate());
+    return true;
+  }
   // We can recreate the tiling if we would invalidate all of its tiles.
   if (high_res.may_contain_low_resolution_tiles())
     return true;
