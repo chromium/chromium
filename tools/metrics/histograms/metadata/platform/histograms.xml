@@ -1748,8 +1748,13 @@ chromium-metrics-reviews@google.com.
   <owner>mutexlox@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
   <summary>
-    Count of crashes (unclean shutdown) during the previous day, or the most
-    recent day the device was in use. Reported at most once a day.
+    Count of unclean OS shutdowns during the previous day, or the most recent
+    day the device was in use. Specifically, the counter is incremented during
+    boot if the OS did not shut down cleanly and the previous shutdown was not
+    due to a kernel crash (kernel crashes are counted elsewere) and the previous
+    shutdown did not occur while the device was suspended (failures while
+    suspended are assumed to be the battery running down). Reported at most once
+    a day.
   </summary>
 </histogram>
 
