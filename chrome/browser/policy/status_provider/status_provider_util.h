@@ -21,6 +21,10 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile);
 // domain of username.
 void SetDomainInUserStatus(base::Value::Dict& user_status);
 
+// Adds a new entry to |dict| with the enterprise profile identifier of the
+// current |profile|.
+void SetProfileId(base::Value::Dict* dict, Profile* profile);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetOffHoursStatus(base::Value::Dict* dict);
 

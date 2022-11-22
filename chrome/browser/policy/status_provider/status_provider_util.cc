@@ -5,6 +5,8 @@
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 
 #include "base/values.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -54,6 +56,18 @@ void SetDomainInUserStatus(base::Value::Dict& user_status) {
   const std::string* username = user_status.FindString(policy::kUsernameKey);
   if (username && !username->empty())
     user_status.Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
+}
+
+void SetProfileId(base::Value::Dict* dict, Profile* profile) {
+  CHECK(profile);
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
+  if (!profile_id_service)
+    return;
+
+  auto profile_id = profile_id_service->GetProfileId();
+  if (profile_id)
+    dict->Set("profileId", profile_id.value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
