@@ -348,6 +348,11 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
       PrintToStderr(" SEGV_MAPERR ");
     else if (info->si_code == SEGV_ACCERR)
       PrintToStderr(" SEGV_ACCERR ");
+#if defined(ARCH_CPU_X86_64) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+    else if (info->si_code == SI_KERNEL)
+      PrintToStderr(" SI_KERNEL");
+#endif
     else
       PrintToStderr(" <unknown> ");
   }
@@ -368,6 +373,16 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
         "https://www.chromium.org/developers/testing/control-flow-integrity\n");
   }
 #endif  // BUILDFLAG(CFI_ENFORCEMENT_TRAP)
+
+#if defined(ARCH_CPU_X86_64) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+  if (signal == SIGSEGV && info->si_code == SI_KERNEL) {
+    PrintToStderr(
+        " Possibly a General Protection Fault, can be due to a non-canonical "
+        "address dereference. See \"Intel 64 and IA-32 Architectures Software "
+        "Developer’s Manual\", Volume 1, Section 3.3.7.1.\n");
+  }
+#endif
 
   debug::StackTrace().Print();
 
