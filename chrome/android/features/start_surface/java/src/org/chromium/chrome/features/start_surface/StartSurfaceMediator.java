@@ -830,9 +830,18 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // the TabSelectionEditor dialog. Therefore, we need to check both controllers as well.
         if (mSecondaryTasksSurfaceController != null
                 && mSecondaryTasksSurfaceController.isDialogVisible()) {
-            return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+            boolean ret = mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+            assert !BackPressManager.isEnabled()
+                    || ret : String.format("Wrong back press state: %s, start surface: %s",
+                                     mSecondaryTasksSurfaceController.getClass().getName(),
+                                     mStartSurfaceState);
+            return ret;
         } else if (mController.isDialogVisible()) {
-            return mController.onBackPressed(isOnHomepage);
+            boolean ret = mController.onBackPressed(isOnHomepage);
+            assert !BackPressManager.isEnabled()
+                    || ret : String.format("Wrong back press state: %s, start surface: %s",
+                                     mController.getClass().getName(), mStartSurfaceState);
+            return ret;
         }
 
         if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
@@ -844,7 +853,12 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 ReturnToChromeUtil.recordBackNavigationToStart("FromTabSwitcher");
                 return true;
             } else {
-                return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+                boolean ret = mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+                assert !BackPressManager.isEnabled()
+                        || ret : String.format("Wrong back press state: %s, start surface: %s",
+                                         mSecondaryTasksSurfaceController.getClass().getName(),
+                                         mStartSurfaceState);
+                return ret;
             }
         }
 
@@ -855,7 +869,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        return mController.onBackPressed(isOnHomepage);
+        boolean ret = mController.onBackPressed(isOnHomepage);
+        assert !BackPressManager.isEnabled()
+                || ret : String.format("Wrong back press state: %s, start surface: %s",
+                                 mController.getClass().getName(), mStartSurfaceState);
+        return ret;
     }
 
     void maybeDestroyFeedPlaceholder() {
@@ -867,8 +885,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     @Override
     public void handleBackPress() {
-        boolean ret = onBackPressedInternal();
-        assert ret;
+        onBackPressedInternal();
         notifyBackPressStateChanged();
     }
 
@@ -1082,7 +1099,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         if (isVisible) {
             if (mSecondaryTasksSurfacePropertyModel == null) {
-                mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
+                setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceInitializer.initialize());
             }
             if (mSecondaryTasksSurfacePropertyModel != null) {
                 mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, false);

@@ -1527,6 +1527,7 @@ public class StartSurfaceMediatorUnitTest {
                 "Should not intercept back press by default", mediator.shouldInterceptBackPress());
         mControllerDialogVisibleSupplier.set(true);
         Assert.assertTrue(mediator.shouldInterceptBackPress());
+        doReturn(true).when(mMainTabGridController).onBackPressed(false);
         mediator.onBackPressed();
         verify(mMainTabGridController).onBackPressed(false);
 
@@ -1536,6 +1537,7 @@ public class StartSurfaceMediatorUnitTest {
         mControllerDialogVisibleSupplier.set(true);
         mSecondaryControllerDialogVisibleSupplier.set(true);
         Assert.assertTrue(mediator.shouldInterceptBackPress());
+        doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed(false);
         mediator.onBackPressed();
         verify(mMainTabGridController).onBackPressed(false);
         verify(mSecondaryTasksSurfaceController,
