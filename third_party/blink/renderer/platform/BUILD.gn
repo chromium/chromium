@@ -69,6 +69,28 @@ blink_python_runner("runtime_enabled_features") {
   ]
 }
 
+blink_python_runner("runtime_feature_state_override_context") {
+  script = "../build/scripts/make_runtime_feature_state_override_context.py"
+
+  inputs = scripts_for_json5_files + [
+             "../build/scripts/make_runtime_feature_state_override_context.py",
+             "runtime_enabled_features.json5",
+             "../build/scripts/templates/runtime_feature_state_override_context.h.tmpl",
+             "../build/scripts/templates/runtime_feature_state_override_context.cc.tmpl",
+           ]
+  outputs = [
+    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.h",
+    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.cc",
+  ]
+
+  args = [
+    rebase_path("runtime_enabled_features.json5", root_build_dir),
+    "--output_dir",
+    rebase_path("$blink_platform_output_dir/runtime_feature_state",
+                root_build_dir),
+  ]
+}
+
 blink_python_runner("color_data") {
   script = "../build/scripts/gperf.py"
 
@@ -121,6 +143,7 @@ group("make_platform_generated") {
     ":color_data",
     ":font_family_names",
     ":runtime_enabled_features",
+    ":runtime_feature_state_override_context",
     "//third_party/blink/renderer/platform/network:make_generated",
   ]
 }
@@ -1546,7 +1569,8 @@ component("platform") {
   # Add in the generated files.
   sources += get_target_outputs(":character_data") +
              get_target_outputs(":color_data") +
-             get_target_outputs(":font_family_names")
+             get_target_outputs(":font_family_names") +
+             get_target_outputs(":runtime_feature_state_override_context")
 
   foreach(_output, get_target_outputs(":runtime_enabled_features")) {
     if (get_path_info(_output, "extension") != "pickle") {
