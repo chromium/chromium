@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
-#include "ash/components/phonehub/icon_decoder.h"
-#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/constants/ash_features.h"
@@ -52,40 +50,6 @@ class FakeClickHandler : public RecentAppClickObserver {
 }  // namespace
 
 class RecentAppsInteractionHandlerTest : public testing::Test {
-  class TestDecoderDelegate : public IconDecoderImpl::DecoderDelegate {
-   public:
-    TestDecoderDelegate() = default;
-    ~TestDecoderDelegate() override = default;
-
-    void Decode(const IconDecoder::DecodingData& data,
-                data_decoder::DecodeImageCallback callback) override {
-      pending_callbacks_[data.id] = std::move(callback);
-    }
-
-    void CompleteRequest(const unsigned long id) {
-      SkBitmap test_bitmap;
-      test_bitmap.allocN32Pixels(id % 10, 1);
-      std::move(pending_callbacks_.at(id)).Run(test_bitmap);
-      pending_callbacks_.erase(id);
-    }
-
-    void FailRequest(const unsigned long id) {
-      SkBitmap test_bitmap;
-      std::move(pending_callbacks_.at(id)).Run(test_bitmap);
-      pending_callbacks_.erase(id);
-    }
-
-    void CompleteAllRequests() {
-      for (auto& it : pending_callbacks_)
-        CompleteRequest(it.first);
-      pending_callbacks_.clear();
-    }
-
-   private:
-    base::flat_map<unsigned long, data_decoder::DecodeImageCallback>
-        pending_callbacks_;
-  };
-
  protected:
   RecentAppsInteractionHandlerTest() = default;
   RecentAppsInteractionHandlerTest(const RecentAppsInteractionHandlerTest&) =
@@ -102,14 +66,9 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
-    icon_decoder_ = std::make_unique<IconDecoderImpl>();
-    icon_decoder_.get()->decoder_delegate_ =
-        std::make_unique<TestDecoderDelegate>();
-    decoder_delegate_ = static_cast<TestDecoderDelegate*>(
-        icon_decoder_.get()->decoder_delegate_.get());
     interaction_handler_ = std::make_unique<RecentAppsInteractionHandlerImpl>(
         &pref_service_, fake_multidevice_setup_client_.get(),
-        &fake_multidevice_feature_access_manager_, icon_decoder_.get());
+        &fake_multidevice_feature_access_manager_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -280,8 +239,6 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
   base::test::ScopedFeatureList feature_list_;
-  TestDecoderDelegate* decoder_delegate_;
-  std::unique_ptr<IconDecoderImpl> icon_decoder_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
@@ -334,72 +291,70 @@ TEST_F(RecentAppsInteractionHandlerTest, RecentAppsUpdated) {
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, SetStreamableApps) {
-  proto::StreamableApps streamable_apps;
-  auto* app1 = streamable_apps.add_apps();
-  app1->set_visible_name("VisName1");
-  app1->set_package_name("App1");
-  app1->set_icon("icon1");
-
-  auto* app2 = streamable_apps.add_apps();
-  app2->set_visible_name("VisName2");
-  app2->set_package_name("App2");
-  app2->set_icon("icon2");
+  std::vector<Notification::AppMetadata> streamable_apps;
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App1", "com.fakeapp1", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1));
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App2", "com.fakeapp2", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1));
 
   handler().SetStreamableApps(streamable_apps);
 
   EXPECT_EQ(2U, handler().recent_app_metadata_list_for_testing()->size());
-  EXPECT_EQ("App1", handler()
-                        .recent_app_metadata_list_for_testing()
-                        ->at(0)
-                        .first.package_name);
-  EXPECT_EQ("App2", handler()
-                        .recent_app_metadata_list_for_testing()
-                        ->at(1)
-                        .first.package_name);
+  EXPECT_EQ("com.fakeapp1", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(0)
+                                .first.package_name);
+  EXPECT_EQ("com.fakeapp2", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(1)
+                                .first.package_name);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,
        SetStreamableApps_ClearsPreviousState) {
-  proto::StreamableApps streamable_apps;
-  auto* app1 = streamable_apps.add_apps();
-  app1->set_visible_name("VisName1");
-  app1->set_package_name("App1");
-  app1->set_icon("icon1");
-
-  auto* app2 = streamable_apps.add_apps();
-  app2->set_visible_name("VisName2");
-  app2->set_package_name("App2");
-  app2->set_icon("icon2");
+  std::vector<Notification::AppMetadata> streamable_apps;
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App1", "com.fakeapp1", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1));
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App2", "com.fakeapp2", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1));
 
   handler().SetStreamableApps(streamable_apps);
 
   EXPECT_EQ(2U, handler().recent_app_metadata_list_for_testing()->size());
-  EXPECT_EQ("App1", handler()
-                        .recent_app_metadata_list_for_testing()
-                        ->at(0)
-                        .first.package_name);
-  EXPECT_EQ("App2", handler()
-                        .recent_app_metadata_list_for_testing()
-                        ->at(1)
-                        .first.package_name);
+  EXPECT_EQ("com.fakeapp1", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(0)
+                                .first.package_name);
+  EXPECT_EQ("com.fakeapp2", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(1)
+                                .first.package_name);
 
-  proto::StreamableApps streamable_apps2;
-  auto* app3 = streamable_apps2.add_apps();
-  app3->set_visible_name("VisName3");
-  app3->set_package_name("App3");
-  app3->set_icon("icon3");
+  std::vector<Notification::AppMetadata> streamable_apps2;
+  streamable_apps2.emplace_back(
+      Notification::AppMetadata(u"App3", "com.fakeapp3", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1));
 
   handler().SetStreamableApps(streamable_apps2);
 
   EXPECT_EQ(1U, handler().recent_app_metadata_list_for_testing()->size());
-  EXPECT_EQ("App3", handler()
-                        .recent_app_metadata_list_for_testing()
-                        ->at(0)
-                        .first.package_name);
+  EXPECT_EQ("com.fakeapp3", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(0)
+                                .first.package_name);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, SetStreamableApps_EmptyList) {
-  proto::StreamableApps streamable_apps;
+  std::vector<Notification::AppMetadata> streamable_apps;
 
   handler().SetStreamableApps(streamable_apps);
 

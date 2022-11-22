@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_
 #define ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_
 
+#include "ash/components/phonehub/notification.h"
 #include "base/callback.h"
 #include "ui/gfx/image/image.h"
 

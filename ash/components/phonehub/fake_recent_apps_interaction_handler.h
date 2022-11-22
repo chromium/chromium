@@ -43,7 +43,8 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) override;
   std::vector<Notification::AppMetadata> FetchRecentAppMetadataList() override;
-  void SetStreamableApps(const proto::StreamableApps& streamable_apps) override;
+  void SetStreamableApps(
+      const std::vector<Notification::AppMetadata>& streamable_apps) override;
 
  private:
   void ComputeAndUpdateUiState();

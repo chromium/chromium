@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
@@ -46,13 +45,10 @@ void RecentAppsInteractionHandlerImpl::RegisterPrefs(
 RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    MultideviceFeatureAccessManager* multidevice_feature_access_manager,
-    IconDecoder* icon_decoder)
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
-      multidevice_feature_access_manager_(multidevice_feature_access_manager),
-      icon_decoder_(icon_decoder) {
-  DCHECK(icon_decoder);
+      multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   multidevice_setup_client_->AddObserver(this);
   multidevice_feature_access_manager_->AddObserver(this);
 }
@@ -179,6 +175,7 @@ void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
   }
   pref_service_->SetList(prefs::kRecentAppsHistory,
                          std::move(app_metadata_value_list));
+  has_loaded_prefs_ = true;
 }
 
 void RecentAppsInteractionHandlerImpl::OnFeatureStatesChanged(
@@ -203,54 +200,16 @@ void RecentAppsInteractionHandlerImpl::OnAppsAccessChanged() {
 }
 
 void RecentAppsInteractionHandlerImpl::SetStreamableApps(
-    const proto::StreamableApps& streamable_apps) {
+    const std::vector<Notification::AppMetadata>& streamable_apps) {
   PA_LOG(INFO) << "ClearRecentAppMetadataListAndPref to update the list of "
-               << streamable_apps.apps_size() << " items.";
+               << streamable_apps.size() << " items.";
   ClearRecentAppMetadataListAndPref();
-  std::unique_ptr<std::vector<IconDecoder::DecodingData>> decoding_data_list =
-      std::make_unique<std::vector<IconDecoder::DecodingData>>();
-  std::hash<std::string> str_hash;
-  gfx::Image image =
-      gfx::Image(CreateVectorIcon(kPhoneHubPhoneIcon, gfx::kGoogleGrey700));
-  for (const auto& app : streamable_apps.apps()) {
-    // TODO(nayebi): AppMetadata is no longer limited to Notification class,
-    // let's move it outside of the Notification class.s2
-    recent_app_metadata_list_.emplace_back(
-        Notification::AppMetadata(base::UTF8ToUTF16(app.visible_name()),
-                                  app.package_name(), image, absl::nullopt,
-                                  app.icon_styling() ==
-                                      proto::NotificationIconStyling::
-                                          ICON_STYLE_MONOCHROME_SMALL_ICON,
-                                  app.user_id()),
-        base::Time::FromDoubleT(0));
-    std::string key = app.package_name() + base::NumberToString(app.user_id());
-    decoding_data_list->emplace_back(
-        IconDecoder::DecodingData(str_hash(key), app.icon()));
+
+  // TODO(b/260015890): Save at most 6 apps.
+  for (const auto& app : streamable_apps) {
+    recent_app_metadata_list_.emplace_back(app, base::Time::FromDoubleT(0));
   }
 
-  icon_decoder_->BatchDecode(
-      std::move(decoding_data_list),
-      base::BindOnce(&RecentAppsInteractionHandlerImpl::IconsDecoded,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void RecentAppsInteractionHandlerImpl::IconsDecoded(
-    std::unique_ptr<std::vector<IconDecoder::DecodingData>>
-        decoding_data_list) {
-  std::hash<std::string> str_hash;
-  for (const IconDecoder::DecodingData& decoding_data : *decoding_data_list) {
-    if (decoding_data.result.IsEmpty())
-      continue;
-    // find the associated app metadata
-    for (auto& app_metadata : recent_app_metadata_list_) {
-      std::string key = app_metadata.first.package_name +
-                        base::NumberToString(app_metadata.first.user_id);
-      if (decoding_data.id == str_hash(key)) {
-        app_metadata.first.icon = decoding_data.result;
-        continue;
-      }
-    }
-  }
   SaveRecentAppMetadataListToPref();
   ComputeAndUpdateUiState();
 }
@@ -297,6 +256,7 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
 void RecentAppsInteractionHandlerImpl::ClearRecentAppMetadataListAndPref() {
   recent_app_metadata_list_.clear();
   pref_service_->ClearPref(prefs::kRecentAppsHistory);
+  has_loaded_prefs_ = false;
 }
 
 }  // namespace phonehub

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
@@ -19,6 +20,8 @@
 #include "ash/components/phonehub/fake_notification_manager.h"
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/fake_screen_lock_manager.h"
+#include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/notification_manager.h"
 #include "ash/components/phonehub/notification_processor.h"
@@ -81,6 +84,41 @@ class AppStreamManagerObserver : public AppStreamManager::Observer {
 };
 
 class PhoneStatusProcessorTest : public testing::Test {
+  class TestDecoderDelegate : public IconDecoderImpl::DecoderDelegate {
+   public:
+    TestDecoderDelegate() = default;
+    ~TestDecoderDelegate() override = default;
+
+    void Decode(const IconDecoder::DecodingData& data,
+                data_decoder::DecodeImageCallback callback) override {
+      pending_callbacks_[data.id] = std::move(callback);
+      CompleteRequest(data.id);
+    }
+
+    void CompleteRequest(const unsigned long id) {
+      SkBitmap test_bitmap;
+      test_bitmap.allocN32Pixels(id % 10, 1);
+      std::move(pending_callbacks_.at(id)).Run(test_bitmap);
+      pending_callbacks_.erase(id);
+    }
+
+    void FailRequest(const unsigned long id) {
+      SkBitmap test_bitmap;
+      std::move(pending_callbacks_.at(id)).Run(test_bitmap);
+      pending_callbacks_.erase(id);
+    }
+
+    void CompleteAllRequests() {
+      for (auto& it : pending_callbacks_)
+        CompleteRequest(it.first);
+      pending_callbacks_.clear();
+    }
+
+   private:
+    base::flat_map<unsigned long, data_decoder::DecodeImageCallback>
+        pending_callbacks_;
+  };
+
  protected:
   PhoneStatusProcessorTest()
       : test_remote_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
@@ -92,7 +130,7 @@ class PhoneStatusProcessorTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubCameraRoll},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kEcheLauncher});
 
     fake_do_not_disturb_controller_ =
         std::make_unique<FakeDoNotDisturbController>();
@@ -112,6 +150,13 @@ class PhoneStatusProcessorTest : public testing::Test {
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_recent_apps_interaction_handler_ =
         std::make_unique<FakeRecentAppsInteractionHandler>();
+    icon_decoder_ = std::make_unique<IconDecoderImpl>();
+    icon_decoder_.get()->decoder_delegate_ =
+        std::make_unique<TestDecoderDelegate>();
+    decoder_delegate_ = static_cast<TestDecoderDelegate*>(
+        icon_decoder_.get()->decoder_delegate_.get());
+    app_stream_launcher_data_model_ =
+        std::make_unique<AppStreamLauncherDataModel>();
 
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
   }
@@ -125,7 +170,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_screen_lock_manager_.get(), fake_notification_processor_.get(),
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
         fake_recent_apps_interaction_handler_.get(), &pref_service_,
-        &app_stream_manager_);
+        &app_stream_manager_, app_stream_launcher_data_model_.get(),
+        icon_decoder_.get());
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -175,9 +221,12 @@ class PhoneStatusProcessorTest : public testing::Test {
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeRecentAppsInteractionHandler>
       fake_recent_apps_interaction_handler_;
+  std::unique_ptr<IconDecoderImpl> icon_decoder_;
+  TestDecoderDelegate* decoder_delegate_;
   TestingPrefServiceSimple pref_service_;
   AppStreamManager app_stream_manager_;
   AppStreamManagerObserver app_stream_manager_observer_;
+  std::unique_ptr<AppStreamLauncherDataModel> app_stream_launcher_data_model_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
 };
 
@@ -389,6 +438,133 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
       fake_recent_apps_interaction_handler_->user_states();
   EXPECT_EQ(1u, user_states[0].user_id);
   EXPECT_EQ(true, user_states[0].is_enabled);
+
+  EXPECT_TRUE(app_stream_launcher_data_model_->GetAppsList()->empty());
+}
+
+TEST_F(PhoneStatusProcessorTest,
+       PhoneStatusSnapshotUpdate_AppStreamLauncher_enableded) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
+                            features::kEcheLauncher},
+      /*disabled_features=*/{});
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
+  expected_phone_properties->set_notification_mode(
+      proto::NotificationMode::DO_NOT_DISTURB_ON);
+  expected_phone_properties->set_profile_type(
+      proto::ProfileType::DEFAULT_PROFILE);
+  expected_phone_properties->set_notification_access_state(
+      proto::NotificationAccessState::ACCESS_NOT_GRANTED);
+  expected_phone_properties->set_ring_status(
+      proto::FindMyDeviceRingStatus::RINGING);
+  expected_phone_properties->set_battery_percentage(24u);
+  expected_phone_properties->set_charging_state(
+      proto::ChargingState::CHARGING_AC);
+  expected_phone_properties->set_signal_strength(
+      proto::SignalStrength::FOUR_BARS);
+  expected_phone_properties->set_mobile_provider("google");
+  expected_phone_properties->set_connection_state(
+      proto::MobileConnectionState::SIM_WITH_RECEPTION);
+  expected_phone_properties->set_screen_lock_state(
+      proto::ScreenLockState::SCREEN_LOCK_UNKNOWN);
+  proto::CameraRollAccessState* access_state =
+      expected_phone_properties->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  proto::FeatureSetupConfig* feature_setup_config =
+      expected_phone_properties->mutable_feature_setup_config();
+  feature_setup_config->set_feature_setup_request_supported(true);
+  expected_phone_properties->set_eche_feature_status(
+      proto::FeatureStatus::FEATURE_STATUS_SUPPORTED);
+
+  expected_phone_properties->add_user_states();
+  proto::UserState* mutable_user_state =
+      expected_phone_properties->mutable_user_states(0);
+  mutable_user_state->set_user_id(1u);
+  mutable_user_state->set_is_quiet_mode_enabled(false);
+
+  proto::PhoneStatusSnapshot expected_snapshot;
+  expected_snapshot.set_allocated_properties(
+      expected_phone_properties.release());
+  expected_snapshot.add_notifications();
+  InitializeNotificationProto(expected_snapshot.mutable_notifications(0),
+                              /*id=*/0u);
+  auto* streamable_apps = expected_snapshot.mutable_streamable_apps();
+  auto* app = streamable_apps->add_apps();
+  app->set_package_name("pkg1");
+  app->set_visible_name("vis");
+
+  auto* app2 = streamable_apps->add_apps();
+  app2->set_package_name("pkg2");
+  app2->set_visible_name("a_vis");  // Test alphbetical sort.
+
+  // Simulate feature set to enabled and connected.
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+
+  // Simulate receiving a proto message.
+  fake_message_receiver_->NotifyPhoneStatusSnapshotReceived(expected_snapshot);
+
+  EXPECT_EQ(1u, fake_notification_manager_->num_notifications());
+  EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
+            *mutable_phone_model_->phone_name());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
+            fake_find_my_device_controller_->GetPhoneRingingStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
+      fake_multidevice_feature_access_manager_->GetCameraRollAccessStatus());
+  EXPECT_TRUE(fake_multidevice_feature_access_manager_
+                  ->GetFeatureSetupRequestSupported());
+  EXPECT_EQ(ScreenLockManager::LockStatus::kUnknown,
+            fake_screen_lock_manager_->GetLockStatus());
+
+  absl::optional<PhoneStatusModel> phone_status_model =
+      mutable_phone_model_->phone_status_model();
+  EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
+            phone_status_model->charging_state());
+  EXPECT_EQ(24u, phone_status_model->battery_percentage());
+  EXPECT_EQ(u"google",
+            phone_status_model->mobile_connection_metadata()->mobile_provider);
+  EXPECT_EQ(PhoneStatusModel::SignalStrength::kFourBars,
+            phone_status_model->mobile_connection_metadata()->signal_strength);
+  EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
+            phone_status_model->mobile_status());
+
+  EXPECT_EQ(ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported,
+            GetEcheSupportReceivedFromPhoneHub());
+
+  // Change feature status to disconnected.
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kEnabledButDisconnected);
+
+  EXPECT_EQ(0u, fake_notification_manager_->num_notifications());
+  EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
+            *mutable_phone_model_->phone_name());
+  EXPECT_FALSE(mutable_phone_model_->phone_status_model().has_value());
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      fake_recent_apps_interaction_handler_->user_states();
+  EXPECT_EQ(1u, user_states[0].user_id);
+  EXPECT_EQ(true, user_states[0].is_enabled);
+
+  EXPECT_EQ(2u,
+            app_stream_launcher_data_model_->GetAppsListSortedByName()->size());
+  EXPECT_EQ(u"a_vis", app_stream_launcher_data_model_->GetAppsListSortedByName()
+                          ->at(0)
+                          .visible_app_name);
+  EXPECT_EQ(u"vis", app_stream_launcher_data_model_->GetAppsListSortedByName()
+                        ->at(1)
+                        .visible_app_name);
 }
 
 TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {

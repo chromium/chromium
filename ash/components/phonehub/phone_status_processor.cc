@@ -12,6 +12,7 @@
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 #include "ash/components/phonehub/find_my_device_controller.h"
 #include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
@@ -22,9 +23,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 namespace phonehub {
@@ -200,7 +205,9 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     MutablePhoneModel* phone_model,
     RecentAppsInteractionHandler* recent_apps_interaction_handler,
     PrefService* pref_service,
-    AppStreamManager* app_stream_manager)
+    AppStreamManager* app_stream_manager,
+    AppStreamLauncherDataModel* app_stream_launcher_data_model,
+    IconDecoder* icon_decoder)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
@@ -212,7 +219,9 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       phone_model_(phone_model),
       recent_apps_interaction_handler_(recent_apps_interaction_handler),
       pref_service_(pref_service),
-      app_stream_manager_(app_stream_manager) {
+      app_stream_manager_(app_stream_manager),
+      app_stream_launcher_data_model_(app_stream_launcher_data_model),
+      icon_decoder_(icon_decoder) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
@@ -223,6 +232,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(phone_model_);
   DCHECK(pref_service_);
   DCHECK(app_stream_manager_);
+  DCHECK(icon_decoder_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -365,7 +375,7 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
   if (features::IsEcheSWAEnabled()) {
-    SetStreamableApps(phone_status_snapshot.streamable_apps());
+    GenerateAppListWithIcons(phone_status_snapshot.streamable_apps());
   }
   multidevice_feature_access_manager_
       ->UpdatedFeatureSetupConnectionStatusIfNeeded();
@@ -402,10 +412,61 @@ void PhoneStatusProcessor::OnHostStatusChanged(
   MaybeSetPhoneModelName(host_device_with_status.second);
 }
 
-void PhoneStatusProcessor::SetStreamableApps(
+void PhoneStatusProcessor::GenerateAppListWithIcons(
     const proto::StreamableApps& streamable_apps) {
-  if (streamable_apps.apps_size() > 0 && recent_apps_interaction_handler_)
-    recent_apps_interaction_handler_->SetStreamableApps(streamable_apps);
+  if (streamable_apps.apps_size() == 0) {
+    return;
+  }
+  std::unique_ptr<std::vector<IconDecoder::DecodingData>> decoding_data_list =
+      std::make_unique<std::vector<IconDecoder::DecodingData>>();
+  std::hash<std::string> str_hash;
+  gfx::Image image =
+      gfx::Image(CreateVectorIcon(kPhoneHubPhoneIcon, gfx::kGoogleGrey700));
+  std::vector<Notification::AppMetadata> apps_list;
+  for (const auto& app : streamable_apps.apps()) {
+    // TODO(nayebi): AppMetadata is no longer limited to Notification class,
+    // let's move it outside of the Notification class.s2
+    apps_list.emplace_back(Notification::AppMetadata(
+        base::UTF8ToUTF16(app.visible_name()), app.package_name(), image,
+        absl::nullopt,
+        app.icon_styling() ==
+            proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON,
+        app.user_id()));
+    std::string key = app.package_name() + base::NumberToString(app.user_id());
+    decoding_data_list->emplace_back(
+        IconDecoder::DecodingData(str_hash(key), app.icon()));
+  }
+
+  icon_decoder_->BatchDecode(std::move(decoding_data_list),
+                             base::BindOnce(&PhoneStatusProcessor::IconsDecoded,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            base::OwnedRef(apps_list)));
+}
+
+void PhoneStatusProcessor::IconsDecoded(
+    std::vector<Notification::AppMetadata>& apps_list,
+    std::unique_ptr<std::vector<IconDecoder::DecodingData>> decode_items) {
+  std::hash<std::string> str_hash;
+  for (const IconDecoder::DecodingData& decoding_data : *decode_items) {
+    if (decoding_data.result.IsEmpty())
+      continue;
+    // find the associated app metadata
+    for (auto& app_metadata : apps_list) {
+      std::string key = app_metadata.package_name +
+                        base::NumberToString(app_metadata.user_id);
+      if (decoding_data.id == str_hash(key)) {
+        app_metadata.icon = decoding_data.result;
+        continue;
+      }
+    }
+  }
+  if (recent_apps_interaction_handler_) {
+    recent_apps_interaction_handler_->SetStreamableApps(apps_list);
+  }
+
+  if (features::IsEcheLauncherEnabled() && app_stream_launcher_data_model_) {
+    app_stream_launcher_data_model_->SetAppList(apps_list);
+  }
 }
 
 }  // namespace phonehub

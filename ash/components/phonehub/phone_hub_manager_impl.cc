@@ -123,8 +123,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               ? std::make_unique<RecentAppsInteractionHandlerImpl>(
                     pref_service,
                     multidevice_setup_client,
-                    multidevice_feature_access_manager_.get(),
-                    icon_decoder_.get())
+                    multidevice_feature_access_manager_.get())
               : nullptr),
       app_stream_manager_(std::make_unique<AppStreamManager>()),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
@@ -139,7 +138,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           phone_model_.get(),
           recent_apps_interaction_handler_.get(),
           pref_service,
-          app_stream_manager_.get())),
+          app_stream_manager_.get(),
+          app_stream_launcher_data_model_.get(),
+          icon_decoder_.get())),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
                                                  user_action_recorder_.get(),

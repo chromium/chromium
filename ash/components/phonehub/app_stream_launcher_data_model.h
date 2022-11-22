@@ -5,6 +5,8 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_APP_STREAM_LAUNCHER_DATA_MODEL_H_
 #define ASH_COMPONENTS_PHONEHUB_APP_STREAM_LAUNCHER_DATA_MODEL_H_
 
+#include <memory>
+#include "ash/components/phonehub/notification.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -20,6 +22,7 @@ class AppStreamLauncherDataModel {
     virtual void OnShouldShowMiniLauncherChanged() = 0;
   };
 
+  AppStreamLauncherDataModel();
   AppStreamLauncherDataModel(const AppStreamLauncherDataModel&) = delete;
   AppStreamLauncherDataModel& operator=(const AppStreamLauncherDataModel&) =
       delete;
@@ -39,14 +42,17 @@ class AppStreamLauncherDataModel {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
- public:
-  AppStreamLauncherDataModel();
+  void SetAppList(
+      const std::vector<Notification::AppMetadata>& streamable_apps);
+  const std::vector<Notification::AppMetadata>* GetAppsList();
+  const std::vector<Notification::AppMetadata>* GetAppsListSortedByName();
 
  private:
   // Indicates if the Mini Launcher should be shown when the status is
   // "phone connected" or not.
   bool should_show_app_stream_launcher_ = false;
-
+  std::vector<Notification::AppMetadata> apps_list_;
+  std::vector<Notification::AppMetadata> apps_list_sorted_by_name_;
   base::ObserverList<Observer> observer_list_;
 };
 

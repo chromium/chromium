@@ -7,7 +7,9 @@
 
 #include <google/protobuf/repeated_field.h>
 
+#include "app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/feature_status_provider.h"
+#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -46,7 +48,9 @@ class PhoneStatusProcessor
       MutablePhoneModel* phone_model,
       RecentAppsInteractionHandler* recent_apps_interaction_handler,
       PrefService* pref_service,
-      AppStreamManager* app_stream_manager);
+      AppStreamManager* app_stream_manager,
+      AppStreamLauncherDataModel* app_stream_launcher_data_model,
+      IconDecoder* icon_decoder_);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -71,8 +75,6 @@ class PhoneStatusProcessor
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
-  void SetStreamableApps(const proto::StreamableApps& streamable_apps);
-
   void ProcessReceivedNotifications(
       const RepeatedPtrField<proto::Notification>& notification_protos);
 
@@ -84,6 +86,12 @@ class PhoneStatusProcessor
 
   void SetEcheFeatureStatusReceivedFromPhoneHub(
       proto::FeatureStatus eche_feature_status);
+
+  void GenerateAppListWithIcons(const proto::StreamableApps& streamable_apps);
+
+  void IconsDecoded(
+      std::vector<Notification::AppMetadata>& apps_list,
+      std::unique_ptr<std::vector<IconDecoder::DecodingData>> decode_items);
 
   DoNotDisturbController* do_not_disturb_controller_;
   FeatureStatusProvider* feature_status_provider_;
@@ -97,6 +105,8 @@ class PhoneStatusProcessor
   RecentAppsInteractionHandler* recent_apps_interaction_handler_;
   PrefService* pref_service_;
   AppStreamManager* app_stream_manager_;
+  AppStreamLauncherDataModel* app_stream_launcher_data_model_;
+  IconDecoder* icon_decoder_;
 
   base::WeakPtrFactory<PhoneStatusProcessor> weak_ptr_factory_{this};
 };

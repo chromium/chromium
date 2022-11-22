@@ -71,7 +71,7 @@ class RecentAppsInteractionHandler {
   virtual std::vector<Notification::AppMetadata>
   FetchRecentAppMetadataList() = 0;
   virtual void SetStreamableApps(
-      const proto::StreamableApps& streamable_apps) = 0;
+      const std::vector<Notification::AppMetadata>& streamable_apps) = 0;
 
  protected:
   RecentAppsInteractionHandler();

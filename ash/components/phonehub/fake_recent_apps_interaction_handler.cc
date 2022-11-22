@@ -56,7 +56,7 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
 }
 
 void FakeRecentAppsInteractionHandler::SetStreamableApps(
-    const proto::StreamableApps& streamable_apps) {
+    const std::vector<Notification::AppMetadata>& streamable_apps) {
   // TODO(nayebi): Do we need to implement this?
 }
 

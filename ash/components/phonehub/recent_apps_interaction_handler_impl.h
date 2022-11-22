@@ -8,8 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "ash/components/phonehub/icon_decoder.h"
-#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
@@ -38,8 +36,7 @@ class RecentAppsInteractionHandlerImpl
   explicit RecentAppsInteractionHandlerImpl(
       PrefService* pref_service,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      MultideviceFeatureAccessManager* multidevice_feature_access_manager,
-      IconDecoder* icon_decoder);
+      MultideviceFeatureAccessManager* multidevice_feature_access_manager);
   ~RecentAppsInteractionHandlerImpl() override;
 
   // RecentAppsInteractionHandler:
@@ -64,9 +61,8 @@ class RecentAppsInteractionHandlerImpl
   void OnNotificationAccessChanged() override;
   void OnAppsAccessChanged() override;
 
-  void SetStreamableApps(const proto::StreamableApps& streamable_apps) override;
-  void IconsDecoded(std::unique_ptr<std::vector<IconDecoder::DecodingData>>
-                        decoding_data_list);
+  void SetStreamableApps(
+      const std::vector<Notification::AppMetadata>& streamable_apps) override;
 
   std::vector<std::pair<Notification::AppMetadata, base::Time>>*
   recent_app_metadata_list_for_testing() {
@@ -92,7 +88,6 @@ class RecentAppsInteractionHandlerImpl
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
-  IconDecoder* icon_decoder_;
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{
       this};

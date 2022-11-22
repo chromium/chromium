@@ -8,7 +8,6 @@
 #include "ash/components/phonehub/icon_decoder.h"
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -31,7 +30,7 @@ class IconDecoderImpl : public IconDecoder {
  private:
   friend class IconDecoderImplTest;
   friend class TestDecoderDelegate;
-  friend class RecentAppsInteractionHandlerTest;
+  friend class PhoneStatusProcessorTest;
 
   // Delegate class that decodes icons. Can be overridden in tests.
   class DecoderDelegate {
