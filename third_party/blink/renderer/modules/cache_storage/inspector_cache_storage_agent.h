@@ -32,7 +32,8 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   ~InspectorCacheStorageAgent() override;
   void Trace(Visitor*) const override;
 
-  void requestCacheNames(const String& security_origin,
+  void requestCacheNames(protocol::Maybe<String> maybe_security_origin,
+                         protocol::Maybe<String> maybe_storage_key,
                          std::unique_ptr<RequestCacheNamesCallback>) override;
   void requestEntries(const String& cache_id,
                       protocol::Maybe<int> skip_count,

@@ -1,0 +1,8 @@
+Tests that requesting cache names for storage key works correctly
+
+Open cache, add item
+cache item added successfully
+
+Request cache names for storage key
+1 cache with name: test-cache
+

@@ -79,7 +79,7 @@ ProtocolResponse ParseCacheId(const String& id,
                               String* cache_name) {
   wtf_size_t pipe = id.find('|');
   if (pipe == WTF::kNotFound)
-    return ProtocolResponse::ServerError("Invalid cache id.");
+    return ProtocolResponse::ServerError("Invalid cache id");
   *storage_key = id.Substring(0, pipe);
   *cache_name = id.Substring(pipe + 1);
 
@@ -519,25 +519,56 @@ void InspectorCacheStorageAgent::Trace(Visitor* visitor) const {
 }
 
 void InspectorCacheStorageAgent::requestCacheNames(
-    const String& security_origin,
+    protocol::Maybe<String> maybe_security_origin,
+    protocol::Maybe<String> maybe_storage_key,
     std::unique_ptr<RequestCacheNamesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "InspectorCacheStorageAgent::requestCacheNames",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-
-  scoped_refptr<const SecurityOrigin> sec_origin =
-      SecurityOrigin::CreateFromString(security_origin);
-  // Cache Storage API is restricted to trustworthy origins.
-  if (!sec_origin->IsPotentiallyTrustworthy()) {
-    // Don't treat this as an error, just don't attempt to open and enumerate
-    // the caches.
-    callback->sendSuccess(std::make_unique<protocol::Array<ProtocolCache>>());
+  if (maybe_security_origin.isJust() == maybe_storage_key.isJust()) {
+    callback->sendFailure(ProtocolResponse::InvalidParams(
+        "At least and at most one of security_origin, "
+        "storage_key must be specified"));
     return;
   }
-  url::Origin origin = sec_origin->ToUrlOrigin();
-  const String storage_key =
-      WTF::String::FromUTF8((StorageKey(origin).Serialize()));
+  String storage_key, security_origin;
+  if (maybe_storage_key.isJust()) {
+    storage_key = maybe_storage_key.fromJust();
+    absl::optional<StorageKey> key =
+        StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringPiece());
+    if (!key.has_value()) {
+      callback->sendFailure(ProtocolResponse::InvalidParams(
+          "Not able to deserialize storage key"));
+      return;
+    }
+    security_origin =
+        SecurityOrigin::CreateFromUrlOrigin(key->origin())->ToString();
+
+    if (!security_origin.StartsWith("http")) {
+      callback->sendFailure(ProtocolResponse::InvalidParams(
+          "Storage key corresponds to invalid origin"));
+      return;
+    }
+  } else {
+    security_origin = maybe_security_origin.fromJust();
+    if (!security_origin.StartsWith("http")) {
+      callback->sendFailure(
+          ProtocolResponse::InvalidParams("Invalid security origin"));
+      return;
+    }
+    scoped_refptr<SecurityOrigin> sec_origin =
+        SecurityOrigin::CreateFromString(security_origin);
+    // Cache Storage API is restricted to trustworthy origins.
+    if (!sec_origin->IsPotentiallyTrustworthy()) {
+      // Don't treat this as an error, just don't attempt to open and enumerate
+      // the caches.
+      callback->sendSuccess(std::make_unique<protocol::Array<ProtocolCache>>());
+      return;
+    }
+    storage_key =
+        WTF::String(StorageKey(sec_origin->ToUrlOrigin()).Serialize());
+  }
 
   mojom::blink::CacheStorage* cache_storage = nullptr;
 
