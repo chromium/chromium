@@ -96,6 +96,7 @@ BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kFoldableJankFix);
 BASE_DECLARE_FEATURE(kGridTabSwitcherForTablets);
 BASE_DECLARE_FEATURE(kHandleMediaIntents);
+BASE_DECLARE_FEATURE(kHideNonDisplayableAccountEmail);
 BASE_DECLARE_FEATURE(kImmersiveUiMode);
 BASE_DECLARE_FEATURE(kIncognitoReauthenticationForAndroid);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);

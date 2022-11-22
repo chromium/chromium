@@ -341,6 +341,8 @@ public abstract class ChromeFeatureList {
     public static final String TANGIBLE_SYNC = "TangibleSync";
     public static final String GRID_TAB_SWITCHER_FOR_TABLETS = "GridTabSwitcherForTablets";
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
+    public static final String HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL =
+            "HideNonDisplayableAccountEmail";
     public static final String HTTPS_FIRST_MODE = "HttpsOnlyMode";
     public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";

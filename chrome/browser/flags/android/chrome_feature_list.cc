@@ -247,6 +247,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFoldableJankFix,
     &kGridTabSwitcherForTablets,
     &kHandleMediaIntents,
+    &kHideNonDisplayableAccountEmail,
     &kImmersiveUiMode,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
@@ -775,6 +776,10 @@ BASE_FEATURE(kGridTabSwitcherForTablets,
 
 BASE_FEATURE(kHandleMediaIntents,
              "HandleMediaIntents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHideNonDisplayableAccountEmail,
+             "HideNonDisplayableAccountEmail",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImmersiveUiMode,
