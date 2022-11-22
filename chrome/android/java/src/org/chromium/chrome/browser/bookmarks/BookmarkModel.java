@@ -54,12 +54,6 @@ public class BookmarkModel extends BookmarkBridge {
         super(nativeBookmarkBridge);
     }
 
-    @Override
-    // TODO(crbug.com/1150129): Remove this method once destroy calls are removed.
-    public void destroy() {
-        super.destroy();
-    }
-
     /**
      * Add an observer that listens to delete events that go through the bookmark model.
      * @param observer The observer to add.
