@@ -79,7 +79,23 @@ size_t modp_b64_encode(char* dest, const char* str, size_t len);
  * if (len == -1) { error }
  * \endcode
  */
-size_t modp_b64_decode(char* dest, const char* src, size_t len);
+enum class ModpDecodePolicy {
+  // src length must be divisible by 4, with a max of 2 pad chars.
+  kStrict,
+
+  // Matches the infra spec: https://infra.spec.whatwg.org/#forgiving-base64
+  // _except_ for ignoring whitespace (Step 1).
+  kForgiving,
+
+  // src length % 4 must not equal 1, after stripping all pad chars.
+  // Accepts any number of pad chars.
+  kNoPaddingValidation,
+};
+size_t modp_b64_decode(
+    char* dest,
+    const char* src,
+    size_t len,
+    ModpDecodePolicy policy = ModpDecodePolicy::kStrict);
 
 /**
  * The maximum input that can be passed into modp_b64_encode. Lengths beyond

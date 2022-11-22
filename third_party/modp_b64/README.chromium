@@ -17,3 +17,4 @@ The source code was modified from upstream as follows:
 - Extended the API so callers can avoid overload for base64 encode
 - Removed big endian support entirely
 - Removed std::string APIs
+- Added multiple decoding options to support Blink callers
