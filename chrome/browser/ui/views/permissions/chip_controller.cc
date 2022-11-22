@@ -389,6 +389,8 @@ void ChipController::HandleConfirmation(
 
     chip_->SetCallback(base::BindRepeating(&ChipController::ShowPageInfoDialog,
                                            base::Unretained(this)));
+    AnnouncePermissionRequestForAccessibility(
+        permission_prompt_model_->GetAccessibilityChipText());
     collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
                           &ChipController::CollapseConfirmation);
   } else {
