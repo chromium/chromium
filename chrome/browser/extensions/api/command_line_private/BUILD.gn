@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("command_line_private") {
+  sources = [
+    "command_line_private_api.cc",
+    "command_line_private_api.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//extensions/browser",
+  ]
+}

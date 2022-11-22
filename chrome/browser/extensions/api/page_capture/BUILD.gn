@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("page_capture") {
+  sources = [
+    "page_capture_api.cc",
+    "page_capture_api.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions/api",
+    "//components/sessions",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//storage/browser",
+  ]
+}
