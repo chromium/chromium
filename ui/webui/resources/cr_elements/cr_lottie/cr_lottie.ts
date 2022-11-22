@@ -17,14 +17,39 @@
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert_ts.js';
+import {assert, assertNotReached} from '../../js/assert_ts.js';
+import {getTrustedScriptURL} from '../../js/static_types.js';
 
 import {getTemplate} from './cr_lottie.html.js';
 
-/**
- * The resource url for the lottier web worker script.
- */
-export const LOTTIE_JS_URL = 'chrome://resources/lottie/lottie_worker.min.js';
+let workerLoaderPolicy: TrustedTypePolicy|null = null;
+
+function getLottieWorkerURL(): TrustedScriptURL {
+  if (workerLoaderPolicy === null) {
+    workerLoaderPolicy =
+        window.trustedTypes!.createPolicy('lottie-worker-script-loader', {
+          createScriptURL: (_ignore: string) => {
+            const workerUrl =
+                getTrustedScriptURL`chrome://resources/lottie/lottie_worker.min.js`;
+            // Need to add a try-catch clause because in tests the parent
+            // element can be removed from the DOM before the importScripts()
+            // call  has finished loading, resulting in test errors.
+            const script = `try{ importScripts('${
+                workerUrl}'); } catch(e) { console.warn(e); };`;
+            // CORS blocks loading worker script from a different origin, even
+            // if chrome://resources/ is added in the 'worker-src' CSP header.
+            // (see https://crbug.com/1385477). Loading scripts as blob and then
+            // instantiating it as web worker is possible.
+            const blob = new Blob([script], {type: 'text/javascript'});
+            return URL.createObjectURL(blob);
+          },
+          createHTML: () => assertNotReached(),
+          createScript: () => assertNotReached(),
+        });
+  }
+
+  return workerLoaderPolicy.createScriptURL('');
+}
 
 interface OffscreenCanvas {
   width: number;
@@ -128,18 +153,9 @@ export class CrLottieElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    // CORS blocks loading worker script from a different origin but
-    // loading scripts as blob and then instantiating it as web worker
-    // is possible.
-    this.sendXmlHttpRequest_(
-        LOTTIE_JS_URL, 'blob', (response: Blob|MediaSource|object|null) => {
-          if (this.isConnected) {
-            this.worker_ =
-                new Worker(URL.createObjectURL(response as Blob | MediaSource));
-            this.worker_.onmessage = this.onMessage_.bind(this);
-            this.initialize_();
-          }
-        });
+    this.worker_ = new Worker(getLottieWorkerURL() as unknown as URL);
+    this.worker_.onmessage = this.onMessage_.bind(this);
+    this.initialize_();
   }
 
   override disconnectedCallback() {
