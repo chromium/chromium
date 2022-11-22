@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -199,26 +198,21 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         Profile profile = Profile.getLastUsedRegularProfile();
         if (!mIsFromSigninScreen) {
+            mTurnOffSync.setVisible(true);
             if (!profile.isChild()) {
                 // Non-child users have an option to sign out and turn off sync.  This is to ensure
                 // that revoking consents for sign in and sync does not require more steps than
                 // enabling them.
-                mTurnOffSync.setVisible(true);
                 mTurnOffSync.setIcon(R.drawable.ic_signout_40dp);
                 mTurnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
                 mTurnOffSync.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                         this, this::onSignOutAndTurnOffSyncClicked));
-            } else if (ChromeFeatureList.isEnabled(
-                               ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+            } else {
                 // Child users are force signed-in, so have an option which only turns off sync.
-                mTurnOffSync.setVisible(true);
                 mTurnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
                 mTurnOffSync.setTitle(R.string.turn_off_sync);
                 mTurnOffSync.setOnPreferenceClickListener(
                         SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
-            } else {
-                // Child users who are not allowed to disable sync have this option hidden.
-                mTurnOffSync.setVisible(false);
             }
 
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
@@ -742,18 +736,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         Profile profile = Profile.getLastUsedRegularProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (profile.isChild()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-                // Child users cannot sign out, so we revoke the sync consent to return to the
-                // previous state. This user won't have started syncing data yet, so there's need
-                // need to wipe data before revoking consent.
-                signinManager.revokeSyncConsent(
-                        SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, null, false);
-            } else {
-                // This child users cannot sign out, and is not allowed to revoke sync consent.
-                // We leave the user in the partially-enabled sync state here (sync consent granted,
-                // but first setup complete is false); SigninChecker will later complete the sync
-                // setup flow.
-            }
+            // Child users cannot sign out, so we revoke the sync consent to return to the
+            // previous state. This user won't have started syncing data yet, so there's need
+            // need to wipe data before revoking consent.
+            signinManager.revokeSyncConsent(
+                    SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, null, false);
         } else {
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
@@ -794,7 +781,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         if (profile.isChild()) {
             // Call through to PrimaryAccountMutatorImpl::RevokeSyncConsent().
-            assert ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS);
             IdentityServicesProvider.get().getSigninManager(profile).revokeSyncConsent(
                     SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, dataWipeCallback,
                     forceWipeUserData);

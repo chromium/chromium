@@ -196,20 +196,13 @@ void ChildAccountServiceImpl::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
-#if !BUILDFLAG(IS_CHROMEOS)
-    bool allow_sync_off = false;
 #if BUILDFLAG(IS_ANDROID)
-    allow_sync_off =
-        base::FeatureList::IsEnabled(switches::kAllowSyncOffForChildAccounts);
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (allow_sync_off) {
-      signin_util::UserSignoutSetting::GetForProfile(profile_)
-          ->SetClearPrimaryAccountAllowed(false);
-    } else {
-      signin_util::UserSignoutSetting::GetForProfile(profile_)
-          ->SetRevokeSyncConsentAllowed(false);
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+    signin_util::UserSignoutSetting::GetForProfile(profile_)
+        ->SetClearPrimaryAccountAllowed(false);
+#elif !BUILDFLAG(IS_CHROMEOS)
+    signin_util::UserSignoutSetting::GetForProfile(profile_)
+        ->SetRevokeSyncConsentAllowed(false);
+#endif
 
     StartFetchingFamilyInfo();
 

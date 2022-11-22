@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -49,17 +48,9 @@ public class SyncConsentFirstRunFragment
 
     @Override
     protected void onSyncRefused() {
-        if (mIsChild
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-            // Somehow the child account disappeared while we were in the FRE.
-            // The user would have to go through the FRE again.
-            getPageDelegate().abortFirstRunExperience();
-        } else {
-            SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
-            getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);
-            getPageDelegate().advanceToNextPage();
-        }
+        SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
+        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);
+        getPageDelegate().advanceToNextPage();
     }
 
     @Override

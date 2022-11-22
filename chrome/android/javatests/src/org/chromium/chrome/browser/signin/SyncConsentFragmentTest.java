@@ -300,9 +300,6 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @DisabledTest(message = "crbug.com/1304737")
-    // This test is only relevant if child users do not have sync force-enabled (if they do, then
-    // they can only ever access this fragment from the FRE).
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testSyncConsentFragmentWithChildAccount() throws IOException {
         CoreAccountInfo accountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
@@ -379,36 +376,8 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures(
-            {ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS, ChromeFeatureList.TANGIBLE_SYNC})
-    public void
-    testFRESyncConsentFragmentWithChildAccount() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
-        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
-        fragment.setPageDelegate(mFirstRunPageDelegateMock);
-
-        launchActivityWithFragment(fragment);
-        assertEquals(1, startPageHistogram.getDelta());
-        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
-        // Espresso.
-        // We check the button is enabled rather than visible, as it may be off-screen on small
-        // devices.
-        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "fre_sync_consent_fragment_with_regular_child");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testFRESyncConsentFragmentWithChildAccountAllowSyncOff() throws IOException {
+    public void testFRESyncConsentFragmentWithChildAccount() throws IOException {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -433,7 +402,6 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWithChildAccountLegacy() throws IOException {
         HistogramDelta startPageHistogram =
@@ -578,7 +546,6 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void testClickingSettingsThenCancelForChildIsNoOp() {
         CoreAccountInfo accountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
         // Check the user is not consented to sync.

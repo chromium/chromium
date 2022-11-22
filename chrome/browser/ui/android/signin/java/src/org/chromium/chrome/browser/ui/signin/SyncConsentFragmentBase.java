@@ -445,10 +445,6 @@ public abstract class SyncConsentFragmentBase
         final Drawable endImageViewDrawable;
         if (mIsChild) {
             endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-                mSigninView.getRefuseButton().setVisibility(View.GONE);
-                mSigninView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
-            }
         } else {
             endImageViewDrawable = SigninView.getExpandArrowDrawable(getContext());
         }
@@ -886,14 +882,6 @@ public abstract class SyncConsentFragmentBase
             // for the previously selected account).
             mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed = */ false);
             mConfirmSyncDataStateMachine = null;
-        }
-
-        // Account for forced sign-in flow disappeared before the sign-in was completed.
-        if (mIsChild
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-            onSyncRefused();
-            return;
         }
 
         if (mSelectedAccountName != null) {

@@ -413,7 +413,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &share::kUpcomingSharingFeatures,
     &supervised_users::kLocalWebApprovals,
     &supervised_users::kWebFilterInterstitialRefresh,
-    &switches::kAllowSyncOffForChildAccounts,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kTangibleSync,

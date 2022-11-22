@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -139,26 +138,15 @@ public class SigninTestRule extends AccountManagerTestRule {
     public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
         CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-            // The auto sign-in should leave the user in signed-in, non-syncing state - check this
-            // and enable sync.
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                assert IdentityServicesProvider.get()
-                                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                        == null : "Sync should not be enabled";
-            });
-            SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
-        } else {
-            // The auto sign-in should also enable sync.
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                assert IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                        .equals(coreAccountInfo)
-                    : "Sync should be enabled";
-            });
-        }
+        // The auto sign-in should leave the user in signed-in, non-syncing state - check this and
+        // enable sync.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assert IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                    == null : "Sync should not be enabled";
+        });
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
 
         return coreAccountInfo;
     }

@@ -166,19 +166,8 @@ void KidsManagementService::AddChildStatusReceivedCallback(
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void KidsManagementService::UpdateUserSignOutSetting() {
-#if !BUILDFLAG(IS_ANDROID)
   signin_util::UserSignoutSetting::GetForProfile(profile_)
       ->SetClearPrimaryAccountAllowed(false);
-#else
-  if (base::FeatureList::IsEnabled(switches::kAllowSyncOffForChildAccounts)) {
-    signin_util::UserSignoutSetting::GetForProfile(profile_)
-        ->SetClearPrimaryAccountAllowed(false);
-    return;
-  }
-
-  signin_util::UserSignoutSetting::GetForProfile(profile_)
-      ->SetRevokeSyncConsentAllowed(false);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

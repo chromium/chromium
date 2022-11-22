@@ -26,14 +26,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -152,29 +149,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void signinWhenChildAccountIsTheOnlyAccount() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        UserActionTester actionTester = new UserActionTester();
-
-        final CoreAccountInfo expectedPrimaryAccount =
-                mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
-
-        CriteriaHelper.pollUiThread(() -> {
-            return expectedPrimaryAccount.equals(
-                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        });
-        Assert.assertEquals(
-                3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
-        Assert.assertTrue(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        Assert.assertTrue(SyncTestUtil.isSyncFeatureEnabled());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void signinWhenChildAccountIsTheOnlyAccountAndAllowSyncOffForChildAccountsIsEnabled() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 

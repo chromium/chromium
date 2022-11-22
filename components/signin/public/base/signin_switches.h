@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kAccountIdMigration);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kAllowSyncOffForChildAccounts);
 BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
 #endif
 

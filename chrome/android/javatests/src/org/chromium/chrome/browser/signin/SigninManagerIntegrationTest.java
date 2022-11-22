@@ -22,13 +22,10 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -331,8 +328,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void testRevokeSyncConsent_whenSyncOffAlwaysAllowed_disablesSync() {
+    public void testRevokeSyncConsent_disablesSync() {
         // Add account.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
@@ -344,30 +340,6 @@ public class SigninManagerIntegrationTest {
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
-        });
-
-        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
-        // SigninManager, and if we don't wait for this to complete before test teardown then we
-        // can hit a race condition where this async processing overlaps with the signout causing
-        // teardown to fail.
-        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
-                .onSignedOut();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
-    public void testRevokeSyncConsent_whenSyncOffNotAlwaysAllowed_signsOut() {
-        // Add accounts.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
-
-            // Run test.
-            mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, null, false);
-
-            Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         });
 
         // Wait for the operation to have completed - the revokeSyncConsent processing calls back

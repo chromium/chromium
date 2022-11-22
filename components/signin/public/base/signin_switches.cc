@@ -16,12 +16,6 @@ BASE_FEATURE(kAccountIdMigration,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, child accounts (i.e. Unicorn accounts) on Android do not have the
-// Sync feature forced on.
-BASE_FEATURE(kAllowSyncOffForChildAccounts,
-             "AllowSyncOffForChildAccounts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, starts gaia id fetching process from android accounts in
 // AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
 BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,

@@ -62,11 +62,6 @@ public class IdentityMutator {
 
     /**
      * Revokes sync consent for the primary account.
-     *
-     * If the transition from Sync to Signin consent level is not supported for this user, then this
-     * method will also clear the primary account.
-     * TODO(crbug.com/1306031): remove the sentence above once ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS is
-     * cleaned up.
      */
     public void revokeSyncConsent(
             @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric) {
