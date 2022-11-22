@@ -2114,6 +2114,13 @@
         {}
        ]
       ],
+      "move-newline-pre-text.html": [
+       "86892a1d39c720440c22f58487de98e2bec6e106",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-at-page-boundary-print.html": [
        "63b27c88cd01ccef03bb7eeffc3ee065194c5f33",
        [
@@ -132061,7 +132068,7 @@
        ]
       ],
       "image-orientation-background-properties.html": [
-       "9f80feb7e9aa2db4b5b126133ca88a363858cb74",
+       "431fba1330eb0a37ff3aae7ee2bcd4835edfb79e",
        [
         null,
         [
@@ -132077,7 +132084,7 @@
            [
             [
              0,
-             2
+             100
             ],
             [
              0,
@@ -132119,7 +132126,7 @@
        ]
       ],
       "image-orientation-default.html": [
-       "7487e40db76e9fb8f12f1e48f3e838581ac484f8",
+       "3fefbd073a4d727b787336aafc746924a9f39e0b",
        [
         null,
         [
@@ -132135,11 +132142,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132161,7 +132168,7 @@
        ]
       ],
       "image-orientation-from-image-composited-dynamic1.html": [
-       "29355518fdef34a1579592bf4b3b70967ee74f1c",
+       "b42b010d6200bb9bb04d1fe99f3116f1b2e386e4",
        [
         null,
         [
@@ -132177,11 +132184,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132190,7 +132197,7 @@
        ]
       ],
       "image-orientation-from-image-composited-dynamic2.html": [
-       "053919d2602c7c4d55919bf35266275c22e68216",
+       "39f23621a77d2b89312997cef282d7b6d8e77694",
        [
         null,
         [
@@ -132206,11 +132213,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             100
+             123
             ]
            ]
           ]
@@ -132219,7 +132226,7 @@
        ]
       ],
       "image-orientation-from-image-composited.html": [
-       "2db88810bca9758013e994bfdcb1f878824565f7",
+       "4e5032779d7b9012494f13a687122e996b3e6db7",
        [
         null,
         [
@@ -132235,11 +132242,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132277,7 +132284,7 @@
        ]
       ],
       "image-orientation-from-image-dynamic1.html": [
-       "d5e00f27cf3597266373b6d8858a7c106760fa0c",
+       "d97492b7f1fa3e4c088e7c451d7835a831d26a96",
        [
         null,
         [
@@ -132293,11 +132300,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132306,7 +132313,7 @@
        ]
       ],
       "image-orientation-from-image-dynamic2.html": [
-       "d70c5f6b3c028e62d096e106b6656695d6545eba",
+       "ee4c3ff1fbfd7c6ce0e8414ef6b6628ee645691d",
        [
         null,
         [
@@ -132322,11 +132329,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             100
+             123
             ]
            ]
           ]
@@ -132364,7 +132371,7 @@
        ]
       ],
       "image-orientation-from-image.html": [
-       "14b929c089504b9e2bb6b5f52725bd3e80019dba",
+       "00d87fc406951f75f1b041e6e42f31fc6175bed1",
        [
         null,
         [
@@ -132380,11 +132387,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132561,7 +132568,7 @@
        ]
       ],
       "image-orientation-none-image-document.html": [
-       "672ed58e6e0d956bd5363aed6c4830f3c99b4348",
+       "05dd66e1e3e50a6a20759fc545dcaa0e6e739490",
        [
         null,
         [
@@ -132577,11 +132584,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             200
+             236
             ]
            ]
           ]
@@ -132590,7 +132597,7 @@
        ]
       ],
       "image-orientation-none.html": [
-       "dfdfa011aefcf1f2df6999006416b329cb4669cf",
+       "d689b5af06f2ec3d0c9c74e902ee70ca664e48a8",
        [
         null,
         [
@@ -132606,11 +132613,11 @@
            [
             [
              0,
-             5
+             100
             ],
             [
              0,
-             100
+             123
             ]
            ]
           ]
@@ -140331,7 +140338,7 @@
        ]
       ],
       "clip-path-contentBox-1a.html": [
-       "97680121fe7bcb779772a765e3b18398580c0ae7",
+       "b10dcbe3ad50028fdb143121534a41e47a923dc1",
        [
         null,
         [
@@ -140347,11 +140354,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -140360,7 +140367,7 @@
        ]
       ],
       "clip-path-contentBox-1b.html": [
-       "a8dbe5d259f93a65385b9c03c706afc5c3460b1b",
+       "8c2a6517667d6c0434f03f4252e875ad3ff382bf",
        [
         null,
         [
@@ -140376,11 +140383,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -140756,7 +140763,7 @@
        ]
       ],
       "clip-path-marginBox-1a.html": [
-       "cef9a2b75e55108f3fd513788b987fc3da3e9ecb",
+       "009ba674d8c56d3f63906e1ab8287ea4db702057",
        [
         null,
         [
@@ -140772,11 +140779,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -140798,7 +140805,7 @@
        ]
       ],
       "clip-path-paddingBox-1a.html": [
-       "d7434ed3c8a0fde634fca8be1b00362c4649e7a9",
+       "493ba7ab05678854d2232e75882483516464a4e8",
        [
         null,
         [
@@ -140814,11 +140821,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -140827,7 +140834,7 @@
        ]
       ],
       "clip-path-paddingBox-1b.html": [
-       "2d1bd534963b9c14bede20a0fa07a9e2cf2b652c",
+       "d3ea29633e317b94e85e1f2ddd0f097e641d717d",
        [
         null,
         [
@@ -140843,11 +140850,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -141457,7 +141464,7 @@
        ]
       ],
       "clip-path-viewBox-1a.html": [
-       "f8fb4f90efeb3fe67b8e758f628ad0c17f269a64",
+       "5b029e1ef7cfea200416bd99314c7288e44e3f60",
        [
         null,
         [
@@ -141473,11 +141480,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -141551,7 +141558,7 @@
        ]
       ],
       "svg-clip-path-circle-offset.html": [
-       "975f9418661a6c0791b20e9fc6b45c1dc72829fa",
+       "ec4cbaeb25203d8d8897d004a4e9c1ba0986350d",
        [
         null,
         [
@@ -141567,11 +141574,11 @@
            [
             [
              0,
-             60
+             62
             ],
             [
              0,
-             394
+             420
             ]
            ]
           ]
@@ -141580,7 +141587,7 @@
        ]
       ],
       "svg-clip-path-ellipse-offset.html": [
-       "3925926ac14db179a3919439dd39990e517b7cdc",
+       "2b0876eb5890c0aa2cc6fcbf054b70efed16a9d7",
        [
         null,
         [
@@ -141596,7 +141603,7 @@
            [
             [
              0,
-             60
+             69
             ],
             [
              0,
@@ -199307,7 +199314,7 @@
       ]
      ],
      "transform3d-preserve3d-007.html": [
-      "6e426e2681a80e259b64bdd91b8883215bc39fcf",
+      "91310b91bae359331f813a15693e17889e18c4f4",
       [
        null,
        [
@@ -199323,7 +199330,7 @@
           [
            [
             0,
-            54
+            55
            ],
            [
             0,
@@ -251698,7 +251705,7 @@
        ]
       ],
       "masked.html": [
-       "58efa225b16e1ad1ce37bd9a450196322678bc8a",
+       "1c7a332d7f9e21dc85105793922b725aeb3891c2",
        [
         null,
         [
@@ -251714,7 +251721,7 @@
            [
             [
              0,
-             36
+             37
             ],
             [
              0,
@@ -258693,7 +258700,7 @@
       []
      ],
      "eddsa.https.any-expected.txt": [
-      "4453f4de19eb3138ad1fb88b144885b3bce34218",
+      "d9c753bc5346c9a967e95d4f4304ad704938136b",
       []
      ],
      "eddsa.https.any.js.ini": [
@@ -258701,11 +258708,11 @@
       []
      ],
      "eddsa.https.any.worker-expected.txt": [
-      "4453f4de19eb3138ad1fb88b144885b3bce34218",
+      "d9c753bc5346c9a967e95d4f4304ad704938136b",
       []
      ],
      "eddsa.js": [
-      "0a2e638114ad198ba8b08a80cff2ea514826b143",
+      "d425fec2dc343ef456ba714e51b940477436a32a",
       []
      ],
      "eddsa_vectors.js": [
