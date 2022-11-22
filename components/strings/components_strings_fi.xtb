@@ -1045,7 +1045,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3709599264800900598">Kopioimasi teksti</translation>
-<translation id="370972442370243704">Ota Matkat käyttöön</translation>
+<translation id="370972442370243704">Laita selailu päälle</translation>
 <translation id="3709866969787468031">Ääni- ja musiikkiohjelmistot</translation>
 <translation id="3711895659073496551">Keskeytä</translation>
 <translation id="3712006010833051684">Kirjekuori #10</translation>
@@ -1353,7 +1353,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4506599922270137252">Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="450710068430902550">Jakaminen järjestelmänvalvojan kanssa</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, käännä tämä sivu Google Kääntäjällä painamalla sarkainta ja sitten Enter</translation>
-<translation id="4514308731478712184">Laita Matkat pois päältä</translation>
+<translation id="4514308731478712184">Laita selailu pois päältä</translation>
 <translation id="4515275063822566619">Kortit ja osoitteet ovat peräisin Chromesta ja Google-tililtäsi (<ph name="ACCOUNT_EMAIL" />). Voit hallinnoida niitä <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Kirjekuori Monarkki</translation>

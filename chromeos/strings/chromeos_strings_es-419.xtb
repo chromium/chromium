@@ -663,7 +663,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
-<translation id="7481312909269577407">Reenviar</translation>
+<translation id="7481312909269577407">Adelante</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
 <translation id="7497215489070763236">Certificado de CA del servidor</translation>
