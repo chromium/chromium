@@ -848,15 +848,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, tab_strip()->GetActiveIndex());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CollapseGroup_Fails) {
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CollapseGroup_CreatesNewTab) {
+  ASSERT_EQ(1, tab_strip_model()->count());
   AppendTab();
+  ASSERT_EQ(2, tab_strip_model()->count());
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   tab_strip_model()->AddToExistingGroup({1}, group);
   ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
   tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_EQ(3, tab_strip_model()->count());
 
-  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,

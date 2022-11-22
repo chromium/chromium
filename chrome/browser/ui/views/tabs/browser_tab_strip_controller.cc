@@ -377,7 +377,7 @@ void BrowserTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
   model_->MoveGroupTo(group, final_index);
 }
 
-bool BrowserTabStripController::ToggleTabGroupCollapsedState(
+void BrowserTabStripController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
     ToggleTabGroupCollapsedStateOrigin origin) {
   const bool is_currently_collapsed = IsGroupCollapsed(group);
@@ -390,18 +390,19 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
     if (model_->GetTabGroupForTab(GetActiveIndex()) == group) {
       // If the active tab is in the group that is toggling to collapse, the
       // active tab should switch to the next available tab. If there are no
-      // available tabs for the active tab to switch to, the group will not
-      // toggle to collapse.
+      // available tabs for the active tab to switch to, a new tab will
+      // be created.
       const absl::optional<int> next_active =
           model_->GetNextExpandedActiveTab(GetActiveIndex(), group);
-      if (!next_active.has_value()) {
-        base::RecordAction(base::UserMetricsAction("TabGroups_CannotCollapse"));
-        return false;
+      if (next_active.has_value()) {
+        model_->ActivateTabAt(
+            next_active.value(),
+            TabStripUserGestureDetails(
+                TabStripUserGestureDetails::GestureType::kOther));
+      } else {
+        // Create a new tab that will automatically be activated
+        CreateNewTab();
       }
-      model_->ActivateTabAt(
-          next_active.value(),
-          TabStripUserGestureDetails(
-              TabStripUserGestureDetails::GestureType::kOther));
     } else {
       // If the active tab is not in the group that is toggling to collapse,
       // reactive the active tab to deselect any other potentially selected
@@ -421,7 +422,6 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
   tab_groups::TabGroupVisualData new_data(
       GetGroupTitle(group), GetGroupColorId(group), !is_currently_collapsed);
   model_->group_model()->GetTabGroup(group)->SetVisualData(new_data, true);
-  return true;
 }
 
 void BrowserTabStripController::ShowContextMenuForTab(

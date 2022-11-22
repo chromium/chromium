@@ -1535,10 +1535,21 @@ void TabStrip::MoveTabLast(Tab* tab) {
       l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_LAST));
 }
 
-bool TabStrip::ToggleTabGroupCollapsedState(
+void TabStrip::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
     ToggleTabGroupCollapsedStateOrigin origin) {
-  return controller_->ToggleTabGroupCollapsedState(group, origin);
+  int tab_count = GetTabCount();
+  controller_->ToggleTabGroupCollapsedState(group, origin);
+  // If tab count changed, all tab groups are collapsed and we have
+  // created a new tab. We need to exit closing mode to resize the new
+  // tab immediately.
+  // TODO(crbug/1384151): This should be captured along with the
+  // ToggleTabGroup logic, so other callers to
+  // TabStripController::ToggleTabGroupCollapsedState see the same
+  // behavior.
+  if (tab_count != GetTabCount()) {
+    tab_container_->ExitTabClosingMode();
+  }
 }
 
 void TabStrip::NotifyTabGroupEditorBubbleOpened() {

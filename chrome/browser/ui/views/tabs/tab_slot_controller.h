@@ -90,7 +90,7 @@ class TabSlotController {
 
   // Switches the collapsed state of a tab group. Returns false if the state was
   // not successfully switched.
-  virtual bool ToggleTabGroupCollapsedState(
+  virtual void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;

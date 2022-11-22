@@ -19,11 +19,9 @@ Tab* FakeTabSlotController::tab_at(int index) const {
   return tab_container_->GetTabAtModelIndex(index);
 }
 
-bool FakeTabSlotController::ToggleTabGroupCollapsedState(
+void FakeTabSlotController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
-    ToggleTabGroupCollapsedStateOrigin origin) {
-  return false;
-}
+    ToggleTabGroupCollapsedStateOrigin origin) {}
 
 bool FakeTabSlotController::IsActiveTab(const Tab* tab) const {
   return active_tab_ == tab;

@@ -205,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
-  ASSERT_TRUE(
-      browser_view->tabstrip()->ToggleTabGroupCollapsedState(group.value()));
+  browser_view->tabstrip()->ToggleTabGroupCollapsedState(group.value());
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
   EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());

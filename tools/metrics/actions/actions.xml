@@ -33328,6 +33328,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_CannotCollapse">
+  <obsolete>
+    This action no longer occurs as of 11/2022. Tab groups can always collapse.
+  </obsolete>
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>

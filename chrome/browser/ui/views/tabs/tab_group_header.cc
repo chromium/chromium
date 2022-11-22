@@ -130,15 +130,13 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
        event.key_code() == ui::VKEY_RETURN) &&
       !editor_bubble_tracker_.is_open()) {
-    bool successful_toggle = tab_slot_controller_->ToggleTabGroupCollapsedState(
+    tab_slot_controller_->ToggleTabGroupCollapsedState(
         group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
-    if (successful_toggle) {
 #if BUILDFLAG(IS_WIN)
-      NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 #else
-      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 #endif
-    }
     return true;
   }
 

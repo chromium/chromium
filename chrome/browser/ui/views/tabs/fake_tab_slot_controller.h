@@ -41,7 +41,7 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftTabPrevious(Tab* tab) override {}
   void MoveTabFirst(Tab* tab) override {}
   void MoveTabLast(Tab* tab) override {}
-  bool ToggleTabGroupCollapsedState(
+  void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kImplicitAction) override;

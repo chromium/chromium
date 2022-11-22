@@ -54,7 +54,7 @@ class FakeBaseTabStripController : public TabStripController {
   void ToggleTabAudioMute(int index) override;
   void MoveTab(int from_index, int to_index) override;
   void MoveGroup(const tab_groups::TabGroupId&, int to_index) override;
-  bool ToggleTabGroupCollapsedState(
+  void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin) override;
   void ShowContextMenuForTab(Tab* tab,
