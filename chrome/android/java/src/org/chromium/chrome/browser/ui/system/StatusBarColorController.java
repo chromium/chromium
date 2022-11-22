@@ -82,6 +82,7 @@ public class StatusBarColorController
     private final @ColorInt int mStandardDefaultThemeColor;
     private final @ColorInt int mIncognitoDefaultThemeColor;
     private final @ColorInt int mActiveOmniboxDefaultColor;
+    private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
 
     private @Nullable TabModelSelector mTabModelSelector;
@@ -223,6 +224,7 @@ public class StatusBarColorController
 
         activityLifecycleDispatcher.register(this);
         mTopUiThemeColor = topUiThemeColorProvider;
+        mToolbarColorChanged = false;
     }
 
     // DestroyObserver implementation.
@@ -261,6 +263,9 @@ public class StatusBarColorController
             return;
         }
 
+        // Set mToolbarColorChanged to true as an extra check to prevent rendering status bar with
+        // default color if toolbar never changes, for example, in dark mode.
+        mToolbarColorChanged = true;
         mToolbarColor = color;
         updateStatusBarColor();
     }
@@ -335,8 +340,8 @@ public class StatusBarColorController
         // The theme should be restored when Omnibox focus clears.
         if (mIsOmniboxFocused) {
             // If the flag is enabled, we will use the toolbar color.
-            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()
-                    && mToolbarAnimationInProgress) {
+            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarAnimationInProgress
+                    && mToolbarColorChanged) {
                 return mToolbarColor;
             }
             return calculateDefaultStatusBarColor();
@@ -360,7 +365,8 @@ public class StatusBarColorController
 
         // Return status bar color to match the toolbar.
         // If the flag is enabled, we will use the toolbar color.
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarAnimationInProgress) {
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarAnimationInProgress
+                && mToolbarColorChanged) {
             return mToolbarColor;
         }
         return mTopUiThemeColor.getThemeColorOrFallback(
