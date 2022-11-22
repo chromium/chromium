@@ -71,6 +71,8 @@ std::string GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2SafetyCheck;
       case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
         return kHatsSurveyTriggerTrustSafetyV2PasswordCheck;
+      case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
+        return kHatsSurveyTriggerTrustSafetyV2BrowsingData;
       default:
         NOTREACHED();
         return "";
@@ -129,6 +131,7 @@ bool VersionCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     // Version 2 only
     case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
     case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
+    case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
       return isV2 == true;
     // Both Versions
     case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
@@ -157,6 +160,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2PasswordCheckProbability
+                   .Get();
+      case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
+        return base::RandDouble() <
+               features::kTrustSafetySentimentSurveyV2BrowsingDataProbability
                    .Get();
       default:
         NOTREACHED();
@@ -474,6 +481,28 @@ void TrustSafetySentimentService::SavedCard() {
 
 void TrustSafetySentimentService::RanPasswordCheck() {
   TriggerOccurred(FeatureArea::kPasswordCheck, {});
+}
+
+void TrustSafetySentimentService::ClearedBrowsingData(
+    browsing_data::BrowsingDataType datatype) {
+  // We are only interested in history, downloads, and autofill.
+  switch (datatype) {
+    case (browsing_data::BrowsingDataType::HISTORY):
+    case (browsing_data::BrowsingDataType::DOWNLOADS):
+    case (browsing_data::BrowsingDataType::FORM_DATA):
+      break;
+    default:
+      return;
+  }
+  return TriggerOccurred(
+      FeatureArea::kBrowsingData,
+      {{"Deleted history",
+        datatype == browsing_data::BrowsingDataType::HISTORY},
+       {"Deleted downloads",
+        datatype == browsing_data::BrowsingDataType::DOWNLOADS},
+       {"Deleted autofill form data",
+        datatype == browsing_data::BrowsingDataType::FORM_DATA}});
+  ;
 }
 
 void TrustSafetySentimentService::InteractedWithPrivacySandbox3(

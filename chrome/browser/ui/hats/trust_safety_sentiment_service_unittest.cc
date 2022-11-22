@@ -18,6 +18,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
@@ -123,9 +124,11 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string ntp_visits_min_range = "2";
     std::string ntp_visits_max_range = "4";
     std::string trusted_surface_time = "5s";
+    std::string browsing_data_probability = "0.4";
     std::string password_check_probability = "0.4";
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
+    std::string browsing_data_trigger_id = "browsing-data-test";
     std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
@@ -140,9 +143,11 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"ntp-visits-min-range", params.ntp_visits_min_range},
             {"ntp-visits-max-range", params.ntp_visits_max_range},
             {"trusted-surface-time", params.trusted_surface_time},
+            {"browsing-data-probability", params.browsing_data_probability},
             {"password-check-probability", params.password_check_probability},
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
+            {"browsing-data-trigger-id", params.browsing_data_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
@@ -923,4 +928,58 @@ TEST_F(TrustSafetySentimentServiceTest, V2_PasswordCheck) {
   service()->OpenedNewTabPage();
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kPasswordCheck},
                   {TrustSafetySentimentService::FeatureArea::kPasswordCheck});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_BrowsingData) {
+  // Clearing history through CBD should make user eligible to receive a survey.
+  FeatureParamsV2 params;
+  params.browsing_data_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  std::vector<std::pair<browsing_data::BrowsingDataType, SurveyBitsData>>
+      datatypes = {{browsing_data::BrowsingDataType::HISTORY,
+                    {{"Deleted history", true},
+                     {"Deleted downloads", false},
+                     {"Deleted autofill form data", false}}},
+                   {browsing_data::BrowsingDataType::DOWNLOADS,
+                    {{"Deleted history", false},
+                     {"Deleted downloads", true},
+                     {"Deleted autofill form data", false}}},
+                   {browsing_data::BrowsingDataType::FORM_DATA,
+                    {{"Deleted history", false},
+                     {"Deleted downloads", false},
+                     {"Deleted autofill form data", true}}}};
+
+  for (const auto& datatype : datatypes) {
+    // The correct survey should be launched.
+    EXPECT_CALL(*mock_hats_service(),
+                LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2BrowsingData, _, _,
+                             datatype.second, _));
+    service()->ClearedBrowsingData(datatype.first);
+    service()->OpenedNewTabPage();
+    testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+  }
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_BrowsingData_NotInterested) {
+  // Clearing a BrowsingDataType that we are not interested in should not
+  // trigger a survey.
+  FeatureParamsV2 params;
+  params.browsing_data_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  // No browsing data survey should be launched.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2BrowsingData, _, _, _, _))
+      .Times(0);
+  service()->ClearedBrowsingData(browsing_data::BrowsingDataType::COOKIES);
+  service()->OpenedNewTabPage();
+  CheckHistograms({}, {});
 }

@@ -1240,6 +1240,9 @@ const base::FeatureParam<int> kTrustSafetySentimentSurveyV2NtpVisitsMaxRange{
 // the Trust & Safety sentiment survey.
 // TODO(crbug.com/1382134): Calculate initial probabilities and remove 0.0
 const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2BrowsingDataProbability{
+        &kTrustSafetySentimentSurveyV2, "browsing-data-probability", 0.0};
+const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability{
         &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.0};
 const base::FeatureParam<double>
@@ -1250,6 +1253,9 @@ const base::FeatureParam<double>
         &kTrustSafetySentimentSurveyV2, "trusted-surface-probability", 0.0};
 // The HaTS trigger IDs, which determine which survey is delivered from the HaTS
 // backend.
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2BrowsingDataTriggerId{
+        &kTrustSafetySentimentSurveyV2, "browsing-data-trigger-id", ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "password-check-trigger-id", ""};

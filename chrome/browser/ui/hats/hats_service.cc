@@ -75,6 +75,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
+constexpr char kHatsSurveyTriggerTrustSafetyV2BrowsingData[] =
+    "ts-v2-browsing-data";
 constexpr char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[] =
     "ts-v2-password-check";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[] =
@@ -255,6 +257,12 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
                                "Privacy Sandbox enabled"});
 
   // Trust & Safety Sentiment surveys - Version 2.
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurveyV2,
+      kHatsSurveyTriggerTrustSafetyV2BrowsingData,
+      features::kTrustSafetySentimentSurveyV2BrowsingDataTriggerId.Get(),
+      std::vector<std::string>{"Deleted history", "Deleted downloads",
+                               "Deleted autofill form data"});
   survey_configs.emplace_back(
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2PasswordCheck,

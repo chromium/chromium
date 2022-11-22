@@ -25,6 +25,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -260,6 +262,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   CHECK(args_list[1].is_list());
   const base::Value::List& data_type_list = args_list[1].GetList();
+  auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
     BrowsingDataType data_type =
@@ -305,6 +309,11 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       case BrowsingDataType::NUM_TYPES:
         NOTREACHED();
         break;
+    }
+
+    // Inform the T&S sentiment service that this datatype was cleared.
+    if (sentiment_service) {
+      sentiment_service->ClearedBrowsingData(data_type);
     }
   }
 
