@@ -181,7 +181,7 @@ bool StubCellularNetworksProvider::AddStubNetworks(
     new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
         iccid_eid_pair.first, iccid_eid_pair.second,
         GetGuidForStubIccid(iccid_eid_pair.first), is_managed,
-        cellular_device));
+        cellular_device->path()));
   }
 
   return network_added;

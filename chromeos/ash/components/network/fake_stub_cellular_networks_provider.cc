@@ -44,7 +44,7 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     for (const IccidEidPair& pair : stubs_to_add) {
       new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
           pair.first, pair.second, GetGuidForStubIccid(pair.first),
-          base::Contains(managed_iccids_, pair.first), device));
+          base::Contains(managed_iccids_, pair.first), device->path()));
       stub_networks_add_count_++;
     }
   }

@@ -621,13 +621,13 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
     const std::string& eid,
     const std::string& guid,
     bool is_managed,
-    const DeviceState* cellular_device) {
+    const std::string& cellular_device_path) {
   std::string path = GenerateStubCellularServicePath(iccid);
   auto new_state = std::make_unique<NetworkState>(path);
   new_state->set_type(shill::kTypeCellular);
   new_state->set_update_received();
   new_state->set_visible(true);
-  new_state->device_path_ = cellular_device->path();
+  new_state->device_path_ = cellular_device_path;
   new_state->iccid_ = iccid;
   new_state->eid_ = eid;
   new_state->guid_ = guid;

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/tether_constants.h"
@@ -468,7 +469,7 @@ TEST_F(NetworkStateTest, NonShillCellular) {
   std::unique_ptr<NetworkState> non_shill_cellular =
       NetworkState::CreateNonShillCellularNetwork(
           kTestIccid, kTestEid, kTestGuid, /*is_managed=*/false,
-          GetCellularDevice());
+          GetCellularDevice()->path());
   EXPECT_EQ(kTestIccid, non_shill_cellular->iccid());
   EXPECT_EQ(kTestEid, non_shill_cellular->eid());
   EXPECT_EQ(kTestGuid, non_shill_cellular->guid());
@@ -482,7 +483,7 @@ TEST_F(NetworkStateTest, NonShillCellular) {
 
   non_shill_cellular = NetworkState::CreateNonShillCellularNetwork(
       kTestIccid, kTestEid, kTestGuid, /*is_managed=*/true,
-      GetCellularDevice());
+      GetCellularDevice()->path());
   EXPECT_EQ(kTestIccid, non_shill_cellular->iccid());
   EXPECT_EQ(kTestEid, non_shill_cellular->eid());
   EXPECT_EQ(kTestGuid, non_shill_cellular->guid());

@@ -284,7 +284,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
       const std::string& eid,
       const std::string& guid,
       bool is_managed,
-      const DeviceState* cellular_device);
+      const std::string& cellular_device_path);
 
   // Ignore changes to signal strength less than this value.
   constexpr static const int kSignalStrengthChangeThreshold = 5;
