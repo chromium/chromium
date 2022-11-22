@@ -81,6 +81,8 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
       base::BindRepeating(
           &PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged,
           base::Unretained(this)));
+  ambient_ui_model_observer_.Observe(
+      Shell::Get()->ambient_controller()->ambient_ui_model());
 }
 
 PersonalizationAppAmbientProviderImpl::
@@ -574,6 +576,14 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
 
 void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
   Shell::Get()->ambient_controller()->StartScreenSaverPreview();
+}
+
+void PersonalizationAppAmbientProviderImpl::OnAmbientUiVisibilityChanged(
+    AmbientUiVisibility visibility) {
+  if (ambient_observer_remote_.is_bound() &&
+      visibility == AmbientUiVisibility::kClosed) {
+    ambient_observer_remote_->OnScreenSaverClosed();
+  }
 }
 
 }  // namespace ash::personalization_app
