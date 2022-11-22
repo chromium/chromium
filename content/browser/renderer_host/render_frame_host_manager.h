@@ -733,6 +733,16 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool was_server_redirect,
       std::string* reason);
 
+  // Returns whether we can use the given `dest_instance` or if it is not
+  // suitable anymore.
+  //
+  // This is a helper function for GetSiteInstanceForNavigation.
+  bool CanUseDestinationInstance(const UrlInfo& dest_url_info,
+                                 SiteInstance* current_instance,
+                                 SiteInstance* dest_instance,
+                                 bool is_failure,
+                                 bool force_browsing_instance_swap);
+
   // Returns true if a navigation to |dest_url| that uses the specified
   // PageTransition in the current frame is allowed to swap BrowsingInstances.
   // DetermineSiteInstanceForURL() uses this helper to determine when it is

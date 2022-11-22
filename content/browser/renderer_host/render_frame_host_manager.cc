@@ -2298,46 +2298,11 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
-  if (dest_instance) {
-    // If we've decided that the target SiteInstance cannot be in the same
-    // BrowsingInstance, and that the dest_instance is, we should not reuse it.
-    if (!force_browsing_instance_swap ||
-        !dest_instance->IsRelatedSiteInstance(current_instance)) {
-      // Note: The later call to IsSuitableForUrlInfo does not have context
-      // about error page navigations, so we cannot rely on it to return correct
-      // value when error pages are involved.
-      if (IsSiteInstanceCompatibleWithErrorIsolation(
-              dest_instance, *frame_tree_node_, is_failure)) {
-        if (IsSiteInstanceCompatibleWithWebExposedIsolation(
-                dest_instance, dest_url_info.web_exposed_isolation_info)) {
-          // TODO(nasko,creis): The check whether data: or about: URLs are
-          // allowed to commit in the current process should be in
-          // IsSuitableForUrlInfo. However, making this change has further
-          // implications and needs more investigation of what behavior changes.
-          // For now, use a conservative approach and explicitly check before
-          // calling IsSuitableForUrlInfo.
-          SiteInstanceImpl* dest_instance_impl =
-              static_cast<SiteInstanceImpl*>(dest_instance);
-          // Make sure that if the destination frame is sandboxed that we don't
-          // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
-          // have a sandboxed parent but unsandboxed child.
-          bool is_data_or_about_and_not_sandboxed =
-              IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
-          if (is_data_or_about_and_not_sandboxed ||
-              dest_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
-            // If we are forcing a swap, this should be in a different
-            // BrowsingInstance.
-            if (force_browsing_instance_swap) {
-              CHECK(!dest_instance->IsRelatedSiteInstance(
-                  render_frame_host_->GetSiteInstance()));
-            }
-            AppendReason(reason,
-                         "DetermineSiteInstanceForURL => dest_instance");
-            return SiteInstanceDescriptor(dest_instance);
-          }
-        }
-      }
-    }
+  if (dest_instance &&
+      CanUseDestinationInstance(dest_url_info, current_instance, dest_instance,
+                                is_failure, force_browsing_instance_swap)) {
+    AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
+    return SiteInstanceDescriptor(dest_instance);
   }
 
   // If error page navigations should be isolated, ensure a dedicated
@@ -2581,6 +2546,51 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     return SiteInstanceDescriptor(dest_url_info,
                                   SiteInstanceRelation::UNRELATED);
   }
+}
+
+bool RenderFrameHostManager::CanUseDestinationInstance(
+    const UrlInfo& dest_url_info,
+    SiteInstance* current_instance,
+    SiteInstance* dest_instance,
+    bool is_failure,
+    bool force_browsing_instance_swap) {
+  // If we've decided that the target SiteInstance cannot be in the same
+  // BrowsingInstance, and that the dest_instance is, we should not reuse it.
+  if (force_browsing_instance_swap &&
+      dest_instance->IsRelatedSiteInstance(current_instance)) {
+    return false;
+  }
+
+  // Note: The later call to IsSuitableForUrlInfo does not have context
+  // about error page navigations, so we cannot rely on it to return correct
+  // value when error pages are involved.
+  if (!IsSiteInstanceCompatibleWithErrorIsolation(
+          dest_instance, *frame_tree_node_, is_failure)) {
+    return false;
+  }
+
+  if (!IsSiteInstanceCompatibleWithWebExposedIsolation(
+          dest_instance, dest_url_info.web_exposed_isolation_info)) {
+    return false;
+  }
+
+  // TODO(nasko,creis): The check whether data: or about: URLs are
+  // allowed to commit in the current process should be in
+  // IsSuitableForUrlInfo. However, making this change has further
+  // implications and needs more investigation of what behavior changes.
+  // For now, use a conservative approach and explicitly check before
+  // calling IsSuitableForUrlInfo.
+  SiteInstanceImpl* dest_instance_impl =
+      static_cast<SiteInstanceImpl*>(dest_instance);
+  // Make sure that if the destination frame is sandboxed that we don't
+  // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
+  // have a sandboxed parent but unsandboxed child.
+  bool is_data_or_about_and_not_sandboxed =
+      IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+  if (is_data_or_about_and_not_sandboxed)
+    return true;
+
+  return dest_instance_impl->IsSuitableForUrlInfo(dest_url_info);
 }
 
 bool RenderFrameHostManager::IsBrowsingInstanceSwapAllowedForPageTransition(
