@@ -34,6 +34,8 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   std::unique_ptr<views::View> CreatePasswordListView();
   std::unique_ptr<views::View> CreatePasswordDetailsView(
       const password_manager::PasswordForm& password_form) const;
+  std::unique_ptr<views::View> CreatePasswordDetailsTitleView(
+      const password_manager::PasswordForm& password_form);
   std::unique_ptr<views::View> CreateFooterView();
 
   ItemsBubbleController controller_;

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -20,8 +21,12 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -95,6 +100,43 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListTitleView()
   return header;
 }
 
+std::unique_ptr<views::View>
+ManagePasswordsView::CreatePasswordDetailsTitleView(
+    const password_manager::PasswordForm& password_form) {
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  auto header = std::make_unique<views::BoxLayoutView>();
+  // Set the space between the icons and title similar to the default behavior
+  // in BubbleFrameView::Layout().
+  header->SetBetweenChildSpacing(
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).left());
+
+  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(
+          [](ManagePasswordsView* view) {
+            view->GetBubbleFrameView()->SetTitleView(
+                view->CreatePasswordListTitleView());
+            view->page_container_->SwitchToPage(view->CreatePasswordListView());
+          },
+          base::Unretained(this)),
+      vector_icons::kArrowBackIcon);
+  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+  views::InstallCircleHighlightPathGenerator(back_button.get());
+  header->AddChildView(std::move(back_button));
+
+  // TODO(crbug.com/1382017): Use favicon instead of the GPM icon.
+  header->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GooglePasswordManagerVectorIcon(), ui::kColorIcon,
+          layout_provider->GetDistanceMetric(
+              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+
+  std::string shown_origin =
+      password_manager::GetShownOriginAndLinkUrl(password_form).first;
+  header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
+      base::UTF8ToUTF16(shown_origin)));
+  return header;
+}
+
 std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -108,6 +150,9 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
             base::BindRepeating(
                 [](ManagePasswordsView* view,
                    const password_manager::PasswordForm& password_form) {
+                  DCHECK(view->GetBubbleFrameView());
+                  view->GetBubbleFrameView()->SetTitleView(
+                      view->CreatePasswordDetailsTitleView(password_form));
                   view->page_container_->SwitchToPage(
                       view->CreatePasswordDetailsView(password_form));
                 },
