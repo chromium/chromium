@@ -21,8 +21,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "checkout_pgo_profiles",
-                  "enable_reclient"
+                  "checkout_pgo_profiles"
                 ],
                 "config": "chromium"
               }
