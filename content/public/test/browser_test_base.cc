@@ -820,10 +820,8 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 #endif  // BUILDFLAG(IS_POSIX)
 
   {
-    // This can be called from a posted task. Allow nested tasks here, because
-    // otherwise the test body will have to do it in order to use RunLoop for
-    // waiting.
-    base::CurrentThread::ScopedNestableTaskAllower allow;
+    // This shouldn't be invoked from a posted task.
+    DCHECK(!base::RunLoop::IsRunningOnCurrentThread());
 
 #if !BUILDFLAG(IS_ANDROID)
     // Fail the test if a renderer crashes while the test is running.
