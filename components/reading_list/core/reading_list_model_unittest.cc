@@ -29,50 +29,41 @@ class TestReadingListStorage : public ReadingListModelStorage {
  public:
   TestReadingListStorage(TestReadingListStorageObserver* observer,
                          base::SimpleTestClock* clock)
-      : entries_(new ReadingListSyncBridgeDelegate::ReadingListEntries()),
-        observer_(observer),
-        clock_(clock) {}
+      : observer_(observer), clock_(clock) {}
 
   void AddSampleEntries() {
     // Adds timer and interlace read/unread entry creation to avoid having two
     // entries with the same creation timestamp.
     ReadingListEntry unread_a(GURL("http://unread_a.com"), "unread_a",
                               AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://unread_a.com"), std::move(unread_a)));
+    entries_.emplace(GURL("http://unread_a.com"), std::move(unread_a));
 
     ReadingListEntry read_a(GURL("http://read_a.com"), "read_a",
                             AdvanceAndGetTime(clock_));
     read_a.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://read_a.com"), std::move(read_a)));
+    entries_.emplace(GURL("http://read_a.com"), std::move(read_a));
 
     ReadingListEntry unread_b(GURL("http://unread_b.com"), "unread_b",
                               AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://unread_b.com"), std::move(unread_b)));
+    entries_.emplace(GURL("http://unread_b.com"), std::move(unread_b));
 
     ReadingListEntry read_b(GURL("http://read_b.com"), "read_b",
                             AdvanceAndGetTime(clock_));
     read_b.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://read_b.com"), std::move(read_b)));
+    entries_.emplace(GURL("http://read_b.com"), std::move(read_b));
 
     ReadingListEntry unread_c(GURL("http://unread_c.com"), "unread_c",
                               AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://unread_c.com"), std::move(unread_c)));
+    entries_.emplace(GURL("http://unread_c.com"), std::move(unread_c));
 
     ReadingListEntry read_c(GURL("http://read_c.com"), "read_c",
                             AdvanceAndGetTime(clock_));
     read_c.SetRead(true, AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://read_c.com"), std::move(read_c)));
+    entries_.emplace(GURL("http://read_c.com"), std::move(read_c));
 
     ReadingListEntry unread_d(GURL("http://unread_d.com"), "unread_d",
                               AdvanceAndGetTime(clock_));
-    entries_->insert(
-        std::make_pair(GURL("http://unread_d.com"), std::move(unread_d)));
+    entries_.emplace(GURL("http://unread_d.com"), std::move(unread_d));
   }
 
   void SetReadingListModel(ReadingListModel* model,
@@ -104,7 +95,7 @@ class TestReadingListStorage : public ReadingListModelStorage {
   }
 
  private:
-  std::unique_ptr<ReadingListSyncBridgeDelegate::ReadingListEntries> entries_;
+  ReadingListSyncBridgeDelegate::ReadingListEntries entries_;
   raw_ptr<TestReadingListStorageObserver> observer_;
   raw_ptr<base::SimpleTestClock> clock_;
 };

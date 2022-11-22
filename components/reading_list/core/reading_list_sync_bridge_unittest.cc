@@ -124,8 +124,8 @@ class ReadingListSyncBridgeTest : public testing::Test,
     sync_merged_.clear();
   }
 
-  // These three mathods handle callbacks from a ReadingListSyncBridge.
-  void StoreLoaded(std::unique_ptr<ReadingListEntries> entries) override {}
+  // These methods handle callbacks from a ReadingListSyncBridge.
+  void StoreLoaded(ReadingListEntries entries) override {}
 
   // Handle sync events.
   void SyncAddEntry(std::unique_ptr<ReadingListEntry> entry) override {

@@ -127,8 +127,8 @@ void ReadingListSyncBridge::OnDatabaseLoad(
     change_processor()->ReportError(*error);
     return;
   }
-  auto loaded_entries =
-      std::make_unique<ReadingListSyncBridgeDelegate::ReadingListEntries>();
+
+  ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries;
 
   for (const syncer::ModelTypeStore::Record& r : *entries) {
     reading_list::ReadingListLocal proto;
@@ -144,8 +144,8 @@ void ReadingListSyncBridge::OnDatabaseLoad(
       continue;
     }
     GURL url = entry->URL();
-    DCHECK(!loaded_entries->count(url));
-    loaded_entries->insert(std::make_pair(url, std::move(*entry)));
+    DCHECK(!loaded_entries.count(url));
+    loaded_entries.emplace(url, std::move(*entry));
   }
 
   delegate_->StoreLoaded(std::move(loaded_entries));

@@ -19,8 +19,7 @@ ReadingListModelImpl::ReadingListModelImpl(
     std::unique_ptr<ReadingListModelStorage> storage,
     PrefService* pref_service,
     base::Clock* clock)
-    : entries_(std::make_unique<ReadingListEntries>()),
-      unread_entry_count_(0),
+    : unread_entry_count_(0),
       read_entry_count_(0),
       unseen_entry_count_(0),
       clock_(clock),
@@ -40,15 +39,13 @@ ReadingListModelImpl::ReadingListModelImpl(
 
 ReadingListModelImpl::~ReadingListModelImpl() {}
 
-void ReadingListModelImpl::StoreLoaded(
-    std::unique_ptr<ReadingListEntries> entries) {
+void ReadingListModelImpl::StoreLoaded(ReadingListEntries entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entries);
   entries_ = std::move(entries);
-  for (auto& iterator : *entries_) {
+  for (auto& iterator : entries_) {
     UpdateEntryStateCountersOnEntryInsertion(iterator.second);
   }
-  DCHECK(read_entry_count_ + unread_entry_count_ == entries_->size());
+  DCHECK(read_entry_count_ + unread_entry_count_ == entries_.size());
   loaded_ = true;
 
   base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
@@ -74,15 +71,15 @@ bool ReadingListModelImpl::loaded() const {
 
 size_t ReadingListModelImpl::size() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(read_entry_count_ + unread_entry_count_ == entries_->size());
+  DCHECK(read_entry_count_ + unread_entry_count_ == entries_.size());
   if (!loaded())
     return 0;
-  return entries_->size();
+  return entries_.size();
 }
 
 size_t ReadingListModelImpl::unread_size() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(read_entry_count_ + unread_entry_count_ == entries_->size());
+  DCHECK(read_entry_count_ + unread_entry_count_ == entries_.size());
   if (!loaded())
     return 0;
   return unread_entry_count_;
@@ -132,7 +129,7 @@ void ReadingListModelImpl::MarkAllSeen() {
   }
   std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
       model_batch_updates = BeginBatchUpdates();
-  for (auto& iterator : *entries_) {
+  for (auto& iterator : entries_) {
     ReadingListEntry& entry = iterator.second;
     if (entry.HasBeenSeen()) {
       continue;
@@ -162,7 +159,7 @@ bool ReadingListModelImpl::DeleteAllEntries() {
   for (const auto& url : Keys()) {
     RemoveEntryByURL(url);
   }
-  return entries_->empty();
+  return entries_.empty();
 }
 
 void ReadingListModelImpl::UpdateEntryStateCountersOnEntryRemoval(
@@ -191,7 +188,7 @@ void ReadingListModelImpl::UpdateEntryStateCountersOnEntryInsertion(
 
 const std::vector<GURL> ReadingListModelImpl::Keys() const {
   std::vector<GURL> keys;
-  for (const auto& iterator : *entries_) {
+  for (const auto& iterator : entries_) {
     keys.push_back(iterator.first);
   }
   return keys;
@@ -201,7 +198,7 @@ const ReadingListEntry* ReadingListModelImpl::GetEntryByURL(
     const GURL& gurl) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  return GetMutableEntryFromURL(gurl);
+  return const_cast<ReadingListModelImpl*>(this)->GetMutableEntryFromURL(gurl);
 }
 
 const ReadingListEntry* ReadingListModelImpl::GetFirstUnreadEntry(
@@ -215,8 +212,8 @@ const ReadingListEntry* ReadingListModelImpl::GetFirstUnreadEntry(
   const ReadingListEntry* first_entry_all = nullptr;
   int64_t update_time_distilled = 0;
   const ReadingListEntry* first_entry_distilled = nullptr;
-  for (auto& iterator : *entries_) {
-    ReadingListEntry& entry = iterator.second;
+  for (auto& iterator : entries_) {
+    const ReadingListEntry& entry = iterator.second;
     if (entry.IsRead()) {
       continue;
     }
@@ -239,11 +236,11 @@ const ReadingListEntry* ReadingListModelImpl::GetFirstUnreadEntry(
 }
 
 ReadingListEntry* ReadingListModelImpl::GetMutableEntryFromURL(
-    const GURL& url) const {
+    const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return nullptr;
   }
   return &(iterator->second);
@@ -262,7 +259,7 @@ void ReadingListModelImpl::SyncAddEntry(
     SetUnseenFlag();
   }
   GURL url = entry->URL();
-  entries_->insert(std::make_pair(url, std::move(*entry)));
+  entries_.emplace(url, std::move(*entry));
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, reading_list::ADDED_VIA_SYNC);
     observer.ReadingListDidApplyChanges(this);
@@ -321,7 +318,7 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
   }
   UpdateEntryStateCountersOnEntryRemoval(*entry);
 
-  entries_->erase(url);
+  entries_.erase(url);
   for (auto& observer : observers_)
     observer.ReadingListDidApplyChanges(this);
 }
@@ -355,7 +352,7 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
     observer.ReadingListWillAddEntry(this, entry);
   UpdateEntryStateCountersOnEntryInsertion(entry);
   SetUnseenFlag();
-  entries_->insert(std::make_pair(url, std::move(entry)));
+  entries_.emplace(url, std::move(entry));
 
   if (storage_layer_) {
     storage_layer_->SaveEntry(*GetEntryByURL(url));
@@ -366,7 +363,7 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
     observer.ReadingListDidApplyChanges(this);
   }
 
-  return entries_->at(url);
+  return entries_.at(url);
 }
 
 const ReadingListEntry& ReadingListModelImpl::AddEntry(
@@ -379,8 +376,8 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
 void ReadingListModelImpl::SetReadStatus(const GURL& url, bool read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return;
   }
   ReadingListEntry& entry = iterator->second;
@@ -408,8 +405,8 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
                                          const std::string& title) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return;
   }
   ReadingListEntry& entry = iterator->second;
@@ -435,8 +432,8 @@ void ReadingListModelImpl::SetEstimatedReadTime(
     base::TimeDelta estimated_read_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return;
   }
   ReadingListEntry& entry = iterator->second;
@@ -463,8 +460,8 @@ void ReadingListModelImpl::SetEntryDistilledInfo(
     const base::Time& distillation_date) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return;
   }
   ReadingListEntry& entry = iterator->second;
@@ -491,8 +488,8 @@ void ReadingListModelImpl::SetEntryDistilledState(
     ReadingListEntry::DistillationState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  auto iterator = entries_->find(url);
-  if (iterator == entries_->end()) {
+  auto iterator = entries_.find(url);
+  if (iterator == entries_.end()) {
     return;
   }
   ReadingListEntry& entry = iterator->second;

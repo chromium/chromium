@@ -21,7 +21,7 @@ class ReadingListSyncBridgeDelegate {
   // These three methods handle callbacks from a ReadingListSyncBridge.
   // This method is called when the local store is loaded. |entries| contains
   // the ReadingListEntry present on the device before sync starts.
-  virtual void StoreLoaded(std::unique_ptr<ReadingListEntries> entries) = 0;
+  virtual void StoreLoaded(ReadingListEntries entries) = 0;
   // Handle sync events.
   // Called to add a new entry to the model.
   // |entry| must not already exist in the model.

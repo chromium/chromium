@@ -102,9 +102,9 @@ TEST_F(ReadingListManagerImplTest, RootWithEmptyReadingList) {
 // Verifies load data into reading list model will update |manager_| as well.
 TEST_F(ReadingListManagerImplTest, Load) {
   // Load data into reading list model.
-  auto entries = std::make_unique<ReadingListEntries>();
+  ReadingListEntries entries;
   GURL url(kURL);
-  entries->emplace(url, ReadingListEntry(url, kTitle, clock()->Now()));
+  entries.emplace(url, ReadingListEntry(url, kTitle, clock()->Now()));
   reading_list_model()->StoreLoaded(std::move(entries));
 
   const auto* node = manager()->Get(url);
