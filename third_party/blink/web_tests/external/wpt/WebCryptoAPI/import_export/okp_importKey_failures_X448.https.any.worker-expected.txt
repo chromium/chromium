@@ -190,9 +190,9 @@ FAIL Missing JWK 'kty' parameter: importKey(jwk(private), {name: X448}, true, [d
 FAIL Missing JWK 'kty' parameter: importKey(jwk(private), {name: X448}, false, [deriveKey, deriveBits, deriveKey, deriveBits]) assert_equals: Missing JWK 'kty' parameter not supported. expected "DataError" but got "NotSupportedError"
 FAIL Missing JWK 'crv' parameter: importKey(jwk (public) , {name: X448}, true, []) assert_equals: Missing JWK 'crv' parameter not supported. expected "DataError" but got "NotSupportedError"
 FAIL Missing JWK 'crv' parameter: importKey(jwk (public) , {name: X448}, false, []) assert_equals: Missing JWK 'crv' parameter not supported. expected "DataError" but got "NotSupportedError"
-FAIL Invalid key pair: importKey(jwk (public) , {name: X448}, true, [deriveKey]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
-FAIL Invalid key pair: importKey(jwk (public) , {name: X448}, true, [deriveBits, deriveKey]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
-FAIL Invalid key pair: importKey(jwk (public) , {name: X448}, true, [deriveBits]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
-FAIL Invalid key pair: importKey(jwk (public) , {name: X448}, true, [deriveKey, deriveBits, deriveKey, deriveBits]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
+FAIL Invalid key pair: importKey(jwk(private), {name: X448}, true, [deriveKey]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
+FAIL Invalid key pair: importKey(jwk(private), {name: X448}, true, [deriveBits, deriveKey]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
+FAIL Invalid key pair: importKey(jwk(private), {name: X448}, true, [deriveBits]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
+FAIL Invalid key pair: importKey(jwk(private), {name: X448}, true, [deriveKey, deriveBits, deriveKey, deriveBits]) assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
 Harness: the test ran to completion.
 

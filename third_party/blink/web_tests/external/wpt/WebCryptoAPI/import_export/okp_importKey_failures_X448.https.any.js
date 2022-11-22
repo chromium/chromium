@@ -92,12 +92,11 @@ var missingJWKFieldKeyData = [
 // The public key doesn't match the private key.
 var invalidJWKKeyData = [
     {
-        data: {
-            crv: "X448",
-            kty: "OKP",
-            d: "WMfSmj61GbKdAM-xkbtk_G2KQtjxcXYnK4nyJy0YGSlcZSXAgpZxsFLvBydTDxiOMdDMU78mkp",
-            x: "mwj3zDG34+Z9ItWuoSEHSic70rg94Jxj+qc9LCLF2bvINmRyQdlT1AxbEtqIEg1TF3+A5TLEH6A",
-        }
+
+        crv: "X448",
+        kty: "OKP",
+        d: "WMfSmj61GbKdAM-xkbtk_G2KQtjxcXYnK4nyJy0YGSlcZSXAgpZxsFLvBydTDxiOMdDMU78mkp",
+        x: "mwj3zDG34+Z9ItWuoSEHSic70rg94Jxj+qc9LCLF2bvINmRyQdlT1AxbEtqIEg1TF3+A5TLEH6A",
     },
 ];
 
