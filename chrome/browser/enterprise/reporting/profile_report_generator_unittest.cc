@@ -258,6 +258,9 @@ TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
 }
 
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
+  feature_list_.InitAndDisableFeature(
+      features::kExtensionWorkflowJustification);
+
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
@@ -272,8 +275,6 @@ TEST_F(ProfileReportGeneratorTest, PendingRequest) {
 }
 
 TEST_F(ProfileReportGeneratorTest, PendingRequest_Justification) {
-  feature_list_.InitAndEnableFeature(features::kExtensionWorkflowJustification);
-
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));

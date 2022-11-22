@@ -425,7 +425,7 @@ BASE_FEATURE(kExtensionDeferredIndividualSettings,
 // extension request dialog.
 BASE_FEATURE(kExtensionWorkflowJustification,
              "ExtensionWorkflowJustification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
 // parameter value controls which |ExternalInstallBubbleAlert| button is the
