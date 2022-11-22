@@ -34,12 +34,10 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
 
   // Only populate the following fields if there is one battery detail.
   if (battery_details.size() == 1) {
-    state.current_capacity =
-        absl::make_optional(battery_details.front().current_capacity);
-    state.full_charged_capacity =
-        absl::make_optional(battery_details.front().full_charged_capacity);
-    state.charge_unit =
-        absl::make_optional(battery_details.front().charge_unit);
+    state.current_capacity = battery_details.front().current_capacity;
+    state.full_charged_capacity = battery_details.front().full_charged_capacity;
+    state.voltage_mv = battery_details.front().voltage_mv;
+    state.charge_unit = battery_details.front().charge_unit;
 #if BUILDFLAG(IS_WIN)
     state.battery_discharge_granularity =
         battery_details.front().battery_discharge_granularity;

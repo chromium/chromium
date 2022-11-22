@@ -48,6 +48,23 @@ struct BatteryDischarge {
   absl::optional<int64_t> rate_relative;
 };
 
+// Returns the discharge rate in milliwatts.
+int64_t CalculateDischargeRateMilliwatts(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state,
+    base::TimeDelta interval_duration);
+
+// Returns the discharge rate in one hundredth of a percent of full capacity per
+// minute.
+int64_t CalculateDischargeRateRelative(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state,
+    base::TimeDelta interval_duration);
+
 // Computes and returns the battery discharge mode and rate during the interval.
 // If the discharge rate isn't valid, the returned rate is nullopt and the
 // reason is indicated per BatteryDischargeMode.

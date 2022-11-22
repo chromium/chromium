@@ -88,4 +88,21 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
   EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
+TEST(BatteryLevelProviderTest, SingleBatteryMAh) {
+  auto state = FakeBatteryLevelProvider::MakeBatteryState({BatteryDetails(
+      {.is_external_power_connected = false,
+       .current_capacity = 42,
+       .full_charged_capacity = 100,
+       .voltage_mv = 12,
+       .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMAh})});
+  EXPECT_EQ(1, state.battery_count);
+  EXPECT_FALSE(state.is_external_power_connected);
+  EXPECT_EQ(42U, state.current_capacity);
+  EXPECT_EQ(100U, state.full_charged_capacity);
+  EXPECT_TRUE(state.voltage_mv.has_value());
+  EXPECT_EQ(12U, *state.voltage_mv);
+  EXPECT_EQ(BatteryLevelProvider::BatteryLevelUnit::kMAh, state.charge_unit);
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
+}
+
 }  // namespace base
