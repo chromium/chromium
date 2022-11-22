@@ -1062,9 +1062,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Set the dying state of the tab.
         tab.setIsDying(true);
-        Tab nextTab = mModel.getNextTabIfClosed(tab.getId(), /*uponExit=*/false);
 
         // 3. Setup animation end listener to resize and move tabs after tab closes.
+        Tab nextTab = mModel.getNextTabIfClosed(tab.getId(), /*uponExit=*/false);
         tabClosingAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -1223,6 +1223,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         AnimatorSet set = new AnimatorSet();
         set.playTogether(animationList);
         if (listener != null) set.addListener(listener);
+        if (mRunningAnimator != null && mRunningAnimator.isRunning()) {
+            mRunningAnimator.end();
+        }
         mRunningAnimator = set;
         mRunningAnimator.start();
     }
@@ -2045,15 +2048,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. We have hovered for the required time, so trigger a reorder.
         int direction = towardEnd ? 1 : -1;
-        int destinationTabId = mTabGroupModelFilter.getRootId(
-                getTabById(mStripTabs[curIndex + direction].getId()));
+        StripLayoutTab destTab = mStripTabs[curIndex + direction];
         float effectiveWidth = mCachedTabWidth - mTabOverlapWidth;
         float flipThreshold = effectiveWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         float minFlipOffset = mTabMarginWidth + flipThreshold;
         int numTabsToSkip =
                 1 + (int) Math.floor((Math.abs(offset) - minFlipOffset) / effectiveWidth);
-
-        mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destinationTabId, true);
+        mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destTab.getId(), true);
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         return towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
