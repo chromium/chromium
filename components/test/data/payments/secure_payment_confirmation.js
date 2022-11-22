@@ -155,63 +155,14 @@ async function securePaymentConfirmationHasEnrolledInstrument() {
 }
 
 /**
- * Creates a secure payment confirmation credential and returns "OK" on success.
- * @param {string} icon - The URL of the icon for the credential.
- * @return {string} - Either "OK" or an error string.
+ * Creates a secure payment confirmation credential, returning a JSON
+ * blob of information about the created credential.
+ *
+ * @param {string} userId - The user.id for the created credential.
+ * @return {Promise<object>} - Either information about the created credential
+ *     or an error message.
  */
-async function createPaymentCredential(icon) {
-  try {
-    // Intentionally ignore the result.
-    await createAndReturnPaymentCredential(icon);
-    return 'OK';
-  } catch (e) {
-    return e.toString();
-  }
-}
-
-/**
- * Creates a secure payment confirmation credential and returns its identifier.
- * @param {string} icon - The URL of the icon for the credential.
- * @return {string} - The base64 encoded identifier of the new credential,
- * or the error message.
- */
-async function createCredentialAndReturnItsIdentifier(icon) {
-  try {
-    const credential = await createAndReturnPaymentCredential(icon);
-    return btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
-  } catch (e) {
-    return e.toString();
-  }
-}
-
-/**
- * Creates a secure payment confirmation credential and returns its
- * clientDataJSON.type field.
- * @param {string} icon - The URL of the icon for the credential.
- * @return {string} - The clientDataJson.type field of the new credential.
- */
-async function createCredentialAndReturnClientDataType(icon) {
-  const credential = await createAndReturnPaymentCredential(icon);
-  return JSON.parse(String.fromCharCode(...new Uint8Array(
-      credential.response.clientDataJSON))).type;
-}
-
-/**
- * Creates a secure payment confirmation credential and returns its type.
- * @param {string} icon - The URL of the icon for the credential.
- * @return {string} - Either "PaymentCredential" or "PublicKeyCredential".
- */
-async function createCredentialAndReturnItsType(icon) {
-  const credential = await createAndReturnPaymentCredential(icon);
-  return credential.constructor.name;
-}
-
-/**
- * Creates and returns a secure payment confirmation credential.
- * @param {string} icon - The URL of the icon for the credential.
- * @return {PaymentCredential} - The new credential.
- */
-async function createAndReturnPaymentCredential(icon) {
+async function createPaymentCredential(userId) {
   const textEncoder = new TextEncoder();
   const publicKeyRP = {
       id: 'a.com',
@@ -222,51 +173,26 @@ async function createAndReturnPaymentCredential(icon) {
       alg: -7,
   }];
   const publicKey = {
-      user: {
-        displayName: 'User',
-        id: textEncoder.encode('user_123'),
-        name: 'user@acme.com',
-      },
-      rp: publicKeyRP,
-      challenge: textEncoder.encode('climb a mountain'),
-      pubKeyCredParams: publicKeyParameters,
-      extensions: {payment: {isPayment: true}},
+    user: {
+      displayName: 'User',
+      id: textEncoder.encode(userId),
+      name: 'user@acme.com',
+    },
+    rp: publicKeyRP,
+    challenge: textEncoder.encode('climb a mountain'),
+    pubKeyCredParams: publicKeyParameters,
+    extensions: {payment: {isPayment: true}},
   };
-  return navigator.credentials.create({publicKey});
-}
 
-/**
- * Creates a public key credential with 'payment' extension and returns its
- * identifier in base64 encoding.
- * @param {string} userId - the user ID for the credential.
- * @return {DOMString} - The new credential's identifier in base64 encoding.
- */
-async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId(
-    userId) {
   try {
-    const textEncoder = new TextEncoder();
-    const credential = await navigator.credentials.create({
-      publicKey: {
-        challenge: textEncoder.encode('climb a mountain'),
-        rp: {
-          id: 'a.com',
-          name: 'Acme',
-        },
-        user: {
-          displayName: 'User',
-          id: textEncoder.encode(userId),
-          name: 'user@acme.com',
-        },
-        pubKeyCredParams: [{
-          alg: -7,
-          type: 'public-key',
-        }],
-        timeout: 60000,
-        attestation: 'direct',
-        extensions: {payment: {isPayment: true}},
-      },
-    });
-    return btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+    const credential = await navigator.credentials.create({publicKey});
+    const webIdlType = credential.constructor.name;
+    const type = JSON.parse(String.fromCharCode(...new Uint8Array(
+                                credential.response.clientDataJSON)))
+                     .type;
+    const id = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+
+    return JSON.stringify({webIdlType, type, id});
   } catch (e) {
     return e.toString();
   }
