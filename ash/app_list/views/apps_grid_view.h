@@ -24,6 +24,7 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -394,8 +395,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
-  // Returns the max number of rows the grid can have on a page.
-  virtual int GetMaxRowsInPage(int page) const = 0;
+  // Returns the max number of rows the grid can have on a page. Returns nullopt
+  // if apps grid does not have limit on number of rows (which currently implies
+  // scrollable, single-page apps grid).
+  virtual absl::optional<int> GetMaxRowsInPage(int page) const = 0;
 
   // Calculates the offset distance to center the grid in the container.
   virtual gfx::Vector2d GetGridCenteringOffset(int page) const = 0;
@@ -471,9 +474,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
 
   // Returns the number of app tiles per page. Takes a page number as an
-  // argument as the first page might have less apps shown. Folder grids may
-  // have different numbers of tiles from the main grid.
-  int TilesPerPage(int page) const;
+  // argument as the first page might have less apps shown.
+  // Returns nullopt if number of tiles per page is not limited (which currently
+  // implies scrollable, single-page apps grid).
+  absl::optional<int> TilesPerPage(int page) const;
 
   GridIndex GetIndexOfView(const AppListItemView* view) const;
   AppListItemView* GetViewAtIndex(const GridIndex& index) const;

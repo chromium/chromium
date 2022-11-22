@@ -248,8 +248,8 @@ void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
                                              int max_rows_on_first_page,
                                              int max_rows) {
   DCHECK_LE(max_rows_on_first_page, max_rows);
-  const int first_page_size = TilesPerPage(0);
-  const int default_page_size = TilesPerPage(1);
+  const absl::optional<int> first_page_size = TilesPerPage(0);
+  const absl::optional<int> default_page_size = TilesPerPage(1);
 
   max_rows_on_first_page_ = max_rows_on_first_page;
   max_rows_ = max_rows;
@@ -513,7 +513,7 @@ void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
                             kMaxAppListAppMovingType);
 }
 
-int PagedAppsGridView::GetMaxRowsInPage(int page) const {
+absl::optional<int> PagedAppsGridView::GetMaxRowsInPage(int page) const {
   return page == 0 ? max_rows_on_first_page_ : max_rows_;
 }
 
@@ -536,11 +536,11 @@ void PagedAppsGridView::UpdatePaging() {
   // The grid can have a different number of tiles per page.
   size_t tiles = view_model()->view_size();
   int total_pages = 1;
-  size_t tiles_on_page = TilesPerPage(0);
+  size_t tiles_on_page = *TilesPerPage(0);
   while (tiles > tiles_on_page) {
     tiles -= tiles_on_page;
     ++total_pages;
-    tiles_on_page = TilesPerPage(total_pages - 1);
+    tiles_on_page = *TilesPerPage(total_pages - 1);
   }
   pagination_model_.SetTotalPages(total_pages);
 }
@@ -769,7 +769,7 @@ gfx::Size PagedAppsGridView::GetPageSize() const {
 
 gfx::Size PagedAppsGridView::GetTileGridSizeForPage(int page) const {
   gfx::Rect rect(GetTotalTileSize(page));
-  const int rows = TilesPerPage(page) / cols();
+  const int rows = *TilesPerPage(page) / cols();
   rect.set_size(gfx::Size(rect.width() * cols(), rect.height() * rows));
   rect.Inset(-GetTilePadding(page));
   return rect.size();

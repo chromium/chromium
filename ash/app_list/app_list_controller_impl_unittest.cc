@@ -663,7 +663,7 @@ TEST_F(AppListControllerImplTest, CreatePage) {
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
   PagedAppsGridView* apps_grid_view = GetAppsGridView();
   test::AppsGridViewTestApi test_api(apps_grid_view);
-  PopulateItem(test_api.TilesPerPage(0));
+  PopulateItem(test_api.TilesPerPageInPagedGrid(0));
   EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());
 
   // Add an extra item and verify that the page count is 2 now.

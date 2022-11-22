@@ -1224,14 +1224,14 @@ TEST_F(AppListViewFocusTest, SelectionHighlightFollowsChangingPage) {
   apps_grid_view()->pagination_model()->SelectPage(1, false);
 
   // Test that focus followed to the next page.
-  EXPECT_EQ(view_model->view_at(test_api()->TilesPerPage(0)),
+  EXPECT_EQ(view_model->view_at(test_api()->TilesPerPageInPagedGrid(0)),
             apps_grid_view()->selected_view());
 
   // Select the first page.
   apps_grid_view()->pagination_model()->SelectPage(0, false);
 
   // Test that focus followed.
-  EXPECT_EQ(view_model->view_at(test_api()->TilesPerPage(0) - 1),
+  EXPECT_EQ(view_model->view_at(test_api()->TilesPerPageInPagedGrid(0) - 1),
             apps_grid_view()->selected_view());
 }
 

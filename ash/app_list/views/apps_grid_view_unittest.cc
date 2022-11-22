@@ -414,8 +414,12 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     return test_api_->GetItemTileRectOnCurrentPageAt(row, col);
   }
 
-  size_t GetTilesPerPage(int page) const {
-    return test_api_->TilesPerPage(page);
+  size_t GetTilesPerPageInPagedGrid(int page) const {
+    return test_api_->TilesPerPageInPagedGrid(page);
+  }
+
+  size_t GetTilesPerPageOr(int page, size_t default_value) const {
+    return test_api_->TilesPerPageOr(page, default_value);
   }
 
   PaginationModel* GetPaginationModel() const {
@@ -859,7 +863,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
 // reorder placeholder is changed during drag.
 TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
-  model_->PopulateApps(GetTilesPerPage(0) + 15);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) + 15);
   UpdateLayout();
 
   GetPaginationModel()->SelectPage(1 /*page*/, false /*animate*/);
@@ -909,7 +913,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
     AppListItemView* item_view = view_model->view_at(i);
     // The first item and items off screen on the second page should not
     // animate.
-    if (i == 0 || i > GetTilesPerPage(0) + 1) {
+    if (i == 0 || i > GetTilesPerPageInPagedGrid(0) + 1) {
       EXPECT_FALSE(apps_grid_view_->IsAnimatingView(item_view));
       continue;
     }
@@ -980,7 +984,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, InFolderBetweenRowsAnimation) {
 // the first row. This causes the between rows animation to reverse.
 TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   ASSERT_TRUE(paged_apps_grid_view_);
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0));
   UpdateLayout();
 
   // Use non-zero animations to test that animations are correct while in
@@ -1274,7 +1278,7 @@ TEST_P(AppsGridViewTabletTest,
        OnGestureEventScrollSequenceHandleByPaginationController) {
   base::HistogramTester histogram_tester;
 
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) + 1);
   UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
@@ -1348,31 +1352,26 @@ TEST_F(AppsGridViewTest, FolderColsAndRows) {
   test_api_->PressItemAt(0);
   EXPECT_EQ(2u, items_grid_view->view_model()->view_size());
   EXPECT_EQ(2, items_grid_view->cols());
-  EXPECT_EQ(2u, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(1);
   EXPECT_EQ(5u, items_grid_view->view_model()->view_size());
   EXPECT_EQ(3, items_grid_view->cols());
-  EXPECT_EQ(6u, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(2);
   EXPECT_EQ(9u, items_grid_view->view_model()->view_size());
   EXPECT_EQ(3, items_grid_view->cols());
-  EXPECT_EQ(9u, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(3);
   EXPECT_EQ(15u, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
-  EXPECT_EQ(16u, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 
   test_api_->PressItemAt(4);
   EXPECT_EQ(17u, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
-  EXPECT_EQ(20u, folder_grid_test_api.TilesPerPage(0));
   app_list_folder_view()->CloseFolderPage();
 }
 
@@ -1497,7 +1496,7 @@ TEST_F(AppsGridViewTest, AppIconSelectedWhenMenuIsShown) {
 
 // Tests that the context menu for app item appears at the right position.
 TEST_P(AppsGridViewTabletTest, MenuAtRightPosition) {
-  const size_t kItemsInPage = GetTilesPerPage(0);
+  const size_t kItemsInPage = GetTilesPerPageInPagedGrid(0);
   const size_t kPages = 2;
   model_->PopulateApps(kItemsInPage * kPages);
   UpdateLayout();
@@ -2662,7 +2661,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, ControlArrowDownToGapOnSamePage) {
 // at the destination slot moving to the source slot (ie. a swap).
 TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
   const int kPages = 3;
-  model_->PopulateApps(GetTilesPerPage(0) + (kPages - 1) * GetTilesPerPage(1));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) +
+                       (kPages - 1) * GetTilesPerPageInPagedGrid(1));
 
   // For every item in the first row, ensure an upward move results in the item
   // swapping places with the item directly above it.
@@ -2673,7 +2673,7 @@ TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
         test_api_->GetViewAtIndex(moved_view_index));
 
     const GridIndex swapped_view_index(
-        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
+        0, GetTilesPerPageInPagedGrid(0) - apps_grid_view_->cols() + i);
     AppListItemView* moved_view = test_api_->GetViewAtIndex(moved_view_index);
     AppListItemView* swapped_view =
         test_api_->GetViewAtIndex(swapped_view_index);
@@ -2692,7 +2692,7 @@ TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {
     GetPaginationModel()->SelectPage(0, false /*animate*/);
     const GridIndex moved_view_index(
-        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
+        0, GetTilesPerPageInPagedGrid(0) - apps_grid_view_->cols() + i);
     apps_grid_view_->GetFocusManager()->SetFocusedView(
         test_api_->GetViewAtIndex(moved_view_index));
 
@@ -2713,7 +2713,7 @@ TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
   // For the final item on the first page, moving right to a full page should
   // swap with the first item on the next page.
   GetPaginationModel()->SelectPage(0, false /*animate*/);
-  GridIndex moved_view_index(0, GetTilesPerPage(0) - 1);
+  GridIndex moved_view_index(0, GetTilesPerPageInPagedGrid(0) - 1);
   GridIndex swapped_view_index(1, 0);
   AppListItemView* moved_view = test_api_->GetViewAtIndex(moved_view_index);
   AppListItemView* swapped_view = test_api_->GetViewAtIndex(swapped_view_index);
@@ -2747,7 +2747,8 @@ TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
 TEST_P(AppsGridViewClamshellAndTabletTest,
        ControlArrowDownOnLastAppOnLastPage) {
   base::HistogramTester histogram_tester;
-  const int kItemCount = paged_apps_grid_view_ ? GetTilesPerPage(0) + 1 : 21;
+  const int kItemCount =
+      paged_apps_grid_view_ ? GetTilesPerPageInPagedGrid(0) + 1 : 21;
   model_->PopulateApps(kItemCount);
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(kItemCount - 1);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
@@ -2945,14 +2946,15 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
 
 // Tests that foldering an item that is on a different page fails.
 TEST_P(AppsGridViewTabletTest, ControlShiftArrowFailsToFolderAcrossPages) {
-  model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) +
+                       GetTilesPerPageInPagedGrid(1));
   UpdateLayout();
 
   // For every item on the last row of the first page, test that foldering to
   // the next page fails.
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {
     const GridIndex moved_view_index(
-        0, GetTilesPerPage(0) - apps_grid_view_->cols() + i);
+        0, GetTilesPerPageInPagedGrid(0) - apps_grid_view_->cols() + i);
     AppListItemView* attempted_folder_view =
         test_api_->GetViewAtIndex(moved_view_index);
     apps_grid_view_->GetFocusManager()->SetFocusedView(attempted_folder_view);
@@ -2967,7 +2969,7 @@ TEST_P(AppsGridViewTabletTest, ControlShiftArrowFailsToFolderAcrossPages) {
   {
     // The last item on the col is selected, try moving right and test that that
     // fails as well.
-    GridIndex moved_view_index(0, GetTilesPerPage(0) - 1);
+    GridIndex moved_view_index(0, GetTilesPerPageInPagedGrid(0) - 1);
     AppListItemView* attempted_folder_view =
         test_api_->GetViewAtIndex(moved_view_index);
 
@@ -3013,9 +3015,10 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   // Create grid with a folder on the last slot in a page (or for scrollable
   // grid, the last slot in the page with enough items that the slot is
   // initially not in the visible part of the grid).
-  const int kTopLevelItemCount = paged_apps_grid_view_
-                                     ? GetTilesPerPage(0) + GetTilesPerPage(1)
-                                     : apps_grid_view_->cols() * 8;
+  const int kTopLevelItemCount =
+      paged_apps_grid_view_
+          ? GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1)
+          : apps_grid_view_->cols() * 8;
   model_->PopulateApps(kTopLevelItemCount - 1);
   const AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(3);
@@ -3080,9 +3083,10 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   // Create grid with a folder on the last slot in a page (or for scrollable
   // grid, the last slot in the page with enough items that the slot is
   // initially not in the visible part of the grid).
-  const int kTopLevelItemCount = paged_apps_grid_view_
-                                     ? GetTilesPerPage(0) + GetTilesPerPage(1)
-                                     : apps_grid_view_->cols() * 8;
+  const int kTopLevelItemCount =
+      paged_apps_grid_view_
+          ? GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1)
+          : apps_grid_view_->cols() * 8;
   model_->PopulateApps(kTopLevelItemCount - 1);
   const AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(3);
@@ -3143,15 +3147,15 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
 
 TEST_P(AppsGridViewTabletTest,
        KeyboardReparentFromFolderPrefersLeavingMovedItemOnCurrentPage) {
-  model_->PopulateApps(GetTilesPerPage(0) - 2);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) - 2);
   const AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(3);
-  model_->PopulateApps(GetTilesPerPage(1));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(1));
   const std::string folder_id = folder_item->id();
   UpdateLayout();
 
-  AppListItemView* folder_view =
-      test_api_->GetViewAtIndex(GridIndex(0, GetTilesPerPage(0) - 2));
+  AppListItemView* folder_view = test_api_->GetViewAtIndex(
+      GridIndex(0, GetTilesPerPageInPagedGrid(0) - 2));
   ASSERT_TRUE(folder_view->is_folder());
   folder_view->RequestFocus();
   const gfx::Rect original_folder_view_bounds =
@@ -3169,7 +3173,7 @@ TEST_P(AppsGridViewTabletTest,
   ASSERT_TRUE(reparented_item_view->item());
 
   std::string reparented_item_id = reparented_item_view->item()->id();
-  EXPECT_EQ("Item " + base::NumberToString(GetTilesPerPage(0) - 2),
+  EXPECT_EQ("Item " + base::NumberToString(GetTilesPerPageInPagedGrid(0) - 2),
             reparented_item_id);
   ASSERT_TRUE(reparented_item_view->HasFocus());
 
@@ -3181,8 +3185,8 @@ TEST_P(AppsGridViewTabletTest,
   ASSERT_EQ(folder_item, model_->FindItem(folder_id));
   EXPECT_EQ(2u, folder_item->ChildItemCount());
 
-  const AppListItemView* last_item_on_first_page =
-      test_api_->GetViewAtIndex(GridIndex(0, GetTilesPerPage(0) - 1));
+  const AppListItemView* last_item_on_first_page = test_api_->GetViewAtIndex(
+      GridIndex(0, GetTilesPerPageInPagedGrid(0) - 1));
   // Verify the view is within visible grid bounds, and that it has focus.
   EXPECT_EQ(reparented_item_id, last_item_on_first_page->item()->id());
   EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
@@ -3250,8 +3254,9 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 3 full pages of apps.
-  model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1) +
-                       GetTilesPerPage(2));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) +
+                       GetTilesPerPageInPagedGrid(1) +
+                       GetTilesPerPageInPagedGrid(2));
   UpdateLayout();
 
   const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
@@ -3287,7 +3292,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create a full page and a partially full second page.
-  model_->PopulateApps(GetTilesPerPage(0) + 3);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) + 3);
   UpdateLayout();
 
   // Drag an item from the first page to the last existing slot on the next
@@ -3296,7 +3301,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
       apps_grid_view_->view_model();
   AppListItemView* dragged_view = view_model->view_at(0);
   AppListItemView* original_first_item_on_second_page =
-      view_model->view_at(GetTilesPerPage(0));
+      view_model->view_at(GetTilesPerPageInPagedGrid(0));
 
   auto* generator = GetEventGenerator();
 
@@ -3380,7 +3385,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
   // The first item on second page should have been moved to the first page (to
   // fill up the empty slot left by moving the draggged item away).
   AppListItemView* last_item_on_first_page =
-      test_api_->GetViewAtVisualIndex(0, GetTilesPerPage(0) - 1);
+      test_api_->GetViewAtVisualIndex(0, GetTilesPerPageInPagedGrid(0) - 1);
   ASSERT_TRUE(last_item_on_first_page);
   EXPECT_EQ(original_first_item_on_second_page->item()->id(),
             last_item_on_first_page->item()->id());
@@ -3390,14 +3395,14 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create a full page and a partially full second page.
-  model_->PopulateApps(GetTilesPerPage(0) + 3);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) + 3);
   UpdateLayout();
 
   const views::ViewModelT<AppListItemView>* view_model =
       apps_grid_view_->view_model();
   AppListItemView* dragged_view = view_model->view_at(0);
   AppListItemView* original_first_item_on_second_page =
-      view_model->view_at(GetTilesPerPage(0));
+      view_model->view_at(GetTilesPerPageInPagedGrid(0));
 
   auto* generator = GetEventGenerator();
 
@@ -3504,7 +3509,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
   // The first item on second page should have been moved to the first page (to
   // fill up the empty slot left by moving the draggged item away).
   AppListItemView* last_item_on_first_page =
-      test_api_->GetViewAtVisualIndex(0, GetTilesPerPage(0) - 1);
+      test_api_->GetViewAtVisualIndex(0, GetTilesPerPageInPagedGrid(0) - 1);
   ASSERT_TRUE(last_item_on_first_page);
   EXPECT_EQ(original_first_item_on_second_page->item()->id(),
             last_item_on_first_page->item()->id());
@@ -3515,7 +3520,8 @@ TEST_P(AppsGridViewTabletTest,
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 2 full pages of apps, and add another app to overflow to third page.
-  const size_t kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) + 1;
+  const size_t kTotalApps =
+      GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1) + 1;
   model_->PopulateApps(kTotalApps);
   EXPECT_EQ(3, GetPaginationModel()->total_pages());
 
@@ -3524,7 +3530,10 @@ TEST_P(AppsGridViewTabletTest,
   // change between landscape and portrait mode).
   UpdateDisplay("1024x768/r");
 
-  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+  EXPECT_EQ(kTotalApps <= GetTilesPerPageInPagedGrid(0) +
+                              GetTilesPerPageInPagedGrid(1)
+                ? 2
+                : 3,
             GetPaginationModel()->total_pages());
 }
 
@@ -3533,7 +3542,8 @@ TEST_P(AppsGridViewTabletTest,
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 2 full pages of apps, and add another app to overflow to third page.
-  const size_t kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) - 1;
+  const size_t kTotalApps =
+      GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1) - 1;
   model_->PopulateApps(kTotalApps);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
@@ -3542,7 +3552,10 @@ TEST_P(AppsGridViewTabletTest,
   // may change between landscape and portrait mode).
   UpdateDisplay("1024x768/r");
 
-  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+  EXPECT_EQ(kTotalApps <= GetTilesPerPageInPagedGrid(0) +
+                              GetTilesPerPageInPagedGrid(1)
+                ? 2
+                : 3,
             GetPaginationModel()->total_pages());
 }
 
@@ -3552,7 +3565,8 @@ TEST_P(AppsGridViewTabletTest,
   UpdateDisplay("1024x768/r");
 
   // Create 2 full pages of apps, and add another app to overflow to third page.
-  const size_t kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) + 1;
+  const size_t kTotalApps =
+      GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1) + 1;
   model_->PopulateApps(kTotalApps);
   EXPECT_EQ(3, GetPaginationModel()->total_pages());
 
@@ -3561,7 +3575,10 @@ TEST_P(AppsGridViewTabletTest,
   // change between landscape and portrait mode).
   UpdateDisplay("1024x768");
 
-  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+  EXPECT_EQ(kTotalApps <= GetTilesPerPageInPagedGrid(0) +
+                              GetTilesPerPageInPagedGrid(1)
+                ? 2
+                : 3,
             GetPaginationModel()->total_pages());
 }
 
@@ -3571,7 +3588,8 @@ TEST_P(AppsGridViewTabletTest,
   UpdateDisplay("1024x768/r");
 
   // Create 2 full pages of apps, and add another app to overflow to third page.
-  const size_t kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) - 1;
+  const size_t kTotalApps =
+      GetTilesPerPageInPagedGrid(0) + GetTilesPerPageInPagedGrid(1) - 1;
   model_->PopulateApps(kTotalApps);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
@@ -3580,7 +3598,10 @@ TEST_P(AppsGridViewTabletTest,
   // items per page than landscape UI).
   UpdateDisplay("1024x768");
 
-  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+  EXPECT_EQ(kTotalApps <= GetTilesPerPageInPagedGrid(0) +
+                              GetTilesPerPageInPagedGrid(1)
+                ? 2
+                : 3,
             GetPaginationModel()->total_pages());
 }
 
@@ -3588,8 +3609,9 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 3 full pages of apps.
-  model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1) +
-                       GetTilesPerPage(2));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) +
+                       GetTilesPerPageInPagedGrid(1) +
+                       GetTilesPerPageInPagedGrid(2));
   // Select the last page.
   GetPaginationModel()->SelectPage(2, /*animate=*/false);
 
@@ -4263,7 +4285,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemToOtherItemAndBack) {
 TEST_P(AppsGridViewTabletTest, Basic) {
   base::HistogramTester histogram_tester;
 
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0) + 1);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -4315,7 +4337,7 @@ TEST_P(AppsGridViewTabletTest, EnsureBlurAfterScrollingWithoutTransition) {
   // Create a folder with 2 apps. Then add apps until a second page is
   // created.
   model_->CreateAndPopulateFolderWithApps(2);
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPageInPagedGrid(0));
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -4404,8 +4426,6 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
             model_->top_level_item_list()->item_at(0)->GetItemType());
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  EXPECT_EQ(kTotalItems,
-            AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
   EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
   EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
@@ -4414,7 +4434,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
 // There's no "page break" item at the end of first page with full grid.
 TEST_P(AppsGridViewTabletTest, NoPageBreakItemWithFullGrid) {
   // There are two pages and last item is on second page.
-  const int kApps = 2 + GetTilesPerPage(0);
+  const int kApps = 2 + GetTilesPerPageInPagedGrid(0);
   model_->PopulateApps(kApps);
   std::string model_content = "Item 0";
   for (int i = 1; i < kApps; ++i)
@@ -4482,9 +4502,10 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   // Add enough items to the root grid so the launcher becomes paged.
   model_->PopulateApps(1);
   model_->CreateAndPopulateFolderWithApps(5);
-  // `GetTilesPerPage()` may return a large number for bubble launcher - ensure
-  // the number of test apps is not excessive.
-  model_->PopulateApps(std::min(size_t{30}, GetTilesPerPage(0)));
+  // `TilesPerPage()` is not well defined for bubble launcher - populate bubble
+  // launcher grid with arbitrary sufficiently large number of apps (so the
+  // root grid becomes scrollable).
+  model_->PopulateApps(GetTilesPerPageOr(0, 30));
   UpdateLayout();
 
   // Open the folder view.
@@ -4545,9 +4566,9 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   // Add enough items to the root grid so the launcher becomes paged.
   model_->PopulateApps(1);
   model_->CreateAndPopulateFolderWithApps(5);
-  // `GetTilesPerPage()` may return a large number for bubble launcher - ensure
-  // the number of test apps is not excessive.
-  model_->PopulateApps(std::min(size_t{30}, GetTilesPerPage(0)));
+  // `GetTilesPerPageInPagedGrid()` may return a large number for bubble
+  // launcher - ensure the number of test apps is not excessive.
+  model_->PopulateApps(GetTilesPerPageOr(0, 30));
   UpdateLayout();
 
   // Open the folder view.
@@ -4608,7 +4629,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
 
 TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
   // There are two pages and last item is on second page.
-  const size_t kApps = 2 + GetTilesPerPage(0);
+  const size_t kApps = 2 + GetTilesPerPageInPagedGrid(0);
   model_->PopulateApps(kApps);
   const views::ViewModelT<AppListItemView>* view_model =
       apps_grid_view_->view_model();
@@ -4631,8 +4652,8 @@ TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
   TestAppListItemViewIndice();
   EXPECT_EQ(kApps, view_model->view_size());
   for (size_t i = 0; i < kApps; ++i) {
-    int page = i / GetTilesPerPage(0);
-    int slot = i % GetTilesPerPage(0);
+    int page = i / GetTilesPerPageInPagedGrid(0);
+    int slot = i % GetTilesPerPageInPagedGrid(0);
     EXPECT_EQ(view_model->view_at(i),
               test_api_->GetViewAtVisualIndex(page, slot));
     EXPECT_EQ("Item " + base::NumberToString((i + kApps - 1) % kApps),
@@ -4708,7 +4729,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
       << first_item_bounds.ToString();
 
   gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPage(0) / apps_grid_view_->cols() - 1,
+      GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
       apps_grid_view_->cols() - 1);
 
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
@@ -4740,7 +4761,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
       << first_item_bounds.ToString();
 
   last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPage(0) / apps_grid_view_->cols() - 1,
+      GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
       apps_grid_view_->cols() - 1);
 
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
@@ -4790,7 +4811,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
       << first_item_bounds.ToString();
 
   gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPage(1) / apps_grid_view_->cols() - 1,
+      GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
       apps_grid_view_->cols() - 1);
 
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
@@ -4821,7 +4842,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
       << first_item_bounds.ToString();
 
   last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPage(1) / apps_grid_view_->cols() - 1,
+      GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
       apps_grid_view_->cols() - 1);
 
   EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
@@ -5413,7 +5434,7 @@ TEST_F(AppsGridViewTest, FocusNotRestoredIfNoViewWasFocused) {
 TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
   SetVirtualKeyboardEnabled(true);
 
-  const int kMaxAppsInGrid = test_api_->TilesPerPage(0);
+  const int kMaxAppsInGrid = test_api_->TilesPerPageInPagedGrid(0);
   model_->PopulateApps(kMaxAppsInGrid - 1);
   UpdateLayout();
 

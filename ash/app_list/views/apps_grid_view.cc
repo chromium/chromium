@@ -1166,12 +1166,12 @@ void AppsGridView::UpdatePulsingBlockViews() {
   int existing_items = item_list_ ? item_list_->item_count() : 0;
   const int tablet_page_size =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-  // For scrolling app list, the "page size" is very large, so cap the number of
-  // pulsing blocks to the size of the tablet mode page (~20 items).
-  const int tiles_per_page = std::min(TilesPerPage(1), tablet_page_size);
+  // For scrolling app list, the "page size" is not defined, so cap the number
+  // of pulsing blocks to the size of the legacy tablet mode page (~20 items).
+  const int tiles_per_page = TilesPerPage(1).value_or(tablet_page_size);
   if (view_structure_.mode() != PagedViewStructure::Mode::kSinglePage) {
-    if (existing_items > TilesPerPage(0))
-      existing_items -= TilesPerPage(0);
+    if (existing_items > *TilesPerPage(0))
+      existing_items -= *TilesPerPage(0);
   }
   const size_t available_slots =
       tiles_per_page - (existing_items % tiles_per_page);
@@ -1247,20 +1247,11 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   return GetItemViewAt(model_index);
 }
 
-int AppsGridView::TilesPerPage(int page) const {
-  const int max_rows = GetMaxRowsInPage(page);
-
-  // In folders, the grid size depends on the number of items in the page.
-  if (IsInFolder()) {
-    // Leave room for at least one item.
-    if (!view_model()->view_size())
-      return 1;
-
-    int rows = (view_model()->view_size() - 1) / cols() + 1;
-    return std::min(max_rows, rows) * cols();
-  }
-
-  return max_rows * cols();
+absl::optional<int> AppsGridView::TilesPerPage(int page) const {
+  const absl::optional<int> max_rows = GetMaxRowsInPage(page);
+  if (!max_rows.has_value())
+    return absl::nullopt;
+  return *max_rows * cols();
 }
 
 void AppsGridView::SetMaxColumnsInternal(int max_cols) {
@@ -2496,9 +2487,11 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
   GridIndex start_index(GetSelectedPage(), 0);
   if (!IsValidIndex(start_index))
     return;
-  size_t start = view_structure_.GetModelIndexFromIndex(start_index);
-  size_t end =
-      std::min(view_model_.view_size(), start + TilesPerPage(start_index.page));
+  const size_t start = view_structure_.GetModelIndexFromIndex(start_index);
+  const absl::optional<int> tiles_per_page = TilesPerPage(start_index.page);
+  const size_t end = tiles_per_page ? std::min(view_model_.view_size(),
+                                               start + *tiles_per_page)
+                                    : view_model_.view_size();
   for (size_t i = start; i < end; ++i)
     GetItemViewAt(i)->CancelContextMenu();
 }
@@ -2691,11 +2684,12 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
       cols_ - 1);
 
   DCHECK_GT(total_tile_size.height(), 0);
-  int max_row = TilesPerPage(current_page) / cols_ - 1;
-  int row = base::clamp(
-      (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height(), 0,
-      max_row);
-
+  const int ideal_row =
+      (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height();
+  const absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+  const int row = tiles_per_page
+                      ? base::clamp(ideal_row, 0, *tiles_per_page / cols_ - 1)
+                      : std::max(ideal_row, 0);
   return GridIndex(current_page, row * cols_ + col);
 }
 
@@ -2821,34 +2815,16 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
   } else if (target_row > (GetNumberOfItemsOnPage(target_page) - 1) / cols_) {
     // The app will move to the first row of the next page.
     ++target_page;
-    if (folder_delegate_) {
-      if (target_page >= GetTotalPages())
-        return source_index;
-    } else {
-      if (target_page >= view_structure_.total_pages()) {
-        // If |source_index| page only has one item, moving down to a new page
-        // should be a no-op.
-        if (view_structure_.items_on_page(source_index.page) == 1)
-          return source_index;
-        return GridIndex(target_page, 0);
-      }
-    }
+    if (target_page >= GetTotalPages())
+      return source_index;
     target_row = 0;
   }
 
   // The ideal slot shares a column with |source_index|.
   const int ideal_slot = target_row * cols_ + source_index.slot % cols_;
-  if (folder_delegate_) {
-    return GridIndex(
-        target_page,
-        std::min(GetNumberOfItemsOnPage(target_page) - 1, ideal_slot));
-  }
-
-  // If the app is being moved to a new page there is 1 extra slot available.
-  const int last_slot_in_target_page =
-      view_structure_.items_on_page(target_page) -
-      (source_index.page != target_page ? 0 : 1);
-  return GridIndex(target_page, std::min(last_slot_in_target_page, ideal_slot));
+  return GridIndex(
+      target_page,
+      std::min(GetNumberOfItemsOnPage(target_page) - 1, ideal_slot));
 }
 
 GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
@@ -2883,10 +2859,15 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
   // Ensure the item is placed on the same page as the folder when possible.
   if (target_index.page < folder_index.page)
     return folder_index;
-  const int folder_page_size = TilesPerPage(folder_index.page);
-  if (target_index.page > folder_index.page &&
-      folder_index.slot + 1 < folder_page_size) {
-    return GridIndex(folder_index.page, folder_index.slot + 1);
+
+  if (target_index.page > folder_index.page) {
+    const absl::optional<int> folder_page_size =
+        TilesPerPage(folder_index.page);
+    // Target index page being at least 1 indicates paged apps grid, so number
+    // of tiles per page should be bounded.
+    DCHECK(folder_page_size);
+    if (folder_index.slot + 1 < *folder_page_size)
+      return GridIndex(folder_index.page, folder_index.slot + 1);
   }
 
   return target_index;
@@ -2948,8 +2929,9 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 }
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
+  const absl::optional<int> tiles_per_page = TilesPerPage(index.page);
   return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
-         index.slot < TilesPerPage(index.page) &&
+         (!tiles_per_page || index.slot < *tiles_per_page) &&
          static_cast<size_t>(view_structure_.GetModelIndexFromIndex(index)) <
              view_model_.view_size();
 }
@@ -2972,13 +2954,18 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
 
   // We are guaranteed not on the last page, so the page must be full.
   if (page < GetTotalPages() - 1)
-    return TilesPerPage(page);
+    return *TilesPerPage(page);
 
   // We are on the last page, so calculate the number of items on the page.
   size_t item_count = view_model_.view_size();
   int current_page = 0;
   while (current_page < GetTotalPages() - 1) {
-    item_count -= TilesPerPage(current_page);
+    absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+    // `current_page` not being the last page implies a paged apps grid view,
+    // as the grid has more than one page. For paged apps grid view,
+    // `TilesPerPage()` should be defined.
+    DCHECK(tiles_per_page);
+    item_count -= *tiles_per_page;
     ++current_page;
   }
   return item_count;

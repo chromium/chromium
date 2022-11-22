@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -130,7 +131,7 @@ class ASH_EXPORT PagedViewStructure {
   void ClearEmptyPages();
 
   // Returns TilesPerPage() from `apps_grid_view_`.
-  int TilesPerPage(int page) const;
+  absl::optional<int> TilesPerPage(int page) const;
 
   // Not const for tests.
   Mode mode_ = Mode::kFullPages;

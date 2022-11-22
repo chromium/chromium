@@ -64,7 +64,7 @@ void PagedViewStructure::LoadFromMetadata() {
   // Copy the view model to N full pages.
   for (size_t i = 0; i < view_model->view_size(); ++i) {
     if (pages_.back().size() ==
-        static_cast<size_t>(TilesPerPage(pages_.size() - 1))) {
+        static_cast<size_t>(*TilesPerPage(pages_.size() - 1))) {
       pages_.emplace_back();
     }
     pages_.back().push_back(view_model->view_at(i));
@@ -117,8 +117,8 @@ GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
     return GridIndex(0, model_index);
 
   int current_page = 0;
-  while (model_index >= TilesPerPage(current_page)) {
-    model_index -= TilesPerPage(current_page);
+  while (model_index >= *TilesPerPage(current_page)) {
+    model_index -= *TilesPerPage(current_page);
     ++current_page;
   }
   return GridIndex(current_page, model_index);
@@ -132,7 +132,7 @@ int PagedViewStructure::GetModelIndexFromIndex(const GridIndex& index) const {
 
   int model_index = 0;
   for (int i = 0; i < index.page; i++) {
-    model_index += TilesPerPage(i);
+    model_index += *TilesPerPage(i);
   }
   model_index += index.slot;
   return model_index;
@@ -159,7 +159,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
   if (page_index == apps_grid_view_->GetTotalPages() - 1)
     return GetLastTargetIndex();
 
-  return GridIndex(page_index, TilesPerPage(page_index) - 1);
+  return GridIndex(page_index, *TilesPerPage(page_index) - 1);
 }
 
 int PagedViewStructure::GetTargetModelIndexForMove(
@@ -198,8 +198,12 @@ void PagedViewStructure::AppendPage() {
 bool PagedViewStructure::IsFullPage(int page_index) const {
   if (page_index >= total_pages())
     return false;
-  return static_cast<int>(pages_[page_index].size()) ==
-         TilesPerPage(page_index);
+
+  const absl::optional<int> tiles_per_page = TilesPerPage(page_index);
+  if (!tiles_per_page)
+    return false;
+
+  return static_cast<int>(pages_[page_index].size()) == *tiles_per_page;
 }
 
 void PagedViewStructure::Sanitize() {
@@ -210,6 +214,9 @@ void PagedViewStructure::Sanitize() {
 }
 
 void PagedViewStructure::ClearOverflow() {
+  if (mode_ == Mode::kSinglePage)
+    return;
+
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
   while (iter != pages_.end() || !overflow_views.empty()) {
@@ -220,7 +227,7 @@ void PagedViewStructure::ClearOverflow() {
     }
 
     const size_t max_item_views =
-        TilesPerPage(static_cast<int>(iter - pages_.begin()));
+        *TilesPerPage(static_cast<int>(iter - pages_.begin()));
     auto& page = *iter;
 
     if (!overflow_views.empty()) {
@@ -252,7 +259,7 @@ void PagedViewStructure::ClearEmptyPages() {
   }
 }
 
-int PagedViewStructure::TilesPerPage(int page) const {
+absl::optional<int> PagedViewStructure::TilesPerPage(int page) const {
   return apps_grid_view_->TilesPerPage(page);
 }
 

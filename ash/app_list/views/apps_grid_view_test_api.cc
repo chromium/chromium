@@ -54,8 +54,13 @@ void AppsGridViewTestApi::PressItemAt(int index) {
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
 }
 
-size_t AppsGridViewTestApi::TilesPerPage(int page) const {
-  return view_->TilesPerPage(page);
+size_t AppsGridViewTestApi::TilesPerPageInPagedGrid(int page) const {
+  return *view_->TilesPerPage(page);
+}
+
+size_t AppsGridViewTestApi::TilesPerPageOr(int page,
+                                           size_t default_value) const {
+  return view_->TilesPerPage(page).value_or(default_value);
 }
 
 int AppsGridViewTestApi::AppsOnPage(int page) const {

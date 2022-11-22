@@ -48,7 +48,15 @@ class AppsGridViewTestApi {
 
   void PressItemAt(int index);
 
-  size_t TilesPerPage(int page) const;
+  // Returns the number of tiles per page in paged apps grid. It should not be
+  // called for scrollable apps grid, in which case number of tiles per page is
+  // not defined.
+  size_t TilesPerPageInPagedGrid(int page) const;
+
+  // Returns number of tiles allowed on the page for paged apps grid, or
+  // `default_value` for scrollable apps grid, for which number of tiles per
+  // page is not defined.
+  size_t TilesPerPageOr(int page, size_t default_value) const;
 
   int AppsOnPage(int page) const;
 

@@ -2120,7 +2120,7 @@ TEST_P(AppListBubbleAndTabletTest,
 // (e.g. on screen rotation).
 TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -2406,7 +2406,7 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -2448,8 +2448,8 @@ TEST_F(PopulatedAppListTest,
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPage(0) +
-               apps_grid_test_api_->TilesPerPage(1));
+  PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) +
+               apps_grid_test_api_->TilesPerPageInPagedGrid(1));
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 

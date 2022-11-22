@@ -272,10 +272,8 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
                             kMaxAppListAppMovingType);
 }
 
-int ScrollableAppsGridView::GetMaxRowsInPage(int page) const {
-  // Return an arbitrary large number, chosen to be small enough
-  // that cols*rows_per_page will not overflow.
-  return 100000;
+absl::optional<int> ScrollableAppsGridView::GetMaxRowsInPage(int page) const {
+  return absl::nullopt;
 }
 
 gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
