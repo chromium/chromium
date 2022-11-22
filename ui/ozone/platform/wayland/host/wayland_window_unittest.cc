@@ -851,6 +851,44 @@ TEST_P(WaylandWindowTest, Minimize) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// Tests the event sequence where a toplevel window is minimized and a restore
+// event is initiated by the server.
+TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
+  wl::ScopedWlArray states({});
+
+  // Make sure the window is initialized to the normal state from the beginning.
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  SendConfigureEvent(surface_id_, {0, 0}, states);
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  // A subsequent minimize event from the server should notify delegates of the
+  // window state change.
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  window_->HandleSurfaceConfigure(3);
+  EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
+
+  if (window_->IsSupportedOnAuraSurface(
+          ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION)) {
+    // If the minimized state is supported via the zaura extension, while
+    // minimized a restore event from the server should return the window to the
+    // normal state.
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {});
+    window_->HandleSurfaceConfigure(4);
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  } else {
+    // If the minimized state is not supported, the server initiated restore
+    // event with no window activation should not restore the window. It should
+    // instead leave the window in the minimized state.
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {});
+    window_->HandleSurfaceConfigure(4);
+    EXPECT_EQ(PlatformWindowState::kMinimized,
+              window_->GetPlatformWindowState());
+  }
+}
+
 TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());

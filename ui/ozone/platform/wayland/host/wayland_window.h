@@ -416,6 +416,8 @@ class WaylandWindow : public PlatformWindow,
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSetRoundedCorners);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
                            CommitOverlaysNonsensicalBoundsRect);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
+                           ServerInitiatedRestoreFromMinimizedState);
 
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
