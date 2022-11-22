@@ -166,8 +166,11 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
       root_window_to_show = Shell::Get()->GetPrimaryRootWindow();
 
     // There were some unsupported apps in the active desk so open up a dialog
-    // to let the user know.
-    saved_desk_util::GetSavedDeskDialogController()->ShowUnsupportedAppsDialog(
+    // to let the user know. The dialog controller should always be available
+    // here since we have already determined that we are in overview mode.
+    auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
+    DCHECK(dialog_controller);
+    dialog_controller->ShowUnsupportedAppsDialog(
         root_window_to_show, call.unsupported_apps, call.incognito_window_count,
         std::move(call.callback), std::move(desk_template));
   } else {

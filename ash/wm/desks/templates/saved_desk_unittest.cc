@@ -3193,6 +3193,42 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
   histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 1);
 }
 
+// Test that things don't crash when exiting overview immediately after
+// triggering the replace dialog. Regression test for http://b/258306298.
+TEST_F(SavedDeskTest, ReplaceTemplateAndExitOverview) {
+  UpdateDisplay("800x600");
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(1)->name_view();
+  // Ensure that we have the right item.
+  EXPECT_EQ(name_view->GetText(), u"template_2");
+
+  ClickOnView(name_view);
+  EXPECT_TRUE(name_view->HasFocus());
+
+  // Change the name of "template_2" to "template_1", which will trigger the
+  // replace dialog to be shown.
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_BACK);
+  SendKey(ui::VKEY_1);
+  SendKey(ui::VKEY_RETURN);
+
+  // Immediately exit overview. It is important that this is done with a
+  // non-zero duration. This will cause saved desk UI items to live on for
+  // slightly longer as they will be briefly owned by an animation.
+  ui::ScopedAnimationDurationScaleMode animation(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
+}
+
 // Tests record metrics when current template being replaced.
 TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   base::HistogramTester histogram_tester;
