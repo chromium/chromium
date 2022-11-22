@@ -33,11 +33,11 @@ namespace blink {
 namespace {
 
 template <typename Traversal>
-int16_t ComparePositions(const Node* container_a,
-                         int offset_a,
-                         const Node* container_b,
-                         int offset_b,
-                         bool* disconnected) {
+int16_t SlowComparePositions(const Node* container_a,
+                             int offset_a,
+                             const Node* container_b,
+                             int offset_b,
+                             bool* disconnected) {
   DCHECK(container_a);
   DCHECK(container_b);
 
@@ -130,6 +130,162 @@ int16_t ComparePositions(const Node* container_a,
   return 0;
 }
 
+// The `Comparator` class implements `ComparePositions()` logic.
+template <typename Traversal>
+class Comparator {
+  STATIC_ONLY(Comparator);
+
+ public:
+  // Returns
+  //  -1 if `node_a` is before `node_b`
+  //   0 if `node_a == node_b`
+  //   1 if `node_a` is after `node_b`
+  //    where
+  //      * `node_a == Traversal::ChildAt(*container_a, offset_a)`
+  //      * `node_b == Traversal::ChildAt(*container_a, offset_b)`
+  // and set `disconnected` to true if `node_a` and `node_b` are in different
+  // tree scopes.
+  static int16_t ComparePositions(const Node* container_a,
+                                  int offset_a,
+                                  const Node* container_b,
+                                  int offset_b,
+                                  bool* disconnected) {
+    DCHECK(container_a);
+    DCHECK(container_b);
+
+    if (disconnected)
+      *disconnected = false;
+
+    if (!container_a)
+      return kAIsBeforeB;
+    if (!container_b)
+      return kAIsAfterB;
+
+    // see DOM2 traversal & range section 2.5
+
+    // Case 1: both points have the same container
+    if (container_a == container_b) {
+      if (offset_a == offset_b)
+        return kAIsEqualToB;
+      if (offset_a < offset_b)
+        return kAIsBeforeB;
+      return kAIsAfterB;
+    }
+
+    // Case 2: node C (container B or an ancestor) is a child node of A, e.g.
+    //  * A < B
+    //      `<a>...A...<c2>...<b>...B...</b>...</c2>...</a>`
+    //  * A > B
+    //      `<a>...<c2>...<b>...B...</b>...</c2>...A...</a>`
+    //  * A == C2
+    //             A
+    //      `<a>...<c2>...<b>...B...</b>...</c2>...</a>`
+    if (const Node* node_c2 = FindChildnInAncestors(*container_b, *container_a))
+      return CompareNodesInSameParent(offset_a, node_c2, kAIsBeforeB);
+
+    // Case 3: node C (container A or an ancestor) is a child node of B, e.g.
+    //  * B < A
+    //      `<b>...B....<c3>...<a>...A...</a>...</b>`
+    //  * B > A
+    //      `<b>...<c3>...<a>...A...</a>...</c3>...B...</b>`
+    //  * B == C3
+    //             B
+    //      `<b>...<c3>...<a>...A...</a>...</b>`
+    if (const Node* node_c3 = FindChildnInAncestors(*container_a, *container_b))
+      return -CompareNodesInSameParent(offset_b, node_c3, kAIsBeforeB);
+
+    // case 4: containers A & B are siblings, or children of siblings
+    // ### we need to do a traversal here instead
+    Node* const common_ancestor =
+        Traversal::CommonAncestor(*container_a, *container_b);
+    if (!common_ancestor) {
+      if (disconnected)
+        *disconnected = true;
+      return kAIsEqualToB;
+    }
+
+    const Node* const child_a =
+        FindChildnInAncestors(*container_a, *common_ancestor);
+    const Node* const adjusted_child_a =
+        child_a ? child_a : Traversal::LastChild(*common_ancestor);
+    const Node* const child_b =
+        FindChildnInAncestors(*container_b, *common_ancestor);
+    const Node* const adjusted_child_b =
+        child_b ? child_b : Traversal::LastChild(*common_ancestor);
+    return CompareNodesInSameParent(adjusted_child_a, adjusted_child_b);
+  }
+
+ private:
+  enum Result : int16_t {
+    kAIsBeforeB = -1,
+    kAIsEqualToB = 0,
+    kAIsAfterB = 1,
+  };
+
+  // Returns where `offset_b =  Traversal::Index(*child_b)`:
+  //  -1 if `offset_a < offset_b`
+  //   0 if `offset_a == offset_b`
+  //   1 if `offset_a > offset_b`
+  // The number of iteration is `std::min(offset_a, offset_b)`.
+  static Result CompareNodesInSameParent(
+      int offset_a,
+      const Node* child_b,
+      Result result_of_a_is_equal_to_b = kAIsEqualToB) {
+    DCHECK(child_b);
+    int offset_b = 0;
+    for (const Node& child_a :
+         Traversal::ChildrenOf(*Traversal::Parent(*child_b))) {
+      if (child_a == child_b || offset_a == offset_b) {
+        const int diff = offset_a - offset_b;
+        return !diff      ? result_of_a_is_equal_to_b
+               : diff > 0 ? kAIsAfterB
+                          : kAIsBeforeB;
+      }
+      ++offset_b;
+    }
+    NOTREACHED();
+    return result_of_a_is_equal_to_b;
+  }
+
+  // Returns
+  //  -1 if `Traversal::Index(*child_a) < Traversal::Index(*child_b)`
+  //   0 if `Traversal::Index(*child_a) == Traversal::Index(*child_b)`
+  //   1 if `Traversal::Index(*child_a) > Traversal::Index(*child_b)`
+  // The number of iteration is `std::min(offset_a, offset_b)`.
+  static Result CompareNodesInSameParent(
+      const Node* child_a,
+      const Node* child_b,
+      Result result_of_a_is_equal_to_b = kAIsEqualToB) {
+    DCHECK(child_a);
+    DCHECK(child_b);
+    if (child_a == child_b)
+      return result_of_a_is_equal_to_b;
+    DCHECK_EQ(Traversal::Parent(*child_a), Traversal::Parent(*child_b));
+    for (const Node& child :
+         Traversal::ChildrenOf(*Traversal::Parent(*child_a))) {
+      if (child == child_a)
+        return child == child_b ? result_of_a_is_equal_to_b : kAIsBeforeB;
+      if (child == child_b)
+        return kAIsAfterB;
+    }
+    NOTREACHED();
+    return result_of_a_is_equal_to_b;
+  }
+
+  // Returns the child node in `parent` if `parent` is one of inclusive
+  // ancestors of `node`, otherwise `nullptr`.
+  // See https://dom.spec.whatwg.org/#boundary-points
+  static const Node* FindChildnInAncestors(const Node& node,
+                                           const Node& parent) {
+    DCHECK_NE(node, parent);
+    for (const Node& child : Traversal::InclusiveAncestorsOf(node)) {
+      if (Traversal::Parent(child) == parent)
+        return &child;
+    }
+    return nullptr;
+  }
+};
+
 }  // namespace
 
 int16_t ComparePositionsInDOMTree(const Node* container_a,
@@ -137,8 +293,13 @@ int16_t ComparePositionsInDOMTree(const Node* container_a,
                                   const Node* container_b,
                                   int offset_b,
                                   bool* disconnected) {
-  return ComparePositions<NodeTraversal>(container_a, offset_a, container_b,
-                                         offset_b, disconnected);
+  if (!RuntimeEnabledFeatures::FastComparePositionsEnabled()) {
+    return SlowComparePositions<NodeTraversal>(
+        container_a, offset_a, container_b, offset_b, disconnected);
+  }
+
+  return Comparator<NodeTraversal>::ComparePositions(
+      container_a, offset_a, container_b, offset_b, disconnected);
 }
 
 int16_t ComparePositionsInFlatTree(const Node* container_a,
@@ -146,8 +307,13 @@ int16_t ComparePositionsInFlatTree(const Node* container_a,
                                    const Node* container_b,
                                    int offset_b,
                                    bool* disconnected) {
-  return ComparePositions<FlatTreeTraversal>(container_a, offset_a, container_b,
-                                             offset_b, disconnected);
+  if (!RuntimeEnabledFeatures::FastComparePositionsEnabled()) {
+    return SlowComparePositions<FlatTreeTraversal>(
+        container_a, offset_a, container_b, offset_b, disconnected);
+  }
+
+  return Comparator<FlatTreeTraversal>::ComparePositions(
+      container_a, offset_a, container_b, offset_b, disconnected);
 }
 
 // Compare two positions, taking into account the possibility that one or both

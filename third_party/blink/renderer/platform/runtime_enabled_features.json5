@@ -1171,6 +1171,11 @@
       status: "test",
     },
     {
+      name: "FastComparePositions",
+      status: "stable",
+      base_feature: "FastComparePositions",
+    },
+    {
       name: "FastPositionIterator",
       status: "stable",
       base_feature: "FastPositionIterator",
