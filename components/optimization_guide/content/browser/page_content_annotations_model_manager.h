@@ -12,7 +12,7 @@
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/core/page_topics_model_executor.h"
-#include "components/optimization_guide/core/page_visibility_model_executor.h"
+#include "components/optimization_guide/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -116,8 +116,8 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // model.
   std::unique_ptr<PageTopicsModelExecutor> page_topics_model_executor_;
 
-  // The model executor responsible for executing the page visibility model.
-  std::unique_ptr<PageVisibilityModelExecutor> page_visibility_model_executor_;
+  // The model handler for the page visibility model.
+  std::unique_ptr<PageVisibilityModelHandler> page_visibility_model_handler_;
 
   // The model executor responsible for executing the page entities model.
   //
