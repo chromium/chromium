@@ -39,7 +39,7 @@ public class StickySectionHeaderView extends SectionHeaderView {
     }
 
     /**
-     * This method is to set/update sticky heaer's margin.
+     * This method is to set/update the sticky header's margin.
      * @param marginValue the sticky header's margin
      */
     @Override
