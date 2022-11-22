@@ -939,4 +939,27 @@ void TestNavigationObserverInternal::OnDidFinishNavigation(
   TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
 }
 
+RenderFrameHostImpl* DescendantRenderFrameHostAtInternal(
+    RenderFrameHostImpl* rfh,
+    std::string path,
+    std::vector<size_t>& descendant_indices) {
+  if (descendant_indices.size() == 0)
+    return rfh;
+  size_t index = descendant_indices[0];
+  descendant_indices.erase(descendant_indices.begin());
+  CHECK_LT(index, rfh->child_count()) << path;
+  FrameTreeNode* node = rfh->child_at(index);
+  path = base::StringPrintf("%s[%zu]", path.c_str(), index);
+  return DescendantRenderFrameHostAtInternal(node->current_frame_host(), path,
+                                             descendant_indices);
+}
+
+RenderFrameHostImpl* DescendantRenderFrameHostImplAt(
+    const ToRenderFrameHost& adapter,
+    std::vector<size_t> descendant_indices) {
+  return DescendantRenderFrameHostAtInternal(
+      static_cast<RenderFrameHostImpl*>(adapter.render_frame_host()), "rfh",
+      descendant_indices);
+}
+
 }  // namespace content

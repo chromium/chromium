@@ -701,6 +701,13 @@ class TestNavigationObserverInternal : public TestNavigationObserver {
   NavigationType last_navigation_type_ = NAVIGATION_TYPE_UNKNOWN;
 };
 
+// Return the descendant of `rfh` found by selecting children according to
+// `descendant_indices`. E.g. `DescendantRenderFrameHostImplAt(rfh, {0, 1}) will
+// return the child at index 1 of the child at index 0 of `rfh`.
+RenderFrameHostImpl* DescendantRenderFrameHostImplAt(
+    const ToRenderFrameHost& adapter,
+    std::vector<size_t> descendant_indices);
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_
