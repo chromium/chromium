@@ -8,13 +8,14 @@
 
 #include "base/containers/flat_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 // This class coalesces browser side and enterprise policy state into a final
 // value which is then used to override the blink runtime feature state. It can
 // be queried with `Is*ForceEnabled()` or `Is*ForceDisabled()`.
-class RuntimeFeatureStateOverrideContext
+class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
     : public GarbageCollected<RuntimeFeatureStateOverrideContext> {
  public:
   RuntimeFeatureStateOverrideContext() {

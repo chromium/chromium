@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -76,7 +77,9 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       lifecycle_state_(mojom::FrameLifecycleState::kRunning),
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
-      origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)) {
+      origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)),
+      runtime_feature_state_override_context_(
+          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>()) {
   DCHECK(agent_);
 }
 
@@ -552,6 +555,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(timers_);
   visitor->Trace(origin_trial_context_);
   visitor->Trace(content_security_policy_);
+  visitor->Trace(runtime_feature_state_override_context_);
   MojoBindingContext::Trace(visitor);
   ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);

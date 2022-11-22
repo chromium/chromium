@@ -94,6 +94,7 @@ class FrameOrWorkerScheduler;
 class KURL;
 class LocalDOMWindow;
 class OriginTrialContext;
+class RuntimeFeatureStateOverrideContext;
 class PolicyContainer;
 class PublicURLManager;
 class ResourceFetcher;
@@ -346,6 +347,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return origin_trial_context_;
   }
 
+  RuntimeFeatureStateOverrideContext* GetRuntimeFeatureStateOverrideContext()
+      const override {
+    return runtime_feature_state_override_context_;
+  }
+
   virtual TrustedTypePolicyFactory* GetTrustedTypes() const { return nullptr; }
   virtual bool RequireTrustedTypes() const;
 
@@ -539,6 +545,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   Member<OriginTrialContext> origin_trial_context_;
 
   Member<ContentSecurityPolicy> content_security_policy_;
+
+  Member<RuntimeFeatureStateOverrideContext>
+      runtime_feature_state_override_context_;
+
   bool require_safe_types_ = false;
 };
 
