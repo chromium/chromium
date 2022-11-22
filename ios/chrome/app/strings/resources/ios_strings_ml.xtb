@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1552525382687785070">നിങ്ങളുടെ അഡ്‌മിൻ സമന്വയം പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="1554477036522844996">പുതിയ വിന്‍ഡോ</translation>
+<translation id="1565371473877914088">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="1580715474678097352">അപകടകരമായ വെബ്‌സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷിതമായി തുടരുക</translation>
 <translation id="1580783302095112590">മെയിൽ അയച്ചു.</translation>
 <translation id="1582732959743469162">ഇത്, നിലവിലെ ഡൗൺലോഡിന്റെ എല്ലാ പുരോഗതിയും നിർത്തും.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">മൊബൈൽ</translation>
 <translation id="1989112275319619282">ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="199425419756152024">പാസ്‌വേഡ് കാണുക</translation>
+<translation id="2010008505735295285">റീലോഡ് ചെയ്യുക</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="2021670401941426298">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="202292859882676807">മൈക്രോഫോൺ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>
 <translation id="3277021493514034324">സൈറ്റ് വിലാസം പകർത്തി</translation>
 <translation id="3285962946108803577">പേജ് പങ്കിടുക...</translation>
+<translation id="3289505634533552500">ശബ്ദ തിരയൽ</translation>
 <translation id="3290875554372353449">ഒരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="3305294846493618482">കൂടുതൽ</translation>
 <translation id="3311748811247479259">ഓഫാണ്</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് നീക്കം ചെയ്യണോ?</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
+<translation id="5318298563956633672">നിങ്ങൾ ഇതിനകം ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു.</translation>
 <translation id="5339316356165661760">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="536067926684072644">ബുക്ക്‌മാർക്കുകൾ കാണിക്കുക</translation>
 <translation id="5360976571138293719">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന്, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> കാണുക.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">പതിവായി സന്ദർശിക്കുന്നവ</translation>
 <translation id="54401264925851789">പേജ് സുരക്ഷാ വിവരങ്ങൾ</translation>
 <translation id="5443952882982198570">ക്രെഡിറ്റ് കാർഡുകൾ</translation>
+<translation id="5444892875087332195">ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="5457226814769348910">ഓഫ്‌ലെെൻ പതിപ്പ് തുറക്കുക</translation>
 <translation id="5489208564673669003">എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ, <ph name="BEGIN_LINK" />കുക്കി ക്രമീകരണം<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5490005495580364134">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">പാസ്‌വേഡുകളും പേയ്മെന്റ് രീതികളും വിലാസങ്ങളും സംരക്ഷിക്കുക, ഇതുവഴി Chrome-ന് അവ പിന്നീട് സ്വയമേവ പൂരിപ്പിക്കാം.</translation>
+<translation id="5834415013958049700">നിങ്ങൾ പകർത്തിയ Lens ഇമേജ്</translation>
 <translation id="5846482154967366008">തിരയൽ യന്ത്രം</translation>
 <translation id="5854790677617711513">30 ദിവസത്തിൽ കൂടുതൽ പഴക്കമുള്ളത്</translation>
 <translation id="5857090052475505287">പുതിയ ഫോള്‍ഡര്‍</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">സമീപകാലത്ത് സന്ദർശിച്ചത്</translation>
 <translation id="5988097621740394599">നിങ്ങളുടെ ടാബുകളിൽ വിലയിടിവുകൾ കാണൂ.</translation>
 <translation id="5988851877894965432">Chrome-ൽ URL-കൾ തുറക്കുക</translation>
+<translation id="6006672969046233841">പുതിയ ടാബ്</translation>
 <translation id="6012140227487808125">എൻക്രിപ്റ്റുചെയ്യുന്നു...</translation>
 <translation id="6021332621416007159">ഇതിൽ തുറക്കുക...</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ അടിസ്ഥാനമാക്കിയുള്ള ഉള്ളടക്കം നേടാൻ സമന്വയിപ്പിക്കൂ.</translation>
 <translation id="721597782417389033">കാർഡിന്റെ വിളിപ്പേര് അസാധുവാണ്</translation>
 <translation id="7221173315674413369">പുതിയത് എന്തൊക്കെ എന്നതിൽ പുതിയ ഫീച്ചറുകളും നുറുങ്ങുകളും അടുത്തറിയുക</translation>
+<translation id="7223102419539744003">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7265758999917665941">ഈ സൈറ്റിൻ്റെ പാസ്‌വേഡ് ഓർക്കേണ്ടതില്ല</translation>
 <translation id="7272437679830969316">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കാനാകില്ല. പാസ്‍വേഡ് പകർത്തിയില്ല.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="785938070103630874">പാസ്‌വേഡുകൾ, പേയ്മെന്റ് രീതികൾ, വിലാസം എന്നിവയും മറ്റും തുറക്കുക</translation>
 <translation id="7859704718976024901">ബ്രൗസിംഗ് ചരിത്രം</translation>
+<translation id="7870750252270996949">പകർത്തിയ Lens ഇമേജ്</translation>
 <translation id="7879275349003161544">ഡൗൺലോഡുകൾ കാണിക്കുക</translation>
 <translation id="7884694604461143138">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ഡിഫോൾട്ട് സൈറ്റ് കാഴ്‌ച</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882557203579758546">പേജിൽ കണ്ടെത്തുക…</translation>
 <translation id="8840513115188359703">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല.</translation>
 <translation id="8843129975935593190">നിങ്ങൾക്ക് സമന്വയിപ്പിക്കാവുന്ന തരങ്ങൾ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു.</translation>
 <translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>

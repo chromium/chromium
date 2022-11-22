@@ -282,6 +282,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Veģetārā virtuve</translation>
 <translation id="1623104350909869708">Neļaut šai lapai veidot papildu dialoglodziņus</translation>
+<translation id="1633137413609266904">{0,plural, =1{Administratora politika bloķē šī faila atvēršanu}zero{Administratora politika bloķē # failu atvēršanu}one{Administratora politika bloķē # faila atvēršanu}other{Administratora politika bloķē # failu atvēršanu}}</translation>
 <translation id="1634828734222219955">Kopā</translation>
 <translation id="163669211644121865">Nodokļu deklarāciju sagatavošana un plānošana</translation>
 <translation id="1638780421120290329">Nevar saglabāt karti</translation>
@@ -699,6 +700,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu savus maksājumus un kredītkaršu informāciju Chrome iestatījumos, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai izietu no pilnekrāna režīma.</translation>
+<translation id="2718207025093645426">Pārvaldītajam lietotājam vai ierīcei nav ielādēta neviena politika.</translation>
 <translation id="2721148159707890343">Pieprasījums bija veiksmīgs.</translation>
 <translation id="2723669454293168317">Veiciet drošības pārbaudi Chrome iestatījumos.</translation>
 <translation id="2726001110728089263">Sānu paplāte</translation>
@@ -896,6 +898,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3270847123878663523">&amp;Pārkārtošanas atsaukšana</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vēlas izveidot savienojumu</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams atvērt šo failu šeit: <ph name="DESTINATION_NAME" />.}zero{Administratora politika nosaka, ka nav ieteicams atvērt šo failu šeit: <ph name="DESTINATION_NAME" />.}one{Administratora politika nosaka, ka nav ieteicams atvērt šo failu šeit: <ph name="DESTINATION_NAME" />.}other{Administratora politika nosaka, ka nav ieteicams atvērt šo failu šeit: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">Jūsu organizācija (<ph name="ENROLLMENT_DOMAIN" />) ir nosūtījusi informāciju, piemēram, iestatījumus vai politikas, uz tālāk norādītajām vietnēm.</translation>
 <translation id="3282497668470633863">Pievienot vārdu un uzvārdu uz kartes</translation>
 <translation id="3286372614333682499">portrets</translation>
@@ -1145,7 +1148,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3897092660631435901">Izvēlne</translation>
 <translation id="3901925938762663762">Kartes derīguma termiņš ir beidzies.</translation>
 <translation id="3906954721959377182">Planšetdators</translation>
-<translation id="3909477809443608991">Vietne <ph name="URL" /> vēlas atskaņot aizsargātu saturu. Jūsu ierīces identitāti pārbaudīs Google, un tai var piekļūt šī vietne.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Ievadīt drošības kodu</translation>
 <translation id="3927932062596804919">Neatļaut</translation>
@@ -1294,6 +1296,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
 <translation id="4278390842282768270">Atļauts</translation>
+<translation id="4281998142035485137">{0,plural, =1{Vai atvērt konfidenciālu failu?}zero{Vai atvērt konfidenciālus failus?}one{Vai atvērt konfidenciālus failus?}other{Vai atvērt konfidenciālus failus?}}</translation>
 <translation id="4282346679996504092">Paziņojumi par šo produktu ir izslēgti, un grāmatzīme ir noņemta.</translation>
 <translation id="4285498937028063278">Atspraust</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
@@ -1927,6 +1930,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5903264686717710770">Nosaukums:</translation>
 <translation id="5904360430676679685">Ģimene un attiecības</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (veikta sinhronizācija)</translation>
+<translation id="5911110632211230665">Atvēršana bloķēta</translation>
 <translation id="59174027418879706">Iespējots</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 tiek lietots}zero{# tiek lietoti}one{# tiek lietots}other{# tiek lietoti}}</translation>

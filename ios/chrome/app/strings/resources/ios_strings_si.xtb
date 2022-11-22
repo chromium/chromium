@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR කේතය ස්කෑන් කරන්න</translation>
 <translation id="1552525382687785070">ඔබේ පරිපාලකයා සමමුහූර්තය අබල කර ඇත</translation>
 <translation id="1554477036522844996">නව කවුළුව</translation>
+<translation id="1565371473877914088">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="1580715474678097352">අනතුරුදායක වෙබ් අඩවිවලින් ආරක්ෂා වන්න</translation>
 <translation id="1580783302095112590">තැපෑල යවන ලදි.</translation>
 <translation id="1582732959743469162">මෙය ඔබගේ වර්තමාන බාගනීම්වල සියලුම ප්‍රගතිය නවතාලයි.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">ජංගම</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
 <translation id="199425419756152024">මුරපදය බලන්න</translation>
+<translation id="2010008505735295285">නැවත පූරණය කරන්න</translation>
 <translation id="2015722694326466240">මුරපද බැලීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="2021670401941426298">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න.</translation>
 <translation id="202292859882676807">මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">අවලංගු කරන්න</translation>
 <translation id="3277021493514034324">අඩවි ලිපිනය පිටපත් කරන ලදී</translation>
 <translation id="3285962946108803577">පිටුව බෙදා ගන්න...</translation>
+<translation id="3289505634533552500">හඬ සෙවීම</translation>
 <translation id="3290875554372353449">ගිණුමක් තෝරා ගන්න</translation>
 <translation id="3305294846493618482">තවත්</translation>
 <translation id="3311748811247479259">අක්‍රිය</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ගිණුම ඉවත් කරන්නද?</translation>
 <translation id="5300589172476337783">පෙන්වන්න</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
+<translation id="5318298563956633672">ඔබ දැනටමත් මෙම නිෂ්පාදනය නිරීක්ෂණය කරමින් සිටී.</translation>
 <translation id="5339316356165661760">සමමුහුර්ත කිරීම ක්‍රියාත්ම කරන්න</translation>
 <translation id="536067926684072644">පිටුසන් පෙන්වන්න</translation>
 <translation id="5360976571138293719">පෞද්ගලිකත්වය, ආරක්ෂාව සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> බලන්න</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">නිතර පිවිසි</translation>
 <translation id="54401264925851789">පිටු ආරක්ෂිත තතු</translation>
 <translation id="5443952882982198570">ණය කාඩ්පත්</translation>
+<translation id="5444892875087332195">පිටුසන්</translation>
 <translation id="5457226814769348910">නොබැඳි අනුවාදය විවෘත කරන්න</translation>
 <translation id="5489208564673669003">සියලුම වෙබ් අඩවි සඳහා කුකී කළමනා කරීමට, <ph name="BEGIN_LINK" />කුකී සැකසීම්<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="5490005495580364134">සියලු කුකි අවහිර කරන්න (නිර්දේශ නොකෙරේ)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">පසුව ස්වයංක්‍රීයව පිරවීම සඳහා Chrome සඳහා මුරපද, ගෙවීම් ක්‍රම සහ ලිපින සුරකින්න.</translation>
+<translation id="5834415013958049700">ඔබ පිටපත් කළ Lens රූපය</translation>
 <translation id="5846482154967366008">සෙවුම් යන්ත්‍රය</translation>
 <translation id="5854790677617711513">දින 30කට වඩා පැරණි</translation>
 <translation id="5857090052475505287">නව ෆෝල්ඩරය</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">මෑතදී පිවිසි</translation>
 <translation id="5988097621740394599">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න.</translation>
 <translation id="5988851877894965432">Chrome තුළ URL විවෘත කරන්න</translation>
+<translation id="6006672969046233841">නව පටිත්ත</translation>
 <translation id="6012140227487808125">සංකේතනය කරමින්...</translation>
 <translation id="6021332621416007159">විවෘත වන...</translation>
 <translation id="6027945736510816438">ඔබ අදහස් කළේ <ph name="WEBSITE" /> ද?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">ඔබගේ ලැදිකම් මත පදනම්ව අන්තර්ගතය ලබා ගැනීමට සමමුහුර්ත කරන්න.</translation>
 <translation id="721597782417389033">වලංගු නොවන කාඩ්පත් අපනාමය</translation>
 <translation id="7221173315674413369">අලුත් දේ තුළ නව විශේෂාංග සහ ඉඟි ගවේෂණය කරන්න</translation>
+<translation id="7223102419539744003">පටිත්ත වසන්න</translation>
 <translation id="722454870747268814">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="7265758999917665941">කිසි විටෙක මෙම වෙබ් අඩවිය සඳහා නැත</translation>
 <translation id="7272437679830969316">ඔබගේ අනන්‍යතාව තහවුරු කළ නොහැකිය. මුරපදය පිටපත් නොකරන ලදී.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">බාගැනීමට නොහැකි විය</translation>
 <translation id="785938070103630874">මුරපද, ගෙවීම් ක්‍රම, හෝ ලිපිනය සහ තවත් දේ විවෘත කරන්න</translation>
 <translation id="7859704718976024901">බ්‍රවුස් කිරීමේ ඉතිහාසය</translation>
+<translation id="7870750252270996949">Lens පිටපත් කළ රූපය</translation>
 <translation id="7879275349003161544">බාගැනීම් පෙන්වන්න</translation>
 <translation id="7884694604461143138">සෙවීම් ඉතිහාසය (<ph name="COUNT" />ක් හමු විය)</translation>
 <translation id="7887198238286927132">ඔබේ පෞද්ගලිකත්වය ආරක්‍ෂා කිරීමට, Chrome මෙම ක්‍ෂේත්‍රය ස්වයං පිරවුම නොකරයි.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">පෙරනිමි අඩවි දසුන</translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
+<translation id="882557203579758546">පිටුව තුළ සොයා ගන්න…</translation>
 <translation id="8840513115188359703">ඔබව ඔබගේ Google ගිණුමෙන් වරනය නොවනු ඇත</translation>
 <translation id="8843129975935593190">ඔබගේ සංවිධානය ඔබට සමමුහුර්ත කළ හැකි දේ සීමා කරයි.</translation>
 <translation id="8849001918648564819">සඟවා ඇත</translation>

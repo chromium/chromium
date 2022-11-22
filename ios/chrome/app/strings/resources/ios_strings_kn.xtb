@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="1552525382687785070">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಿಂಕ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
+<translation id="1565371473877914088">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="1580715474678097352">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿ</translation>
 <translation id="1580783302095112590">ಮೇಲ್ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="1582732959743469162">ಇದು ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೌನ್‌ಲೋಡ್‌ಗಾಗಿ ಎಲ್ಲಾ ಪ್ರಕ್ರಿಯೆಗಳನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">ಮೊಬೈಲ್</translation>
 <translation id="1989112275319619282">ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="199425419756152024">ಪಾಸ್‌ವರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
+<translation id="2010008505735295285">ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2015722694326466240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವಡ್‌ ಅನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="2021670401941426298">ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ನ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="202292859882676807">ಮೈಕ್ರೊಫೋನ್ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">ರದ್ದುಮಾಡಿ</translation>
 <translation id="3277021493514034324">ಸೈಟ್‌ ವಿಳಾಸವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3285962946108803577">ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ...</translation>
+<translation id="3289505634533552500">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="3290875554372353449">ಖಾತೆಯೊಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3311748811247479259">ಆಫ್ ಆಗಿದೆ</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5318298563956633672">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="5339316356165661760">ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="536067926684072644">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5360976571138293719">ಗೌಪ್ಯತೆ, ಸುರಕ್ಷತೆ ಮತ್ತು ಡೇಟಾ ಸಂಗ್ರಹಣೆಗೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ, <ph name="BEGIN_LINK" />Google ಸೇವೆಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು‌</translation>
 <translation id="54401264925851789">ಪುಟ ಭದ್ರತೆಯ ಮಾಹಿತಿ</translation>
 <translation id="5443952882982198570">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು</translation>
+<translation id="5444892875087332195">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="5457226814769348910">ಆಫ್‌ಲೈನ್ ಆವೃತ್ತಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5489208564673669003">ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="BEGIN_LINK" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="5490005495580364134">ಎಲ್ಲಾ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">ಆನಂತರ Chrome ಸ್ವಯಂಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಉಳಿಸಿ.</translation>
+<translation id="5834415013958049700">ನೀವು ನಕಲಿಸಿದ Lens ಚಿತ್ರ</translation>
 <translation id="5846482154967366008">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="5854790677617711513">30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದು</translation>
 <translation id="5857090052475505287">ಹೊಸ ಫೋಲ್ಡರ್</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದವು</translation>
 <translation id="5988097621740394599">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆ ಕುಸಿತಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="5988851877894965432">Chrome ನಲ್ಲಿ URL ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="6006672969046233841">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="6012140227487808125">ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6021332621416007159">ಇದರಲ್ಲಿ ತೆರೆಯಿರಿ...</translation>
 <translation id="6027945736510816438">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="WEBSITE" /> ತಾನೇ?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ವಿಷಯವನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="721597782417389033">ಕಾರ್ಡ್ ಅಡ್ಡಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="7221173315674413369">'ಹೊಸತೇನಿದೆ' ಎಂಬಲ್ಲಿ ಹೊಸ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಸಲಹೆಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
+<translation id="7223102419539744003">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="722454870747268814">ಹೊಸ ಅದೃಶ್ಯ ಟ್ಯಾಬ್</translation>
 <translation id="7265758999917665941">ಈ ಸೈಟ್‌ಗೆ ಎಂದಿಗೂ ಬೇಡ</translation>
 <translation id="7272437679830969316">ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನಕಲಿಸಲಾಗಿಲ್ಲ.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="785938070103630874">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಅಥವಾ ವಿಳಾಸ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7859704718976024901">ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ</translation>
+<translation id="7870750252270996949">ನೀವು ನಕಲಿಸಿದ Lens ಚಿತ್ರ</translation>
 <translation id="7879275349003161544">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7884694604461143138">ಹುಡುಕಾಟದ ಇತಿಹಾಸ (<ph name="COUNT" /> ಪತ್ತೆಯಾಗಿದೆ)</translation>
 <translation id="7887198238286927132">ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, Chrome ಈ ಫೀಲ್ಡ್ ಅನ್ನು ಸ್ವಯಂ ಭರ್ತಿ ಮಾಡುವುದಿಲ್ಲ.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ಡೀಫಾಲ್ಟ್ ಸೈಟ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="8820817407110198400">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
+<translation id="882557203579758546">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ…</translation>
 <translation id="8840513115188359703">ನಿಮ್ಮನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="8843129975935593190">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀವು ಸಿಂಕ್ ಮಾಡಬಹುದಾಗಿರುವುದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>

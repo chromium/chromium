@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Help ons om 'n meer private web te bou</translation>
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander program oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
 <translation id="1089606299949659462">Kontrolering is afgehandel!</translation>
+<translation id="1091604859693995976">Herlaai om te bekyk</translation>
 <translation id="1095761715416917775">Maak seker dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1100066534610197918">Open in nuwe oortjie in groep</translation>
 <translation id="1103142993930332957">Help om Chrome te verbeter?</translation>
@@ -122,11 +123,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="1571304935088121812">Kopieer gebruikernaam</translation>
 <translation id="1592864538817356322">Standaardbeskerming:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> voorgestelde items op lys hieronder.</translation>
-<translation id="161647866166517041">Die vermindering van strooipos en bedrog maak staat op vertrouenstokens om werwe te help om bedrog te bekamp en bots van mense te onderskei.
-
-Gegrond op jou interaksie met 'n werf, soos om gereeld by 'n rekening aan te meld, kan daardie werf 'n vertrouenstoken aan jou blaaier uitreik. Later, as ander werwe wat jy besoek vertrouenstekens soek en vind, sal hulle jou meer waarskynlik as 'n persoon hanteer, en nie as 'n bot nie.
-
-Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit te vind wie jy is nie.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings verwyder wat jy wil hê Chrome moenie oorweeg nie.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Verwyder 1 gekose item}other{Verwyder # gekose items}}</translation>
 <translation id="1633659023549081553">Ontdek nuwe inhoud op Chrome se tuisblad</translation>
@@ -334,6 +330,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Incognito-oortjie sal toegemaak word}other{<ph name="TAB_COUNT_MANY" /> Incognito-oortjies sal toegemaak word}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag gelede nagegaan}other{# dae gelede nagegaan}}</translation>
 <translation id="2842985007712546952">Moedervouer</translation>
+<translation id="2851291081585704741">Jy is vanlyn</translation>
 <translation id="2856503607207334158">Kon nie aanmeld nie</translation>
 <translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="2861923151411510142">Sommige Chrome-kenmerke sal nie meer beskikbaar wees nie</translation>
@@ -559,6 +556,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opsies is naby die bokant van die skerm beskikbaar</translation>
 <translation id="4062305924942672200">Regsinligting</translation>
+<translation id="4072805772816336153">Probeer later weer</translation>
 <translation id="4084682180776658562">Boekmerk</translation>
 <translation id="4084712963632273211">Vanaf <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />afgelewer deur Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Jy kan hierdie tablet gebruik om op die toestel aan te meld wat hierdie QR-kode wys.</translation>
@@ -984,11 +982,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6363990818884053551">Verifieer dis jy om sinkronisering te begin</translation>
 <translation id="6364438453358674297">Verwyder voorstel uit geskiedenis?</translation>
 <translation id="6380100320871303656">Laai meer gereeld bladsye vooraf wat Chrome dink jy waarskynlik gaan besoek. Hierdie instelling kan groter datagebruik tot gevolg hê.</translation>
-<translation id="6385407407546870227">Wanneer proeflopies aan is, maak vermindering van strooipos en bedrog staat op vertrouenstokens om werwe te help om bedrog te bekamp en bots van mense te onderskei.
-
-Gegrond op jou interaksie met ’n werf, soos om gereeld by ’n rekening aan te meld, kan daardie werf ’n vertrouenstoken aan jou blaaier uitreik. Later, as ander werwe wat jy besoek vertrouenstekens soek en vind, sal hulle jou meer waarskynlik as 'n persoon hanteer, en nie as 'n bot nie.
-
-Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit te vind wie jy is nie.</translation>
 <translation id="6394791151443660613">Soek vir: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">SKAKEL</translation>
 <translation id="6397616442223433927">Weer aanlyn</translation>

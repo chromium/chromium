@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
 <translation id="1552525382687785070">စင့်ခ်လုပ်ခြင်းကို သင့် 'စီမံခန့်ခွဲသူ' က ပိတ်ထားပါသည်</translation>
 <translation id="1554477036522844996">ဝင်ဒိုး အသစ်</translation>
+<translation id="1565371473877914088">ရုပ်ဖျက်တဘ်အသစ်</translation>
 <translation id="1580715474678097352">အန္တရာယ်ဝဘ်ဆိုက်များမှ ကာကွယ်ပေးသည်</translation>
 <translation id="1580783302095112590">မေးလ် ပေးပို့ပြီးပါပြီ။</translation>
 <translation id="1582732959743469162">၎င်းသည် သင်၏ လက်ရှိဒေါင်းလုဒ်များ အားလုံးကို ရပ်လိုက်ပါမည်။</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">မိုဘိုင်း</translation>
 <translation id="1989112275319619282">ကြည့်ရန်</translation>
 <translation id="199425419756152024">စကားဝှက်ကို ကြည့်ရန်</translation>
+<translation id="2010008505735295285">ပြန်လည်စတင်ရန်</translation>
 <translation id="2015722694326466240">စကားဝှက်များကို ကြည့်ရှုရန်အတွက် သင့်စက်တွင် လျှို့ဝှက်ကုဒ်တစ်ခုကို ဦးစွာ သတ်မှတ်ရပါမည်။</translation>
 <translation id="2021670401941426298">သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် သင့်ရှာဖွေရေး အင်ဂျင်၏ ညွှန်ကြားချက်များကို ကြည့်ပါ။</translation>
 <translation id="202292859882676807">မိုက်ခရိုဖုန်း သုံးခွင့်ပြုထားသည်</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">မလုပ်တော့</translation>
 <translation id="3277021493514034324">ဝဘ်ဆိုက်လိပ်စာကို မိတ္တူကူးယူထားသည်</translation>
 <translation id="3285962946108803577">စာမျက်နှာကို မျှဝေရန်...</translation>
+<translation id="3289505634533552500">အသံဖြင့်ရှာဖွေရန်</translation>
 <translation id="3290875554372353449">'အကောင့်' တစ်ခု ရွေးရန်</translation>
 <translation id="3305294846493618482">နောက်ထပ်</translation>
 <translation id="3311748811247479259">ပိတ်ထားသည်</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> အကောင့်ကို ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
+<translation id="5318298563956633672">ဤထုတ်ကုန်ကို စောင့်ကြည့်ထားပြီးပြီ။</translation>
 <translation id="5339316356165661760">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
 <translation id="536067926684072644">လိပ်စာများ ပြပါ</translation>
 <translation id="5360976571138293719">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ၊ လုံခြုံရေး၊ ဒေတာစုဆောင်းမှုတို့နှင့် ဆက်စပ်နေသည့် နောက်ထပ်ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
@@ -618,6 +622,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="581659025233126501">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">နောက်ပိုင်းတွင် အော်တိုဖြည့်ရန် Chrome အတွက် စကားဝှက်၊ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို သိမ်းနိုင်သည်။</translation>
+<translation id="5834415013958049700">သင်မိတ္တူကူးထားသည့် Lens ပုံ</translation>
 <translation id="5846482154967366008">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="5854790677617711513">ရက် ၃၀ ထက် ပိုဟောင်းသော</translation>
 <translation id="5857090052475505287">အကန့်အသစ်</translation>
@@ -645,6 +650,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5984222099446776634">မကြာသေးခင်က လည်ပတ်ခဲ့သော</translation>
 <translation id="5988097621740394599">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်။</translation>
 <translation id="5988851877894965432">Chrome တွင် URL များ ဖွင့်ရန်</translation>
+<translation id="6006672969046233841">တဘ်အသစ်</translation>
 <translation id="6012140227487808125">လျှို့ဝှက်သည့်အသွင်သို့ ပြောင်းနေသည်…</translation>
 <translation id="6021332621416007159">...တွင်ဖွင့်မည်</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ကို ဆိုလိုသလား။</translation>
@@ -831,6 +837,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7207023858769244910">သင့်စိတ်ဝင်စားမှုများအပေါ် အခြေခံသည့် အကြောင်းအရာများ ရယူရန် စင့်ခ်လုပ်နိုင်သည်။</translation>
 <translation id="721597782417389033">မမှန်ကန်သော ကတ်နာမည်ပြောင်</translation>
 <translation id="7221173315674413369">ဝန်ဆောင်မှုအသစ်များနှင့် အကြံပြုချက်များကို ‘အသစ်ပါဝင်မှုများ’ တွင် စူးစမ်းလေ့လာနိုင်သည်</translation>
+<translation id="7223102419539744003">တဘ် ပိတ်ရန်</translation>
 <translation id="722454870747268814">ရုပ်ဖျက်တဘ်အသစ်</translation>
 <translation id="7265758999917665941">ဤဝဘ်ဆိုက်အတွက် လုံးဝမလုပ်ရန်</translation>
 <translation id="7272437679830969316">သင်မည်သူမည်ဝါဖြစ်ကြောင်း အတည်ပြု၍ မရနိုင်ပါ။ စကားဝှက်ကို မိတ္ထူကူးမထားပါ။</translation>
@@ -902,6 +909,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7856733331829174190">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
 <translation id="785938070103630874">စကားဝှက်၊ ငွေပေးချေနည်းလမ်း (သို့) လိပ်စာ စသည်ကို ဖွင့်ပါ</translation>
 <translation id="7859704718976024901">ရှာဖွေမှု မှတ်တမ်း</translation>
+<translation id="7870750252270996949">မိတ္တူကူးထားသည့် Lens ပုံ</translation>
 <translation id="7879275349003161544">ဒေါင်းလုဒ် ပြပါ</translation>
 <translation id="7884694604461143138">ရှာဖွေမှတ်တမ်း (<ph name="COUNT" /> ခု တွေ့သည်)</translation>
 <translation id="7887198238286927132">သင်၏ ပုဂ္ဂိုလ်ရေးကို ကာကွယ်ရန် Chrome သည် ဤအကွက်တွင် အော်တိုဖြည့်မည် မဟုတ်ပါ။</translation>
@@ -1026,6 +1034,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">မူရင်းဝဘ်ဆိုက် ပြသခြင်း</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
+<translation id="882557203579758546">စာမျက်နှာတွင် ရှာရန်…</translation>
 <translation id="8840513115188359703">Google အကောင့်မှ သင်ထွက်သွားမည် မဟုတ်ပါ။</translation>
 <translation id="8843129975935593190">စင့်ခ်လုပ်နိုင်သည်များကို သင့်အဖွဲ့အစည်းက ကန့်သတ်ထားသည်။</translation>
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>

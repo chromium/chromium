@@ -87,6 +87,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1545749641540134597">QR-Code scannen</translation>
 <translation id="1552525382687785070">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="1554477036522844996">Neues Fenster</translation>
+<translation id="1565371473877914088">Neuer Inkognitotab</translation>
 <translation id="1580715474678097352">Schutz vor gefährlichen Websites</translation>
 <translation id="1580783302095112590">E-Mail gesendet</translation>
 <translation id="1582732959743469162">Hierdurch wird dein aktueller Download abgebrochen.</translation>
@@ -133,6 +134,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="199425419756152024">Passwort anzeigen</translation>
+<translation id="2010008505735295285">Aktualisieren</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
 <translation id="2021670401941426298">Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine.</translation>
 <translation id="202292859882676807">Mikrofonzugriff gewährt</translation>
@@ -299,6 +301,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3272527697863656322">Abbrechen</translation>
 <translation id="3277021493514034324">Websiteadresse kopiert</translation>
 <translation id="3285962946108803577">Seite teilen…</translation>
+<translation id="3289505634533552500">Sprachsuche</translation>
 <translation id="3290875554372353449">Konto auswählen</translation>
 <translation id="3305294846493618482">mehr</translation>
 <translation id="3311748811247479259">Aus</translation>
@@ -556,6 +559,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5295239312320826323">Konto <ph name="USER_EMAIL" /> entfernen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5317780077021120954">Speichern</translation>
+<translation id="5318298563956633672">Du beobachtest dieses Produkt bereits.</translation>
 <translation id="5339316356165661760">Synchronisierung aktivieren</translation>
 <translation id="536067926684072644">Lesezeichen einblenden</translation>
 <translation id="5360976571138293719">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="581659025233126501">Synchronisierung aktivieren</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Du kannst Passwörter, Zahlungsmethoden und Adressen in Chrome speichern, um sie später automatisch ausfüllen zu lassen.</translation>
+<translation id="5834415013958049700">Aus Lens kopiertes Bild</translation>
 <translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857090052475505287">Neuer Ordner</translation>
@@ -646,6 +651,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5984222099446776634">Kürzlich besucht</translation>
 <translation id="5988097621740394599">Du siehst Preisnachlässe auf deinen Tabs.</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
+<translation id="6006672969046233841">Neuer Tab</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6021332621416007159">Öffnen in...</translation>
 <translation id="6027945736510816438">Meintest du <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7207023858769244910">Aktiviere die Synchronisierung, um Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
 <translation id="721597782417389033">Ungültiger Kartenalias</translation>
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
+<translation id="7223102419539744003">Tab schließen</translation>
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
@@ -903,6 +910,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7856733331829174190">Fehler beim Download</translation>
 <translation id="785938070103630874">Passwörter, Zahlungsmethoden oder Adresse aufrufen</translation>
 <translation id="7859704718976024901">Browserverlauf</translation>
+<translation id="7870750252270996949">Aus Lens kopiertes Bild</translation>
 <translation id="7879275349003161544">Downloads anzeigen</translation>
 <translation id="7884694604461143138">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="7887198238286927132">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
@@ -1027,6 +1035,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standardansicht für Websites</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
+<translation id="882557203579758546">Auf Seite suchen…</translation>
 <translation id="8840513115188359703">Du wirst nicht von deinem Google-Konto abgemeldet.</translation>
 <translation id="8843129975935593190">Deine Organisation legt fest, was du synchronisieren kannst.</translation>
 <translation id="8849001918648564819">Verborgen</translation>

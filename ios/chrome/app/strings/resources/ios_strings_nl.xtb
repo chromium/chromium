@@ -87,6 +87,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1545749641540134597">QR-code scannen</translation>
 <translation id="1552525382687785070">Synchronisatie is uitgezet door de beheerder</translation>
 <translation id="1554477036522844996">Nieuw venster</translation>
+<translation id="1565371473877914088">Nieuw incognitotabblad</translation>
 <translation id="1580715474678097352">Beveiliging tegen schadelijke websites</translation>
 <translation id="1580783302095112590">E-mail verzonden.</translation>
 <translation id="1582732959743469162">Hiermee wordt de voortgang van de huidige download gestopt.</translation>
@@ -133,6 +134,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1981118202195772574">Mobiel</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="199425419756152024">Wachtwoord bekijken</translation>
+<translation id="2010008505735295285">Opnieuw laden</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="2021670401941426298">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="202292859882676807">Microfoontoegang toegestaan</translation>
@@ -299,6 +301,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3272527697863656322">Annuleren</translation>
 <translation id="3277021493514034324">Siteadres gekopieerd</translation>
 <translation id="3285962946108803577">Pagina delen...</translation>
+<translation id="3289505634533552500">Gesproken zoekopdracht</translation>
 <translation id="3290875554372353449">Een account selecteren</translation>
 <translation id="3305294846493618482">meer</translation>
 <translation id="3311748811247479259">Uit</translation>
@@ -556,6 +559,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5295239312320826323">Account <ph name="USER_EMAIL" /> verwijderen?</translation>
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
+<translation id="5318298563956633672">Je volgt dit product al.</translation>
 <translation id="5339316356165661760">Synchronisatie aanzetten</translation>
 <translation id="536067926684072644">Bookmarks tonen</translation>
 <translation id="5360976571138293719">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
@@ -569,6 +573,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5439599923922718668">Vaak bezocht</translation>
 <translation id="54401264925851789">Paginabeveiligingsinfo</translation>
 <translation id="5443952882982198570">Creditcards</translation>
+<translation id="5444892875087332195">Bookmarks</translation>
 <translation id="5457226814769348910">Offline versie openen</translation>
 <translation id="5489208564673669003">Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="5490005495580364134">Alle cookies blokkeren (niet aanbevolen)</translation>
@@ -619,6 +624,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="581659025233126501">Synchronisatie aanzetten</translation>
 <translation id="5819208479324046259">Beheerd door <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Sla wachtwoorden, betaalmethoden en adressen op zodat Chrome ze later automatisch kan invullen.</translation>
+<translation id="5834415013958049700">Lens-afbeelding die je hebt gekopieerd</translation>
 <translation id="5846482154967366008">Zoekmachine</translation>
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5857090052475505287">Nieuwe map</translation>
@@ -646,6 +652,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5984222099446776634">Recent bezocht</translation>
 <translation id="5988097621740394599">Prijsdalingen bekijken op je tabbladen</translation>
 <translation id="5988851877894965432">URL's openen in Chrome</translation>
+<translation id="6006672969046233841">Nieuw tabblad</translation>
 <translation id="6012140227487808125">Versleutelen…</translation>
 <translation id="6021332621416007159">Openen in...</translation>
 <translation id="6027945736510816438">Bedoelde je <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7207023858769244910">Synchroniseer om content op basis van je interesses te krijgen.</translation>
 <translation id="721597782417389033">Ongeldige bijnaam kaart</translation>
 <translation id="7221173315674413369">Ontdek nieuwe functies en tips in Wat is er nieuw</translation>
+<translation id="7223102419539744003">Tabblad sluiten</translation>
 <translation id="722454870747268814">Nieuw incognitotabblad</translation>
 <translation id="7265758999917665941">Nooit voor deze site</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
@@ -903,6 +911,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="785938070103630874">Open Wachtwoorden, Betaalmethoden of Adres en meer</translation>
 <translation id="7859704718976024901">Browsegeschiedenis</translation>
+<translation id="7870750252270996949">Afbeelding gekopieerd door Lens</translation>
 <translation id="7879275349003161544">Downloads tonen</translation>
 <translation id="7884694604461143138">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
 <translation id="7887198238286927132">Ter bescherming van je privacy wordt dit veld niet automatisch ingevuld door Chrome.</translation>
@@ -1027,6 +1036,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standaard siteweergave</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882557203579758546">Zoeken op pagina…</translation>
 <translation id="8840513115188359703">Je wordt niet uitgelogd van je Google-account.</translation>
 <translation id="8843129975935593190">De limieten van je organisatie voor wat je kunt synchroniseren.</translation>
 <translation id="8849001918648564819">Verborgen</translation>

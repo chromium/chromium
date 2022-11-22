@@ -87,6 +87,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1545749641540134597">Skanna QR-kod</translation>
 <translation id="1552525382687785070">Synkronisering har inaktiverats av administratören</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
+<translation id="1565371473877914088">Ny inkognitoflik</translation>
 <translation id="1580715474678097352">Skydda dig mot farliga webbplatser</translation>
 <translation id="1580783302095112590">E-post skickades.</translation>
 <translation id="1582732959743469162">Den pågående nedladdningen avbryts.</translation>
@@ -133,6 +134,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="199425419756152024">Visa lösenord</translation>
+<translation id="2010008505735295285">Läs in igen</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="2021670401941426298">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="202292859882676807">Mikrofonåtkomst har tillåtits</translation>
@@ -299,6 +301,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
 <translation id="3285962946108803577">Dela sidan …</translation>
+<translation id="3289505634533552500">Röstsökning</translation>
 <translation id="3290875554372353449">Välj ett konto</translation>
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
@@ -556,6 +559,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5295239312320826323">Vill du ta bort kontot <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5317780077021120954">Spara</translation>
+<translation id="5318298563956633672">Du bevakar redan den här produkten.</translation>
 <translation id="5339316356165661760">Aktivera synkronisering</translation>
 <translation id="536067926684072644">Visa bokmärken</translation>
 <translation id="5360976571138293719">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5439599923922718668">Mest besökta</translation>
 <translation id="54401264925851789">Sidans säkerhetsinfo</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
+<translation id="5444892875087332195">Bokmärken</translation>
 <translation id="5457226814769348910">Öppna offlineversion</translation>
 <translation id="5489208564673669003">Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />Cookie-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blockera alla cookies (rekommenderas inte)</translation>
@@ -619,6 +624,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="581659025233126501">Aktivera synkronisering</translation>
 <translation id="5819208479324046259">Hanteras av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Spara lösenord, betalningsmetoder och adresser så att Chrome kan fylla i dem automatiskt vid ett senare tillfälle.</translation>
+<translation id="5834415013958049700">Sök efter bilden du kopierade med Lens</translation>
 <translation id="5846482154967366008">Sökmotor</translation>
 <translation id="5854790677617711513">Äldre än 30 dagar</translation>
 <translation id="5857090052475505287">Ny mapp</translation>
@@ -646,6 +652,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5984222099446776634">Nyligen besökta</translation>
 <translation id="5988097621740394599">Se sänkta priser på flikar</translation>
 <translation id="5988851877894965432">Öppna webbadresser i Chrome</translation>
+<translation id="6006672969046233841">Ny flik</translation>
 <translation id="6012140227487808125">Krypterar …</translation>
 <translation id="6021332621416007159">Öppna i ...</translation>
 <translation id="6027945736510816438">Menade du <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7207023858769244910">Synkronisera för att få innehåll utifrån dina intressen.</translation>
 <translation id="721597782417389033">Ogiltigt kortnamn</translation>
 <translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
+<translation id="7223102419539744003">Stäng fliken</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7265758999917665941">Aldrig på den här webbplatsen</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
@@ -903,6 +911,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7856733331829174190">Nedladdning misslyckades</translation>
 <translation id="785938070103630874">Öppna Lösenord, Betalningsmetoder, Adress m.m.</translation>
 <translation id="7859704718976024901">Webbhistorik</translation>
+<translation id="7870750252270996949">Sök efter kopierad bild med Lens</translation>
 <translation id="7879275349003161544">Visa nedladdningar</translation>
 <translation id="7884694604461143138">Sökhistorik (<ph name="COUNT" /> hittades)</translation>
 <translation id="7887198238286927132">Av integritetsskäl fylls det här fältet inte i automatiskt.</translation>
@@ -1027,6 +1036,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standardvy för webbplats</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
+<translation id="882557203579758546">Sök på sidan …</translation>
 <translation id="8840513115188359703">Du loggas inte ut från Google-kontot.</translation>
 <translation id="8843129975935593190">Organisationen begränsar vad du kan synkronisera.</translation>
 <translation id="8849001918648564819">Dold</translation>

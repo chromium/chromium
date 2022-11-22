@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Ajude-nos a criar uma Web mais privada</translation>
 <translation id="107147699690128016">Se alterar a extensão do ficheiro, este pode ser aberto numa aplicação diferente e representar um risco para o seu dispositivo.</translation>
 <translation id="1089606299949659462">Revisão concluída!</translation>
+<translation id="1091604859693995976">Atualize a página para ver as novidades</translation>
 <translation id="1095761715416917775">Certifique-se de que pode aceder sempre aos seus dados de sincronização</translation>
 <translation id="1100066534610197918">Abrir num novo sep. no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
@@ -122,11 +123,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
-<translation id="161647866166517041">A redução de spam e fraudes depende de símbolos fidedignos para ajudar os sites a combater fraudes e distinguir bots de pessoas.
-
-Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo fidedigno para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo fidedigno válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
-
-Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados para descobrir a sua identidade.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1633659023549081553">Descubra novo conteúdo na página inicial do Chrome</translation>
@@ -334,6 +330,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima será fechado}other{<ph name="TAB_COUNT_MANY" /> separadores de navegação anónima serão fechados}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Última verificação há 1 dia}other{Última verificação há # dias}}</translation>
 <translation id="2842985007712546952">Pasta superior</translation>
+<translation id="2851291081585704741">Está offline</translation>
 <translation id="2856503607207334158">Falha ao iniciar sessão</translation>
 <translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
 <translation id="2861923151411510142">Algumas funcionalidades do Chrome vão deixar de estar disponíveis</translation>
@@ -559,6 +556,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Opções disponíveis junto à parte superior do ecrã</translation>
 <translation id="4062305924942672200">Informações legais</translation>
+<translation id="4072805772816336153">Tente mais tarde.</translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fornecido pela Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pode usar este tablet para iniciar sessão no dispositivo que está a apresentar este código QR.</translation>
@@ -984,11 +982,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6363990818884053551">Para iniciar a sincronização, valide a sua identidade</translation>
 <translation id="6364438453358674297">Remover a sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega mais frequentemente páginas que o Chrome pensa que provavelmente irá visitar. Esta definição pode resultar numa maior utilização de dados.</translation>
-<translation id="6385407407546870227">Quando as avaliações estão ativadas, a redução de spam e fraudes depende de símbolos fidedignos para ajudar os sites a combater fraudes e distinguir bots de pessoas.
-
-Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo fidedigno para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo fidedigno válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
-
-Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados para descobrir a sua identidade.</translation>
 <translation id="6394791151443660613">Pesquisar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Ligação retomada</translation>

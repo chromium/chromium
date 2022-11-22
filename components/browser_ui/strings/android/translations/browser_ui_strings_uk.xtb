@@ -125,6 +125,7 @@
 <translation id="3594780231884063836">Вимкнути звук у відео</translation>
 <translation id="3596414637720633074">Блокувати файли cookie третіх сторін в анонімному режимі</translation>
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
+<translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3628308229821498208">Рекомендовані пошукові запити</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3763247130972274048">Двічі торкніться відео ліворуч або праворуч, щоб пропустити 10 с</translation>
@@ -171,6 +172,7 @@
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
 <translation id="4751476147751820511">Датчики руху та світла</translation>
+<translation id="4779083564647765204">Збільшити</translation>
 <translation id="4811450222531576619">Докладніше про джерело й тему</translation>
 <translation id="4836046166855586901">Запитувати, коли сайт хоче дізнатися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="483914009762354899">Включити всі сайти в цьому домені</translation>
@@ -233,6 +235,7 @@
 <translation id="5922853908706496913">Доступ до вашого екрана</translation>
 <translation id="5922967540311291836">Блокувати сторонні файли cookie:</translation>
 <translation id="5939518447894949180">Скинути</translation>
+<translation id="5968921426641056619">Введіть веб-адресу</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Керуйте доступом цього сайту до вашого пристрою</translation>
@@ -312,6 +315,7 @@
 <translation id="7641339528570811325">Очистити історію…</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="780301667611848630">Ні, дякую</translation>

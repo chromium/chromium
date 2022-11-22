@@ -1075,6 +1075,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
+<translation id="1966649499058910679">Highlight each word as it is spoken</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -1814,7 +1815,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
-<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">This page is accessing your camera and microphone.</translation>
@@ -2143,7 +2143,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     Server message: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Add Media Gallery by Directory</translation>
 <translation id="2908358077082926882">Press '<ph name="CURRENTKEY" />' again to remove assignment and <ph name="RESPONSE" /></translation>
-<translation id="2909380725331714712">Spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.</translation>
 <translation id="2909506265808101667">Couldn't connect with Google services. Check your network connection and try again. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Connect to a network and try again</translation>
 <translation id="291056154577034373">UNREAD</translation>
@@ -3189,7 +3188,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3902789559055749153">Choose how you want to create a passkey for <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Built-in keyboard</translation>
 <translation id="3904326018476041253">Location Services</translation>
-<translation id="3904849010307028014">Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites that you visit check for and find a valid trust token, they're more likely to treat you like a person and not a bot.</translation>
 <translation id="3905761538810670789">Repair app</translation>
 <translation id="3908501907586732282">Enable extension</translation>
 <translation id="3909701002594999354">Show All &amp;Controls</translation>
@@ -3766,7 +3764,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4462159676511157176">Custom name servers</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> time limit set for <ph name="APP_NAME" /></translation>
-<translation id="4465649939134800363">Sort options</translation>
 <translation id="4466839823729730432">See your memories here</translation>
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> can edit files in <ph name="FOLDERNAME" /></translation>
@@ -3823,6 +3820,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Toggle video to play or pause</translation>
 <translation id="451515744433878153">Remove</translation>
+<translation id="4515799157838123044">Shade background content</translation>
 <translation id="4515872537870654449">Contact Dell for service. The dock will shut down if the fan isn't working.</translation>
 <translation id="4518840066030486079">Shift key mode style</translation>
 <translation id="4519331665958994620">Sites can ask to use your camera</translation>
@@ -4416,7 +4414,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="508059534790499809">Refresh a Kerberos ticket</translation>
 <translation id="5084328598860513926">Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Checking for updates</translation>
-<translation id="5085561329775168253">Get creative, be productive and stay entertained with apps on the Google Play Store</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">Restore default homepage?</translation>
 <translation id="5087249366037322692">Added by a third party</translation>
@@ -4631,7 +4628,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="52912272896845572">Private key file is invalid.</translation>
 <translation id="5291739252352359682">Automatically creates captions for media in Chrome Browser (currently available in English). Audio and captions are processed locally and never leave the device.</translation>
 <translation id="529175790091471945">Format this device</translation>
-<translation id="5292862864186939732">Always allow '<ph name="EXTENSION_NAME" />' to run on <ph name="ORIGIN" />?</translation>
 <translation id="529296195492126134">Ephemeral mode is not supported. Please contact your administrator</translation>
 <translation id="5293170712604732402">Restore settings to their original defaults</translation>
 <translation id="5294097441441645251">Must start with a lowercase character or underscore</translation>
@@ -4847,7 +4843,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5494016731375030300">Recently closed tabs</translation>
 <translation id="5494362494988149300">Open When &amp;Finished</translation>
 <translation id="5494752089476963479">Block ads on sites that show intrusive or misleading ads</translation>
-<translation id="5494920125229734069">Select all</translation>
 <translation id="5495466433285976480">This will remove all local users, files, data and other settings after your next restart. All users will need to sign in again.</translation>
 <translation id="5495597166260341369">Keep display on</translation>
 <translation id="5496587651328244253">Organise</translation>
@@ -5605,7 +5600,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6207200176136643843">Reset to default zoom level</translation>
 <translation id="6207806976844244951">Save to Google Password Manager (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">Country/Region</translation>
-<translation id="6208382900683142153">Trust tokens improve privacy on the web and can't be used to find out who you are.</translation>
 <translation id="6208521041562685716">Mobile data being activated</translation>
 <translation id="6208725777148613371">Failed to save to <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Component updating</translation>
@@ -6553,7 +6547,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> is managed by your administrator</translation>
 <translation id="7085389578340536476">Allow Chrome to record audio?</translation>
 <translation id="708550780726587276">(not configured)</translation>
-<translation id="7086531709814430567">Always allow these extensions to run on <ph name="ORIGIN" />?</translation>
 <translation id="7086672505018440886">Include Chrome log files in the archive.</translation>
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
@@ -7250,7 +7243,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
-<translation id="7764857504908700767">When trials are on, spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7765507180157272835">Bluetooth and Wi-Fi needed</translation>
 <translation id="7766082757934713382">Helps reduce network data usage by pausing automatic app and system updates</translation>
@@ -7333,6 +7325,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7839051173341654115">View/Backup media</translation>
 <translation id="7839192898639727867">Certificate Subject Key ID</translation>
 <translation id="7842062217214609161">No shortcut</translation>
+<translation id="7842115774595115751">Enable navigation controls</translation>
 <translation id="7842692330619197998">Visit g.co/ChromeEnterpriseAccount if you need to create a new account.</translation>
 <translation id="78427265591841839">Search any part of the page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Uninstall Linux</translation>
@@ -7415,6 +7408,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="79113168483292735">Media tabs section in tab search</translation>
 <translation id="7912080627461681647">Your password has been changed on the server. Please sign out then sign in again.</translation>
 <translation id="7912974581251770345">Translation</translation>
+<translation id="7914870167134465181">Highlighting</translation>
 <translation id="7915457674565721553">Connect to the Internet to set up parental controls</translation>
 <translation id="7918257978052780342">Enrol</translation>
 <translation id="7919123827536834358">Automatically translate these languages</translation>
@@ -8006,7 +8000,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8448729345478502352">Make items on your screen smaller or larger</translation>
 <translation id="8449008133205184768">Paste and Match Style</translation>
 <translation id="8449036207308062757">Manage storage</translation>
-<translation id="8456512334795994339">Find apps for work and play</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
 <translation id="8458341576712814616">Shortcut</translation>
@@ -8576,6 +8569,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8991520179165052608">Site can use your microphone</translation>
 <translation id="8991694323904646277">No camera</translation>
 <translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
+<translation id="8993737615451556423">Provides controls to speed up, slow down and pause the reading voice</translation>
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">Your Chrome, Everywhere</translation>

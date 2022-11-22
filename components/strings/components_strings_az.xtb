@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında ödənişlərinizi və kredit kartı məlumatlarınızı idarə edin</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| düyməsinə basın</translation>
+<translation id="2718207025093645426">İdarə olunan istifadəçi və ya cihazda yüklənmiş siyasət yoxdur.</translation>
 <translation id="2721148159707890343">Sorğu uğurlu oldu</translation>
 <translation id="2723669454293168317">Chrome ayarlarında Təhlükəsizlik Yoxlanışı icra edin</translation>
 <translation id="2726001110728089263">Yan Qab</translation>
@@ -1144,7 +1145,6 @@
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
 <translation id="3906954721959377182">Planşet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> qorunan kontenti oxutmaq istəyir. Cihazın kimliyi Google tərəfindən doğrulanacaq və bu sayt cihaza daxil ola biləcək.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Təhlükəsizlik kodunuzu daxil edin</translation>
 <translation id="3927932062596804919">Rədd edin</translation>
@@ -2841,6 +2841,7 @@
 <translation id="8233773197406738106">Fayl hazırlanır</translation>
 <translation id="8235754723616617175">Kantri musiqisi</translation>
 <translation id="8237519162179154808">Hobbi və asudə vaxt</translation>
+<translation id="8238188918340945316">28 x 40 düym</translation>
 <translation id="8238581221633243064">Yeni Gizli tabda səhifə açın</translation>
 <translation id="8241707690549784388">Baxdığınız səhifə daxil etdiyiniz məlumatı işlədir. Həmin səhifəyə qayıtmaq, etdiyiniz istənilən əməlin təkrarlanmasına səbəb ola bilər. Davam edirsiniz?</translation>
 <translation id="8241712895048303527">Bu saytda blok edin</translation>

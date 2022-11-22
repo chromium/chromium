@@ -282,6 +282,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622571349153632031">Cociña vexetariana</translation>
 <translation id="1623104350909869708">Evitar que esta páxina cree caixas de diálogo adicionais</translation>
+<translation id="1633137413609266904">{0,plural, =1{A política do administrador non permite abrir este ficheiro}other{A política do administrador non permite abrir # ficheiros}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Planificación e preparación fiscal</translation>
 <translation id="1638780421120290329">Produciuse un erro ao gardar a tarxeta</translation>
@@ -699,6 +700,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="2715808615350965923">Súper A</translation>
 <translation id="271663710482723385">Para saír da pantalla completa, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="2718207025093645426">O usuario ou dispositivo xestionado non ten ningunha política cargada.</translation>
 <translation id="2721148159707890343">Solicitude correcta</translation>
 <translation id="2723669454293168317">Executar unha comprobación de seguranza na configuración de Chrome</translation>
 <translation id="2726001110728089263">Bandexa lateral</translation>
@@ -896,6 +898,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3270847123878663523">&amp;Desfacer de cambio de orde</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> quere conectarse</translation>
 <translation id="3272091146646336650">Súper B</translation>
+<translation id="3281350579597955952">{0,plural, =1{A política do administrador non recomenda abrir este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda abrir estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A túa organización, <ph name="ENROLLMENT_DOMAIN" />, enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
 <translation id="3282497668470633863">Engadir o nome que aparece na tarxeta</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -1146,7 +1149,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">A tarxeta caducou</translation>
 <translation id="3906954721959377182">Tableta</translation>
-<translation id="3909477809443608991"><ph name="URL" /> quere reproducir contidos protexidos. Google verificará a identidade do teu dispositivo e este sitio web poderá acceder a ela.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Indica o teu código de seguranza</translation>
 <translation id="3927932062596804919">Denegar</translation>
@@ -1295,6 +1297,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4275830172053184480">Reinicia o dispositivo</translation>
 <translation id="4277028893293644418">Restablecer contrasinal</translation>
 <translation id="4278390842282768270">Permitida</translation>
+<translation id="4281998142035485137">{0,plural, =1{Queres abrir o ficheiro confidencial?}other{Queres abrir os ficheiros confidenciais?}}</translation>
 <translation id="4282346679996504092">Desactiváronse as alertas para este produto e eliminouse o marcador</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esta tarxeta gardouse na túa Conta de Google}other{Estas tarxetas gardáronse na túa Conta de Google}}</translation>
@@ -1928,6 +1931,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5904360430676679685">Familia e relacións</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5911110632211230665">Non se permite abrir ficheiros</translation>
 <translation id="59174027418879706">Activado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en uso}other{# en uso}}</translation>
@@ -2841,6 +2845,7 @@ Detalles adicionais:
 <translation id="8233773197406738106">Preparando ficheiro</translation>
 <translation id="8235754723616617175">Música country</translation>
 <translation id="8237519162179154808">Pasatempos e tempo libre</translation>
+<translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">Abre a páxina nunha nova pestana do modo de incógnito</translation>
 <translation id="8241707690549784388">A páxina que estás buscando utilizou información que inseriches ti. Se volves a esa páxina é posible que se repita algunha das accións que levaches a cabo. Queres continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste sitio</translation>

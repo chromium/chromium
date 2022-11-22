@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
 <translation id="1552525382687785070">સિંક કરવાનું તમારા વ્યવસ્થાપક દ્વારા બંધ કરવામાં આવ્યું છે</translation>
 <translation id="1554477036522844996">નવી વિંડો</translation>
+<translation id="1565371473877914088">નવું છૂપું ટૅબ</translation>
 <translation id="1580715474678097352">જોખમકારક વેબસાઇટથી સુરક્ષિત રહો</translation>
 <translation id="1580783302095112590">મેઇલ મોકલ્યો છે.</translation>
 <translation id="1582732959743469162">આનાથી તમારું હાલનું ડાઉનલોડ આગળ વધતું અટકી જશે.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">મોબાઇલ</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
+<translation id="2010008505735295285">ફરીથી લોડ કરો</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="2021670401941426298">જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
 <translation id="202292859882676807">માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">રદ કરો</translation>
 <translation id="3277021493514034324">સાઇટનું ઍડ્રેસ કૉપિ કર્યું</translation>
 <translation id="3285962946108803577">પેજ શેર કરો...</translation>
+<translation id="3289505634533552500">વૉઇસ શોધ</translation>
 <translation id="3290875554372353449">એકાઉન્ટ પસંદ કરો</translation>
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3311748811247479259">બંધ</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">એકાઉન્ટ <ph name="USER_EMAIL" /> કાઢી નાખીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
+<translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
 <translation id="5339316356165661760">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="536067926684072644">બુકમાર્ક બતાવો</translation>
 <translation id="5360976571138293719">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> જુઓ.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">વારંવાર મુલાકાત લેવાયેલી વેબસાઇટ</translation>
 <translation id="54401264925851789">પેજની સુરક્ષા માહિતી</translation>
 <translation id="5443952882982198570">ક્રેડિટ કાર્ડ</translation>
+<translation id="5444892875087332195">બુકમાર્ક</translation>
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Chrome માટે પાસવર્ડ, ચુકવણી પદ્ધતિઓ અને સરનામા સાચવો કે જેથી પછીથી ઑટોમૅટિક રીતે ભરી શકાય.</translation>
+<translation id="5834415013958049700">તમે કૉપિ કરેલી લેન્સની છબી</translation>
 <translation id="5846482154967366008">શોધ એન્જિન</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>
 <translation id="5857090052475505287">નવું ફોલ્ડર</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">હાલમાં મુલાકાત લીધેલા</translation>
 <translation id="5988097621740394599">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ.</translation>
 <translation id="5988851877894965432">URLsને Chromeમાં ખોલો</translation>
+<translation id="6006672969046233841">નવું ટૅબ</translation>
 <translation id="6012140227487808125">એન્ક્રિપ્ટ કરી રહ્યું છે...</translation>
 <translation id="6021332621416007159">આમાં ખોલો...</translation>
 <translation id="6027945736510816438">શું તમારો અર્થ <ph name="WEBSITE" /> હતો?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">તમારી રુચિઓના આધારે કન્ટેન્ટ મેળવવા માટે સિંક કરો.</translation>
 <translation id="721597782417389033">કાર્ડનું અમાન્ય ઉપનામ</translation>
 <translation id="7221173315674413369">"નવું શું છે" સુવિધામાં નવી સુવિધાઓ અને ટિપ વિશે જાણો</translation>
+<translation id="7223102419539744003">ટૅબ બંધ કરો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
 <translation id="7265758999917665941">આ સાઇટ માટે ક્યારેય નહીં</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="785938070103630874">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અથવા સરનામું વગેરે ખોલો</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
+<translation id="7870750252270996949">લેન્સની કૉપિ કરેલી છબી</translation>
 <translation id="7879275349003161544">ડાઉનલોડ કરેલી આઇટમ બતાવો</translation>
 <translation id="7884694604461143138">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ડિફૉલ્ટ સાઇટ વ્યૂ</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
+<translation id="882557203579758546">પેજમાં શોધો…</translation>
 <translation id="8840513115188359703">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ.</translation>
 <translation id="8843129975935593190">તમે શું સિંક કરી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે.</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>

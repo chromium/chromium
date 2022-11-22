@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Sisize sakhe iwebhu eyimfihlo kakhulu</translation>
 <translation id="107147699690128016">Uma ushintsha isandiso sefayela, ifayela kungenzeka livulwe ngezinhlelo zokusebenza ezihlukile kanye nokungaba nobungozi kudivayisi yakho.</translation>
 <translation id="1089606299949659462">Ukubuyekeza kuqedile!</translation>
+<translation id="1091604859693995976">Vuselela ukuze ubuke</translation>
 <translation id="1095761715416917775">Qinisekisa ukuthi ungahlala ufinyelela kudatha yakho yokuvumelanisa</translation>
 <translation id="1100066534610197918">Vula kuthebhu elisha kuqembu</translation>
 <translation id="1103142993930332957">Siza ukuthuthukisa i-Chrome?</translation>
@@ -122,11 +123,6 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="1571304935088121812">Kopisha igama lomsebenzisi</translation>
 <translation id="1592864538817356322">Ukuvikelwa okuvamile:</translation>
 <translation id="1594635596540195766">Izinto eziphakanyisiwe ezingu-<ph name="SUGGESTIONS_COUNT" /> ohlwini olungezansi.</translation>
-<translation id="161647866166517041">Ukwehliswa kogaxekile nokukhwabanisa kuncike kumathokheni okuthenjwa ukusiza amasayithi alwe nokukhwabanisa futhi ahlukanise ama-bot kubantu.
-
-Ngokusekelwe ekusebenzelaneni kwakho nesayithi, njengokungena njalo ku-akhawunti, lelo sayithi lingakhipha ithokheni yokwethenjwa kwibhrawuza yakho. Kamuva, uma amanye amasayithi owavakashelayo ehlola futhi ethola ithokheni elivumelekile lokwethenjwa, maningi amathuba okuthi akuphathe njengomuntu hhayi i-bot.
-
-Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenziselwa ukuthola ukuthi ungubani.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Ungayiphatha kanjani idatha yakho:<ph name="END_BOLD" /> Ukuze sivikele ubumfihlo bakho, sisula ngokuzenzakalelayo izintshisekelo zakho ezindala kunamaviki ama-4. Njengoba uqhubeka nokubhrawuza, intshisekelo ingase ivele ohlwini futhi. Noma ungasusa izithakazelo ongafuni ukuthi i-Chrome izicabangele.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Susa into engu-1 ekhethiwe}one{Susa izinto ezingu-# ezikhethiwe}other{Susa izinto ezingu-# ezikhethiwe}}</translation>
 <translation id="1633659023549081553">Zitholele okuqukethwe okusha ekhasini eliyisiqalo le-Chrome</translation>
@@ -334,6 +330,7 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{ithebhu ye-incognito engu-<ph name="TAB_COUNT_ONE" /> izovalwa}one{amathebhu we-incognito angu-<ph name="TAB_COUNT_MANY" /> azovalwa}other{amathebhu we-incognito angu-<ph name="TAB_COUNT_MANY" /> azovalwa}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kuhlolwe osukwini olu-1 olwedlule}one{Kuhlolwe ezinsukwini ezingu-# ezedlule}other{Kuhlolwe ezinsukwini ezingu-# ezedlule}}</translation>
 <translation id="2842985007712546952">Ifolda yomzali</translation>
+<translation id="2851291081585704741">Awuxhunyiwe ku-inthanethi</translation>
 <translation id="2856503607207334158">Ukungena ngemvume kwehlulekile</translation>
 <translation id="2860954141821109167">Sicela uqinisekise ukuthi uhlelo lokusebenza lwefoni linikwe amandla kule divayisi</translation>
 <translation id="2861923151411510142">Ezinye zezakhi ze-Chrome ngeke zisatholakala</translation>
@@ -559,6 +556,7 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="4056223980640387499">I-Sepia</translation>
 <translation id="4060598801229743805">Izinketho ziyatholakala eduze kwaphezulu kwesikrini</translation>
 <translation id="4062305924942672200">Ulwazi lezomthetho</translation>
+<translation id="4072805772816336153">Zama futhi emuva kwesikhathi</translation>
 <translation id="4084682180776658562">Ibhukhimakhi</translation>
 <translation id="4084712963632273211">Kusukela ku-<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />okulethwe i-Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Ungasebenzisa le thebulethi ukuze ungene ngemvume kudivayisi ebonisa le khodi ye-QR.</translation>
@@ -984,11 +982,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6363990818884053551">Ukuze uqale ukuvumelanisa, qinisekisa ukuthi nguwe</translation>
 <translation id="6364438453358674297">Susa isiphakamiso kusukela kumlando?</translation>
 <translation id="6380100320871303656">Iwalayisha kakhulu kusengaphambili amakhasi i-Chrome ecabanga ukuthi ungawavakashela. Leli sethingi lingase liphumele ekwenyukeni kokusetshenziswa kwedatha.</translation>
-<translation id="6385407407546870227">Lapho imizamo ivuliwe, ukwehliswa Kogaxekile nokukhwabanisa kuncike kumathokheni okuthenjwa ukusiza amasayithi alwe nokukhwabanisa futhi ahlukanise ama-bot kubantu.
-
-Ngokusekelwe ekusebenzelaneni kwakho nesayithi, njengokungena njalo ku-akhawunti, lelo sayithi lingakhipha ithokheni yokwethenjwa kwibhrawuza yakho. Kamuva, uma amanye amasayithi owavakashelayo ehlola futhi ethola ithokheni elivumelekile lokwethenjwa, maningi amathuba okuthi akuphathe njengomuntu hhayi i-bot.
-
-Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenziselwa ukuthola ukuthi ungubani.</translation>
 <translation id="6394791151443660613">Sesha: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ISIXHUMANISI</translation>
 <translation id="6397616442223433927">Usuxhunyiwe futhi ku-inthanethi</translation>

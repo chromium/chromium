@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Aidez-nous à créer une navigation Web plus privée</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, il peut s'ouvrir dans une application différente et poser un risque pour votre appareil.</translation>
 <translation id="1089606299949659462">Vérification terminée!</translation>
+<translation id="1091604859693995976">Actualiser pour afficher</translation>
 <translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données de synchronisation</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
 <translation id="1103142993930332957">Aidez à améliorer Chrome?</translation>
@@ -122,11 +123,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1592864538817356322">Protection standard :</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> éléments suggérés dans la liste ci-dessous.</translation>
-<translation id="161647866166517041">La réduction des pourriels et de la fraude utilise des jetons de confiance pour aider les sites à lutter contre la fraude ainsi qu'à distinguer les robots des personnes.
-
-Un site peut envoyer un jeton de confiance à votre navigateur en fonction de votre interaction avec ce site, comme la connexion régulière à un compte. Ultérieurement, si d'autres sites que vous visitez recherchent et trouvent un jeton de confiance valide, ils seront plus susceptibles de vous traiter comme une personne et non comme un robot.
-
-Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent pas être utilisés pour savoir qui vous êtes.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chrome les prenne en compte.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1633659023549081553">Découvrez de nouveaux contenus sur la page d'accueil de Chrome</translation>
@@ -334,6 +330,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée sera fermé}one{<ph name="TAB_COUNT_MANY" /> onglet de navigation privée sera fermé}other{<ph name="TAB_COUNT_MANY" /> onglets de navigation privée seront fermés}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
+<translation id="2851291081585704741">Vous êtes hors ligne</translation>
 <translation id="2856503607207334158">Échec de connexion</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus offertes</translation>
@@ -559,6 +556,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles vers le haut de l'écran</translation>
 <translation id="4062305924942672200">Mentions juridiques</translation>
+<translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4084682180776658562">Favoris</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fourni par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter à l'appareil qui affiche ce code QR.</translation>
@@ -984,11 +982,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique?</translation>
 <translation id="6380100320871303656">Précharge plus fréquemment les pages que vous êtes susceptible de visiter selon Chrome. Ce paramètre peut entraîner une augmentation de la consommation de données.</translation>
-<translation id="6385407407546870227">Pendant les essais, la réduction des pourriels et de la fraude utilise des jetons de confiance pour aider les sites à lutter contre la fraude ainsi qu'à distinguer les robots des personnes.
-
-Un site peut envoyer un jeton de confiance à votre navigateur en fonction de votre interaction avec ce site, comme la connexion régulière à un compte. Ultérieurement, si d'autres sites que vous visitez recherchent et trouvent un jeton de confiance valide, ils seront plus susceptibles de vous traiter comme une personne et non comme un robot.
-
-Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent pas être utilisés pour savoir qui vous êtes.</translation>
 <translation id="6394791151443660613">Recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIEN</translation>
 <translation id="6397616442223433927">De nouveau en ligne</translation>

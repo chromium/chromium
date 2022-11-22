@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">掃描 QR 圖碼</translation>
 <translation id="1552525382687785070">你的管理員停用了同步功能</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
+<translation id="1565371473877914088">新無痕分頁</translation>
 <translation id="1580715474678097352">守護網頁瀏覽安全，有效防堵危險網站</translation>
 <translation id="1580783302095112590">已傳送郵件。</translation>
 <translation id="1582732959743469162">目前所有下載進度都會因此停止。</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">行動模式</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="199425419756152024">查看密碼</translation>
+<translation id="2010008505735295285">重新載入</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
 <translation id="2021670401941426298">如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="202292859882676807">已允許存取麥克風</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">取消</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
 <translation id="3285962946108803577">分享網頁...</translation>
+<translation id="3289505634533552500">語音搜尋</translation>
 <translation id="3290875554372353449">選擇帳戶</translation>
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">關閉</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">要移除 <ph name="USER_EMAIL" /> 帳戶嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
+<translation id="5318298563956633672">你已在追蹤這項產品。</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">經常造訪</translation>
 <translation id="54401264925851789">網頁安全性資訊</translation>
 <translation id="5443952882982198570">信用卡</translation>
+<translation id="5444892875087332195">書籤</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">開啟同步功能</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">在 Chrome 中儲存密碼、付款方式和地址，以便稍後自動填入。</translation>
+<translation id="5834415013958049700">你複製的智慧鏡頭圖片</translation>
 <translation id="5846482154967366008">搜尋引擎</translation>
 <translation id="5854790677617711513">超過 30 天前</translation>
 <translation id="5857090052475505287">新資料夾</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="5988097621740394599">在分頁上查看降價資訊。</translation>
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
+<translation id="6006672969046233841">新分頁</translation>
 <translation id="6012140227487808125">加密中…</translation>
 <translation id="6021332621416007159">在其他應用程式中開啟...</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">系統會根據你的興趣提供內容。</translation>
 <translation id="721597782417389033">卡片暱稱無效</translation>
 <translation id="7221173315674413369">你可以前往「新功能」頁面探索新功能及相關提示</translation>
+<translation id="7223102419539744003">關閉分頁</translation>
 <translation id="722454870747268814">新無痕式分頁</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方式或地址等等</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
+<translation id="7870750252270996949">你複製的智慧鏡頭圖片</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>
 <translation id="7884694604461143138">在歷史記錄中搜尋 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">預設的網站檢視畫面</translation>
 <translation id="8820817407110198400">書籤</translation>
+<translation id="882557203579758546">在網頁中搜尋…</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8843129975935593190">貴機構對你能同步處理的內容設有限制。</translation>
 <translation id="8849001918648564819">隱藏</translation>

@@ -282,6 +282,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuzhina vegjetariane</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
+<translation id="1633137413609266904">{0,plural, =1{Hapja e këtij skedari është bllokuar nga politika e administratorit}other{Hapja e # skedarëve është bllokuar nga politika e administratorit}}</translation>
 <translation id="1634828734222219955">Totali</translation>
 <translation id="163669211644121865">Përgatitja dhe planifikimi i taksave</translation>
 <translation id="1638780421120290329">Karta nuk mund të ruhet</translation>
@@ -699,6 +700,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të menaxhuar informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të dalë nga ekrani i plotë</translation>
+<translation id="2718207025093645426">Përdoruesi ose pajisja e menaxhuar nuk ka asnjë politikë të ngarkuar.</translation>
 <translation id="2721148159707890343">Kërkesa pati sukses</translation>
 <translation id="2723669454293168317">Ekzekuto një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="2726001110728089263">Tabakaja rrëshqitëse</translation>
@@ -896,6 +898,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3270847123878663523">&amp;Zhbëj rirenditjen</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> dëshiron që të lidhet</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Politika e administratorit nuk rekomandon hapjen e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon hapjen e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizata jote, <ph name="ENROLLMENT_DOMAIN" />, ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
 <translation id="3282497668470633863">Shto emrin në kartë</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -1146,7 +1149,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3901925938762663762">Karta ka skaduar</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> dëshiron të luajë përmbajtjen e mbrojtur. Identiteti i pajisjes sate do të verifikohet nga Google dhe mund të qaset nga ky sajt.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Fut kodin e sigurisë</translation>
 <translation id="3927932062596804919">Refuzo</translation>
@@ -1295,6 +1297,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4277028893293644418">Rivendos fjalëkalimin</translation>
 <translation id="4278390842282768270">Të lejuara</translation>
+<translation id="4281998142035485137">{0,plural, =1{Të hapet skedari konfidencial?}other{Të hapen skedarët konfidencialë?}}</translation>
 <translation id="4282346679996504092">Sinjalizimet për këtë produkt janë çaktivizuar dhe faqeshënuesi është hequr</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kjo kartë është ruajtur në "Llogarinë tënde të Google"}other{Këto karta janë ruajtur në "Llogarinë tënde të Google"}}</translation>
@@ -1928,6 +1931,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5903264686717710770">Titulli:</translation>
 <translation id="5904360430676679685">Familja dhe marrëdhëniet</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizuar)</translation>
+<translation id="5911110632211230665">Hapja u bllokua</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 në përdorim}other{# në përdorim}}</translation>
@@ -2840,6 +2844,7 @@ Detaje shtesë:
 <translation id="8233773197406738106">Po përgatit skedarin</translation>
 <translation id="8235754723616617175">Muzika country</translation>
 <translation id="8237519162179154808">Hobit dhe koha e lirë</translation>
+<translation id="8238188918340945316">28 x 40 inç</translation>
 <translation id="8238581221633243064">Hape faqen në një skedë të re "të fshehtë"</translation>
 <translation id="8241707690549784388">Faqja që po kërkon i përdori informacionet që fute. Kthimi tek ajo faqe mund të bëjë që çdo veprim që bëre të përsëritet përsëri. Dëshiron që të vazhdosh?</translation>
 <translation id="8241712895048303527">Blloko në këtë sajt</translation>

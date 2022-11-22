@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
 <translation id="1552525382687785070">مطابقت پذیری کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
+<translation id="1565371473877914088">نیا پوشیدگی ٹیب</translation>
 <translation id="1580715474678097352">خطرناک ویب سائٹس سے محفوظ رہیں</translation>
 <translation id="1580783302095112590">میل بھیج دی گئی۔</translation>
 <translation id="1582732959743469162">اس سے آپ کے موجودہ ڈاؤن لوڈ کی سبھی پیش رفت رک جائے گی۔</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">موبائل</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
+<translation id="2010008505735295285">دوبارہ لوڈ کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
 <translation id="2021670401941426298">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
 <translation id="202292859882676807">مائیکروفون تک رسائی کی اجازت ہے</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">منسوخ کریں</translation>
 <translation id="3277021493514034324">سائٹ کا پتہ کاپی ہو گیا</translation>
 <translation id="3285962946108803577">صفحہ کا اشتراک کریں...</translation>
+<translation id="3289505634533552500">صوتی تلاش</translation>
 <translation id="3290875554372353449">اکاؤنٹ منتخب کریں</translation>
 <translation id="3305294846493618482">مزید</translation>
 <translation id="3311748811247479259">آف</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> اکاؤنٹ ہٹائیں؟</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
+<translation id="5318298563956633672">آپ پہلے سے ہی اس پروڈکٹ کو ٹریک کر رہے ہیں۔</translation>
 <translation id="5339316356165661760">مطابقت پذیری آن کریں</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
 <translation id="5360976571138293719">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">اکثر ملاحظہ کردہ</translation>
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
+<translation id="5444892875087332195">بُک مارکس</translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
 <translation id="5489208564673669003">سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5490005495580364134">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی)</translation>
@@ -619,6 +624,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="581659025233126501">مطابقت پذیری آن کریں</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> نظم کرتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">‏بعد میں آٹو فل کرنے کے لیے Chrome کے پاس ورڈز، ادائیگی کے طریقے اور پتے محفوظ کریں۔</translation>
+<translation id="5834415013958049700">آپ کے کاپی کردہ لینز کی تصویر</translation>
 <translation id="5846482154967366008">تلاش انجن</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
 <translation id="5857090052475505287">نیا فولڈر</translation>
@@ -646,6 +652,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="5988097621740394599">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں۔</translation>
 <translation id="5988851877894965432">‏URLs کو Chrome میں کھولیں</translation>
+<translation id="6006672969046233841">نیا ٹیب</translation>
 <translation id="6012140227487808125">مرموز کاری ہو رہی ہے…</translation>
 <translation id="6021332621416007159">اس میں کھولیں…</translation>
 <translation id="6027945736510816438">کیا آپ کا مطلب <ph name="WEBSITE" /> ہے؟</translation>
@@ -832,6 +839,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7207023858769244910">اپنی دلچسپیوں کی بنیاد پر مواد حاصل کرنے کے لیے مطابقت پذیری کریں۔</translation>
 <translation id="721597782417389033">کارڈ کا غلط عرفی نام</translation>
 <translation id="7221173315674413369">نیا کیا ہے میں نئی خصوصیات اور تجاویز دریافت کریں</translation>
+<translation id="7223102419539744003">ٹیب بند کریں</translation>
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
 <translation id="7265758999917665941">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7272437679830969316">آپ کی شناخت کی توثیق نہیں کی جا سکتی۔ پاس ورڈ کاپی نہیں ہوا۔</translation>
@@ -903,6 +911,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7856733331829174190">ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="785938070103630874">پاس ورڈز، ادائیگی کے طریقے یا پتہ اور بہت کچھ کھولیں</translation>
 <translation id="7859704718976024901">براؤزنگ سرگزشت</translation>
+<translation id="7870750252270996949">لینز نے تصویر کو کاپی کیا</translation>
 <translation id="7879275349003161544">ڈاؤن لوڈز دکھائیں</translation>
 <translation id="7884694604461143138">تلاش کی سرگزشت (<ph name="COUNT" /> ملی)</translation>
 <translation id="7887198238286927132">‏آپ کی رازداری کے تحفظ کے لیے، Chrome اس فیلڈ کو آٹو فل نہیں کرے گا۔</translation>
@@ -1027,6 +1036,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ڈیفالٹ سائٹ منظر</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
+<translation id="882557203579758546">صفحہ میں تلاش کریں…</translation>
 <translation id="8840513115188359703">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔</translation>
 <translation id="8843129975935593190">آپ کی تنظیم یہ محدود کرتی ہے کہ آپ کیا سنک کر سکتے ہیں۔</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>

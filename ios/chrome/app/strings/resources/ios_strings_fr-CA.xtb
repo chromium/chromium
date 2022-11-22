@@ -87,6 +87,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1545749641540134597">Numérisez le code QR</translation>
 <translation id="1552525382687785070">La synchronisation est désactivée par votre administrateur</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
+<translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
 <translation id="1580715474678097352">Protégez-vous contre les sites Web dangereux</translation>
 <translation id="1580783302095112590">Courriel envoyé.</translation>
 <translation id="1582732959743469162">Cette opération entraînera l'arrêt de la progression de votre téléchargement en cours.</translation>
@@ -133,6 +134,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
+<translation id="2010008505735295285">Actualiser</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="2021670401941426298">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="202292859882676807">Accès au microphone autorisé</translation>
@@ -299,6 +301,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
 <translation id="3285962946108803577">Partager la page…</translation>
+<translation id="3289505634533552500">Recherche vocale</translation>
 <translation id="3290875554372353449">Choisir un compte</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
@@ -556,6 +559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
+<translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
@@ -569,6 +573,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5439599923922718668">Fréquemment consultés</translation>
 <translation id="54401264925851789">Information sur la sécurité de la page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
+<translation id="5444892875087332195">Favoris</translation>
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
@@ -619,6 +624,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Enregistrez les mots de passe, les modes de paiement et les adresses pour que Chrome les remplisse automatiquement par la suite.</translation>
+<translation id="5834415013958049700">Image de Lentille que vous avez copiée</translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
@@ -646,6 +652,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5984222099446776634">Dossiers récents</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
+<translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
 <translation id="6021332621416007159">Ouvrir dans...</translation>
 <translation id="6027945736510816438">Vouliez-vous dire <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7207023858769244910">Activez la synchronisation pour voir du contenu en fonction de vos centres d'intérêt.</translation>
 <translation id="721597782417389033">Pseudo de carte incorrect</translation>
 <translation id="7221173315674413369">Explorez les nouvelles fonctionnalités et astuces dans Nouveautés</translation>
+<translation id="7223102419539744003">Fermer l'onglet</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
@@ -903,6 +911,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7856733331829174190">Échec du téléchargement</translation>
 <translation id="785938070103630874">Ouvrir les mots de passe, les modes de paiement, l'adresse et plus</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
+<translation id="7870750252270996949">Image copiée de Lentille</translation>
 <translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7884694604461143138">Historique de recherche (<ph name="COUNT" /> éléments trouvés)</translation>
 <translation id="7887198238286927132">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ.</translation>
@@ -1027,6 +1036,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Affichage du site par défaut</translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="882557203579758546">Rechercher dans la page…</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre organisation impose une limite quant à ce que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Caché</translation>

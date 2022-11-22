@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Сканувати QR-код</translation>
 <translation id="1552525382687785070">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="1554477036522844996">Нове вікно</translation>
+<translation id="1565371473877914088">Нова анонімна вкладка</translation>
 <translation id="1580715474678097352">Захист від небезпечних веб-сайтів</translation>
 <translation id="1580783302095112590">Лист надіслано.</translation>
 <translation id="1582732959743469162">Поточне завантаження зупиниться.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Режим для мобільного пристрою</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="199425419756152024">Показати пароль</translation>
+<translation id="2010008505735295285">Оновити</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="2021670401941426298">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="202292859882676807">Доступ до мікрофона надано</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3277021493514034324">Адресу сайту скопійовано</translation>
 <translation id="3285962946108803577">Поділитися сторінкою…</translation>
+<translation id="3289505634533552500">Голосовий пошук</translation>
 <translation id="3290875554372353449">Виберіть обліковий запис</translation>
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">Вилучити обліковий запис <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5317780077021120954">Зберегти</translation>
+<translation id="5318298563956633672">Ви вже відстежуєте цей товар.</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
 <translation id="536067926684072644">Показати закладки</translation>
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">Часто відвідувані</translation>
 <translation id="54401264925851789">Відомості про безпеку сторінки</translation>
 <translation id="5443952882982198570">Кредитні картки</translation>
+<translation id="5444892875087332195">Закладки</translation>
 <translation id="5457226814769348910">Відкрити офлайн-версію</translation>
 <translation id="5489208564673669003">Щоб керувати файлами cookie для всіх сайтів, перегляньте <ph name="BEGIN_LINK" />Налаштування файлів cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокувати всі файли cookie (не рекомендовано)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">Увімкнути синхронізацію</translation>
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Зберігайте паролі, способи оплати й адреси, і Chrome автоматично заповнюватиме їх.</translation>
+<translation id="5834415013958049700">Шукати скопійоване зображення через Об’єктив</translation>
 <translation id="5846482154967366008">Пошукова система</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
 <translation id="5857090052475505287">Нова папка</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">Нещодавно відвідані</translation>
 <translation id="5988097621740394599">Переглядайте зниження цін на вкладках.</translation>
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
+<translation id="6006672969046233841">Нова вкладка</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
 <translation id="6021332621416007159">Відкрити в...</translation>
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">Увімкніть синхронізацію, щоб отримувати контент на основі ваших інтересів.</translation>
 <translation id="721597782417389033">Недійсний псевдонім картки</translation>
 <translation id="7221173315674413369">Дізнайтеся про нові функції та поради в розділі "Що нового"</translation>
+<translation id="7223102419539744003">Закрити вкладку</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7265758999917665941">Ніколи для цього сайту</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">Не вдалося завантажити</translation>
 <translation id="785938070103630874">Відкрийте розділ "Паролі", "Способи оплати" або "Адреса тощо"</translation>
 <translation id="7859704718976024901">Історія веб-перегляду</translation>
+<translation id="7870750252270996949">Шукати скопійоване зображення через Об’єктив</translation>
 <translation id="7879275349003161544">Показати завантаження</translation>
 <translation id="7884694604461143138">Історія пошуку (знайдено: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Щоб захистити вашу конфіденційність, Chrome не буде автоматично заповнювати це поле.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Режим перегляду сайту за умовчанням</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="882557203579758546">Знайти на сторінці…</translation>
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
 <translation id="8843129975935593190">Ваша організація обмежила дані, які можна синхронізувати.</translation>
 <translation id="8849001918648564819">Приховано</translation>

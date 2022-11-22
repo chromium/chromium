@@ -1303,6 +1303,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan disetel ke salah (false), <ph name="BOREALIS_NAME" /> tidak akan tersedia untuk semua pengguna perangkat. Sebaliknya (jika kebijakan tidak disetel atau disetel ke benar (true)), <ph name="BOREALIS_NAME" /> akan tersedia jika dan hanya jika tidak ada kebijakan atau setelan lain yang menonaktifkannya.</translation>
 <translation id="2246621891161157804">Mengizinkan Chrome memblokir navigasi ke protokol eksternal di iframe sandbox</translation>
 <translation id="224750967938323855">Jangan tampilkan Izin Sinkronisasi selama login</translation>
+<translation id="2252400912879027343">WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.</translation>
 <translation id="225340736558643885">Mengaktifkan peringatan untuk formulir tidak aman</translation>
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
@@ -2206,6 +2207,7 @@ Jika pengguna tidak mencentang kotak:
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> kecuali profil yang baru dibuat tidak diizinkan memiliki akun sekunder.</translation>
 <translation id="3083259245974004342">Perlindungan sandi</translation>
+<translation id="308356121098374167">WebSQL dalam konteks yang tidak aman akan tersedia.</translation>
 <translation id="3086995894968271156">Mengonfigurasi Penerima Cast di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi lintas asal</translation>
 <translation id="3088557424854005813">Pengesahan</translation>
@@ -2687,7 +2689,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3524204464536655762">Jangan izinkan situs apa pun meminta akses ke perangkat USB melalui WebUSB API</translation>
 <translation id="3526752951628474302">Khusus pencetakan monokrom</translation>
 <translation id="3528000905991875314">Mengaktifkan halaman kesalahan alternatif</translation>
-<translation id="3528681240373634003">Mengontrol ketersediaan ekstensi manifes v2.</translation>
 <translation id="3530249698314520116">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
 
@@ -3644,6 +3645,15 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4492287494009043413">Menonaktifkan pengambilan screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="4495390552861857186">Mengaktifkan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL.
+
+Menyetel kebijakan ini akan menentukan URL mana yang akan ditawarkan oleh <ph name="PRODUCT_NAME" /> untuk memulai alur pengesahan. Hal ini memungkinkan situs tersebut mendapatkan serangkaian sinyal kontekstual yang telah disahkan dari perangkat.
+
+Jika kebijakan ini disetel ke kosong atau tidak disetel, tidak ada situs yang akan dapat memulai alur pengesahan atau memperoleh sinyal dari perangkat.
+
+Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini berhubungan dengan pengesahan jarak jauh dengan sertifikat yang otomatis dibuat dan diupload ke server. Untuk penggunaan alur pengesahan pada layar login perangkat, gunakan kebijakan <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Warna lampu latar keyboard biru</translation>
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
 <translation id="4499376951770369935">Update Chrome OS disetel ke versi yang telah ditentukan dalam manifes aplikasi kios</translation>
@@ -3895,6 +3905,15 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada sertifikat yang dihasilkan dan panggilan ke <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> akan gagal.</translation>
 <translation id="4742973303930120836">Membatasi mode pencetakan grafis latar belakang</translation>
 <translation id="4745232963710538589">Mengaktifkan ekstensi insight untuk melaporkan metrik penggunaan</translation>
+<translation id="4749670563834935149">Mengaktifkan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di layar login dan layar kunci.
+
+Menyetel kebijakan ini akan menentukan URL mana yang akan ditawarkan oleh <ph name="PRODUCT_OS_NAME" /> untuk memulai alur pengesahan. Hal ini memungkinkan situs tersebut mendapatkan serangkaian sinyal kontekstual yang telah disahkan dari perangkat.
+
+Jika kebijakan ini disetel ke kosong atau tidak disetel, tidak ada situs yang akan dapat memulai alur pengesahan atau memperoleh sinyal dari perangkat.
+
+Kebijakan ini hanya akan memengaruhi alur pengesahan di layar login dan layar kunci. Untuk mengubah alur pengesahan dalam sesi, gunakan kebijakan <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4752880493649142945">Sertifikat klien untuk menyambung ke RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Jika kebijakan disetel ke <ph name="ASK_FILE_HANDLING" />, aplikasi web akan dapat meminta akses ke berbagai jenis file melalui File Handling API. Jika kebijakan disetel ke <ph name="BLOCK_FILE_HANDLING" />, aplikasi web akan dilarang mengakses berbagai jenis file.
 
@@ -4051,6 +4070,9 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
       untuk memproses permintaan keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Nilai default (0) berarti fitur ini dinonaktifkan.</translation>
+<translation id="4934869540807953882">Mulai M110, window.webkitStorageInfo API non-standar akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
+Jika kebijakan ini disetel ke Aktif, window.webkitStorageInfo API akan tersedia.
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, window.webkitStorageInfo API tidak akan tersedia.</translation>
 <translation id="4937423591320233496">Nonaktifkan konten yang disarankan</translation>
 <translation id="4940810901775798837">Izinkan situs yang tidak aman membuat permintaan ke endpoint jaringan mana pun</translation>
 <translation id="4942096314850617489">Nonaktifkan pengesahan jarak jauh untuk pengguna</translation>
@@ -4670,7 +4692,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini tidak disetel, atau disetel ke false, sertifikat server yang tidak menyertakan ekstensi subjectAlternativeName yang berisi nama DNS atau alamat IP tidak akan dipercaya.</translation>
 <translation id="5576377426850850084">Gunakan autentikasi NTLM</translation>
 <translation id="5577475143148445339">Berisi jumlah hari dan persentase fleet yang harus diperbarui setelah hari-hari tersebut berlalu.</translation>
-<translation id="5579179012798142131">Menetapkan ArcEnabled ke Benar (True) akan mengaktifkan ARC untuk pengguna, kecuali mode Singkat atau login multipel aktif saat sesi pengguna. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna versi bisnis tidak dapat menggunakan ARC.</translation>
+<translation id="5579179012798142131">Menetapkan ArcEnabled ke Benar (True) akan mengaktifkan ARC untuk pengguna, kecuali mode Singkat atau multi-login aktif saat sesi pengguna. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna versi bisnis tidak dapat menggunakan ARC.</translation>
 <translation id="5582429816116769246">Memungkinkan Anda mengontrol apakah pengguna dapat mengakses printer non-perusahaan
 
       Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat menambahkan, mengonfigurasi, dan mencetak menggunakan printer native-nya sendiri.
@@ -5045,19 +5067,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika disetel ke Benar (True), situs dapat mengirim modul WebAssembly serta lintas asal tanpa batasan.
 
       Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat mengirim modul WebAssembly ke jendela dan pekerja di asal yang sama.</translation>
-<translation id="6005906773585863978">Mengontrol apakah ekstensi manifes v2 dapat digunakan oleh browser.
-
-Dukungan ekstensi manifes v2 tidak akan digunakan lagi dan semua ekstensi perlu
-dimigrasikan ke v3 di masa mendatang. Informasi selengkapnya dan linimasa migrasi
-dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh browser, mengikuti linimasa di atas.
-Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
-Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
-Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
-
-
-Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="6009062900206392980">Menetapkan kebijakan ke Tidak Ada (None) akan menonaktifkan fitur pembesaran layar di layar login.
 
        Jika kebijakan ditetapkan, pengguna dapat mengaktifkan atau menonaktifkan Kaca Pembesar Layar untuk sementara. Saat dimuat ulang atau tidak ada aktivitas selama satu menit, layar login akan kembali ke keadaan semula.
@@ -5101,6 +5110,7 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="6050796253724099706">Aktifkan respons lisan di layar login</translation>
 <translation id="605132676434455096">Larang penambahan profil baru</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
+<translation id="6056517174496942473">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL</translation>
 <translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
 
       Tidak menyetel kebijakan (jika didukung di perangkat) akan menerapkan mode pengisian daya baterai standar, dan pengguna tidak dapat mengubahnya.
@@ -5121,6 +5131,9 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
       Jika tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori cache default, tetapi pengguna dapat mengubah setelan tersebut dengan tanda command line --dir-cache-disk.
 
       <ph name="PRODUCT_NAME" /> akan mengelola konten direktori utama volume. Agar tidak kehilangan data atau mengalami error lainnya, jangan menetapkan kebijakan ini ke direktori utama atau semua direktori yang digunakan untuk tujuan lainnya. Lihat variabel yang dapat Anda gunakan (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="6083356110032622782">Mulai M110, WebSQL dalam konteks yang tidak aman akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
+          Jika kebijakan ini disetel ke benar (true), WebSQL dalam konteks yang tidak aman akan tersedia.
+          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
@@ -5798,6 +5811,13 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
       Jika kebijakan ini disetel ke Salah (False), tampilan URL default akan diterapkan.
       Jika kebijakan ini tidak disetel, tampilan URL default akan diterapkan dan pengguna akan dapat beralih antara tampilan URL lengkap dan default dengan opsi menu konteks.
       </translation>
+<translation id="6670716303606644752">Sebagaimana dijelaskan di https://www.chromestatus.com/feature/5148698084376576, dialog modal JavaScript, yang dipicu oleh <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, dan <ph name="JS_PROMPT" />, akan diblokir di <ph name="PRODUCT_NAME" /> jika dipicu dari subframe yang memiliki origin berbeda dari origin frame utama.
+
+Kebijakan ini memungkinkan penggantian perubahan tersebut.
+Jika kebijakan disetel ke aktif atau tidak disetel, dialog JavaScript yang dipicu dari subframe origin yang berbeda akan diblokir.
+Jika kebijakan disetel ke nonaktif, dialog JavaScript yang dipicu dari subframe origin yang berbeda tidak akan diblokir.
+
+Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.</translation>
 <translation id="6670794785040100077">Nonaktifkan pengiriman dokumen ke <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6672070613706645316">Izinkan pengguna menyesuaikan latar belakang di halaman Tab Baru</translation>
 <translation id="6672630473862787247">Mengaktifkan autentikasi pasif di sesi reguler, samaran, dan tamu.</translation>
@@ -7092,6 +7112,19 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7974114691960514888">Kebijakan ini tidak lagi didukung. Mengaktifkan penggunaan STUN dan server relay saat menyambungkan ke klien jarak jauh. Jika setelan ini diaktifkan, maka komputer ini dapat menemukan dan terhubung ke komputer host jarak jauh bahkan jika dipisahkan oleh firewall. Jika setelan ini dinonaktifkan dan sambungan UDP keluar difilter oleh firewall, maka komputer ini hanya dapat terhubung ke komputer host dalam jaringan lokal.</translation>
+<translation id="7976103461034266553">Jika kebijakan disetel ke Aktif, fungsi setTimeout() JavaScript dengan waktu tunggu 0 md tidak akan dibulatkan ke 1 md.
+          Jika kebijakan disetel ke Nonaktif, fungsi setTimeout() JavaScript dengan waktu tunggu 0 md akan dibulatkan ke 1 md.
+          Jika kebijakan tidak disetel, perilaku default browser akan digunakan untuk penundaan minimum fungsi setTimeout().
+
+          Ini merupakan fitur kepatuhan standar web, tetapi dapat mengubah urutan tugas
+          di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada
+          urutan tertentu dengan cara tertentu pula. Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout()
+          dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
+
+          Bagi pengguna yang tidak menyetel kebijakan ini, Chrome akan meluncurkan perubahan secara bertahap pada saluran Stabil.
+
+          Kebijakan ini dihapus di Chrome 110.
+                                        </translation>
 <translation id="7976157349247117979">Nama tujuan <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Aktifkan pelaporan Android</translation>
@@ -7303,6 +7336,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 
       Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="8199823751103472868">Menyetel kebijakan ini akan mengaktifkan Tata Letak Inscript Hindi di <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak akan tersedia.</translation>
+<translation id="8202834945144737726">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di layar login</translation>
 <translation id="8212900161626657849">Jika kebijakan ini tidak dikonfigurasi, atau disetel ke aktif, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk CECPQ2, algoritme perjanjian kunci pasca-kuantum di TLS.
 
       CECPQ2 menghasilkan pesan TLS yang lebih besar yang, sangat jarang terjadi, dapat memicu bug di beberapa hardware jaringan. Kebijakan ini dapat disetel ke Salah (False) untuk menonaktifkan CECPQ2 saat masalah jaringan diselesaikan.

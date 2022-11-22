@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="1552525382687785070">तपाईंका प्रशासकले सिंंक सुविधा असक्षम पार्नुभएको छ</translation>
 <translation id="1554477036522844996">नयाँ विन्डो</translation>
+<translation id="1565371473877914088">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="1580715474678097352">हानिकारक वेबसाइटहरूबाट सुरक्षित रहनुहोस्</translation>
 <translation id="1580783302095112590">पत्र पठाइयो।</translation>
 <translation id="1582732959743469162">यस कार्यले तपाईंको जारी डाउनलोडको सम्पूर्ण प्रगति रोक्ने छ।</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="199425419756152024">पासवर्ड हेर्नुहोस्</translation>
+<translation id="2010008505735295285">रिलोड गर्नुहोस्</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
 <translation id="2021670401941426298">तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="202292859882676807">माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3277021493514034324">साइटको ठेगाना प्रतिलिपि गरियो</translation>
 <translation id="3285962946108803577">पेज सेयर गर्नुहोस्...</translation>
+<translation id="3289505634533552500">भ्वाइस सर्च</translation>
 <translation id="3290875554372353449">कुनै खाता छान्नुहोस्</translation>
 <translation id="3305294846493618482">थप</translation>
 <translation id="3311748811247479259">निष्क्रिय छ</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">खाता <ph name="USER_EMAIL" /> हटाउने हो?</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
+<translation id="5318298563956633672">तपाईंले यो उत्पादन ट्र्याक गर्न थालिसक्नुभएको छ।</translation>
 <translation id="5339316356165661760">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="536067926684072644">बुकमार्कहरू देखाइयोस्</translation>
 <translation id="5360976571138293719">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">बारम्बार हेरिएका</translation>
 <translation id="54401264925851789">पृष्ठ सुरक्षा जानकारी</translation>
 <translation id="5443952882982198570">क्रेडिट कार्डहरू</translation>
+<translation id="5444892875087332195">बुकमार्कहरू</translation>
 <translation id="5457226814769348910">अफलाइन संस्करण खोल्नुहोस्</translation>
 <translation id="5489208564673669003">सबै साइटका कुकीहरू व्यवस्थापन गर्न, <ph name="BEGIN_LINK" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5490005495580364134">सबै कुकीलाई रोक लगाइयोस् (सिफारिस गरिँदैन)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Chrome ले पछि अटोफिल प्रयोग गर्न सकोस् भन्नाका लागि पासवर्ड, भुक्तानी विधि र ठेगानाहरू सेभ गर्नुहोस्।</translation>
+<translation id="5834415013958049700">तपाईंले कपी गरेको लेन्स इमेज</translation>
 <translation id="5846482154967366008">सर्च इन्जिन</translation>
 <translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5857090052475505287">नयाँ फोल्डर</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">भर्खरै भ्रमण गरिएको</translation>
 <translation id="5988097621740394599">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्।</translation>
 <translation id="5988851877894965432">Chrome मा URL हरू खोल्नुहोस्</translation>
+<translation id="6006672969046233841">नयाँ ट्याब</translation>
 <translation id="6012140227487808125">इन्क्रिप्सन गर्दै ...</translation>
 <translation id="6021332621416007159">यसमा खोल्नुहोस्...</translation>
 <translation id="6027945736510816438">तपाईंले <ph name="WEBSITE" /> लेख्न खोज्नुभएको हो?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">आफ्नो रुचिअनुसारका सामग्री प्राप्त गर्न सिंक गर्नुहोस्।</translation>
 <translation id="721597782417389033">कार्डको उपनाम अवैध छ</translation>
 <translation id="7221173315674413369">"नयाँ के छ" मा गई नयाँ सुविधा र सुझावहरूका बारेमा जान्नुहोस्</translation>
+<translation id="7223102419539744003">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="722454870747268814">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7265758999917665941">यो साइटका हकमा कहिल्यै पनि नसम्झनुहोस्</translation>
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">डाउनलोड गर्न सकिएन</translation>
 <translation id="785938070103630874">"पासवर्डहरू", "भुक्तानी विधिहरू" वा "ठेगाना र अन्य जानकारी" खोल्नुहोस्</translation>
 <translation id="7859704718976024901">ब्राउजिङ इतिहास</translation>
+<translation id="7870750252270996949">तपाईंले कपी गरेको लेन्स इमेज</translation>
 <translation id="7879275349003161544">डाउनलोड गरिएका सामग्री देखाइयोस्</translation>
 <translation id="7884694604461143138">सर्च हिस्ट्री (<ph name="COUNT" /> वटा सामग्री भेटियो)</translation>
 <translation id="7887198238286927132">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्ड स्वतः भर्ने छैन।</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">डिफल्ट साइट भ्यू</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
+<translation id="882557203579758546">पेजमा खोज्नुहोस्…</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8843129975935593190">तपाईंको सङ्गठनले तपाईंले सिंक गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>

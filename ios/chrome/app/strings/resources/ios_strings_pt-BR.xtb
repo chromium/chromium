@@ -87,6 +87,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1545749641540134597">Ler código QR</translation>
 <translation id="1552525382687785070">Sincronização desativada pelo administrador</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1565371473877914088">Nova guia anônima</translation>
 <translation id="1580715474678097352">Proteção contra sites perigosos</translation>
 <translation id="1580783302095112590">Mensagem enviada.</translation>
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
@@ -133,6 +134,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1981118202195772574">Dispositivo móvel</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="199425419756152024">Ver senha</translation>
+<translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="202292859882676807">Acesso ao microfone permitido</translation>
@@ -299,6 +301,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
 <translation id="3285962946108803577">Compartilhar página…</translation>
+<translation id="3289505634533552500">Pesquisa por voz</translation>
 <translation id="3290875554372353449">Escolher uma conta</translation>
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
@@ -556,6 +559,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Salvar</translation>
+<translation id="5318298563956633672">Você já está acompanhando este produto.</translation>
 <translation id="5339316356165661760">Ativar a sincronização</translation>
 <translation id="536067926684072644">Mostrar favoritos</translation>
 <translation id="5360976571138293719">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5439599923922718668">Visitados com frequência</translation>
 <translation id="54401264925851789">Informações de segurança</translation>
 <translation id="5443952882982198570">Cartões de crédito</translation>
+<translation id="5444892875087332195">Favoritos</translation>
 <translation id="5457226814769348910">Abrir versão off-line</translation>
 <translation id="5489208564673669003">Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado)</translation>
@@ -619,6 +624,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="581659025233126501">Ativar a sincronização</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Salvar senhas, formas de pagamento e endereços para que o Chrome preencha esses campos automaticamente.</translation>
+<translation id="5834415013958049700">Imagem do Lens que você copiou</translation>
 <translation id="5846482154967366008">Mecanismo de pesquisa</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
@@ -646,6 +652,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="5988097621740394599">Ver reduções no preço nas suas guias</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
+<translation id="6006672969046233841">Nova guia</translation>
 <translation id="6012140227487808125">Criptografando…</translation>
 <translation id="6021332621416007159">Abrir no...</translation>
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7207023858769244910">Sincronize para receber conteúdo com base nos seus interesses.</translation>
 <translation id="721597782417389033">Apelido do cartão inválido</translation>
 <translation id="7221173315674413369">Conheça os novos recursos e dicas em "Novidades"</translation>
+<translation id="7223102419539744003">Fechar guia</translation>
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível verificar sua identidade. Senha não copiada.</translation>
@@ -903,6 +911,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
+<translation id="7870750252270996949">Imagem copiada no Lens</translation>
 <translation id="7879275349003161544">Mostrar downloads</translation>
 <translation id="7884694604461143138">Histórico de pesquisa (<ph name="COUNT" /> encontrados)</translation>
 <translation id="7887198238286927132">Para proteger sua privacidade, o Chrome não preencherá esse campo automaticamente.</translation>
@@ -1027,6 +1036,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Visualização padrão do site</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="882557203579758546">Localizar na página…</translation>
 <translation id="8840513115188359703">Você não será desconectado da sua Conta do Google.</translation>
 <translation id="8843129975935593190">Sua organização limita o que pode ser sincronizado.</translation>
 <translation id="8849001918648564819">Oculto</translation>

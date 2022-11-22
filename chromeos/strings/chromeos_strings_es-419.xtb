@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Programación del modo oscuro</translation>
 <translation id="2276999893457278469">Contenido de ayuda principal</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para agregar fotos, ve a <ph name="LINK" />.</translation>
+<translation id="2304783958703511257">Configuración avanzada</translation>
 <translation id="2307344026739914387">Usar el par de claves actual</translation>
 <translation id="2320295602967756579">Habilitar el tema claro</translation>
 <translation id="2323506179655536734">OMITIDO</translation>
@@ -473,6 +474,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5499114900554609492">No se pudo completar el escaneo</translation>
 <translation id="5499762266711462226">El color del teclado depende del fondo de pantalla</translation>
 <translation id="5502931783115429516">Android no funciona</translation>
+<translation id="551689408806449779">Se desconectó el dispositivo. Intenta volver a conectarte para realizar la prueba.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Cambiar automáticamente al tema oscuro al atardecer</translation>
@@ -502,10 +504,12 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5866840822086176774">Muy fuerte</translation>
+<translation id="5876385649737594562">Activa esta opción para seleccionar opciones</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903200662178656908">El dispositivo es una combinación de teclado con mouse.</translation>
+<translation id="5904994456462260490">Agregar un APN nuevo</translation>
 <translation id="5907649332524363701">color de la tecla</translation>
 <translation id="5916084858004523819">Prohibido</translation>
 <translation id="5916664084637901428">Activado</translation>
@@ -670,7 +674,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
-<translation id="7481312909269577407">Reenviar</translation>
+<translation id="7481312909269577407">Adelante</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
 <translation id="7497215489070763236">Certificado de CA del servidor</translation>

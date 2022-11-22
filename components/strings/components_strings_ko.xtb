@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">전체화면을 종료하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
+<translation id="2718207025093645426">관리 사용자 또는 기기에 로드된 정책이 없습니다.</translation>
 <translation id="2721148159707890343">요청 성공</translation>
 <translation id="2723669454293168317">Chrome 설정의 안전 확인 실행</translation>
 <translation id="2726001110728089263">측면 트레이</translation>
@@ -1148,7 +1149,6 @@
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
 <translation id="3906954721959377182">태블릿</translation>
-<translation id="3909477809443608991"><ph name="URL" />에서 보호된 콘텐츠를 재생하려고 합니다. Google에서 이 기기의 신원을 확인하며 이 사이트에서 이 기기에 액세스할 수 있습니다.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">보안 코드 입력</translation>
 <translation id="3927932062596804919">거부</translation>
@@ -2844,6 +2844,7 @@
 <translation id="8233773197406738106">파일 준비 중</translation>
 <translation id="8235754723616617175">컨트리 음악</translation>
 <translation id="8237519162179154808">취미 및 레저</translation>
+<translation id="8238188918340945316">28x40인치</translation>
 <translation id="8238581221633243064">새 시크릿 창에서 페이지 열기</translation>
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="8241712895048303527">이 사이트에서 차단</translation>

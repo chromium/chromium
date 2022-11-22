@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Pomôžte nám vytvoriť súkromnejší internet</translation>
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
 <translation id="1089606299949659462">Kontrola bola dokončená.</translation>
+<translation id="1091604859693995976">Obnovte stránku</translation>
 <translation id="1095761715416917775">Zaistite, aby ste mali neustály prístup k svojim údajom synchronizácie</translation>
 <translation id="1100066534610197918">Otvoriť v skupine na novej karte</translation>
 <translation id="1103142993930332957">Chcete pomôcť zlepšiť Chrome?</translation>
@@ -122,11 +123,6 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="1571304935088121812">Kopírovať používateľské meno</translation>
 <translation id="1592864538817356322">Štandardná ochrana:</translation>
 <translation id="1594635596540195766">Zoznam nižšie obsahuje navrhované položky (<ph name="SUGGESTIONS_COUNT" />).</translation>
-<translation id="161647866166517041">Redukcia spamu a podvodov závisí od tokenov dôveryhodnosti, ktoré pomáhajú webom bojovať proti podvodom a rozlišovať robotov od ľudí.
-
-Na základe vašej interakcie s určitým webom, ako je pravidelné prihlasovanie sa do účtu, môže daný web vydať vášmu prehliadaču token dôveryhodnosti. Ak neskôr ďalšie weby, ktoré navštívite, skontrolujú a nájdu platný token dôveryhodnosti, budú vás s vyššou pravdepodobnosťou považovať za osobu a nie robota.
-
-Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nejde podľa nich zistiť vaša totožnosť.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> v rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chrome posudzovať.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstrániť 1 vybranú položku}few{Odstrániť # vybrané položky}many{Odstrániť # vybranej položky}other{Odstrániť # vybraných položiek}}</translation>
 <translation id="1633659023549081553">Objavte nový obsah na domovskej stránke Chromu</translation>
@@ -334,6 +330,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito bude zavretá}few{<ph name="TAB_COUNT_MANY" /> karty inkognito budú zavreté}many{<ph name="TAB_COUNT_MANY" /> incognito tabs will be closed}other{<ph name="TAB_COUNT_MANY" /> kariet inkognito bude zavretých}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrola prebehla včera}few{Kontrola prebehla pred # dňami}many{Kontrola prebehla pred # dňa}other{Kontrola prebehla pred # dňami}}</translation>
 <translation id="2842985007712546952">Nadradený priečinok</translation>
+<translation id="2851291081585704741">Ste offline</translation>
 <translation id="2856503607207334158">Nepodarilo sa prihlásiť</translation>
 <translation id="2860954141821109167">Skontrolujte, či je v tomto zariadení povolená aplikácia pre telefóny</translation>
 <translation id="2861923151411510142">Niektoré funkcie Chromu už nebudú k dispozícii</translation>
@@ -559,6 +556,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Možnosti sú k dispozícii v hornej časti obrazovky</translation>
 <translation id="4062305924942672200">Právne informácie</translation>
+<translation id="4072805772816336153">Skúste to neskôr</translation>
 <translation id="4084682180776658562">Záložka</translation>
 <translation id="4084712963632273211">Od: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />doručené Googlom<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Týmto tabletom sa môžete prihlásiť v zariadení, v ktorom je zobrazený tento QR kód.</translation>
@@ -984,11 +982,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6363990818884053551">Ak chcete spustiť synchronizáciu, overte svoju totožnosť</translation>
 <translation id="6364438453358674297">Odstrániť návrh z histórie?</translation>
 <translation id="6380100320871303656">Častejšie prednačítava stránky, ktoré podľa Chromu pravdepodobne navštívite. Toto nastavenie môže zvýšiť spotrebu dát.</translation>
-<translation id="6385407407546870227">Keď sú zapnuté skúšobné obdobia, redukcia spamu a podvodov závisí od tokenov dôveryhodnosti, ktoré pomáhajú webom bojovať proti podvodom a rozlišovať robotov od ľudí.
-
-Na základe vašej interakcie s určitým webom, ako je pravidelné prihlasovanie sa do účtu, môže daný web vydať vášmu prehliadaču token dôveryhodnosti. Ak neskôr ďalšie weby, ktoré navštívite, skontrolujú a nájdu platný token dôveryhodnosti, budú vás s vyššou pravdepodobnosťou považovať za osobu a nie robota.
-
-Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa podľa nich zistiť vaša totožnosť.</translation>
 <translation id="6394791151443660613">Hľadať: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ODKAZ</translation>
 <translation id="6397616442223433927">Sme späť online</translation>

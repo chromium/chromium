@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="2715808615350965923">Super-A</translation>
 <translation id="271663710482723385">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|.</translation>
+<translation id="2718207025093645426">Для управляемого пользователя или устройства не загружены правила.</translation>
 <translation id="2721148159707890343">Запрос выполнен успешно</translation>
 <translation id="2723669454293168317">Запустите проверку безопасности в настройках Chrome</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
@@ -1147,7 +1148,6 @@
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Срок действия карты истек</translation>
 <translation id="3906954721959377182">Планшет</translation>
-<translation id="3909477809443608991">Сайт <ph name="URL" /> собирается воспроизвести защищенный контент. Ваше устройство пройдет проверку в Google, и этот сайт сможет получать к нему доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
 <translation id="3921869355029467742">Ввести защитный код</translation>
 <translation id="3927932062596804919">Запретить</translation>
@@ -2844,6 +2844,7 @@
 <translation id="8233773197406738106">Подготовка файла</translation>
 <translation id="8235754723616617175">Кантри-музыка</translation>
 <translation id="8237519162179154808">Хобби и отдых</translation>
+<translation id="8238188918340945316">28 x 40 дюймов</translation>
 <translation id="8238581221633243064">Открыть страницу в новой вкладке инкогнито</translation>
 <translation id="8241707690549784388">На странице, которую вы ищете, использовалась введенная вами информация. При возврате на эту страницу может потребоваться повторить выполненные ранее действия. Продолжить?</translation>
 <translation id="8241712895048303527">Блокировать на этом сайте</translation>

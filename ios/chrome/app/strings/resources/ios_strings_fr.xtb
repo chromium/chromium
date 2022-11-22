@@ -87,6 +87,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1545749641540134597">Scanner le code QR</translation>
 <translation id="1552525382687785070">Votre administrateur a désactivé la synchronisation</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
+<translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
 <translation id="1580715474678097352">Pour vous protéger contre les sites Web dangereux</translation>
 <translation id="1580783302095112590">E-mail envoyé.</translation>
 <translation id="1582732959743469162">Cette action arrêtera le téléchargement en cours.</translation>
@@ -133,6 +134,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
+<translation id="2010008505735295285">Actualiser</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="2021670401941426298">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="202292859882676807">Accès au micro autorisé</translation>
@@ -299,6 +301,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
 <translation id="3285962946108803577">Partager la page…</translation>
+<translation id="3289505634533552500">Recherche vocale</translation>
 <translation id="3290875554372353449">Sélectionner un compte</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
@@ -556,6 +559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
+<translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la page <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5439599923922718668">Consultés régulièrement</translation>
 <translation id="54401264925851789">Informations sur la sécurité de cette page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
+<translation id="5444892875087332195">Favoris</translation>
 <translation id="5457226814769348910">Ouvrir la version hors connexion</translation>
 <translation id="5489208564673669003">Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les cookies (non recommandé)</translation>
@@ -619,6 +624,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Enregistrez vos mots de passe, vos modes de paiement et vos adresses pour que la saisie automatique dans Chrome soit effectuée plus tard.</translation>
+<translation id="5834415013958049700">Image Lens que vous avez copiée</translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
@@ -646,6 +652,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5984222099446776634">Consultations récentes</translation>
 <translation id="5988097621740394599">Les prix en baisse s'affichent dans les onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
+<translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
 <translation id="6021332621416007159">Ouvrir dans…</translation>
 <translation id="6027945736510816438">Vous vouliez dire <ph name="WEBSITE" /> ?</translation>
@@ -832,6 +839,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7207023858769244910">Activez la synchronisation pour bénéficier de contenus correspondant à vos centres d'intérêt.</translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
 <translation id="7221173315674413369">Découvrez de nouvelles fonctionnalités et des astuces dans "Nouveautés"</translation>
+<translation id="7223102419539744003">Fermer l'onglet</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 
 </translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
@@ -904,6 +912,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7856733331829174190">Téléchargement impossible</translation>
 <translation id="785938070103630874">Ouvrez la section des mots de passe, des modes de paiement, de l'adresse, etc.</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
+<translation id="7870750252270996949">Image Lens copiée</translation>
 <translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7884694604461143138">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
@@ -1028,6 +1037,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Affichage par défaut du site</translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="882557203579758546">Rechercher sur la page</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre entreprise limite les éléments que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Masqué</translation>

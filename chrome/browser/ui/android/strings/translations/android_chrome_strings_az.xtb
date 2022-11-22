@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Daha şəxsi veb yaratmağımıza kömək edin</translation>
 <translation id="107147699690128016">Fayl artırmasını dəyişsəniz, fayl başqa tətbiqdə açıla bilər və cihaz üçün potensial zərərli ola bilər.</translation>
 <translation id="1089606299949659462">Nəzərdən keçirmə tamamlandı!</translation>
+<translation id="1091604859693995976">Baxmaq üçün yeniləyin</translation>
 <translation id="1095761715416917775">Sinxronlaşdırma datasına həmişə girişinizin olduğuna əmin olun</translation>
 <translation id="1100066534610197918">Qrupda yeni tabda açın</translation>
 <translation id="1103142993930332957">Chrome'un təkmilləşdirilməsinə kömək edirsiniz?</translation>
@@ -122,11 +123,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="1571304935088121812">İstifadəçi adını kopyalayın</translation>
 <translation id="1592864538817356322">Standart qoruma:</translation>
 <translation id="1594635596540195766">Aşağıdakı siyahıda <ph name="SUGGESTIONS_COUNT" /> element təklif edilib.</translation>
-<translation id="161647866166517041">Spam və dələduzluğun azaldılması saytlara dələduzluqla mübarizə aparmağa və botları insanlardan ayırmağa kömək etmək üçün güvən nişanlarına əsaslanır.
-
-Müntəzəm olaraq hesaba daxil olmaq kimi saytla qarşılıqlı əlaqəniz əsasında həmin sayt brauzerinizə güvən nişanı verə bilər. Daha sonra ziyarət etdiyiniz digər saytlar keçərli güvən nişanını yoxlayıb tapsalar, onlar sizə bot deyil, insan kimi yanaşacaqlar.
-
-Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuzu öyrənmək üçün istifadə edilə bilməz.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Məxfiliyinizi qorumaq üçün 4 həftədən köhnə maraqlarınızı avtomatik silirik. Baxmağa davam etdikcə, maraq siyahıda yenidən görünə bilər. Və ya Chrome'un nəzərə almasını istəmədiyiniz maraqları silə bilərsiniz.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Seçilmiş 1 elementi silin}other{Seçilmiş # elementi silin}}</translation>
 <translation id="1633659023549081553">Chrome'un əsas səhifəsində yeni məzmunu kəşf edin</translation>
@@ -334,6 +330,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonim tab bağlanacaq}other{<ph name="TAB_COUNT_MANY" /> anonim tab bağlanacaq}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 gün əvvəl yoxlanılıb}other{# gün əvvəl yoxlanılıb}}</translation>
 <translation id="2842985007712546952">Ana qovluq</translation>
+<translation id="2851291081585704741">Oflaynsınız</translation>
 <translation id="2856503607207334158">Daxil olmaq alınmadı</translation>
 <translation id="2860954141821109167">Telefon tətbiqinin bu cihazda aktiv edildiyinə əmin olun</translation>
 <translation id="2861923151411510142">Bəzi Chrome funksiyaları daha əlçatan olmayacaq</translation>
@@ -559,6 +556,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Seçənəklər ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="4062305924942672200">Leqal informasiya</translation>
+<translation id="4072805772816336153">Sonra yenidən sınayın</translation>
 <translation id="4084682180776658562">Əlfəcin</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> ünvanından – <ph name="BEGIN_DEEMPHASIZED" />Google tərəfindən çatdırıldı<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Bu QR kodunu göstərən cihaza daxil olmaq üçün bu planşetdən istifadə edə bilərsiniz.</translation>
@@ -982,11 +980,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6363990818884053551">Sinxronizasiyaya başlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6364438453358674297">Təklif tarixçədən silinsin?</translation>
 <translation id="6380100320871303656">Chrome'un ziyarət edəcəyinizi düşündüyü səhifələr daha çox əvvəlcədən yüklənir. Bu ayar data istifadəsinin artması ilə nəticələnə bilər.</translation>
-<translation id="6385407407546870227">Sınaqlar aktiv olduqda, spam və dələduzluğun azaldılması saytlara dələduzluqla mübarizə aparmağa və botları insanlardan ayırmağa kömək etmək üçün güvən nişanlarına əsaslanır.
-
-Müntəzəm olaraq hesaba daxil olmaq kimi saytla qarşılıqlı əlaqəniz əsasında həmin sayt brauzerinizə güvən nişanı verə bilər. Daha sonra ziyarət etdiyiniz digər saytlar keçərli güvən nişanını yoxlayıb tapsalar, onlar sizə bot deyil, insan kimi yanaşacaqlar.
-
-Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuzu öyrənmək üçün istifadə edilə bilməz.</translation>
 <translation id="6394791151443660613">Axtarış: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LİNK</translation>
 <translation id="6397616442223433927">Bağlantı bərpa edildi</translation>

@@ -282,6 +282,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarijanska kuhinja</translation>
 <translation id="1623104350909869708">Tej strani prepreči, da bi ustvarila dodatna pogovorna okna</translation>
+<translation id="1633137413609266904">{0,plural, =1{Odpiranje te datoteke blokira skrbniški pravilnik.}one{Odpiranje # datoteke blokira skrbniški pravilnik.}two{Odpiranje # datotek blokira skrbniški pravilnik.}few{Odpiranje # datotek blokira skrbniški pravilnik.}other{Odpiranje # datotek blokira skrbniški pravilnik.}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Priprava in načrtovanje davka</translation>
 <translation id="1638780421120290329">Kartice ni mogoče shraniti</translation>
@@ -699,6 +700,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati plačila in podatke o kreditnih karticah v Chromovih nastavitvah</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za zapiranje celozaslonskega načina</translation>
+<translation id="2718207025093645426">Upravljani uporabnik ali upravljana naprava nima naloženih pravilnikov.</translation>
 <translation id="2721148159707890343">Zahteva je uspela</translation>
 <translation id="2723669454293168317">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
 <translation id="2726001110728089263">Stranski pladenj</translation>
@@ -896,6 +898,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3270847123878663523">&amp;Razveljavi razvrstitev</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> se želi povezati</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Pravilnik skrbnika ne priporoča odpiranja te datoteke tukaj: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>
 <translation id="3282497668470633863">Dodajanje imena na kartico</translation>
 <translation id="3286372614333682499">pokončno</translation>
@@ -1146,7 +1149,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je potekla</translation>
 <translation id="3906954721959377182">Tablični računalnik</translation>
-<translation id="3909477809443608991"><ph name="URL" /> želi predvajati zaščiteno vsebino. Google bo preveril identiteto naprave in do nje bo morda dostopalo to spletno mesto.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Vnesite varnostno kodo</translation>
 <translation id="3927932062596804919">Ne dovoli</translation>
@@ -1295,6 +1297,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4277028893293644418">Ponastavi geslo</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
+<translation id="4281998142035485137">{0,plural, =1{Želite odpreti zaupno datoteko?}one{Želite odpreti zaupne datoteke?}two{Želite odpreti zaupne datoteke?}few{Želite odpreti zaupne datoteke?}other{Želite odpreti zaupne datoteke?}}</translation>
 <translation id="4282346679996504092">Opozorila za ta izdelek so bila izklopljena in zaznamek je bil odstranjen.</translation>
 <translation id="4285498937028063278">Odpni</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ta kartica je shranjena v Google Računu}one{Te kartice so shranjene v Google Računu}two{Te kartice so shranjene v Google Računu}few{Te kartice so shranjene v Google Računu}other{Te kartice so shranjene v Google Računu}}</translation>
@@ -1928,6 +1931,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Družina in odnosi</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizirano)</translation>
+<translation id="5911110632211230665">Odpiranje je blokirano</translation>
 <translation id="59174027418879706">Omogočeno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 v uporabi}one{# v uporabi}two{# v uporabi}few{# v uporabi}other{# v uporabi}}</translation>
@@ -2841,6 +2845,7 @@ Dodatne podrobnosti:
 <translation id="8233773197406738106">Pripravljanje datoteke</translation>
 <translation id="8235754723616617175">Country</translation>
 <translation id="8237519162179154808">Hobiji in prosti čas</translation>
+<translation id="8238188918340945316">28 x 40 palcev</translation>
 <translation id="8238581221633243064">Odpiranje strani v novem anonimnem zavihku.</translation>
 <translation id="8241707690549784388">Stran, ki jo iščete, je uporabila informacije, ki ste jih vnesli. Z vrnitvijo na to stran se bodo morda ponovila vsa vaša dejanja, ki ste jih opravili. Ali želite nadaljevati?</translation>
 <translation id="8241712895048303527">Blokiraj na tem spletnem mestu</translation>

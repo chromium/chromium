@@ -205,6 +205,7 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 
       Si cette règle est définie sur "False", la case "Toujours autoriser" n'est pas affichée, et l'utilisateur est invité à confirmer à chaque fois le lancement d'un protocole externe.</translation>
 <translation id="1181598794547737681">Activer l'interface utilisateur de la bulle de téléchargement</translation>
+<translation id="1184562656144537588">Manifest V2 n'est activé que pour les extensions installées d'office</translation>
 <translation id="11903325225202653">Définissez cette règle sur "True" pour maintenir le mode Contraste élevé activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si cette règle n'est pas définie, le mode Contraste élevé est désactivé, mais les utilisateurs peuvent l'activer à tout moment.</translation>
@@ -1300,6 +1301,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si cette règle est définie sur "False", <ph name="BOREALIS_NAME" /> sera indisponible pour tous les utilisateurs de l'appareil. Si la règle est définie sur "True" ou n'est pas définie, <ph name="BOREALIS_NAME" /> sera disponible si et seulement si aucune autre règle ni aucun autre paramètre ne le désactivent.</translation>
 <translation id="2246621891161157804">Autoriser Chrome à bloquer les navigations vers des protocoles externes dans des cadres iFrame en bac à sable</translation>
 <translation id="224750967938323855">Ne pas afficher l'autorisation de synchronisation lors de la procédure de connexion</translation>
+<translation id="2252400912879027343">WebSQL restera disponible dans des contextes non sécurisés jusqu'à M109, puis sera indisponible à partir de M110.</translation>
 <translation id="225340736558643885">Activer les avertissements pour les formulaires non sécurisés</translation>
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
@@ -1522,6 +1524,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="2466131534462628618">L'authentification de portail captif ignore le proxy</translation>
+<translation id="2467181864598429837">Comportement par défaut du navigateur</translation>
 <translation id="2467896267442150508">Intervalle d'une semaine (au maximum). Si l'heure de début est postérieure à l'heure de fin, l'heure de fin sera décalée au jour suivant.</translation>
 <translation id="2476249479201711962">Activer l'accès au menu contextuel du moteur de recherche par défaut</translation>
 <translation id="247658312644322296">Destination "Enregistrer au format PDF"</translation>
@@ -2193,6 +2196,7 @@ Si l'utilisateur ne coche pas la case :
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mais le nouveau profil n'est pas autorisé à posséder de comptes secondaires.</translation>
 <translation id="3083259245974004342">Protection par mot de passe</translation>
+<translation id="308356121098374167">WebSQL sera disponible dans les contextes non sécurisés.</translation>
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Indique si SharedArrayBuffers peut être utilisé dans un contexte non isolé multi-origine</translation>
 <translation id="3088557424854005813">Attestation</translation>
@@ -3033,6 +3037,13 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 
       Si cette règle est définie sur 2, les annonces sont bloquées sur les sites présentant des annonces intrusives.</translation>
 <translation id="3877517141460819966">Mode d'authentification à deux facteurs intégré</translation>
+<translation id="3877908683993837673">Cette règle détermine la pile logicielle utilisée pour communiquer avec le serveur DNS, c'est-à-dire soit le client DNS du système d'exploitation, soit le client DNS intégré de <ph name="PRODUCT_NAME" />. Cette règle n'a aucune incidence sur les serveurs DNS utilisés : si, par exemple, le système d'exploitation est configuré pour utiliser un serveur DNS d'entreprise, ce même serveur sera utilisé par le client DNS intégré. Elle ne contrôle pas non plus l'utilisation du protocole DNS-over-HTTPS. <ph name="PRODUCT_NAME" /> utilisera toujours le résolveur intégré pour les requêtes DNS-over-HTTPS. Pour plus d'informations sur le contrôle du protocole DNS-over-HTTPS, veuillez consulter la règle <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
+
+      Si vous activez cette règle, le client DNS intégré est utilisé, si disponible.
+
+      Si vous la désactivez, le client DNS intégré n'est utilisé que si le protocole DNS-over-HTTPS est utilisé.
+
+      Si vous ne la configurez pas, le client DNS intégré est activé par défaut sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (lorsque ni le DNS privé, ni le VPN ne sont activés) et <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configurer la liste des applications Web installées d'office</translation>
 <translation id="3879700444818346084">Désactiver l'importation des mots de passe enregistrés à la première exécution</translation>
 <translation id="388237772682176890">Cette règle a été abandonnée dans la version M53 et supprimée dans la version M54, car le protocole SPDY 3.1 n'est plus pris en charge.
@@ -3133,6 +3144,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3990391739475801018">Le mode Économiseur de batterie sera désactivé.</translation>
 <translation id="3994043824457743421">Afficher l'annonce d'espace intermédiaire sur la page "Nouvel onglet"</translation>
 <translation id="399433537808390819">Ne pas rendre le mode Bureau unifié accessible à l'utilisateur</translation>
+<translation id="3995880046827722248">Manifest V2 est désactivé</translation>
 <translation id="3996325823532867220">Cette règle n'est plus compatible, mais la règle associée <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> peut l'être sur certaines plates-formes.
 
       Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
@@ -3594,6 +3606,15 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4492287494009043413">Désactiver les captures d'écran</translation>
 <translation id="4494132853995232608">Dispositif DTC de Wilco</translation>
 <translation id="449423975179525290">Configurer les règles liées à <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="4495390552861857186">Activer <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL.
+
+Cette règle permet de spécifier à quelles URL <ph name="PRODUCT_NAME" /> proposera de lancer le flux d'attestation. Elle permet à ces sites Web d'obtenir un ensemble certifié de signaux contextuels provenant de l'appareil.
+
+Si cette règle n'est pas configurée ou qu'elle est vide, aucun site Web ne peut lancer le parcours d'attestation ni obtenir de signaux auprès de l'appareil.
+
+Pour <ph name="PRODUCT_OS_NAME" />, cette règle est liée à l'attestation à distance, où un certificat est automatiquement généré et importé sur le serveur. Pour utiliser le flux d'attestation sur l'écran de connexion de l'appareil, veuillez utiliser la règle <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Rétroéclairage du clavier bleu</translation>
 <translation id="449784980858429908">Autoriser automatiquement les sites à se connecter à tous les ports série.</translation>
 <translation id="4499376951770369935">Les mises à jour de ChromeOS sont configurées sur la version définie dans le fichier manifeste de l'appli kiosque</translation>
@@ -3633,6 +3654,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549405078915181477">Activer la fonctionnalité "Temps d'utilisation" pour les sites Web</translation>
+<translation id="4549695018986780856">Manifest V2 est activé</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -3836,6 +3858,15 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
       Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
 <translation id="4745232963710538589">Activer l'extension des insights pour transmettre des statistiques d'utilisation</translation>
+<translation id="4749670563834935149">Activer <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion et de verrouillage.
+
+Cette règle permet de spécifier à quelles URL <ph name="PRODUCT_OS_NAME" /> proposera de lancer le flux d'attestation. Elle permet à ces sites Web d'obtenir un ensemble certifié de signaux contextuels provenant de l'appareil.
+
+Si cette règle n'est pas configurée ou qu'elle est vide, aucun site Web ne peut lancer le parcours d'attestation ni obtenir de signaux auprès de l'appareil.
+
+Cette règle ne s'appliquera qu'au parcours d'attestation sur l'écran de connexion et de verrouillage. Pour modifier le flux d'attestation en cours de session, veuillez utiliser la règle <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4752880493649142945">Certificat client pour se connecter à RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Si la règle est définie sur <ph name="ASK_FILE_HANDLING" />, les applications Web peuvent demander l'accès à ces types de fichiers via l'API File Handling. Si la règle est définie sur <ph name="BLOCK_FILE_HANDLING" />, l'accès à ces types de fichiers est refusé.
 
@@ -3987,6 +4018,9 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
 <translation id="4933301190614090397">Permet de contrôler la durée (en secondes) pendant laquelle la fermeture du navigateur sera bloquée le temps de traiter les demandes keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Utilisez la valeur par défaut (0) pour désactiver cette fonctionnalité.</translation>
+<translation id="4934869540807953882">À partir de M110, l'API non standard window.webkitStorageInfo sera supprimée. Cette règle réactive l'API.
+Si cette règle est activée, l'API window.webkitStorageInfo sera disponible.
+Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitStorageInfo ne sera pas disponible.</translation>
 <translation id="4937423591320233496">Désactiver le contenu suggéré</translation>
 <translation id="4940810901775798837">Autoriser les sites non sécurisés à envoyer des requêtes à n'importe quel point de terminaison du réseau</translation>
 <translation id="4942096314850617489">Désactiver l'attestation à distance pour l'utilisateur</translation>
@@ -5024,6 +5058,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6050796253724099706">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="605132676434455096">Interdire l'ajout de nouveaux profils</translation>
 <translation id="6053681087509103368">Autoriser WebRTC à utiliser des versions obsolètes du protocole TLD/DTLS</translation>
+<translation id="6056517174496942473">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL</translation>
 <translation id="6058879286588763839">La règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" permet de gérer l'alimentation suivant le mode de recharge de la batterie (si l'appareil le permet), sauf si la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />" est spécifiée et remplace ainsi la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />". Pour prolonger l'autonomie de la batterie, cette règle contrôle dynamiquement la recharge de la batterie en réduisant au maximum les contraintes et l'usure.
 
       Si cette règle n'est pas configurée (et que l'appareil le permet), le mode standard de recharge de la batterie est appliqué, et les utilisateurs ne peuvent pas modifier ce paramètre.
@@ -5044,6 +5079,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire de cache par défaut. Toutefois, l'utilisateur peut modifier ce paramètre avec l'option de ligne de commande "--disk-cache-dir".
 
       <ph name="PRODUCT_NAME" /> gère le contenu du répertoire racine d'un volume. Ainsi, pour éviter de perdre des données ou de générer d'autres erreurs, ne définissez pas cette règle sur le répertoire racine ni sur un autre répertoire utilisé à d'autres fins. Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
+<translation id="6083356110032622782">WebSQL sera supprimée dans les contextes non sécurisés à partir de M110. Cette règle réactive l'API.
+          Si cette règle est définie sur "True", WebSQL est disponible dans des contextes non sécurisés.
+          Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL restera disponible dans les contextes non sécurisés jusqu'à M109, puis sera indisponible à partir de M110.</translation>
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
@@ -5550,6 +5588,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Remarque : Pour le moment, les redémarrages automatiques ne sont activés que lorsque l'écran de connexion est affiché ou qu'une session d'appli kiosque est en cours.</translation>
 <translation id="6556586932263358975">Autoriser le verrouillage de l'écran</translation>
 <translation id="6559057113164934677">Interdire à tous les sites d'accéder à la caméra et au microphone</translation>
+<translation id="65591220958874949">Utiliser le client DNS intégré sur Windows, macOS, Android et ChromeOS</translation>
 <translation id="6559221564468029245">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture audio. Le délai d'inactivité ne peut ainsi pas être atteint, et l'action à effectuer en cas d'inactivité n'est pas appliquée. Toutefois, l'écran peut quand même s'assombrir, s'éteindre ou se verrouiller au terme des délais configurés, malgré l'activité audio.
 
       Si cette règle est désactivée, le système peut considérer que l'utilisateur est inactif malgré l'activité audio.</translation>
@@ -5702,6 +5741,13 @@ Si vous sélectionnez les options suivantes :
       Si cette règle est définie sur "False", l'URL par défaut s'affiche.
       Si cette règle n'est pas configurée, l'URL par défaut s'affiche. Toutefois, l'utilisateur peut alterner entre l'affichage par défaut et l'affichage de l'URL complète à l'aide d'une option de menu contextuel.
       </translation>
+<translation id="6670716303606644752">Tel que décrit sur https://www.chromestatus.com/feature/5148698084376576, les boîtes de dialogue modales JavaScript déclenchées par <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> et <ph name="JS_PROMPT" /> seront bloquées sur <ph name="PRODUCT_NAME" /> si elles sont déclenchées depuis un sous-frame dont l'origine est différente de celle du frame principal.
+
+Cette règle permet d'ignorer cette distinction.
+Si la règle est activée ou n'est pas définie, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente seront bloquées.
+Si elle est désactivée, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente ne seront pas bloquées.
+
+Cette règle sera supprimée prochainement de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6670794785040100077">Désactiver l'envoi de documents à <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6672070613706645316">Autoriser les utilisateurs à personnaliser l'arrière-plan sur la page "Nouvel onglet"</translation>
 <translation id="6672630473862787247">Activer l'authentification ambiante pour les sessions standards, Invité et de navigation privée.</translation>
@@ -6997,6 +7043,16 @@ Permet l'utilisation de serveurs STUN et relais lors de la connexion à un clien
 Si ce paramètre est activé, cette machine peut découvrir et se connecter à des machines hôte distantes, même si elles sont séparées par un pare-feu. 
 
 Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtrées par le pare-feu, cette machine peut uniquement se connecter aux machines hôte au sein du réseau local.</translation>
+<translation id="7976103461034266553">Si cette règle est activée, les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms ne seront pas ramenées à 1 ms.
+          Si cette règle est activée, les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms seront ramenées à 1 ms.
+          Si cette règle n'est pas configurée, le comportement par défaut du navigateur est appliqué pour l'écrêtage de la fonction setTimeout().
+
+          Bien que conforme aux normes Web, cette fonctionnalité peut modifier l'ordre d'exécution des tâches sur une page et provoquer un comportement inattendu sur les sites qui dépendent de cet ordre. Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent également être affectés (par exemple, ils peuvent davantage solliciter le processeur).
+
+          Le changement sera déployé graduellement sur la version stable de Chrome pour les utilisateurs chez qui cette règle n'est pas configurée.
+
+          Cette règle a été supprimée dans Chrome 110.
+                                        </translation>
 <translation id="7976157349247117979">Nom de la destination <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Activer la création de rapports Android</translation>
@@ -7208,6 +7264,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 
       Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="8199823751103472868">Cette règle permet d'activer la disposition de clavier Hindi Inscript sur <ph name="PRODUCT_OS_NAME" />. Si elle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible.</translation>
+<translation id="8202834945144737726">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion</translation>
 <translation id="8212900161626657849">Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour CECPQ2, un algorithme de clé-contrat post-quantique dans TLS.
 
       CECPQ2 entraîne une augmentation de la taille des messages TLS, ce qui peut déclencher (dans des cas très rares) des bugs dans certains matériels de mise en réseau. Vous pouvez définir cette règle sur "False" pour désactiver CECPQ2 jusqu'à ce que les problèmes de réseau soient résolus.

@@ -700,6 +700,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali plaćanjima i informacijama o kreditnim karticama u podešavanjima Chrome-a</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da biste izašli iz režima celog ekrana</translation>
+<translation id="2718207025093645426">Korisnik ili uređaj kojim se upravlja nema učitanih smernica.</translation>
 <translation id="2721148159707890343">Zahtev je uspeo</translation>
 <translation id="2723669454293168317">Pokrenite proveru bezbednosti u Chrome podešavanjima</translation>
 <translation id="2726001110728089263">Bočna fioka</translation>
@@ -1148,7 +1149,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je istekla</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> želi da pusti zaštićeni sadržaj. Google će potvrditi identitet uređaja i ovaj sajt će moći da mu pristupa.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Unesite bezbednosni kôd</translation>
 <translation id="3927932062596804919">Odbij</translation>
@@ -2844,6 +2844,7 @@ Dodatni detalji:
 <translation id="8233773197406738106">Priprema se fajl</translation>
 <translation id="8235754723616617175">Kantri muzika</translation>
 <translation id="8237519162179154808">Hobiji i razonoda</translation>
+<translation id="8238188918340945316">28×40 in</translation>
 <translation id="8238581221633243064">Otvorite stranicu na novoj kartici bez arhiviranja</translation>
 <translation id="8241707690549784388">Stranica koju tražite koristila je informacije koje ste uneli. Povratak na tu stranicu može da prouzrokuje potrebnu ponavljanja radnji koje ste izvršili. Želite li da nastavite?</translation>
 <translation id="8241712895048303527">Blokiraj na ovom sajtu</translation>

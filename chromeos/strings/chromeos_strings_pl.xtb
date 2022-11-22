@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
 <translation id="2276999893457278469">Najlepsze materiały pomocy</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Ustawienia zaawansowane</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2320295602967756579">Włącz jasny motyw</translation>
 <translation id="2323506179655536734">POMINIĘTO</translation>
@@ -473,6 +474,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5499114900554609492">Nie udało się zeskanować</translation>
 <translation id="5499762266711462226">Kolor klawiatury zależy od tapety</translation>
 <translation id="5502931783115429516">Android nie działa</translation>
+<translation id="551689408806449779">Urządzenie zostało odłączone. Aby przeprowadzić test, spróbuj podłączyć je ponownie</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatycznie przełączaj na ciemny motyw o zachodzie słońca</translation>
@@ -502,10 +504,12 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5866840822086176774">Bardzo silny</translation>
+<translation id="5876385649737594562">Włącz, aby wybrać opcje</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5903200662178656908">Urządzenie to zestaw klawiatury i myszy.</translation>
+<translation id="5904994456462260490">Dodaj nowy APN</translation>
 <translation id="5907649332524363701">kolor klawiszy</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
 <translation id="5916664084637901428">Włączone</translation>

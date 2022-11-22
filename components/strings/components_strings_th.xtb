@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">กด |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| เพื่อออกจากโหมดเต็มหน้าจอ</translation>
+<translation id="2718207025093645426">ผู้ใช้หรืออุปกรณ์ที่มีการจัดการไม่ได้โหลดนโยบายไว้</translation>
 <translation id="2721148159707890343">คำขอสำเร็จ</translation>
 <translation id="2723669454293168317">เรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
 <translation id="2726001110728089263">ถาดข้าง</translation>
@@ -1147,7 +1148,6 @@
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
 <translation id="3906954721959377182">แท็บเล็ต</translation>
-<translation id="3909477809443608991"><ph name="URL" /> ต้องการเล่นเนื้อหาที่ได้รับความคุ้มครอง ข้อมูลประจำตัวของอุปกรณ์จะได้รับการยืนยันโดย Google และเว็บไซต์นี้อาจเข้าถึงข้อมูลดังกล่าว</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">ป้อนรหัสความปลอดภัย</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
@@ -2844,6 +2844,7 @@
 <translation id="8233773197406738106">กำลังเตรียมไฟล์</translation>
 <translation id="8235754723616617175">เพลงคันทรี</translation>
 <translation id="8237519162179154808">งานอดิเรกและงานยามว่าง</translation>
+<translation id="8238188918340945316">28 x 40 นิ้ว</translation>
 <translation id="8238581221633243064">เปิดหน้าเว็บในแท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8241712895048303527">บล็อกในไซต์นี้</translation>

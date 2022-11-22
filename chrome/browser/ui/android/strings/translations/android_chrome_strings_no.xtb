@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Hjelp oss med å bygge et mer privat internett</translation>
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
 <translation id="1089606299949659462">Gjennomgangen er fullført.</translation>
+<translation id="1091604859693995976">Last inn på nytt for å se</translation>
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
 <translation id="1100066534610197918">Åpne i en ny fane i en gruppe</translation>
 <translation id="1103142993930332957">Vil du bidra til å gjøre Chrome bedre?</translation>
@@ -122,11 +123,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1571304935088121812">Kopiér brukernavnet</translation>
 <translation id="1592864538817356322">Standardbeskyttelse:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> foreslåtte elementer på listen under.</translation>
-<translation id="161647866166517041">Reduksjon av nettsøppel og svindel er avhengig av tillitstokener for å hjelpe nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.
-
-Basert på hvordan du samhandler med et bestemt nettsted (f.eks. hvis du pleier å logge på med en konto), kan nettstedet utstede et tillitstoken til nettleseren din. Hvis andre nettsteder du besøker, senere ser etter og finner et gyldig tillitstoken, er det større sannsynlighet for at de behandler deg som et menneske og ikke en robot.
-
-Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne ut hvem du er.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Slik kan du administrere dataene dine:<ph name="END_BOLD" /> For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chrome skal vurdere.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1633659023549081553">Oppdag nytt innhold på startsiden for Chrome</translation>
@@ -334,6 +330,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane blir lukket}other{<ph name="TAB_COUNT_MANY" /> inkognitofaner blir lukket}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Sjekket for en dag siden}other{Sjekket for # dager siden}}</translation>
 <translation id="2842985007712546952">Overordnet mappe</translation>
+<translation id="2851291081585704741">Du er uten nett</translation>
 <translation id="2856503607207334158">Pålogging mislyktes</translation>
 <translation id="2860954141821109167">Kontroller at en telefon-app er påslått på denne enheten</translation>
 <translation id="2861923151411510142">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger</translation>
@@ -559,6 +556,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Du finner alternativene oppe på skjermen</translation>
 <translation id="4062305924942672200">Juridisk informasjon</translation>
+<translation id="4072805772816336153">Prøv på nytt senere</translation>
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan bruke dette nettbrettet til å logge på enheten som viser denne QR-koden.</translation>
@@ -984,11 +982,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6363990818884053551">For å starte synkroniseringen, bekreft at det er deg</translation>
 <translation id="6364438453358674297">Vil du fjerne forslaget fra loggen?</translation>
 <translation id="6380100320871303656">Forhåndslaster oftere sider som Chrome tror du sannsynligvis kommer til å besøke. Denne innstillingen kan medføre høyere databruk.</translation>
-<translation id="6385407407546870227">Når prøveprosjekter er påslått, blir mengden nettsøppel og svindel redusert ved bruk av tillitstokener, som hjelper nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.
-
-Basert på hvordan du samhandler med et bestemt nettsted (f.eks. hvis du pleier å logge på med en konto), kan nettstedet utstede et tillitstoken til nettleseren din. Hvis andre nettsteder du besøker, senere ser etter og finner et gyldig tillitstoken, er det større sannsynlighet for at de behandler deg som et menneske og ikke en robot.
-
-Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne ut hvem du er.</translation>
 <translation id="6394791151443660613">Søk: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">På nettet igjen</translation>

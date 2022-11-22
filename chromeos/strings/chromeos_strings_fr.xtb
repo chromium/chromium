@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide populaire</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Paramètres avancés</translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
@@ -473,6 +474,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5499114900554609492">Impossible de finaliser la numérisation</translation>
 <translation id="5499762266711462226">La couleur du clavier est basée sur le fond d'écran</translation>
 <translation id="5502931783115429516">Android n'est pas exécuté</translation>
+<translation id="551689408806449779">L'appareil a été déconnecté. Essayez de le reconnecter pour le tester.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Basculer automatiquement sur le thème sombre au coucher du soleil</translation>
@@ -502,10 +504,12 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5866840822086176774">Excellent</translation>
+<translation id="5876385649737594562">Activez pour sélectionner des options</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil combine clavier et souris.</translation>
+<translation id="5904994456462260490">Ajouter un APN</translation>
 <translation id="5907649332524363701">couleur touche</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>

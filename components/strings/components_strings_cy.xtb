@@ -282,6 +282,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Coginio llysieuol</translation>
 <translation id="1623104350909869708">Atal y dudalen hon rhag creu dialogau ychwanegol</translation>
+<translation id="1633137413609266904">{0,plural, =1{Mae agor y ffeil hon wedi'i rwystro gan bolisi gweinyddwr}zero{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}two{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}few{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}many{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}other{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}}</translation>
 <translation id="1634828734222219955">Cyfanswm</translation>
 <translation id="163669211644121865">Paratoi a chynllunio treth</translation>
 <translation id="1638780421120290329">Methu â chadw'r cerdyn</translation>
@@ -699,6 +700,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli eich taliadau a'ch gwybodaeth cerdyn credyd yn Gosodiadau Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Pwyswch |<ph name="ACCELERATOR1" /> + <ph name="ACCELERATOR2" />| i adael y modd sgrîn lawn</translation>
+<translation id="2718207025093645426">Nid oes gan ddefnyddiwr neu ddyfais a reolir unrhyw bolisi wedi'i lwytho.</translation>
 <translation id="2721148159707890343">Roedd y cais yn llwyddiannus</translation>
 <translation id="2723669454293168317">Rhedeg gwiriad diogelwch yng ngosodiadau Chrome</translation>
 <translation id="2726001110728089263">Hambwrdd Ochr</translation>
@@ -896,6 +898,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3270847123878663523">&amp;Ailwneud Aildrefnu</translation>
 <translation id="3271648667212143903">Mae <ph name="ORIGIN" /> eisiau cysylltu</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Nid yw polisi gweinyddwr yn argymell agor y ffeil hon yn <ph name="DESTINATION_NAME" />}zero{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}two{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}few{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}many{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}other{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Mae eich sefydliad, <ph name="ENROLLMENT_DOMAIN" />, wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="3282497668470633863">Ychwanegwch yr enw ar y cerdyn</translation>
 <translation id="3286372614333682499">portread</translation>
@@ -1146,7 +1149,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3897092660631435901">Dewislen</translation>
 <translation id="3901925938762663762">Mae'r cerdyn wedi darfod</translation>
 <translation id="3906954721959377182">Llechen</translation>
-<translation id="3909477809443608991">Mae <ph name="URL" /> eisiau chwarae cynnwys gwarchodedig. Bydd hunaniaeth eich dyfais yn cael ei gwirio gan Google ac mae'n bosib y bydd y wefan hon yn gallu cael mynediad ati.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Rhowch eich cod diogelwch</translation>
 <translation id="3927932062596804919">Gwrthod</translation>
@@ -1295,6 +1297,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4277028893293644418">Ailosod cyfrinair</translation>
 <translation id="4278390842282768270">Caniateir</translation>
+<translation id="4281998142035485137">{0,plural, =1{Agor ffeil gyfrinachol?}zero{Agor ffeiliau cyfrinachol?}two{Agor ffeiliau cyfrinachol?}few{Agor ffeiliau cyfrinachol?}many{Agor ffeiliau cyfrinachol?}other{Agor ffeiliau cyfrinachol?}}</translation>
 <translation id="4282346679996504092">Mae hysbysiadau ar gyfer y cynnyrch hwn wedi'u diffodd a'r nod tudalen wedi'i ddileu</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Mae'r cerdyn hwn wedi'i gadw yn eich Cyfrif Google}zero{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}two{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}few{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}many{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}other{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}}</translation>
@@ -1928,6 +1931,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5903264686717710770">Teitl:</translation>
 <translation id="5904360430676679685">Teulu a pherthnasoedd</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (cysonwyd)</translation>
+<translation id="5911110632211230665">Agor wedi'i rwystro</translation>
 <translation id="59174027418879706">Galluogwyd</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 yn cael ei ddefnyddio}zero{# yn cael eu defnyddio}two{# yn cael eu defnyddio}few{# yn cael eu defnyddio}many{# yn cael eu defnyddio}other{# yn cael eu defnyddio}}</translation>
@@ -2841,6 +2845,7 @@ Manylion ychwanegol:
 <translation id="8233773197406738106">Wrthi'n paratoi ffeil</translation>
 <translation id="8235754723616617175">Canu gwlad</translation>
 <translation id="8237519162179154808">Hobïau a hamdden</translation>
+<translation id="8238188918340945316">28 x 40 modfedd</translation>
 <translation id="8238581221633243064">Agor tudalen mewn Tab Anhysbys newydd</translation>
 <translation id="8241707690549784388">Gwnaeth y dudalen rydych yn chwilio amdani ddefnyddio gwybodaeth y gwnaethoch ei rhoi. Mae'n bosib y bydd dychwelyd i'r dudalen honno achosi i unrhyw gamau a gymerwyd gennych gael eu hailadrodd. Ydych chi am barhau?</translation>
 <translation id="8241712895048303527">Rhwystro ar y wefan hon</translation>

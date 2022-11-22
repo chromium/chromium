@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Iskedyul ng dark mode</translation>
 <translation id="2276999893457278469">Nangungunang content ng tulong</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Mga Advanced na Setting</translation>
 <translation id="2307344026739914387">Gamitin ang kasalukuyang keypair</translation>
 <translation id="2320295602967756579">I-enable ang maliwanag na tema</translation>
 <translation id="2323506179655536734">NILAKTAWAN</translation>
@@ -473,6 +474,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5499114900554609492">Hindi makumpleto ang pag-scan</translation>
 <translation id="5499762266711462226">Nakabase sa wallpaper ang kulay ng keyboard</translation>
 <translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
+<translation id="551689408806449779">Na-disconnect ang device. Subukang kumonekta ulit para subukan</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Awtomatikong lumipat sa madilim na tema sa paglubog ng araw</translation>
@@ -502,10 +504,12 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5866840822086176774">Napakalakas</translation>
+<translation id="5876385649737594562">I-on para pumili ng mga opsyon</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
+<translation id="5904994456462260490">Magdagdag ng bagong APN</translation>
 <translation id="5907649332524363701">kulay ng key</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>

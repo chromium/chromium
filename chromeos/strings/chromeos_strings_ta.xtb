@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">டார்க் பயன்முறையைத் திட்டமிடுதல்</translation>
 <translation id="2276999893457278469">சிறந்த உதவி உள்ளடக்கம்</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
+<translation id="2304783958703511257">மேம்பட்ட அமைப்புகள்</translation>
 <translation id="2307344026739914387">தற்போதைய குறியீட்டு இணையைப் பயன்படுத்து</translation>
 <translation id="2320295602967756579">லைட் தீமினை இயக்குதல்</translation>
 <translation id="2323506179655536734">தவிர்க்கப்பட்டது</translation>
@@ -473,6 +474,7 @@
 <translation id="5499114900554609492">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
 <translation id="5499762266711462226">வால்பேப்பரின் வண்ணத்தைப் பொறுத்து கீபோர்டின் வண்ணம் அமையும்</translation>
 <translation id="5502931783115429516">Android இயங்கவில்லை</translation>
+<translation id="551689408806449779">சாதனம் துண்டிக்கப்பட்டது. சோதனை செய்ய மீண்டும் இணைக்கவும்</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">சூரிய அஸ்தமனத்தின்போது தானாகவே டார்க் தீமிற்கு மாறும்</translation>
@@ -502,10 +504,12 @@
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
+<translation id="5876385649737594562">விருப்பங்களைத் தேர்ந்தெடுக்க ஆன் செய்யவும்</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
+<translation id="5904994456462260490">புதிய APNனைச் சேர்த்தல்</translation>
 <translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>

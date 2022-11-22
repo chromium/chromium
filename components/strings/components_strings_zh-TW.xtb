@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
+<translation id="2718207025093645426">受管理的使用者或裝置未載入政策。</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
 <translation id="2726001110728089263">側匣</translation>
@@ -768,7 +769,7 @@
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="2943895734390379394">上傳時間：</translation>
-<translation id="2945026002409061480">線上社群</translation>
+<translation id="2945026002409061480">網路社群</translation>
 <translation id="2948083400971632585">你可以在設定頁面停用任何為連線設置的 Proxy。</translation>
 <translation id="2949183777371959169">裝置並未透過 Chrome 瀏覽器雲端管理服務註冊，因此系統已忽略這項政策。</translation>
 <translation id="2951588413176968965">我的出紙槽</translation>
@@ -1147,7 +1148,6 @@
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">這張信用卡已過期</translation>
 <translation id="3906954721959377182">平板電腦</translation>
-<translation id="3909477809443608991"><ph name="URL" /> 想要播放受到保護的內容。Google 會驗證你的裝置身分，這個網站可能也會存取你的裝置身分。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3921869355029467742">輸入安全碼</translation>
 <translation id="3927932062596804919">拒絕</translation>
@@ -2844,6 +2844,7 @@
 <translation id="8233773197406738106">檔案準備中</translation>
 <translation id="8235754723616617175">鄉村音樂</translation>
 <translation id="8237519162179154808">興趣與休閒</translation>
+<translation id="8238188918340945316">28 x 40 英寸</translation>
 <translation id="8238581221633243064">在新的無痕式分頁中開啟網頁</translation>
 <translation id="8241707690549784388">你尋找的網頁使用了你輸入的資料。返回該頁會重複你剛才的行動。你確定要繼續嗎？</translation>
 <translation id="8241712895048303527">禁止這個網站顯示廣告</translation>

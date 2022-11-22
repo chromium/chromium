@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="2276999893457278469">മികച്ച സഹായ ഉള്ളടക്കം</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
+<translation id="2304783958703511257">വിപുലമായ ക്രമീകരണം</translation>
 <translation id="2307344026739914387">നിലവിലെ കീ ജോടി ഉപയോഗിക്കുക</translation>
 <translation id="2320295602967756579">ലൈറ്റ് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2323506179655536734">ഒഴിവാക്കി</translation>
@@ -472,6 +473,7 @@
 <translation id="5499114900554609492">സ്‌കാൻ പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="5499762266711462226">കീബോർഡിന്റെ നിറം വാൾപേപ്പറിനെ അടിസ്ഥാനമാക്കിയുള്ളതാണ്</translation>
 <translation id="5502931783115429516">Android റൺ ചെയ്യുന്നില്ല</translation>
+<translation id="551689408806449779">ഉപകരണം വിച്ഛേദിച്ചിരിക്കുന്നു. ടെസ്റ്റ് ചെയ്യുന്നതിന് വീണ്ടും കണക്‌റ്റ് ചെയ്യാൻ ശ്രമിക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">സൂര്യാസ്തമയ സമയത്ത് സ്വയമേവ ഡാർക്ക് തീമിലേക്ക് മാറുക</translation>
@@ -501,10 +503,12 @@
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5866840822086176774">വളരെ ദൃഢമാണ്</translation>
+<translation id="5876385649737594562">ഓപ്‌ഷനുകൾ തിരഞ്ഞെടുക്കുന്നതിന് ഓണാക്കുക</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5903200662178656908">കീബോർഡിന്റെയും മൗസിന്റെയും കോമ്പോ ആണ് ഉപകരണം.</translation>
+<translation id="5904994456462260490">പുതിയൊരു APN ചേർക്കുക</translation>
 <translation id="5907649332524363701">കീയുടെ നിറം</translation>
 <translation id="5916084858004523819">നിരോധിച്ചിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>

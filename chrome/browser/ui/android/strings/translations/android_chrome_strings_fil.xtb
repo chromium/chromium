@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Tulungan kaming bumuo ng mas pribadong web</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
+<translation id="1091604859693995976">I-refresh para tingnan</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
 <translation id="1103142993930332957">Tumulong na pahusayin ang Chrome?</translation>
@@ -122,11 +123,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="1571304935088121812">Kopyahin ang username</translation>
 <translation id="1592864538817356322">Karaniwang proteksyon:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> (na) iminumungkahing item sa listahan sa ibaba.</translation>
-<translation id="161647866166517041">Umaasa ang pagbawas ng spam at panloloko sa mga trust token para matulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao.
-
-Batay sa iyong pakikipag-ugnayan sa isang site, tulad ng regular na pag-sign in sa isang account, puwedeng magbigay ang site na iyon ng trust token sa browser mo. Sa ibang pagkakataon, kung titingin at maghahanap ng valid na trust token ang iba pang site na binibisita mo, malamang na ituring ka nito bilang tao at hindi bot.
-
-Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito para malaman kung sino ka.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alisin ang 1 piniling item}one{Alisin ang # piniling item}other{Alisin ang # na piniling item}}</translation>
 <translation id="1633659023549081553">Tumuklas ng bagong content sa homepage ng Chrome</translation>
@@ -334,6 +330,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab na incognito ang isasara}one{<ph name="TAB_COUNT_MANY" /> tab na incognito ang isasara}other{<ph name="TAB_COUNT_MANY" /> na tab na incognito ang isasara}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
+<translation id="2851291081585704741">Offline ka</translation>
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
@@ -559,6 +556,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Available ang mga opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="4062305924942672200">Impormasyong legal</translation>
+<translation id="4072805772816336153">Subukan ulit sa ibang pagkakataon</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">Mula sa <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />ihinatid ng Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Puwede mong gamitin ang tablet na ito para mag-sign in sa device na nagpapakita ng QR code na ito.</translation>
@@ -984,11 +982,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6363990818884053551">Para simulan ang pag-sync, i-verify na ikaw ito</translation>
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
 <translation id="6380100320871303656">Mas madalas na nagpi-preload ng mga page na sa palagay ng Chrome ay malamang mong bisitahin. Posibleng magresulta sa mas malakas na paggamit ng data ang setting na ito.</translation>
-<translation id="6385407407546870227">Kapag naka-on ang mga trial, umaasa ang pagbawas ng spam at panloloko sa mga trust token para matulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao.
-
-Batay sa iyong pakikipag-ugnayan sa isang site, tulad ng regular na pag-sign in sa isang account, puwedeng magbigay ang site na iyon ng trust token sa browser mo. Sa ibang pagkakataon, kung titingin at maghahanap ng valid na trust token ang iba pang site na binibisita mo, malamang na ituring ka nito bilang tao at hindi bot.
-
-Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito para malaman kung sino ka.</translation>
 <translation id="6394791151443660613">Hanapin: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online ulit</translation>

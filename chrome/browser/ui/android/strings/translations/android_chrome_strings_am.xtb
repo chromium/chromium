@@ -122,11 +122,6 @@
 <translation id="1571304935088121812">የተጠቃሚ ስምን ቅዳ</translation>
 <translation id="1592864538817356322">መደበኛ ጥበቃ፦</translation>
 <translation id="1594635596540195766">ከታች ባለው ዝርዝር ውስጥ <ph name="SUGGESTIONS_COUNT" /> በአስተያየት የተጠቆሙ ንጥሎች።</translation>
-<translation id="161647866166517041">የአይፈለጌ መልዕክት እና የመጭበርበር ቅነሳ ጣቢያዎች መጭበርበርን እንዲዋጉ እና ቦቶቹን ከሰዎች እንዲለዩ ለማገዝ በእምነት ማስመሰያዎች ይተማመናል።
-
-ከጣቢያው ጋር ባለዎት መስተጋብር ላይ በመመስረት እንደ በመደበኛነት ወደ መለያ መግባት ያለ ያ ጣቢያ ለአሳሽዎ የእምነት ማስመሰያ ሊሰጥ ይችላል። በኋላ ላይ እርስዎ የሚጎበኟቸው ሌሎች ጣቢያዎች ካረጋገጡ እና ትክክለኛ የእምነት ማስመሰያ ካገኙ እርስዎን እንደ ቦት ሳይሆን እንደ ሰው ሊያስቡዎት ይችላሉ።
-
-የእምነት ማስመሰያዎች በድሩ ላይ ግላዊነትን ያሻሽላሉ እና እርስዎ ማን እንደሆኑ ለማወቅ ጥቅም ላይ መዋል አይችሉም።</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />የእርስዎን ውሂብ እንዴት ማቀናበር እንደሚችሉ፦<ph name="END_BOLD" /> የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ዝንባሌዎችዎን በራስ-ሰር እንሰርዛለን። ማሰስዎን በሚቀጥሉበት ጊዜ ዝንባሌ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። ወይም Chrome ከግምት ውስጥ እንዲያስገባቸው የማይፈልጓቸውን ዝንባሌዎች ማስወገድ ይችላሉ።</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="1633659023549081553">በChrome መነሻ ገጽ ላይ ያለውን አዲስ ይዘት ያግኙ</translation>
@@ -334,6 +329,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ማንነት የማያሳውቅ ትር ይዘጋል}one{<ph name="TAB_COUNT_MANY" /> ማንነት የማያሳውቁ ትሮች ይዘጋሉ}other{<ph name="TAB_COUNT_MANY" /> ማንነት የማያሳውቁ ትሮች ይዘጋሉ}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ከ1 ቀን በፊት ተፈትሿል}one{ከ# ቀኖች በፊት ተፈትሿል}other{ከ# ቀኖች በፊት ተፈትሿል}}</translation>
 <translation id="2842985007712546952">ወላጅ አቃፊ</translation>
+<translation id="2851291081585704741">ከመስመር ውጭ ነዎት</translation>
 <translation id="2856503607207334158">በመለያ መግባት ተሰናክሏል</translation>
 <translation id="2860954141821109167">በዚህ መሣሪያ ላይ የስልክ መተግበሪያ እንደነቃ ያረጋግጡ</translation>
 <translation id="2861923151411510142">የተወሰኑ የChrome ባህሪዎች ከአሁን በኋላ \u2019 አይገኙም</translation>
@@ -559,6 +555,7 @@
 <translation id="4056223980640387499">ቀይ ቡናማ</translation>
 <translation id="4060598801229743805">አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ</translation>
 <translation id="4062305924942672200">የህግ መረጃ</translation>
+<translation id="4072805772816336153">ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="4084682180776658562">ዕልባት</translation>
 <translation id="4084712963632273211">ከ<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />በGoogle የተላከ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">ይህን QR ኮድ በሚያሳየው መሣሪያ ላይ በመለያ ለመግባት ይህን ጡባዊ መጠቀም ይችላሉ።</translation>
@@ -984,11 +981,6 @@
 <translation id="6363990818884053551">ማስመርን ለመጀመር እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6364438453358674297">ጥቆማው ከታሪክ ይወገድ?</translation>
 <translation id="6380100320871303656">Chrome እርስዎ የመጎብኘት ዕድልዎ ከፍ ያለ ነው የሚልባቸው ገጾችን በበለጠ ተደጋጋሚነት ቅድሚያ ይጭናቸዋል። ይህ ቅንብር የጨመረ የውሂብ አጠቃቀምን ሊያስከትል ይችላል።</translation>
-<translation id="6385407407546870227">ሙከራዎች ሲበሩ የአይፈለጌ መልዕክት እና የመጭበርበር ቅነሳ ጣቢያዎች መጭበርበርን እንዲዋጉ እና ቦቶቹን ከሰዎች እንዲለዩ ለማገዝ በእምነት ማስመሰያዎች ይተማመናል።
-
-ከጣቢያው ጋር ባለዎት መስተጋብር ላይ በመመስረት እንደ በመደበኛነት ወደ መለያ መግባት ያለ ያ ጣቢያ ለአሳሽዎ የእምነት ማስመሰያ ሊሰጥ ይችላል። በኋላ ላይ እርስዎ የሚጎበኟቸው ሌሎች ጣቢያዎች ካረጋገጡ እና ትክክለኛ የእምነት ማስመሰያ ካገኙ እርስዎን እንደ ቦት ሳይሆን እንደ ሰው ሊያስቡዎት ይችላሉ።
-
-የእምነት ማስመሰያዎች በድሩ ላይ ግላዊነትን ያሻሽላሉ እና እርስዎ ማን እንደሆኑ ለማወቅ ስራ ላይ መዋል አይችሉም።</translation>
 <translation id="6394791151443660613">ይፈልጉ፦ <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">አገናኝ</translation>
 <translation id="6397616442223433927">ወደ መስመር ላይ ይመለሱ</translation>

@@ -206,6 +206,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 
       Se questo criterio viene impostato su False, la casella di controllo "Consenti sempre" non viene visualizzata e l'utente riceverà un messaggio ogni volta che viene richiamato un protocollo esterno.</translation>
 <translation id="1181598794547737681">Attiva l'UI del fumetto dei download</translation>
+<translation id="1184562656144537588">Il file manifest v2 è abilitato solo per le estensioni forzate</translation>
 <translation id="11903325225202653">Se il criterio è impostato su True, la modalità ad alto contrasto rimane attivata. Se il criterio è impostato su False, la modalità ad alto contrasto rimane disattivata.
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, la modalità ad alto contrasto è disattivata, ma gli utenti possono attivarla in qualsiasi momento.</translation>
@@ -1293,6 +1294,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile per tutti gli utenti del dispositivo. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
 <translation id="2246621891161157804">Consenti a Chrome di bloccare le navigazioni verso protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
+<translation id="2252400912879027343">WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
 <translation id="225340736558643885">Attiva avvisi per moduli non sicuri</translation>
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
@@ -1515,6 +1517,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="2466131534462628618">L'autenticazione tramite captive portal ignora il proxy</translation>
+<translation id="2467181864598429837">Comportamento predefinito del browser</translation>
 <translation id="2467896267442150508">L'intervallo di tempo (massimo una settimana). Se l'ora di inizio è successiva all'ora di fine, l'intervallo verrà chiuso il giorno successivo.</translation>
 <translation id="2476249479201711962">Attiva l'accesso al menu contestuale del provider di ricerca predefinito</translation>
 <translation id="247658312644322296">La destinazione "Salva come PDF"</translation>
@@ -2163,6 +2166,7 @@ Se l'utente non seleziona la casella:
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.</translation>
 <translation id="3083259245974004342">Protezione della password</translation>
+<translation id="308356121098374167">WebSQL in contesti non sicuri sarà disponibile.</translation>
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto isolato da tutte le origini</translation>
 <translation id="3088557424854005813">Attestazione</translation>
@@ -3004,6 +3008,13 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Se il criterio viene impostato su 2, gli annunci sono bloccati sui siti con annunci invasivi.</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
+<translation id="3877908683993837673">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
+
+      Se il criterio viene impostato su Attivato, viene utilizzato il client DNS integrato, se disponibile.
+
+      Se viene impostato su Disattivato, il client DNS integrato viene utilizzato soltanto quando viene usato il protocollo DNS-over-HTTPS.
+
+      Se il criterio non viene configurato, il client DNS integrato viene attivato per impostazione predefinita su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (nel caso in cui non siano attivi né il DNS privato né la VPN) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configura l'elenco delle app web con installazione forzata</translation>
 <translation id="3879700444818346084">Disabilita l'importazione delle password salvate alla prima esecuzione</translation>
 <translation id="388237772682176890">Questa norma è stata ritirata in M53 e rimossa in M54 perché è stato rimosso il supporto di SPDY/3.1.
@@ -3104,6 +3115,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
+<translation id="3995880046827722248">Manifest v2 disabilitato</translation>
 <translation id="3996325823532867220">Questo criterio non è più supportato, ma il criterio correlato <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> potrebbe essere supportato su alcune piattaforme.
 
       Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
@@ -3574,6 +3586,15 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4492287494009043413">Disabilita l'acquisizione di screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="4495390552861857186">Attiva <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL.
+
+La configurazione di questo criterio consente di specificare gli URL che <ph name="PRODUCT_NAME" /> offre per avviare il flusso di attestazione. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
+
+Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare il flusso di attestazione o ricevere segnali dal dispositivo.
+
+Per <ph name="PRODUCT_OS_NAME" />, questo criterio è correlato all'attestazione remota, in cui un certificato viene generato e caricato automaticamente sul server. Per utilizzare il flusso di attestazione nella schermata di accesso del dispositivo, utilizza il criterio <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Colore della retroilluminazione della tastiera blu</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
 <translation id="4499376951770369935">Gli aggiornamenti di ChromeOS sono impostati sulla versione definita nel file manifest dell'app kiosk</translation>
@@ -3614,6 +3635,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
 <translation id="4549405078915181477">Attiva Tempo di utilizzo per i siti web</translation>
+<translation id="4549695018986780856">Manifest v2 abilitato</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4554991346503872538">Non offrire mai la traduzione</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
@@ -3814,6 +3836,15 @@ in concomitanza con la rimozione del supporto per l'utilizzo dello strumento di 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
+<translation id="4749670563834935149">Consente di attivare <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL nella schermata di accesso e di blocco.
+
+La configurazione di questo criterio consente di specificare gli URL offerti da <ph name="PRODUCT_OS_NAME" /> per avviare il flusso di attestazione. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
+
+Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare il flusso di attestazione o ricevere segnali dal dispositivo.
+
+Questo criterio inciderà soltanto sul flusso di attestazione nella schermata di accesso e di blocco. Per modificare il flusso di attestazione all'interno della sessione, utilizza il criterio <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4752880493649142945">Certificato client per la connessione a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Se il criterio è impostato su <ph name="ASK_FILE_HANDLING" />, le app web possono richiedere l'accesso ai tipi di file tramite l'API File Handling. Se è impostato su <ph name="BLOCK_FILE_HANDLING" />, viene negato l'accesso ai di file.
 
@@ -3970,6 +4001,9 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       al fine di elaborare le richieste keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Il valore predefinito (0) significa che questa funzionalità è disattivata.</translation>
+<translation id="4934869540807953882">A partire dalla versione M110, verrà rimossa l'API window.webkitStorageInfo non standard. Questo criterio consente di riattivare l'API.
+Se questo criterio viene impostato su Enabled, l'API window.webkitStorageInfo sarà disponibile.
+Se questo criterio viene impostato su Disabled o se non viene configurato, l'API window.webkitStorageInfo non sarà disponibile.</translation>
 <translation id="4937423591320233496">Disattiva i contenuti suggeriti</translation>
 <translation id="4940810901775798837">Consenti ai siti web non sicuri di effettuare richieste a qualsiasi endpoint di rete</translation>
 <translation id="4942096314850617489">Disattiva l'attestazione da remoto per l'utente</translation>
@@ -4995,6 +5029,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6050796253724099706">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="605132676434455096">Non consentire l'aggiunta di nuovi profili</translation>
 <translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
+<translation id="6056517174496942473">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL</translation>
 <translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> non venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
 
       Se il criterio non viene configurato (se l'impostazione è supportata dal dispositivo), viene applicata la modalità di ricarica standard della batteria e gli utenti non possono modificarlo.
@@ -5015,6 +5050,9 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.
 
       <ph name="PRODUCT_NAME" /> gestisce i contenuti della directory principale di un volume. Per prevenire la perdita di dati o altri errori, non impostare questo criterio nella directory principale né sulle directory utilizzate per altri scopi. Vedi le variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="6083356110032622782">WebSQL in contesti non sicuri verrà rimosso a partire dalla versione M110. Questo criterio consente di riattivare l'API.
+          Se questo criterio viene impostato su True, WebSQL in contesti non sicuri sarà disponibile.
+          Se il criterio viene impostato su False o se non viene configurato, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
@@ -5528,6 +5566,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Nota: al momento i riavvii automatici sono abilitati solo quando la schermata di accesso è in visualizzazione o è in corso una sessione di app kiosk.</translation>
 <translation id="6556586932263358975">Consenti il blocco dello schermo</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
+<translation id="65591220958874949">Utilizza il client DNS integrato su Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di audio. In questo modo non viene raggiunto il timeout di inattività e non viene compiuta l'azione per l'inattività. Tuttavia, lo schermo viene ancora oscurato, spento e bloccato dopo i timeout configurati, nonostante l'attività audio.
 
       Se il criterio viene impostato su Disattivato, il sistema può considerare gli utenti inattivi nonostante l'attività audio.</translation>
@@ -6975,6 +7014,16 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7974114691960514888">Questa norma non è più supportata. Consente di attivare l'utilizzo di server relay e STUN durante la connessione a un client remoto. Se questa impostazione viene attivata, questo computer potrà rilevare i computer host remoti e collegarsi a essi anche se sono separati da un firewall. Se questa impostazione viene disattivata e le connessioni UDP in uscita vengono filtrate dal firewall, questo computer potrà collegarsi ai computer host soltanto all'interno della rete locale.</translation>
+<translation id="7976103461034266553">Se il criterio viene impostato su Enabled, la funzione JavaScript setTimeout() con un timeout di 0 ms non verrà clampata su 1 ms.
+          Se il criterio viene impostato su Disabled, la funzione JavaScript setTimeout() con un timeout di 0 ms verrà clampata su 1 ms.
+          Se il criterio non viene configurato, viene usato il comportamento predefinito del browser per clampare la funzione setTimeout().
+
+          Si tratta di una funzionalità conforme agli standard web, ma potrebbe modificare l'ordine delle attività su una pagina web, causando comportamenti imprevisti sui siti che dipendono in qualche misura da un ordine specifico. Potrebbe anche incidere sui siti che utilizzano spesso la funzione setTimeout() con timeout di 0 ms, ad esempio causando un aumento del carico della CPU.
+
+          Per gli utenti per i quali il criterio non viene configurato, Chrome implementerà gradualmente la modifica sul canale stabile.
+
+          Questo criterio è stato rimosso in Chrome 110.
+                                        </translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Attiva la generazione di report Android</translation>
@@ -7186,6 +7235,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 
       Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Se il criterio viene impostato, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />. Se viene impostato su False o se non viene configurato, il layout non è disponibile.</translation>
+<translation id="8202834945144737726">Attiva il flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL nella schermata di accesso</translation>
 <translation id="8212900161626657849">Se questo criterio non viene configurato o se viene impostato su Attivato, <ph name="PRODUCT_NAME" /> seguirà la procedura di lancio predefinita di CECPQ2, un algoritmo di scambio di chiavi post-quantistico di TLS.
 
       CECPQ2 comporta la generazione di messaggi TLS di dimensioni maggiori che, in rarissimi casi, potrebbero attivare bug in alcuni componenti hardware di rete. Questo criterio può essere impostato su Falso per disattivare ECPQ2 durante la risoluzione dei problemi di rete.

@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Tidsplan for mørk tilstand</translation>
 <translation id="2276999893457278469">Mest populære indhold i Hjælp</translation>
 <translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Avancerede indstillinger</translation>
 <translation id="2307344026739914387">Brug aktuelt nøglepar</translation>
 <translation id="2320295602967756579">Aktivér Lyst tema</translation>
 <translation id="2323506179655536734">SPRUNGET OVER</translation>
@@ -472,6 +473,7 @@
 <translation id="5499114900554609492">Scanningen kunne ikke gennemføres</translation>
 <translation id="5499762266711462226">Tastaturets farve er baseret på baggrunden</translation>
 <translation id="5502931783115429516">Android kører ikke</translation>
+<translation id="551689408806449779">Forbindelsen til enheden er blevet afbrudt. Prøv at oprette forbindelse igen for at teste</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Skift automatisk til Mørkt tema ved solnedgang</translation>
@@ -501,10 +503,12 @@
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5866840822086176774">Meget stærk</translation>
+<translation id="5876385649737594562">Aktivér for at vælge muligheder</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheden er en kombination af et tastatur og en mus</translation>
+<translation id="5904994456462260490">Tilføj et nyt adgangspunkt</translation>
 <translation id="5907649332524363701">farve på taster</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>

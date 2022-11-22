@@ -2670,7 +2670,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3524204464536655762">Websites dürfen nie Zugriff auf USB-Geräte über die WebUSB API anfordern</translation>
 <translation id="3526752951628474302">Nur Schwarz-Weiß-Druck</translation>
 <translation id="3528000905991875314">Alternative Fehlerseiten aktivieren</translation>
-<translation id="3528681240373634003">Verfügbarkeit von Manifest V2-Erweiterungen steuern.</translation>
 <translation id="3530249698314520116">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
       Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
 
@@ -4970,17 +4969,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn die Richtlinie auf „wahr“ gesetzt wird, können Websites WebAssembly-Module ohne Einschränkungen auch ursprungsübergreifend senden.
 
       Wird sie auf „falsch“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
-<translation id="6005906773585863978">Mit dieser Richtlinie kannst du festlegen, ob vom Browser Manifest V2-Erweiterungen verwendet werden können.
-
-Die Unterstützung für Manifest V2-Erweiterungen wird eingestellt. Alle Erweiterungen müssen dann zur Version V3 migriert werden. Weitere Informationen und den Zeitplan für die Migration findest du unter https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Wenn die Richtlinie auf <ph name="DEFAULT" /> (0) gesetzt oder nicht konfiguriert ist, werden V2-Erweiterungen abhängig vom Browser und gemäß dem obigen Zeitplan geladen.
-Ist die Richtlinie auf <ph name="DISABLE" /> (1) gesetzt, wird das Installieren von V2-Erweiterungen blockiert und vorhandene V2-Erweiterungen werden deaktiviert. Nachdem die V2-Unterstützung standardmäßig deaktiviert wurde, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
-Ist die Richtlinie auf <ph name="ENABLE" /> (2) gesetzt, sind V2-Erweiterungen zulässig. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
-Wenn die Richtlinie auf <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3) gesetzt ist, sind V2-Erweiterungen mit erzwungener Installation zulässig. Dazu gehören Erweiterungen, die in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> oder <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> mit <ph name="INSTALLATION_MODE" /> „force_installed“ oder „normal_installed“ aufgeführt sind. Alle anderen V2-Erweiterungen sind deaktiviert. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
-
-
-Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien gesteuert.</translation>
 <translation id="6009062900206392980">Wenn du die Richtlinie auf "None" setzt, wird die Lupe auf dem Anmeldebildschirm deaktiviert.
 
        Wenn du diese Richtlinie konfigurierst, können Nutzer vorübergehend die Lupe aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird sie in den Originalzustand zurückversetzt.
@@ -5706,6 +5694,13 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien ges
       Ist diese Richtlinie auf "False" gesetzt, wird die standardmäßige URL angezeigt.
       Wenn die Richtlinie nicht konfiguriert ist, wird die standardmäßige URL angezeigt und Nutzer können über ein Kontextmenü zwischen der standardmäßigen und vollständigen URL wechseln.
       </translation>
+<translation id="6670716303606644752">Wie unter https://www.chromestatus.com/feature/5148698084376576 beschrieben, werden von <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> und <ph name="JS_PROMPT" /> ausgelöste modale JavaScript-Dialogfelder in <ph name="PRODUCT_NAME" /> blockiert, wenn sie von einem Subframe ausgelöst werden, dessen Quelle sich von der Quelle des Hauptframes unterscheidet.
+
+Mit dieser Richtlinie kann diese Änderung überschrieben werden.
+Ist die Richtlinie aktiviert oder nicht konfiguriert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, blockiert.
+Ist die Richtlinie deaktiviert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, nicht blockiert.
+
+Diese Richtlinie wird in Zukunft aus <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="6670794785040100077">Senden von Dokumenten an <ph name="CLOUD_PRINT_NAME" /> deaktivieren</translation>
 <translation id="6672070613706645316">Nutzern erlauben, den Hintergrund auf der "Neuer Tab"-Seite anzupassen</translation>
 <translation id="6672630473862787247">Aktiviert die passive Authentifizierung für reguläre, Inkognito- und Gastsitzungen.</translation>

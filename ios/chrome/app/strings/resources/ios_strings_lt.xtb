@@ -87,6 +87,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1545749641540134597">Nuskaitykite QR kodą</translation>
 <translation id="1552525382687785070">Sinchronizavimą išjungė jūsų administratorius</translation>
 <translation id="1554477036522844996">Naujas langas</translation>
+<translation id="1565371473877914088">Naujas inkognito skirtukas</translation>
 <translation id="1580715474678097352">Būkite apsaugoti nuo pavojingų svetainių</translation>
 <translation id="1580783302095112590">El. laiškas išsiųstas.</translation>
 <translation id="1582732959743469162">Bus sustabdytas dabartinis atsisiuntimas.</translation>
@@ -133,6 +134,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1981118202195772574">Mobiliojo įrenginio</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="199425419756152024">Peržiūrėti slaptažodį</translation>
+<translation id="2010008505735295285">Įkelti iš naujo</translation>
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="2021670401941426298">Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="202292859882676807">Leidžiama pasiekti mikrofoną</translation>
@@ -299,6 +301,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3272527697863656322">Atšaukti</translation>
 <translation id="3277021493514034324">Svetainės adresas nukopijuotas</translation>
 <translation id="3285962946108803577">Bendrinti puslapį...</translation>
+<translation id="3289505634533552500">Paieška balsu</translation>
 <translation id="3290875554372353449">Pasirinkite paskyrą</translation>
 <translation id="3305294846493618482">daugiau</translation>
 <translation id="3311748811247479259">Išjungta</translation>
@@ -556,6 +559,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5295239312320826323">Pašalinti paskyrą <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
+<translation id="5318298563956633672">Jau stebite šį produktą.</translation>
 <translation id="5339316356165661760">Įjungti sinchronizavimą</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
 <translation id="5360976571138293719">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyje <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5439599923922718668">Dažnai lankytasi</translation>
 <translation id="54401264925851789">Puslapio saugos informacija</translation>
 <translation id="5443952882982198570">Kredito kortelės</translation>
+<translation id="5444892875087332195">Žymės</translation>
 <translation id="5457226814769348910">Atidaryti versiją neprisijungus</translation>
 <translation id="5489208564673669003">Jei norite tvarkyti visų svetainių slapukus, žr. <ph name="BEGIN_LINK" />„Slapukų nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuoti visus slapukus (nerekomenduojama)</translation>
@@ -619,6 +624,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="581659025233126501">Įjungti sinchronizavimą</translation>
 <translation id="5819208479324046259">Valdo „<ph name="MANAGER" />“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Išsaugokite slaptažodžius, mokėjimo metodus ir adresus, kad vėliau „Chrome“ galėtų juos užpildyti automatiškai.</translation>
+<translation id="5834415013958049700">Jūsų nukopijuotas „Lens“ vaizdas</translation>
 <translation id="5846482154967366008">Paieškos variklis</translation>
 <translation id="5854790677617711513">Senesni nei 30 dienų</translation>
 <translation id="5857090052475505287">Naujas aplankas</translation>
@@ -646,6 +652,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5984222099446776634">Neseniai lankyta</translation>
 <translation id="5988097621740394599">Žr. sumažintas kainas skirtukuose.</translation>
 <translation id="5988851877894965432">Atidaryti URL naršyklėje „Chrome“</translation>
+<translation id="6006672969046233841">Naujas skirtukas</translation>
 <translation id="6012140227487808125">Šifruojama...</translation>
 <translation id="6021332621416007159">Atidaryti...</translation>
 <translation id="6027945736510816438">Turėjote omenyje <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7207023858769244910">Sinchronizuokite, kad gautumėte turinio pagal savo pomėgius.</translation>
 <translation id="721597782417389033">Netinkamas kortelės slapyvardis</translation>
 <translation id="7221173315674413369">Naršykite naujas funkcijas ir patarimus skiltyje „Kas naujo“</translation>
+<translation id="7223102419539744003">Uždaryti skirtuką</translation>
 <translation id="722454870747268814">Naujas inkognito skirtukas</translation>
 <translation id="7265758999917665941">Niekada šioje svetainėje</translation>
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>
@@ -903,6 +911,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7856733331829174190">Nepavyko atsisiųsti</translation>
 <translation id="785938070103630874">Atidarykite slaptažodžius, mokėjimo metodus arba adresą ir kt.</translation>
 <translation id="7859704718976024901">Naršymo istorija</translation>
+<translation id="7870750252270996949">Nukopijuotas „Lens“ vaizdas</translation>
 <translation id="7879275349003161544">Rodyti atsisiuntimus</translation>
 <translation id="7884694604461143138">Paieškos istorija (rasta: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Siekiant apsaugoti jūsų privatumą, „Chrome“ šio lauko automatiškai nepildys.</translation>
@@ -1027,6 +1036,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Numatytasis svetainės rodinys</translation>
 <translation id="8820817407110198400">Žymės</translation>
+<translation id="882557203579758546">Rasti puslapyje…</translation>
 <translation id="8840513115188359703">Nebūsite atjungti nuo „Google“ paskyros.</translation>
 <translation id="8843129975935593190">Jūsų organizacija riboja, ką galite sinchronizuoti.</translation>
 <translation id="8849001918648564819">Paslėpta</translation>

@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्ना भुक्तानी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थित गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">तपाईं फुल स्क्रिनबाट बाहिरिन चाहनुहुन्छ भने |<ph name="ACCELERATOR1" />| र |<ph name="ACCELERATOR2" />| की एकै पटक थिच्नुहोस्</translation>
+<translation id="2718207025093645426">सुपरिवेक्षित प्रयोगकर्ता वा डिभाइसका हकमा कुनै पनि नीति लोड गरिएको छैन।</translation>
 <translation id="2721148159707890343">अनुरोध सफल भयो</translation>
 <translation id="2723669454293168317">Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्नुहोस्</translation>
 <translation id="2726001110728089263">छेउको ट्रे</translation>
@@ -1145,7 +1146,6 @@
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3901925938762663762">कार्डको म्याद सकिएको छ</translation>
 <translation id="3906954721959377182">ट्याब्लेट</translation>
-<translation id="3909477809443608991"><ph name="URL" /> संरक्षित सामग्री प्ले गर्न चाहन्छ। Google ले तपाईंको डिभाइसको पहिचान पुष्टि गर्ने छ र यो साइटले उक्त जानकारीमाथि पहुँच राख्न सक्ने छ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">सुरक्षा कोड हाल्नुहोस्</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
@@ -2842,6 +2842,7 @@
 <translation id="8233773197406738106">फाइल तयार गरिँदै छ</translation>
 <translation id="8235754723616617175">कन्ट्री सङ्गीत</translation>
 <translation id="8237519162179154808">सोख तथा आराम</translation>
+<translation id="8238188918340945316">२८ x ४० इन्च</translation>
 <translation id="8238581221633243064">पृष्ठलाई नयाँ इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
 <translation id="8241707690549784388">तपाईंले खोजिरहनुभएको पृष्ठले तपाईंले प्रविष्ट गर्नुभएको जानकारी प्रयोग गर्‍यो। त्यस पृष्ठमा फर्किनाले तपाईंले दोहोरिनका लागि लिनुभएको कुनैपनि  प्रवेश कि प्रयोग जानकारी खोज्दै हुनुहुन्छ पृष्ठ कि। कि पृष्ठ फर्केपछि तिमी ले कुनै पनि काम नदोहोरिने गर्न लगाउँछ। तपाईं जारी राख्न चाहनुहुन्छ?</translation>
 <translation id="8241712895048303527">यस साइटमा रोक लगाउनुहोस्</translation>

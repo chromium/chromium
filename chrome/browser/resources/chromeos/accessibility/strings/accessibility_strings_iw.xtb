@@ -423,6 +423,7 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{דולר}two{# סימני דולר}many{# סימני דולר}other{# סימני דולר}}</translation>
 <translation id="3659787053479271466">alrt</translation>
+<translation id="3661265561216135784">חזרה</translation>
 <translation id="366419593095697301">‏רמז: כדי לצאת מהמדריך הזה, מקישים על Escape.</translation>
 <translation id="3676062394766691318">‏לאחר הגדרת המכשיר, אפשר לחזור ולהציג עוד מדריכים כך: מקישים על מקש החיפוש ועל O ולאחר מכן מקישים על T.</translation>
 <translation id="3681531118904532409">וניל פפאיה</translation>
@@ -568,7 +569,6 @@
 <translation id="4780458943471935919">גלילה לדף הבא</translation>
 <translation id="4784215347943747396">אפשר לשלוט במכשיר בעזרת מתג אחד או שניים בלבד</translation>
 <translation id="4786285211967466855">אין כותרת קודמת מרמה 1</translation>
-<translation id="4786591486270126089">החלפת הקול באופן אוטומטי לפי השפה</translation>
 <translation id="4787577491510559358">הקראת הפורמט של הפריט הנוכחי</translation>
 <translation id="479989351350248267">Search</translation>
 <translation id="4804818685124855865">ניתוק</translation>

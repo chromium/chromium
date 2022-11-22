@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1622571349153632031">சைவ உணவுவகை</translation>
 <translation id="1623104350909869708">கூடுதல் உரையாடல்களை உருவாக்குவதிலிருந்து இந்தப் பக்கத்தைத் தடு</translation>
+<translation id="1633137413609266904">{0,plural, =1{இந்த ஃபைலைத் திறப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}other{# ஃபைல்களைத் திறப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}}</translation>
 <translation id="1634828734222219955">மொத்தம்</translation>
 <translation id="163669211644121865">வரி தாக்கல் &amp; திட்டமிடல்</translation>
 <translation id="1638780421120290329">கார்டு விவரங்களைச் சேமிக்க இயலவில்லை</translation>
@@ -699,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="2715808615350965923">சூப்பர் A</translation>
 <translation id="271663710482723385">முழுத்திரையில் இருந்து வெளியேற, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| பட்டன்களை அழுத்தவும்</translation>
+<translation id="2718207025093645426">நிர்வகிக்கப்படும் பயனர் அல்லது சாதனத்தில் கொள்கை எதுவும் காட்டப்படவில்லை.</translation>
 <translation id="2721148159707890343">கோரிக்கை வெற்றியடைந்தது</translation>
 <translation id="2723669454293168317">Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்கும்</translation>
 <translation id="2726001110728089263">சைடு டிரே</translation>
@@ -893,6 +895,7 @@
 <translation id="3270847123878663523">&amp;மறுவரிசைப்படுத்தலைச் செயல்தவிர்</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> இணைய விரும்புகிறது</translation>
 <translation id="3272091146646336650">சூப்பர் B</translation>
+<translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைலைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைல்களைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="3282085321714087552">அமைப்புகள், கொள்கைகள் போன்ற சில தகவல்களை உங்கள் நிறுவனம் <ph name="ENROLLMENT_DOMAIN" /> பின்வரும் இணையதளங்களுக்கு அனுப்பியுள்ளது.</translation>
 <translation id="3282497668470633863">கார்டிலுள்ள பெயரைச் சேர்க்கவும்</translation>
 <translation id="3286372614333682499">போர்ட்ரெயிட்</translation>
@@ -1142,7 +1145,6 @@
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3901925938762663762">கார்டு காலாவதியானது</translation>
 <translation id="3906954721959377182">டேப்லெட்</translation>
-<translation id="3909477809443608991">பாதுகாக்கப்பட்ட உள்ளடக்கத்தை <ph name="URL" /> இயக்க விரும்புகிறது. உங்கள் சாதனத்தின் அடையாளத்தை Google சரிபார்க்கும், சாதன அடையாளத்தை இந்தத் தளம் அணுகக்கூடும்.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">உங்கள் பாதுகாப்புக் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="3927932062596804919">மறு</translation>
@@ -1291,6 +1293,7 @@
 <translation id="4275830172053184480">உங்கள் சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="4277028893293644418">கடவுச்சொல்லை மீட்டமை</translation>
 <translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
+<translation id="4281998142035485137">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் திறக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் திறக்க வேண்டுமா?}}</translation>
 <translation id="4282346679996504092">இந்தத் தயாரிப்பிற்கான அறிவிப்புகள் முடக்கப்பட்டதுடன் புக்மார்க் அகற்றப்பட்டது</translation>
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{இந்தக் கார்டு உங்கள் Google கணக்கில் சேமிக்கப்பட்டது}other{இந்தக் கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்பட்டன}}</translation>
@@ -1924,6 +1927,7 @@
 <translation id="5903264686717710770">தலைப்பு:</translation>
 <translation id="5904360430676679685">குடும்பம் &amp; உறவுகள்</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ஒத்திசைக்கப்பட்டது)</translation>
+<translation id="5911110632211230665">ஃபைல்களைத் திறப்பது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{ஒரு குக்கீ பயன்படுத்தப்படுகிறது}other{# குக்கீகள் பயன்படுத்தப்படுகின்றன}}</translation>
@@ -2836,6 +2840,7 @@
 <translation id="8233773197406738106">ஃபைலைத் தயார்செய்கிறது</translation>
 <translation id="8235754723616617175">நாட்டுப்புற இசை</translation>
 <translation id="8237519162179154808">பொழுதுபோக்குகள் &amp; ஓய்வு</translation>
+<translation id="8238188918340945316">28 x 40 இன்ச்</translation>
 <translation id="8238581221633243064">புதிய மறைநிலைத் தாவலில் பக்கத்தைத் திறக்கவும்</translation>
 <translation id="8241707690549784388">நீங்கள் தேடும் பக்கமானது நீங்கள் உள்ளிட்ட தகவலைப் பயன்படுத்தியது. மீண்டும் அந்த பக்கத்திற்கு திரும்பினால், நீங்கள் செய்த ஏதேனும் செயலை மீண்டும் செய்ய வேண்டியிருக்கலாம். தொடர விரும்புகிறீர்களா?</translation>
 <translation id="8241712895048303527">இந்தத் தளத்தில் தடு</translation>

@@ -702,6 +702,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ పేమెంట్‌లు, క్రెడిట్ కార్డ్ సమాచారం మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="2715808615350965923">సూపర్ A</translation>
 <translation id="271663710482723385">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| నొక్కండి</translation>
+<translation id="2718207025093645426">ఈ యూజర్ మేనేజ్ చేయబడుతున్నారు, లేదా ఈ పరికరంలో పాలసీలు ఏవీ లోడ్ అయ్యి లేవు.</translation>
 <translation id="2721148159707890343">రిక్వెస్ట్‌ విజయవంతం అయింది</translation>
 <translation id="2723669454293168317">Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయండి</translation>
 <translation id="2726001110728089263">సైడ్ ట్రే</translation>
@@ -1150,7 +1151,6 @@
 <translation id="3897092660631435901">మెనూ</translation>
 <translation id="3901925938762663762">కార్డ్ గడువు సమయం ముగిసింది</translation>
 <translation id="3906954721959377182">టాబ్లెట్</translation>
-<translation id="3909477809443608991">రక్షిత కంటెంట్‌ను ప్లే చేయడానికి <ph name="URL" /> అనుమతి కోరుతుంది. మీ పరికరం గుర్తింపు Google ద్వారా ధృవీకరించబడుతుంది, దీనిని ఈ సైట్ ద్వారా యాక్సెస్ చేయవచ్చు</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">మీ సెక్యూరిటీ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3927932062596804919">తిరస్కరించు</translation>
@@ -2847,6 +2847,7 @@
 <translation id="8233773197406738106">ఫైల్‌ను సిద్ధం చేస్తోంది</translation>
 <translation id="8235754723616617175">కంట్రీ మ్యూజిక్</translation>
 <translation id="8237519162179154808">అభిరుచులు &amp; కాలక్షేపం</translation>
+<translation id="8238188918340945316">28 x 40 అంగుళాలు</translation>
 <translation id="8238581221633243064">కొత్త అజ్ఞాత ట్యాబ్‌లో పేజీని తెరవండి</translation>
 <translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా రిపీట్‌ చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="8241712895048303527">ఈ సైట్‌లో బ్లాక్ చేయండి</translation>

@@ -700,6 +700,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to exit full screen</translation>
+<translation id="2718207025093645426">Managed user or device does not have a policy loaded.</translation>
 <translation id="2721148159707890343">Request succeeded</translation>
 <translation id="2723669454293168317">Run a safety check in Chrome settings</translation>
 <translation id="2726001110728089263">Side tray</translation>
@@ -1148,7 +1149,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">The card is expired</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> wants to play protected content. Your device's identity will be verified by Google and may be accessed by this site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Enter your security code</translation>
 <translation id="3927932062596804919">Deny</translation>

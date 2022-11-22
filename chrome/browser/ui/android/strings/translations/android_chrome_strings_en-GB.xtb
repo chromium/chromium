@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Help us build a more private web</translation>
 <translation id="107147699690128016">If you change the file extension, the file may open in a different application and potentially be a hazard to your device.</translation>
 <translation id="1089606299949659462">Review complete!</translation>
+<translation id="1091604859693995976">Refresh to view</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
 <translation id="1100066534610197918">Open in new tab in group</translation>
 <translation id="1103142993930332957">Help improve Chrome?</translation>
@@ -122,11 +123,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> suggested items in list below.</translation>
-<translation id="161647866166517041">Spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites that you visit check for and find a valid trust token, they’re more likely to treat you like a person and not a bot.
-
-Trust tokens improve privacy on the web and can’t be used to find out who you are.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chrome to consider.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1633659023549081553">Discover new content on Chrome’s homepage</translation>
@@ -334,6 +330,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab will be closed}other{<ph name="TAB_COUNT_MANY" /> incognito tabs will be closed}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
+<translation id="2851291081585704741">You're offline</translation>
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="2861923151411510142">Some Chrome features won\u2019t be available anymore</translation>
@@ -559,6 +556,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Options available near the top of the screen</translation>
 <translation id="4062305924942672200">Legal information</translation>
+<translation id="4072805772816336153">Try again later</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">You can use this tablet to sign in on the device that’s displaying this QR code.</translation>
@@ -984,11 +982,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6363990818884053551">To start sync, verify that it's you</translation>
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
 <translation id="6380100320871303656">More frequently preloads pages that Chrome thinks you are likely to visit. This setting may result in increased data use.</translation>
-<translation id="6385407407546870227">When trials are on, spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites that you visit check for and find a valid trust token, they’re more likely to treat you like a person and not a bot.
-
-Trust tokens improve privacy on the web and can’t be used to find out who you are.</translation>
 <translation id="6394791151443660613">Search: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Back online</translation>

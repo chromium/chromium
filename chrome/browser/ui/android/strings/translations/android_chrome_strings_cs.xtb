@@ -123,11 +123,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1571304935088121812">Kopírovat uživatelské jméno</translation>
 <translation id="1592864538817356322">Standardní ochrana:</translation>
 <translation id="1594635596540195766">Seznam níže obsahuje navrhované položky (<ph name="SUGGESTIONS_COUNT" />).</translation>
-<translation id="161647866166517041">Omezení spamu a podvodů závisí na tokenech důvěry, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.
-
-Web může na základě vaší interakce, jako je pravidelné přihlašování k účtu, vystavit vašemu prohlížeči token důvěry. Když potom ostatní weby, které navštívíte, najdou platný token důvěry, s větší pravděpodobností s vámi budou nakládat jako s člověkem a ne jako s robotem.
-
-Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjistit, kdo jste.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromu odstranit.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranit jednu vybranou položku}few{Odstranit # vybrané položky}many{Odstranit # vybrané položky}other{Odstranit # vybraných položek}}</translation>
 <translation id="1633659023549081553">Objevte nový obsah na domovské stránce Chromu</translation>
@@ -335,6 +330,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Zavře se <ph name="TAB_COUNT_ONE" /> anonymní karta}few{Zavřou se <ph name="TAB_COUNT_MANY" /> anonymní karty}many{Zavře se <ph name="TAB_COUNT_MANY" /> anonymní karty}other{Zavře se <ph name="TAB_COUNT_MANY" /> anonymních karet}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zkontrolováno před 1 dnem}few{Zkontrolováno před # dny}many{Zkontrolováno před # dne}other{Zkontrolováno před # dny}}</translation>
 <translation id="2842985007712546952">Nadřazená složka</translation>
+<translation id="2851291081585704741">Nejste připojeni k internetu</translation>
 <translation id="2856503607207334158">Přihlášení se nezdařilo</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="2861923151411510142">Některé funkce Chromu už nebudou dostupné</translation>
@@ -560,6 +556,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="4056223980640387499">Sépie</translation>
 <translation id="4060598801229743805">Možnosti jsou k dispozici u horního okraje obrazovky</translation>
 <translation id="4062305924942672200">Právní informace</translation>
+<translation id="4072805772816336153">Zkuste to znovu později</translation>
 <translation id="4084682180776658562">Záložka</translation>
 <translation id="4084712963632273211">Zdroj: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />poskytováno společností Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Tento tablet můžete použít k přihlášení na počítači, na kterém se zobrazuje tento QR kód.</translation>
@@ -985,11 +982,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6363990818884053551">Pokud chcete zahájit synchronizaci, ověřte svou totožnost</translation>
 <translation id="6364438453358674297">Odstranit návrh z historie?</translation>
 <translation id="6380100320871303656">Častěji předběžně načítá stránky, které byste podle Chromu mohli navštívit. Toto nastavení může vést ke zvýšenému využití dat.</translation>
-<translation id="6385407407546870227">Když jsou zapnuté zkušební verze, omezení spamu a podvodů závisí na tokenech důvěry, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.
-
-Web může na základě vaší interakce, např. pravidelné přihlašování k účtu, vystavit vašemu prohlížeči token důvěry. Když potom ostatní weby, které navštívíte, najdou platný token důvěry, s větší pravděpodobností s vámi budou nakládat jako s člověkem a ne jako s robotem.
-
-Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjistit, kdo jste.</translation>
 <translation id="6394791151443660613">Vyhledat: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ODKAZ</translation>
 <translation id="6397616442223433927">Opět online</translation>

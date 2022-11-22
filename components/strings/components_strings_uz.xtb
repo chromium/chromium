@@ -699,6 +699,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali toʻlov va kredit karta axborotini boshqarish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Butun ekran rejimidan chiqish uchun |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tugmalarini bosing</translation>
+<translation id="2718207025093645426">Boshqariladigan foydalanuvchi yoki qurilmada qoidalar yuklanmagan.</translation>
 <translation id="2721148159707890343">So‘rov bajarildi</translation>
 <translation id="2723669454293168317">Chrome sozlamalari orqali xavfsizlik tekshiruvini bajaring</translation>
 <translation id="2726001110728089263">Yon tarnov</translation>
@@ -1143,7 +1144,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Bu kartadan foydalanish muddati tugadi</translation>
 <translation id="3906954721959377182">Planshet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> himoyalangan kontentni ijro etmoqchi. Bu saytdagi himoyalangan kontent ijro etilishi uchun qurilmangizdagi shaxsni tasdiqlash axboroti Google tomonidan tekshiriladi.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Himoya kodini kiriting</translation>
 <translation id="3927932062596804919">Taqiqlash</translation>

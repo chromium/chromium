@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">עדכון ויציאה מהחשבון</translation>
 <translation id="1864454756846565995">‏מכשיר עם יציאת USB-C (יציאה אחורית)</translation>
 <translation id="1869497990620230175">קבצים מהירים</translation>
+<translation id="1871703283152909317">הפעלת שתי הרשאות הגישה</translation>
 <translation id="1879018240766558464">בשלב זה, אין תמיכה בחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
 <translation id="1882814835921407042">אין רשת סלולרית</translation>
 <translation id="1882897271359938046">משקף אל <ph name="DISPLAY_NAME" /></translation>
@@ -895,7 +896,6 @@
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
 <translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
-<translation id="5977415296283489383">אוזניות</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
 <translation id="598407983968395253">שימוש בתבנית</translation>
@@ -924,6 +924,7 @@
 <translation id="6095008505822982596">קצב דיבור</translation>
 <translation id="6099678161144790572">נערך בחודש האחרון</translation>
 <translation id="6103838137565245112">מערכת</translation>
+<translation id="6107292179555508368">הרשאות הגישה למיקרופון ולמצלמה מושבתות במכשיר הזה</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
 <translation id="6116825164611323644">הגישה למצלמה מושבתת במכשיר הזה</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +953,7 @@
 <translation id="6259254695169772643">כדי לבחור יש להשתמש בסטיילוס</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: בהפעלה...</translation>
 <translation id="6274202259872570803">הקלטת מסך</translation>
+<translation id="6282694724099204652">עליך להפעיל את הרשאות הגישה כדי שניתן יהיה להשתמש במיקרופונים ובמצלמות במכשיר הזה באפליקציות ובדפי אינטרנט עם הרשאות.</translation>
 <translation id="6283712521836204486">מצב 'נא לא להפריע' מושבת.</translation>
 <translation id="6284232397434400372">הרזולוציה השתנתה</translation>
 <translation id="6288235558961782912">ניתן יהיה להוסיף את <ph name="USER_EMAIL_ADDRESS" /> מחדש מאוחר יותר לאחר שיתקבל אישור של הורה.</translation>

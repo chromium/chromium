@@ -700,6 +700,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať platby a informácie o kreditnej karte</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Stlačením klávesov |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ukončíte režim celej obrazovky</translation>
+<translation id="2718207025093645426">Spravovaný používateľ alebo zariadenie nemá načítané žiadne pravidlá.</translation>
 <translation id="2721148159707890343">Žiadosť bola úspešná</translation>
 <translation id="2723669454293168317">Spustiť kontrolu bezpečnosti v nastaveniach Chromu</translation>
 <translation id="2726001110728089263">Bočný zásobník</translation>
@@ -1144,7 +1145,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3901925938762663762">Platnosť karty vypršala</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> chce prehrať chránený obsah. Google overí totožnosť vášho zariadenia a tento web k nej môže získať prístup.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Zadať bezpečnostný kód</translation>
 <translation id="3927932062596804919">Odmietnuť</translation>
@@ -2840,6 +2840,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8233773197406738106">Súbor sa pripravuje</translation>
 <translation id="8235754723616617175">Country hudba</translation>
 <translation id="8237519162179154808">Záľuby a voľný čas</translation>
+<translation id="8238188918340945316">28 × 40 palcov</translation>
 <translation id="8238581221633243064">Otvorte stránku na novej karte inkognito</translation>
 <translation id="8241707690549784388">Vami hľadaná stránka použila informácie, ktoré ste zadali. Návrat na túto stránku môže spôsobiť zopakovanie akcie, ktorú ste vykonali. Chcete pokračovať?</translation>
 <translation id="8241712895048303527">Blokovať na tomto webe</translation>

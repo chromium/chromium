@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2715808615350965923">സൂപ്പർ A</translation>
 <translation id="271663710482723385">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
+<translation id="2718207025093645426">മാനേജ് ചെയ്യുന്ന ഉപയോക്താവ് അല്ലെങ്കിൽ ഉപകരണത്തിൽ നയമൊന്നും ലോഡ് ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="2721148159707890343">അഭ്യർത്ഥന വിജയിച്ചു</translation>
 <translation id="2723669454293168317">Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="2726001110728089263">വശത്തുള്ള ട്രേ</translation>
@@ -1147,7 +1148,6 @@
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3901925938762663762">കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="3906954721959377182">ടാബ്‌ലെറ്റ്</translation>
-<translation id="3909477809443608991">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ <ph name="URL" /> താൽപ്പര്യപ്പെടുന്നു. നിങ്ങളുടെ ഉപകരണത്തിന്‍റെ ഐഡന്‍റിറ്റി Google പരിശോധിച്ചുറപ്പിക്കും, ഈ സൈറ്റ് ആക്‌സസ് ചെയ്യാനായേക്കാം.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">നിങ്ങളുടെ സുരക്ഷാ കോഡ് നൽകുക</translation>
 <translation id="3927932062596804919">നിരസിക്കൂ</translation>
@@ -2842,6 +2842,7 @@
 <translation id="8233773197406738106">ഫയൽ തയ്യാറാക്കുന്നു</translation>
 <translation id="8235754723616617175">കൺട്രി സംഗീതം</translation>
 <translation id="8237519162179154808">ഹോബികളും വിശ്രമവേളയും</translation>
+<translation id="8238188918340945316">28 x 40 ഇഞ്ച്</translation>
 <translation id="8238581221633243064">പുതിയൊരു അദൃശ്യ ടാബിൽ പേജ് തുറക്കുക</translation>
 <translation id="8241707690549784388">നിങ്ങൾ തിരയുന്ന പേജ് നിങ്ങൾ നൽകിയ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ആ പേജിലേയ്‌ക്ക് തിരികെ പോകുന്നത് നിങ്ങളുടെ എല്ലാ പ്രവർത്തനങ്ങളും ആവർത്തിക്കുന്നതിന് ഇടയാക്കാം. തുടരണോ?</translation>
 <translation id="8241712895048303527">ഈ സൈറ്റിൽ ബ്ലോക്ക് ചെയ്യുക</translation>

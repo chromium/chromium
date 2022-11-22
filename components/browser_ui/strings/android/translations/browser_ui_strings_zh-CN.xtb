@@ -125,6 +125,7 @@
 <translation id="3594780231884063836">将视频静音</translation>
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
+<translation id="3602290021589620013">预览</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
@@ -171,6 +172,7 @@
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟实境</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
+<translation id="4779083564647765204">缩放</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="483914009762354899">包含该网域下的所有网站</translation>
@@ -233,6 +235,7 @@
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
 <translation id="5922967540311291836">阻止第三方 Cookie：</translation>
 <translation id="5939518447894949180">重置</translation>
+<translation id="5968921426641056619">输入网址</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
@@ -312,6 +315,7 @@
 <translation id="7641339528570811325">清除浏览数据…</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7719367874908701697">网页缩放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>

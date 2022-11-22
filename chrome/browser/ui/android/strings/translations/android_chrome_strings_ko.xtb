@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">웹의 개인 정보 보호 개선에 동참해 주세요</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1089606299949659462">검토 완료</translation>
+<translation id="1091604859693995976">새로고침하여 보기</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1103142993930332957">Chrome을 개선하는 데 도움을 주시겠어요?</translation>
@@ -122,11 +123,6 @@
 <translation id="1571304935088121812">사용자 이름 복사</translation>
 <translation id="1592864538817356322">표준 보호 모드:</translation>
 <translation id="1594635596540195766">아래 리스트에 추천된 항목이 <ph name="SUGGESTIONS_COUNT" />개 있습니다.</translation>
-<translation id="161647866166517041">스팸 및 사기 근절은 신뢰 토큰을 사용해 사이트에서 사기를 근절하고 사용자와 봇을 구별할 수 있도록 돕습니다.
-
-사이트에서는 사용자의 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 내 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 내가 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있음을 확인하면 이러한 사이트에서도 나를 봇이 아닌 사용자로 여길 가능성이 높습니다.
-
-신뢰 토큰은 웹의 개인 정보 보호를 강화해 주지만 특정 사용자를 식별하는 데는 사용할 수 없습니다.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="1633659023549081553">Chrome 홈페이지에서 새로운 콘텐츠를 발견하세요.</translation>
@@ -334,6 +330,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
+<translation id="2851291081585704741">오프라인 상태입니다</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
@@ -559,6 +556,7 @@
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4060598801229743805">화면 상단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="4062305924942672200">법적 정보</translation>
+<translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">이 태블릿을 사용하여 이 QR 코드가 표시된 기기에 로그인할 수 있습니다.</translation>
@@ -984,11 +982,6 @@
 <translation id="6363990818884053551">동기화를 시작하려면 본인 여부를 확인하세요.</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
 <translation id="6380100320871303656">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 더 자주 미리 로드합니다. 이 설정을 사용하면 데이터 사용량이 늘어날 수 있습니다.</translation>
-<translation id="6385407407546870227">무료 체험을 사용 설정한 경우 스팸 및 사기 감소 기능은 신뢰 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.
-
-사이트에서는 나와 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있는지 확인하여 토큰을 찾으면 이 사이트에서도 나를 봇이 아닌 사람으로 여길 가능성이 큽니다.
-
-신뢰 토큰은 웹의 개인 정보 보호를 개선하나, 나를 식별하는 데 사용될 수는 없습니다.</translation>
 <translation id="6394791151443660613">검색: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">링크</translation>
 <translation id="6397616442223433927">인터넷에 다시 연결됨</translation>

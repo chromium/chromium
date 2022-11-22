@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
 <translation id="2276999893457278469">সেরা সহায়তা কন্টেন্ট</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
+<translation id="2304783958703511257">উন্নত সেটিংস</translation>
 <translation id="2307344026739914387">বর্তমান কী পেয়ার ব্যবহার করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
@@ -472,6 +473,7 @@
 <translation id="5499114900554609492">স্ক্যান সম্পূর্ণ করা যায়নি</translation>
 <translation id="5499762266711462226">ওয়ালপেপারের উপর নির্ভর করে কীবোর্ডের রঙ দেখানো হয়</translation>
 <translation id="5502931783115429516">Android কাজ করছে না</translation>
+<translation id="551689408806449779">ডিভাইস ডিসকানেক্ট হয়ে গেছে। টেস্টে আবার কানেক্ট করার চেষ্টা করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">সূর্যাস্তের সময় অটোমেটিক ডার্ক থিমে পাল্টান</translation>
@@ -501,10 +503,12 @@
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5866840822086176774">খুব জোরালো</translation>
+<translation id="5876385649737594562">বিকল্প বেছে নেওয়ার জন্য চালু করুন</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5903200662178656908">ডিভাইসটি কীবোর্ড এবং মাউসের একটি কম্বো।</translation>
+<translation id="5904994456462260490">নতুন APN যোগ করুন</translation>
 <translation id="5907649332524363701">কী কালার</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>

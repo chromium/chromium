@@ -700,6 +700,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a fizetési és hitelkártyaadatoknak a Chrome beállításaiban való kezeléséhez</translation>
 <translation id="2715808615350965923">„Super A” méret</translation>
 <translation id="271663710482723385">A teljes képernyős módból való kilépéshez nyomja le a következő billentyűkombinációt: |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="2718207025093645426">A felügyelt felhasználó vagy eszköz esetében nincs betöltve házirend.</translation>
 <translation id="2721148159707890343">Sikeres kérés</translation>
 <translation id="2723669454293168317">Biztonsági ellenőrzés futtatása a Chrome-beállításokban</translation>
 <translation id="2726001110728089263">Oldalsó tálca</translation>
@@ -1146,7 +1147,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">A kártya lejárt</translation>
 <translation id="3906954721959377182">Táblagép</translation>
-<translation id="3909477809443608991">A(z) <ph name="URL" /> védett tartalmat szeretne lejátszani. Miután a Google azonosítja az eszközt, hozzáférést adhat a webhely számára.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Adja meg a biztonsági kódot</translation>
 <translation id="3927932062596804919">Megtagadás</translation>
@@ -2843,6 +2843,7 @@ További részletek:
 <translation id="8233773197406738106">Fájl előkészítése folyamatban</translation>
 <translation id="8235754723616617175">Countryzene</translation>
 <translation id="8237519162179154808">Hobbi és szabadidő</translation>
+<translation id="8238188918340945316">28 × 40 hüvelyk</translation>
 <translation id="8238581221633243064">Oldal megnyitása új inkognitó ablakban</translation>
 <translation id="8241707690549784388">A keresett oldal a megadott információt használta. Ha visszatér arra az oldalra, akkor lehet, hogy az egyszer már megtett mozdulatok ismétlésre kerülnek. Mégis továbblép?</translation>
 <translation id="8241712895048303527">Letiltás ezen a webhelyen</translation>

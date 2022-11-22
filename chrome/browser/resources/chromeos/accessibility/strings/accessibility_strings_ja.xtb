@@ -423,6 +423,7 @@
 <translation id="3650317109285159359">メニュー項目のチェックボックス</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ドル}other{# 個のドル記号}}</translation>
 <translation id="3659787053479271466">アラート</translation>
+<translation id="3661265561216135784">繰り返す</translation>
 <translation id="366419593095697301">ヒント: このチュートリアルを終了する場合は Esc キーを押してください。</translation>
 <translation id="3676062394766691318">デバイスを設定した後で、このチュートリアルにアクセスして詳細を確認するには、検索+O キーを押してから T キーを押してください。</translation>
 <translation id="3681531118904532409">パパイヤ ウィップ</translation>
@@ -568,7 +569,6 @@
 <translation id="4780458943471935919">次のページにスクロールします</translation>
 <translation id="4784215347943747396">1～2 個のスイッチだけでデバイスを制御します</translation>
 <translation id="4786285211967466855">前のレベル 1 の見出しはありません</translation>
-<translation id="4786591486270126089">言語に基づいて音声を自動的に切り替える</translation>
 <translation id="4787577491510559358">現在のアイテムの書式設定を読み上げる</translation>
 <translation id="479989351350248267">検索</translation>
 <translation id="4804818685124855865">切断</translation>

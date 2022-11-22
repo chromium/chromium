@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">暗光模式時間表</translation>
 <translation id="2276999893457278469">熱門說明內容</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
+<translation id="2304783958703511257">進階設定</translation>
 <translation id="2307344026739914387">使用目前的配對金鑰</translation>
 <translation id="2320295602967756579">啟用淺色主題背景</translation>
 <translation id="2323506179655536734">已略過</translation>
@@ -473,6 +474,7 @@
 <translation id="5499114900554609492">無法完成掃描</translation>
 <translation id="5499762266711462226">鍵盤顏色是根據桌布而定</translation>
 <translation id="5502931783115429516">Android 未執行</translation>
+<translation id="551689408806449779">裝置已解除連接。請嘗試重新連接以測試</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落時自動切換至深色主題背景</translation>
@@ -502,10 +504,12 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5866840822086176774">非常強</translation>
+<translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903200662178656908">裝置係鍵盤同滑鼠組合。</translation>
+<translation id="5904994456462260490">新增 VPN</translation>
 <translation id="5907649332524363701">按鍵顏色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>

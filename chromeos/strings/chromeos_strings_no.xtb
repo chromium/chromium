@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2276999893457278469">Populært hjelpeinnhold</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Avanserte innstillinger</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
@@ -473,6 +474,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5499114900554609492">Kunne ikke fullføre skanningen</translation>
 <translation id="5499762266711462226">Tastaturfargen er basert på bakgrunnen</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
+<translation id="551689408806449779">Enheten er koblet fra. Prøv å koble til på nytt for å teste</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Bytt automatisk til mørkt tema ved solnedgang</translation>
@@ -502,10 +504,12 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5866840822086176774">Veldig sterk</translation>
+<translation id="5876385649737594562">Slå på for å velge alternativer</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
+<translation id="5904994456462260490">Legg til et nytt APN</translation>
 <translation id="5907649332524363701">tastefarge</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">På</translation>

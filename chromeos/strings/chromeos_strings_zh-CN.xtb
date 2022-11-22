@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
+<translation id="2304783958703511257">高级设置</translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
@@ -306,6 +307,7 @@
 <translation id="4044093238444069296">无法连接网关</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4060260348856573701">新建 APN</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
@@ -472,6 +474,7 @@
 <translation id="5499114900554609492">无法完成扫描</translation>
 <translation id="5499762266711462226">键盘颜色基于壁纸</translation>
 <translation id="5502931783115429516">Android 未运行</translation>
+<translation id="551689408806449779">设备已断开连接。请尝试重新连接以进行测试</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落时自动切换到深色主题</translation>
@@ -501,10 +504,12 @@
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5866840822086176774">非常强</translation>
+<translation id="5876385649737594562">开启后才能选择所需选项</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903200662178656908">设备是键盘和鼠标的组合。</translation>
+<translation id="5904994456462260490">添加新的 APN</translation>
 <translation id="5907649332524363701">按键颜色</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">启用</translation>
@@ -609,6 +614,7 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6791471867139427246">键盘背光颜色</translation>
+<translation id="6793680441750437230">请在键盘上按下任意键。您最多可以同时按下 4 个键。按 Alt + Esc 键，即可关闭对话框。</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
 <translation id="6853312040151791195">放电速率</translation>

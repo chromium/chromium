@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Programació del mode fosc</translation>
 <translation id="2276999893457278469">Contingut d'ajuda principal</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
+<translation id="2304783958703511257">Configuració avançada</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
 <translation id="2320295602967756579">Activa el tema clar</translation>
 <translation id="2323506179655536734">OMÈS</translation>
@@ -473,6 +474,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5499114900554609492">L'escaneig no s'ha pogut completar</translation>
 <translation id="5499762266711462226">El color del teclat es basa en el fons de pantalla</translation>
 <translation id="5502931783115429516">Android no s'està executant</translation>
+<translation id="551689408806449779">El dispositiu s'ha desconnectat. Prova de connectar-te de nou per fer la prova.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Canvia automàticament al tema fosc al vespre</translation>
@@ -502,10 +504,12 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5866840822086176774">Molt forta</translation>
+<translation id="5876385649737594562">Activa per seleccionar les opcions</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5903200662178656908">El dispositiu és un conjunt de teclat i ratolí.</translation>
+<translation id="5904994456462260490">Afegeix un APN nou</translation>
 <translation id="5907649332524363701">color de les tecles</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5916664084637901428">Activat</translation>

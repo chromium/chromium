@@ -125,6 +125,7 @@
 <translation id="3594780231884063836">Видеонун үнүн басуу</translation>
 <translation id="3596414637720633074">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3600792891314830896">Добуш чыгарган сайттардын үнү өчүрүлөт</translation>
+<translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3628308229821498208">Сунушталган издөөлөр</translation>
 <translation id="3744111561329211289">Фонду шайкештирүү</translation>
 <translation id="3763247130972274048">10 сек. өткөрүп жиберүү үчүн видеонун сол же оң жагын эки жолу таптаңыз</translation>
@@ -171,6 +172,7 @@
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
+<translation id="4779083564647765204">Ченөлчөм</translation>
 <translation id="4811450222531576619">Булагы жана темасы тууралуу кеңири маалымат</translation>
 <translation id="4836046166855586901">Сайт түзмөктү активдүү колдонуп жаткан учур тууралуу билгиси келгенде уруксат суралсын</translation>
 <translation id="483914009762354899">Бул домендеги бардык сайттарды камтуу</translation>
@@ -233,6 +235,7 @@
 <translation id="5922853908706496913">Экраныңыз бөлүшүлүүдө</translation>
 <translation id="5922967540311291836">Үчүнчү тараптын cookie файлдарын бөгөттөө:</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
+<translation id="5968921426641056619">Веб дарегин киргизиңиз</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Бул сайттын түзмөгүңүзгө кирүү мүмкүнчүлүгүн көзөмөлдөңүз</translation>
@@ -312,6 +315,7 @@
 <translation id="7641339528570811325">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7719367874908701697">Бетти чоңойтуп/кичирейтүү</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>

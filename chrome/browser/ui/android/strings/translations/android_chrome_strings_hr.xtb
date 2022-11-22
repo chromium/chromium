@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Pomozite nam stvoriti web s više privatnosti</translation>
 <translation id="107147699690128016">Ako promijenite datotečni nastavak, datoteka bi se mogla otvoriti u nekoj drugoj aplikaciji i mogla bi izložiti vaš uređaj opasnosti.</translation>
 <translation id="1089606299949659462">Pregled je dovršen!</translation>
+<translation id="1091604859693995976">Osvježite za prikaz</translation>
 <translation id="1095761715416917775">Pobrinite se da uvijek možete pristupiti sinkroniziranim podacima</translation>
 <translation id="1100066534610197918">Otvori novu karticu u grupi</translation>
 <translation id="1103142993930332957">Želite li pomoći poboljšati Chrome?</translation>
@@ -122,11 +123,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1592864538817356322">Standardna zaštita:</translation>
 <translation id="1594635596540195766">Predložene stavke na popisu u nastavku: <ph name="SUGGESTIONS_COUNT" />.</translation>
-<translation id="161647866166517041">Smanjenje količine neželjenog sadržaja i prijevara oslanja se na oznake povjerenja koje pomažu web-lokacijama da se bore protiv prijevara i razlikuju botove od osoba.
-
-Na temelju vaše interakcije s određenom web-lokacijom, kao što je redovito prijavljivanje na račun, ta web-lokacija može vašem pregledniku izdati oznaku povjerenja. Ako kasnije druge web-lokacije koje posjetite provjere postoji li važeća oznaka povjerenja i pronađu je, vjerojatnije je da će vas tretirati kao osobu, a ne bot.
-
-Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati da bi se saznalo tko ste vi.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. Možete i ukloniti interese za koje ne želite da ih Chrome razmatra.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Uklanjanje 1 odabrane stavke}one{Uklanjanje # odabrane stavke}few{Uklanjanje # odabranih stavki}other{Uklanjanje # odabranih stavki}}</translation>
 <translation id="1633659023549081553">Otkrijte novi sadržaj na početnoj stranici Chromea</translation>
@@ -334,6 +330,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Zatvorit će se <ph name="TAB_COUNT_ONE" /> anonimna kartica}one{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimna kartica}few{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimne kartice}other{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimnih kartica}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provjera je izvršena jučer}one{Provjera je izvršena prije # dana}few{Provjera je izvršena prije # dana}other{Provjera je izvršena prije # dana}}</translation>
 <translation id="2842985007712546952">Nadređena mapa</translation>
+<translation id="2851291081585704741">Niste povezani s internetom</translation>
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
 <translation id="2860954141821109167">Provjerite je li na uređaju omogućena aplikacija telefona</translation>
 <translation id="2861923151411510142">Neke Chromeove značajke više neće biti dostupne</translation>
@@ -559,6 +556,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Opcije su dostupne pri vrhu zaslona</translation>
 <translation id="4062305924942672200">Pravne informacije</translation>
+<translation id="4072805772816336153">Pokušajte ponovo kasnije</translation>
 <translation id="4084682180776658562">Oznaka</translation>
 <translation id="4084712963632273211">Objavio <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />omogućio Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pomoću ovog tableta možete se prijaviti na uređaju na kojem se prikazuje ovaj QR kôd.</translation>
@@ -984,11 +982,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6363990818884053551">Za pokretanje sinkronizacije potvrdite da ste to vi.</translation>
 <translation id="6364438453358674297">Želite li ukloniti prijedlog iz povijesti?</translation>
 <translation id="6380100320871303656">Češće predučitava stranice za koje Chrome misli da ćete ih vjerojatno posjetiti. Ta postavka može rezultirati većom potrošnjom podatkovnog prometa.</translation>
-<translation id="6385407407546870227">Tijekom eksperimenata smanjenje količine neželjenog sadržaja i prijevara oslanja se na oznake povjerenja koje pomažu web-lokacijama da se bore protiv prijevara i razlikuju botove od osoba.
-
-Na temelju vaše interakcije s određenom web-lokacijom, kao što je redovito prijavljivanje na račun, ta web-lokacija može vašem pregledniku izdati oznaku povjerenja. Ako druge web-lokacije koje poslije posjetite provjere postoji li važeća oznaka povjerenja i pronađu je, vjerojatnije je da će vas tretirati kao osobu, a ne bot.
-
-Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati da bi se saznalo tko ste vi.</translation>
 <translation id="6394791151443660613">Pretraživanje: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">VEZA</translation>
 <translation id="6397616442223433927">Veza je ponovo uspostavljena</translation>

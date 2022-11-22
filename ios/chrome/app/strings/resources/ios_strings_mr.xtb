@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
 <translation id="1552525382687785070">तुमच्या ॲडमिनिस्ट्रेटरने सिंक बंद केले आहे</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
+<translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
 <translation id="1580715474678097352">धोकादायक वेबसाइटपासून सुरक्षित राहा</translation>
 <translation id="1580783302095112590">मेल पाठवले.</translation>
 <translation id="1582732959743469162">यामुळे तुमच्या सुरू असलेल्या डाउनलोडची पुढची सर्व प्रगती थांबेल.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="199425419756152024">पासवर्ड पहा</translation>
+<translation id="2010008505735295285">रीलोड करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="2021670401941426298">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा.</translation>
 <translation id="202292859882676807">मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3277021493514034324">साइट पत्ता कॉपी केला</translation>
 <translation id="3285962946108803577">पेज शेअर करा...</translation>
+<translation id="3289505634533552500">व्हॉइस शोध</translation>
 <translation id="3290875554372353449">एक खाते निवडा</translation>
 <translation id="3305294846493618482">आणखी</translation>
 <translation id="3311748811247479259">बंद</translation>
@@ -557,6 +560,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
+<translation id="5318298563956633672">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात.</translation>
 <translation id="5339316356165661760">सिंक सुरू करा</translation>
 <translation id="536067926684072644">बुकमार्क दाखवा</translation>
 <translation id="5360976571138293719">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पहा.</translation>
@@ -570,6 +574,7 @@
 <translation id="5439599923922718668">वारंवार भेट दिलेली</translation>
 <translation id="54401264925851789">पृष्‍ठ सुरक्षितता माहिती</translation>
 <translation id="5443952882982198570">क्रेडिट कार्ड</translation>
+<translation id="5444892875087332195">बुकमार्क</translation>
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
@@ -620,6 +625,7 @@
 <translation id="581659025233126501">सिंक सुरू करा</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> ने व्यवस्थापित केलेले. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Chrome चे पासवर्ड, पेमेंट पद्धती आणि ॲड्रेस नंतर ऑटोफिल करण्यासाठी सेव्ह करा.</translation>
+<translation id="5834415013958049700">तुम्ही कॉपी केलेली Lens इमेज</translation>
 <translation id="5846482154967366008">शोध इंजीन</translation>
 <translation id="5854790677617711513">30 दिवसांपेक्षा जुना</translation>
 <translation id="5857090052475505287">नवीन फोल्डर</translation>
@@ -647,6 +653,7 @@
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
 <translation id="5988097621740394599">तुमच्या टॅबवर कमी झालेली किंमत पहा.</translation>
 <translation id="5988851877894965432">Chrome URL उघडा</translation>
+<translation id="6006672969046233841">नवीन टॅब</translation>
 <translation id="6012140227487808125">कूटबद्ध करीत आहे...</translation>
 <translation id="6021332621416007159">यामध्ये उघडा...</translation>
 <translation id="6027945736510816438">तुम्हाला <ph name="WEBSITE" /> म्हणायचे आहे का?</translation>
@@ -834,6 +841,7 @@
 <translation id="7207023858769244910">तुमच्या स्वारस्यांनुसार आशय मिळवण्यासाठी सिंक करा.</translation>
 <translation id="721597782417389033">कार्डाचे चुकीचे टोपणनाव</translation>
 <translation id="7221173315674413369">नवीन काय आहे मधील नवीन वैशिष्ट्ये आणि टिपा एक्सप्लोर करा</translation>
+<translation id="7223102419539744003">टॅब बंद करा</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
 <translation id="7265758999917665941">या साइटसाठी कधीही नाही</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
@@ -905,6 +913,7 @@
 <translation id="7856733331829174190">डाउनलोड करता आले नाही</translation>
 <translation id="785938070103630874">पासवर्ड, पेमेंट पद्धती किंवा ॲड्रेस आणि आणखी बरेच काही उघडा</translation>
 <translation id="7859704718976024901">ब्राउझिंग इतिहास</translation>
+<translation id="7870750252270996949">कॉपी केलेली Lens इमेज</translation>
 <translation id="7879275349003161544">डाउनलोड दाखवा</translation>
 <translation id="7884694604461143138">शोध इतिहास (<ph name="COUNT" /> आढळले)</translation>
 <translation id="7887198238286927132">तुमच्या गोपनीयतेचे संरक्षण करण्‍यासाठी, Chrome हा भाग ऑटोफिल करणार नाही.</translation>
@@ -1029,6 +1038,7 @@
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">डीफॉल्ट साइट दृश्य</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
+<translation id="882557203579758546">पेजमध्ये शोधा…</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
 <translation id="8843129975935593190">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="8849001918648564819">लपवलेली</translation>

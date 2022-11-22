@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Ajude-nos a criar uma Web com mais privacidade</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
+<translation id="1091604859693995976">Atualize para mostrar o conteúdo</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
 <translation id="1100066534610197918">Abrir em nova guia no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
@@ -122,11 +123,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1571304935088121812">Copiar nome de usuário</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
-<translation id="161647866166517041">A redução de spam e fraudes depende de tokens de confiança para ajudar os sites a evitar fraudes e distinguir entre robôs e pessoas.
-
-Baseado na sua interação com um site, como fazer login em uma conta com frequência, o site pode emitir um token de confiança para o navegador. Se outros sites que você visitar verificarem e encontrarem um token de confiança válido, é mais provável que eles tratem você como uma pessoa e não como um robô.
-
-Os tokens de confiança melhoram a privacidade na Web e não podem ser usados para descobrir quem você é.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chrome considere.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1633659023549081553">Descubra novos conteúdos na página inicial do Chrome</translation>
@@ -334,6 +330,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia anônima será fechada}one{<ph name="TAB_COUNT_MANY" /> guia anônima será fechada}other{<ph name="TAB_COUNT_MANY" /> guias anônimas serão fechadas}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Verificado 1 dia atrás}one{Verificado # dia atrás}other{Verificado # dias atrás}}</translation>
 <translation id="2842985007712546952">Pasta mãe</translation>
+<translation id="2851291081585704741">Você está off-line</translation>
 <translation id="2856503607207334158">Falha no login</translation>
 <translation id="2860954141821109167">Verifique se há um aplicativo para telefones ativado neste dispositivo</translation>
 <translation id="2861923151411510142">Você vai perder o acesso a alguns dos recursos do Chrome</translation>
@@ -559,6 +556,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Opções disponíveis perto da parte superior da tela</translation>
 <translation id="4062305924942672200">Informações legais</translation>
+<translation id="4072805772816336153">Tente novamente mais tarde</translation>
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Você pode usar o tablet para fazer login no dispositivo que está mostrando o código QR.</translation>
@@ -985,11 +983,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6363990818884053551">Para iniciar a sincronização, confirme sua identidade</translation>
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega com mais frequência páginas que o Chrome acredita serem de seu interesse. Esta configuração pode resultar em aumento no uso de dados.</translation>
-<translation id="6385407407546870227">Quando os testes estão ativados, a redução de spam e de fraudes depende de tokens de confiança para ajudar os sites a evitar fraudes e distinguir entre robôs e pessoas.
-
-Baseado na sua interação com um site, como fazer login em uma conta com frequência, o site pode emitir um token de confiança para o navegador. Se outros sites que você visitar verificarem e encontrarem um token de confiança válido, é mais provável que eles tratem você como uma pessoa e não como um robô.
-
-Os tokens de confiança melhoram a privacidade na Web e não podem ser usados para descobrir quem você é.</translation>
 <translation id="6394791151443660613">Pesquisar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Conectado novamente</translation>

@@ -203,6 +203,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
 
       Se esta política for definida como falsa, a caixa de seleção "Sempre permitir" não será exibida, e o usuário precisará confirmar sempre que um protocolo externo for invocado.</translation>
 <translation id="1181598794547737681">Ativar IU de download em balão</translation>
+<translation id="1184562656144537588">O Manifest v2 está ativado apenas para extensões forçadas</translation>
 <translation id="11903325225202653">Se esta política for definida como verdadeira, o modo de alto contraste permanece ativado. Se esta política for definida como falsa, o modo de alto contraste será desativado.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, o modo de alto contraste será desativado, mas os usuários podem ativá-lo quando quiserem.</translation>
@@ -1299,6 +1300,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível para todos os usuários do dispositivo. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="2246621891161157804">Permitir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="224750967938323855">Não mostrar o consentimento de sincronização durante o login</translation>
+<translation id="2252400912879027343">O WebSQL em contextos não seguros continuará disponível até a versão M109 e ficará indisponível da M110 em diante.</translation>
 <translation id="225340736558643885">Ativar alertas para formulários não seguros</translation>
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
 <translation id="225830954785359083">Impedir que as páginas mostrem pop-ups durante o descarregamento</translation>
@@ -1521,6 +1523,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Especifique o valor da política em dias.</translation>
 <translation id="2466131534462628618">A autenticação de portal cativo ignora o proxy</translation>
+<translation id="2467181864598429837">Comportamento padrão do navegador</translation>
 <translation id="2467896267442150508">Intervalo de tempo que dura no máximo uma semana. Se o horário de início for posterior ao de término, o intervalo será contínuo.</translation>
 <translation id="2476249479201711962">Ativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
 <translation id="247658312644322296">O destino "Salvar como PDF"</translation>
@@ -2202,6 +2205,7 @@ Se o usuário não marcar a caixa:
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mas o perfil recém-criado não pode ter contas secundárias.</translation>
 <translation id="3083259245974004342">Proteção por senha</translation>
+<translation id="308356121098374167">O WebSQL em contextos não seguros vai estar disponível.</translation>
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Especifica se o SharedArrayBuffers pode ser usado em um contexto não isolado de origem cruzada</translation>
 <translation id="3088557424854005813">Atestado</translation>
@@ -3149,6 +3153,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3990391739475801018">O modo Economia de bateria vai ser desativado.</translation>
 <translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="399433537808390819">Não disponibilizar o Modo área de trabalho unificada para o usuário</translation>
+<translation id="3995880046827722248">O Manifest v2 está desativado</translation>
 <translation id="3996325823532867220">Não há mais suporte para esta política, mas a política relacionada <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> pode ter suporte em algumas plataformas.
 
       Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
@@ -3631,6 +3636,15 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4492287494009043413">Desativar captura de tela</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Configura políticas relacionadas ao <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="4495390552861857186">Ative o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para criar uma lista de URLs.
+
+A definição desta política especifica para quais URLs o <ph name="PRODUCT_NAME" /> vai oferecer a opção de iniciar o fluxo de atestado. O último permite que esses sites recebam um conjunto atestado de indicadores contextuais do dispositivo.
+
+Se a política for deixada sem definição ou em branco, nenhum site poderá iniciar o fluxo de atestado ou receber os indicadores.
+
+No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados remotos em que um certificado é gerado automaticamente e o upload dele é feito para o servidor. Para usar o fluxo de atestado na tela de login do dispositivo, use a política <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Luz de fundo azul do teclado</translation>
 <translation id="449784980858429908">Permitir automaticamente que os sites se conectem a todas as portas seriais.</translation>
 <translation id="4499376951770369935">As atualizações do Chrome OS são configuradas de acordo com a versão definida no manifesto do app de quiosque</translation>
@@ -3670,6 +3684,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
 <translation id="4549405078915181477">Ativar o Tempo de Uso para sites</translation>
+<translation id="4549695018986780856">O Manifest v2 está ativado</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
 <translation id="4554991346503872538">Nunca oferecer tradução</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
@@ -3882,6 +3897,15 @@ O suporte ao uso das raízes e do verificador de certificados disponibilizados p
       Se a política for definida como "Desativada" ou deixada sem definição, nenhum certificado será gerado e as chamadas para <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> falharão.</translation>
 <translation id="4742973303930120836">Restringir modo de impressão de gráficos de segundo plano</translation>
 <translation id="4745232963710538589">Ativar extensão de insights para relatar métricas de uso</translation>
+<translation id="4749670563834935149">Ative o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para criar uma lista de URLs nas telas de login e de bloqueio.
+
+A definição desta política especifica quais URLs o <ph name="PRODUCT_OS_NAME" /> vai oferecer para iniciar o fluxo de atestado. O último permite que esses sites recebam um conjunto atestado de indicadores contextuais do dispositivo.
+
+Se a política for deixada sem definição ou em branco, nenhum site poderá iniciar o fluxo de atestado ou receber os indicadores.
+
+Esta política afeta apenas o fluxo de atestado nas telas de login e de bloqueio. Para mudar o fluxo de atestado na sessão, use a política <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4752880493649142945">Certificado de cliente para conexão a RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Se a política for definida como <ph name="ASK_FILE_HANDLING" />, os apps da Web poderão solicitar acesso a tipos de arquivos usando a API File Handling. Se a política for definida como <ph name="BLOCK_FILE_HANDLING" />, o acesso será negado.
 
@@ -4036,6 +4060,9 @@ O suporte ao uso das raízes e do verificador de certificados disponibilizados p
       para processar as solicitações de sinal de atividade (https://fetch.spec.whatwg.org/#request-keepalive-flag, link em inglês).
 
       O valor padrão (0) significa que esse recurso está desativado.</translation>
+<translation id="4934869540807953882">Da versão M110 em diante, a API window.webkitStorageInfo não padrão vai ser removida. A política reativa essa API.
+Se a política for ativada, a API window.webkitStorageInfo ficará disponível.
+Se ela for desativada ou deixada sem definição, a API vai ficar indisponível.</translation>
 <translation id="4937423591320233496">Desativar conteúdo sugerido</translation>
 <translation id="4940810901775798837">Permitir que sites não seguros façam solicitações para qualquer endpoint da rede</translation>
 <translation id="4942096314850617489">Desativar atestado remoto para o usuário</translation>
@@ -5068,6 +5095,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6050796253724099706">Ativar a resposta falada na tela de login</translation>
 <translation id="605132676434455096">Não permitir adição de novos perfis</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versões obsoletas do protocolo TLD/DTLS</translation>
+<translation id="6056517174496942473">Ativar o fluxo de atestado <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs</translation>
 <translation id="6058879286588763839">A menos que <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> seja especificada, o que substitui <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> especifica a política de gerenciamento de energia para o modo de carregamento da bateria, se compatível com o dispositivo. Para prolongar a duração da bateria, a política controla de maneira dinâmica o carregamento da bateria minimizando o estresse e o desgaste.
 
       Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuários não poderão mudá-lo.
@@ -5088,6 +5116,9 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará o diretório de cache padrão, mas os usuários poderão mudar isso com a sinalização da linha de comando "--disk-cache-dir".
 
       O <ph name="PRODUCT_NAME" /> gerencia o conteúdo do diretório raiz de um volume. Portanto, para evitar a perda de dados ou outros erros, não defina a política para o diretório raiz nem qualquer diretório usado para outros propósitos. Veja as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
+<translation id="6083356110032622782">O WebSQL em contextos não seguros vai ser removido da versão M110 em diante. A política reativa essa API.
+          Se a política for definida como verdadeira, o WebSQL em contextos não seguros ficará disponível.
+          Se ela for definida como falsa ou for deixada sem definição, o WebSQL em contextos não seguros continuará disponível até a versão M109 e ficará indisponível da M110 em diante.</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
@@ -5761,6 +5792,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se esta política for definida como falsa, a exibição padrão de URL será aplicada.
       Se esta política não for definida, a exibição padrão de URL será aplicada e o usuário poderá alternar entre ela e a exibição completa do URL em uma opção do menu de contexto.
       </translation>
+<translation id="6670716303606644752">Como descrito em https://www.chromestatus.com/feature/5148698084376576, as caixas de diálogo modais de JavaScript, acionadas por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, são bloqueadas no <ph name="PRODUCT_NAME" /> quando acionadas por um subframe com a origem diferente do frame de origem principal.
+
+Esta política permite substituir essa mudança.
+Se a política é definida como "Enabled" ou deixada sem definição, as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente são bloqueadas.
+Se definida como "Disabled", as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente não são bloqueadas.
+
+Esta política pode ser removida de <ph name="PRODUCT_NAME" /> no futuro.</translation>
 <translation id="6670794785040100077">Desativar o envio de documentos para <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6672070613706645316">Permitir que usuários personalizem o plano de fundo na página "Nova guia"</translation>
 <translation id="6672630473862787247">Ativar a autenticação pelo SO em sessões normais, anônimas e de visitante.</translation>
@@ -7052,6 +7090,19 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de desligamento da tela (se definido) e ao intervalo de inatividade.</translation>
 <translation id="7974114691960514888">Esta política não é mais suportada. Ativa o uso de servidores STUN e de retransmissão ao estabelecer conexão a um cliente remoto. Se esta configuração estiver ativada, este computador pode descobrir e conectar-se a computadores host remotos mesmo se separados por um firewall. Se esta configuração estiver desativada e conexões de UDP enviadas forem filtradas pelo firewall, este computador só poderá estabelecer conexões a computadores host na rede local.</translation>
+<translation id="7976103461034266553">Quando esta política estiver ativada, a função setTimeout() do JavaScript com um tempo limite de 0ms não vai ser limitada a 1ms.
+          Quando ela estiver desativada, a função setTimeout() do JavaScript com um tempo limite de 0ms será limitada a 1ms.
+          Se a política for deixada sem definição, use o comportamento padrão do navegador para o limite da função setTimeout().
+
+          Esse é um recurso que obedece aos padrões da Web, mas pode mudar a ordem das tarefas
+           em uma página, levando a um comportamento inesperado em sites que dependem de
+           uma certa ordem. Também pode afetar sites com muitas funções setTimeout()
+           com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
+
+          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no Canal Stable.
+
+          Esta política foi removida no Chrome 110.
+                                        </translation>
 <translation id="7976157349247117979">Nome do destino do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Ativar relatórios do Android</translation>
@@ -7263,6 +7314,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 
       Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Se a política for definida, o layout de teclado Inscript hindi vai ser ativado no <ph name="PRODUCT_OS_NAME" />. Se ela for "false" ou não for definida, o layout não estará disponível.</translation>
+<translation id="8202834945144737726">Ativar o fluxo de atestado <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs na tela de login</translation>
 <translation id="8212900161626657849">Se esta política não for configurada ou for ativada, o <ph name="PRODUCT_NAME" /> seguirá o processo de lançamento padrão para o CECPQ2, um algoritmo de acordo de chave pós-quântico em TLS.
 
       O CECPQ2 resulta em mensagens TLS maiores, que, em casos muito raros, podem causar bugs em alguns hardwares de rede. Esta política pode ser definida como "falsa" para desativar o CECPQ2 enquanto problemas de rede são solucionados.

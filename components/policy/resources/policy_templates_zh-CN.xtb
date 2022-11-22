@@ -1289,6 +1289,7 @@
       如果此政策设为 false，该设备的所有用户都将无法使用 <ph name="BOREALIS_NAME" />。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2246621891161157804">允许 Chrome 阻止导航到沙盒化 iframe 中的外部协议</translation>
 <translation id="224750967938323855">在登录期间不显示同步同意声明</translation>
+<translation id="2252400912879027343">不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。</translation>
 <translation id="225340736558643885">启用针对不安全表单的警告</translation>
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="225830954785359083">禁止页面在卸载期间显示弹出式窗口</translation>
@@ -2165,6 +2166,7 @@
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 这与 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> 的行为相同，但新创建的个人资料不得设有辅助帐号。</translation>
 <translation id="3083259245974004342">密码保护</translation>
+<translation id="308356121098374167">不安全情境中的 WebSQL 将可用。</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
 <translation id="3087346703976541109">指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中</translation>
 <translation id="3088557424854005813">认证</translation>
@@ -2634,7 +2636,6 @@
 <translation id="3524204464536655762">不允许任何网站通过 WebUSB API 请求访问 USB 设备</translation>
 <translation id="3526752951628474302">仅限单色打印</translation>
 <translation id="3528000905991875314">启用备用的错误页面</translation>
-<translation id="3528681240373634003">控制 Manifest V2 扩展程序的可用性。</translation>
 <translation id="3530249698314520116">配置一个规则列表，以防止 <ph name="PRODUCT_OS_NAME" /> 上发生数据泄露。
       复制和粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
@@ -3569,6 +3570,15 @@
 <translation id="4492287494009043413">停用截取屏幕截图功能</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
+<translation id="4495390552861857186">旨在以列表形式为一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />。
+
+通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 将主动为哪些网址启动认证流程。后者会允许这些网站从设备上获取一组经过认证的情境感知信号。
+
+如果您未设置此政策或将其留空，任何网站都将无法启动认证流程，也无法接收来自设备的信号。
+
+对于 <ph name="PRODUCT_OS_NAME" />，此政策会与远程认证关联，在这种情况下，系统会自动生成一个证书，并将其上传到服务器。如需在设备的登录界面上使用认证流程，请使用 <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="449561952193478261">键盘背光颜色：蓝色</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
 <translation id="4499376951770369935">ChromeOS 更新已设为自助服务终端应用清单中定义的版本</translation>
@@ -3802,6 +3812,15 @@
       如果此政策已停用或未设置，系统将不会生成任何证书，并且无法调用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />。</translation>
 <translation id="4742973303930120836">限制背景图片打印模式</translation>
 <translation id="4745232963710538589">启用数据洞见扩展程序以报告使用情况指标</translation>
+<translation id="4749670563834935149">旨在以列表形式为登录界面和锁定的屏幕上的一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />。
+
+通过设置此政策，您可以指定 <ph name="PRODUCT_OS_NAME" /> 将主动为哪些网址启动认证流程。后者会允许这些网站从设备上获取一组经过认证的情境感知信号。
+
+如果您未设置此政策或将其留空，任何网站都将无法启动认证流程，也无法接收来自设备的信号。
+
+此政策只会影响登录界面和锁定的屏幕上的认证流程。如需更改会话期间认证流程，请使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="4752880493649142945">连接到 RemoteAccessHostTokenValidationUrl 时使用的客户端证书</translation>
 <translation id="475479145997699293">如果此政策设为 <ph name="ASK_FILE_HANDLING" />，系统会允许 Web 应用通过 File Handling API 请求访问各类文件。如果此政策设为 <ph name="BLOCK_FILE_HANDLING" />，系统会禁止 Web 应用访问各类文件。
 
@@ -3955,6 +3974,9 @@
       如果您指定了此政策，系统在关闭浏览器时便可延迟所设秒数之久，以处理 keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) 请求。
 
       默认值 (0) 表示此功能已停用。</translation>
+<translation id="4934869540807953882">从 M110 开始，非标准 API window.webkitStorageInfo 将被移除。此政策用于重新启用该 API。
+如果此政策已启用，window.webkitStorageInfo API 将可用。
+如果此政策已停用或未设置，window.webkitStorageInfo API 将不可用。</translation>
 <translation id="4937423591320233496">停用建议的内容</translation>
 <translation id="4940810901775798837">允许不安全网站向任意网络端点发送请求</translation>
 <translation id="4942096314850617489">禁止远程认证用户</translation>
@@ -4934,17 +4956,6 @@
       如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
 
       如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
-<translation id="6005906773585863978">控制浏览器是否可以使用 Manifest V2 扩展程序。
-
-对 Manifest V2 扩展程序的支持将被弃用，日后所有扩展程序都需要迁移到 v3。如需了解详情和迁移时间轴，请访问 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
-
-如果此政策设为 <ph name="DEFAULT" /> (0) 或未设置，浏览器会根据上述时间轴决定是否加载 V2 扩展程序。
-如果此政策设为 <ph name="DISABLE" /> (1)，系统会禁止安装 V2 扩展程序，并停用已安装的这类扩展程序。在 V2 支持被默认关闭之后，系统对该选项的处理方式将与未设置此政策时的情形相同。
-如果此政策设为 <ph name="ENABLE" /> (2)，系统将允许安装 V2 扩展程序。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
-如果此政策设为 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系统将允许使用强制安装的 V2 扩展程序。这包括由 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出且 <ph name="INSTALLATION_MODE" /> 为“force_installed”或“normal_installed”的扩展程序。所有其他 V2 扩展程序均会被停用。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
-
-
-扩展程序的可用性仍由其他政策控制。</translation>
 <translation id="6009062900206392980">将此政策设为 None 时，系统会在登录屏幕上关闭屏幕放大功能。
 
        如果您设置了此政策，用户便可暂时开启或关闭放大镜。当登录屏幕重新加载或闲置了 1 分钟后，放大镜就会还原为初始状态。
@@ -4988,6 +4999,7 @@
 <translation id="6050796253724099706">为登录屏幕启用语音反馈</translation>
 <translation id="605132676434455096">禁止添加新的个人资料</translation>
 <translation id="6053681087509103368">允许 WebRTC 使用已过时的 TLD/DTLS 协议版本</translation>
+<translation id="6056517174496942473">为一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 认证流程</translation>
 <translation id="6058879286588763839">您可以通过设置 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 来指定电池充电模式电源管理政策（如果相应设备支持的话），除非指定了会覆盖 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 的 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />。此政策会动态地控制电池充电，尽可能减少电池应力和损耗，从而延长电池寿命。
 
       如果您未设置此政策，系统会采用标准电池充电模式（如果相应设备支持的话），而且用户无法更改相关设置。
@@ -5008,6 +5020,9 @@
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 会使用默认的缓存目录，但用户可以使用 --disk-cache-dir 命令行标记更改此设置。
 
       <ph name="PRODUCT_NAME" /> 会管理卷的根目录内容。因此，为避免丢失数据或发生其他错误，请勿将此政策设为根目录或任何有其他用途的目录。查看您可以使用的变量 (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables)。</translation>
+<translation id="6083356110032622782">从 M110 开始，不安全情境中的 WebSQL 将被移除。此政策用于重新启用该 API。
+          如果此政策设为 true，不安全情境中的 WebSQL 将可用。
+          如果此政策设为 false 或未设置，不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。</translation>
 <translation id="6083631234867522991">Windows（Windows 客户端）：</translation>
 <translation id="608788685013546076">设定用电高峰转移电量阈值（以百分比表示）</translation>
 <translation id="6089679180657323464">控制 Wilco 诊断和遥测控制器设置。</translation>
@@ -5668,6 +5683,13 @@
       如果此政策设为 False，系统将会应用默认网址显示方式。
       如果此政策未设置，系统将会应用默认网址显示方式，而且用户将能使用一个上下文菜单选项，在默认网址显示方式和完整网址显示方式之间切换。
       </translation>
+<translation id="6670716303606644752">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
+
+此政策让您可以覆盖这项变更。
+如果此政策已启用或未设置，系统将会屏蔽从其他源的子框架触发的 JavaScript 对话框。
+如果此政策已停用，系统将不会屏蔽从其他源的子框架触发的 JavaScript 对话框。
+
+日后我们会从 <ph name="PRODUCT_NAME" /> 中移除此政策。</translation>
 <translation id="6670794785040100077">禁止将文档提交到 <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6672070613706645316">允许用户在“新标签页”页面上自定义背景</translation>
 <translation id="6672630473862787247">为常规会话、无痕会话和访客会话启用静默身份验证。</translation>
@@ -6954,6 +6976,16 @@
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7974114691960514888">此政策已不再受支持。在连接到远程客户端时，允许使用 STUN 和中继服务器。如果启用此设置，那么即使远程客户端受到防火墙隔离，也仍然可以检测到并连接到此计算机。如果停用此设置，并且防火墙过滤了外发 UDP 连接，那么此计算机将只能与本地网络内的客户端计算机建立连接。</translation>
+<translation id="7976103461034266553">如果此政策已启用，超时设置为 0 毫秒的 JavaScript setTimeout() 将不会延迟到 1 毫秒。
+          如果此政策已停用，超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。
+          如果此政策未设置，浏览器的默认行为将会用于 setTimeout() 函数延迟。
+
+          该功能符合 Web 标准，但可能会改变网页上的任务排序，从而导致那些依赖于某种特定排序的网站出现意外行为，也可能会影响大量使用超时设置为 0 毫秒的 setTimeout() 的网站，例如增加 CPU 负载。
+
+          对于未设置此政策的用户，Chrome 将在稳定渠道上逐步推出相应变更。
+
+          此政策已从 Chrome 110 中移除。
+                                        </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> 目标名称</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">启用 Android 报告</translation>
@@ -7165,6 +7197,7 @@
 
       详细了解“安全浏览”功能 (https://developers.google.com/safe-browsing)。</translation>
 <translation id="8199823751103472868">通过设置此政策，您可为 <ph name="PRODUCT_OS_NAME" /> 启用印地语 Inscript 布局。如果此政策设为 false 或未设置，布局将不可用。</translation>
+<translation id="8202834945144737726">为登录界面上的一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 认证流程</translation>
 <translation id="8212900161626657849">如果您未配置或已启用此政策，<ph name="PRODUCT_NAME" /> 将会遵循 CECPQ2（TLS 中的一种后量子密钥协议算法）的默认发布流程。
 
       CECPQ2 会引发更长的 TLS 消息；在极少数情况下，这种消息可能会致使某些网络硬件出错。您也可将此政策设为 False，以便在解决网络问题期间停用 CECPQ2。

@@ -282,6 +282,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1622571349153632031">Culinária vegetariana</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
+<translation id="1633137413609266904">{0,plural, =1{A abertura desse arquivo está bloqueada pela política do administrador}one{A abertura de # arquivo está bloqueada pela política do administrador}other{A abertura de # arquivos está bloqueada pela política do administrador}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Declaração e planejamento de impostos</translation>
 <translation id="1638780421120290329">Não é possível salvar o cartão</translation>
@@ -699,6 +700,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Pressione |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para sair da tela cheia</translation>
+<translation id="2718207025093645426">O dispositivo ou usuário gerenciado não tem nenhuma política carregada.</translation>
 <translation id="2721148159707890343">Solicitação bem-sucedida</translation>
 <translation id="2723669454293168317">Executar uma confirmação de segurança nas configurações do Chrome</translation>
 <translation id="2726001110728089263">Bandeja lateral</translation>
@@ -896,6 +898,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> deseja se conectar</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes arquivos em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Sua organização, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="3282497668470633863">Adicionar nome (como consta no cartão)</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -1146,7 +1149,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991">Solicitação para reproduzir conteúdo protegido feita por <ph name="URL" />. A identidade do seu dispositivo será verificada pelo Google e poderá ser acessada por esse site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Digite o código de segurança</translation>
 <translation id="3927932062596804919">Negar</translation>
@@ -1295,6 +1297,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4277028893293644418">Redefinir senha</translation>
 <translation id="4278390842282768270">Permitido</translation>
+<translation id="4281998142035485137">{0,plural, =1{Abrir arquivo confidencial?}one{Abrir arquivo confidencial?}other{Abrir arquivos confidenciais?}}</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o favorito foi removido</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esse cartão foi adicionado à sua Conta do Google}one{Esse cartão foi adicionado à sua Conta do Google}other{Esses cartões foram adicionados à sua Conta do Google}}</translation>
@@ -1928,6 +1931,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5904360430676679685">Família e relacionamentos</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5911110632211230665">A abertura de arquivos está bloqueada</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}}</translation>
@@ -2841,6 +2845,7 @@ Mais detalhes:
 <translation id="8233773197406738106">Preparando o arquivo</translation>
 <translation id="8235754723616617175">Música country</translation>
 <translation id="8237519162179154808">Hobbies e lazer</translation>
+<translation id="8238188918340945316">28 x 40 pol.</translation>
 <translation id="8238581221633243064">Abrir página em uma nova guia anônima</translation>
 <translation id="8241707690549784388">A página que você está procurando usou as informações inseridas. Voltar à essa página poderá fazer com que todas as ações realizadas antes sejam repetidas. Quer continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste site</translation>

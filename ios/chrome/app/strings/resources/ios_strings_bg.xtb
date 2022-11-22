@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
 <translation id="1552525382687785070">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1565371473877914088">Нов раздел в режим „инкогнито“</translation>
 <translation id="1580715474678097352">Защита от опасни сайтове</translation>
 <translation id="1580783302095112590">Пощата е изпратена.</translation>
 <translation id="1582732959743469162">Текущото изтегляне ще бъде прекратено.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Мобилна</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="199425419756152024">Преглед на паролата</translation>
+<translation id="2010008505735295285">Презареждане</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="2021670401941426298">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="202292859882676807">Достъпът до микрофона е разрешен</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Отказ</translation>
 <translation id="3277021493514034324">Адресът на сайта бе копиран</translation>
 <translation id="3285962946108803577">Споделяне на страницата...</translation>
+<translation id="3289505634533552500">Гласово търсене</translation>
 <translation id="3290875554372353449">Изберете профил</translation>
 <translation id="3305294846493618482">още</translation>
 <translation id="3311748811247479259">Изключено</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">Да се премахне ли профилът <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5317780077021120954">Запазване</translation>
+<translation id="5318298563956633672">Вече проследявате този продукт.</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
 <translation id="536067926684072644">Показване на отметките</translation>
 <translation id="5360976571138293719">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">Често посещавани</translation>
 <translation id="54401264925851789">Информация за сигурността на страницата</translation>
 <translation id="5443952882982198570">Кредитни карти</translation>
+<translation id="5444892875087332195">Отметки</translation>
 <translation id="5457226814769348910">Отваряне на офлайн версията</translation>
 <translation id="5489208564673669003">За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">Включване на синхронизирането</translation>
 <translation id="5819208479324046259">Управлява се от <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Можете да запазвате паролите, начините на плащане и адресите за Chrome, така че по-късно да се попълват автоматично.</translation>
+<translation id="5834415013958049700">Търсене с Обектив на копираното от вас изображение</translation>
 <translation id="5846482154967366008">Търсеща машина</translation>
 <translation id="5854790677617711513">По-стари от 30 дни</translation>
 <translation id="5857090052475505287">Нова папка</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">Наскоро посетени</translation>
 <translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
+<translation id="6006672969046233841">Нов раздел</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
 <translation id="6021332621416007159">Отваряне във...</translation>
 <translation id="6027945736510816438">Може би имахте предвид <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">Включете синхронизирането, за да получавате съдържание въз основа на интересите си.</translation>
 <translation id="721597782417389033">Псевдонимът на картата е невалиден</translation>
 <translation id="7221173315674413369">Разгледайте новите функции и съвети в „Новите неща“</translation>
+<translation id="7223102419539744003">Затваряне на раздела</translation>
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
 <translation id="7265758999917665941">Никога за този сайт</translation>
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">Неуспешно изтегляне</translation>
 <translation id="785938070103630874">Отворете „Пароли“, „Начини на плащане“ или „Адрес“ и изберете „Още“.</translation>
 <translation id="7859704718976024901">История на сърфирането</translation>
+<translation id="7870750252270996949">Търсене с Обектив на копираното изображение</translation>
 <translation id="7879275349003161544">Показване на изтеглянията</translation>
 <translation id="7884694604461143138">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">За да защити поверителността ви, Chrome няма да попълни автоматично това поле.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Основна версия на сайта</translation>
 <translation id="8820817407110198400">Отметки</translation>
+<translation id="882557203579758546">Търсене в страницата…</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
 <translation id="8843129975935593190">Организацията ви ограничава това какво можете да синхронизирате.</translation>
 <translation id="8849001918648564819">Скрито</translation>

@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR 코드 스캔</translation>
 <translation id="1552525382687785070">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="1554477036522844996">새 창</translation>
+<translation id="1565371473877914088">새 시크릿 탭</translation>
 <translation id="1580715474678097352">위험한 웹사이트로부터 컴퓨터를 보호합니다.</translation>
 <translation id="1580783302095112590">메일이 전송되었습니다.</translation>
 <translation id="1582732959743469162">현재 진행 중인 다운로드가 모두 중지됩니다.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">모바일</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="199425419756152024">비밀번호 보기</translation>
+<translation id="2010008505735295285">새로고침</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="2021670401941426298">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="202292859882676807">마이크 액세스 허용됨</translation>
@@ -299,6 +301,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3272527697863656322">취소</translation>
 <translation id="3277021493514034324">사이트 주소가 복사되었습니다.</translation>
 <translation id="3285962946108803577">페이지 공유...</translation>
+<translation id="3289505634533552500">음성 검색</translation>
 <translation id="3290875554372353449">계정 선택</translation>
 <translation id="3305294846493618482">더보기</translation>
 <translation id="3311748811247479259">사용 안함</translation>
@@ -556,6 +559,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> 계정을 삭제하시겠습니까?</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5317780077021120954">저장</translation>
+<translation id="5318298563956633672">이미 추적 중인 제품입니다.</translation>
 <translation id="5339316356165661760">동기화 사용</translation>
 <translation id="536067926684072644">북마크 보기</translation>
 <translation id="5360976571138293719">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
@@ -569,6 +573,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5439599923922718668">자주 방문한 웹사이트</translation>
 <translation id="54401264925851789">페이지 보안 정보</translation>
 <translation id="5443952882982198570">신용카드</translation>
+<translation id="5444892875087332195">북마크</translation>
 <translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
@@ -619,6 +624,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="581659025233126501">동기화 사용 설정</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">나중에 Chrome이 자동 완성할 수 있도록 비밀번호, 결제 수단, 주소를 저장합니다</translation>
+<translation id="5834415013958049700">복사한 렌즈 이미지</translation>
 <translation id="5846482154967366008">검색엔진</translation>
 <translation id="5854790677617711513">30일 이상 전</translation>
 <translation id="5857090052475505287">새 폴더</translation>
@@ -646,6 +652,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5984222099446776634">최근 방문</translation>
 <translation id="5988097621740394599">탭에서 가격 인하 정보를 확인합니다.</translation>
 <translation id="5988851877894965432">Chrome에서 URL 열기</translation>
+<translation id="6006672969046233841">새 탭</translation>
 <translation id="6012140227487808125">암호화하는 중...</translation>
 <translation id="6021332621416007159">다음에서 열기</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
@@ -832,6 +839,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7207023858769244910">동기화하여 내 관심분야에 맞는 콘텐츠를 받아보세요.</translation>
 <translation id="721597782417389033">잘못된 카드 닉네임</translation>
 <translation id="7221173315674413369">'새로운 기능'에서 새로운 기능과 팁을 살펴보세요.</translation>
+<translation id="7223102419539744003">탭 닫기</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7265758999917665941">이 사이트 제외</translation>
 <translation id="7272437679830969316">신원을 인증할 수 없습니다. 비밀번호가 복사되지 않았습니다.</translation>
@@ -903,6 +911,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7856733331829174190">다운로드할 수 없음</translation>
 <translation id="785938070103630874">비밀번호, 결제 수단, 주소 등 열기</translation>
 <translation id="7859704718976024901">인터넷 사용 기록</translation>
+<translation id="7870750252270996949">렌즈에서 이미지를 복사했습니다.</translation>
 <translation id="7879275349003161544">다운로드 표시</translation>
 <translation id="7884694604461143138">검색 기록(<ph name="COUNT" />개 찾음)</translation>
 <translation id="7887198238286927132">Chrome에서는 개인정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
@@ -1027,6 +1036,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">기본 사이트 보기</translation>
 <translation id="8820817407110198400">북마크</translation>
+<translation id="882557203579758546">페이지에서 찾기…</translation>
 <translation id="8840513115188359703">Google 계정에서 로그아웃되지 않습니다.</translation>
 <translation id="8843129975935593190">조직에서 동기화할 수 있는 항목을 제한합니다.</translation>
 <translation id="8849001918648564819">숨김</translation>

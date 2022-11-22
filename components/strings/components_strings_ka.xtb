@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1622571349153632031">ვეგეტარიანული სამზარეულო</translation>
 <translation id="1623104350909869708">ამ გვერდისთვის დამატებითი დიალოგების შექმნის აკრძალვა</translation>
+<translation id="1633137413609266904">{0,plural, =1{ამ ფაილის გახსნა დაბლოკილია ადმინისტრატორის წესების მიხედვით}other{# ფაილის გახსნა დაბლოკილია ადმინისტრატორის წესების მიხედვით}}</translation>
 <translation id="1634828734222219955">სულ</translation>
 <translation id="163669211644121865">გადასახადების მომზადება და დაგეგმვა</translation>
 <translation id="1638780421120290329">ბარათის შენახვა ვერ მოხერხდა</translation>
@@ -699,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან საგადახდო და საკრედიტო ბარათების ინფორმაციის სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">სრულეკრანიანი რეჟიმიდან გამოსასვლელად, დააჭირეთ კლავიშებზე |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="2718207025093645426">წესები არ ჩატვირთულა მართული მომხმარებლისთვის ან მოწყობილობისთვის.</translation>
 <translation id="2721148159707890343">მოთხოვნა წარმატებით განხორციელდა</translation>
 <translation id="2723669454293168317">გაუშვით უსაფრთხოების შემოწმება Chrome-ის პარამეტრებიდან</translation>
 <translation id="2726001110728089263">გვერდითი ლანგარი</translation>
@@ -896,6 +898,7 @@
 <translation id="3270847123878663523">გადალაგების &amp;მოქმედების გაუქმება</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> დაკავშირებას ითხოვს</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}}</translation>
 <translation id="3282085321714087552">თქვენმა ორგანიზაციამ (<ph name="ENROLLMENT_DOMAIN" />) მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
 <translation id="3282497668470633863">ბარათზე სახელის დამატება</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
@@ -1146,7 +1149,6 @@
 <translation id="3897092660631435901">მენიუ</translation>
 <translation id="3901925938762663762">ბარათი ვადაგასულია</translation>
 <translation id="3906954721959377182">ტაბლეტი</translation>
-<translation id="3909477809443608991"><ph name="URL" /> ითხოვს დაცული კონტენტის დაკვრას. Google განახორციელებს თქვენი მოწყობილობის იდენტიფიკაციას, ხოლო ამ ინფორმაციაზე წვდომა შეიძლება ჰქონდეს ამ საიტსაც.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">შეიყვანეთ უსაფრთხოების კოდი</translation>
 <translation id="3927932062596804919">უარყოფა</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">გადატვირთეთ თქვენი მოწყობილობა</translation>
 <translation id="4277028893293644418">პაროლის გადაყენება</translation>
 <translation id="4278390842282768270">დაშვებულია</translation>
+<translation id="4281998142035485137">{0,plural, =1{გსურთ, გახსნათ კონფიდენციალური ფაილი?}other{გსურთ, გახსნათ კონფიდენციალური ფაილები?}}</translation>
 <translation id="4282346679996504092">ამ პროდუქტთან დაკავშირებული გაფრთხილებები გამოირთო, ხოლო სანიშნე ამოიშალა</translation>
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ეს ბარათი შეინახა თქვენს Google ანგარიშში}other{ეს ბარათები შეინახა თქვენს Google ანგარიშში}}</translation>
@@ -1928,6 +1931,7 @@
 <translation id="5903264686717710770">სათაური:</translation>
 <translation id="5904360430676679685">ოჯახი და ურთიერთობები</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (სინქრონიზებული)</translation>
+<translation id="5911110632211230665">გახსნა დაბლოკილია</translation>
 <translation id="59174027418879706">ჩართული</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{გამოიყენება 1}other{გამოიყენება #}}</translation>

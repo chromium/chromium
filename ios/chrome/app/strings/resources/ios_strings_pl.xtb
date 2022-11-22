@@ -87,6 +87,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
 <translation id="1552525382687785070">Administrator wyłączył synchronizację</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
+<translation id="1565371473877914088">Nowa karta incognito</translation>
 <translation id="1580715474678097352">Korzystaj z ochrony przed niebezpiecznymi stronami</translation>
 <translation id="1580783302095112590">E-mail wysłany.</translation>
 <translation id="1582732959743469162">Spowoduje to zatrzymanie bieżącego pobierania.</translation>
@@ -133,6 +134,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1981118202195772574">Mobilny</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="199425419756152024">Wyświetl hasło</translation>
+<translation id="2010008505735295285">Załaduj ponownie</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="2021670401941426298">Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wyszukiwarki.</translation>
 <translation id="202292859882676807">Przyznano dostęp do mikrofonu</translation>
@@ -299,6 +301,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3272527697863656322">Anuluj</translation>
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
 <translation id="3285962946108803577">Udostępnij stronę...</translation>
+<translation id="3289505634533552500">Wyszukiwanie głosowe</translation>
 <translation id="3290875554372353449">Wybierz konto</translation>
 <translation id="3305294846493618482">więcej</translation>
 <translation id="3311748811247479259">Wyłączono</translation>
@@ -556,6 +559,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5295239312320826323">Usunąć konto <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5317780077021120954">Zapisz</translation>
+<translation id="5318298563956633672">Śledzisz już ten produkt.</translation>
 <translation id="5339316356165661760">Włącz synchronizację</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5439599923922718668">Często odwiedzane</translation>
 <translation id="54401264925851789">Informacje o bezpieczeństwie strony</translation>
 <translation id="5443952882982198570">Karty kredytowe</translation>
+<translation id="5444892875087332195">Zakładki</translation>
 <translation id="5457226814769348910">Otwórz wersję offline</translation>
 <translation id="5489208564673669003">Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
@@ -619,6 +624,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="581659025233126501">Włącz synchronizację</translation>
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Zapisuj w Chrome hasła, formy płatności i adresy, aby później automatycznie je uzupełniać.</translation>
+<translation id="5834415013958049700">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="5846482154967366008">Wyszukiwarka</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
 <translation id="5857090052475505287">Nowy folder</translation>
@@ -646,6 +652,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5984222099446776634">Ostatnio odwiedzone</translation>
 <translation id="5988097621740394599">Pokazuj obniżki cen na kartach.</translation>
 <translation id="5988851877894965432">Otwórz adresy URL w Chrome</translation>
+<translation id="6006672969046233841">Nowa karta</translation>
 <translation id="6012140227487808125">Szyfruję…</translation>
 <translation id="6021332621416007159">Otwórz w...</translation>
 <translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7207023858769244910">Włącz synchronizację, aby otrzymywać treści związane ze swoimi zainteresowaniami.</translation>
 <translation id="721597782417389033">Nieprawidłowa nazwa karty</translation>
 <translation id="7221173315674413369">Poznaj nowe funkcje i wskazówki przedstawione na stronie Nowe funkcje</translation>
+<translation id="7223102419539744003">Zamknij kartę</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
@@ -903,6 +911,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="785938070103630874">Otwórz sekcje Hasła, Formy płatności lub Adres i inne</translation>
 <translation id="7859704718976024901">Historia przeglądania</translation>
+<translation id="7870750252270996949">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="7879275349003161544">Wyświetl pobrane pliki</translation>
 <translation id="7884694604461143138">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Aby chronić Twoją prywatność, Chrome nie będzie automatycznie wypełniać tego pola.</translation>
@@ -1027,6 +1036,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Domyślny widok witryny</translation>
 <translation id="8820817407110198400">Zakładki</translation>
+<translation id="882557203579758546">Znajdź na stronie…</translation>
 <translation id="8840513115188359703">Nie spowoduje to wylogowania z konta Google.</translation>
 <translation id="8843129975935593190">Twoja organizacja nie pozwala na synchronizację niektórych typów danych.</translation>
 <translation id="8849001918648564819">Ukryte</translation>

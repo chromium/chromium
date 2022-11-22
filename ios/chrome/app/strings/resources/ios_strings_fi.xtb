@@ -87,6 +87,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1545749641540134597">Skannaa QR-koodi</translation>
 <translation id="1552525382687785070">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä</translation>
 <translation id="1554477036522844996">Uusi ikkuna</translation>
+<translation id="1565371473877914088">Uusi incognito-välilehti</translation>
 <translation id="1580715474678097352">Suojaudu vaarallisilta sivustoilta</translation>
 <translation id="1580783302095112590">Viesti lähetetty.</translation>
 <translation id="1582732959743469162">Tämä keskeyttää nykyisen latauksen edistymisen.</translation>
@@ -133,6 +134,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1981118202195772574">Mobiili</translation>
 <translation id="1989112275319619282">Selaa</translation>
 <translation id="199425419756152024">Näytä salasana</translation>
+<translation id="2010008505735295285">Päivitä</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="2021670401941426298">Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="202292859882676807">Pääsy mikrofoniin myönnetty</translation>
@@ -299,6 +301,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
 <translation id="3285962946108803577">Jaa sivu…</translation>
+<translation id="3289505634533552500">Puhehaku</translation>
 <translation id="3290875554372353449">Valitse tili</translation>
 <translation id="3305294846493618482">lisää</translation>
 <translation id="3311748811247479259">Pois päältä</translation>
@@ -556,6 +559,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5295239312320826323">Poistetaanko tili <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5317780077021120954">Tallenna</translation>
+<translation id="5318298563956633672">Seuraat jo tätä tuotetta.</translation>
 <translation id="5339316356165661760">Laita synkronointi päälle</translation>
 <translation id="536067926684072644">Näytä kirjanmerkit</translation>
 <translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
@@ -569,6 +573,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5439599923922718668">Usein avatut</translation>
 <translation id="54401264925851789">Sivun suojaustiedot</translation>
 <translation id="5443952882982198570">Luottokortit</translation>
+<translation id="5444892875087332195">Kirjanmerkit</translation>
 <translation id="5457226814769348910">Avaa offline-versio</translation>
 <translation id="5489208564673669003">Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Evästeasetuksiin<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Estä kaikki evästeet (ei suositella)</translation>
@@ -619,6 +624,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="581659025233126501">Laita synkronointi päälle</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Tallenna salasanat, maksutavat ja osoitteet Chromen automaattista täyttöä varten.</translation>
+<translation id="5834415013958049700">Kopioimasi Lens-kuva</translation>
 <translation id="5846482154967366008">Hakukone</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857090052475505287">Uusi kansio</translation>
@@ -646,6 +652,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5984222099446776634">Viimeksi vieraillut</translation>
 <translation id="5988097621740394599">Katso hinnanalennukset välilehdiltä.</translation>
 <translation id="5988851877894965432">Avaa URL-osoitteet Chromessa</translation>
+<translation id="6006672969046233841">Uusi välilehti</translation>
 <translation id="6012140227487808125">Salataan…</translation>
 <translation id="6021332621416007159">Avaa sovell...</translation>
 <translation id="6027945736510816438">Tarkoititko: <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7207023858769244910">Synkronoimalla näet kiinnostuksen kohteidesi mukaista sisältöä.</translation>
 <translation id="721597782417389033">Virheellinen kortin lyhytnimi</translation>
 <translation id="7221173315674413369">Tutustu uusiin ominaisuuksiin ja vinkkeihin Uutta-ominaisuudessa</translation>
+<translation id="7223102419539744003">Sulje välilehti</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>
 <translation id="7265758999917665941">Ei koskaan tälle sivustolle</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
@@ -903,6 +911,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7856733331829174190">Lataus epäonnistui</translation>
 <translation id="785938070103630874">Avaa esimerkiksi Salasanat, Maksutavat tai Osoite</translation>
 <translation id="7859704718976024901">Selaushistoria</translation>
+<translation id="7870750252270996949">Kopioitu Lens-kuva</translation>
 <translation id="7879275349003161544">Näytä lataukset</translation>
 <translation id="7884694604461143138">Hae historiasta (<ph name="COUNT" /> löytyi)</translation>
 <translation id="7887198238286927132">Tietojesi suojaamiseksi Chrome ei täytä tätä kenttää automaattisesti.</translation>
@@ -1027,6 +1036,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Sivuston oletusnäkymä</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
+<translation id="882557203579758546">Hae sivulta…</translation>
 <translation id="8840513115188359703">Sinua ei kirjata ulos Google-tililtäsi.</translation>
 <translation id="8843129975935593190">Organisaatiosi rajoittaa, mitä voit synkronoida.</translation>
 <translation id="8849001918648564819">Piilotettu</translation>

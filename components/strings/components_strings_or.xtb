@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପେମେଣ୍ଟ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ ସୂଚନା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="2715808615350965923">ସୁପର A</translation>
 <translation id="271663710482723385">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
+<translation id="2718207025093645426">ପରିଚାଳିତ ୟୁଜର କିମ୍ବା ଡିଭାଇସର କୌଣସି ନୀତି ଲୋଡ ହୋଇନାହିଁ।</translation>
 <translation id="2721148159707890343">ଅନୁରୋଧ ସଫଳ ହୋଇଛି</translation>
 <translation id="2723669454293168317">Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
 <translation id="2726001110728089263">ସାଇଡ୍ ଟ୍ରେ</translation>
@@ -1145,7 +1146,6 @@
 <translation id="3897092660631435901">ମେନୁ</translation>
 <translation id="3901925938762663762">କାର୍ଡର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="3906954721959377182">ଟାବ୍‌ଲେଟ୍</translation>
-<translation id="3909477809443608991"><ph name="URL" /> ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଳାଇବାକୁ ଚାହୁଁଛି। ଆପଣଙ୍କର ଡିଭାଇସ୍‌ର ପରିଚୟକୁ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯିବ ଏବଂ ଏହି ସାଇଟ୍ ଦ୍ୱାରା ଆକ୍ସେସ୍ କରାଯାଇପାରେ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /><ph name="ERROR" /></translation>
 <translation id="3921869355029467742">ଆପଣଙ୍କ ସୁରକ୍ଷା କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="3927932062596804919">ଅସ୍ଵୀକାର</translation>
@@ -2842,6 +2842,7 @@
 <translation id="8233773197406738106">ଫାଇଲ୍ ପ୍ରସ୍ତୁତ କରାଯାଉଛି</translation>
 <translation id="8235754723616617175">କଣ୍ଟ୍ରୀ ମ୍ୟୁଜିକ</translation>
 <translation id="8237519162179154808">ସଉକ ଏବଂ ଆରାମ</translation>
+<translation id="8238188918340945316">28 x 40 ଇଞ୍ଚ</translation>
 <translation id="8238581221633243064">ଏକ ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍‌ରେ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="8241707690549784388">ଆପଣ ଯେଉଁ ପୃଷ୍ଠାଟି ଦେଖନ୍ତି ତାହା ଆପଣ ପ୍ରବିଷ୍ଟ କରିବା ବ୍ୟବହୃତ ସୂଚନା ଅଟେ । ସେହି ପୃଷ୍ଠାଟିକୁ ଫେରିବା ଦ୍ଵାରା ପୁନରାବୃତ୍ତି ଲାଗି ଆପଣ ରଖିଥିବା ଯେକୌଣସିଟି ନିଶ୍ଚିତରୂପେ ଘଟିପାରେ । ଆପଣ ଜାରି ରଖିବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="8241712895048303527">ଏହି ସାଇଟ୍‌ରେ ବ୍ଲକ୍ କରନ୍ତୁ</translation>

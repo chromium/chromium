@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Horario del modo Oscuro</translation>
 <translation id="2276999893457278469">Contenido de ayuda destacado</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para añadir fotos, accede a <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Configuración avanzada</translation>
 <translation id="2307344026739914387">Usar par de claves actual</translation>
 <translation id="2320295602967756579">Habilitar tema claro</translation>
 <translation id="2323506179655536734">SALTADA</translation>
@@ -472,6 +473,7 @@
 <translation id="5499114900554609492">No se ha podido terminar de escanear</translation>
 <translation id="5499762266711462226">El color del teclado se basa en el fondo de pantalla</translation>
 <translation id="5502931783115429516">Android no se está ejecutando</translation>
+<translation id="551689408806449779">El dispositivo se ha desconectado. Prueba a conectarlo de nuevo para probarlo.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Cambiar automáticamente al tema oscuro al anochecer</translation>
@@ -501,10 +503,12 @@
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5866840822086176774">Óptima</translation>
+<translation id="5876385649737594562">Actívalo para seleccionar opciones</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903200662178656908">El dispositivo es una combinación de teclado y ratón.</translation>
+<translation id="5904994456462260490">Añadir un nuevo APN</translation>
 <translation id="5907649332524363701">color de las teclas</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Activado</translation>

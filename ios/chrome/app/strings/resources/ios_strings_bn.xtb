@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
 <translation id="1552525382687785070">আপনার অ্যাডমিনিস্ট্রেটর সিঙ্ক 'বন্ধ' করে দিয়েছে</translation>
 <translation id="1554477036522844996">নতুন উইন্ডো</translation>
+<translation id="1565371473877914088">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1580715474678097352">বিপজ্জনক ওয়েবসাইটের হাত থেকে রক্ষা পান</translation>
 <translation id="1580783302095112590">মেল পাঠানো হয়েছে৷</translation>
 <translation id="1582732959743469162">এর ফলে আপনি এখন যা ডাউনলোড করছেন সেগুলি সব বন্ধ হয়ে যাবে।</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">মোবাইল</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
+<translation id="2010008505735295285">আবার লোড করুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="2021670401941426298">এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সার্চ ইঞ্জিনের নির্দেশাবলী দেখুন।</translation>
 <translation id="202292859882676807">মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="3285962946108803577">পৃষ্ঠা শেয়ার করুন...</translation>
+<translation id="3289505634533552500">ভয়েস সার্চ</translation>
 <translation id="3290875554372353449">একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> অ্যাকাউন্ট সরাবেন?</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
+<translation id="5318298563956633672">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন।</translation>
 <translation id="5339316356165661760">সিঙ্ক চালু করুন</translation>
 <translation id="536067926684072644">বুকমার্ক দেখান</translation>
 <translation id="5360976571138293719">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন।</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">প্রায়ই দেখা হয় এমন</translation>
 <translation id="54401264925851789">পৃষ্ঠা নিরাপত্তা তথ্য</translation>
 <translation id="5443952882982198570">ক্রেডিট কার্ড</translation>
+<translation id="5444892875087332195">বুকমার্ক</translation>
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
@@ -620,6 +625,7 @@
 <translation id="581659025233126501">সিঙ্ক চালু করুন</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">পরে আপনা-আপনি পূরণ হওয়ার জন্য Chrome-এ পাসওয়ার্ড, পেমেন্ট পদ্ধতি এবং অ্যাড্রেস সেভ করুন।</translation>
+<translation id="5834415013958049700">আপনার কপি করা লেন্সের ছবি</translation>
 <translation id="5846482154967366008">সার্চ ইঞ্জিন</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857090052475505287">নতুন ফোল্ডার</translation>
@@ -647,6 +653,7 @@
 <translation id="5984222099446776634">সাম্প্রতিককালে দেখা</translation>
 <translation id="5988097621740394599">ট্যাবে দাম কমার তথ্য দেখুন।</translation>
 <translation id="5988851877894965432">Chrome ব্রাউজার থেকে ইউআরএলগুলি খুলুন</translation>
+<translation id="6006672969046233841">নতুন ট্যাব</translation>
 <translation id="6012140227487808125">এনক্রিপ্ট হচ্ছে...</translation>
 <translation id="6021332621416007159">এতে খুলুন...</translation>
 <translation id="6027945736510816438">আপনি কি <ph name="WEBSITE" /> ডোমেনের কথা বলছেন?</translation>
@@ -833,6 +840,7 @@
 <translation id="7207023858769244910">আপনার আগ্রহের উপর ভিত্তি করে কন্টেন্ট পেতে সিঙ্ক করুন।</translation>
 <translation id="721597782417389033">কার্ডের বিশেষ নামটি সঠিক নয়</translation>
 <translation id="7221173315674413369">'নতুন' বিভাগে নতুন ফিচার এবং পরামর্শ এক্সপ্লোর করুন</translation>
+<translation id="7223102419539744003">'ট্যাব' বন্ধ করুন</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
@@ -904,6 +912,7 @@
 <translation id="7856733331829174190">ডাউনলোড করা যায়নি</translation>
 <translation id="785938070103630874">পাসওয়ার্ড, পেমেন্ট পদ্ধতি, অ্যাড্রেস এবং আরও অনেক কিছু খুলুন</translation>
 <translation id="7859704718976024901">ব্রাউজিং ইতিহাস</translation>
+<translation id="7870750252270996949">লেন্স কপি করা ছবি</translation>
 <translation id="7879275349003161544">ডাউনলোড দেখুন</translation>
 <translation id="7884694604461143138">সার্চ ইতিহাস (<ph name="COUNT" />টি পাওয়া গেছে)</translation>
 <translation id="7887198238286927132">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রটি নিজে থেকে পূরণ করবে না।</translation>
@@ -1028,6 +1037,7 @@
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ডিফল্ট সাইট ভিউ</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882557203579758546">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="8840513115188359703">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না।</translation>
 <translation id="8843129975935593190">আপনি কী সিঙ্ক করতে পারবেন সেটি আপনার প্রতিষ্ঠান সীমিত করে।</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>

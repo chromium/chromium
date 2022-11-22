@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2276999893457278469">Suosituin ohjesisältö</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Lisäasetukset</translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
 <translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
@@ -473,6 +474,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5499114900554609492">Skannausta ei voi suorittaa loppuun</translation>
 <translation id="5499762266711462226">Näppäimistön väri perustuu taustakuvaan</translation>
 <translation id="5502931783115429516">Android ei käynnissä</translation>
+<translation id="551689408806449779">Laitteen yhteys on katkaistu. Yhdistä se uudelleen testausta varten.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Vaihda tummaan teemaan automaattisesti, kun aurinko laskee</translation>
@@ -502,10 +504,12 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5866840822086176774">Hyvin vahva</translation>
+<translation id="5876385649737594562">Laita tämä päälle, jotta voit valita vaihtoehdot</translation>
 <translation id="588258955323874662">Koko ruutu</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
+<translation id="5904994456462260490">Lisää uusi APN</translation>
 <translation id="5907649332524363701">avaimen väri</translation>
 <translation id="5916084858004523819">Kielletty</translation>
 <translation id="5916664084637901428">Päällä</translation>

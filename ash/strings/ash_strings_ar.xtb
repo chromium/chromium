@@ -592,7 +592,7 @@
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
-<translation id="4285498937028063278">إزالة تثبيت</translation>
+<translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">محو جميع الإشعارات التي يبلغ عددها <ph name="COUNT" /></translation>
 <translation id="430191667033048642">تم نقل <ph name="MOVED_APP_NAME" /> إلى المجلد <ph name="FOLDER_NAME" />.</translation>
@@ -898,7 +898,6 @@
 <translation id="5958529069007801266">مستخدم يخضع للإدارة</translation>
 <translation id="5965524703725988602">إيقاف/تفعيل المظهر الداكن: <ph name="STATE_TEXT" /></translation>
 <translation id="5976112937189445008">‏اضغط على المفتاح Enter لتسجيل فيديو للنافذة</translation>
-<translation id="5977415296283489383">السمّاعة</translation>
 <translation id="5978382165065462689">مشاركة التحكم في شاشتك عن طريق المساعدة عن بُعد.</translation>
 <translation id="5980301590375426705">إنهاء جلسة الضيف</translation>
 <translation id="598407983968395253">استخدام النموذج</translation>

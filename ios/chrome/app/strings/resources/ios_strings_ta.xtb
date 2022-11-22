@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">QR குறியீட்டை ஸ்கேன் செய்க</translation>
 <translation id="1552525382687785070">உங்கள் நிர்வாகி ஒத்திசைவை முடக்கியுள்ளார்</translation>
 <translation id="1554477036522844996">புதிய சாளரம்</translation>
+<translation id="1565371473877914088">புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="1580715474678097352">ஆபத்தான இணையதளங்களில் இருந்து பாதுகாப்பாக இருங்கள்</translation>
 <translation id="1580783302095112590">மின்னஞ்சல் அனுப்பப்பட்டது.</translation>
 <translation id="1582732959743469162">இவ்வாறு செய்தால் உங்களின் தற்போதைய பதிவிறக்கத்திற்கான அனைத்துச் செயல்பாடும் நிறுத்தப்படும்.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">மொபைல்</translation>
 <translation id="1989112275319619282">உலாவு</translation>
 <translation id="199425419756152024">கடவுச்சொல்லைக் காட்டு</translation>
+<translation id="2010008505735295285">ரெஃப்ரெஷ் செய்</translation>
 <translation id="2015722694326466240">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="2021670401941426298">தேடல் விவரங்களை நீக்க உங்கள் தேடல் இன்ஜினின் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்).</translation>
 <translation id="202292859882676807">மைக்ரோஃபோனுக்கான அணுகல் வழங்கப்பட்டது</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">ரத்துசெய்</translation>
 <translation id="3277021493514034324">தள முகவரி நகலெடுக்கப்பட்டது</translation>
 <translation id="3285962946108803577">பக்கத்தைப் பகிர்...</translation>
+<translation id="3289505634533552500">குரல் தேடல்</translation>
 <translation id="3290875554372353449">கணக்கைத் தேர்வுசெய்க</translation>
 <translation id="3305294846493618482">மேலும்</translation>
 <translation id="3311748811247479259">ஆஃப்</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> எனும் கணக்கை அகற்றவா?</translation>
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5317780077021120954">சேமி</translation>
+<translation id="5318298563956633672">இந்தத் தயாரிப்பை ஏற்கெனவே கண்காணிக்கிறீர்கள்.</translation>
 <translation id="5339316356165661760">ஒத்திசைவை இயக்கு</translation>
 <translation id="536067926684072644">புக்மார்க்குகளைக் காட்டு</translation>
 <translation id="5360976571138293719">தனியுரிமை, பாதுகாப்பு, தரவுச் சேகரிப்பு ஆகியவற்றுடன் தொடர்புடைய கூடுதல் அமைப்புகளுக்கு <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> என்பதைப் பாருங்கள்.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">அடிக்கடி பார்வையிட்டவை</translation>
 <translation id="54401264925851789">பக்க பாதுகாப்புத் தகவல்</translation>
 <translation id="5443952882982198570">கிரெடிட் கார்டுகள்</translation>
+<translation id="5444892875087332195">புக்மார்க்குகள்</translation>
 <translation id="5457226814769348910">ஆஃப்லைன் பதிப்பைத் திற</translation>
 <translation id="5489208564673669003">அனைத்துத் தளங்களுக்குமான குக்கீகளையும் நிர்வகிக்க, <ph name="BEGIN_LINK" />குக்கீ அமைப்புகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="5490005495580364134">அனைத்து குக்கீகளையும் தடு (பரிந்துரைக்கப்படவில்லை)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">ஒத்திசைவை இயக்கு</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">வரும்காலங்களில் Chrome தானாக நிரப்பும் வகையில் கடவுச்சொற்கள், பேமெண்ட் முறைகள், முகவரிகள் ஆகியவற்றைச் சேமிக்கலாம்.</translation>
+<translation id="5834415013958049700">நீங்கள் Lens மூலம் நகலெடுத்த படம்</translation>
 <translation id="5846482154967366008">தேடல் இன்ஜின்</translation>
 <translation id="5854790677617711513">30 நாட்களுக்கு முந்தையவை</translation>
 <translation id="5857090052475505287">புதிய ஃபோல்டர்</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">சமீபத்தில் பார்த்தவை</translation>
 <translation id="5988097621740394599">உலாவிப் பக்கங்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்.</translation>
 <translation id="5988851877894965432">URLகளை Chromeமில் திற</translation>
+<translation id="6006672969046233841">புதிய உலாவிப் பக்கம்</translation>
 <translation id="6012140227487808125">முறைமையாக்குகிறது...</translation>
 <translation id="6021332621416007159">இதில் திற...</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> தளத்தைக் குறிப்பிடுகிறீர்களா?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">உங்கள் ஆர்வங்களின் அடிப்படையில் உள்ளடக்கத்தைப் பார்க்க ஒத்திசைக்கவும்.</translation>
 <translation id="721597782417389033">கார்டின் புனைப்பெயர் தவறானது</translation>
 <translation id="7221173315674413369">‘புதியவை’ என்பதில் புதிய அம்சங்களையும் உதவிக்குறிப்புகளையும் கண்டறியலாம்</translation>
+<translation id="7223102419539744003">உலாவிப் பக்கத்தை மூடுக</translation>
 <translation id="722454870747268814">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="7265758999917665941">இந்தத் தளத்திற்கு எப்போதும் வேண்டாம்</translation>
 <translation id="7272437679830969316">அடையாளத்தைச் சரிபார்க்க முடியவில்லை. கடவுச்சொல் நகலெடுக்கப்படவில்லை.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">பதிவிறக்க முடியவில்லை</translation>
 <translation id="785938070103630874">கடவுச்சொற்கள், பேமெண்ட் முறைகள், முகவரி போன்றவற்றைத் திறக்கவும்</translation>
 <translation id="7859704718976024901">உலாவல் வரலாறு</translation>
+<translation id="7870750252270996949">Lens மூலம் நகலெடுத்த படம்</translation>
 <translation id="7879275349003161544">பதிவிறக்கங்களைக் காட்டு</translation>
 <translation id="7884694604461143138">இதுவரை தேடியவை (<ph name="COUNT" /> முடிவுகள் உள்ளன)</translation>
 <translation id="7887198238286927132">உங்கள் தனியுரிமையைப் பாதுகாக்க, Chrome இந்தப் புலத்தைத் தானாக நிரப்பாது.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">இயல்புத் தளக் காட்சி</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
+<translation id="882557203579758546">பக்கத்தில் கண்டறிக…</translation>
 <translation id="8840513115188359703">உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்.</translation>
 <translation id="8843129975935593190">நீங்கள் எவற்றையெல்லாம் ஒத்திசைக்கலாம் என்பதை உங்கள் நிறுவனம் கட்டுப்படுத்துகிறது.</translation>
 <translation id="8849001918648564819">மறைக்கப்பட்டுள்ளது</translation>

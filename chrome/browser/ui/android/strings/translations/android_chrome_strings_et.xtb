@@ -12,6 +12,7 @@
 <translation id="1062628064301375934">Aidake meil luua privaatsem veeb</translation>
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
+<translation id="1091604859693995976">Värskendage vaatamiseks</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
 <translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
 <translation id="1103142993930332957">Kas soovite aidata Chrome'i täiustada?</translation>
@@ -122,11 +123,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
 <translation id="1592864538817356322">Standardne kaitse:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> soovitatud üksust allolevas loendis.</translation>
-<translation id="161647866166517041">Rämpssisu ja pettuste vähendamisel toetutakse usaldusmärkidele, et aidata saitidel võidelda pettuste vastu ja eristada roboteid inimestest.
-
-Teie interaktsioonide põhjal saidiga (nt kontole regulaarselt sisse logimine) saab see sait teie brauserile väljastada usaldusmärgi. Hiljem, kui teised külastatavad saidid kontrollivad kehtivat usaldusmärki ja leiavad selle, kohtlevad nad teid suurema tõenäosusega inimesena, mitte robotina.
-
-Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku tuvastamiseks.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame automaatselt huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chrome'il arvesse võtta.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Eemalda 1 valitud üksus}other{Eemalda # valitud üksust}}</translation>
 <translation id="1633659023549081553">Avastage Chrome'i avalehel uut sisu</translation>
@@ -334,6 +330,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito vaheleht suletakse}other{<ph name="TAB_COUNT_MANY" /> inkognito vahelehte suletakse}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolliti 1 päev tagasi}other{Kontrolliti # päeva tagasi}}</translation>
 <translation id="2842985007712546952">Emakaust</translation>
+<translation id="2851291081585704741">Võrguühendus puudub</translation>
 <translation id="2856503607207334158">Sisselogimine ebaõnnestus</translation>
 <translation id="2860954141821109167">Veenduge, et telefonirakendus oleks selles seadmes lubatud</translation>
 <translation id="2861923151411510142">Mõned Chrome'i funktsioonid pole enam saadaval</translation>
@@ -559,6 +556,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Ekraani ülaosas saadaolevad valikud</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>
+<translation id="4072805772816336153">Proovige hiljem uuesti</translation>
 <translation id="4084682180776658562">Järjehoidja</translation>
 <translation id="4084712963632273211">Avaldajalt <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />sisu pakub Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Võite kasutada tahvelarvutit selles seadmes sisselogimiseks, milles QR-koodi kuvatakse.</translation>
@@ -984,11 +982,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6363990818884053551">Sünkroonimise alustamiseks kinnitage oma isik</translation>
 <translation id="6364438453358674297">Kas eemaldada soovitus ajaloost?</translation>
 <translation id="6380100320871303656">Lehed, mida Chrome'i arvates tõenäoliselt külastate, eellaaditakse sagedamini. See seade võib suurendada andmemahu kasutust.</translation>
-<translation id="6385407407546870227">Kui katsed on sisse lülitatud, toetutakse rämpssisu ja pettuste vähendamisel usaldusmärkidele, et aidata saitidel võidelda pettuste vastu ja eristada roboteid inimestest.
-
-Teie interaktsioonide põhjal saidiga (nt kontole regulaarselt sisse logimine) saab see sait teie brauserile väljastada usaldusmärgi. Hiljem, kui teised külastatavad saidid kontrollivad kehtivat usaldusmärki ja leiavad selle, kohtlevad nad teid suurema tõenäosusega inimesena, mitte robotina.
-
-Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku tuvastamiseks.</translation>
 <translation id="6394791151443660613">Otsing: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Võrguühendus taastus</translation>

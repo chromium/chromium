@@ -1063,6 +1063,7 @@
 <translation id="1962233722219655970">這個網頁使用無法在你電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963976881984600709">標準防護</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
+<translation id="1966649499058910679">醒目顯示每個朗讀的字詞</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
 <translation id="1972325230031091483">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
@@ -1192,6 +1193,7 @@
 <translation id="208928984520943006">隨時從底部向上滑動即可返回主畫面。</translation>
 <translation id="2089566709556890888">使用 Google Chrome 安全瀏覽網路</translation>
 <translation id="2089795179672254991">當網站要讀取已複製到剪貼簿的文字和圖片時，必須先詢問你 (建議使用)</translation>
+<translation id="2089925163047119068">或</translation>
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
@@ -1798,7 +1800,6 @@
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="262154978979441594">訓練 Google 助理的語音模型</translation>
-<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">禁止任何網站處理通訊協定</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">這個網頁正在存取你的攝影機和麥克風。</translation>
@@ -2127,7 +2128,6 @@
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
 <translation id="2908358077082926882">再次按下「<ph name="CURRENTKEY" />」鍵即可移除指派設定並<ph name="RESPONSE" /></translation>
-<translation id="2909380725331714712">網站可透過信任權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。</translation>
 <translation id="2909506265808101667">無法連上 Google 服務。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2910318910161511225">請連線至網路，然後再試一次</translation>
 <translation id="291056154577034373">未讀取</translation>
@@ -2752,6 +2752,7 @@
 <translation id="3514373592552233661">如有多個可用網路，慣用網路的優先使用順序高於其他已知網路</translation>
 <translation id="3514647716686280777">你即將使用標準安全防護機制。如要進一步防範不安全的網站、下載內容和擴充功能，請在 Chrome 設定中啟用「安全瀏覽強化防護功能」。</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
+<translation id="3518866566087677312">將日後想回顧的內容加上書籤</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519564332031442870">列印後端服務</translation>
 <translation id="3519938335881974273">另存網頁…</translation>
@@ -3172,7 +3173,6 @@
 <translation id="3902789559055749153">選擇為「<ph name="APP_NAME" />」建立密碼金鑰的方式</translation>
 <translation id="3903187154317825986">內建鍵盤</translation>
 <translation id="3904326018476041253">定位服務</translation>
-<translation id="3904849010307028014">網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發信任權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的信任權杖，這些網站就較有可能會判斷你是真人，而非機器人。</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
 <translation id="3909701002594999354">顯示所有控制項(&amp;C)</translation>
@@ -3748,7 +3748,6 @@
 <translation id="4460014764210899310">取消分組</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
-<translation id="4465649939134800363">排序選項</translation>
 <translation id="4466839823729730432">在此查看回憶集錦</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
@@ -3804,6 +3803,7 @@
 <translation id="451407183922382411">技術提供：<ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">在播放和暫停影片之間切換</translation>
 <translation id="451515744433878153">移除</translation>
+<translation id="4515799157838123044">將背景調暗</translation>
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，座架將會停止運作。</translation>
 <translation id="4518840066030486079">Shift 鍵模式樣式</translation>
 <translation id="4519331665958994620">網站可以要求使用你的攝影機</translation>
@@ -4397,7 +4397,6 @@
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">正在檢查有無更新</translation>
-<translation id="5085561329775168253">運用 Google Play 商店提供的應用程式發揮創意、提升效率及享受娛樂</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">要還原預設首頁嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
@@ -4612,7 +4611,6 @@
 <translation id="52912272896845572">秘密金鑰檔案無效。</translation>
 <translation id="5291739252352359682">在 Chrome 瀏覽器中自動建立媒體字幕 (目前僅支援英文)。系統只會在裝置中處理語音和字幕，絕對不會外洩。</translation>
 <translation id="529175790091471945">格式化這台裝置</translation>
-<translation id="5292862864186939732">一律允許「<ph name="EXTENSION_NAME" />」在 <ph name="ORIGIN" /> 上執行嗎？</translation>
 <translation id="529296195492126134">不支援暫時模式。請與管理員聯絡。</translation>
 <translation id="5293170712604732402">將設定還原成原始預設值</translation>
 <translation id="5294097441441645251">開頭必須是小寫字元或底線</translation>
@@ -4828,7 +4826,6 @@
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
 <translation id="5494752089476963479">封鎖干擾性或誤導性的網站廣告</translation>
-<translation id="5494920125229734069">全選</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、資料和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持開啟螢幕</translation>
 <translation id="5496587651328244253">整理</translation>
@@ -5583,7 +5580,6 @@
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
 <translation id="6207806976844244951">儲存至 Google 密碼管理工具 (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">國家/地區</translation>
-<translation id="6208382900683142153">信任權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
 <translation id="6208521041562685716">正在啟用行動數據</translation>
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">正在更新元件</translation>
@@ -6531,7 +6527,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由系統管理員管理</translation>
 <translation id="7085389578340536476">要允許 Chrome 錄音嗎？</translation>
 <translation id="708550780726587276">(未設定)</translation>
-<translation id="7086531709814430567">一律允許這些擴充功能在 <ph name="ORIGIN" /> 上執行嗎？</translation>
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088674813905715446">管理員已將這個裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求你的管理員將裝置設為待處理狀態。</translation>
@@ -6958,6 +6953,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">「<ph name="APP_NAME" />」已暫停</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
+<translation id="752098910262610337">顯示快速鍵</translation>
 <translation id="7522255036471229694">說出「Ok Google」</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>
 <translation id="7525067979554623046">建立</translation>
@@ -7227,7 +7223,6 @@
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
-<translation id="7764857504908700767">在試用期間，網站會使用信任權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7765507180157272835">需要使用藍牙功能或 Wi-Fi</translation>
 <translation id="7766082757934713382">透過暫停應用程式和系統的自動更新來降低網路數據用量</translation>
@@ -7310,6 +7305,7 @@
 <translation id="7839051173341654115">查看/備份媒體</translation>
 <translation id="7839192898639727867">憑證主體金鑰識別碼</translation>
 <translation id="7842062217214609161">沒有快速鍵</translation>
+<translation id="7842115774595115751">啟用導覽控制項</translation>
 <translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="78427265591841839">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的任何內容</translation>
 <translation id="784273751836026224">解除安裝 Linux</translation>
@@ -7392,6 +7388,7 @@
 <translation id="79113168483292735">分頁搜尋中的「媒體分頁」部分</translation>
 <translation id="7912080627461681647">伺服器上的密碼已變更。請先登出然後重新登入。</translation>
 <translation id="7912974581251770345">翻譯</translation>
+<translation id="7914870167134465181">醒目顯示</translation>
 <translation id="7915457674565721553">如要設定家長監護功能，請連線至網際網路</translation>
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
@@ -7927,6 +7924,7 @@
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更你在造訪過的網站留下的所有資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠</translation>
+<translation id="8392726714909453725">隨選朗讀設定</translation>
 <translation id="8393511274964623038">停止外掛程式</translation>
 <translation id="839363317075970734">藍牙裝置詳細資料</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
@@ -7982,7 +7980,6 @@
 <translation id="8448729345478502352">縮小或放大畫面上的項目</translation>
 <translation id="8449008133205184768">貼上並符合樣式</translation>
 <translation id="8449036207308062757">管理儲存空間</translation>
-<translation id="8456512334795994339">尋找適合工作與娛樂的應用程式</translation>
 <translation id="845702320058262034">無法連線。請確認手機的藍牙功能已開啟。</translation>
 <translation id="8457451314607652708">匯入書籤</translation>
 <translation id="8458341576712814616">快捷字詞</translation>
@@ -8552,6 +8549,7 @@
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
 <translation id="8991694323904646277">找不到相機</translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
+<translation id="8993737615451556423">提供可調整朗讀速度以及暫停語音朗讀的控制項</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="899657321862108550">隨時隨地享有個人化的 Chrome 體驗</translation>

@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="1552525382687785070">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
+<translation id="1565371473877914088">برگه ناشناس جدید</translation>
 <translation id="1580715474678097352">ایمن ماندن دربرابر وب‌سایت‌های خطرناک</translation>
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
 <translation id="1582732959743469162">با این کار کل پیشرفت بارگیری کنونی‌تان متوقف خواهد شد.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">تلفن همراه</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="199425419756152024">مشاهده گذرواژه</translation>
+<translation id="2010008505735295285">بار کردن مجدد</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="2021670401941426298">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="202292859882676807">دسترسی به میکروفون مجاز است</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">لغو</translation>
 <translation id="3277021493514034324">نشانی سایت کپی شد</translation>
 <translation id="3285962946108803577">هم‌رسانی صفحه…</translation>
+<translation id="3289505634533552500">جستجوی گفتاری</translation>
 <translation id="3290875554372353449">انتخاب حساب</translation>
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3311748811247479259">خاموش</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">حساب <ph name="USER_EMAIL" /> برداشته شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5317780077021120954">ذخیره</translation>
+<translation id="5318298563956633672">ازقبل این محصول را پیگیری می‌کنید.</translation>
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
 <translation id="536067926684072644">نمایش نشانک‌ها</translation>
 <translation id="5360976571138293719">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">پربازدید</translation>
 <translation id="54401264925851789">اطلاعات امنیتی صفحه</translation>
 <translation id="5443952882982198570">کارت‌های اعتباری</translation>
+<translation id="5444892875087332195">نشانک‌ها</translation>
 <translation id="5457226814769348910">باز کردن نسخه آفلاین</translation>
 <translation id="5489208564673669003">برای مدیریت کردن کوکی‌ها برای همه سایت‌ها، به <ph name="BEGIN_LINK" />تنظیمات کوکی‌ها<ph name="END_LINK" /> بروید.</translation>
 <translation id="5490005495580364134">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
@@ -619,6 +624,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="581659025233126501">روشن کردن همگام‌سازی</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">‏گذرواژه‌ها، روش‌های پرداخت، و نشانی‌ها را ذخیره کنید تا Chrome بتواند آن‌ها را تکمیل خودکار کند.</translation>
+<translation id="5834415013958049700">تصویر «لنز» که کپی کرده‌اید</translation>
 <translation id="5846482154967366008">موتور جستجو</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
 <translation id="5857090052475505287">پوشهٔ جدید</translation>
@@ -646,6 +652,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5984222099446776634">به‌تازگی بازدیدشده</translation>
 <translation id="5988097621740394599">کاهش قیمت را در برگه‌ها مشاهده کنید.</translation>
 <translation id="5988851877894965432">‏باز کردن نشانی‌های وب در Chrome</translation>
+<translation id="6006672969046233841">برگه جدید</translation>
 <translation id="6012140227487808125">در حال رمزگذاری…</translation>
 <translation id="6021332621416007159">بازکردن در...</translation>
 <translation id="6027945736510816438">منظورتان <ph name="WEBSITE" /> بود؟</translation>
@@ -832,6 +839,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7207023858769244910">برای دریافت محتوا براساس علایقتان، همگام‌سازی کنید.</translation>
 <translation id="721597782417389033">نام مستعار کارت نامعتبر است</translation>
 <translation id="7221173315674413369">ویژگی‌ها و نکات جدید را در «تازه‌ها» کاوش کنید</translation>
+<translation id="7223102419539744003">بستن برگه</translation>
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
 <translation id="7265758999917665941">هرگز برای این سایت</translation>
 <translation id="7272437679830969316">نمی‌توانیم هویتتان را به تأیید برسانیم. گذرواژه کپی نشد.</translation>
@@ -903,6 +911,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7856733331829174190">بارگیری نشد</translation>
 <translation id="785938070103630874">گذرواژه‌ها، روش‌های پرداخت، نشانی‌ها، و دیگر موارد ذخیره‌شده را باز کنید</translation>
 <translation id="7859704718976024901">سابقه مرور</translation>
+<translation id="7870750252270996949">تصویر کپی‌شده «لنز»</translation>
 <translation id="7879275349003161544">نمایش بارگیری‌ها</translation>
 <translation id="7884694604461143138">سابقه جستجو (<ph name="COUNT" /> مورد پیدا شد)</translation>
 <translation id="7887198238286927132">‏برای محافظت از حریم‌خصوصی‌تان، Chrome از ویژگی تکمیل خودکار برای این فیلد استفاده نخواهد کرد.</translation>
@@ -1027,6 +1036,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">نمای سایت پیش‌فرض</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
+<translation id="882557203579758546">یافتن در صفحه…</translation>
 <translation id="8840513115188359703">‏از حساب Google خود خارج نمی‌شوید.</translation>
 <translation id="8843129975935593190">سازمان شما آنچه را می‌توانید همگام‌سازی کنید محدود می‌کند.</translation>
 <translation id="8849001918648564819">پنهان</translation>

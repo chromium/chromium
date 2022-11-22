@@ -1063,6 +1063,7 @@
 <translation id="1962233722219655970">‏یہ صفحہ ایک Native Client ایپ استعمال کرتا ہے جو آپ کے کمپیوٹر پر کام نہیں کرتی ہے۔</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
 <translation id="1965624977906726414">کوئی خصوصی اجازتیں نہیں ہیں۔</translation>
+<translation id="1966649499058910679">بولے جانے پر ہر لفظ کو نمایاں کریں</translation>
 <translation id="1969654639948595766">‏WebRTC ٹیکسٹ لاگز (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="197288927597451399">رکھیں</translation>
@@ -1192,6 +1193,7 @@
 <translation id="208928984520943006">کسی بھی وقت ہوم اسکرین پر جانے کے لیے، نیچے سے اوپر کی طرف سوائپ کریں۔</translation>
 <translation id="2089566709556890888">‏Google Chrome کے ساتھ محفوظ طریقے سے براؤز کریں</translation>
 <translation id="2089795179672254991">جب کوئی سائٹ کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہے تو پوچھیں (تجویز کردہ)</translation>
+<translation id="2089925163047119068">یا</translation>
 <translation id="2090165459409185032">‏اپنے اکاؤنٹ کی معلومات کی بازیابی کیلئے، اس پر جائیں: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">آپ کے لاگ ان کرنے پر خودکار طور پر منسلک ہو جاتا ہے</translation>
 <translation id="2090876986345970080">سسٹم سیکیورٹی کی ترتیبات</translation>
@@ -1800,7 +1802,6 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا ہے۔</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="262154978979441594">‏Google اسسٹنٹ صوتی ماڈل کی تربیت کریں</translation>
-<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">کسی سائٹ کو پروٹوکولز ہینڈل کرنے کی اجازت نہ دیں</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">یہ صفحہ آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کر رہا ہے۔</translation>
@@ -2129,7 +2130,6 @@
     سرور کا پیغام: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">ڈائریکٹری کے لحاظ سے میڈیا گیلری شامل کریں</translation>
 <translation id="2908358077082926882">تفویض اور <ph name="RESPONSE" /> ہٹانے کے لیے "<ph name="CURRENTKEY" />" دوبارہ دبائيں</translation>
-<translation id="2909380725331714712">اسپام اور دھوکہ دہی میں تخفیف سائٹس کو دھوکہ دہی سے لڑنے اور بوٹس کو لوگوں سے ممتاز کرنے میں مدد کرنے کے لیے ٹرسٹ ٹوکنز پر انحصار کرتی ہے۔</translation>
 <translation id="2909506265808101667">‏Google سروسز سے منسلک نہیں کیا جا سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="2910318910161511225">نیٹ ورک سے منسلک ہو کر دوبارہ کوشش کریں</translation>
 <translation id="291056154577034373">بغیر پڑھے ہوئے</translation>
@@ -2754,6 +2754,7 @@
 <translation id="3514373592552233661">اگر ایک سے زیادہ نیٹ ورکس دستیاب ہوتے ہیں تو دیگر معلوم نیٹ ورکس پر ترجیحی نیٹ ورکس کو ترجیح دی جائے گی</translation>
 <translation id="3514647716686280777">‏آپ کو معیاری حفاظتی تحفظ مل رہا ہے۔ خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف مزید تحفظ حاصل کرنے کے لیے، Chrome ترتیبات میں بہتر کردہ محفوظ براؤزنگ کو آن کریں۔</translation>
 <translation id="3515983984924808886">‏دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے اپنی سیکیورٹی کلید کو دوبارہ ٹچ کریں۔ سیکیورٹی کلید کے PIN سمیت اس میں اسٹور کردہ سبھی معلومات کو حذف کر دیا جائے گا۔</translation>
+<translation id="3518866566087677312">ان چیزوں کو بک مارکس کریں جن پر آپ بعد میں واپس آنا چاہتے ہیں</translation>
 <translation id="3518985090088779359">قبول کرکے جاری رکھیں</translation>
 <translation id="3519564332031442870">پرنٹ بیک اینڈ سروس</translation>
 <translation id="3519938335881974273">صفحہ محفوظ کریں بطور…</translation>
@@ -3174,7 +3175,6 @@
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
-<translation id="3904849010307028014">کسی سائٹ کے ساتھ آپ کے تعامل کی بنیاد پر، جیسے کہ کسی اکاؤنٹ میں باقاعدگی سے سائن ان کرنے سے وہ سائٹ آپ کے براؤزر کے لیے ٹرسٹ ٹوکن جاری کر سکتی ہے۔ بعد میں، اگر آپ دیگر سائٹس کو ملاحظہ کرتے ہیں تو وہ ایک درست ٹرسٹ ٹوکن چیک کرتی ہیں اور اس کے حاصل ہونے پر ان کا آپ کے ساتھ ایک شخص کی طرح سلوک کرنے کا زیادہ امکان ہوتا ہے نہ کہ بوٹ کی طرح۔</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
 <translation id="3908501907586732282">ایکسٹینشن فعال کریں</translation>
 <translation id="3909701002594999354">سبھی کنٹرولز کمانڈ دکھائیں</translation>
@@ -3751,7 +3751,6 @@
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
-<translation id="4465649939134800363">ترتیب دینے کے اختیارات</translation>
 <translation id="4466839823729730432">اپنی یادیں یہاں دیکھیں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکتا ہے</translation>
@@ -3807,6 +3806,7 @@
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> کی جانب سے تقویت یافتہ</translation>
 <translation id="4514610446763173167">چلانے یا روکنے کیلئے ویڈیو ٹوگل کریں</translation>
 <translation id="451515744433878153">ہٹائیں</translation>
+<translation id="4515799157838123044">پس منظر کے مواد کا شیڈ</translation>
 <translation id="4515872537870654449">‏سروس کیلئے Dell سے رابطہ کریں۔ پنکھے کے کام نہ کرنے کی صورت میں ڈاک بند ہو جائے گا۔</translation>
 <translation id="4518840066030486079">شفٹ کلید موڈ اسٹائل</translation>
 <translation id="4519331665958994620">سائٹس آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہیں</translation>
@@ -4400,7 +4400,6 @@
 <translation id="508059534790499809">‏Kerberos ٹکٹ ریفریش کریں</translation>
 <translation id="5084328598860513926">فراہمی کے بہاؤ میں مداخلت ہو گئی۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5085162214018721575">اپ ڈیٹس چیک کرنا</translation>
-<translation id="5085561329775168253">‏Google Play اسٹور پر موجود ایپس کے ساتھ تخلیقی بنیں، پروڈکٹیو رہیں اور لطف اندوز ہوں</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">ڈیفالٹ ہوم صفحہ کو بحال کریں؟</translation>
 <translation id="5087249366037322692">ایک فریق ثالث نے شامل کر دیا</translation>
@@ -4615,7 +4614,6 @@
 <translation id="52912272896845572">نجی کلید کی فائل غلط ہے۔</translation>
 <translation id="5291739252352359682">‏یہ خصوصیت Chrome براؤزر میں میڈیا کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے (فی الحال انگریزی میں دستیاب ہے)۔ آڈیو اور کیپشنز پر مقامی طور پر کارروائی کی جاتی ہے اور یہ ہمیشہ آلے پر ہی رہتے ہیں۔</translation>
 <translation id="529175790091471945">اس آلہ کو فارمیٹ کریں</translation>
-<translation id="5292862864186939732">"<ph name="EXTENSION_NAME" />" کو ہمیشہ <ph name="ORIGIN" /> پر چلنے کی اجازت دیں؟</translation>
 <translation id="529296195492126134">عارضی موڈ سیٹ نہیں ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں</translation>
 <translation id="5293170712604732402">ترتیبات کو ان کی اصل ڈیفالٹس میں بحال کریں</translation>
 <translation id="5294097441441645251">چھوٹے حرف یا انڈر سکور کے ساتھ شروع کرنا ضروری ہے</translation>
@@ -4830,7 +4828,6 @@
 <translation id="5494016731375030300">حال ہی میں بند کئے گئے ٹیبز</translation>
 <translation id="5494362494988149300">&amp;مکمل ہو جانے پر کھولیں</translation>
 <translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
-<translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5495466433285976480">اس سے آپ کی جانب سے اگلی بار دوبارہ شروع کرنے کے بعد سبھی مقامی صارفین، فائلیں، ڈیٹا اور دیگر ترتیبات ہٹ جائیں گی۔ سبھی صارفین کو دوبارہ سائن ان کرنے کی ضرورت ہوگی۔</translation>
 <translation id="5495597166260341369">ڈسپلے آن رکھیں</translation>
 <translation id="5496587651328244253">منظم کریں</translation>
@@ -5588,7 +5585,6 @@
 <translation id="6207200176136643843">ڈیفالٹ زوم سطح پر ری سیٹ کریں</translation>
 <translation id="6207806976844244951">‏Google پاس ورڈ مینیجر میں محفوظ کریں (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">ملک/علاقہ</translation>
-<translation id="6208382900683142153">ٹرسٹ ٹوکنز ویب پر رازداری کو بہتر بناتے ہیں اور آپ کون ہیں یہ معلوم کرنے کے لیے استعمال نہیں کیے جا سکتے۔</translation>
 <translation id="6208521041562685716">موبائل ڈیٹا فعال کیا جا رہا ہے</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> میں محفوظ کرنے میں ناکام ہو گیا</translation>
 <translation id="6209838773933913227">کمپونینٹ اپ ڈیٹ ہو رہا ہے</translation>
@@ -6536,7 +6532,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7085389578340536476">‏Chrome کو آڈیو ریکارڈ کرنے کی اجازت دیں؟</translation>
 <translation id="708550780726587276">(کنفیگر نہیں ہے)</translation>
-<translation id="7086531709814430567">ان ایکسٹینشنز کو ہمیشہ <ph name="ORIGIN" /> پر چلنے کی اجازت دیں؟</translation>
 <translation id="7086672505018440886">‏آرکائیو میں Chrome کی لاگ فائلز کو شامل کریں۔</translation>
 <translation id="7088434364990739311">اپ ڈیٹ چیک شروع ہونے میں ناکام ہوگیا (خرابی کا کوڈ <ph name="ERROR" />)۔</translation>
 <translation id="7088674813905715446">منتظم نے اس آلہ کو ایک مسترد کردہ حالت میں رکھ دیا ہے۔ اندراج کیلئے اسے فعال کرنے کیلئے، براہ کرم اپنے منتظم کو آلہ کو ایک زیر التوا حالت میں رکھنے دیں۔</translation>
@@ -6963,6 +6958,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> موقوف ہے</translation>
 <translation id="7520766081042531487">پوشیدگی وضع کا پورٹل: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="752098910262610337">شارٹ کٹس دکھائيں</translation>
 <translation id="7522255036471229694">‏"Ok Google" بولیں</translation>
 <translation id="7523585675576642403">پروفائل کا نام تبدیل کریں</translation>
 <translation id="7525067979554623046">بنائیں</translation>
@@ -7232,7 +7228,6 @@
 <translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> سے <ph name="DOWNLOAD_RECEIVED" /></translation>
-<translation id="7764857504908700767">ٹرائلز کے آن ہونے پر، اسپام اور دھوکہ دہی میں تخفیف سائٹس کو دھوکہ دہی سے لڑنے اور بوٹس کو لوگوں سے ممتاز کرنے میں مدد کرنے کے لیے ٹرسٹ ٹوکنز پر انحصار کرتی ہے۔</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7765507180157272835">‏بلوٹوتھ اور Wi-Fi درکار ہے</translation>
 <translation id="7766082757934713382">ایپس اور سسٹم کی خودکار اپ ڈیٹس کو موقوف کرنے سے نیٹ ورک ڈیٹا کے استعمال میں کمی آتی ہے</translation>
@@ -7315,6 +7310,7 @@
 <translation id="7839051173341654115">میڈیا دیکھیں /بیک اپ لیں</translation>
 <translation id="7839192898639727867">‏سرٹیفیکیٹ موضوع کلید ID</translation>
 <translation id="7842062217214609161">کوئی شارٹ کٹ نہیں ہے</translation>
+<translation id="7842115774595115751">نیویگیشن کنٹرولز کو فعال کریں</translation>
 <translation id="7842692330619197998">‏اگر آپ ایک نیا اکاؤنٹ بنانا چاہتے ہیں تو g.co/ChromeEnterpriseAccount ملاحظہ کریں۔</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے صفحہ کا کوئی بھی حصہ تلاش کریں</translation>
 <translation id="784273751836026224">‏Linux اَن انسٹال کریں</translation>
@@ -7397,6 +7393,7 @@
 <translation id="79113168483292735">ٹیب تلاش میں میڈیا ٹیبز سیکشن</translation>
 <translation id="7912080627461681647">سرور پر آپ کا پاس ورڈ تبدیل ہو گیا ہے۔ براہ کرم سائن آؤٹ کر کے پھر دوبارہ سائن ان کریں۔</translation>
 <translation id="7912974581251770345">ترجمہ</translation>
+<translation id="7914870167134465181">نمایاں کرنا</translation>
 <translation id="7915457674565721553">پیرنٹل کنٹرولز سیٹ اپ کرنے کیلئے انٹرنیٹ سے منسلک ہوں</translation>
 <translation id="7918257978052780342">اندراج کریں</translation>
 <translation id="7919123827536834358">خودکار طور پر ان زبانوں کا ترجمہ کریں</translation>
@@ -7931,6 +7928,7 @@
 <translation id="8389492867173948260">اس ایکسٹینشن کو ان ویب سائٹس پر موجود آپ کا سبھی ڈیٹا پڑھنے اور تبدیل کرنے کی اجازت دیں، جنہیں آپ ملاحظہ کرتے ہیں:</translation>
 <translation id="8390449457866780408">سرور دستیاب نہیں ہے۔</translation>
 <translation id="8391218455464584335">وینائل</translation>
+<translation id="8392726714909453725">'سننے کیلئے منتخب کریں' کی ترتیبات</translation>
 <translation id="8393511274964623038">پلگ ان روکیں</translation>
 <translation id="839363317075970734">بلوٹوتھ آلے کی تفاصیل</translation>
 <translation id="8393700583063109961">پیغام بھیجیں</translation>
@@ -7986,7 +7984,6 @@
 <translation id="8448729345478502352">اپنی اسکرین پر موجود آئٹمز کو اور چھوٹا یا بڑا کریں</translation>
 <translation id="8449008133205184768">طرز پیسٹ کریں اور مماثل بنائیں</translation>
 <translation id="8449036207308062757">اسٹوریج کا نظم کریں</translation>
-<translation id="8456512334795994339">کام کرنے اور چلانے کے لئے ایپس تلاش کریں</translation>
 <translation id="845702320058262034">منسلک نہیں ہو سکتا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>
 <translation id="8458341576712814616">شارٹ کٹ</translation>
@@ -8556,6 +8553,7 @@
 <translation id="8991520179165052608">سائٹ آپ کا مائیکروفون استعمال کر سکتی ہے</translation>
 <translation id="8991694323904646277">کوئی کیمرا نہیں ہے</translation>
 <translation id="8993059306046735527">‏اگر آپ اپنے <ph name="DEVICE_TYPE" /> کا پاس ورڈ بھول جاتے ہیں تب بھی آپ اپنا مقامی ڈیٹا بحال کر سکتے ہیں۔ آپ کو اپنے Google اکاؤنٹ میں سائن ان کرنے یا اکاؤنٹ کی بازیابی کا استعمال کرنے کی ضرورت ہوگی۔</translation>
+<translation id="8993737615451556423">رفتار بڑھانے، کم کرنے اور پڑھنے کی آواز کو روکنے کیلئے کنٹرول فراہم کرتا ہے</translation>
 <translation id="899384117894244799">محدود صارف کو ہٹائیں</translation>
 <translation id="899403249577094719">‏Netscape سرٹیفکیٹ بیس URL</translation>
 <translation id="899657321862108550">‏آپ کا Chrome، ہر جگہ ہے</translation>

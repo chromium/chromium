@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="2715808615350965923">Super-A</translation>
 <translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
+<translation id="2718207025093645426">受管使用者或裝置未載入政策。</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
 <translation id="2726001110728089263">側匣</translation>
@@ -1147,7 +1148,6 @@
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">卡片已過期</translation>
 <translation id="3906954721959377182">平板電腦</translation>
-<translation id="3909477809443608991"><ph name="URL" /> 想播放受保護的內容。Google 會驗證您的裝置身分，此網站可能也會存取您的裝置身分。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">輸入安全碼</translation>
 <translation id="3927932062596804919">拒絕</translation>
@@ -2844,6 +2844,7 @@
 <translation id="8233773197406738106">正在準備檔案</translation>
 <translation id="8235754723616617175">鄉村音樂</translation>
 <translation id="8237519162179154808">興趣和休閒</translation>
+<translation id="8238188918340945316">28 x 40 吋</translation>
 <translation id="8238581221633243064">在新無痕式分頁中開啟網頁</translation>
 <translation id="8241707690549784388">您尋找的網頁使用了您輸入的資料。返回該頁會重複您剛才的動作。您確定要繼續嗎？</translation>
 <translation id="8241712895048303527">禁止此網站顯示廣告</translation>

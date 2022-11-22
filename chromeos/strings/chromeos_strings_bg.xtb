@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">График за тъмния режим</translation>
 <translation id="2276999893457278469">Най-популярно помощно съдържание</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Разширени настройки</translation>
 <translation id="2307344026739914387">Използване на текущата двойка ключове</translation>
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
@@ -473,6 +474,7 @@
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="5499762266711462226">Цветът на клавиатурата е въз основа на тапета</translation>
 <translation id="5502931783115429516">Android не работи</translation>
+<translation id="551689408806449779">Връзката с устройството е прекратена. Свържете се отново, за да тествате</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматично превключване към тъмната тема при залез</translation>
@@ -502,10 +504,12 @@
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5866840822086176774">Много силен</translation>
+<translation id="5876385649737594562">Включете, за да изберете опции</translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
+<translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
 <translation id="5907649332524363701">цвят на клавишите</translation>
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5916664084637901428">Включено</translation>

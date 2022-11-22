@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">Πρόγραμμα λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2276999893457278469">Κορυφαίο περιεχόμενο βοήθειας</translation>
 <translation id="2287186687001756809">Δεν υπάρχει διαθέσιμη εικόνα. Για προσθήκη φωτογραφιών, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
+<translation id="2304783958703511257">Σύνθετες ρυθμίσεις</translation>
 <translation id="2307344026739914387">Χρήση τρέχοντος ζεύγους κλειδιών</translation>
 <translation id="2320295602967756579">Ενεργοποίηση φωτεινού θέματος</translation>
 <translation id="2323506179655536734">ΠΑΡΑΒΛΕΦΘΗΚΕ</translation>
@@ -473,6 +474,7 @@
 <translation id="5499114900554609492">Δεν ήταν δυνατή η ολοκλήρωση της σάρωσης</translation>
 <translation id="5499762266711462226">Το χρώμα του πληκτρολογίου βασίζεται στην ταπετσαρία</translation>
 <translation id="5502931783115429516">Το Android δεν εκτελείται</translation>
+<translation id="551689408806449779">Η συσκευή αποσυνδέθηκε. Δοκιμάστε να συνδεθείτε ξανά για δοκιμή.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Αυτόματη εναλλαγή σε σκούρο θέμα κατά τη δύση του ηλίου</translation>
@@ -502,10 +504,12 @@
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5866840822086176774">Πολύ ισχυρό</translation>
+<translation id="5876385649737594562">Ενεργοποίηση για ορισμό επιλογών</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
+<translation id="5904994456462260490">Προσθήκη νέου APN</translation>
 <translation id="5907649332524363701">χρώμα πλήκτρων</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
 <translation id="5916664084637901428">Ενεργό</translation>

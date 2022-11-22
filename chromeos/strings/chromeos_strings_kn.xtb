@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="2276999893457278469">ಟಾಪ್ ಸಹಾಯ ವಿಷಯ</translation>
 <translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
+<translation id="2304783958703511257">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2307344026739914387">ಪ್ರಸ್ತುತ ಕೀ ಜೋಡಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2320295602967756579">ಲೈಟ್ ಥೀಮ್‌ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2323506179655536734">ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -472,6 +473,7 @@
 <translation id="5499114900554609492">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="5499762266711462226">ಕೀಬೋರ್ಡ್‌ನ ಬಣ್ಣ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಆಧರಿಸಿದೆ</translation>
 <translation id="5502931783115429516">Android ರನ್ ಆಗುತ್ತಿಲ್ಲ</translation>
+<translation id="551689408806449779">ಸಾಧನವು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗಿದೆ. ಪರೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಪುನಃ ಕನೆಕ್ಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್‌ಗೆ ಬದಲಿಸಿ</translation>
@@ -501,10 +503,12 @@
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5866840822086176774">ತುಂಬಾ ಪ್ರಬಲವಾಗಿದೆ</translation>
+<translation id="5876385649737594562">ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಆನ್ ಮಾಡಿ</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5903200662178656908">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್‌ನ ಕಾಂಬೋ ಆಗಿದೆ.</translation>
+<translation id="5904994456462260490">ಹೊಸ APN ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5907649332524363701">ಕೀ ಬಣ್ಣ</translation>
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>

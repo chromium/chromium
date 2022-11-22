@@ -87,6 +87,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1552525382687785070">Din administrator har deaktiveret synkronisering</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
+<translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1580715474678097352">Beskytter dig mod farlige websites</translation>
 <translation id="1580783302095112590">Email sendt.</translation>
 <translation id="1582732959743469162">Denne handling stopper den aktuelle download.</translation>
@@ -133,6 +134,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="199425419756152024">Se adgangskode</translation>
+<translation id="2010008505735295285">Genindlæs</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="2021670401941426298">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="202292859882676807">Der er givet adgang til mikrofonen</translation>
@@ -299,6 +301,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3272527697863656322">Annuller</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
 <translation id="3285962946108803577">Del side…</translation>
+<translation id="3289505634533552500">Stemmesøgning</translation>
 <translation id="3290875554372353449">Vælg en konto</translation>
 <translation id="3305294846493618482">mere</translation>
 <translation id="3311748811247479259">Fra</translation>
@@ -556,6 +559,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Gem</translation>
+<translation id="5318298563956633672">Du holder allerede øje med dette produkt.</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="536067926684072644">Vis bogmærker</translation>
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5439599923922718668">Ofte besøgt</translation>
 <translation id="54401264925851789">Oplysninger om sidesikkerhed</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
+<translation id="5444892875087332195">Bogmærker</translation>
 <translation id="5457226814769348910">Åbn offlineversion</translation>
 <translation id="5489208564673669003">Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="5490005495580364134">Bloker alle cookies (anbefales ikke)</translation>
@@ -619,6 +624,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="581659025233126501">Aktivér synkronisering</translation>
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Gem adgangskoder, betalingsmetoder og adresser, så Chrome automatisk kan udfylde disse oplysninger senere.</translation>
+<translation id="5834415013958049700">Lens-billede, du har kopieret</translation>
 <translation id="5846482154967366008">Søgemaskine</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857090052475505287">Ny mappe</translation>
@@ -646,6 +652,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5984222099446776634">Besøgt for nylig</translation>
 <translation id="5988097621740394599">Se prisfald på dine faner</translation>
 <translation id="5988851877894965432">Åbn webadresser i Chrome</translation>
+<translation id="6006672969046233841">Ny fane</translation>
 <translation id="6012140227487808125">Krypterer...</translation>
 <translation id="6021332621416007159">Åbn i...</translation>
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7207023858769244910">Synkroniser for at få indhold baseret på dine interesser.</translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
 <translation id="7221173315674413369">Se nye funktioner og tips i Nyheder</translation>
+<translation id="7223102419539744003">Luk fane</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>
@@ -903,6 +911,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7856733331829174190">Downloaden mislykkedes</translation>
 <translation id="785938070103630874">Åbn Adgangskoder, Betalingsmetoder, Adresse m.m.</translation>
 <translation id="7859704718976024901">Browserhistorik</translation>
+<translation id="7870750252270996949">Lens-billede, du har kopieret</translation>
 <translation id="7879275349003161544">Vis downloads</translation>
 <translation id="7884694604461143138">Søgehistorik (<ph name="COUNT" /> blev fundet)</translation>
 <translation id="7887198238286927132">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke dette felt.</translation>
@@ -1027,6 +1036,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Websitets standardvisning</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
+<translation id="882557203579758546">Find på siden…</translation>
 <translation id="8840513115188359703">Du bliver ikke logget ud af din Google-konto.</translation>
 <translation id="8843129975935593190">Din organisation begrænser, hvad du kan synkronisere.</translation>
 <translation id="8849001918648564819">Skjult</translation>

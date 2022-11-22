@@ -87,6 +87,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1552525382687785070">O teu administrador desactivou a sincronización</translation>
 <translation id="1554477036522844996">Nova ventá</translation>
+<translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
 <translation id="1580715474678097352">Protéxete contra sitios web perigosos</translation>
 <translation id="1580783302095112590">Correo enviado.</translation>
 <translation id="1582732959743469162">Esta acción deterá o progreso da túa descarga actual.</translation>
@@ -133,6 +134,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1981118202195772574">Móbil</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="199425419756152024">Ver contrasinal</translation>
+<translation id="2010008505735295285">Volver cargar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="2021670401941426298">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
 <translation id="202292859882676807">Permitiuse o acceso ao micrófono</translation>
@@ -299,6 +301,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Copiouse o enderezo do sitio</translation>
 <translation id="3285962946108803577">Compartir páxina…</translation>
+<translation id="3289505634533552500">Busca por voz</translation>
 <translation id="3290875554372353449">Escolle unha conta</translation>
 <translation id="3305294846493618482">máis</translation>
 <translation id="3311748811247479259">Non</translation>
@@ -556,6 +559,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5295239312320826323">Queres quitar a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Gardar</translation>
+<translation id="5318298563956633672">Xa estás facendo un seguimento deste produto.</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5439599923922718668">Visitas frecuentes</translation>
 <translation id="54401264925851789">Información de seguranza da páxina</translation>
 <translation id="5443952882982198570">Tarxetas de crédito</translation>
+<translation id="5444892875087332195">Marcadores</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
@@ -619,6 +624,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="581659025233126501">Activar sincronización</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Garda contrasinais, métodos de pago e enderezos para que Chrome autocomplete a información correspondente máis tarde.</translation>
+<translation id="5834415013958049700">Imaxe de Lens que copiaches</translation>
 <translation id="5846482154967366008">Motor de busca</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857090052475505287">Novo cartafol</translation>
@@ -646,6 +652,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
+<translation id="6006672969046233841">Nova pestana</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
 <translation id="6021332621416007159">Abrir en...</translation>
 <translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
@@ -832,6 +839,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7207023858769244910">Activa a sincronización para obter contido baseado nos teus intereses.</translation>
 <translation id="721597782417389033">O alcume da tarxeta non é válido</translation>
 <translation id="7221173315674413369">Explora funcións e consellos na páxina Novidades</translation>
+<translation id="7223102419539744003">Pechar pestana</translation>
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
 <translation id="7265758999917665941">Nunca neste sitio</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
@@ -903,6 +911,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7856733331829174190">Non se puido descargar o ficheiro</translation>
 <translation id="785938070103630874">Abre os contrasinais, os métodos de pago, o enderezo etc.</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
+<translation id="7870750252270996949">Imaxe de Lens copiada</translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>
 <translation id="7884694604461143138">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
@@ -1027,6 +1036,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Vista predeterminada do sitio</translation>
 <translation id="8820817407110198400">Marcadores</translation>
+<translation id="882557203579758546">Buscar o contido na páxina…</translation>
 <translation id="8840513115188359703">Non se pechará sesión na túa conta de Google.</translation>
 <translation id="8843129975935593190">A túa organización limita o que podes sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>

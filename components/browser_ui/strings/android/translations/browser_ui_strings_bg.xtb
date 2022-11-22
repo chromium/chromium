@@ -125,6 +125,7 @@
 <translation id="3594780231884063836">Без образ</translation>
 <translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3600792891314830896">Спиране на звука, възпроизвеждан от сайтовете</translation>
+<translation id="3602290021589620013">Визуализация</translation>
 <translation id="3628308229821498208">Предложени търсения</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
@@ -171,6 +172,7 @@
 <translation id="4645575059429386691">Управлява се от ваш родител</translation>
 <translation id="4670064810192446073">Виртуална реалност</translation>
 <translation id="4751476147751820511">Сензори за движение или светлина</translation>
+<translation id="4779083564647765204">Промяна на мащаба</translation>
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
 <translation id="4836046166855586901">Извеждане на запитване, когато сайт иска да знае кога това устройство се използва активно</translation>
 <translation id="483914009762354899">Включване на всички сайтове от този домейн</translation>
@@ -233,6 +235,7 @@
 <translation id="5922853908706496913">Екранът ви се споделя</translation>
 <translation id="5922967540311291836">Блокиране на „бисквитките“ на трети страни:</translation>
 <translation id="5939518447894949180">Нулиране</translation>
+<translation id="5968921426641056619">Въведете уеб адрес</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">Контролирайте достъпа на този сайт до устройството ви</translation>
@@ -312,6 +315,7 @@
 <translation id="7641339528570811325">Изчистване на данните за сърфирането…</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="780301667611848630">Не, благодаря</translation>

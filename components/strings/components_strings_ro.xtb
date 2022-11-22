@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile despre plăți și carduri de credit în setările Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Apasă pe |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pentru a ieși din ecranul complet</translation>
+<translation id="2718207025093645426">Utilizatorul sau dispozitivul gestionat nu are nicio politică încărcată.</translation>
 <translation id="2721148159707890343">Solicitarea a reușit</translation>
 <translation id="2723669454293168317">Rulează o verificare de siguranță în setările Chrome</translation>
 <translation id="2726001110728089263">Tava laterală</translation>
@@ -1148,7 +1149,6 @@
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3901925938762663762">Cardul este expirat</translation>
 <translation id="3906954721959377182">Tabletă</translation>
-<translation id="3909477809443608991"><ph name="URL" /> vrea să redea conținut protejat. Identitatea dispozitivului tău va fi verificată de Google și poate fi accesată de acest site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Introdu codul de securitate</translation>
 <translation id="3927932062596804919">Refuză</translation>
@@ -2845,6 +2845,7 @@ Detalii suplimentare:
 <translation id="8233773197406738106">Se pregătește fișierul</translation>
 <translation id="8235754723616617175">Muzică country</translation>
 <translation id="8237519162179154808">Pasiuni și timp liber</translation>
+<translation id="8238188918340945316">28 x 40 in</translation>
 <translation id="8238581221633243064">Deschide pagina într-o filă incognito nouă</translation>
 <translation id="8241707690549784388">Pagina pe care o cauți a utilizat informațiile pe care le-ai introdus. Întoarcerea la acea pagină ar putea face ca orice acțiune să fie repetată. Vrei să continui?</translation>
 <translation id="8241712895048303527">Blochează pe acest site</translation>

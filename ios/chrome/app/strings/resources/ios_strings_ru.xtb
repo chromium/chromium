@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
 <translation id="1552525382687785070">Синхронизация отключена администратором</translation>
 <translation id="1554477036522844996">Новое окно</translation>
+<translation id="1565371473877914088">Новая вкладка инкогнито</translation>
 <translation id="1580715474678097352">Защищает от опасных сайтов</translation>
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">Мобильная версия</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="199425419756152024">Посмотреть пароль</translation>
+<translation id="2010008505735295285">Перезагрузить</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="2021670401941426298">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="202292859882676807">Доступ к микрофону разрешен</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
 <translation id="3285962946108803577">Поделиться страницей</translation>
+<translation id="3289505634533552500">Голосовой поиск</translation>
 <translation id="3290875554372353449">Выберите аккаунт</translation>
 <translation id="3305294846493618482">ещё</translation>
 <translation id="3311748811247479259">Отключено</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">Удалить аккаунт <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5317780077021120954">Сохранить</translation>
+<translation id="5318298563956633672">Вы уже отслеживаете этот товар.</translation>
 <translation id="5339316356165661760">Включить синхронизацию</translation>
 <translation id="536067926684072644">Показать закладки</translation>
 <translation id="5360976571138293719">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделе <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
@@ -569,6 +573,7 @@
 <translation id="5439599923922718668">Часто посещаемые</translation>
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
+<translation id="5444892875087332195">Закладки</translation>
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
@@ -619,6 +624,7 @@
 <translation id="581659025233126501">Включить синхронизацию</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Сохраняйте пароли, сведения о способах оплаты и адреса в Chrome, чтобы потом использовать их для автозаполнения.</translation>
+<translation id="5834415013958049700">Поиск по скопированному изображению (Объектив)</translation>
 <translation id="5846482154967366008">Поисковая система</translation>
 <translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
 <translation id="5857090052475505287">Новая папка</translation>
@@ -646,6 +652,7 @@
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5988097621740394599">Показывать скидки на вкладках</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
+<translation id="6006672969046233841">Новая вкладка</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
 <translation id="6021332621416007159">Открыть в…</translation>
 <translation id="6027945736510816438">Вам нужен домен <ph name="WEBSITE" />?</translation>
@@ -832,6 +839,7 @@
 <translation id="7207023858769244910">Включите синхронизацию и смотрите интересный контент.</translation>
 <translation id="721597782417389033">Недопустимое название карты</translation>
 <translation id="7221173315674413369">Прочитайте новости и рекомендации на вкладке "Что нового"</translation>
+<translation id="7223102419539744003">Закрыть вкладку</translation>
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7265758999917665941">Никогда для этого сайта</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
@@ -903,6 +911,7 @@
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
 <translation id="785938070103630874">Откройте вкладку "Пароли", "Методы оплаты", или "Адреса и прочее".</translation>
 <translation id="7859704718976024901">История браузера</translation>
+<translation id="7870750252270996949">Поиск по изображению из буфера</translation>
 <translation id="7879275349003161544">Показать скачанные файлы</translation>
 <translation id="7884694604461143138">Поиск в истории (совпадений: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
@@ -1027,6 +1036,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Режим просмотра сайтов по умолчанию</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="882557203579758546">Найти на странице…</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
 <translation id="8849001918648564819">Скрытые</translation>

@@ -700,6 +700,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar dari mode layar penuh</translation>
+<translation id="2718207025093645426">Pengguna atau perangkat terkelola tidak memuat kebijakan.</translation>
 <translation id="2721148159707890343">Permintaan berhasil</translation>
 <translation id="2723669454293168317">Jalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="2726001110728089263">Baki Samping</translation>
@@ -1147,7 +1148,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Kartu telah habis masa berlakunya</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google dan akan dapat diakses oleh situs ini.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Masukkan kode keamanan</translation>
 <translation id="3927932062596804919">Tolak</translation>
@@ -2842,6 +2842,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8233773197406738106">Menyiapkan file</translation>
 <translation id="8235754723616617175">Musik country</translation>
 <translation id="8237519162179154808">Hobi &amp; rekreasi</translation>
+<translation id="8238188918340945316">28 x 40 inci (71 x 101 cm)</translation>
 <translation id="8238581221633243064">Buka halaman dalam tab Samaran baru</translation>
 <translation id="8241707690549784388">Halaman yang dicari menggunakan informasi yang Anda masukkan. Kembali ke halaman tersebut dapat menyebabkan pengulangan tindakan apa pun yang Anda lakukan. Apakah Anda ingin melanjutkan?</translation>
 <translation id="8241712895048303527">Blokir di situs ini</translation>

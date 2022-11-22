@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer vos données de paiement et vos cartes de crédit dans les paramètres de Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour quitter le mode plein écran</translation>
+<translation id="2718207025093645426">L'utilisateur ou l'appareil géré n'a pas de politique chargée.</translation>
 <translation id="2721148159707890343">Demande réussie</translation>
 <translation id="2723669454293168317">Effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
 <translation id="2726001110728089263">Plateau latéral</translation>
@@ -1148,7 +1149,6 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="3906954721959377182">Tablette</translation>
-<translation id="3909477809443608991"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google et sera accessible par ce site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Entrez votre code de sécurité</translation>
 <translation id="3927932062596804919">Refuser</translation>
@@ -2845,6 +2845,7 @@ Détails supplémentaires :
 <translation id="8233773197406738106">Préparation du fichier en cours…</translation>
 <translation id="8235754723616617175">Musique country</translation>
 <translation id="8237519162179154808">Passe-temps et loisirs</translation>
+<translation id="8238188918340945316">71 cm x 102 cm</translation>
 <translation id="8238581221633243064">Ouvrir la page dans un nouvel onglet de navigation privée</translation>
 <translation id="8241707690549784388">La page que vous recherchez a utilisé de l'information que vous avez envoyée. Si vous revenez sur cette page, chaque action précédemment effectuée sera peut-être répétée. Souhaitez-vous continuer?</translation>
 <translation id="8241712895048303527">Bloquer sur ce site</translation>

@@ -1060,6 +1060,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf deinem Computer nicht funktioniert.</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
 <translation id="1965624977906726414">Erfordert keine besonderen Berechtigungen</translation>
+<translation id="1966649499058910679">Jedes Wort hervorheben, das gerade gesprochen wird</translation>
 <translation id="1969654639948595766">WebRTC-Textprotokolle (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Du kannst schneller surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="197288927597451399">Behalten</translation>
@@ -1795,7 +1796,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kann nicht sicher heruntergeladen werden.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Sprachmodell von Google Assistant trainieren</translation>
-<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Verarbeitung von Protokollen für keine Website zulassen</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Diese Seite greift auf Kamera und Mikrofon zu.</translation>
@@ -2124,7 +2124,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Mediengalerie nach Verzeichnis hinzufügen</translation>
 <translation id="2908358077082926882">Drücke zum Entfernen der Zuweisung und <ph name="RESPONSE" /> noch einmal „<ph name="CURRENTKEY" />“</translation>
-<translation id="2909380725331714712">Die Spam- und Betrugsreduzierung verwendet Trust Tokens, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
 <translation id="2909506265808101667">Keine Verbindung mit Google-Diensten möglich. Prüfe deine Netzwerkverbindung und versuche es noch einmal. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Stelle eine Verbindung zu einem Netzwerk her und versuche es noch einmal</translation>
 <translation id="291056154577034373">UNGELESEN</translation>
@@ -3169,7 +3168,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3902789559055749153">Wähle aus, wie der Passkey für <ph name="APP_NAME" /> erstellt werden soll</translation>
 <translation id="3903187154317825986">Integrierte Tastatur</translation>
 <translation id="3904326018476041253">Standortdienste</translation>
-<translation id="3904849010307028014">Basierend auf deiner Interaktion mit einer Website, z. B. regelmäßige Anmeldungen in einem Konto, kann diese Website ein Trust Token für deinen Browser ausstellen. Wenn andere von dir besuchte Websites später dann ein gültiges Trust Token finden, ist die Wahrscheinlichkeit höher, dass du als Person und nicht als Bot eingestuft wirst.</translation>
 <translation id="3905761538810670789">App reparieren</translation>
 <translation id="3908501907586732282">Erweiterung aktivieren</translation>
 <translation id="3909701002594999354">Alle Steuerelemente anzeigen</translation>
@@ -3746,7 +3744,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
 <translation id="4462159676511157176">Benutzerdefinierte Nameserver</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> wurde als Zeitbeschränkung für <ph name="APP_NAME" /> festgelegt</translation>
-<translation id="4465649939134800363">Sortierungsoptionen</translation>
 <translation id="4466839823729730432">Deine Erinnerungen hier ansehen</translation>
 <translation id="4469324811108161144">Die Notiz kann bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kann Dateien in "<ph name="FOLDERNAME" />" bearbeiten</translation>
@@ -3802,6 +3799,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Video wiedergeben oder pausieren</translation>
 <translation id="451515744433878153">Entfernen</translation>
+<translation id="4515799157838123044">Inhalte im Hintergrund abdunkeln</translation>
 <translation id="4515872537870654449">Wende dich für eine Reparatur an Dell. Wenn der Lüfter nicht funktioniert, wird das Dock ausgeschaltet.</translation>
 <translation id="4518840066030486079">Modusstil der Umschalttaste</translation>
 <translation id="4519331665958994620">Websites dürfen nachfragen, wenn sie meine Kamera verwenden möchten</translation>
@@ -4395,7 +4393,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="508059534790499809">Kerberos-Ticket aktualisieren</translation>
 <translation id="5084328598860513926">Bereitstellung wurde unterbrochen. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Suche nach Updates...</translation>
-<translation id="5085561329775168253">Apps für noch mehr Produktivität, Kreativität und Unterhaltung findest du im Google Play Store</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">Standardstartseite wiederherstellen?</translation>
 <translation id="5087249366037322692">Von einem Drittanbieter hinzugefügt</translation>
@@ -4610,7 +4607,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="52912272896845572">Private Schlüsseldatei ist ungültig.</translation>
 <translation id="5291739252352359682">Erstellt automatisch Untertitel für Medien in Chrome (zurzeit nur auf Englisch verfügbar). Audioinhalte und Untertitel werden ausschließlich auf dem Gerät verarbeitet.</translation>
 <translation id="529175790091471945">Gerät formatieren</translation>
-<translation id="5292862864186939732">Zulassen, dass „<ph name="EXTENSION_NAME" />“ auf <ph name="ORIGIN" /> ausgeführt wird?</translation>
 <translation id="529296195492126134">Flüchtiger Modus wird nicht unterstützt. Bitte wende dich an deinen Administrator.</translation>
 <translation id="5293170712604732402">Einstellungen auf ursprüngliche Standardwerte zurücksetzen</translation>
 <translation id="5294097441441645251">Muss mit einem Kleinbuchstaben oder Unterstrich beginnen</translation>
@@ -4826,7 +4822,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5494016731375030300">Kürzlich geschlossene Tabs</translation>
 <translation id="5494362494988149300">Nach &amp;Fertigstellung öffnen</translation>
 <translation id="5494752089476963479">Werbung auf Websites blockieren, auf denen aufdringliche oder irreführende Werbung angezeigt wird</translation>
-<translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5495466433285976480">Dadurch werden beim nächsten Neustart alle lokalen Nutzer, Dateien, Daten und anderen Einstellungen entfernt und alle Nutzer müssen sich erneut anmelden.</translation>
 <translation id="5495597166260341369">Display bleibt aktiv</translation>
 <translation id="5496587651328244253">Organisieren</translation>
@@ -5581,7 +5576,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6207200176136643843">Auf Standard-Zoomstufe zurücksetzen</translation>
 <translation id="6207806976844244951">Im Google Passwortmanager speichern (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">Land/Region</translation>
-<translation id="6208382900683142153">Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet werden, deine Identität zu ermitteln.</translation>
 <translation id="6208521041562685716">Mobile Daten werden aktiviert</translation>
 <translation id="6208725777148613371">Fehler beim Speichern in <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Komponente wird aktualisiert</translation>
@@ -6529,7 +6523,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wird von deinem Administrator verwaltet</translation>
 <translation id="7085389578340536476">Chrome die Aufzeichnung von Audioinhalten gestatten?</translation>
 <translation id="708550780726587276">(nicht konfiguriert)</translation>
-<translation id="7086531709814430567">Zulassen, dass diese Erweiterungen auf <ph name="ORIGIN" /> ausgeführt werden?</translation>
 <translation id="7086672505018440886">Chrome-Protokolldateien im Archiv einbeziehen.</translation>
 <translation id="7088434364990739311">Update-Prüfung konnte nicht gestartet werden. Fehlercode: <ph name="ERROR" /></translation>
 <translation id="7088674813905715446">Die Bereitstellung dieses Geräts wurde vom Administrator aufgehoben. Bitte deinen Administrator, es als ausstehend zu kennzeichnen, um es für die Registrierung zu aktivieren.</translation>
@@ -7225,7 +7218,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> von <ph name="DOWNLOAD_DOMAIN" /></translation>
-<translation id="7764857504908700767">Wenn Tests aktiviert sind, verwendet die Spam- und Betrugsreduzierung Trust Tokens, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7765507180157272835">Bluetooth und WLAN erforderlich</translation>
 <translation id="7766082757934713382">Trägt dazu bei, die Netzwerkdatennutzung durch Pausieren von automatischen App- und Systemupdates zu reduzieren</translation>
@@ -7308,6 +7300,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7839051173341654115">Medien anzeigen/sichern</translation>
 <translation id="7839192898639727867">Schlüssel-ID des Zertifikatsinhabers</translation>
 <translation id="7842062217214609161">Keine Tastenkombination</translation>
+<translation id="7842115774595115751">Steuerelemente zur Navigation aktivieren</translation>
 <translation id="7842692330619197998">Rufe g.co/ChromeEnterpriseAccount auf, wenn du ein neues Konto erstellen musst.</translation>
 <translation id="78427265591841839">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> auf einem beliebigen Teil der Seite suchen</translation>
 <translation id="784273751836026224">Linux deinstallieren</translation>
@@ -7390,6 +7383,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="79113168483292735">Abschnitt „Medien-Tabs“ in der Tab-Suche</translation>
 <translation id="7912080627461681647">Dein Passwort wurde auf dem Server geändert. Bitte melde dich ab und dann wieder an.</translation>
 <translation id="7912974581251770345">Übersetzung</translation>
+<translation id="7914870167134465181">Hervorhebung</translation>
 <translation id="7915457674565721553">Es ist eine Internetverbindung notwendig, um Jugendschutzeinstellungen einzurichten</translation>
 <translation id="7918257978052780342">Anmelden</translation>
 <translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
@@ -7980,7 +7974,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8448729345478502352">Die Elemente auf dem Bildschirm vergrößern oder verkleinern</translation>
 <translation id="8449008133205184768">Einsetzen und Stil anpassen</translation>
 <translation id="8449036207308062757">Speicherplatz verwalten</translation>
-<translation id="8456512334795994339">Apps für Arbeit und Freizeit</translation>
 <translation id="845702320058262034">Verbindung nicht möglich. Kontrolliere, ob Bluetooth auf deinem Smartphone aktiviert ist.</translation>
 <translation id="8457451314607652708">Lesezeichen importieren</translation>
 <translation id="8458341576712814616">Kürzel</translation>
@@ -8550,6 +8543,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8991520179165052608">Die Website kann dein Mikrofon verwenden</translation>
 <translation id="8991694323904646277">Keine Kamera</translation>
 <translation id="8993059306046735527">Wenn du dein <ph name="DEVICE_TYPE" />-Passwort vergessen hast, kannst du trotzdem deine lokalen Daten wiederherstellen. Melde dich in deinem Google-Konto an oder verwende die Kontowiederherstellung.</translation>
+<translation id="8993737615451556423">Steuerelemente, damit die Vorlesestimme schneller oder langsamer liest oder pausiert</translation>
 <translation id="899384117894244799">Nutzer mit eingeschränktem Zugriff entfernen</translation>
 <translation id="899403249577094719">Basis-URL für Netscape-Zertifikate</translation>
 <translation id="899657321862108550">Dein persönlicher Chrome-Browser – auf allen Geräten</translation>

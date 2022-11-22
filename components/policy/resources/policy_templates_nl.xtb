@@ -1298,6 +1298,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar voor gebruikers van het apparaat. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="2246621891161157804">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
+<translation id="2252400912879027343">WebSQL in niet-beveiligde contexten blijft beschikbaar tot M109 en is niet meer beschikbaar vanaf M110.</translation>
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
@@ -2169,6 +2170,7 @@ Als de gebruiker het selectievakje niet aanvinkt, gebeurt het volgende:
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, behalve dat het nieuwe profiel geen secundaire accounts mag hebben.</translation>
 <translation id="3083259245974004342">Wachtwoordbeveiliging</translation>
+<translation id="308356121098374167">WebSQL in niet-beveiligde contexten is beschikbaar.</translation>
 <translation id="3086995894968271156">De Cast-receiver instellen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie</translation>
 <translation id="3088557424854005813">Attest</translation>
@@ -2641,7 +2643,6 @@ Als het beleid is ingesteld op GAIA, wordt de login uitgevoerd volgens de normal
 <translation id="3524204464536655762">Niet toestaan dat sites via de WebUSB API toegang tot USB-apparaten vragen</translation>
 <translation id="3526752951628474302">Alleen monochroom afdrukken</translation>
 <translation id="3528000905991875314">Alternatieve foutpagina's gebruiken</translation>
-<translation id="3528681240373634003">De beschikbaarheid van Manifest v2-extensies beheren.</translation>
 <translation id="3530249698314520116">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
       Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
 
@@ -3574,6 +3575,15 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4492287494009043413">Maken van screenshots uitzetten</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
+<translation id="4495390552861857186">Zet <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aan voor een lijst met URL's.
+
+Als je dit beleid instelt, geef je op welke URL's <ph name="PRODUCT_NAME" /> aanbiedt om het attestproces te starten. Met de laatstgenoemde optie kunnen die websites een attest van contextbewuste signalen van het apparaat krijgen.
+
+Als je dit beleid niet instelt of leeg laat, kan geen enkele website het attestproces starten of signalen van het apparaat krijgen.
+
+Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid gerelateerd aan externe attesten, waarbij er automatisch certificaten worden gegenereerd en geüpload naar de server. Gebruik het beleid <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> om het attestproces op het inlogscherm van het apparaat te gebruiken.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="449561952193478261">Blauwe achtergrondverlichting van toetsenbord</translation>
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="4499376951770369935">ChromeOS-updates zijn ingesteld volgens de versie die is gedefinieerd in het manifest van de kiosk-app</translation>
@@ -3807,6 +3817,15 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
       Als je het beleid niet toepast of niet instelt, wordt er geen certificaat gegenereerd en mislukken aanroepen naar de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="4742973303930120836">De modus voor afdrukken met achtergrondbeelden beperken</translation>
 <translation id="4745232963710538589">Extensie voor inzichten aanzetten om gebruiksstatistieken te rapporteren</translation>
+<translation id="4749670563834935149">Zet <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aan voor een lijst met URL's op het inlog- en vergrendelscherm.
+
+Als je dit beleid instelt, geef je op welke URL's <ph name="PRODUCT_OS_NAME" /> aanbiedt om het attestproces te starten. Met de laatstgenoemde optie kunnen die websites een attest van contextbewuste signalen van het apparaat krijgen.
+
+Als je dit beleid niet instelt of leeg laat, kan geen enkele website het attestproces starten of signalen van het apparaat krijgen.
+
+Dit beleid is alleen van invloed op het attestproces op het inlog- en vergrendelscherm. Gebruik het beleid <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> om het attestproces van een sessie te wijzigen.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="4752880493649142945">Clientcertificaat voor verbinding maken met RemoteAccessHostTokenValidationUrl</translation>
 <translation id="475479145997699293">Als je het beleid instelt op <ph name="ASK_FILE_HANDLING" />, kunnen web-apps toegang vragen tot bestandstypen via de File Handling API. Als je het beleid instelt op <ph name="BLOCK_FILE_HANDLING" />, wordt toegang tot bestandstypen geweigerd.
 
@@ -3960,6 +3979,9 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
       Als hiervoor een waarde is opgegeven, wordt gedurende het opgegeven aantal seconden voorkomen dat de browser afsluit, zodat keepalive-verzoeken (https://fetch.spec.whatwg.org/#request-keepalive-flag) kunnen worden verwerkt.
 
       De standaardwaarde (0) betekent dat deze functie niet wordt gebruikt.</translation>
+<translation id="4934869540807953882">Vanaf M110 wordt de niet-standaard API window.webkitStorageInfo verwijderd. Dit beleid zet de API opnieuw aan.
+Als je dit beleid toepast, is de API window.webkitStorageInfo beschikbaar.
+Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageInfo niet beschikbaar.</translation>
 <translation id="4937423591320233496">Voorgestelde content uitzetten</translation>
 <translation id="4940810901775798837">Toestaan dat niet-beveiligde websites verzoeken indienen bij een netwerkeindpunt</translation>
 <translation id="4942096314850617489">Extern attest voor de gebruiker uitzetten</translation>
@@ -4940,17 +4962,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je dit beleid instelt op True, kunnen sites zonder beperkingen WebAssembly-modules cross-origin versturen.
 
       Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
-<translation id="6005906773585863978">Bepaal of Manifest v2-extensies kunnen worden gebruikt door de browser.
-
-Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Als je het beleid instelt op <ph name="DEFAULT" /> (0) of niet instelt, wordt het laden van v2-extensies bepaald door de browser op basis van de bovenstaande tijdlijn.
-Als je het beleid instelt op <ph name="DISABLE" /> (1), wordt de installatie van v2-extensies geblokkeerd. Bestaande extensies worden uitgezet. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld nadat de v2-ondersteuning standaard is uitgezet.
-Als je het beleid instelt op <ph name="ENABLE" /> (2), zijn v2-extensies toegestaan. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
-Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zijn afgedwongen geïnstalleerde v2-extensies toegestaan. Dit omvat extensies die worden vermeld in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> met <ph name="INSTALLATION_MODE" /> force_installed of normal_installed. Alle andere v2-extensies staan uit. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
-
-
-De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="6009062900206392980">Als het beleid is ingesteld op None, staat schermvergroting uit op het inlogscherm.
 
        Als je dit beleid instelt, kunnen gebruikers het vergrootglas tijdelijk aan- of uitzetten. Als het inlogscherm opnieuw wordt geladen of een minuut lang niet wordt gebruikt, wordt de oorspronkelijke status hersteld.
@@ -4994,6 +5005,7 @@ De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsreg
 <translation id="6050796253724099706">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="605132676434455096">Toevoegen van nieuwe profielen niet toestaan</translation>
 <translation id="6053681087509103368">Toestaan dat WebRTC verouderde versies van het TLD-/DTLS-protocol gebruikt</translation>
+<translation id="6056517174496942473">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's</translation>
 <translation id="6058879286588763839">Als je <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> instelt, geef je het stroombeheerbeleid voor de batterijoplaadmodus op (als dit wordt ondersteund op het apparaat), tenzij <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> is opgegeven (dat voorrang krijgt op <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />). Dit beleid beheert het opladen van de batterij op dynamische wijze door spanning en belasting te minimaliseren. Zo wordt de batterijduur verlengd.
 
       Als je het beleid niet instelt (als dit wordt ondersteund op het apparaat), is de standaard batterijoplaadmodus van toepassing en kunnen gebruikers dit niet wijzigen.
@@ -5014,6 +5026,9 @@ De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsreg
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard cachedirectory. Gebruikers kunnen die instelling echter wijzigen met behulp van de opdrachtregel '--disk-cache-dir'.
 
       <ph name="PRODUCT_NAME" /> beheert de inhoud van de root-map van een volume. Als je gegevensverlies of andere fouten wilt voorkomen, moet je dit beleid niet instellen op de root-map of een directory die voor andere doeleinden wordt gebruikt. Bekijk de variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="6083356110032622782">WebSQL in niet-beveiligde contexten wordt verwijderd vanaf M110. Dit beleid zet de API opnieuw aan.
+          Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
+          Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.</translation>
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
@@ -5672,6 +5687,13 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je dit beleid instelt op True, is de volledige URL zichtbaar in de adresbalk, inclusief schema's en subdomeinen.
       Als je dit beleid instelt op False, wordt de standaard URL-weergave toegepast.
       Als je dit beleid niet instelt, wordt de standaard URL-weergave toegepast. Via een optie in het contextmenu kan de gebruiker schakelen tussen de standaard en volledige URL-weergave.</translation>
+<translation id="6670716303606644752">Zoals wordt beschreven in https://www.chromestatus.com/feature/5148698084376576, worden modulaire JavaScript-dialoogvensters die worden geactiveerd door <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> en <ph name="JS_PROMPT" />, geblokkeerd in <ph name="PRODUCT_NAME" /> als ze worden geactiveerd vanuit een subframe waarvan de oorsprong verschilt van de oorsprong van de hoofdframe.
+
+Met dit beleid kun je die wijziging overschrijven.
+Als je het beleid toepast of niet instelt, worden JavaScript-dialoogvensters geblokkeerd als ze afkomstig zijn van een subframe met een andere oorsprong.
+Als je het beleid niet toepast, worden JavaScript-dialoogvensters niet geblokkeerd, zelfs niet als ze afkomstig zijn van een subframe met een andere oorsprong.
+
+Dit beleid wordt in de toekomst verwijderd uit <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6670794785040100077">Indienen van documenten bij <ph name="CLOUD_PRINT_NAME" /> uitzetten</translation>
 <translation id="6672070613706645316">Gebruikers toestaan de achtergrond van de pagina 'Nieuw tabblad' aan te passen</translation>
 <translation id="6672630473862787247">Ambient-verificatie in normale, incognito- en gastsessies aanzetten.</translation>
@@ -6963,6 +6985,16 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
           Als deze instelling aanstaat, kan dit apparaat externe hosts zien en hier verbinding mee maken, zelfs als ze worden gescheiden door een firewall.
 
           Als deze instelling uitstaat en uitgaande UDP-verbindingen worden gefilterd door de firewall, kan dit apparaat alleen verbinding maken met hosts binnen het lokale netwerk.</translation>
+<translation id="7976103461034266553">Als het beleid wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms niet vastgezet op 1 ms.
+          Als het beleid niet wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms vastgezet op 1 ms.
+          Als het beleid niet is ingesteld, wordt het standaardgedrag van de browser gebruikt voor het vastzetten van de functie setTimeout().
+
+          Deze functie voldoet aan de internetstandaarden, maar kan de taakvolgorde op een webpagina veranderen, wat kan leiden tot onverwacht gedrag op sites die afhankelijk zijn van een bepaalde volgorde. De functie kan ook van invloed zijn op sites die veel instanties van setTimeout() met een time-out van 0 ms gebruiken. De CPU-belasting kan bijvoorbeeld toenemen.
+
+          Voor gebruikers waarvoor dit beleid niet is ingesteld, rolt Chrome de wijziging geleidelijk uit op het stabiele kanaal.
+
+          Dit beleid is verwijderd in Chrome 110.
+                                        </translation>
 <translation id="7976157349247117979">Naam van de bestemming van <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Android-rapporten aanzetten</translation>
@@ -7174,6 +7206,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
       Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="8199823751103472868">Als je het beleid instelt, wordt Hindi InScript-indeling aangezet voor <ph name="PRODUCT_OS_NAME" />. Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet beschikbaar.</translation>
+<translation id="8202834945144737726">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's op het inlogscherm</translation>
 <translation id="8212900161626657849">Als je dit beleid toepast of niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor CECPQ2, een algoritme voor post-quantum sleutelovereenkomst in TLS.
 
       CECPQ2 resulteert in grotere TLS-berichten die in zeer zeldzame gevallen bugs kunnen veroorzaken in bepaalde netwerkhardware. Je kunt dit beleid instellen op False om CECPQ2 uit te zetten terwijl de netwerkproblemen worden opgelost.

@@ -700,6 +700,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou betalings- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Druk |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om volskerm te verlaat</translation>
+<translation id="2718207025093645426">Daar is geen beleid vir bestuurde gebruiker of toestel gelaai nie.</translation>
 <translation id="2721148159707890343">Versoek was suksesvol</translation>
 <translation id="2723669454293168317">Doen 'n veiligheidskontrole in Chrome-instellings</translation>
 <translation id="2726001110728089263">Kantlaai</translation>
@@ -1148,7 +1149,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3901925938762663762">Die kaart het verval</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> wil beskermde inhoud speel. Jou toestel se identiteit sal deur Google geverifieer word en hierdie werf kan toegang daartoe kry.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Voer jou sekuriteitkode in</translation>
 <translation id="3927932062596804919">Weier</translation>
@@ -2845,6 +2845,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8233773197406738106">Berei tans lêer voor</translation>
 <translation id="8235754723616617175">Countrymusiek</translation>
 <translation id="8237519162179154808">Stokperdjies en ontspanning</translation>
+<translation id="8238188918340945316">28x40 dm.</translation>
 <translation id="8238581221633243064">Maak bladsy in nuwe incognito-oortjie oop</translation>
 <translation id="8241707690549784388">Die bladsy wat jy soek, het inligting gebruik wat jy ingevoer het. As jy na daardie bladsy terugkeer, kan van die handelinge wat jy uitgevoer het, herhaal word. Wil jy voortgaan?</translation>
 <translation id="8241712895048303527">Blokkeer op hierdie werf</translation>

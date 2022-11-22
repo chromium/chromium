@@ -700,6 +700,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Druk op |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om het volledige scherm te sluiten</translation>
+<translation id="2718207025093645426">Er is geen beleid geladen voor een beheerde gebruiker of beheerd apparaat.</translation>
 <translation id="2721148159707890343">Verzoek geslaagd</translation>
 <translation id="2723669454293168317">Voer een veiligheidscheck uit in de Chrome-instellingen</translation>
 <translation id="2726001110728089263">Zijlade</translation>
@@ -1143,7 +1144,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3909477809443608991"><ph name="URL" /> wil beschermde content afspelen. De identiteit van je apparaat wordt geverifieerd door Google en is mogelijk toegankelijk voor deze site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Geef je beveiligingscode op</translation>
 <translation id="3927932062596804919">Weigeren</translation>
@@ -2839,6 +2839,7 @@ Aanvullende informatie:
 <translation id="8233773197406738106">Bestand voorbereiden</translation>
 <translation id="8235754723616617175">Countrymuziek</translation>
 <translation id="8237519162179154808">Hobby's en vrijetijdsbesteding</translation>
+<translation id="8238188918340945316">28 x 40 inch</translation>
 <translation id="8238581221633243064">Pagina openen op een nieuw incognitotabblad</translation>
 <translation id="8241707690549784388">De pagina die je zoekt, heeft informatie gebruikt die je hebt opgegeven Als je terugkeert naar deze pagina, worden acties die je hebt uitgevoerd, mogelijk herhaald. Wil je doorgaan?</translation>
 <translation id="8241712895048303527">Blokkeren op deze site</translation>

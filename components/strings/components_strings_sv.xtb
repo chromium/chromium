@@ -700,6 +700,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill hantera betalningar och kreditkortsuppgifter i inställningarna för Chrome</translation>
 <translation id="2715808615350965923">Super A</translation>
 <translation id="271663710482723385">Tryck på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om du vill avsluta helskärmsläget</translation>
+<translation id="2718207025093645426">Ingen princip har lästs in för den hanterade användaren eller enheten.</translation>
 <translation id="2721148159707890343">Begäran genomfördes</translation>
 <translation id="2723669454293168317">Kör en säkerhetskontroll i inställningarna för Chrome</translation>
 <translation id="2726001110728089263">Sidofack</translation>
@@ -1148,7 +1149,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3901925938762663762">Kortet gäller inte längre</translation>
 <translation id="3906954721959377182">Surfplatta</translation>
-<translation id="3909477809443608991"><ph name="URL" /> vill spela upp skyddat innehåll. Enhetens identitet verifieras av Google och kan öppnas av webbplatsen.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">Ange din säkerhetskod</translation>
 <translation id="3927932062596804919">Neka</translation>
@@ -2845,6 +2845,7 @@ Mer information.
 <translation id="8233773197406738106">Filen förbereds</translation>
 <translation id="8235754723616617175">Countrymusik</translation>
 <translation id="8237519162179154808">Hobby och fritid</translation>
+<translation id="8238188918340945316">28 × 40 tum</translation>
 <translation id="8238581221633243064">Öppna sidan på en ny inkognitoflik</translation>
 <translation id="8241707690549784388">Önskad sida använder information som du har angett. Om du återgår till sidan kan eventuella åtgärder på sidan upprepas. Vill du fortsätta?</translation>
 <translation id="8241712895048303527">Blockera på den här webbplatsen</translation>

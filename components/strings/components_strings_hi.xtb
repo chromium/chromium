@@ -701,6 +701,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में पैसे चुकाने से जुड़ी जानकारी और क्रेडिट कार्ड की जानकारी प्रबंधित करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2715808615350965923">सुपर ए</translation>
 <translation id="271663710482723385">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
+<translation id="2718207025093645426">मैनेज किए जा रहे उपयोगकर्ता या डिवाइस पर कोई नीति लोड नहीं है.</translation>
 <translation id="2721148159707890343">अनुरोध कामयाब रहा</translation>
 <translation id="2723669454293168317">Chrome की सेटिंग में, सुरक्षा जांच करें</translation>
 <translation id="2726001110728089263">साइड ट्रे</translation>
@@ -1148,7 +1149,6 @@
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3901925938762663762">इस कार्ड की समय सीमा खत्म हो गई है</translation>
 <translation id="3906954721959377182">टैबलेट</translation>
-<translation id="3909477809443608991"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है . Google आपके डिवाइस की पहचान की पुष्टि कर सकता है और यह साइट उसे ऐक्सेस कर सकती है.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3921869355029467742">अपना सुरक्षा कोड डालें</translation>
 <translation id="3927932062596804919">अस्वीकार करें</translation>
@@ -2845,6 +2845,7 @@
 <translation id="8233773197406738106">फ़ाइल तैयार की जा रही है</translation>
 <translation id="8235754723616617175">कंट्री म्यूज़िक</translation>
 <translation id="8237519162179154808">शौक और आराम</translation>
+<translation id="8238188918340945316">28 x 40 इंच</translation>
 <translation id="8238581221633243064">पेज को नए गुप्त टैब में खोलें</translation>
 <translation id="8241707690549784388">आप जिस पेज को ढूंढ रहे हैं उसने आपकी डाली गई जानकारी का इस्तेमाल किया है. उस पेज पर वापस लौटने से आपकी कोई कार्रवाई दोहराई जा सकती है. क्या आप जारी रखना चाहते हैं?</translation>
 <translation id="8241712895048303527">इस साइट पर ब्लॉक करें</translation>

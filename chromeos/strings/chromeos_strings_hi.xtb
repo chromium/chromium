@@ -152,6 +152,7 @@
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
+<translation id="2304783958703511257">अतिरिक्त सेटिंग</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
 <translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
@@ -306,6 +307,7 @@
 <translation id="4044093238444069296">गेटवे से संपर्क नहीं किया जा सकता</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="404928562651467259">चेतावनी</translation>
+<translation id="4060260348856573701">नया एपीएन</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
 <translation id="4110686435123617899">एल्बम चुनें <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -472,6 +474,7 @@
 <translation id="5499114900554609492">स्कैन नहीं किया जा सका</translation>
 <translation id="5499762266711462226">कीबोर्ड का रंग वॉलपेपर के हिसाब से तय होता है</translation>
 <translation id="5502931783115429516">Android नहीं चल रहा है</translation>
+<translation id="551689408806449779">डिवाइस को डिसकनेक्ट कर दिया गया है. टेस्ट करने के लिए, डिवाइस को फिर से कनेक्ट करने की कोशिश करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">शाम होने पर, अपने-आप गहरे रंग वाली थीम पर स्विच करें</translation>
@@ -501,10 +504,12 @@
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5866840822086176774">बहुत सशक्त</translation>
+<translation id="5876385649737594562">विकल्प चुनने के लिए, ऐंबियंट मोड चालू करें</translation>
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5903200662178656908">यह डिवाइस, कीबोर्ड और माउस का कॉम्बो है.</translation>
+<translation id="5904994456462260490">नया एपीएन जोड़ें</translation>
 <translation id="5907649332524363701">बटन का रंग</translation>
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
@@ -609,6 +614,7 @@
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
 <translation id="6791471867139427246">कीबोर्ड की लाइट का रंग</translation>
+<translation id="6793680441750437230">अपने कीबोर्ड पर कोई भी बटन दबाएं. एक बार में, ज़्यादा से ज़्यादा चार बटन दबाए जा सकते हैं. डायलॉग बॉक्स बंद करने के लिए, Alt के साथ Esc दबाएं.</translation>
 <translation id="680983167891198932">कुंजी</translation>
 <translation id="6816797338148849397">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी उपलब्ध है. इसे ऐक्सेस करने के लिए, अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="6853312040151791195">डिस्चार्ज होने की दर</translation>
