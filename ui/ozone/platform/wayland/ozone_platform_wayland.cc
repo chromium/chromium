@@ -33,7 +33,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_gl_egl_utility.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
@@ -71,6 +70,10 @@
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #else
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
+#endif
+
+#if defined(WAYLAND_GBM)
+#include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #endif
 
 namespace ui {
@@ -184,6 +187,7 @@ class OzonePlatformWayland : public OzonePlatform,
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
+#if defined(WAYLAND_GBM)
     // If there is no drm render node device available, native pixmaps are not
     // supported.
     if (path_finder_.GetDrmRenderNodePath().empty())
@@ -196,6 +200,9 @@ class OzonePlatformWayland : public OzonePlatform,
 
     return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
                                                                    usage);
+#else
+    return false;
+#endif
   }
 
   bool ShouldUseCustomFrame() override {
@@ -428,9 +435,11 @@ class OzonePlatformWayland : public OzonePlatform,
   // framework.
   wl::BufferFormatsWithModifiersMap supported_buffer_formats_;
 
+#if defined(WAYLAND_GBM)
   // This is used both in the gpu and browser processes to find out if a drm
   // render node is available.
   DrmRenderNodePathFinder path_finder_;
+#endif
 
 #if BUILDFLAG(USE_GTK)
   std::unique_ptr<LinuxUiDelegateWayland> gtk_ui_platform_;

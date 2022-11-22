@@ -32,8 +32,6 @@ source_set("wayland") {
     "common/wayland_object.h",
     "common/wayland_util.cc",
     "common/wayland_util.h",
-    "gpu/drm_render_node_path_finder.cc",
-    "gpu/drm_render_node_path_finder.h",
     "gpu/gl_surface_egl_readback_wayland.cc",
     "gpu/gl_surface_egl_readback_wayland.h",
     "gpu/gl_surface_wayland.cc",
@@ -357,6 +355,8 @@ source_set("wayland") {
     sources += [
       "gpu/drm_render_node_handle.cc",
       "gpu/drm_render_node_handle.h",
+      "gpu/drm_render_node_path_finder.cc",
+      "gpu/drm_render_node_path_finder.h",
       "gpu/gbm_pixmap_wayland.cc",
       "gpu/gbm_pixmap_wayland.h",
       "gpu/gbm_surfaceless_wayland.cc",
