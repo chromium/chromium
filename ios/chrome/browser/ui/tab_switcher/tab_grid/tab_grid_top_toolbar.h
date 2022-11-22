@@ -23,6 +23,7 @@
 //   Remote page:    [                   PageControl             Done]
 //   Selection mode: [SelectAll        SelectedTabsCount         Done]
 @interface TabGridTopToolbar : UIToolbar
+
 // These components are publicly available to allow the user to set their
 // contents, visibility and actions.
 @property(nonatomic, strong, readonly) UIBarButtonItem* anchorItem;
@@ -60,6 +61,7 @@
 - (void)setCloseAllButtonEnabled:(BOOL)enabled;
 // use undo or closeAll text on the close all button based on `useUndo` value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
+
 // Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
 // Set `enabled` on the Edit button.
@@ -75,6 +77,9 @@
 - (void)hide;
 // Recovers the normal appearance for tab grid transition animation.
 - (void)show;
+// Updates the appearance of the this toolbar, based on whether the content
+// below it is `scrolledToEdge` or not.
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
 
 @end
 

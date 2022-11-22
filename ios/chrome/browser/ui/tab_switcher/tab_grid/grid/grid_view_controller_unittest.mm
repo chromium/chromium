@@ -79,6 +79,11 @@
   // No-op for unittests.
 }
 
+- (void)gridViewControllerScrollViewDidScroll:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

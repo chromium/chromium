@@ -115,6 +115,8 @@ source_set("tab_grid_ui") {
     "tab_grid_new_tab_button.mm",
     "tab_grid_page_control.h",
     "tab_grid_page_control.mm",
+    "tab_grid_toolbars_utils.h",
+    "tab_grid_toolbars_utils.mm",
     "tab_grid_top_toolbar.h",
     "tab_grid_top_toolbar.mm",
     "tab_grid_view_controller.h",

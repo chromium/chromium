@@ -905,6 +905,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self.delegate gridViewControllerScrollViewDidScroll:self];
   if (!self.thumbStripEnabled)
     return;
   [self updateFractionVisibleOfLastItem];

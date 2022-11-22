@@ -59,6 +59,10 @@
 // position change of the slider will be animated.
 - (void)setSelectedPage:(TabGridPage)selectedPage animated:(BOOL)animated;
 
+// Updates the appearance of the control, based on whether the content below it
+// is `scrolledToEdge` or not.
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_PAGE_CONTROL_H_

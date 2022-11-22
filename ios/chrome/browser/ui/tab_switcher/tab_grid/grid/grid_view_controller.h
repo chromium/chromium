@@ -86,6 +86,9 @@ enum class DragDropTabs {
 // Tells the delegate that the grid view controller cells did end dragging.
 - (void)gridViewControllerDragSessionDidEnd:
     (GridViewController*)gridViewController;
+// Tells the delegate that the grid view controller did scroll.
+- (void)gridViewControllerScrollViewDidScroll:
+    (GridViewController*)gridViewController;
 
 @end
 

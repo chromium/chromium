@@ -9,8 +9,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_new_tab_button.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_toolbars_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -34,15 +36,28 @@
   UIBarButtonItem* _closeTabsButton;
   UIBarButtonItem* _shareButton;
   BOOL _undoActive;
+  BOOL _scrolledToEdge;
+  UIView* _scrolledToBottomBackgroundView;
+  UIView* _scrolledBackgroundView;
 }
 
 #pragma mark - UIView
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
+  [super willMoveToSuperview:newSuperview];
   // The first time this moves to a superview, perform the view setup.
   if (newSuperview && self.subviews.count == 0) {
     [self setupViews];
   }
+}
+
+- (void)didMoveToSuperview {
+  if (_scrolledBackgroundView) {
+    [self.superview.bottomAnchor
+        constraintEqualToAnchor:_scrolledBackgroundView.bottomAnchor]
+        .active = YES;
+  }
+  [super didMoveToSuperview];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -178,6 +193,16 @@
   _largeNewTabButton.alpha = 1.0;
 }
 
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge {
+  if (!UseSymbols() || scrolledToEdge == _scrolledToEdge)
+    return;
+
+  _scrolledToEdge = scrolledToEdge;
+
+  _scrolledToBottomBackgroundView.hidden = !scrolledToEdge;
+  _scrolledBackgroundView.hidden = scrolledToEdge;
+}
+
 #pragma mark Close Tabs
 
 - (void)setCloseTabsButtonTarget:(id)target action:(SEL)action {
@@ -228,12 +253,7 @@
   _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
   if (UseSymbols()) {
-    UIToolbarAppearance* appearance = [[UIToolbarAppearance alloc] init];
-    appearance.backgroundColor =
-        [UIColor colorWithWhite:0 alpha:kToolbarBackgroundAlpha];
-    appearance.backgroundEffect = [UIBlurEffect
-        effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialLight];
-    _toolbar.standardAppearance = appearance;
+    [self createScrolledBackgrounds];
     _toolbar.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   } else {
     _toolbar.barStyle = UIBarStyleBlack;
@@ -451,6 +471,34 @@
              UIUserInterfaceSizeClassRegular &&
          self.traitCollection.horizontalSizeClass ==
              UIUserInterfaceSizeClassCompact;
+}
+
+// Creates and configures the two background for the scrolled in the
+// middle/scrolled to the top states.
+- (void)createScrolledBackgrounds {
+  _scrolledToEdge = YES;
+
+  // Background when the content is scrolled to the middle.
+  _scrolledBackgroundView = CreateTabGridOverContentBackground();
+  _scrolledBackgroundView.hidden = YES;
+  _scrolledBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_scrolledBackgroundView];
+  AddSameConstraintsToSides(
+      self, _scrolledBackgroundView,
+      LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+
+  // Background when the content is scrolled to the top.
+  _scrolledToBottomBackgroundView = CreateTabGridScrolledToEdgeBackground();
+  _scrolledToBottomBackgroundView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [self addSubview:_scrolledToBottomBackgroundView];
+  AddSameConstraints(_scrolledBackgroundView, _scrolledToBottomBackgroundView);
+
+  // A non-nil UIImage has to be added in the background of the toolbar to avoid
+  // having an additional blur effect.
+  [_toolbar setBackgroundImage:[UIImage new]
+            forToolbarPosition:UIBarPositionAny
+                    barMetrics:UIBarMetricsDefault];
 }
 
 @end

@@ -8,10 +8,13 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_toolbars_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -54,6 +57,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   UIView* _searchBarView;
 
   BOOL _undoActive;
+
+  BOOL _scrolledToEdge;
+  UIView* _scrolledToTopBackgroundView;
+  UIView* _scrolledBackgroundView;
 }
 
 - (UIBarButtonItem*)anchorItem {
@@ -200,6 +207,17 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self.pageControl.alpha = 1.0;
 }
 
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge {
+  if (!UseSymbols() || scrolledToEdge == _scrolledToEdge)
+    return;
+
+  _scrolledToEdge = scrolledToEdge;
+
+  _scrolledToTopBackgroundView.hidden = !scrolledToEdge;
+  _scrolledBackgroundView.hidden = scrolledToEdge;
+  [_pageControl setScrollViewScrolledToEdge:scrolledToEdge];
+}
+
 #pragma mark Edit Button
 
 - (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
@@ -217,10 +235,20 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
+  [super willMoveToSuperview:newSuperview];
   // The first time this moves to a superview, perform the view setup.
   if (newSuperview && self.subviews.count == 0) {
     [self setupViews];
   }
+}
+
+- (void)didMoveToSuperview {
+  if (_scrolledBackgroundView) {
+    [self.superview.topAnchor
+        constraintEqualToAnchor:_scrolledBackgroundView.topAnchor]
+        .active = YES;
+  }
+  [super didMoveToSuperview];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -362,6 +390,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self.translatesAutoresizingMaskIntoConstraints = NO;
   if (UseSymbols()) {
     self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    [self createScrolledBackgrounds];
   } else {
     self.barStyle = UIBarStyleBlack;
     self.translucent = YES;
@@ -369,7 +398,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self.delegate = self;
   [self setShadowImage:[[UIImage alloc] init]
       forToolbarPosition:UIBarPositionAny];
-  if (base::ios::HasDynamicIsland()) {
+  if (!UseSymbols() && base::ios::HasDynamicIsland()) {
     // Do this to make the toolbar transparent instead of translucent.
     [self setBackgroundImage:[UIImage new]
           forToolbarPosition:UIToolbarPositionAny
@@ -384,6 +413,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
   _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
+  [_pageControl setScrollViewScrolledToEdge:_scrolledToEdge];
   _pageControlItem = [[UIBarButtonItem alloc] initWithCustomView:_pageControl];
 
   _doneButton = [[UIBarButtonItem alloc] init];
@@ -481,6 +511,33 @@ const CGFloat kSymbolSearchImagePointSize = 22;
                            action:nil];
 
   [self setItemsForTraitCollection:self.traitCollection];
+}
+
+// Creates and configures the two background for the scrolled in the
+// middle/scrolled to the top states.
+- (void)createScrolledBackgrounds {
+  _scrolledToEdge = YES;
+
+  // Background when the content is scrolled to the middle.
+  _scrolledBackgroundView = CreateTabGridOverContentBackground();
+  _scrolledBackgroundView.hidden = YES;
+  _scrolledBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_scrolledBackgroundView];
+  AddSameConstraintsToSides(
+      self, _scrolledBackgroundView,
+      LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  // Background when the content is scrolled to the top.
+  _scrolledToTopBackgroundView = CreateTabGridScrolledToEdgeBackground();
+  _scrolledToTopBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_scrolledToTopBackgroundView];
+  AddSameConstraints(_scrolledBackgroundView, _scrolledToTopBackgroundView);
+
+  // A non-nil UIImage has to be added in the background of the toolbar to avoid
+  // having an additional blur effect.
+  [self setBackgroundImage:[UIImage new]
+        forToolbarPosition:UIBarPositionAny
+                barMetrics:UIBarMetricsDefault];
 }
 
 // Returns YES if should use compact bottom toolbar layout.

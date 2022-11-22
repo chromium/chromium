@@ -18,8 +18,9 @@ class DistantSession;
 
 @protocol ApplicationCommands;
 @protocol RecentTabsMenuProvider;
-@protocol RecentTabsTableViewControllerDelegate;
 @protocol RecentTabsPresentationDelegate;
+@protocol RecentTabsTableViewControllerDelegate;
+@protocol RecentTabsTableViewControllerUIDelegate;
 @protocol TableViewFaviconDataSource;
 
 @interface RecentTabsTableViewController
@@ -36,6 +37,9 @@ class DistantSession;
 @property(nonatomic, assign) WindowOpenDisposition restoredTabDisposition;
 // RecentTabsTableViewControllerDelegate delegate.
 @property(nonatomic, weak) id<RecentTabsTableViewControllerDelegate> delegate;
+// Delegate for UI-related events.
+@property(nonatomic, weak) id<RecentTabsTableViewControllerUIDelegate>
+    UIDelegate;
 // Whether the updates of the RecentTabs should be ignored. Setting this to NO
 // would trigger a reload of the TableView.
 @property(nonatomic, assign) BOOL preventUpdates;

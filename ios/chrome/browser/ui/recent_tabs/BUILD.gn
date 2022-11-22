@@ -64,6 +64,7 @@ source_set("recent_tabs_ui") {
     "recent_tabs_table_view_controller.h",
     "recent_tabs_table_view_controller.mm",
     "recent_tabs_table_view_controller_delegate.h",
+    "recent_tabs_table_view_controller_ui_delegate.h",
     "recent_tabs_transitioning_delegate.h",
     "recent_tabs_transitioning_delegate.mm",
     "sessions_sync_user_state.h",

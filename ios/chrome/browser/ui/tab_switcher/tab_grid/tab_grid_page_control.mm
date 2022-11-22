@@ -124,6 +124,7 @@ const int kLegacySliderColor = 0xF8F9FA;
 // Alpha for the background view.
 const CGFloat kLegacyBackgroundAlpha = 0.3;
 const CGFloat kBackgroundAlpha = 0.15;
+const CGFloat kScrolledToTopBackgroundAlpha = 0.25;
 // Color for the regular tab count label and icons.
 const CGFloat kLegacySelectedColor = 0x3C4043;
 
@@ -177,6 +178,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   UIAccessibilityElement* _remoteAccessibilityElement;
 }
 
+// The grey background for all the segments.
+@property(nonatomic, weak) UIView* background;
+
 // Layout guides used to position segment-specific content.
 @property(nonatomic, weak) UILayoutGuide* incognitoGuide;
 @property(nonatomic, weak) UILayoutGuide* regularGuide;
@@ -225,6 +229,10 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Gesture recognizer used to handle taps. Owned by `self` as a UIView, so this
 // property is just a weak pointer to refer to it in some touch logic.
 @property(nonatomic, weak) UIGestureRecognizer* tapRecognizer;
+
+// Whether the content below is scrolled to the edge or displayed behind.
+@property(nonatomic, assign) BOOL scrolledToEdge;
+
 @end
 
 @implementation TabGridPageControl
@@ -277,6 +285,18 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
     ];
   }
   return self;
+}
+
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge {
+  if (!UseSymbols() || _scrolledToEdge == scrolledToEdge)
+    return;
+
+  _scrolledToEdge = scrolledToEdge;
+
+  CGFloat backgroundAlpha =
+      scrolledToEdge ? kScrolledToTopBackgroundAlpha : kBackgroundAlpha;
+  self.background.backgroundColor = [UIColor colorWithWhite:1
+                                                      alpha:backgroundAlpha];
 }
 
 #pragma mark - Public Properies
@@ -586,10 +606,12 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 - (void)setupViews {
   UIView* backgroundView = nil;
   if (UseSymbols()) {
+    self.scrolledToEdge = YES;
+
     backgroundView = [[UIView alloc]
         initWithFrame:CGRectMake(0, 0, kOverallWidth, kSegmentHeight)];
-    backgroundView.backgroundColor = [UIColor colorWithWhite:1
-                                                       alpha:kBackgroundAlpha];
+    backgroundView.backgroundColor =
+        [UIColor colorWithWhite:1 alpha:kScrolledToTopBackgroundAlpha];
 
   } else {
     backgroundView = [[TabGridPageControlBackground alloc] init];
@@ -609,6 +631,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
     backgroundView.center =
         CGPointMake(kLegacyOverallWidth / 2.0, kLegacyOverallHeight / 2.0);
   }
+  self.background = backgroundView;
 
   // Set up the layout guides for the segments.
   UILayoutGuide* incognitoGuide = [[UILayoutGuide alloc] init];
@@ -729,7 +752,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
   CGRect segmentRect;
   if (UseSymbols()) {
-    segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
+    segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
   } else {
     segmentRect = CGRectMake(0, 0, kLegacySegmentWidth, kLegacyOverallHeight);
   }

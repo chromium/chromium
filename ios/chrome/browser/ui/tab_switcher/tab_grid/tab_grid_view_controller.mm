@@ -19,10 +19,12 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_view_controller.h"
@@ -131,6 +133,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @interface TabGridViewController () <DisabledTabViewControllerDelegate,
                                      GridViewControllerDelegate,
                                      LayoutSwitcher,
+                                     RecentTabsTableViewControllerUIDelegate,
                                      SuggestedActionsDelegate,
                                      UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate,
@@ -1074,6 +1077,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.pinnedTabsViewController
         pinnedTabsAvailable:isTabGridPageRegularTabs];
   }
+  [self updateToolbarsAppearance];
 }
 
 // Sets the value of `currentPage`, adjusting the position of the scroll view
@@ -1275,16 +1279,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Adds the remote tabs view controller as a contained view controller, and
 // sets constraints.
 - (void)setupRemoteTabsViewController {
+  RecentTabsTableViewController* viewController = self.remoteTabsViewController;
+  viewController.UIDelegate = self;
+
   // TODO(crbug.com/804589) : Dark style on remote tabs.
   // The styler must be set before the view controller is loaded.
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   styler.tableViewBackgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  self.remoteTabsViewController.overrideUserInterfaceStyle =
-      UIUserInterfaceStyleDark;
-  self.remoteTabsViewController.styler = styler;
+  viewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  viewController.styler = styler;
 
   UIView* contentView = self.scrollContentView;
-  RecentTabsTableViewController* viewController = self.remoteTabsViewController;
   viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:viewController];
   [contentView addSubview:viewController.view];
@@ -1376,7 +1381,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Adds the top toolbar and sets constraints.
 - (void)setupTopToolbar {
   UIVisualEffectView* topToolbarBlurView;
-  if (base::ios::HasDynamicIsland()) {
+  if (!UseSymbols() && base::ios::HasDynamicIsland()) {
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     topToolbarBlurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -1420,7 +1425,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
   ]];
 
-  if (base::ios::HasDynamicIsland()) {
+  if (!UseSymbols() && base::ios::HasDynamicIsland()) {
     [NSLayoutConstraint activateConstraints:@[
       [topToolbarBlurView.topAnchor
           constraintEqualToAnchor:self.view.topAnchor],
@@ -2021,6 +2026,33 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       }];
 }
 
+// Updates the appearance of the toolbars based on the scroll position of the
+// currently active Grid.
+- (void)updateToolbarsAppearance {
+  UIScrollView* scrollView;
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      scrollView = self.incognitoTabsViewController.gridView;
+      break;
+    case TabGridPageRegularTabs:
+      scrollView = self.regularTabsViewController.gridView;
+      break;
+    case TabGridPageRemoteTabs:
+      scrollView = self.remoteTabsViewController.tableView;
+      break;
+  }
+
+  BOOL gridScrolledToTop =
+      scrollView.contentOffset.y <= -scrollView.adjustedContentInset.top;
+  [self.topToolbar setScrollViewScrolledToEdge:gridScrolledToTop];
+
+  CGFloat scrollableHeight = scrollView.contentSize.height +
+                             scrollView.adjustedContentInset.bottom -
+                             scrollView.bounds.size.height;
+  BOOL gridScrolledToBottom = scrollView.contentOffset.y >= scrollableHeight;
+  [self.bottomToolbar setScrollViewScrolledToEdge:gridScrolledToBottom];
+}
+
 #pragma mark UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -2095,6 +2127,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // the results.
     [self hideScrim];
   }
+}
+
+#pragma mark - RecentTabsTableViewControllerUIDelegate
+
+- (void)recentTabsScrollViewDidScroll:
+    (RecentTabsTableViewController*)recentTabsTableViewController {
+  [self updateToolbarsAppearance];
 }
 
 #pragma mark - SuggestedActionsDelegate
@@ -2333,6 +2372,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (self.tabGridMode == TabGridModeSelection) {
     [self updateSelectionModeToolbars];
   }
+}
+
+- (void)gridViewControllerScrollViewDidScroll:
+    (GridViewController*)gridViewController {
+  [self updateToolbarsAppearance];
 }
 
 #pragma mark - Control actions

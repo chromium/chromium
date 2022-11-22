@@ -26,6 +26,7 @@
 //   Remote page:    [                                                  ]
 //   Selection mode: [CloseTabButton       shareButton       AddToButton]
 @interface TabGridBottomToolbar : UIView
+
 // This property together with `mode` and self.traitCollection control the items
 // shown in toolbar and its background color. Setting this property will also
 // set it on `newTabButton`.
@@ -78,6 +79,10 @@
 - (void)hide;
 // Recovers the normal appearance for tab grid transition animation.
 - (void)show;
+// Updates the appearance of the this toolbar, based on whether the content
+// below it is `scrolledToEdge` or not.
+- (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_BOTTOM_TOOLBAR_H_
