@@ -11,11 +11,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
-import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 
@@ -27,9 +24,6 @@ import java.lang.ref.WeakReference;
  */
 public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
-    private static final MutableFlagWithSafeDefault sScrollOptimizationsFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
-
     private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
 
     /**
@@ -58,20 +52,6 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
         return super.isKeyboardShowing(context, view)
                 || (mManualFillingComponentSupplier.hasValue()
                         && mManualFillingComponentSupplier.get().isFillingViewShown(view));
-    }
-
-    @Override
-    public int calculateKeyboardHeight(View rootView) {
-        // TODO(https://crbug.com/1385562: remove the flag guard once this change is known to be
-        // safe).
-        if (sScrollOptimizationsFlag.isEnabled()) {
-            if (rootView == null || rootView.getRootWindowInsets() == null) return 0;
-            return WindowInsetsCompat.toWindowInsetsCompat(rootView.getRootWindowInsets(), rootView)
-                    .getInsets(WindowInsetsCompat.Type.ime())
-                    .bottom;
-        }
-
-        return super.calculateKeyboardHeight(rootView);
     }
 
     /**

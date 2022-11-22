@@ -99,6 +99,11 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
         return mIsShowing ? getStaticKeyboardHeight() : 0;
     }
 
+    @Override
+    public int calculateKeyboardDetectionThreshold(Context context, View rootView) {
+        return 0;
+    }
+
     /**
      * Creates an inset observer view calculating the bottom inset based on the fake keyboard.
      * @param context Context used to instantiate this view.

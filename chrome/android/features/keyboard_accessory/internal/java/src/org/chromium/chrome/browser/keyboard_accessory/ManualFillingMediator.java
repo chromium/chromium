@@ -192,7 +192,7 @@ class ManualFillingMediator
     }
 
     boolean isFillingViewShown(View view) {
-        return isInitialized() && mKeyboardAccessory.hasActiveTab() && !isSoftKeyboardShowing(view);
+        return isInitialized() && !isSoftKeyboardShowing(view) && mKeyboardAccessory.hasActiveTab();
     }
 
     ObservableSupplier<Integer> getBottomInsetSupplier() {
