@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -478,12 +479,12 @@ void Profile::MaybeSendDestroyedNotification() {
 PrefStore* Profile::CreateExtensionPrefStore(Profile* profile,
                                              bool incognito_pref_store) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return new ExtensionPrefStore(
-      ExtensionPrefValueMapFactory::GetForBrowserContext(profile),
-      incognito_pref_store);
-#else
-  return nullptr;
+  if (ExtensionPrefValueMap* pref_value_map =
+          ExtensionPrefValueMapFactory::GetForBrowserContext(profile)) {
+    return new ExtensionPrefStore(pref_value_map, incognito_pref_store);
+  }
 #endif
+  return nullptr;
 }
 
 bool ProfileCompare::operator()(Profile* a, Profile* b) const {

@@ -138,7 +138,12 @@ void ChromeProcessManagerDelegate::OnProfileAdded(Profile* profile) {
   // The profile might have been initialized asynchronously (in parallel with
   // extension system startup). Now that initialization is complete the
   // ProcessManager can load deferred background pages.
-  ProcessManager::Get(profile)->MaybeCreateStartupBackgroundHosts();
+  //
+  // The process manager service might not be available for some irregular
+  // profiles, like the System Profile.
+  if (ProcessManager* process_manager = ProcessManager::Get(profile)) {
+    process_manager->MaybeCreateStartupBackgroundHosts();
+  }
 }
 
 void ChromeProcessManagerDelegate::OnProfileManagerDestroying() {

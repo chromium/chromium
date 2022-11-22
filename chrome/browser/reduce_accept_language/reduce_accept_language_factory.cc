@@ -5,9 +5,7 @@
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/reduce_accept_language/browser/reduce_accept_language_service.h"
 
 // static
@@ -24,9 +22,9 @@ ReduceAcceptLanguageFactory* ReduceAcceptLanguageFactory::GetInstance() {
 }
 
 ReduceAcceptLanguageFactory::ReduceAcceptLanguageFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ReduceAcceptLanguage",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -39,9 +37,4 @@ KeyedService* ReduceAcceptLanguageFactory::BuildServiceInstanceFor(
   return new reduce_accept_language::ReduceAcceptLanguageService(
       HostContentSettingsMapFactory::GetForProfile(context), prefs,
       profile->IsIncognitoProfile());
-}
-
-content::BrowserContext* ReduceAcceptLanguageFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

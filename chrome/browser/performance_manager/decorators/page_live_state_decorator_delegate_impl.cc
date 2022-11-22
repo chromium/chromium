@@ -26,12 +26,18 @@ std::map<ContentSettingsType, ContentSetting>
 PageLiveStateDelegateImpl::GetContentSettingsForUrl(
     content::WebContents* web_contents,
     const GURL& url) {
-  ContentSetting setting =
-      permissions::PermissionsClient::Get()
-          ->GetSettingsMap(web_contents->GetBrowserContext())
-          ->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS);
+  // The host content setting map service might not be available for some
+  // irregular profiles, like the System Profile.
+  if (HostContentSettingsMap* service =
+          permissions::PermissionsClient::Get()->GetSettingsMap(
+              web_contents->GetBrowserContext())) {
+    ContentSetting setting = service->GetContentSetting(
+        url, url, ContentSettingsType::NOTIFICATIONS);
 
-  return {{ContentSettingsType::NOTIFICATIONS, setting}};
+    return {{ContentSettingsType::NOTIFICATIONS, setting}};
+  }
+
+  return {};
 }
 
 }  // namespace performance_manager

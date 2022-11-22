@@ -4,6 +4,8 @@
 
 #include "chrome/browser/universal_web_contents_observers.h"
 
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -22,6 +24,11 @@ void AttachUniversalWebContentsObservers(content::WebContents* web_contents) {
   // and not every WebContents has (or needs) every tab helper.
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(web_contents->GetBrowserContext())) {
+    return;
+  }
+
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents);
 #endif

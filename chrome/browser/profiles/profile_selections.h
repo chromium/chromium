@@ -25,6 +25,13 @@ BASE_DECLARE_FEATURE(kGuestProfileSelectionDefaultNone);
 
 class Profile;
 
+// A helper function that checks whether Keyed Services should be created for
+// the given `profile` based on the default profile type value. Currently checks
+// if it is the System Profile and if it's equivalent feature flag to disable
+// the creation of Keyed Services (`kSystemProfileSelectionDefaultNone`) is
+// activated.
+bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile);
+
 // The class `ProfileSelections` and enum `ProfileSelection` are not coupled
 // with the usage of `ProfileKeyedServiceFactory`, however the experiment of
 // changing the default value of `ProfileSelections` behavior is mainly done for
@@ -52,6 +59,11 @@ class ProfileSelections {
  public:
   ProfileSelections(const ProfileSelections& other);
   ~ProfileSelections();
+
+  static const ProfileSelection kRegularProfileDefault =
+      ProfileSelection::kOriginalOnly;
+  static const ProfileSelection kSystemProfileExperimentDefault =
+      ProfileSelection::kNone;
 
   // Builder to construct the `ProfileSelections` parameters.
   class Builder {
@@ -304,7 +316,7 @@ class ProfileSelections {
   // Not assigning values for Guest and System Profiles now defaults to the
   // behavior of regular profiles. This will change later on to default to
   // `ProfileSelection::kNone`.
-  ProfileSelection regular_profile_selection_ = ProfileSelection::kOriginalOnly;
+  ProfileSelection regular_profile_selection_ = kRegularProfileDefault;
   absl::optional<ProfileSelection> guest_profile_selection_;
   absl::optional<ProfileSelection> system_profile_selection_;
   absl::optional<ProfileSelection> ash_internals_profile_selection_;

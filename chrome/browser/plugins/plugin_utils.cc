@@ -15,6 +15,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -70,15 +71,21 @@ PluginUtils::GetMimeTypeToExtensionIdMap(
   base::flat_map<std::string, std::string> mime_type_to_extension_id_map;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(profile)) {
+    return mime_type_to_extension_id_map;
+  }
+
   const std::vector<std::string>& allowlist =
       MimeTypesHandler::GetMIMETypeAllowlist();
   // Go through the allowed extensions and try to use them to intercept
   // the URL request.
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser_context);
+  DCHECK(registry);
   for (const std::string& extension_id : allowlist) {
     const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(browser_context)
-            ->enabled_extensions()
-            .GetByID(extension_id);
+        registry->enabled_extensions().GetByID(extension_id);
     // The allowed extension may not be installed, so we have to nullptr
     // check |extension|.
     if (!extension ||

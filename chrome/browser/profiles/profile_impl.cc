@@ -59,6 +59,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_manager_utils.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
@@ -89,6 +90,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
@@ -723,27 +725,33 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   UpdateSupervisedUserIdInStorage();
   UpdateIsEphemeralInStorage();
 
+  // Background mode and plugins are not used with all profiles. These use
+  // KeyedServices that might not be available such as the ExtensionSystem for
+  // some profiles, e.g. the System profile.
+  if (!AreKeyedServicesDisabledForProfileByDefault(this)) {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  // Initialize the BackgroundModeManager - this has to be done here before
-  // InitExtensions() is called because it relies on receiving notifications
-  // when extensions are loaded. BackgroundModeManager is not needed under
-  // ChromeOS because Chrome is always running, no need for special keep-alive
-  // or launch-on-startup support unless kKeepAliveForTest is set.
-  bool init_background_mode_manager = true;
+    // Initialize the BackgroundModeManager - this has to be done here before
+    // InitExtensions() is called because it relies on receiving notifications
+    // when extensions are loaded. BackgroundModeManager is not needed under
+    // ChromeOS because Chrome is always running, no need for special keep-alive
+    // or launch-on-startup support unless kKeepAliveForTest is set.
+    bool init_background_mode_manager = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kKeepAliveForTest))
-    init_background_mode_manager = false;
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kKeepAliveForTest)) {
+      init_background_mode_manager = false;
+    }
 #endif
-  if (init_background_mode_manager) {
-    if (g_browser_process->background_mode_manager())
+    if (init_background_mode_manager &&
+        g_browser_process->background_mode_manager()) {
       g_browser_process->background_mode_manager()->RegisterProfile(this);
-  }
+    }
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
+    ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
 #endif
+  }
 
   auto* db_provider = GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   key_->SetProtoDatabaseProvider(db_provider);
@@ -779,7 +787,12 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
     model->AddObserver(new BookmarkModelLoadedObserver(this));
 #endif
 
-  HeavyAdServiceFactory::GetForBrowserContext(this)->Initialize(GetPath());
+  // The ad service might not be available for some irregular profiles, like the
+  // System Profile.
+  if (heavy_ad_intervention::HeavyAdService* heavy_ad_service =
+          HeavyAdServiceFactory::GetForBrowserContext(this)) {
+    heavy_ad_service->Initialize(GetPath());
+  }
 
   PushMessagingServiceImpl::InitializeForProfile(this);
 
@@ -835,8 +848,12 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   }
 #endif
 
-  AnnouncementNotificationServiceFactory::GetForProfile(this)
-      ->MaybeShowNotification();
+  // The announcement notification  service might not be available for some
+  // irregular profiles, like the System Profile.
+  if (AnnouncementNotificationService* announcement_notification =
+          AnnouncementNotificationServiceFactory::GetForProfile(this)) {
+    announcement_notification->MaybeShowNotification();
+  }
 
   if (breadcrumbs::IsEnabled())
     BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
@@ -886,9 +903,13 @@ ProfileImpl::~ProfileImpl() {
     ProfileDestroyer::DestroyOTRProfileImmediately(otr_profile);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!primary_otr_available) {
-    ExtensionPrefValueMapFactory::GetForBrowserContext(this)
-        ->ClearAllIncognitoSessionOnlyPreferences();
+  if (!primary_otr_available &&
+      !extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(this)) {
+    ExtensionPrefValueMap* pref_value_map =
+        ExtensionPrefValueMapFactory::GetForBrowserContext(this);
+    DCHECK(pref_value_map);
+    pref_value_map->ClearAllIncognitoSessionOnlyPreferences();
   }
 #endif
 
@@ -1011,9 +1032,13 @@ void ProfileImpl::DestroyOffTheRecordProfile(Profile* otr_profile) {
   otr_profiles_.erase(profile_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Extensions are only supported on primary OTR profile.
-  if (profile_id == OTRProfileID::PrimaryID()) {
-    ExtensionPrefValueMapFactory::GetForBrowserContext(this)
-        ->ClearAllIncognitoSessionOnlyPreferences();
+  if (profile_id == OTRProfileID::PrimaryID() &&
+      !extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(this)) {
+    ExtensionPrefValueMap* pref_value_map =
+        ExtensionPrefValueMapFactory::GetForBrowserContext(this);
+    DCHECK(pref_value_map);
+    pref_value_map->ClearAllIncognitoSessionOnlyPreferences();
   }
 #endif
 }
@@ -1076,7 +1101,13 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // Note: Extension preferences can be keyed off the extension ID, so need to
   // be handled specially (rather than directly as part of
   // MigrateObsoleteProfilePrefs()).
-  extensions::ExtensionPrefs::Get(this)->MigrateObsoleteExtensionPrefs();
+  if (!extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(this)) {
+    extensions::ExtensionPrefs* extension_prefs =
+        extensions::ExtensionPrefs::Get(this);
+    DCHECK(extension_prefs);
+    extension_prefs->MigrateObsoleteExtensionPrefs();
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

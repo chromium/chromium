@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/download_manager.h"
 
@@ -25,8 +26,13 @@ MultiProfileDownloadNotifier::MultiProfileDownloadNotifier(
 MultiProfileDownloadNotifier::~MultiProfileDownloadNotifier() = default;
 
 void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
-  if (!client_->ShouldObserveProfile(profile))
+  // The multi profile download notifier is not needed for irregular profiles
+  // that don't support it, like the system profile. In addition it needs some
+  // keyed service that might not be available for those profiles.
+  if (AreKeyedServicesDisabledForProfileByDefault(profile) ||
+      !client_->ShouldObserveProfile(profile)) {
     return;
+  }
 
   content::DownloadManager* manager = profile->GetDownloadManager();
   if (base::Contains(download_notifiers_, manager,

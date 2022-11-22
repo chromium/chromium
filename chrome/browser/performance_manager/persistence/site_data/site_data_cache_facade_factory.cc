@@ -43,9 +43,10 @@ void SiteDataCacheFacadeFactory::DisassociateForTesting(Profile* profile) {
 }
 
 SiteDataCacheFacadeFactory::SiteDataCacheFacadeFactory()
-    : ProfileKeyedServiceFactory(
-          "SiteDataCacheFacadeFactory",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+    : ProfileKeyedServiceFactory("SiteDataCacheFacadeFactory",
+                                 ProfileSelections::BuildForRegularAndIncognito(
+                                     /*force_guest=*/true,
+                                     /*force_system=*/true)) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 

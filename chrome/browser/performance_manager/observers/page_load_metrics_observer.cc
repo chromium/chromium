@@ -155,11 +155,14 @@ bool PageLoadMetricsWebContentsObserver::IsTab() const {
 
 bool PageLoadMetricsWebContentsObserver::IsExtension() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return !!extensions::ProcessManager::Get(web_contents()->GetBrowserContext())
-               ->GetExtensionForWebContents(web_contents());
-#else
-  return false;
+  // The process manager might be null for some irregular profiles, e.g. the
+  // System Profile.
+  if (extensions::ProcessManager* service = extensions::ProcessManager::Get(
+          web_contents()->GetBrowserContext())) {
+    return !!service->GetExtensionForWebContents(web_contents());
+  }
 #endif
+  return false;
 }
 
 bool PageLoadMetricsWebContentsObserver::IsPrerender() const {

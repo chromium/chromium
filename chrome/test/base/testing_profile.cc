@@ -357,50 +357,53 @@ void TestingProfile::Init(bool is_supervised_profile) {
     launcher->MaybeSetProfile(this);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&BuildPersonalDataManagerInstanceFor));
+  if (!AreKeyedServicesDisabledForProfileByDefault(this)) {
+    autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating(&BuildPersonalDataManagerInstanceFor));
 
-  ReadingListModelFactory::GetInstance()->SetTestingFactory(
-      this, ReadingListModelFactory::GetDefaultFactoryForTesting());
+    ReadingListModelFactory::GetInstance()->SetTestingFactory(
+        this, ReadingListModelFactory::GetDefaultFactoryForTesting());
 
-  // TODO(joaodasilva): remove this once this PKS isn't created in ProfileImpl
-  // anymore, after converting the PrefService to a PKS. Until then it must
-  // be associated with a TestingProfile too.
-  if (!IsOffTheRecord())
-    CreateProfilePolicyConnector();
+    // TODO(joaodasilva): remove this once this PKS isn't created in ProfileImpl
+    // anymore, after converting the PrefService to a PKS. Until then it must
+    // be associated with a TestingProfile too.
+    if (!IsOffTheRecord())
+      CreateProfilePolicyConnector();
 
-  extensions_path_ = profile_path_.AppendASCII("Extensions");
+    extensions_path_ = profile_path_.AppendASCII("Extensions");
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Note that the GetPrefs() creates a TestingPrefService, therefore
-  // the extension controlled pref values set in ExtensionPrefs
-  // are not reflected in the pref service. One would need to
-  // inject a new ExtensionPrefStore(extension_pref_value_map, false).
-  bool extensions_disabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableExtensions);
-  std::unique_ptr<extensions::ExtensionPrefs> extension_prefs(
-      extensions::ExtensionPrefs::Create(
-          this, GetPrefs(), extensions_path_,
-          ExtensionPrefValueMapFactory::GetForBrowserContext(this),
-          extensions_disabled,
-          std::vector<extensions::EarlyExtensionPrefsObserver*>()));
-  extensions::ExtensionPrefsFactory::GetInstance()->SetInstanceForTesting(
-      this, std::move(extension_prefs));
+    // Note that the GetPrefs() creates a TestingPrefService, therefore
+    // the extension controlled pref values set in ExtensionPrefs
+    // are not reflected in the pref service. One would need to
+    // inject a new ExtensionPrefStore(extension_pref_value_map, false).
+    bool extensions_disabled =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableExtensions);
+    std::unique_ptr<extensions::ExtensionPrefs> extension_prefs(
+        extensions::ExtensionPrefs::Create(
+            this, GetPrefs(), extensions_path_,
+            ExtensionPrefValueMapFactory::GetForBrowserContext(this),
+            extensions_disabled,
+            std::vector<extensions::EarlyExtensionPrefsObserver*>()));
+    extensions::ExtensionPrefsFactory::GetInstance()->SetInstanceForTesting(
+        this, std::move(extension_prefs));
 
-  extensions::ExtensionSystemFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
+    extensions::ExtensionSystemFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
 
-  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
-      this, BrowserContextKeyedServiceFactory::TestingFactory());
+    extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+        this, BrowserContextKeyedServiceFactory::TestingFactory());
 
-  web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
+    web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
+    ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().
   SimpleFactoryKey* key = GetProfileKey();

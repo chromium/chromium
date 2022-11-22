@@ -24,6 +24,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
@@ -206,6 +207,13 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents))
     return nullptr;
+
+  // Stop creating NavitationThrottle for System Profiles. It needs some
+  // KeyedServices that are not available for the System Profile.
+  if (AreKeyedServicesDisabledForProfileByDefault(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+    return nullptr;
+  }
 
   // Don't handle navigations in subframe or fenced frame which shouldn't
   // show an interstitial and record metrics.

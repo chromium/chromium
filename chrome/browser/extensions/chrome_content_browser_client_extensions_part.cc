@@ -25,6 +25,7 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/renderer_host/chrome_extension_message_filter.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/common/chrome_constants.h"
@@ -209,6 +210,8 @@ size_t GetExtensionBackgroundProcessCount() {
       g_browser_process->profile_manager()->GetLoadedProfiles();
   for (Profile* profile : profiles) {
     ProcessManager* epm = ProcessManager::Get(profile);
+    if (!epm)
+      continue;
     for (ExtensionHost* host : epm->background_hosts())
       process_ids.insert(host->render_process_host()->GetID());
   }
@@ -617,6 +620,12 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
       ->extension_service()
       ->component_loader()
       ->Exists(extension_id);
+}
+
+bool ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+    content::BrowserContext* browser_context) {
+  return AreKeyedServicesDisabledForProfileByDefault(
+      Profile::FromBrowserContext(browser_context));
 }
 
 void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(

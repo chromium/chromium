@@ -5,10 +5,11 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -47,18 +48,12 @@ void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
 }
 
 FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "FirstPartySetsPolicyService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 FirstPartySetsPolicyServiceFactory::~FirstPartySetsPolicyServiceFactory() =
     default;
-
-content::BrowserContext*
-FirstPartySetsPolicyServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

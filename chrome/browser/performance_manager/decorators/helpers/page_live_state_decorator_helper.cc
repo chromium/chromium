@@ -100,9 +100,13 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
     }
     outer_->first_web_contents_observer_ = this;
 
-    content_settings_observation_.Observe(
-        permissions::PermissionsClient::Get()->GetSettingsMap(
-            web_contents->GetBrowserContext()));
+    // The service might not be constructed for irregular profiles, e.g. the
+    // System Profile.
+    if (HostContentSettingsMap* service =
+            permissions::PermissionsClient::Get()->GetSettingsMap(
+                web_contents->GetBrowserContext())) {
+      content_settings_observation_.Observe(service);
+    }
   }
 
   WebContentsObserver(const WebContentsObserver&) = delete;

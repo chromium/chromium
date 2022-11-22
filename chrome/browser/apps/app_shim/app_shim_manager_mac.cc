@@ -1058,15 +1058,24 @@ void AppShimManager::OnProfileAdded(Profile* profile) {
   if (profile->IsOffTheRecord())
     return;
 
-  AppLifetimeMonitorFactory::GetForBrowserContext(profile)->AddObserver(this);
+  // The app lifetime monitor service might not be available for some irregular
+  // profiles, like the System Profile.
+  if (AppLifetimeMonitor* app_lifetime_monitor =
+          AppLifetimeMonitorFactory::GetForBrowserContext(profile)) {
+    app_lifetime_monitor->AddObserver(this);
+  }
 }
 
 void AppShimManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
   if (profile->IsOffTheRecord())
     return;
 
-  AppLifetimeMonitorFactory::GetForBrowserContext(profile)->RemoveObserver(
-      this);
+  // The app lifetime monitor service might not be available for some irregular
+  // profiles, like the System Profile.
+  if (AppLifetimeMonitor* app_lifetime_monitor =
+          AppLifetimeMonitorFactory::GetForBrowserContext(profile)) {
+    app_lifetime_monitor->RemoveObserver(this);
+  }
 
   // Close app shims that were kept alive only for this profile. Note that this
   // must be done as a posted task because closing shims may result in closing

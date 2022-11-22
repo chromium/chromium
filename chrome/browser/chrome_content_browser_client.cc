@@ -112,6 +112,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/renderer_updater.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 #include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
@@ -1843,7 +1844,10 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
       std::make_unique<CrashMemoryMetricsCollector>(host));
 #endif
 
-  RendererUpdaterFactory::GetForProfile(profile)->InitializeRenderer(host);
+  // The RendereUpdater might be null for some irregular profiles, e.g. the
+  // System Profile.
+  if (RendererUpdater* service = RendererUpdaterFactory::GetForProfile(profile))
+    service->InitializeRenderer(host);
 
   for (size_t i = 0; i < extra_parts_.size(); ++i)
     extra_parts_[i]->RenderProcessWillLaunch(host);
@@ -1866,6 +1870,10 @@ GURL ChromeContentBrowserClient::GetEffectiveURL(
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          profile))
+    return url;
+
   return ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(profile,
                                                                    url);
 #else
@@ -1883,6 +1891,11 @@ bool ChromeContentBrowserClient::
   DCHECK(browser_context);
   DCHECK(candidate_site_instance);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          browser_context)) {
+    return true;
+  }
+
   return ChromeContentBrowserClientExtensionsPart::
       ShouldCompareEffectiveURLsForSiteInstanceSelection(
           browser_context, candidate_site_instance, is_outermost_main_frame,
@@ -2047,6 +2060,11 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
     bool is_for_isolated_world,
     network::mojom::URLLoaderFactoryParams* factory_params) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          browser_context)) {
+    return;
+  }
+
   ChromeContentBrowserClientExtensionsPart::OverrideURLLoaderFactoryParams(
       browser_context, origin, is_for_isolated_world, factory_params);
 #endif
@@ -2402,6 +2420,11 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     content::BrowserContext* browser_context,
     const GURL& lock_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          browser_context)) {
+    return false;
+  }
+
   // Allow restricted context APIs in Chrome Apps.
   auto* extension = extensions::ExtensionRegistry::Get(browser_context)
                         ->enabled_extensions()
@@ -3763,24 +3786,30 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 // Fill font preferences. These are not registered on Android
 // - http://crbug.com/308033, http://crbug.com/696364.
 #if !BUILDFLAG(IS_ANDROID)
-  FontFamilyCache::FillFontFamilyMap(profile,
-                                     prefs::kWebKitStandardFontFamilyMap,
-                                     &web_prefs->standard_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile, prefs::kWebKitFixedFontFamilyMap,
-                                     &web_prefs->fixed_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile, prefs::kWebKitSerifFontFamilyMap,
-                                     &web_prefs->serif_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile,
-                                     prefs::kWebKitSansSerifFontFamilyMap,
-                                     &web_prefs->sans_serif_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile,
-                                     prefs::kWebKitCursiveFontFamilyMap,
-                                     &web_prefs->cursive_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile,
-                                     prefs::kWebKitFantasyFontFamilyMap,
-                                     &web_prefs->fantasy_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile, prefs::kWebKitMathFontFamilyMap,
-                                     &web_prefs->math_font_family_map);
+  // Enabling the FontFamilyCache needs some KeyedService that might not be
+  // available for some irregular profiles, like the System Profile.
+  if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitStandardFontFamilyMap,
+                                       &web_prefs->standard_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitFixedFontFamilyMap,
+                                       &web_prefs->fixed_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitSerifFontFamilyMap,
+                                       &web_prefs->serif_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitSansSerifFontFamilyMap,
+                                       &web_prefs->sans_serif_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitCursiveFontFamilyMap,
+                                       &web_prefs->cursive_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile,
+                                       prefs::kWebKitFantasyFontFamilyMap,
+                                       &web_prefs->fantasy_font_family_map);
+    FontFamilyCache::FillFontFamilyMap(profile, prefs::kWebKitMathFontFamilyMap,
+                                       &web_prefs->math_font_family_map);
+  }
 
   web_prefs->default_font_size =
       prefs->GetInteger(prefs::kWebKitDefaultFontSize);
@@ -5344,14 +5373,23 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  factories->emplace(
-      extensions::kExtensionScheme,
-      extensions::CreateExtensionNavigationURLLoaderFactory(
-          browser_context, ukm_source_id,
-          !!extensions::WebViewGuest::FromWebContents(web_contents)));
+  if (!ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(browser_context)) {
+    factories->emplace(
+        extensions::kExtensionScheme,
+        extensions::CreateExtensionNavigationURLLoaderFactory(
+            browser_context, ukm_source_id,
+            !!extensions::WebViewGuest::FromWebContents(web_contents)));
+  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
+  // KeyedServices could be disabled based on the profile type, e.g. System
+  // Profile doesn't construct services by default.
+  if (AreKeyedServicesDisabledForProfileByDefault(profile))
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   factories->emplace(content::kExternalFileScheme,
                      ash::ExternalFileURLLoaderFactory::Create(
                          profile, content::ChildProcessHost::kInvalidUniqueID));
@@ -5378,6 +5416,9 @@ void ChromeContentBrowserClient::
   DCHECK(factories);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  DCHECK(!ChromeContentBrowserClientExtensionsPart::
+             AreExtensionsDisabledForProfile(browser_context));
+
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
@@ -5403,6 +5444,11 @@ void ChromeContentBrowserClient::
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          browser_context)) {
+    return;
+  }
+
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionServiceWorkerScriptURLLoaderFactory(
@@ -5547,7 +5593,10 @@ void AddChromeSchemeFactories(
   // URL is chrome-search://remote-ntp. This is to allow the use of the NTP
   // public api and to embed most-visited tiles
   // (chrome-search://most-visited/title.html).
-  if (instant_service->IsInstantProcess(render_process_id)) {
+  //
+  // InstantService might be null for some irregular profiles, e.g. the System
+  // Profile.
+  if (instant_service && instant_service->IsInstantProcess(render_process_id)) {
     factories->emplace(
         chrome::kChromeSearchScheme,
         content::CreateWebUIURLLoaderFactory(
@@ -5646,19 +5695,25 @@ void ChromeContentBrowserClient::
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  content::BrowserContext* browser_context =
+      content::RenderProcessHost::FromID(render_process_id)
+          ->GetBrowserContext();
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          browser_context))
+    return;
+
   factories->emplace(extensions::kExtensionScheme,
                      extensions::CreateExtensionURLLoaderFactory(
                          render_process_id, render_frame_id));
 
-  content::BrowserContext* browser_context =
-      content::RenderProcessHost::FromID(render_process_id)
-          ->GetBrowserContext();
   const extensions::Extension* extension = nullptr;
-
   if (request_initiator_origin != absl::nullopt) {
-    extension = extensions::ExtensionRegistry::Get(browser_context)
-                    ->enabled_extensions()
-                    .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(
+            Profile::FromBrowserContext(browser_context));
+    DCHECK(registry);
+    extension = registry->enabled_extensions().GetExtensionOrAppByURL(
+        request_initiator_origin->GetURL());
   }
 
   // For service worker contexts, we only allow file access. The remainder of
@@ -6229,8 +6284,8 @@ void ChromeContentBrowserClient::RegisterRendererPreferenceWatcher(
     content::BrowserContext* browser_context,
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  PrefWatcher::Get(profile)->RegisterRendererPreferenceWatcher(
-      std::move(watcher));
+  if (PrefWatcher* pref_watcher = PrefWatcher::Get(profile))
+    pref_watcher->RegisterRendererPreferenceWatcher(std::move(watcher));
 }
 
 // Static; handles rewriting Web UI URLs.
@@ -6810,8 +6865,15 @@ bool ChromeContentBrowserClient::
 bool ChromeContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  return content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      HostContentSettingsMapFactory::GetForProfile(browser_context), origin);
+  // The host content settings map might no be null for some irregular profiles,
+  // e.g. the System Profile.
+  if (HostContentSettingsMap* service =
+          HostContentSettingsMapFactory::GetForProfile(browser_context)) {
+    return content_settings::ShouldAllowInsecurePrivateNetworkRequests(service,
+                                                                       origin);
+  }
+
+  return false;
 }
 
 bool ChromeContentBrowserClient::IsJitDisabledForSite(
@@ -6819,9 +6881,8 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
     const GURL& site_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-
   // Special case to determine if any policy is set.
-  if (site_url.is_empty()) {
+  if (map && site_url.is_empty()) {
     return map->GetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_JIT,
                                          nullptr) == CONTENT_SETTING_BLOCK;
   }
@@ -6830,9 +6891,9 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
   if (!site_url.SchemeIsHTTPOrHTTPS())
     return false;
 
-  return (map->GetContentSetting(site_url, site_url,
-                                 ContentSettingsType::JAVASCRIPT_JIT) ==
-          CONTENT_SETTING_BLOCK);
+  return (map && map->GetContentSetting(site_url, site_url,
+                                        ContentSettingsType::JAVASCRIPT_JIT) ==
+                     CONTENT_SETTING_BLOCK);
 }
 
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {

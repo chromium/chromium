@@ -221,7 +221,12 @@ void OffTheRecordProfileImpl::Init() {
   // AccessibilityLabelsService has a default prefs behavior in incognito.
   AccessibilityLabelsService::InitOffTheRecordPrefs(this);
 
-  HeavyAdServiceFactory::GetForBrowserContext(this)->InitializeOffTheRecord();
+  // The ad service might not be available for some irregular profiles, like the
+  // System Profile.
+  if (heavy_ad_intervention::HeavyAdService* heavy_ad_service =
+          HeavyAdServiceFactory::GetForBrowserContext(this)) {
+    heavy_ad_service->InitializeOffTheRecord();
+  }
 
   key_->SetProtoDatabaseProvider(
       GetDefaultStoragePartition()->GetProtoDatabaseProvider());

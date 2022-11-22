@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/values.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -25,8 +25,7 @@ class FirstPartySetsPolicyService;
 //
 // Listens for the BrowserContext's destruction notification and cleans up the
 // associated FirstPartySetsPolicyService.
-class FirstPartySetsPolicyServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class FirstPartySetsPolicyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   FirstPartySetsPolicyServiceFactory(
       const FirstPartySetsPolicyServiceFactory&) = delete;
@@ -49,8 +48,6 @@ class FirstPartySetsPolicyServiceFactory
   ~FirstPartySetsPolicyServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_REDUCE_ACCEPT_LANGUAGE_REDUCE_ACCEPT_LANGUAGE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/reduce_accept_language/browser/reduce_accept_language_service.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 
 class Profile;
 
-class ReduceAcceptLanguageFactory : public BrowserContextKeyedServiceFactory {
+class ReduceAcceptLanguageFactory : public ProfileKeyedServiceFactory {
  public:
   static reduce_accept_language::ReduceAcceptLanguageService* GetForProfile(
       Profile* profile);
@@ -32,8 +32,6 @@ class ReduceAcceptLanguageFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

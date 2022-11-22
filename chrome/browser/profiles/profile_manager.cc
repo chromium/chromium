@@ -50,6 +50,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -65,6 +66,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -379,9 +381,17 @@ void ProfileCleanedUp(base::Value profile_path_value) {
 // Returns the number of installed (and enabled) apps, excluding any component
 // apps.
 size_t GetEnabledAppCount(Profile* profile) {
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(profile)) {
+    return 0u;
+  }
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  DCHECK(registry);
+
   size_t installed_apps = 0u;
-  const extensions::ExtensionSet& extensions =
-      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
+  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   for (extensions::ExtensionSet::const_iterator iter = extensions.begin();
        iter != extensions.end(); ++iter) {
     if ((*iter)->is_app() &&
@@ -1652,7 +1662,11 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   // flag attached to the profile.
   signin_util::UserSignoutSetting::GetForProfile(profile)
       ->InitializeUserSignoutSettingIfNeeded();
-  PrimaryAccountPolicyManagerFactory::GetForProfile(profile)->Initialize();
+
+  if (PrimaryAccountPolicyManager* primary_account_policy_manager =
+          PrimaryAccountPolicyManagerFactory::GetForProfile(profile)) {
+    primary_account_policy_manager->Initialize();
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // The caret browsing command-line switch toggles caret browsing on
@@ -1677,8 +1691,10 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
 
 void ProfileManager::DoFinalInitForServices(Profile* profile,
                                             bool go_off_the_record) {
-  if (!do_final_services_init_)
+  if (!do_final_services_init_ ||
+      AreKeyedServicesDisabledForProfileByDefault(profile)) {
     return;
+  }
 
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitForServices");
 

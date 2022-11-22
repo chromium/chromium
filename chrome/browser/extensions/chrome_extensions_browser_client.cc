@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/favicon/favicon_util.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
@@ -469,9 +470,15 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
     content::BrowserContext* browser_context,
     int embedder_process_id,
     int view_instance_id) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
+
   // Clean up context menus for the WebView.
-  auto* menu_manager =
-      MenuManager::Get(Profile::FromBrowserContext(browser_context));
+  auto* menu_manager = MenuManager::Get(profile);
+  DCHECK(menu_manager);
   menu_manager->RemoveAllContextItems(
       MenuItem::ExtensionKey("", embedder_process_id, view_instance_id));
 }

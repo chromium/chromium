@@ -22,6 +22,21 @@ BASE_FEATURE(kGuestProfileSelectionDefaultNone,
              "GuestProfileSlectionDefaultNone",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
+bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile) {
+  if (profile && profile->IsSystemProfile()) {
+    // The default behavior of the system profile selection depends on the value
+    // of `kSystemProfileSelectionDefaultNone` feature flag.
+    ProfileSelection system_profile_default =
+        base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone)
+            ? ProfileSelections::kSystemProfileExperimentDefault
+            : ProfileSelections::kRegularProfileDefault;
+
+    return system_profile_default == ProfileSelection::kNone;
+  }
+
+  return false;
+}
+
 ProfileSelections::Builder::Builder()
     : selections_(base::WrapUnique(new ProfileSelections())) {}
 
@@ -215,7 +230,7 @@ ProfileSelection ProfileSelections::GetProfileSelection(
     // the `regular_profile_selection_` value (old default behavior).
     ProfileSelection system_profile_default =
         base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone)
-            ? ProfileSelection::kNone
+            ? ProfileSelections::kSystemProfileExperimentDefault
             : regular_profile_selection_;
 
     // If the value for SystemProfileSelection is set, use it.

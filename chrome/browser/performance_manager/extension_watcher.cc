@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "extensions/browser/extension_host.h"
@@ -56,8 +57,15 @@ ExtensionWatcher::ExtensionWatcher() {
 ExtensionWatcher::~ExtensionWatcher() = default;
 
 void ExtensionWatcher::OnProfileAdded(Profile* profile) {
-  extension_process_manager_observation_.AddObservation(
-      extensions::ProcessManager::Get(profile));
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
+
+  extensions::ProcessManager* process_manager =
+      extensions::ProcessManager::Get(profile);
+  DCHECK(process_manager);
+  extension_process_manager_observation_.AddObservation(process_manager);
 }
 
 void ExtensionWatcher::OnBackgroundHostCreated(

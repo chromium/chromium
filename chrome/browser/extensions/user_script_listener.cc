@@ -11,6 +11,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -217,7 +218,12 @@ void UserScriptListener::Observe(int type,
   switch (type) {
     case chrome::NOTIFICATION_PROFILE_ADDED: {
       Profile* profile = content::Source<Profile>(source).ptr();
+      if (extensions::ChromeContentBrowserClientExtensionsPart::
+              AreExtensionsDisabledForProfile(profile)) {
+        break;
+      }
       auto* registry = ExtensionRegistry::Get(profile);
+      DCHECK(registry);
       DCHECK(!extension_registry_observations_.IsObservingSource(registry));
       extension_registry_observations_.AddObservation(registry);
       break;
