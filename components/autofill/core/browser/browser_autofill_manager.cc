@@ -215,8 +215,11 @@ AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
     const AutofillField& field) {
   // An unparsable autocomplete attribute is treated like kNone.
   auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
-  if (ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute)) {
-    autocomplete_state = AutofillMetrics::AutocompleteState::kIgnored;
+  // autocomplete=on is ignored as well. But for the purposes of metrics we care
+  // about cases where the developer tries to disable autocomplete.
+  if (field.autocomplete_attribute != "on" &&
+      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute)) {
+    autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
   } else if (field.parsed_autocomplete) {
     autocomplete_state =
         field.parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
@@ -244,13 +247,10 @@ void LogAutocompletePredictionCollisionTypeMetrics(
     }
 
     auto autocomplete_state = AutocompleteStateForSubmittedField(*field);
-
     AutofillMetrics::LogAutocompletePredictionCollisionState(
         prediction_state, autocomplete_state);
-    if (autocomplete_state == AutofillMetrics::AutocompleteState::kGarbage) {
-      AutofillMetrics::LogAutocompletePredictionCollisionTypes(server_type,
-                                                               heuristic_type);
-    }
+    AutofillMetrics::LogAutocompletePredictionCollisionTypes(
+        autocomplete_state, server_type, heuristic_type);
   }
 }
 

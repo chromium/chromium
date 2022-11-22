@@ -489,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionState"
-    enum="PredictionStateAutocompleteStatePair" expires_after="2022-12-31">
+    enum="PredictionStateAutocompleteStatePair" expires_after="2023-10-31">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Heuristics"
-    enum="AutofillServerFieldType" expires_after="2022-12-31">
+    enum="AutofillServerFieldType" expires_after="2023-10-31">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -513,7 +513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Server"
-    enum="AutofillServerFieldType" expires_after="2022-12-31">
+    enum="AutofillServerFieldType" expires_after="2023-10-31">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.PredictionCollisionType.ServerOrHeuristics"
-    enum="AutofillServerFieldType" expires_after="2022-12-31">
+    enum="AutofillServerFieldType" expires_after="2023-10-31">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -534,6 +534,30 @@ chromium-metrics-reviews@google.com.
     submitted form. If no server type is available, the heuristics type is
     logged instead. Emitted on form submission.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.Autocomplete.PredictionCollisionType2.{PredictionType}.{AutocompleteState}"
+    enum="AutofillServerFieldType" expires_after="2023-10-31">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the PredictionType of each field in a submitted form, depending on
+    the field's AutocompleteState. Emitted on form submission.
+  </summary>
+  <token key="PredictionType">
+    <variant name="Heuristics"/>
+    <variant name="Server"/>
+    <variant name="ServerOrHeuristics"
+        summary="If available, the server type. Otherwise the heuristic type."/>
+  </token>
+  <token key="AutocompleteState">
+    <variant name="Garbage"/>
+    <variant name="None"/>
+    <variant name="Off"/>
+    <variant name="Valid"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.AutocompleteQuery" enum="BooleanCreated"
