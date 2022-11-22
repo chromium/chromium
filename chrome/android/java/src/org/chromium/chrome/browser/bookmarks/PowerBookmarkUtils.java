@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.Resources;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
@@ -168,6 +170,12 @@ public class PowerBookmarkUtils {
             snackbarManager.showSnackbar(snackbar);
             callback.onResult(success);
         };
+        // Make sure the notification channel is initialized when the user tracks a product.
+        // TODO(crbug.com/1382191): Add a SubscriptionsObserver in the PriceDropNotificationManager
+        // and initialize the channel there.
+        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PriceDropNotificationManagerFactory.create().createNotificationChannel();
+        }
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 Profile.getLastUsedRegularProfile(), bookmarkId.getId(), enabled, wrapperCallback);
     }

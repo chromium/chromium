@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
@@ -157,6 +159,12 @@ public class BookmarkSaveFlowMediator
                     });
         }
 
+        // Make sure the notification channel is initialized when the user tracks a product.
+        // TODO(crbug.com/1382191): Add a SubscriptionsObserver in the PriceDropNotificationManager
+        // and initialize the channel there.
+        if (toggled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PriceDropNotificationManagerFactory.create().createNotificationChannel();
+        }
         setPriceTrackingIconForEnabledState(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(Profile.getLastUsedRegularProfile(),
                 mBookmarkId.getId(), toggled, mSubscriptionsManagerCallback);
