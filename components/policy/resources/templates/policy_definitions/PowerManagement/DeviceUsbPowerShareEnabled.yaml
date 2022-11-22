@@ -21,6 +21,8 @@ items:
   value: false
 owners:
 - lamzin@google.com
+- bkersting@google.com
+- chromeos-oem-services@google.com
 schema:
   type: boolean
 supported_on:

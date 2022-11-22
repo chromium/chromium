@@ -14,8 +14,9 @@ items:
 - caption: Disable the wilco diagnostics and telemetry controller
   value: false
 owners:
-- pbond@chromium.org
 - lamzin@google.com
+- bkersting@google.com
+- chromeos-oem-services@google.com
 schema:
   type: boolean
 supported_on:

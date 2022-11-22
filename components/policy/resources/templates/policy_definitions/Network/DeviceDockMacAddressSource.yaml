@@ -26,6 +26,8 @@ items:
   value: 3
 owners:
 - lamzin@google.com
+- bkersting@google.com
+- chromeos-oem-services@google.com
 schema:
   enum:
   - 1

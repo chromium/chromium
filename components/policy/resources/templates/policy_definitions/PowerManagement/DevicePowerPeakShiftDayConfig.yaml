@@ -33,6 +33,8 @@ features:
   per_profile: false
 owners:
 - lamzin@google.com
+- bkersting@google.com
+- chromeos-oem-services@google.com
 schema:
   properties:
     entries:
