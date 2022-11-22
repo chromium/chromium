@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
+#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -288,7 +289,7 @@ class WaylandBufferManagerTest : public WaylandTest {
                                             std::move(properties));
     EXPECT_TRUE(new_window);
 
-    SyncDisplay();
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     EXPECT_NE(new_window->GetWidget(), gfx::kNullAcceleratedWidget);
     return new_window;

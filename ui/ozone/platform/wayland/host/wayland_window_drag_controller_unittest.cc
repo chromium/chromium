@@ -37,6 +37,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
+#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -776,7 +777,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
   wayland_extension->StartWindowDraggingSessionIfNeeded(
       /*allow_system_drag=*/false);
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   // Emulate a [motion => leave] event sequence and make sure the correct
@@ -1032,7 +1033,7 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   // Start the drag session.
   GetWaylandExtension(*dragged_window)
       ->StartWindowDraggingSessionIfNeeded(/*allow_system_drag=*/false);
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*dragged_window);
@@ -1113,7 +1114,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   EXPECT_CALL(delegate(), DispatchEvent(_)).Times(::testing::AtLeast(2));
   wayland_extension->StartWindowDraggingSessionIfNeeded(
       /*allow_system_drag=*/false);
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
   // Starting a DnD session results in a server sending a Enter event, which
   // enters the window at 0x0.
   EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());

@@ -112,12 +112,6 @@ class WaylandTestBase {
   // Initializes SurfaceAugmenter in |server_|.
   void InitializeSurfaceAugmenter();
 
-  // Sets up a sync callback via wl_display.sync and waits until it's received.
-  // Requests are handled in-order and events are delivered in-order, thus sync
-  // is used as a barrier to ensure all previous requests and the resulting
-  // events have been handled.
-  void SyncDisplay();
-
   // A helper method that sets up the XKB configuration for tests that require
   // it.
   // Does nothing if XkbCommon is not used.

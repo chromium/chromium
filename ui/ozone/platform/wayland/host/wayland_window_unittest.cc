@@ -64,6 +64,7 @@
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
+#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -376,7 +377,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   window_->root_surface()->set_input_region(region_px.data());
   window_->root_surface()->set_surface_buffer_scale(2);
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -391,7 +392,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   window_->root_surface()->ApplyPendingState();
   window_->root_surface()->Commit();
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 }
 
 // Checks that decoration insets do not change final bounds and that
@@ -438,7 +439,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // (which also updates visual size).
   window_->root_surface()->Commit();
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
   PostToServerAndWait([id = surface_id_, bounds_with_insets](
@@ -482,7 +483,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // (which also updates visual size).
   window_->root_surface()->Commit();
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Now send configure events many times - bounds mustn't change.
   for (size_t i = 0; i < 10; i++) {
@@ -926,7 +927,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   auto window = delegate.CreateWaylandWindow(connection_.get(),
                                              std::move(properties), true, true);
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
@@ -944,7 +945,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   // The state of the window must already be fullscreen one.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   Mock::VerifyAndClearExpectations(&delegate);
 
@@ -984,7 +985,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   auto window = delegate.CreateWaylandWindow(connection_.get(),
                                              std::move(properties), true, true);
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
@@ -1002,7 +1003,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   // The state of the window must already be fullscreen one.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   Mock::VerifyAndClearExpectations(&delegate);
 
@@ -1826,7 +1827,7 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
   // update) for that.
   window_->UpdateVisualSize(kMainWindowBounds.size());
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // Create a menu.
   constexpr gfx::Rect kMenuBounds{100, 100, 80, 50};
@@ -2336,7 +2337,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     EXPECT_EQ(2, window_->window_scale());
     wayland_popup->Show(false);
 
-    Sync();
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     // |wayland_popup|'s scale and bounds must change whenever its parents
     // scale is changed.
@@ -3298,7 +3299,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
 
   window->Hide();
 
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   window->Show(false);
 

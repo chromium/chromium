@@ -42,6 +42,7 @@
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
+#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -120,7 +121,8 @@ class WaylandClipboardTestBase : public WaylandTest {
     WaylandConnectionTestApi(connection_.get())
         .SetRoundtripClosure(base::BindLambdaForTesting([&]() {
           wl_display_flush(connection_->display());
-          SyncDisplay();
+          wl::SyncDisplay(connection_->display_wrapper(),
+                          *connection_->display());
           base::ThreadPoolInstance::Get()->FlushForTesting();
         }));
 
@@ -140,7 +142,7 @@ class WaylandClipboardTestBase : public WaylandTest {
   // Actual clipboard data reading is performed in the ThreadPool. Also,
   // wl::TestSelection{Source,Offer} currently use ThreadPool task runners.
   void WaitForClipboardTasks() {
-    SyncDisplay();
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
   }
@@ -230,7 +232,7 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
     // calls, otherwise tests, such as ReadFromClipboard, would crash.
     ASSERT_EQ(WhichBufferToUse() == ClipboardBuffer::kSelection,
               !!clipboard_->GetClipboard(ClipboardBuffer::kSelection));
-    SyncDisplay();
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     offered_data_.clear();
   }
@@ -319,7 +321,7 @@ TEST_P(WaylandClipboardTest, WriteToClipboard) {
 
     // 1. Offer sample text as selection data.
     OfferData(WhichBufferToUse(), kSampleClipboardText, {kMimeTypeTextUtf8});
-    SyncDisplay();
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     // 2. Emulate an external client requesting to read the offered data and
     // make sure the appropriate string gets delivered.

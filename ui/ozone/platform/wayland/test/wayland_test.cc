@@ -18,6 +18,7 @@
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
+#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -116,7 +117,7 @@ void WaylandTestBase::TearDown() {
     if (server_mode_ != TestServerMode::kAsync)
       Sync();
     else
-      SyncDisplay();
+      wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
   }
 }
 
@@ -135,22 +136,22 @@ void WaylandTestBase::Sync() {
 void WaylandTestBase::PostToServerAndWait(
     base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback) {
   // Sync with the display to ensure client's requests are processed.
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   server_.RunAndWait(std::move(callback));
 
   // Sync with the display to ensure server's events are received and processed.
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 }
 
 void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure) {
   // Sync with the display to ensure client's requests are processed.
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   server_.RunAndWait(std::move(closure));
 
   // Sync with the display to ensure server's events are received and processed
-  SyncDisplay();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 }
 
 void WaylandTestBase::DisableSyncOnTearDown() {
@@ -237,21 +238,6 @@ void WaylandTestBase::InitializeSurfaceAugmenter() {
     server_.EnsureSurfaceAugmenter();
     Sync();
   }
-}
-
-void WaylandTestBase::SyncDisplay() {
-  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
-  DCHECK(initialized_);
-  base::RunLoop run_loop;
-  wl::Object<wl_callback> sync_callback(
-      wl_display_sync(connection_->display_wrapper()));
-  wl_callback_listener listener = {
-      [](void* data, struct wl_callback* cb, uint32_t time) {
-        static_cast<base::RunLoop*>(data)->Quit();
-      }};
-  wl_callback_add_listener(sync_callback.get(), &listener, &run_loop);
-  connection_->Flush();
-  run_loop.Run();
 }
 
 void WaylandTestBase::MaybeSetUpXkb() {
