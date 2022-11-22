@@ -83,8 +83,6 @@ enum HtmlFieldType {
 
   // Variants of type hints specified in the HTML specification that are
   // inferred based on a field's 'maxlength' attribute.
-  // TODO(isherman): Remove these types, in favor of understanding maxlength
-  // when filling fields.
   kAdditionalNameInitial,
   kCreditCardExpDate2DigitYear,
   kCreditCardExpDate4DigitYear,
