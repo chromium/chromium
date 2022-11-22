@@ -151,13 +151,10 @@ base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
     return base::UnguessableToken::Null();
 
   auto first_entry = origin_ids->begin();
-  absl::optional<base::UnguessableToken> result =
-      base::ValueToUnguessableToken(*first_entry);
-  if (!result)
-    return base::UnguessableToken::Null();
-
+  auto result = base::ValueToUnguessableToken(*first_entry);
   origin_ids->erase(first_entry);
-  return *result;
+
+  return result.value_or(base::UnguessableToken::Null());
 }
 
 void AddOriginId(base::Value::Dict& origin_id_dict,

@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/android/media_drm_bridge.h"
@@ -103,6 +104,14 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
 
   const base::Value::Dict& GetDict(const std::string& path) const {
     return profile_->GetTestingPrefService()->GetDict(path);
+  }
+
+  void VerifyListSize() {
+    auto& dict = GetDict(kMediaDrmOriginIds);
+    DVLOG(1) << DisplayPref(dict);
+    const auto* list = dict.FindList(kAvailableOriginIds);
+    EXPECT_TRUE(list);
+    EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
   }
 
   // On devices that support per-application provisioning pre-provisioning
@@ -267,13 +276,7 @@ TEST_F(MediaDrmOriginIdManagerTest, GetOriginIdCreatesList) {
   task_environment_.RunUntilIdle();
 
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-
-  auto& dict = GetDict(kMediaDrmOriginIds);
-  DVLOG(1) << DisplayPref(dict);
-
-  const auto* list = dict.FindList(kAvailableOriginIds);
-  EXPECT_TRUE(list);
-  EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
+  VerifyListSize();
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
@@ -339,9 +342,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningSuccessAfterFail) {
   EXPECT_FALSE(dict.Find(kExpirableToken));
 
   // As well, the list of available pre-provisioned origin IDs should be full.
-  auto* list = dict.FindList(kAvailableOriginIds);
-  EXPECT_TRUE(list);
-  EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
+  VerifyListSize();
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
@@ -453,12 +454,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
 
   // Pre-provisioning should have run and filled up the list.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds << " again";
-  {
-    auto& dict = GetDict(kMediaDrmOriginIds);
-    DVLOG(1) << DisplayPref(dict);
-    auto* list = dict.FindList(kAvailableOriginIds);
-    EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
-  }
+  VerifyListSize();
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
@@ -503,4 +499,37 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
   }
+}
+
+TEST_F(MediaDrmOriginIdManagerTest, InvalidEntry) {
+  // After fetching an origin ID the code should pre-provision more origins
+  // and fill up the list. This is independent of whether the device supports
+  // per-application provisioning or not.
+  EXPECT_CALL(*this, GetProvisioningResult())
+      .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
+  Initialize();
+
+  EXPECT_TRUE(GetOriginId());
+  task_environment_.RunUntilIdle();
+  VerifyListSize();
+
+  // Fetching the first origin ID has now filled up the list. Replace the
+  // first entry in the list with something (a boolean value) that cannot
+  // be converted to a base::UnguessableToken.
+  {
+    ScopedDictPrefUpdate update(profile_->GetTestingPrefService(),
+                                kMediaDrmOriginIds);
+    base::Value::List* origin_ids = update->FindList(kAvailableOriginIds);
+    EXPECT_FALSE(origin_ids->empty());
+    auto first_entry = origin_ids->begin();
+    *first_entry = base::Value(true);
+  }
+
+  // Next GetOriginId() call should attempt to use the invalid entry. Since
+  // it's invalid, a new origin ID will be created and used. And then an
+  // additional one is created to replace the one that should have been taken
+  // from the list.
+  EXPECT_TRUE(GetOriginId());
+  task_environment_.RunUntilIdle();
+  VerifyListSize();
 }
