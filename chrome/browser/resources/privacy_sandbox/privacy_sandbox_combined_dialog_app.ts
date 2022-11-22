@@ -10,6 +10,7 @@ import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';
 import './privacy_sandbox_dialog_notice_step.js';
 
+import {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -62,14 +63,14 @@ export class PrivacySandboxCombinedDialogAppElement extends
     // Support starting with notice step instead of starting with consent step.
     const step = new URLSearchParams(window.location.search).get('step');
     const startWithNotice = step === PrivacySandboxCombinedDialogStep.NOTICE;
-    let promise: Promise<void>;
-    if (startWithNotice) {
-      promise = this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE);
-    } else {
-      promise = this.navigateToStep_(PrivacySandboxCombinedDialogStep.CONSENT);
-    }
+
+    const firstStep = startWithNotice ?
+        PrivacySandboxCombinedDialogStep.NOTICE :
+        PrivacySandboxCombinedDialogStep.CONSENT;
     // After the initial step was loaded, resize the native dialog to fit it.
-    promise.then(() => this.resizeAndShowNativeDialog())
+    this.navigateToStep_(firstStep)
+        .then(() => this.resizeAndShowNativeDialog())
+        .then(() => this.updateScrollableContentsCurrentStep_())
         .then(
             () => this.promptActionOccurred(
                 startWithNotice ? PrivacySandboxPromptAction.NOTICE_SHOWN :
@@ -86,6 +87,7 @@ export class PrivacySandboxCombinedDialogAppElement extends
         .then(() => new Promise(r => setTimeout(r, savingDurationMs)))
         .then(
             () => this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE))
+        .then(() => this.updateScrollableContentsCurrentStep_())
         .then(
             () => this.promptActionOccurred(
                 PrivacySandboxPromptAction.NOTICE_SHOWN));
@@ -103,6 +105,19 @@ export class PrivacySandboxCombinedDialogAppElement extends
 
   private promptActionOccurred(action: PrivacySandboxPromptAction) {
     PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
+  }
+
+  private updateScrollableContentsCurrentStep_() {
+    // After the dialog was resized and filled content, trigger
+    // `updateScrollableContents()` for the current step (consent or notice).
+    this.getStepElement_(this.step_)!.updateScrollableContents();
+  }
+
+  private getStepElement_(step: PrivacySandboxCombinedDialogStep):
+      CrScrollableMixinInterface|null {
+    return this.shadowRoot!.querySelector(`#${step}`) as
+        CrScrollableMixinInterface |
+        null;
   }
 }
 

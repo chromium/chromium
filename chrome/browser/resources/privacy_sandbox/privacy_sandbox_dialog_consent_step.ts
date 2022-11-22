@@ -8,12 +8,18 @@ import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_dialog_consent_step.html.js';
+import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 
-export class PrivacySandboxDialogConsentStepElement extends PolymerElement {
+const PrivacySandboxDialogConsentStepElementBase =
+    CrScrollableMixin(PrivacySandboxDialogMixin(PolymerElement));
+
+export class PrivacySandboxDialogConsentStepElement extends
+    PrivacySandboxDialogConsentStepElementBase {
   static get is() {
     return 'privacy-sandbox-dialog-consent-step';
   }
@@ -26,22 +32,9 @@ export class PrivacySandboxDialogConsentStepElement extends PolymerElement {
     return {
       expanded_: {
         type: Boolean,
-        observer: 'onLearnMoreExpandedChanged_',
+        observer: 'onConsentLearnMoreExpandedChanged',
       },
     };
-  }
-
-  private onLearnMoreExpandedChanged_(newValue: boolean, oldValue: boolean) {
-    // Check both old and new value to avoid reporting actions when the dialog
-    // just was created and oldValue is undefined.
-    if (newValue && !oldValue) {
-      this.promptActionOccurred(
-          PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
-    }
-    if (!newValue && oldValue) {
-      this.promptActionOccurred(
-          PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
-    }
   }
 
   private onConsentAccepted_() {
@@ -54,10 +47,6 @@ export class PrivacySandboxDialogConsentStepElement extends PolymerElement {
     this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_DECLINED);
     this.dispatchEvent(
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
-  }
-
-  private promptActionOccurred(action: PrivacySandboxPromptAction) {
-    PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
   }
 }
 
