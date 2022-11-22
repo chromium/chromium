@@ -47,6 +47,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "build/build_config.h"
+#include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -549,7 +550,12 @@ void PrintProcesses() {
   const base::ProcessIterator::ProcessEntries& process_entries =
       process_iterator.Snapshot();
   for (const base::ProcessEntry& entry : process_entries) {
-    VLOG(0) << entry.exe_file();
+    VLOG(0) << entry.exe_file() << ", cmdline=" << [](base::ProcessId pid) {
+      std::unique_ptr<ProcessInspector> process_inspector =
+          ProcessInspector::Create(
+              base::Process::OpenWithAccess(pid, PROCESS_ALL_ACCESS));
+      return process_inspector ? process_inspector->command_line() : L"n/a";
+    }(entry.pid());
   }
   VLOG(0) << demarcation;
 }
