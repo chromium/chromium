@@ -28,7 +28,7 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
-  html_source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(html_source);
   html_source->AddResourcePath("test_loader_util.js",
                                IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
