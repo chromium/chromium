@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_logs/device_event_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
@@ -12,11 +12,10 @@ namespace system_logs {
 const char kNetworkEventLogEntry[] = "network_event_log";
 const char kDeviceEventLogEntry[] = "device_event_log";
 
-DeviceEventLogSource::DeviceEventLogSource() : SystemLogsSource("DeviceEvent") {
-}
+DeviceEventLogSource::DeviceEventLogSource()
+    : SystemLogsSource("DeviceEvent") {}
 
-DeviceEventLogSource::~DeviceEventLogSource() {
-}
+DeviceEventLogSource::~DeviceEventLogSource() {}
 
 void DeviceEventLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

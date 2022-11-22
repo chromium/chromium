@@ -6,6 +6,7 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
@@ -18,6 +19,7 @@ SystemLogsFetcher* BuildLacrosSystemLogsFetcher(bool scrub_data) {
 
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<CrashIdsSource>());
+  fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
 
   return fetcher;

@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
-#include "chrome/browser/ash/system_logs/device_event_log_source.h"
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ash/system_logs/traffic_counters_log_source.h"
 #include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
 #include "chrome/browser/ash/system_logs/virtual_keyboard_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

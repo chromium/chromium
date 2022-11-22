@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "net/net_buildflags.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
-#include "chrome/browser/ash/system_logs/device_event_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
@@ -40,6 +40,7 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   SystemLogsFetcher* fetcher = new SystemLogsFetcher(scrub_data, nullptr);
 
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
+  fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -51,7 +52,6 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   fetcher->AddSource(std::make_unique<BluetoothLogSource>());
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
   fetcher->AddSource(std::make_unique<DBusLogSource>());
-  fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   fetcher->AddSource(std::make_unique<RevenLogSource>());
 #endif

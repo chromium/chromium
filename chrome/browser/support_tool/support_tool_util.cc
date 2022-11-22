@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/policy_data_collector.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
-#include "chrome/browser/ash/system_logs/device_event_log_source.h"
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
 #include "chrome/browser/ash/system_logs/traffic_counters_log_source.h"
@@ -48,13 +48,13 @@ namespace {
 // Data collector types that can work on every platform.
 constexpr support_tool::DataCollectorType kDataCollectors[] = {
     support_tool::CHROME_INTERNAL, support_tool::CRASH_IDS,
-    support_tool::MEMORY_DETAILS, support_tool::POLICIES};
+    support_tool::MEMORY_DETAILS, support_tool::POLICIES,
+    support_tool::CHROMEOS_DEVICE_EVENT};
 
 // Data collector types can only work on Chrome OS Ash.
 constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
     support_tool::CHROMEOS_UI_HIERARCHY,
     support_tool::CHROMEOS_COMMAND_LINE,
-    support_tool::CHROMEOS_DEVICE_EVENT,
     support_tool::CHROMEOS_IWL_WIFI_DUMP,
     support_tool::CHROMEOS_TOUCH_EVENTS,
     support_tool::CHROMEOS_DBUS,
@@ -117,6 +117,12 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         handler->AddDataCollector(
             std::make_unique<PolicyDataCollector>(profile));
         break;
+      case support_tool::CHROMEOS_DEVICE_EVENT:
+        handler->AddDataCollector(std::make_unique<
+                                  SystemLogSourceDataCollectorAdaptor>(
+            "Fetches entries for 'network_event_log' and 'device_event_log'.",
+            std::make_unique<system_logs::DeviceEventLogSource>()));
+        break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:
         handler->AddDataCollector(std::make_unique<UiHierarchyDataCollector>());
@@ -132,12 +138,6 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 "exports data into these files: alsa controls, cras, "
                 "audio_diagnostics, env, disk_usage.",
                 std::make_unique<system_logs::CommandLineLogSource>()));
-        break;
-      case support_tool::CHROMEOS_DEVICE_EVENT:
-        handler->AddDataCollector(std::make_unique<
-                                  SystemLogSourceDataCollectorAdaptor>(
-            "Fetches entries for 'network_event_log' and 'device_event_log'.",
-            std::make_unique<system_logs::DeviceEventLogSource>()));
         break;
       case support_tool::CHROMEOS_IWL_WIFI_DUMP:
         handler->AddDataCollector(std::make_unique<

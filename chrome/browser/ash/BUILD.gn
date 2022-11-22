@@ -2901,8 +2901,6 @@ source_set("ash") {
     "system_logs/debug_daemon_log_source.h",
     "system_logs/debug_log_writer.cc",
     "system_logs/debug_log_writer.h",
-    "system_logs/device_event_log_source.cc",
-    "system_logs/device_event_log_source.h",
     "system_logs/iwlwifi_dump_log_source.cc",
     "system_logs/iwlwifi_dump_log_source.h",
     "system_logs/network_health_source.cc",
