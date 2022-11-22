@@ -170,6 +170,8 @@ static_library("sandbox") {
     ":maybe_set_appcontainer_acls",
     "//base:base_static",
   ]
+
+  libs = [ "userenv.lib" ]
 }
 
 test("sbox_integration_tests") {

@@ -97,35 +97,13 @@ TEST(LpcPolicyTest, GetUserDefaultLCID) {
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd.c_str()));
 }
 
-// GetUserDefaultLocaleName is not available on WIN XP.  So we'll
-// load it on-the-fly.
-const wchar_t kKernel32DllName[] = L"kernel32.dll";
-typedef int(WINAPI* GetUserDefaultLocaleNameFunction)(LPWSTR lpLocaleName,
-                                                      int cchLocaleName);
-
 SBOX_TESTS_COMMAND int Lpc_GetUserDefaultLocaleName(int argc, wchar_t** argv) {
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   std::wstring expected_locale_name(argv[0]);
-  static GetUserDefaultLocaleNameFunction GetUserDefaultLocaleName_func =
-      nullptr;
-  if (!GetUserDefaultLocaleName_func) {
-    // GetUserDefaultLocaleName is not available on WIN XP.  So we'll
-    // load it on-the-fly.
-    HMODULE kernel32_dll = ::GetModuleHandle(kKernel32DllName);
-    if (!kernel32_dll) {
-      return SBOX_TEST_FAILED;
-    }
-    GetUserDefaultLocaleName_func =
-        reinterpret_cast<GetUserDefaultLocaleNameFunction>(
-            GetProcAddress(kernel32_dll, "GetUserDefaultLocaleName"));
-    if (!GetUserDefaultLocaleName_func) {
-      return SBOX_TEST_FAILED;
-    }
-  }
   wchar_t locale_name[LOCALE_NAME_MAX_LENGTH] = {0};
   // This will cause an exception if not warmed up suitably.
-  int ret = GetUserDefaultLocaleName_func(
+  int ret = ::GetUserDefaultLocaleName(
       locale_name, LOCALE_NAME_MAX_LENGTH * sizeof(wchar_t));
   if (!ret) {
     return SBOX_TEST_FAILED;
@@ -141,20 +119,8 @@ SBOX_TESTS_COMMAND int Lpc_GetUserDefaultLocaleName(int argc, wchar_t** argv) {
 }
 
 TEST(LpcPolicyTest, GetUserDefaultLocaleName) {
-  static GetUserDefaultLocaleNameFunction GetUserDefaultLocaleName_func =
-      nullptr;
-  if (!GetUserDefaultLocaleName_func) {
-    // GetUserDefaultLocaleName is not available on WIN XP.  So we'll
-    // load it on-the-fly.
-    HMODULE kernel32_dll = ::GetModuleHandle(kKernel32DllName);
-    EXPECT_NE(nullptr, kernel32_dll);
-    GetUserDefaultLocaleName_func =
-        reinterpret_cast<GetUserDefaultLocaleNameFunction>(
-            GetProcAddress(kernel32_dll, "GetUserDefaultLocaleName"));
-    EXPECT_NE(nullptr, GetUserDefaultLocaleName_func);
-  }
   wchar_t locale_name[LOCALE_NAME_MAX_LENGTH] = {0};
-  EXPECT_NE(0, GetUserDefaultLocaleName_func(
+  EXPECT_NE(0, ::GetUserDefaultLocaleName(
                    locale_name, LOCALE_NAME_MAX_LENGTH * sizeof(wchar_t)));
   EXPECT_NE(0U, wcsnlen(locale_name, LOCALE_NAME_MAX_LENGTH));
   std::wstring cmd =

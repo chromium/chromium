@@ -25,18 +25,6 @@ namespace sandbox {
 
 namespace {
 
-typedef decltype(::CreateAppContainerProfile) CreateAppContainerProfileFunc;
-
-typedef decltype(::DeriveAppContainerSidFromAppContainerName)
-    DeriveAppContainerSidFromAppContainerNameFunc;
-
-typedef decltype(::DeleteAppContainerProfile) DeleteAppContainerProfileFunc;
-
-typedef decltype(::GetAppContainerFolderPath) GetAppContainerFolderPathFunc;
-
-typedef decltype(
-    ::GetAppContainerRegistryLocation) GetAppContainerRegistryLocationFunc;
-
 struct FreeSidDeleter {
   inline void operator()(void* ptr) const { ::FreeSid(ptr); }
 };
@@ -82,14 +70,8 @@ class ScopedImpersonation {
 AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
                                                   const wchar_t* display_name,
                                                   const wchar_t* description) {
-  static auto create_app_container_profile =
-      reinterpret_cast<CreateAppContainerProfileFunc*>(GetProcAddress(
-          GetModuleHandle(L"userenv"), "CreateAppContainerProfile"));
-  if (!create_app_container_profile)
-    return nullptr;
-
   PSID package_sid_ptr = nullptr;
-  HRESULT hr = create_app_container_profile(
+  HRESULT hr = ::CreateAppContainerProfile(
       package_name, display_name, description, nullptr, 0, &package_sid_ptr);
   if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
     return Open(package_name);
@@ -105,15 +87,9 @@ AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
 
 // static
 AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
-  static auto derive_app_container_sid =
-      reinterpret_cast<DeriveAppContainerSidFromAppContainerNameFunc*>(
-          GetProcAddress(GetModuleHandle(L"userenv"),
-                         "DeriveAppContainerSidFromAppContainerName"));
-  if (!derive_app_container_sid)
-    return nullptr;
-
   PSID package_sid_ptr = nullptr;
-  HRESULT hr = derive_app_container_sid(package_name, &package_sid_ptr);
+  HRESULT hr = ::DeriveAppContainerSidFromAppContainerName(package_name,
+                                                           &package_sid_ptr);
   if (FAILED(hr))
     return nullptr;
 
@@ -135,13 +111,7 @@ AppContainerBase* AppContainerBase::CreateLowbox(const wchar_t* sid) {
 
 // static
 bool AppContainerBase::Delete(const wchar_t* package_name) {
-  static auto delete_app_container_profile =
-      reinterpret_cast<DeleteAppContainerProfileFunc*>(GetProcAddress(
-          GetModuleHandle(L"userenv"), "DeleteAppContainerProfile"));
-  if (!delete_app_container_profile)
-    return false;
-
-  return SUCCEEDED(delete_app_container_profile(package_name));
+  return SUCCEEDED(::DeleteAppContainerProfile(package_name));
 }
 
 AppContainerBase::AppContainerBase(base::win::Sid& package_sid,
@@ -168,36 +138,24 @@ void AppContainerBase::Release() {
 
 bool AppContainerBase::GetRegistryLocation(REGSAM desired_access,
                                            base::win::ScopedHandle* key) {
-  static GetAppContainerRegistryLocationFunc*
-      get_app_container_registry_location =
-          reinterpret_cast<GetAppContainerRegistryLocationFunc*>(GetProcAddress(
-              GetModuleHandle(L"userenv"), "GetAppContainerRegistryLocation"));
-  if (!get_app_container_registry_location)
-    return false;
-
   base::win::ScopedHandle token;
   if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
     return false;
 
   ScopedImpersonation impersonation(token);
   HKEY key_handle;
-  if (FAILED(get_app_container_registry_location(desired_access, &key_handle)))
+  if (FAILED(::GetAppContainerRegistryLocation(desired_access, &key_handle)))
     return false;
   key->Set(key_handle);
   return true;
 }
 
 bool AppContainerBase::GetFolderPath(base::FilePath* file_path) {
-  static GetAppContainerFolderPathFunc* get_app_container_folder_path =
-      reinterpret_cast<GetAppContainerFolderPathFunc*>(GetProcAddress(
-          GetModuleHandle(L"userenv"), "GetAppContainerFolderPath"));
-  if (!get_app_container_folder_path)
-    return false;
   auto sddl_str = package_sid_.ToSddlString();
   if (!sddl_str)
     return false;
   base::win::ScopedCoMem<wchar_t> path_str;
-  if (FAILED(get_app_container_folder_path(sddl_str->c_str(), &path_str)))
+  if (FAILED(::GetAppContainerFolderPath(sddl_str->c_str(), &path_str)))
     return false;
   *file_path = base::FilePath(path_str.get());
   return true;
