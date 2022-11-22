@@ -70,8 +70,7 @@ void TestPersonalDataManager::AddProfile(const AutofillProfile& profile) {
 }
 
 void TestPersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
-  AutofillProfile* existing_profile =
-      GetProfileWithGUID(profile.guid().c_str());
+  AutofillProfile* existing_profile = GetProfileByGUID(profile.guid());
   if (existing_profile) {
     RemoveByGUID(existing_profile->guid());
     AddProfile(profile);
@@ -79,13 +78,13 @@ void TestPersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 }
 
 void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
-  CreditCard* credit_card = GetCreditCardWithGUID(guid.c_str());
+  CreditCard* credit_card = GetCreditCardByGUID(guid);
   if (credit_card) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
   }
 
-  AutofillProfile* profile = GetProfileWithGUID(guid.c_str());
+  AutofillProfile* profile = GetProfileByGUID(guid);
   if (profile) {
     web_profiles_.erase(base::ranges::find(
         web_profiles_, profile, &std::unique_ptr<AutofillProfile>::get));
@@ -115,8 +114,7 @@ void TestPersonalDataManager::DeleteLocalCreditCards(
 }
 
 void TestPersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
-  CreditCard* existing_credit_card =
-      GetCreditCardWithGUID(credit_card.guid().c_str());
+  CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
   if (existing_credit_card) {
     RemoveByGUID(existing_credit_card->guid());
     AddCreditCard(credit_card);
@@ -129,14 +127,6 @@ void TestPersonalDataManager::AddFullServerCreditCard(
   // and full server cards equally, relying on their preset RecordType to
   // differentiate them.
   AddServerCreditCard(credit_card);
-}
-
-std::vector<AutofillProfile*> TestPersonalDataManager::GetProfiles() const {
-  std::vector<AutofillProfile*> result;
-  result.reserve(web_profiles_.size());
-  for (const auto& profile : web_profiles_)
-    result.push_back(profile.get());
-  return result;
 }
 
 const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
@@ -239,10 +229,6 @@ void TestPersonalDataManager::LoadUpiIds() {
   }
 }
 
-bool TestPersonalDataManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
-}
-
 bool TestPersonalDataManager::IsAutofillProfileEnabled() const {
   // Return the value of autofill_profile_enabled_ if it has been set,
   // otherwise fall back to the normal behavior of checking the pref_service.
@@ -330,22 +316,6 @@ void TestPersonalDataManager::ClearCloudTokenData() {
 
 void TestPersonalDataManager::ClearCreditCardOfferData() {
   autofill_offer_data_.clear();
-}
-
-AutofillProfile* TestPersonalDataManager::GetProfileWithGUID(const char* guid) {
-  for (AutofillProfile* profile : GetProfiles()) {
-    if (!profile->guid().compare(guid))
-      return profile;
-  }
-  return nullptr;
-}
-
-CreditCard* TestPersonalDataManager::GetCreditCardWithGUID(const char* guid) {
-  for (CreditCard* card : GetCreditCards()) {
-    if (!card->guid().compare(guid))
-      return card;
-  }
-  return nullptr;
 }
 
 void TestPersonalDataManager::AddServerCreditCard(

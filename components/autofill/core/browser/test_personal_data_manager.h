@@ -55,7 +55,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   void AddFullServerCreditCard(const CreditCard& credit_card) override;
-  std::vector<AutofillProfile*> GetProfiles() const override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   void SetProfiles(std::vector<AutofillProfile>* profiles) override;
   void LoadProfiles() override;
@@ -63,7 +62,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void LoadCreditCardCloudTokenData() override;
   void LoadIBANs() override;
   void LoadUpiIds() override;
-  bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
@@ -92,12 +90,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Clears |autofill_offer_data_|.
   void ClearCreditCardOfferData();
-
-  // Gets a profile based on the provided |guid|.
-  AutofillProfile* GetProfileWithGUID(const char* guid);
-
-  // Gets a credit card based on the provided |guid| (local or server).
-  CreditCard* GetCreditCardWithGUID(const char* guid);
 
   // Adds a card to |server_credit_cards_|.  Functionally identical to
   // AddFullServerCreditCard().

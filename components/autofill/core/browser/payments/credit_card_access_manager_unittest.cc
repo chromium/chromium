@@ -565,9 +565,9 @@ TEST_F(CreditCardAccessManagerTest, RemoveLocalCreditCard) {
   CreateLocalCard(kTestGUID);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
 
-  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
   EXPECT_TRUE(credit_card_access_manager_->DeleteCard(card));
-  EXPECT_FALSE(personal_data().GetCreditCardWithGUID(kTestGUID));
+  EXPECT_FALSE(personal_data().GetCreditCardByGUID(kTestGUID));
 }
 
 // Ensures DeleteCard() does nothing for server cards.
@@ -575,11 +575,11 @@ TEST_F(CreditCardAccessManagerTest, RemoveServerCreditCard) {
   CreateServerCard(kTestGUID);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
 
-  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
   EXPECT_FALSE(credit_card_access_manager_->DeleteCard(card));
 
   // Cannot delete server cards.
-  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
 }
 
 // Ensures GetDeletionConfirmationText(~) returns correct values for local

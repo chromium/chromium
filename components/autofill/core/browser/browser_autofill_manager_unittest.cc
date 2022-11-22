@@ -1464,8 +1464,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
   FormsSeen({form});
 
   // Add a duplicate profile.
-  AutofillProfile duplicate_profile = *(personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000001"));
+  AutofillProfile duplicate_profile =
+      *personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000001");
   personal_data().AddProfile(duplicate_profile);
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -2482,7 +2482,7 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   }
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
@@ -2528,7 +2528,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
     *it = FormFieldData();
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
 
   int response_query_id = 0;
@@ -2566,7 +2566,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldRemoved) {
   form.fields.pop_back();
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
 
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
@@ -3234,7 +3234,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
@@ -4619,8 +4619,8 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   FormsSeen({form_with_us_number_max_length, form_with_autocompletetype});
 
   // We should be able to fill prefix and suffix fields for US numbers.
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4694,8 +4694,8 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
 }
 
 TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4757,8 +4757,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
 }
 
 TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4802,8 +4802,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
 }
 
 TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4870,8 +4870,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
 // phone field, we do not fill anything to extension field.
 TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_NotFillMisclassifiedExtention) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4927,8 +4927,8 @@ TEST_F(BrowserAutofillManagerTest,
 // Phone number local heuristics only succeed if a PHONE_HOME_NUMBER field is
 // present.
 TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4978,8 +4978,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
 // entire form, both first phone field and second phone field included.
 TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_FocusOnSecondPhoneNumber) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5027,8 +5027,8 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_HiddenFieldShouldNotCount) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5146,8 +5146,8 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
 
 TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
-  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
-      "00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile =
+      personal_data().GetProfileByGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -6753,7 +6753,7 @@ TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
 
-  EXPECT_FALSE(personal_data().GetProfileWithGUID(guid));
+  EXPECT_FALSE(personal_data().GetProfileByGUID(guid));
 }
 
 TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
@@ -6767,7 +6767,7 @@ TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
 
-  EXPECT_FALSE(personal_data().GetCreditCardWithGUID(guid));
+  EXPECT_FALSE(personal_data().GetCreditCardByGUID(guid));
 }
 
 // Test our external delegate is called at the right time.

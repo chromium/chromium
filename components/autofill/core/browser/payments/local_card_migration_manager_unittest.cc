@@ -859,12 +859,12 @@ TEST_F(LocalCardMigrationManagerTest, DeleteLocalCardViaMigrationDialog) {
                      test::NextYear().c_str(), "1", guid);
 
   const std::string guid_str = guid.AsLowercaseString();
-  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(guid_str.c_str()));
+  EXPECT_TRUE(personal_data().GetCreditCardByGUID(guid_str));
 
   local_card_migration_manager_->OnUserDeletedLocalCardViaMigrationDialog(
       guid_str);
 
-  EXPECT_FALSE(personal_data().GetCreditCardWithGUID(guid_str.c_str()));
+  EXPECT_FALSE(personal_data().GetCreditCardByGUID(guid_str));
 }
 
 // Use one local card with more valid local cards available, don't show prompt
