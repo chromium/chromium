@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_H_
 
 namespace content {
 class WebContents;
@@ -13,15 +13,13 @@ namespace autofill {
 
 class CardUnmaskAuthenticationSelectionDialogController;
 
-// TODO(crbug.com/1382856): Rename CardUnmaskAuthenticationSelectionDialogView
-// to CardUnmaskAuthenticationSelectionDialog
-// Interface that exposes the view to
+// Interface that exposes the dialog to
 // CardUnmaskAuthenticationSelectionDialogControllerImpl.
-class CardUnmaskAuthenticationSelectionDialogView {
+class CardUnmaskAuthenticationSelectionDialog {
  public:
   // Creates a dialog and displays it as a modal on top of the web contents of
   // CardUnmaskAuthenticationSelectionDialogController.
-  static CardUnmaskAuthenticationSelectionDialogView* CreateAndShow(
+  static CardUnmaskAuthenticationSelectionDialog* CreateAndShow(
       CardUnmaskAuthenticationSelectionDialogController* controller,
       content::WebContents* web_contents);
 
@@ -39,4 +37,4 @@ class CardUnmaskAuthenticationSelectionDialogView {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_H_

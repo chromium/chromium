@@ -52,8 +52,8 @@ CardUnmaskAuthenticationSelectionDialogViews::
 }
 
 // static
-CardUnmaskAuthenticationSelectionDialogView*
-CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
+CardUnmaskAuthenticationSelectionDialog*
+CardUnmaskAuthenticationSelectionDialog::CreateAndShow(
     CardUnmaskAuthenticationSelectionDialogController* controller,
     content::WebContents* web_contents) {
   CardUnmaskAuthenticationSelectionDialogViews* dialog_view =

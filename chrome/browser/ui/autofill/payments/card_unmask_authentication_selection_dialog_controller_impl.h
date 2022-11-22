@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-class CardUnmaskAuthenticationSelectionDialogView;
+class CardUnmaskAuthenticationSelectionDialog;
 
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
     : public CardUnmaskAuthenticationSelectionDialogController,
@@ -62,7 +62,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   void SetSelectedChallengeOptionId(
       const std::string& selected_challenge_option_id) override;
 
-  CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting() {
+  CardUnmaskAuthenticationSelectionDialog* GetDialogViewForTesting() {
     return dialog_view_;
   }
 
@@ -91,7 +91,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
 
-  raw_ptr<CardUnmaskAuthenticationSelectionDialogView> dialog_view_ = nullptr;
+  raw_ptr<CardUnmaskAuthenticationSelectionDialog> dialog_view_ = nullptr;
 
   // Callback invoked when the user confirmed an authentication method to use.
   base::OnceCallback<void(const std::string&)>

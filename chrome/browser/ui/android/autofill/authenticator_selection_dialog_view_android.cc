@@ -36,8 +36,8 @@ AuthenticatorSelectionDialogViewAndroid::
     ~AuthenticatorSelectionDialogViewAndroid() = default;
 
 // static
-CardUnmaskAuthenticationSelectionDialogView*
-CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
+CardUnmaskAuthenticationSelectionDialog*
+CardUnmaskAuthenticationSelectionDialog::CreateAndShow(
     CardUnmaskAuthenticationSelectionDialogController* controller,
     content::WebContents* web_contents) {
   ui::ViewAndroid* view_android = web_contents->GetNativeView();

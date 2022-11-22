@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/check_is_test.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
+#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -63,7 +63,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
       std::move(confirm_unmasking_method_callback);
   cancel_unmasking_closure_ = std::move(cancel_unmasking_closure);
 
-  dialog_view_ = CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
+  dialog_view_ = CardUnmaskAuthenticationSelectionDialog::CreateAndShow(
       this, &GetWebContents());
 
   DCHECK(dialog_view_);

@@ -17,7 +17,7 @@ namespace autofill {
 struct CardUnmaskChallengeOption;
 
 // Interface that exposes controller functionality to
-// CardUnmaskAuthenticationSelectionDialogView.
+// CardUnmaskAuthenticationSelectionDialog.
 class CardUnmaskAuthenticationSelectionDialogController {
  public:
   CardUnmaskAuthenticationSelectionDialogController() = default;

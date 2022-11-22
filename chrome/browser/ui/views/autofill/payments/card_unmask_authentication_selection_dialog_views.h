@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
+#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -21,7 +21,7 @@ class CardUnmaskAuthenticationSelectionDialogController;
 // TODO(crbug.com/1382856):  Rename CardUnmaskAuthenticationSelectionDialogViews
 // to CardUnmaskAuthenticationSelectionDialogView
 class CardUnmaskAuthenticationSelectionDialogViews
-    : public CardUnmaskAuthenticationSelectionDialogView,
+    : public CardUnmaskAuthenticationSelectionDialog,
       public views::BubbleDialogDelegateView {
  public:
   explicit CardUnmaskAuthenticationSelectionDialogViews(
@@ -32,7 +32,7 @@ class CardUnmaskAuthenticationSelectionDialogViews
       const CardUnmaskAuthenticationSelectionDialogViews&) = delete;
   ~CardUnmaskAuthenticationSelectionDialogViews() override;
 
-  // CardUnmaskAuthenticationSelectionDialogView:
+  // CardUnmaskAuthenticationSelectionDialog:
   void Dismiss(bool user_closed_dialog, bool server_success) override;
   void UpdateContent() override;
 
@@ -71,7 +71,7 @@ class CardUnmaskAuthenticationSelectionDialogViews
       CardUnmaskChallengeOption challenge_option);
 
   // Controller that owns functionality of the
-  // CardUnmaskAuthenticationSelectionDialogView.
+  // CardUnmaskAuthenticationSelectionDialog.
   raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_ =
       nullptr;
 };
