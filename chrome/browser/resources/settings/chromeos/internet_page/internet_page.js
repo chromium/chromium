@@ -1037,7 +1037,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
           // This shouldn't happen, the UI should prevent this, fall through and
           // show the error.
         case StartConnectResult.kUnknown:
-          console.error(
+          console.warn(
               'startConnect failed for: ' + networkState.guid +
               ' Error: ' + response.message);
           return;
