@@ -254,6 +254,8 @@ void BackgroundTracingActiveScenario::SetState(State new_state) {
   if (scenario_state_ == State::kAborted) {
     DCHECK_NE(config_->tracing_mode(), BackgroundTracingConfigImpl::SYSTEM);
     tracing_session_.reset();
+    tracing_timer_.reset();
+
     std::move(on_aborted_callback_).Run();
   }
 }
