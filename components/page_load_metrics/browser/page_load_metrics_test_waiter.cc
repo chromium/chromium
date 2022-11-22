@@ -89,6 +89,62 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   const char* observer_name_;
 };
 
+std::string PageLoadMetricsTestWaiter::TimingFieldBitSet::ToDebugString()
+    const {
+  std::string debug_string = "";
+  if (ContainsTimingField(TimingField::kFirstPaint))
+    debug_string += "FirstPaint|";
+
+  if (ContainsTimingField(TimingField::kFirstContentfulPaint))
+    debug_string += "FirstContentfulPaint|";
+
+  if (ContainsTimingField(TimingField::kFirstMeaningfulPaint))
+    debug_string += "FirstMeaningfulPaint|";
+
+  if (ContainsTimingField(TimingField::kFirstPaintAfterBackForwardCacheRestore))
+    debug_string += "FirstPaintAfterBackForwardCacheRestore|";
+
+  if (ContainsTimingField(
+          TimingField::kRequestAnimationFrameAfterBackForwardCacheRestore))
+    debug_string += "RequestAnimationFrameAfterBackForwardCacheRestore|";
+
+  if (ContainsTimingField(TimingField::kDocumentWriteBlockReload))
+    debug_string += "DocumentWriteBlockReload|";
+
+  if (ContainsTimingField(TimingField::kFirstInputDelay))
+    debug_string += "FirstInputDelay|";
+
+  if (ContainsTimingField(TimingField::kFirstInputOrScroll))
+    debug_string += "FirstInputOrScroll|";
+
+  if (ContainsTimingField(
+          TimingField::kFirstInputDelayAfterBackForwardCacheRestore))
+    debug_string += "FirstInputDelayAfterBackForwardCacheRestore|";
+
+  if (ContainsTimingField(TimingField::kLoadTimingInfo))
+    debug_string += "LoadTimingInfo|";
+
+  if (ContainsTimingField(TimingField::kLargestContentfulPaint))
+    debug_string += "LargestContentfulPaint|";
+
+  if (ContainsTimingField(TimingField::kTotalInputDelay))
+    debug_string += "TotalInputDelay|";
+
+  if (ContainsTimingField(TimingField::kFirstContentfulPaint))
+    debug_string += "FirstContentfulPaint|";
+
+  if (ContainsTimingField(TimingField::kLayoutShift))
+    debug_string += "LayoutShift|";
+
+  if (ContainsTimingField(TimingField::kLoadEvent))
+    debug_string += "LoadEvent|";
+
+  if (ContainsTimingField(TimingField::kSoftNavigationCountUpdated))
+    debug_string += "SoftNavigationCountUpdated";
+
+  return debug_string;
+}
+
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents)
     : MetricsLifecycleObserver(web_contents),

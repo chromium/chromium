@@ -177,6 +177,17 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
       return !((bitmask_ & other.bitmask_) ^ bitmask_);
     }
 
+    // Returns the string representation of the TimingFields this bitset
+    // contains. This method is not called anywhere and is for debug purpose
+    // only.
+    std::string ToDebugString() const;
+
+    // Returns true if the bitset contains the TimingField. This method is not
+    // called anywhere and is for debug purpose only.
+    bool ContainsTimingField(TimingField time_field) const {
+      return (bitmask_ & static_cast<int>(time_field)) > 0;
+    }
+
    private:
     int bitmask_ = 0;
   };
