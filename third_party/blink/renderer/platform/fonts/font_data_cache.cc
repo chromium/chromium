@@ -44,14 +44,6 @@ const unsigned kCMaxInactiveFontData = 225;
 const unsigned kCTargetInactiveFontData = 200;
 #endif
 
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-// static
-FontDataCache& FontDataCache::SharedInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontDataCache, shared_font_data_cache, ());
-  return shared_font_data_cache;
-}
-#endif
-
 // static
 std::unique_ptr<FontDataCache> FontDataCache::Create() {
   return std::make_unique<FontDataCache>();
@@ -73,7 +65,6 @@ scoped_refptr<SimpleFontData> FontDataCache::Get(
     return nullptr;
   }
 
-  AutoLockForParallelTextShaping guard(lock_);
   Cache::iterator result = cache_.find(platform_data);
   if (result == cache_.end()) {
     std::pair<scoped_refptr<SimpleFontData>, unsigned> new_value(
@@ -108,14 +99,12 @@ scoped_refptr<SimpleFontData> FontDataCache::Get(
 }
 
 bool FontDataCache::Contains(const FontPlatformData* font_platform_data) const {
-  AutoLockForParallelTextShaping guard(lock_);
   return cache_.Contains(font_platform_data);
 }
 
 void FontDataCache::Release(const SimpleFontData* font_data) {
   DCHECK(!font_data->IsCustomFont());
 
-  AutoLockForParallelTextShaping guard(lock_);
   Cache::iterator it = cache_.find(&(font_data->PlatformData()));
   DCHECK_NE(it, cache_.end());
   if (it == cache_.end())
@@ -127,7 +116,6 @@ void FontDataCache::Release(const SimpleFontData* font_data) {
 }
 
 bool FontDataCache::Purge(PurgeSeverity purge_severity) {
-  AutoLockForParallelTextShaping guard(lock_);
   if (purge_severity == kForcePurge)
     return PurgeLeastRecentlyUsed(INT_MAX);
 
@@ -143,8 +131,6 @@ bool FontDataCache::PurgeLeastRecentlyUsed(int count) {
   // FontData.
   if (is_purging_)
     return false;
-
-  lock_.AssertAcquired();
 
   base::AutoReset<bool> is_purging_auto_reset(&is_purging_, true);
 

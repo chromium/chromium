@@ -40,10 +40,7 @@
 namespace blink {
 
 CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
-    : CSSFontSelectorBase(
-          tree_scope.GetDocument().GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalDefault)),
-      tree_scope_(&tree_scope) {
+    : tree_scope_(&tree_scope) {
   DCHECK(tree_scope.GetDocument().GetExecutionContext()->IsContextThread());
   DCHECK(tree_scope.GetDocument().GetFrame());
   generic_font_family_settings_ = tree_scope.GetDocument()

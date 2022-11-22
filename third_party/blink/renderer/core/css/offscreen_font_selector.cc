@@ -12,8 +12,7 @@
 namespace blink {
 
 OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
-    : CSSFontSelectorBase(worker->GetTaskRunner(TaskType::kInternalDefault)),
-      worker_(worker) {
+    : worker_(worker) {
   DCHECK(worker);
   font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
   FontCache::Get().AddClient(this);

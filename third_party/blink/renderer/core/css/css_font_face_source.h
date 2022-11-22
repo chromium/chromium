@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
-#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -71,8 +70,7 @@ class CORE_EXPORT CSSFontFaceSource
   }
 
   scoped_refptr<SimpleFontData> GetFontData(const FontDescription&,
-                                            const FontSelectionCapabilities&)
-      LOCKS_EXCLUDED(lock_);
+                                            const FontSelectionCapabilities&);
 
   // TODO(https://crbug.com/947461): IsLocalFontAvailable must not have a
   // FontDescription argument.
@@ -100,7 +98,7 @@ class CORE_EXPORT CSSFontFaceSource
   virtual scoped_refptr<SimpleFontData> CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) = 0;
-  void PruneTable() LOCKS_EXCLUDED(lock_);
+  void PruneTable();
 
   // Report the font lookup for metrics collection. Only used for local font
   // face sources currently.
@@ -109,13 +107,12 @@ class CORE_EXPORT CSSFontFaceSource
                                 bool is_loading_fallback = false) {}
 
  private:
-  void PruneOldestIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PruneOldestIfNeeded();
   using FontDataTable = HashMap<FontCacheKey, scoped_refptr<SimpleFontData>>;
   using FontCacheKeyAgeList = LinkedHashSet<FontCacheKey>;
 
-  LockForParallelTextShaping lock_;
-  FontDataTable font_data_table_ GUARDED_BY(lock_);
-  FontCacheKeyAgeList font_cache_key_age GUARDED_BY(lock_);
+  FontDataTable font_data_table_;
+  FontCacheKeyAgeList font_cache_key_age;
 };
 
 }  // namespace blink

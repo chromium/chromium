@@ -98,7 +98,6 @@ class TestFontSelector : public FontSelector {
   void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
   FontFaceCache* GetFontFaceCache() override { return nullptr; }
-  bool IsContextThread() const override { return true; }
 
   void RegisterForInvalidationCallbacks(FontSelectorClient*) override {}
   void UnregisterForInvalidationCallbacks(FontSelectorClient*) override {}

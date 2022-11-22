@@ -44,15 +44,6 @@ BASE_FEATURE(kFontCacheNoSizeInKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-// static
-FontPlatformDataCache& FontPlatformDataCache::SharedInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontPlatformDataCache,
-                                  shared_font_platform_data_cache, ());
-  return shared_font_platform_data_cache;
-}
-#endif
-
 // static
 std::unique_ptr<FontPlatformDataCache> FontPlatformDataCache::Create() {
   return std::make_unique<FontPlatformDataCache>();
@@ -136,17 +127,14 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
 }
 
 size_t FontPlatformDataCache::ByteSize() const {
-  AutoLockForParallelTextShaping guard(lock_);
   return map_.size() * sizeof(SizedFontPlatformDataSet);
 }
 
 void FontPlatformDataCache::Clear() {
-  AutoLockForParallelTextShaping guard(lock_);
   map_.clear();
 }
 
 void FontPlatformDataCache::Purge(const FontDataCache& font_data_cache) {
-  AutoLockForParallelTextShaping guard(lock_);
   Vector<FontCacheKey> keys_to_remove;
   keys_to_remove.ReserveInitialCapacity(map_.size());
   for (auto& entry : map_) {
@@ -158,7 +146,6 @@ void FontPlatformDataCache::Purge(const FontDataCache& font_data_cache) {
 
 FontPlatformDataCache::SizedFontPlatformDataSet&
 FontPlatformDataCache::GetOrCreateSizeMap(const FontCacheKey& key) {
-  AutoLockForParallelTextShaping guard(lock_);
   auto result = map_.insert(key, nullptr);
   if (result.is_new_entry)
     result.stored_value->value = SizedFontPlatformDataSet::Create();
@@ -187,7 +174,6 @@ FontPlatformDataCache::SizedFontPlatformDataSet::GetOrCreateFontPlatformData(
     float size,
     AlternateFontName alternate_font_name,
     unsigned rounded_size) {
-  AutoLockForParallelTextShaping guard(lock_);
   // Take a different size instance of the same font before adding an entry to
   // `size_to_data_map`.
   FontPlatformData* const another_size =
@@ -211,7 +197,6 @@ FontPlatformDataCache::SizedFontPlatformDataSet::GetOrCreateFontPlatformData(
 
 bool FontPlatformDataCache::SizedFontPlatformDataSet::Purge(
     const FontDataCache& font_data_cache) {
-  AutoLockForParallelTextShaping guard(lock_);
   Vector<unsigned> sizes_to_remove;
   sizes_to_remove.ReserveInitialCapacity(size_to_data_map_.size());
   for (const auto& entry : size_to_data_map_) {
@@ -225,7 +210,6 @@ bool FontPlatformDataCache::SizedFontPlatformDataSet::Purge(
 void FontPlatformDataCache::SizedFontPlatformDataSet::Set(
     unsigned rounded_size,
     FontPlatformData* platform_data) {
-  AutoLockForParallelTextShaping guard(lock_);
   size_to_data_map_.insert(rounded_size,
                            std::make_unique<FontPlatformData>(*platform_data));
 }

@@ -269,7 +269,6 @@ bool SimpleFontData::IsSegmented() const {
 
 scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
     const FontDescription& font_description) const {
-  AutoLockForParallelTextShaping guard(derived_font_data_lock_);
   if (!derived_font_data_)
     derived_font_data_ = std::make_unique<DerivedFontData>();
   if (!derived_font_data_->small_caps) {
@@ -282,7 +281,6 @@ scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
 
 scoped_refptr<SimpleFontData> SimpleFontData::EmphasisMarkFontData(
     const FontDescription& font_description) const {
-  AutoLockForParallelTextShaping guard(derived_font_data_lock_);
   if (!derived_font_data_)
     derived_font_data_ = std::make_unique<DerivedFontData>();
   if (!derived_font_data_->emphasis_mark) {

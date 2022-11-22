@@ -180,38 +180,7 @@ class PLATFORM_EXPORT FontPlatformData {
   WebFontRenderStyle style_;
 #endif
 
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  // The class maps from thread id to `HarfBuzzFace`.
-  // Note: We can not use `base::SequenceLocalStorageSlot` or
-  // `base::ThreadLocalStorage` here, because number of instances are limited,
-  // e.g. 255.
-  class ThreadSpecificHarfBuzzFace final {
-   public:
-    ThreadSpecificHarfBuzzFace();
-    ~ThreadSpecificHarfBuzzFace();
-
-    ThreadSpecificHarfBuzzFace(const ThreadSpecificHarfBuzzFace&) = delete;
-    ThreadSpecificHarfBuzzFace(ThreadSpecificHarfBuzzFace&&) = delete;
-
-    ThreadSpecificHarfBuzzFace operator=(const ThreadSpecificHarfBuzzFace&) =
-        delete;
-    ThreadSpecificHarfBuzzFace operator=(ThreadSpecificHarfBuzzFace&&) = delete;
-
-    HarfBuzzFace& GetOrCreate(FontPlatformData* platform_data)
-        LOCKS_EXCLUDED(lock_);
-
-   private:
-    // TODO(yosin): Once all platforms support parallel text shaping, we should
-    // use `std::unique_ptr<T>` for `HarfBuzzFace`.
-    using Map = HashMap<base::PlatformThreadId, std::unique_ptr<HarfBuzzFace>>;
-    base::Lock lock_;
-    Map map_ GUARDED_BY(lock_);
-  };
-
-  mutable ThreadSpecificHarfBuzzFace harfbuzz_face_;
-#else
   mutable std::unique_ptr<HarfBuzzFace> harfbuzz_face_;
-#endif
   bool is_hash_table_deleted_value_ = false;
 };
 

@@ -16,56 +16,12 @@
 
 namespace blink {
 
-CSSFontSelectorBase::CSSFontSelectorBase(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-    : task_runner_(task_runner)
-#endif
-{
-  DCHECK(IsContextThread());
-}
-
-void CSSFontSelectorBase::CountUse(WebFeature feature) const {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (IsContextThread())
-    return UseCounter::Count(GetUseCounter(), feature);
-  PostCrossThreadTask(
-      *task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&CSSFontSelectorBase::CountUse,
-                          WrapCrossThreadPersistent(this), feature));
-#endif
-}
-
 AtomicString CSSFontSelectorBase::FamilyNameFromSettings(
     const FontDescription& font_description,
     const FontFamily& generic_family_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsContextThread()) {
-    if (IsWebkitBodyFamily(font_description)) {
-      PostCrossThreadTask(
-          *task_runner_, FROM_HERE,
-          CrossThreadBindOnce(
-              &CSSFontSelectorBase::CountUse, WrapCrossThreadPersistent(this),
-              WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
-    }
-    return FontSelector::FamilyNameFromSettings(generic_font_family_settings_,
-                                                font_description,
-                                                generic_family_name, nullptr);
-  }
-#endif
   return FontSelector::FamilyNameFromSettings(
       generic_font_family_settings_, font_description, generic_family_name,
       GetUseCounter());
-}
-
-bool CSSFontSelectorBase::IsContextThread() const {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  return task_runner_->RunsTasksInCurrentSequence();
-#else
-  return true;
-#endif
 }
 
 bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
@@ -81,19 +37,6 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
 void CSSFontSelectorBase::ReportEmojiSegmentGlyphCoverage(
     unsigned num_clusters,
     unsigned num_broken_clusters) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportEmojiSegmentGlyphCoverage,
-            WrapCrossThreadPersistent(this), num_clusters,
-            num_broken_clusters));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportEmojiSegmentGlyphCoverage(
       num_clusters, num_broken_clusters);
 }
@@ -103,19 +46,6 @@ void CSSFontSelectorBase::ReportFontFamilyLookupByGenericFamily(
     UScriptCode script,
     FontDescription::GenericFamilyType generic_family_type,
     const AtomicString& resulting_font_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportFontFamilyLookupByGenericFamily,
-            WrapCrossThreadPersistent(this), generic_font_family_name, script,
-            generic_family_type, resulting_font_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFontFamilyLookupByGenericFamily(
       generic_font_family_name, script, generic_family_type,
       resulting_font_name);
@@ -123,66 +53,21 @@ void CSSFontSelectorBase::ReportFontFamilyLookupByGenericFamily(
 
 void CSSFontSelectorBase::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&CSSFontSelectorBase::ReportFailedFontFamilyMatch,
-                            WrapCrossThreadPersistent(this), font_family_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportSuccessfulFontFamilyMatch(font_family_name);
 }
 
 void CSSFontSelectorBase::ReportFailedFontFamilyMatch(
     const AtomicString& font_family_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&CSSFontSelectorBase::ReportFailedFontFamilyMatch,
-                            WrapCrossThreadPersistent(this), font_family_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFailedFontFamilyMatch(font_family_name);
 }
 
 void CSSFontSelectorBase::ReportSuccessfulLocalFontMatch(
     const AtomicString& font_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportSuccessfulLocalFontMatch,
-            WrapCrossThreadPersistent(this), font_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportSuccessfulLocalFontMatch(font_name);
 }
 
 void CSSFontSelectorBase::ReportFailedLocalFontMatch(
     const AtomicString& font_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&CSSFontSelectorBase::ReportFailedLocalFontMatch,
-                            WrapCrossThreadPersistent(this), font_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFailedLocalFontMatch(font_name);
 }
 
@@ -190,19 +75,6 @@ void CSSFontSelectorBase::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
     scoped_refptr<SimpleFontData> resulting_font_data) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportFontLookupByUniqueOrFamilyName,
-            WrapCrossThreadPersistent(this), name, font_description,
-            resulting_font_data));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
       name, font_description, resulting_font_data.get());
 }
@@ -212,19 +84,6 @@ void CSSFontSelectorBase::ReportFontLookupByUniqueNameOnly(
     const FontDescription& font_description,
     scoped_refptr<SimpleFontData> resulting_font_data,
     bool is_loading_fallback) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportFontLookupByUniqueNameOnly,
-            WrapCrossThreadPersistent(this), name, font_description,
-            resulting_font_data, is_loading_fallback));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFontLookupByUniqueNameOnly(
       name, font_description, resulting_font_data.get(), is_loading_fallback);
 }
@@ -234,19 +93,6 @@ void CSSFontSelectorBase::ReportFontLookupByFallbackCharacter(
     FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
     scoped_refptr<SimpleFontData> resulting_font_data) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportFontLookupByFallbackCharacter,
-            WrapCrossThreadPersistent(this), fallback_character,
-            fallback_priority, font_description, resulting_font_data));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportFontLookupByFallbackCharacter(
       fallback_character, fallback_priority, font_description,
       resulting_font_data.get());
@@ -255,56 +101,22 @@ void CSSFontSelectorBase::ReportFontLookupByFallbackCharacter(
 void CSSFontSelectorBase::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
     scoped_refptr<SimpleFontData> resulting_font_data) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &CSSFontSelectorBase::ReportLastResortFallbackFontLookup,
-            WrapCrossThreadPersistent(this), font_description,
-            resulting_font_data));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportLastResortFallbackFontLookup(
       font_description, resulting_font_data.get());
 }
 
 void CSSFontSelectorBase::ReportNotDefGlyph() const {
-  CountUse(WebFeature::kFontShapingNotDefGlyphObserved);
+  UseCounter::Count(GetUseCounter(),
+                    WebFeature::kFontShapingNotDefGlyphObserved);
 }
 
 void CSSFontSelectorBase::ReportSystemFontFamily(
     const AtomicString& font_family_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&CSSFontSelectorBase::ReportSystemFontFamily,
-                            WrapCrossThreadPersistent(this), font_family_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportSystemFontFamily(font_family_name);
 }
 
 void CSSFontSelectorBase::ReportWebFontFamily(
     const AtomicString& font_family_name) {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!IsAlive())
-    return;
-  if (!IsContextThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&CSSFontSelectorBase::ReportWebFontFamily,
-                            WrapCrossThreadPersistent(this), font_family_name));
-    return;
-  }
-#endif
   GetFontMatchingMetrics()->ReportWebFontFamily(font_family_name);
 }
 
@@ -322,7 +134,6 @@ void CSSFontSelectorBase::WillUseFontData(
     // help when e.g., the font size is different, check once more if this
     // generic family is already prewarmed.
     {
-      AutoLockForParallelTextShaping guard(prewarmed_generic_families_lock_);
       const auto result =
           prewarmed_generic_families_.insert(family.FamilyName());
       if (!result.is_new_entry)

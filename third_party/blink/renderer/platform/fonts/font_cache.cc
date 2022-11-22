@@ -89,20 +89,8 @@ FontCache& FontCache::Get() {
 
 FontCache::FontCache()
     : font_manager_(sk_ref_sp(static_font_manager_)),
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-      // See destructor for lifetime management of
-      // `{FontPlatformDataCache,FontDataCache}::SharedInstance()`.
-      font_platform_data_cache_(
-          RuntimeEnabledFeatures::ParallelTextShapingEnabled()
-              ? base::WrapUnique(&FontPlatformDataCache::SharedInstance())
-              : FontPlatformDataCache::Create()),
-      font_data_cache_(RuntimeEnabledFeatures::ParallelTextShapingEnabled()
-                           ? base::WrapUnique(&FontDataCache::SharedInstance())
-                           : FontDataCache::Create()) {
-#else
       font_platform_data_cache_(FontPlatformDataCache::Create()),
       font_data_cache_(FontDataCache::Create()) {
-#endif
 #if BUILDFLAG(IS_WIN)
   if (!font_manager_ || should_use_test_font_mgr) {
     // This code path is only for unit tests. This SkFontMgr does not work in
@@ -124,16 +112,7 @@ FontCache::FontCache()
 #endif
 }
 
-FontCache::~FontCache() {
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (RuntimeEnabledFeatures::ParallelTextShapingEnabled()) {
-    // Because `FontDataCache` and `FontPlatformDataCache` are shared among
-    // threads, we should not destruct here.
-    font_data_cache_.release();
-    font_platform_data_cache_.release();
-  }
-#endif
-}
+FontCache::~FontCache() = default;
 
 #if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(

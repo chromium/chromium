@@ -137,8 +137,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
       const FontDescription&,
       const FontFamily& passed_family) = 0;
 
-  virtual bool IsContextThread() const = 0;
-
   FontFallbackMap& GetFontFallbackMap();
 
   void Trace(Visitor* visitor) const override;

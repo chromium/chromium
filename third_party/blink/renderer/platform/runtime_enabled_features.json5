@@ -2017,19 +2017,6 @@
       base_feature: "Parakeet",
     },
     {
-      name: "ParallelPrimaryFont",
-      depends_on: ["ParallelTextShaping"],
-      // http://crbug.com/1315900
-      // Global DeviceScaleFactor prevents us to use this feature.
-      status: {"ChromeOS_Ash": "", "ChromeOS_Lacros": "", "Linux": "",
-               "default": ""},
-    },
-    {
-      name: "ParallelTextShaping",
-      depends_on: ["LayoutNG"],
-      // http://crbug.com/1264280
-    },
-    {
       name: "PartitionedCookies",
       origin_trial_feature_name: "PartitionedCookies",
       status: "experimental",

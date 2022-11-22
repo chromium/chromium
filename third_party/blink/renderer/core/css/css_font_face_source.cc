@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
-#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
 namespace {
@@ -65,7 +64,6 @@ scoped_refptr<SimpleFontData> CSSFontFaceSource::GetFontData(
   FontCacheKey key =
       font_description.CacheKey(FontFaceCreationParams(), is_unique_match);
 
-  AutoLockForParallelTextShaping guard(lock_);
   // Get or create the font data. Take care to avoid dangling references into
   // font_data_table_, because it is modified below during pruning.
   scoped_refptr<SimpleFontData> font_data;
@@ -86,7 +84,6 @@ scoped_refptr<SimpleFontData> CSSFontFaceSource::GetFontData(
 }
 
 void CSSFontFaceSource::PruneOldestIfNeeded() {
-  lock_.AssertAcquired();
   if (font_cache_key_age.size() > kMaxCachedFontData) {
     DCHECK_EQ(font_cache_key_age.size() - 1, kMaxCachedFontData);
     const FontCacheKey& key = font_cache_key_age.back();
@@ -99,7 +96,6 @@ void CSSFontFaceSource::PruneOldestIfNeeded() {
 }
 
 void CSSFontFaceSource::PruneTable() {
-  AutoLockForParallelTextShaping guard(lock_);
   if (font_data_table_.empty())
     return;
 

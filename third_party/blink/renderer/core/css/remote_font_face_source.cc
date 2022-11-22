@@ -144,9 +144,6 @@ RemoteFontFaceSource::RemoteFontFaceSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : face_(css_font_face),
       font_selector_(font_selector),
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-      task_runner_(task_runner),
-#endif
       // No need to report the violation here since the font is not loaded yet
       display_(
           GetFontDisplayWithDocumentPolicyCheck(display,
@@ -389,22 +386,6 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
       font_selector_->GetExecutionContext();
   if (!execution_context)
     return;
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  if (!execution_context->IsContextThread()) {
-    // Following tests reache here.
-    //  * fast/css3-text/css3-text-decoration/text-decoration-skip-ink-links.html
-    //  * fast/css3-text/css3-word-break/word-break-break-all-in-span.html
-    //  * virtual/text-antialias/justify-vertical.html
-    //  * virtual/text-antialias/line-break-8bit-after-16bit.html
-    // Note: |ExecutionContext::GetTaskRunner()| works only for context
-    // thread, so we ask main thread to handle |BeginLoadIfNeeded()|.
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&RemoteFontFaceSource::BeginLoadIfNeeded,
-                            WrapCrossThreadPersistent(this)));
-    return;
-  }
-#endif
 
   DCHECK(GetResource());
 

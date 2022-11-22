@@ -69,15 +69,9 @@ class CSSCustomFontData final : public CustomFontData {
 
   // TODO(Oilpan): consider moving (Custom)FontFace hierarchy to the heap,
   // thereby making this reference a Member<>.
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  CrossThreadWeakPersistent<CSSFontFaceSource> font_face_source_;
-  std::atomic<FallbackVisibility> fallback_visibility_;
-  mutable std::atomic<bool> is_loading_{false};
-#else
   WeakPersistent<CSSFontFaceSource> font_face_source_;
   FallbackVisibility fallback_visibility_;
   mutable bool is_loading_ = false;
-#endif
 };
 
 }  // namespace blink
