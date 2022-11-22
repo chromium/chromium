@@ -1238,6 +1238,7 @@ void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
   if (notify_default_match)
     notify_changed_default_match_ = true;
   if (done_ || in_start_) {
+    notify_changed_debouncer_.ResetTimeLastRun();
     NotifyChanged();
   } else {
     notify_changed_debouncer_.RequestRun(base::BindOnce(

@@ -32,6 +32,12 @@ void AutocompleteProviderDebouncer::CancelRequest() {
   timer_.Stop();
 }
 
+void AutocompleteProviderDebouncer::ResetTimeLastRun() {
+  time_last_run_ = base::TimeTicks::Now();
+  if (timer_.IsRunning())
+    RequestRun(std::move(callback_));
+}
+
 void AutocompleteProviderDebouncer::Run() {
   time_last_run_ = base::TimeTicks::Now();
   std::move(callback_).Run();

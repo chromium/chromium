@@ -10,7 +10,8 @@
 #include "base/timer/timer.h"
 
 // Debounces a method call, i.e. throttles its call rate by delaying its
-// invocations and cancelling pending ones when new ones are requested.
+// invocations and cancelling pending ones when new ones are requested. Each
+// instance should be used in a single thread to avoid bad `callback_`.
 class AutocompleteProviderDebouncer {
  public:
   AutocompleteProviderDebouncer(bool from_last_run, int delay_ms);
@@ -24,6 +25,16 @@ class AutocompleteProviderDebouncer {
 
   // Cancels any pending request.
   void CancelRequest();
+
+  // Resets `time_last_run_` to now. Should be called when the debounced method
+  // was called externally. E.g., if there are 2 flows to call `X()`:
+  // 1) `X()`
+  // 2) `debouncer.RequestRun(base::BindOnce(&X))`
+  // When (1) occurs prior to (2), it might want to also invoke
+  // `debouncer.ResetTimeLastRan()` to make sure the 2nd call to `X()` doesn't
+  // occur in rapid succession.
+  // Will delay both future `RequestRun()` as well as any pending requests.
+  void ResetTimeLastRun();
 
  private:
   void Run();
