@@ -60,6 +60,7 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
     }
 
     @Override
+    @SuppressWarnings("WrongViewCast") // False positive.
     protected void onFinishInflate() {
         super.onFinishInflate();
 
