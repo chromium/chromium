@@ -85,7 +85,7 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
       // WakeUpResolution::kLow is always used for throttled tasks since those
       // tasks can tolerate having their execution being delayed.
       return base::sequence_manager::WakeUp{
-          allowed_run_time, base::GetTaskLeeway(),
+          allowed_run_time, base::GetTaskLeewayForCurrentThread(),
           base::sequence_manager::WakeUpResolution::kLow};
     }
   }

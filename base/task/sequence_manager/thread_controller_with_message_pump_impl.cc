@@ -60,7 +60,7 @@ std::atomic_bool g_run_tasks_by_batches = false;
 TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
   if (g_align_wake_ups.load(std::memory_order_relaxed)) {
     TimeTicks aligned_run_time = wake_up.earliest_time().SnappedToNextTick(
-        TimeTicks(), base::GetTaskLeeway());
+        TimeTicks(), GetTaskLeewayForCurrentThread());
     return std::min(aligned_run_time, wake_up.latest_time());
   }
   return wake_up.time;

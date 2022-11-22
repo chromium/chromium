@@ -763,7 +763,7 @@ absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
 
 void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
   if (!main_thread_only().time_domain) {
-    task.leeway = base::GetTaskLeeway();
+    task.leeway = GetTaskLeewayForCurrentThread();
   }
 }
 

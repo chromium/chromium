@@ -192,7 +192,7 @@ std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
   if (align_wake_ups_) {
     TimeTicks aligned_run_time =
         ripest_delayed_task.task.earliest_delayed_run_time().SnappedToNextTick(
-            TimeTicks(), base::GetTaskLeeway());
+            TimeTicks(), GetTaskLeewayForCurrentThread());
     delayed_run_time = std::min(
         aligned_run_time, ripest_delayed_task.task.latest_delayed_run_time());
   }

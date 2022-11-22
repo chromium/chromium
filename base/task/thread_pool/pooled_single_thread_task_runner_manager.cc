@@ -417,7 +417,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
-              base::GetTaskLeeway());
+              GetDefaultTaskLeeway());
     return PostTask(std::move(task));
   }
 
@@ -430,7 +430,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
-              base::GetTaskLeeway(), delay_policy);
+              GetDefaultTaskLeeway(), delay_policy);
     return PostTask(std::move(task));
   }
 

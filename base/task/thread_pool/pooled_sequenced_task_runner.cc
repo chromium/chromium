@@ -31,7 +31,7 @@ bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
   }
 
   Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
-            base::GetTaskLeeway());
+            GetDefaultTaskLeeway());
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),
@@ -50,7 +50,7 @@ bool PooledSequencedTaskRunner::PostDelayedTaskAt(
   }
 
   Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
-            base::GetTaskLeeway(), delay_policy);
+            GetDefaultTaskLeeway(), delay_policy);
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),

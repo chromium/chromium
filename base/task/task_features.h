@@ -79,7 +79,8 @@ extern const BASE_EXPORT base::FeatureParam<TimeDelta>
     kBrowserPeriodicYieldingToNativeDelay;
 
 BASE_EXPORT void InitializeTaskLeeway();
-BASE_EXPORT TimeDelta GetTaskLeeway();
+BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread();
+BASE_EXPORT TimeDelta GetDefaultTaskLeeway();
 
 }  // namespace base
 

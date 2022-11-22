@@ -8,6 +8,7 @@
 
 #include "base/base_export.h"
 #include "base/feature_list.h"
+#include "base/threading/platform_thread.h"
 
 namespace base {
 
@@ -100,7 +101,16 @@ BASE_EXPORT void InitializeTaskLeeway() {
   g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 }
 
-BASE_EXPORT TimeDelta GetTaskLeeway() {
+BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread() {
+  // For some threads, there might be a override of the leeway, so check it
+  // first.
+  auto leeway_override = PlatformThread::GetThreadLeewayOverride();
+  if (leeway_override.has_value())
+    return leeway_override.value();
+  return g_task_leeway.load(std::memory_order_relaxed);
+}
+
+BASE_EXPORT TimeDelta GetDefaultTaskLeeway() {
   return g_task_leeway.load(std::memory_order_relaxed);
 }
 
