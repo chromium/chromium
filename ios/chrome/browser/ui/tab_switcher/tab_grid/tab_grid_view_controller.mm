@@ -582,6 +582,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setRegularTabsImageDataSource:
     (id<GridImageDataSource>)regularTabsImageDataSource {
   self.regularTabsViewController.imageDataSource = regularTabsImageDataSource;
+  if (IsPinnedTabsEnabled()) {
+    self.pinnedTabsViewController.imageDataSource = regularTabsImageDataSource;
+  }
   _regularTabsImageDataSource = regularTabsImageDataSource;
 }
 

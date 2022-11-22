@@ -7,12 +7,26 @@
 
 #import <UIKit/UIKit.h>
 
-// UIViewController used to display pinned tabs.
-@interface PinnedTabsViewController : UIViewController
+@protocol GridImageDataSource;
+
+// UICollectionViewController used to display pinned tabs.
+@interface PinnedTabsViewController : UICollectionViewController
+
+// Data source for images.
+@property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
 
 // Makes the pinned tabs view available. The pinned view should only be
 // available when the regular tabs grid is displayed.
 - (void)pinnedTabsAvailable:(BOOL)available;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout*)layout
+    NS_UNAVAILABLE;
 
 @end
 

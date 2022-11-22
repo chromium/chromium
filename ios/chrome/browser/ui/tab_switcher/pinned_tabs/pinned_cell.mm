@@ -23,7 +23,8 @@ NSString* const kDefaultFaviconImage = @"default_world_favicon";
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.contentView.layer.cornerRadius = kPinnedCellCornerRadius;
-    self.contentView.backgroundColor = [UIColor colorNamed:kGrey800Color];
+    self.contentView.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
 
     [self setupFaviconView];
     [self setupTitleLabel];
