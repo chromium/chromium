@@ -2419,7 +2419,6 @@ if (!is_android) {
         "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.h",
-        "../browser/enterprise/connectors/file_system/signin_experience_browsertest.cc",
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
 
         # Lacros does not seem to have any actual WebView-based UI to test.
@@ -6668,7 +6667,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/connectors_manager_unittest.cc",
       "../browser/enterprise/connectors/connectors_service_unittest.cc",
       "../browser/enterprise/connectors/enterprise_connectors_policy_handler_unittest.cc",
-      "../browser/enterprise/connectors/file_system/rename_handler_unittest.cc",
       "../browser/enterprise/connectors/file_system/service_settings_unittest.cc",
       "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/realtime_reporting_client_unittest.cc",
@@ -8544,7 +8542,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/file_system/box_uploader_test_helper.h",
       "../browser/enterprise/connectors/file_system/box_uploader_unittest.cc",
       "../browser/enterprise/connectors/file_system/signin_confirmation_unittest.cc",
-      "../browser/enterprise/connectors/file_system/signin_experience_unittest.cc",
       "../browser/enterprise/connectors/file_system/test_helper.cc",
       "../browser/enterprise/connectors/file_system/test_helper.h",
     ]

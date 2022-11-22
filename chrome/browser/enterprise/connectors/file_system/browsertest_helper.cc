@@ -453,32 +453,9 @@ void FileSystemConnectorBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
-void FileSystemConnectorBrowserTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kFileSystemConnectorEnabled},
-      /*disabled_features=*/{});
-}
-
 void FileSystemConnectorBrowserTestBase::TearDownOnMainThread() {
   // Make sure any pending requests have finished
   base::RunLoop().RunUntilIdle();
-}
-
-void FileSystemConnectorBrowserTestBase::SetCloudFSCPolicy(
-    const std::string& policy_value) {
-  browser()->profile()->GetPrefs()->Set(
-      ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
-      *base::JSONReader::Read(policy_value.c_str()));
-  // Verify that the FSC is enabled.
-  ASSERT_TRUE(IsFSCEnabled());
-}
-
-bool FileSystemConnectorBrowserTestBase::IsFSCEnabled() {
-  auto* service =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile());
-  return service->IsConnectorEnabled(
-      FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }
 
 }  // namespace enterprise_connectors

@@ -185,7 +185,6 @@ class FileSystemConnectorBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;
 
   void SetCloudFSCPolicy(const std::string& policy_value);

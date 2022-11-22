@@ -57,15 +57,9 @@ class ConnectorsService : public KeyedService {
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<FileSystemSettings> GetFileSystemGlobalSettings(
-      FileSystemConnector connector);
-  absl::optional<FileSystemSettings> GetFileSystemSettings(
-      const GURL& url,
-      FileSystemConnector connector);
 
   bool IsConnectorEnabled(AnalysisConnector connector) const;
   bool IsConnectorEnabled(ReportingConnector connector) const;
-  bool IsConnectorEnabled(FileSystemConnector connector) const;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 

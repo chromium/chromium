@@ -250,34 +250,6 @@ absl::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
   return settings;
 }
 
-absl::optional<FileSystemSettings>
-ConnectorsService::GetFileSystemGlobalSettings(FileSystemConnector connector) {
-  if (!ConnectorsEnabled())
-    return absl::nullopt;
-
-  absl::optional<FileSystemSettings> settings =
-      connectors_manager_->GetFileSystemGlobalSettings(connector);
-
-  if (!settings.has_value())
-    return absl::nullopt;
-
-  return settings;
-}
-
-absl::optional<FileSystemSettings> ConnectorsService::GetFileSystemSettings(
-    const GURL& url,
-    FileSystemConnector connector) {
-  if (!ConnectorsEnabled())
-    return absl::nullopt;
-
-  absl::optional<FileSystemSettings> settings =
-      connectors_manager_->GetFileSystemSettings(url, connector);
-  if (!settings.has_value())
-    return absl::nullopt;
-
-  return settings;
-}
-
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
@@ -286,14 +258,6 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
 }
 
 bool ConnectorsService::IsConnectorEnabled(ReportingConnector connector) const {
-  if (!ConnectorsEnabled())
-    return false;
-
-  return connectors_manager_->IsConnectorEnabled(connector);
-}
-
-bool ConnectorsService::IsConnectorEnabled(
-    FileSystemConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
 
