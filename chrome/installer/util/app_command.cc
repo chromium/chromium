@@ -4,14 +4,30 @@
 
 #include "chrome/installer/util/app_command.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/win/registry.h"
+#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/work_item_list.h"
 
 namespace installer {
+
+namespace {
+
+// Returns the "`GetClientsKeyPath()`\\Commands\\`name`" registry key path used
+// to register AppCommands with the updater.
+std::wstring GetCommandKey(const std::wstring& name) {
+  return base::StrCat({install_static::GetClientsKeyPath(), L"\\",
+                       google_update::kRegCommandsKey, L"\\", name});
+}
+
+}  // namespace
 
 // static
 // Associate bool member variables with registry entries.
@@ -29,12 +45,33 @@ AppCommand::AppCommand()
       is_auto_run_on_os_upgrade_(false),
       is_run_as_user_(false) {}
 
-AppCommand::AppCommand(const std::wstring& command_line)
-    : command_line_(command_line),
+AppCommand::AppCommand(const std::wstring& command_name,
+                       const std::wstring& command_line)
+    : command_name_(command_name),
+      command_line_(command_line),
       sends_pings_(false),
       is_web_accessible_(false),
       is_auto_run_on_os_upgrade_(false),
       is_run_as_user_(false) {}
+
+AppCommand::AppCommand(AppCommand&&) = default;
+AppCommand::AppCommand(const AppCommand&) = default;
+AppCommand::~AppCommand() = default;
+
+bool AppCommand::Initialize(HKEY root_key) {
+  DCHECK(!command_name_.empty());
+
+  base::win::RegKey key;
+  auto result = key.Open(root_key, GetCommandKey(command_name_).c_str(),
+                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
+  if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(DFATAL) << "Error opening AppCommand: " << command_name_;
+    return false;
+  }
+
+  return Initialize(key);
+}
 
 bool AppCommand::Initialize(const base::win::RegKey& key) {
   if (!key.Valid()) {
@@ -64,16 +101,16 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
   return true;
 }
 
-void AppCommand::AddWorkItems(HKEY predefined_root,
-                              const std::wstring& command_path,
-                              WorkItemList* item_list) const {
-  // Command_path is derived from GetRegCommandKey which always returns
-  // value from GetClientsKeyPath() which should be 32-bit hive.
-  item_list
-      ->AddCreateRegKeyWorkItem(predefined_root, command_path, KEY_WOW64_32KEY)
+void AppCommand::AddCreateAppCommandWorkItems(const HKEY root_key,
+                                              WorkItemList* item_list) const {
+  DCHECK(!command_name_.empty());
+  DCHECK(!command_line_.empty());
+
+  const std::wstring command_path = GetCommandKey(command_name_);
+  item_list->AddCreateRegKeyWorkItem(root_key, command_path, KEY_WOW64_32KEY)
       ->set_log_message("creating AppCommand registry key");
   item_list
-      ->AddSetRegValueWorkItem(predefined_root, command_path, KEY_WOW64_32KEY,
+      ->AddSetRegValueWorkItem(root_key, command_path, KEY_WOW64_32KEY,
                                google_update::kRegCommandLineField,
                                command_line_, true)
       ->set_log_message("setting AppCommand CommandLine registry value");
@@ -85,14 +122,21 @@ void AppCommand::AddWorkItems(HKEY predefined_root,
     // Adds a work item to set |var_name| to DWORD 1 if |var_data| is true;
     // adds a work item to remove |var_name| otherwise.
     if (var_data) {
-      item_list->AddSetRegValueWorkItem(predefined_root, command_path,
-                                        KEY_WOW64_32KEY, var_name,
-                                        static_cast<DWORD>(1), true);
+      item_list->AddSetRegValueWorkItem(root_key, command_path, KEY_WOW64_32KEY,
+                                        var_name, static_cast<DWORD>(1), true);
     } else {
-      item_list->AddDeleteRegValueWorkItem(predefined_root, command_path,
+      item_list->AddDeleteRegValueWorkItem(root_key, command_path,
                                            KEY_WOW64_32KEY, var_name);
     }
   }
+}
+
+void AppCommand::AddDeleteAppCommandWorkItems(const HKEY root_key,
+                                              WorkItemList* item_list) const {
+  DCHECK(!command_name_.empty());
+
+  item_list->AddDeleteRegKeyWorkItem(root_key, GetCommandKey(command_name_),
+                                     KEY_WOW64_32KEY);
 }
 
 }  // namespace installer

@@ -53,10 +53,6 @@ class ProductState {
   // Returns the brand code the product is currently installed with.
   const std::wstring& brand() const { return brand_; }
 
-  // Returns the command to be used to update to the new version that is
-  // awaiting update; may be empty.
-  const std::wstring& rename_cmd() const { return rename_cmd_; }
-
   // Returns true and populates |eula_accepted| if the product has such a value;
   // otherwise, returns false and does not modify |eula_accepted|.  Expected
   // values are 0 (false) and 1 (true), although |eula_accepted| is given
@@ -95,7 +91,6 @@ class ProductState {
   std::unique_ptr<base::Version> version_;
   std::unique_ptr<base::Version> old_version_;
   std::wstring brand_;
-  std::wstring rename_cmd_;
   std::wstring oem_install_;
   base::CommandLine uninstall_command_;
   AppCommands commands_;

@@ -74,6 +74,7 @@
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/uninstall.h"
 #include "chrome/installer/setup/user_experiment.h"
+#include "chrome/installer/util/app_command.h"
 #include "chrome/installer/util/conditional_work_item_list.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
 #include "chrome/installer/util/delete_old_versions.h"
@@ -583,9 +584,8 @@ installer::InstallStatus RenameChromeExecutables(
   install_list->AddDeleteRegValueWorkItem(
       reg_root, clients_key, KEY_WOW64_32KEY,
       google_update::kRegCriticalVersionField);
-  install_list->AddDeleteRegValueWorkItem(reg_root, clients_key,
-                                          KEY_WOW64_32KEY,
-                                          google_update::kRegRenameCmdField);
+  installer::AppCommand(installer::kCmdRenameChromeExe, {})
+      .AddDeleteAppCommandWorkItems(reg_root, install_list.get());
 
   // If a channel was specified by policy, update the "channel" registry value
   // with it so that the browser knows which channel to use, otherwise delete

@@ -103,9 +103,6 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line);
 // Returns true if the processor is supported by chrome.
 bool IsProcessorSupported();
 
-// Returns the "...\\Commands\\|name|" registry key for a product's |reg_data|.
-std::wstring GetCommandKey(const wchar_t* name);
-
 // Deletes all values and subkeys of the key |path| under |root|, preserving
 // the keys named in |keys_to_preserve| (each of which must be an ASCII string).
 // The key itself is deleted if no subkeys are preserved.

@@ -364,7 +364,6 @@ if (is_win) {
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
-      "//chrome/installer/setup:lib",
       "//chrome/installer/test:alternate_version_generator_lib",
       "//components/variations",
       "//components/version_info:channel",

@@ -539,12 +539,6 @@ TEST(SetupUtilTest, ContainsUnsupportedSwitch) {
       base::CommandLine::FromString(L"foo.exe --chrome-frame")));
 }
 
-TEST(SetupUtilTest, GetRegistrationDataCommandKey) {
-  const std::wstring key = installer::GetCommandKey(L"test_name");
-  EXPECT_TRUE(base::EndsWith(key, L"\\Commands\\test_name",
-                             base::CompareCase::SENSITIVE));
-}
-
 TEST(SetupUtilTest, GetConsoleSessionStartTime) {
   base::Time start_time = installer::GetConsoleSessionStartTime();
   EXPECT_FALSE(start_time.is_null());

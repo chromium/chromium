@@ -154,39 +154,6 @@ TEST_P(ProductStateTest, InitializeOldVersion) {
   }
 }
 
-// Test extraction of the "cmd" value from the Clients key.
-TEST_P(ProductStateTest, InitializeRenameCmd) {
-  MinimallyInstallProduct(L"10.0.1.1");
-
-  // No "cmd" value.
-  {
-    ProductState state;
-    LONG result = clients_.DeleteValue(google_update::kRegRenameCmdField);
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.rename_cmd().empty());
-  }
-
-  // Empty "cmd" value.
-  {
-    ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegRenameCmdField, L"");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.rename_cmd().empty());
-  }
-
-  // Valid "cmd" value.
-  {
-    ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegRenameCmdField,
-                                      L"spam.exe --spamalot");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"spam.exe --spamalot", state.rename_cmd());
-  }
-}
-
 // Test extraction of the uninstall command and arguments from the ClientState
 // key.
 TEST_P(ProductStateTest, InitializeUninstallCommand) {
