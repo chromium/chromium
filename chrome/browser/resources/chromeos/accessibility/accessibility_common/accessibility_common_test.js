@@ -2,43 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../common/testing/e2e_test_base.js']);
+GEN_INCLUDE(['../common/testing/common_e2e_test_base.js']);
 
 /**
  * Accessibility common extension browser tests.
  */
-AccessibilityCommonE2ETest = class extends E2ETestBase {
-  constructor() {
-    super();
-  }
-
-  /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-#include "ash/accessibility/accessibility_delegate.h"
-#include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-    `);
-  }
-
-  /** @override */
-  testGenPreamble() {
-    super.testGenPreamble();
-    // Note that at least one accessibility common feature has to be enabled for
-    // the extension to load. Extension load is required for this test suite to
-    // have a place to be injected.
-    GEN(`
-  base::OnceClosure load_cb =
-      base::BindOnce(&ash::AccessibilityManager::EnableAutoclick,
-          base::Unretained(ash::AccessibilityManager::Get()),
-          true);
-    `);
-    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
-  }
-
+AccessibilityCommonE2ETest = class extends CommonE2ETestBase {
   async getPref(name) {
     return new Promise(resolve => {
       chrome.settingsPrivate.getPref(name, ret => {

@@ -112,6 +112,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/rect_util.js",
     "../common/testing/accessibility_test_base.js",
     "../common/testing/callback_helper.js",
+    "../common/testing/common_e2e_test_base.js",
     "../common/testing/e2e_test_base.js",
     "../common/testing/mock_accessibility_private.js",
     "../common/testing/mock_input_ime.js",
