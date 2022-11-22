@@ -163,13 +163,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
   EXPECT_FALSE(GetSessionData(1, &sessions1));
 }
 
-// TODO(crbug.com/1340790): Flaky on MSAN, deflake and re-enable the test.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_DeleteActiveSession DISABLED_DeleteActiveSession
-#else
-#define MAYBE_DeleteActiveSession DeleteActiveSession
-#endif
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MAYBE_DeleteActiveSession) {
+IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
