@@ -1031,6 +1031,36 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
+TEST_P(PaintAndRasterInvalidationTest, VisibilityChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target { width: 100px; height: 100px; background: blue; }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  const DisplayItemClient* client = target->GetLayoutObject();
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  target->setAttribute(html_names::kStyleAttr, "visibility: hidden");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  client->Id(), client->DebugName(), gfx::Rect(8, 8, 100, 100),
+                  PaintInvalidationReason::kDisappeared}));
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  target->setAttribute(html_names::kStyleAttr, "visibility: visible");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  client->Id(), client->DebugName(), gfx::Rect(8, 8, 100, 100),
+                  PaintInvalidationReason::kAppeared}));
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
 class PaintInvalidatorTestClient : public RenderingTestChromeClient {
  public:
   void InvalidateContainer() override { invalidation_recorded_ = true; }

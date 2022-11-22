@@ -43,7 +43,6 @@ class StyleDifference {
         layout_type_(kNoLayout),
         needs_reshape_(false),
         recompute_visual_overflow_(false),
-        visual_rect_update_(false),
         property_specific_differences_(0),
         scroll_anchor_disabling_property_changed_(false),
         compositing_reasons_changed_(false),
@@ -54,7 +53,6 @@ class StyleDifference {
     layout_type_ = std::max(layout_type_, other.layout_type_);
     needs_reshape_ |= other.needs_reshape_;
     recompute_visual_overflow_ |= other.recompute_visual_overflow_;
-    visual_rect_update_ |= other.visual_rect_update_;
     property_specific_differences_ |= other.property_specific_differences_;
     scroll_anchor_disabling_property_changed_ |=
         other.scroll_anchor_disabling_property_changed_;
@@ -66,7 +64,7 @@ class StyleDifference {
   bool HasDifference() const {
     return needs_paint_invalidation_ || layout_type_ || needs_reshape_ ||
            property_specific_differences_ || recompute_visual_overflow_ ||
-           visual_rect_update_ || scroll_anchor_disabling_property_changed_ ||
+           scroll_anchor_disabling_property_changed_ ||
            compositing_reasons_changed_ || compositable_paint_effect_changed_;
   }
 
@@ -102,9 +100,6 @@ class StyleDifference {
     return recompute_visual_overflow_;
   }
   void SetNeedsRecomputeVisualOverflow() { recompute_visual_overflow_ = true; }
-
-  bool NeedsVisualRectUpdate() const { return visual_rect_update_; }
-  void SetNeedsVisualRectUpdate() { visual_rect_update_ = true; }
 
   // True if the transform property itself changed, or properties related to
   // transform changed (e.g., individual transform properties, motion path,
@@ -209,7 +204,6 @@ class StyleDifference {
   unsigned layout_type_ : 2;
   unsigned needs_reshape_ : 1;
   unsigned recompute_visual_overflow_ : 1;
-  unsigned visual_rect_update_ : 1;
   unsigned property_specific_differences_ : kPropertyDifferenceCount;
   unsigned scroll_anchor_disabling_property_changed_ : 1;
   unsigned compositing_reasons_changed_ : 1;
@@ -223,7 +217,7 @@ class StyleDifference {
   // data back again with a large read can cause store-to-load forward
   // stalls). Feel free to take bits from here if you need them
   // for something else.
-  unsigned padding_ [[maybe_unused]] : 12;
+  unsigned padding_ [[maybe_unused]] : 13;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

@@ -335,25 +335,6 @@
         ]
     },
     {
-        name: "DiffNeedsVisualRectUpdate",
-        methods_to_diff: [
-          {
-            method: "Visibility()",
-            field_dependencies: ["visibility"]
-          },
-          {
-            method: "Resize()",
-            field_dependencies: ["resize"]
-          },
-        ],
-        predicates_to_test: [
-          {
-            predicate: "a.ClipPathDataEquivalent(b)",
-            field_dependencies: ["clip-path"]
-          }
-        ]
-    },
-    {
         name: "UpdatePropertySpecificDifferencesZIndex",
         fields_to_diff: ["z-index"],
         methods_to_diff: [

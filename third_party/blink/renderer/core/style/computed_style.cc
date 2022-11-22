@@ -729,9 +729,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 
   AdjustDiffForNeedsPaintInvalidation(other, diff, document);
 
-  if (DiffNeedsVisualRectUpdate(other))
-    diff.SetNeedsVisualRectUpdate();
-
   UpdatePropertySpecificDifferences(other, diff);
 
   // The following condition needs to be at last, because it may depend on
@@ -1013,15 +1010,6 @@ bool ComputedStyle::CustomPropertiesEqual(
   }
 
   return true;
-}
-
-// This doesn't include conditions needing layout or overflow recomputation
-// which implies visual rect update.
-bool ComputedStyle::DiffNeedsVisualRectUpdate(
-    const ComputedStyle& other) const {
-  // Visual rect is empty if visibility is hidden. Also need to update visual
-  // rect of the resizer.
-  return ComputedStyleBase::DiffNeedsVisualRectUpdate(*this, other);
 }
 
 bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(

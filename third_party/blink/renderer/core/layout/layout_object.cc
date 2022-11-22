@@ -2720,8 +2720,10 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
   }
 
-  if (diff.NeedsVisualRectUpdate())
-    SetShouldCheckForPaintInvalidation();
+  if (!IsLayoutNGObject() && old_style &&
+      old_style->Visibility() != style_->Visibility()) {
+    SetShouldDoFullPaintInvalidation();
+  }
 
   // Text nodes share style with their parents but the paint properties don't
   // apply to them, hence the !isText() check. If property nodes are added or

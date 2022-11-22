@@ -835,6 +835,12 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
 
   previous_update_for_testing_ = PreviousUpdateType::kRepaint;
   needs_update_ = false;
+
+  DVLOG(3) << "PaintArtifactCompositor::UpdateRepaintedLayers() done\n"
+           << "Composited layers:\n"
+           << GetLayersAsJSON(VLOG_IS_ON(3) ? 0xffffffff : 0)
+                  ->ToPrettyJSONString()
+                  .Utf8();
 }
 
 bool PaintArtifactCompositor::CanDirectlyUpdateProperties() const {

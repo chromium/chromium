@@ -2436,7 +2436,6 @@ class ComputedStyle : public ComputedStyleBase,
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
                                                const ComputedStyle& other,
                                                const Document&) const;
-  bool DiffNeedsVisualRectUpdate(const ComputedStyle& other) const;
   CORE_EXPORT void UpdatePropertySpecificDifferences(const ComputedStyle& other,
                                                      StyleDifference&) const;
   bool PotentialCompositingReasonsFor3DTransformChanged(

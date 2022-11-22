@@ -29,7 +29,6 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
   out << ", reshape=" << diff.needs_reshape_;
   out << ", paintInvalidation=" << diff.needs_paint_invalidation_;
   out << ", recomputeVisualOverflow=" << diff.recompute_visual_overflow_;
-  out << ", visualRectUpdate=" << diff.visual_rect_update_;
 
   out << ", propertySpecificDifferences=";
   int diff_count = 0;
