@@ -150,6 +150,13 @@ class DenseSet {
     }
   }
 
+  // Converts the bitset back to a raw bitmask. Useful for serialization.
+  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
+            std::enable_if_t<(kMaxBit < 64), bool> = true>
+  uint64_t to_uint64() const {
+    return bitset_.to_ullong();
+  }
+
   friend bool operator==(const DenseSet& a, const DenseSet& b) {
     return a.bitset_ == b.bitset_;
   }

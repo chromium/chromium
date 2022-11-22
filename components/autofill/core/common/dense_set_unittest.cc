@@ -81,6 +81,19 @@ TEST(DenseSetTest, initializer_list) {
   }
 }
 
+TEST(DenseSetTest, to_uint64) {
+  {
+    constexpr DenseSet<size_t, 31> set{0, 1, 2, 3, 4, 20, 31};
+    EXPECT_EQ(set.to_uint64(), (1ULL << 0) | (1ULL << 1) | (1ULL << 2) |
+                                   (1ULL << 3) | (1ULL << 4) | (1ULL << 20) |
+                                   (1ULL << 31));
+  }
+  {
+    constexpr DenseSet<size_t, 63> set{0, 1, 63};
+    EXPECT_EQ(set.to_uint64(), (1ULL << 0) | (1ULL << 1) | (1ULL << 63));
+  }
+}
+
 TEST(DenseSetTest, iterators_begin_end) {
   enum class T : int {
     One = 1,
