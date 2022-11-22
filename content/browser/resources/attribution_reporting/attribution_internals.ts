@@ -254,6 +254,7 @@ class Source {
   status: string;
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: string;
+  debugReportingEnabled: boolean;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -272,6 +273,7 @@ class Source {
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys.join(', ');
     this.status = attributabilityToText(mojo.attributability);
+    this.debugReportingEnabled = mojo.debugReportingEnabled;
   }
 }
 
@@ -303,6 +305,9 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
       new ValueColumn<Source, string>(
           'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
+      new ValueColumn<Source, string>(
+          'Verbose Debug Reporting',
+          (e) => e.debugReportingEnabled ? 'enabled' : 'disabled'),
     ];
 
     this.emptyRowText = 'No sources.';
@@ -351,6 +356,7 @@ class Trigger {
   aggregatableTriggers: string;
   aggregatableValues: string;
   aggregatableDedupKey: string;
+  debugReportingEnabled: boolean;
 
   constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
@@ -400,6 +406,7 @@ class Trigger {
 
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
+    this.debugReportingEnabled = mojo.debugReportingEnabled;
   }
 }
 
@@ -428,6 +435,9 @@ class TriggerTableModel extends TableModel<Trigger> {
           'Aggregatable Values', (e) => e.aggregatableValues),
       new ValueColumn<Trigger, string>(
           'Aggregatable Dedup Key', (e) => e.aggregatableDedupKey),
+      new ValueColumn<Trigger, string>(
+          'Verbose Debug Reporting',
+          (e) => e.debugReportingEnabled ? 'enabled' : 'disabled'),
     ];
 
     this.emptyRowText = 'No triggers.';
