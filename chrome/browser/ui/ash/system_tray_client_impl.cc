@@ -74,7 +74,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 using session_manager::SessionManager;
@@ -508,14 +507,10 @@ void SystemTrayClientImpl::ShowAccessibilitySettings() {
   // mode, so users can't get to other OS Settings (such as Wi-Fi, Date / Time).
   // We plan to remove this after we add a standalone OS Accessibility page for
   // kiosk mode, which blocks access to other OS settings.
-  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
-  if (!is_kiosk && ::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
-    ShowSettingsSubPageForActiveUser(
-        chromeos::settings::mojom::kAccessibilitySectionPath);
-  } else {
-    ShowSettingsSubPageForActiveUser(
-        chromeos::settings::mojom::kManageAccessibilitySubpagePath);
-  }
+  ShowSettingsSubPageForActiveUser(
+      user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()
+          ? chromeos::settings::mojom::kManageAccessibilitySubpagePath
+          : chromeos::settings::mojom::kAccessibilitySectionPath);
 }
 
 void SystemTrayClientImpl::ShowGestureEducationHelp() {

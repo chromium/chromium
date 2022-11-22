@@ -237,15 +237,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @protected */
-      isAccessibilityOSSettingsVisibilityEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOSSettingsVisibilityEnabled');
-        },
-      },
-
       /**
        * Whether the user is in kiosk mode.
        * @protected
@@ -426,8 +417,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     /** @private {!DevicePageBrowserProxy} */
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
 
-    if (loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled') &&
-        !this.isKioskModeActive_) {
+    if (!this.isKioskModeActive_) {
       this.redirectToNewA11ySettings();
     }
   }

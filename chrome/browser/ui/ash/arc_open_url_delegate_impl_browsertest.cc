@@ -34,7 +34,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -56,31 +55,6 @@ Browser* GetLastActiveBrowser() {
 }
 
 using ArcOpenUrlDelegateImplBrowserTest = InProcessBrowserTest;
-
-class ArcOpenUrlDelegateImplBrowserParamTest
-    : public ArcOpenUrlDelegateImplBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ArcOpenUrlDelegateImplBrowserParamTest() = default;
-  ArcOpenUrlDelegateImplBrowserParamTest(
-      const ArcOpenUrlDelegateImplBrowserParamTest&) = delete;
-  ArcOpenUrlDelegateImplBrowserParamTest& operator=(
-      const ArcOpenUrlDelegateImplBrowserParamTest&) = delete;
-  ~ArcOpenUrlDelegateImplBrowserParamTest() override = default;
-
-  // ArcOpenUrlDelegateImplBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAccessibilityOSSettingsVisibility,
-        IsAccessibilityOSSettingsVisibilityEnabled());
-    ArcOpenUrlDelegateImplBrowserTest::SetUp();
-  }
-
-  bool IsAccessibilityOSSettingsVisibilityEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 using ArcOpenUrlDelegateImplWebAppBrowserTest =
     web_app::WebAppNavigationBrowserTest;
@@ -351,10 +325,7 @@ void TestAllOSSettingPages(const GURL& base_url) {
           chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2));
   TestOpenOSSettingsChromePage(
       ChromePage::MANAGEACCESSIBILITY,
-      base_url.Resolve(
-          features::IsAccessibilityOSSettingsVisibilityEnabled()
-              ? chromeos::settings::mojom::kAccessibilitySectionPath
-              : chromeos::settings::mojom::kManageAccessibilitySubpagePath));
+      base_url.Resolve(chromeos::settings::mojom::kAccessibilitySectionPath));
   TestOpenOSSettingsChromePage(
       ChromePage::NETWORKSTYPEVPN,
       base_url.Resolve(chromeos::settings::mojom::kVpnDetailsSubpagePath));
@@ -408,13 +379,7 @@ void TestAllAboutPages() {
   TestOpenChromePage(ChromePage::ABOUTBLANK, GURL(url::kAboutBlankURL));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ArcOpenUrlDelegateImplBrowserParamTest,
-    /*IsAccessibilityOSSettingsVisibilityEnabled()=*/::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplBrowserParamTest,
-                       TestOpenChromePage) {
+IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, TestOpenChromePage) {
   // Install the Settings App.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();

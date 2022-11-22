@@ -91,18 +91,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
       },
 
       /**
-       * Whether Accessibility OS Settings visibility improvements are enabled.
-       */
-      isAccessibilityOSSettingsVisibilityEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOSSettingsVisibilityEnabled');
-        },
-      },
-
-      /**
        * Dictionary defining page visibility.
        */
       pageVisibility: {

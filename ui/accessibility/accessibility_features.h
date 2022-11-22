@@ -138,12 +138,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnhancedNetworkVoices);
 // Returns true if network-based voices are enabled in Select-to-speak.
 AX_BASE_EXPORT bool IsEnhancedNetworkVoicesEnabled();
 
-// Enables improved Accessibility OS Settings visibility.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOSSettingsVisibility);
-
-// Returns true if improved Accessibility OS Settings visibility is enabled.
-AX_BASE_EXPORT bool IsAccessibilityOSSettingsVisibilityEnabled();
-
 // Enables the experimental color enhancements settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityColorEnhancementSettings);

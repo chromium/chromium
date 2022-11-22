@@ -31,7 +31,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -444,10 +443,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showOsSettingsAppBadgingToggle",
       base::FeatureList::IsEnabled(features::kOsSettingsAppBadgingToggle));
   html_source->AddBoolean("showArcvmManageUsb", arc::IsArcVmEnabled());
-
-  html_source->AddBoolean(
-      "isAccessibilityOSSettingsVisibilityEnabled",
-      ::features::IsAccessibilityOSSettingsVisibilityEnabled());
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

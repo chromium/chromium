@@ -402,7 +402,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'AudioAndCaptionsPage',
    'audio_and_captions_page_tests.js',
-   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
@@ -417,13 +416,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'CursorAndTouchpadPage',
    'cursor_and_touchpad_page_tests.js',
-   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['DateTimePage', 'date_time_page_tests.js'],
  [
    'DisplayAndMagnificationPage',
    'display_and_magnification_page_tests.js',
-   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
@@ -445,7 +442,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'KeyboardAndTextInputPage',
    'keyboard_and_text_input_page_tests.js',
-   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
  ['LockScreenPage', 'lock_screen_tests.js'],
@@ -555,7 +551,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'TextToSpeechPage',
    'text_to_speech_page_tests.js',
-   {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],
  ['TimezoneSelector', 'timezone_selector_test.js'],

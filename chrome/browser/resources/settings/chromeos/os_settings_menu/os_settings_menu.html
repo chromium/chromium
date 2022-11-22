@@ -183,12 +183,10 @@
     <iron-icon icon="os-settings:apps"></iron-icon>
     $i18n{appsPageTitle}
   </a>
-  <template is="dom-if" if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
-    <a href="/osAccessibility" class="item">
-      <iron-icon icon="os-settings:accessibility"></iron-icon>
-      $i18n{a11yPageTitle}
-    </a>
-  </template>
+  <a href="/osAccessibility" class="item">
+    <iron-icon icon="os-settings:accessibility"></iron-icon>
+    $i18n{a11yPageTitle}
+  </a>
   <cr-button id="advancedButton"
       aria-expanded$="[[boolToString_(advancedOpened)]]"
       on-click="onAdvancedButtonToggle_">
@@ -219,12 +217,6 @@
         <iron-icon icon="os-settings:developer-tags"></iron-icon>
         $i18n{crostiniPageTitle}
       </a>
-      <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
-        <a href="/osAccessibility" class="item">
-          <iron-icon icon="os-settings:accessibility"></iron-icon>
-          $i18n{a11yPageTitle}
-        </a>
-      </template>
       <a id="osReset" href="/osReset" hidden="[[!showReset]]" class="item">
         <iron-icon icon="os-settings:restore"></iron-icon>
         $i18n{resetPageTitle}

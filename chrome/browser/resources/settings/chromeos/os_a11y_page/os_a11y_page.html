@@ -21,51 +21,40 @@
         deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
     </settings-toggle-button>
     <div class="hr" hidden="[[isKioskModeActive_]]"></div>
-    <template is="dom-if"
-        if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
-      <cr-link-row id="text-to-speech-page-trigger"
-          label="$i18n{textToSpeechLinkTitle}"
-          on-click="onTextToSpeechTap_"
-          sub-label="$i18n{textToSpeechLinkDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="hr"></div>
-      <cr-link-row id="display-and-magnification-page-trigger"
-          label="$i18n{displayAndMagnificationLinkTitle}"
-          on-click="onDisplayAndMagnificationTap_"
-          sub-label="$i18n{displayAndMagnificationLinkDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="hr"></div>
-      <cr-link-row id="keyboard-and-text-input-page-trigger"
-          label="$i18n{keyboardAndTextInputLinkTitle}"
-          on-click="onKeyboardAndTextInputTap_"
-          sub-label="$i18n{keyboardAndTextInputLinkDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="hr"></div>
-      <cr-link-row id="cursor-and-touchpad-page-trigger"
-          label="$i18n{cursorAndTouchpadLinkTitle}"
-          on-click="onCursorAndTouchpadTap_"
-          sub-label="$i18n{cursorAndTouchpadLinkDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="hr"></div>
-      <cr-link-row id="audio-and-captions-page-trigger"
-          label="$i18n{audioAndCaptionsLinkTitle}"
-          on-click="onAudioAndCaptionsTap_"
-          sub-label="$i18n{audioAndCaptionsLinkDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
-      <cr-link-row id="subpage-trigger"
-        label="$i18n{manageAccessibilityFeatures}"
-        on-click="onManageAccessibilityFeaturesTap_"
-        sub-label="$i18n{moreFeaturesLinkDescription}"
+    <cr-link-row id="text-to-speech-page-trigger"
+        label="$i18n{textToSpeechLinkTitle}"
+        on-click="onTextToSpeechTap_"
+        sub-label="$i18n{textToSpeechLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
+    </cr-link-row>
+    <div class="hr"></div>
+    <cr-link-row id="display-and-magnification-page-trigger"
+        label="$i18n{displayAndMagnificationLinkTitle}"
+        on-click="onDisplayAndMagnificationTap_"
+        sub-label="$i18n{displayAndMagnificationLinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div class="hr"></div>
+    <cr-link-row id="keyboard-and-text-input-page-trigger"
+        label="$i18n{keyboardAndTextInputLinkTitle}"
+        on-click="onKeyboardAndTextInputTap_"
+        sub-label="$i18n{keyboardAndTextInputLinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div class="hr"></div>
+    <cr-link-row id="cursor-and-touchpad-page-trigger"
+        label="$i18n{cursorAndTouchpadLinkTitle}"
+        on-click="onCursorAndTouchpadTap_"
+        sub-label="$i18n{cursorAndTouchpadLinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div class="hr"></div>
+    <cr-link-row id="audio-and-captions-page-trigger"
+        label="$i18n{audioAndCaptionsLinkTitle}"
+        on-click="onAudioAndCaptionsTap_"
+        sub-label="$i18n{audioAndCaptionsLinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
     <template is="dom-if"
         if="[[shouldShowAdditionalFeaturesLink_(isKioskModeActive_, isGuest_)]]">
       <cr-link-row

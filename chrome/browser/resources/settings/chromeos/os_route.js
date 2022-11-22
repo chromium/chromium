@@ -201,52 +201,48 @@ function createOSSettingsRoutes() {
         Subpage.kPluginVmUsbPreferences);
   }
 
-  // Accessibility section, listed in Basic, if feature enabled.
-  if (loadTimeData.valueExists('isAccessibilityOSSettingsVisibilityEnabled') &&
-      loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
-    r.OS_ACCESSIBILITY = createSection(
-        r.BASIC, routesMojomWebui.ACCESSIBILITY_SECTION_PATH,
-        Section.kAccessibility);
-    r.MANAGE_ACCESSIBILITY = createSubpage(
-        r.OS_ACCESSIBILITY, routesMojomWebui.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
-        Subpage.kManageAccessibility);
-    r.A11Y_TEXT_TO_SPEECH = createSubpage(
-        r.OS_ACCESSIBILITY, routesMojomWebui.TEXT_TO_SPEECH_PAGE_PATH,
-        Subpage.kTextToSpeechPage);
-    r.A11Y_DISPLAY_AND_MAGNIFICATION = createSubpage(
-        r.OS_ACCESSIBILITY,
-        routesMojomWebui.DISPLAY_AND_MAGNIFICATION_SUBPAGE_PATH,
-        Subpage.kDisplayAndMagnification);
-    r.A11Y_KEYBOARD_AND_TEXT_INPUT = createSubpage(
-        r.OS_ACCESSIBILITY,
-        routesMojomWebui.KEYBOARD_AND_TEXT_INPUT_SUBPAGE_PATH,
-        Subpage.kKeyboardAndTextInput);
-    r.A11Y_CURSOR_AND_TOUCHPAD = createSubpage(
-        r.OS_ACCESSIBILITY, routesMojomWebui.CURSOR_AND_TOUCHPAD_SUBPAGE_PATH,
-        Subpage.kCursorAndTouchpad);
-    r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
-        r.OS_ACCESSIBILITY, routesMojomWebui.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
-        Subpage.kAudioAndCaptions);
-    if (loadTimeData.valueExists(
-            'isAccessibilitySelectToSpeakPageMigrationEnabled') &&
-        loadTimeData.getBoolean(
-            'isAccessibilitySelectToSpeakPageMigrationEnabled')) {
-      r.A11Y_SELECT_TO_SPEAK = createSubpage(
-          r.A11Y_TEXT_TO_SPEECH, routesMojomWebui.SELECT_TO_SPEAK_SUBPAGE_PATH,
-          Subpage.kSelectToSpeak);
-    }
-    r.MANAGE_TTS_SETTINGS = createSubpage(
-        loadTimeData.getBoolean('isKioskModeActive') ? r.MANAGE_ACCESSIBILITY :
-                                                       r.A11Y_TEXT_TO_SPEECH,
-        routesMojomWebui.TEXT_TO_SPEECH_SUBPAGE_PATH, Subpage.kTextToSpeech);
-    r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
-        r.A11Y_KEYBOARD_AND_TEXT_INPUT,
-        routesMojomWebui.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
-        Subpage.kSwitchAccessOptions);
-    r.MANAGE_CAPTION_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY, routesMojomWebui.CAPTIONS_SUBPAGE_PATH,
-        Subpage.kCaptions);
+  // Accessibility section.
+  r.OS_ACCESSIBILITY = createSection(
+      r.BASIC, routesMojomWebui.ACCESSIBILITY_SECTION_PATH,
+      Section.kAccessibility);
+  r.MANAGE_ACCESSIBILITY = createSubpage(
+      r.OS_ACCESSIBILITY, routesMojomWebui.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
+      Subpage.kManageAccessibility);
+  r.A11Y_TEXT_TO_SPEECH = createSubpage(
+      r.OS_ACCESSIBILITY, routesMojomWebui.TEXT_TO_SPEECH_PAGE_PATH,
+      Subpage.kTextToSpeechPage);
+  r.A11Y_DISPLAY_AND_MAGNIFICATION = createSubpage(
+      r.OS_ACCESSIBILITY,
+      routesMojomWebui.DISPLAY_AND_MAGNIFICATION_SUBPAGE_PATH,
+      Subpage.kDisplayAndMagnification);
+  r.A11Y_KEYBOARD_AND_TEXT_INPUT = createSubpage(
+      r.OS_ACCESSIBILITY, routesMojomWebui.KEYBOARD_AND_TEXT_INPUT_SUBPAGE_PATH,
+      Subpage.kKeyboardAndTextInput);
+  r.A11Y_CURSOR_AND_TOUCHPAD = createSubpage(
+      r.OS_ACCESSIBILITY, routesMojomWebui.CURSOR_AND_TOUCHPAD_SUBPAGE_PATH,
+      Subpage.kCursorAndTouchpad);
+  r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
+      r.OS_ACCESSIBILITY, routesMojomWebui.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
+      Subpage.kAudioAndCaptions);
+  if (loadTimeData.valueExists(
+          'isAccessibilitySelectToSpeakPageMigrationEnabled') &&
+      loadTimeData.getBoolean(
+          'isAccessibilitySelectToSpeakPageMigrationEnabled')) {
+    r.A11Y_SELECT_TO_SPEAK = createSubpage(
+        r.A11Y_TEXT_TO_SPEECH, routesMojomWebui.SELECT_TO_SPEAK_SUBPAGE_PATH,
+        Subpage.kSelectToSpeak);
   }
+  r.MANAGE_TTS_SETTINGS = createSubpage(
+      loadTimeData.getBoolean('isKioskModeActive') ? r.MANAGE_ACCESSIBILITY :
+                                                     r.A11Y_TEXT_TO_SPEECH,
+      routesMojomWebui.TEXT_TO_SPEECH_SUBPAGE_PATH, Subpage.kTextToSpeech);
+  r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
+      r.A11Y_KEYBOARD_AND_TEXT_INPUT,
+      routesMojomWebui.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
+      Subpage.kSwitchAccessOptions);
+  r.MANAGE_CAPTION_SETTINGS = createSubpage(
+      r.MANAGE_ACCESSIBILITY, routesMojomWebui.CAPTIONS_SUBPAGE_PATH,
+      Subpage.kCaptions);
 
   // Crostini section.
   r.CROSTINI = createSection(
@@ -363,27 +359,6 @@ function createOSSettingsRoutes() {
   r.CUPS_PRINTERS = createSubpage(
       r.OS_PRINTING, routesMojomWebui.PRINTING_DETAILS_SUBPAGE_PATH,
       Subpage.kPrintingDetails);
-
-  // Accessibility section, listed in Advanced, if feature disabled.
-  if (!loadTimeData.valueExists('isAccessibilityOSSettingsVisibilityEnabled') ||
-      !loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
-    r.OS_ACCESSIBILITY = createSection(
-        r.ADVANCED, routesMojomWebui.ACCESSIBILITY_SECTION_PATH,
-        Section.kAccessibility);
-    r.MANAGE_ACCESSIBILITY = createSubpage(
-        r.OS_ACCESSIBILITY, routesMojomWebui.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
-        Subpage.kManageAccessibility);
-    r.MANAGE_TTS_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY, routesMojomWebui.TEXT_TO_SPEECH_SUBPAGE_PATH,
-        Subpage.kTextToSpeech);
-    r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY,
-        routesMojomWebui.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
-        Subpage.kSwitchAccessOptions);
-    r.MANAGE_CAPTION_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY, routesMojomWebui.CAPTIONS_SUBPAGE_PATH,
-        Subpage.kCaptions);
-  }
 
   // Reset section.
   if (loadTimeData.valueExists('allowPowerwash') &&

@@ -27,10 +27,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/accessibility/accessibility_features.h"
-#endif
-
 // =============================================================================
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
@@ -1710,16 +1706,7 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY),
-            GURL("chrome://os-settings/manageAccessibility")) {}
-
-  void OnLoaded() override {
-    OmniboxPedal::OnLoaded();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
-      SetNavigationUrl(GURL("chrome://os-settings/osAccessibility"));
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
+            GURL("chrome://os-settings/osAccessibility")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {

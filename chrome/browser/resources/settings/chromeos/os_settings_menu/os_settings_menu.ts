@@ -65,18 +65,6 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         readOnly: true,
       },
 
-      /**
-       * Whether Accessibility OS Settings visibility improvements are enabled.
-       */
-      isAccessibilityOSSettingsVisibilityEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOSSettingsVisibilityEnabled');
-        },
-      },
-
       showCrostini: Boolean,
 
       showStartup: Boolean,
@@ -93,7 +81,6 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   showReset: boolean;
   showKerberosSection: boolean;
   private isGuestMode_: boolean;
-  private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
 
   override currentRouteChanged(newRoute: Route) {
     const urlSearchQuery =

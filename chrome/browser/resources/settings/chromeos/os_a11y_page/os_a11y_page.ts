@@ -86,14 +86,6 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
         value: false,
       },
 
-      isAccessibilityOSSettingsVisibilityEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOSSettingsVisibilityEnabled');
-        },
-      },
-
       /**
        * Whether Select-to-speak page migration is enabled.
        */

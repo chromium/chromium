@@ -34,8 +34,6 @@ suite('TextToSpeechPageTests', function() {
 
   setup(function() {
     PolymerTest.clearBody();
-    loadTimeData.overrideValues(
-      {isAccessibilityOSSettingsVisibilityEnabled: true});
     Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
   });
 

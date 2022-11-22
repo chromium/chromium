@@ -182,13 +182,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
   // <if expr="is_chromeos">
   private onManageSystemAccessibilityFeaturesTap_() {
-    if (loadTimeData.valueExists(
-            'isAccessibilityOSSettingsVisibilityEnabled') &&
-        loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
-      window.location.href = 'chrome://os-settings/osAccessibility';
-    } else {
-      window.location.href = 'chrome://os-settings/manageAccessibility';
-    }
+    window.location.href = 'chrome://os-settings/osAccessibility';
   }
   // </if>
 

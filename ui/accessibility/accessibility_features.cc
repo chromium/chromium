@@ -182,15 +182,6 @@ bool IsEnhancedNetworkVoicesEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
 }
 
-BASE_FEATURE(kAccessibilityOSSettingsVisibility,
-             "AccessibilityOSSettingsVisibility",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAccessibilityOSSettingsVisibilityEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityOSSettingsVisibility);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
              "ExperimentalAccessibilityColorEnhancementSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
