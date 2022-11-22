@@ -9,14 +9,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/single_topic_invalidation_set.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace invalidation {
 
@@ -62,7 +59,7 @@ class INVALIDATION_EXPORT TopicInvalidationMap {
 
   // Serialize this map to a value. Used to expose value on
   // chrome://invalidations page.
-  std::unique_ptr<base::ListValue> ToValue() const;
+  base::Value::List ToValue() const;
 
  private:
   explicit TopicInvalidationMap(

@@ -4,7 +4,6 @@
 
 #include "components/invalidation/public/single_topic_invalidation_set.h"
 
-#include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 
 namespace invalidation {
@@ -76,14 +75,6 @@ SingleTopicInvalidationSet::rend() const {
 
 const Invalidation& SingleTopicInvalidationSet::back() const {
   return *invalidations_.rbegin();
-}
-
-std::unique_ptr<base::ListValue> SingleTopicInvalidationSet::ToValue() const {
-  std::unique_ptr<base::ListValue> value(new base::ListValue);
-  for (const Invalidation& invalidation : invalidations_) {
-    value->GetList().Append(invalidation.ToValue());
-  }
-  return value;
 }
 
 }  // namespace invalidation

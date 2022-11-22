@@ -124,9 +124,7 @@ void InvalidationsMessageHandler::OnDebugMessage(
 
 void InvalidationsMessageHandler::OnInvalidation(
     const invalidation::TopicInvalidationMap& new_invalidations) {
-  std::unique_ptr<base::ListValue> invalidations_list =
-      new_invalidations.ToValue();
-  FireWebUIListener("log-invalidations", *invalidations_list);
+  FireWebUIListener("log-invalidations", new_invalidations.ToValue());
 }
 
 void InvalidationsMessageHandler::OnDetailedStatus(

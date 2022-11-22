@@ -14,10 +14,6 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace invalidation {
 
 // Holds a list of invalidations that all share the same Topic.
@@ -56,8 +52,6 @@ class INVALIDATION_EXPORT SingleTopicInvalidationSet {
   const_reverse_iterator rbegin() const;
   const_reverse_iterator rend() const;
   const Invalidation& back() const;
-
-  std::unique_ptr<base::ListValue> ToValue() const;
 
  private:
   InvalidationsSet invalidations_;

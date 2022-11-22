@@ -87,11 +87,11 @@ bool TopicInvalidationMap::operator==(const TopicInvalidationMap& other) const {
   return map_ == other.map_;
 }
 
-std::unique_ptr<base::ListValue> TopicInvalidationMap::ToValue() const {
-  std::unique_ptr<base::ListValue> value(new base::ListValue());
+base::Value::List TopicInvalidationMap::ToValue() const {
+  base::Value::List value;
   for (const auto& topic_to_invalidations : map_) {
     for (const Invalidation& invalidation : topic_to_invalidations.second) {
-      value->GetList().Append(invalidation.ToValue());
+      value.Append(invalidation.ToValue());
     }
   }
   return value;
