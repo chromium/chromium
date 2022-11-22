@@ -167,7 +167,7 @@ fyi_goma_rbe_canary_builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -499,7 +499,7 @@ fyi_goma_rbe_latest_client_builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -663,7 +663,7 @@ goma_mac_builder(
     name = "Chromium iOS Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 goma_mac_builder(
