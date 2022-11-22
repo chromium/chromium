@@ -436,7 +436,9 @@ const std::vector<SearchConcept>& GetInstantTetheringSearchConcepts() {
        mojom::SearchResultIcon::kInstantTethering,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kMobileDataNetworks}},
+       {.subpage = mojom::Subpage::kMobileDataNetworks},
+       {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
