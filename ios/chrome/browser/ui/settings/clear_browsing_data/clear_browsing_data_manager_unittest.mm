@@ -181,7 +181,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 TEST_F(ClearBrowsingDataManagerTest, TestModel) {
   [manager_ loadModel:model_];
 
-  EXPECT_EQ(3, [model_ numberOfSections]);
+  EXPECT_EQ(2, [model_ numberOfSections]);
   EXPECT_EQ(
       1,
       [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
@@ -190,11 +190,6 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
       5,
       [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
                                                  SectionIdentifierDataTypes]]);
-  EXPECT_EQ(
-      0,
-      [model_
-          numberOfItemsInSection:[model_ sectionForSectionIdentifier:
-                                             SectionIdentifierSavedSiteData]]);
 }
 
 // Tests model is set up with correct number of items and sections if signed in

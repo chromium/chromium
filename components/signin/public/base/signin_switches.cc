@@ -58,7 +58,7 @@ BASE_FEATURE(kEnableFetchingAccountCapabilities,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableCbdSignOut,
              "EnableCbdSignOut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // This feature disables all extended sync promos.
