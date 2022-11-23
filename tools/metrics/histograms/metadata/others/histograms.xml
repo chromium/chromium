@@ -9922,26 +9922,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OutdatedUpgradeBubble.NumLaterPerEnableAU" units="units"
-    expires_after="M85">
-  <owner>mad@chromium.org</owner>
-  <summary>
-    Counts the number of times the user clicked on the later button of the
-    outdated upgrade bubble, before clicking on the enable updates button in the
-    same Chrome session.
-  </summary>
-</histogram>
-
-<histogram name="OutdatedUpgradeBubble.NumLaterPerReinstall" units="units"
-    expires_after="M85">
-  <owner>mad@chromium.org</owner>
-  <summary>
-    Counts the number of times the user clicked on the later button of the
-    outdated upgrade bubble, before clicking on the reinstall button in the same
-    Chrome session.
-  </summary>
-</histogram>
-
 <histogram name="Overscroll.Cancelled3" enum="OverscrollNavigationType"
     expires_after="2021-02-21">
   <owner>nzolghadr@chromium.org</owner>
