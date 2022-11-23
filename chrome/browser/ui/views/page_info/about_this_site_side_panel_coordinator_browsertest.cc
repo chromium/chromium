@@ -88,6 +88,10 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Check that navigating to reloading that URL is works fine
+  // (See https://crbug.com/1393000).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
 }
 
 // TODO(crbug.com/1318000): Cover additional AboutThisSite side panel behavior.
