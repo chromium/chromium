@@ -224,17 +224,9 @@
       light: 'rgba($cros.ref.neutral10.rgb, 0.10)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
     },
-    'hover-on-quiet': {
-      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
-      dark: 'rgba($cros.ref.neutral10.rgb, 0.16)',
-    },
-    'hover-on-base': {
+    'hover-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
       dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
-    },
-    'hover-alt': {
-      light: 'rgba($cros.ref.neutral99.rgb, 0.1)',
-      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
     },
     'ripple-primary': {
       light: 'rgba($cros.ref.primary70.rgb, 0.32)',
@@ -242,7 +234,7 @@
     },
     'ripple-neutral-on-prominent': {
       light: 'rgba($cros.ref.neutral99.rgb, 0.16)',
-      dark: 'rgba($cros.ref.neutral10.rgb, 0.12)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.08)',
     },
     'ripple-neutral-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.12)',
@@ -255,6 +247,10 @@
     'highlight-text': {
       light: 'rgba($cros.ref.primary70.rgb, 0.6)',
       dark: 'rgba($cros.ref.primary70.rgb, 0.6)',
+    },
+    'focus-ring': {
+      light: '$cros.ref.primary40',
+      dark: '$cros.ref.primary80',
     }
   },
 }
