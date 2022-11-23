@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/util/accessibility_close_menu_button.h"
@@ -51,12 +54,36 @@ const CGFloat kImageMargin = 196;
   return self;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // Let the view controller become first responder to handle the ESC key
+  // command. See `-keyCommands` and `-keyCommand_close`.
+  [self becomeFirstResponder];
+}
+
 - (void)addContent:(UIViewController*)content {
   [self addChildViewController:content];
   content.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentContainer addSubview:content.view];
   AddSameConstraints(self.contentContainer, content.view);
   [content didMoveToParentViewController:self];
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  [self.delegate popupMenuViewControllerWillDismiss:self];
 }
 
 #pragma mark - Private

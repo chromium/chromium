@@ -30,6 +30,7 @@ source_set("popup_menu_ui") {
     ":ui_constants",
     "//base",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/popup_menu/cells",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
