@@ -807,6 +807,10 @@ TEST_P(WaylandWindowTest, ServerInitiatedMinimize) {
 #else
 
 TEST_P(WaylandWindowTest, Minimize) {
+  // This mustn't run with aura shell.
+  if (GetParam().enable_aura_shell == wl::EnableAuraShellProtocol::kEnabled)
+    GTEST_SKIP();
+
   wl::ScopedWlArray states({});
 
   // Make sure the window is initialized to normal state from the beginning.
