@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, PrintPreviewDestinationDropdownCrosElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -175,7 +173,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
 
         // Key press does not directly update |value| so it is expected for the
         // |value| to not change here in this test.
-        assert(dropdown.value === pdfDestination);
+        assertEquals(dropdown.value, pdfDestination);
 
         // Verify a down press sends the Save to Google Drive destination as the
         // next value selected.

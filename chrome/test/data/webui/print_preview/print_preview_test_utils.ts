@@ -4,9 +4,9 @@
 
 import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -223,7 +223,9 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
  */
 export function getDefaultOrientation(device: CapabilitiesResponse): string {
   const options = device.capabilities!.printer.page_orientation!.option;
-  return assert(options!.find(opt => !!opt.is_default)!.type!);
+  const orientation = options!.find(opt => !!opt.is_default)!.type;
+  assert(orientation);
+  return orientation;
 }
 
 interface ExtensionPrinters {
