@@ -110,6 +110,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // apps.
   std::string GetGoogleAppVariationsString();
 
+  // Same as GetVariationString(), but returns all triggering IDs.
+  // IMPORTANT: This string should only be used for debugging and diagnostics.
+  std::string GetTriggerVariationsString();
+
   // Returns the collection of VariationIDs associated with |keys|. Each entry
   // in the returned vector is unique.
   std::vector<VariationID> GetVariationsVector(

@@ -128,6 +128,11 @@ std::string VariationsIdsProvider::GetGoogleAppVariationsString() {
   return GetVariationsString({GOOGLE_APP});
 }
 
+std::string VariationsIdsProvider::GetTriggerVariationsString() {
+  return GetVariationsString({GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+                              GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
+}
+
 std::string VariationsIdsProvider::GetVariationsString() {
   return GetVariationsString(
       {GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, GOOGLE_WEB_PROPERTIES_FIRST_PARTY});
