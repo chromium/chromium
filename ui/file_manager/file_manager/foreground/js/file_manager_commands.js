@@ -1842,19 +1842,9 @@ CommandHandler.COMMANDS_['default-task'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    fileManager.taskController.getFileTasks()
-        .then(tasks => {
-          tasks.showTaskPicker(
-              fileManager.ui.defaultTaskPicker, str('OPEN_WITH_BUTTON_LABEL'),
-              '', task => {
-                tasks.execute(task);
-              }, TaskPickerType.OpenWith);
-        })
-        .catch(error => {
-          if (error) {
-            console.warn(error.stack || error);
-          }
-        });
+    console.assert(
+        `open-with command doesn't execute, ` +
+        `instead it only opens the sub-menu`);
   }
 
   /** @override */

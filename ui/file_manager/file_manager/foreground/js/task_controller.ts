@@ -300,8 +300,7 @@ export class TaskController {
     return items;
   }
 
-
-  /** Executes default task.  */
+  /** Executes default task from the dropdown menu. */
   async executeDefaultTask() {
     try {
       const tasks = await this.getFileTasks();

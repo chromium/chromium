@@ -286,3 +286,13 @@ export async function getMimeType(entry) {
 export async function getFileTasks(entries) {
   return promisify(chrome.fileManagerPrivate.getFileTasks, entries);
 }
+
+/**
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} taskDescriptor
+ * @param {!Array<!Entry|!FilesAppEntry>} entries
+ * @return {!Promise<chrome.fileManagerPrivate.TaskResult>}
+ */
+export async function executeTask(taskDescriptor, entries) {
+  return promisify(
+      chrome.fileManagerPrivate.executeTask, taskDescriptor, entries);
+}

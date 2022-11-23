@@ -11,7 +11,6 @@ import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
-import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -282,7 +281,7 @@ function showDefaultTaskDialogCalled(entries: Entry[]): Promise<void> {
 /**
  * Returns a promise that resolves when showImportCrostiniImageDialog is called.
  */
-function showImportCrostiniImageDialogIsCalled(entries: Entry[]):
+async function showImportCrostiniImageDialogIsCalled(entries: Entry[]):
     Promise<void> {
   return new Promise((resolve) => {
     const fileManager = getMockFileManager();
@@ -306,55 +305,52 @@ function showImportCrostiniImageDialogIsCalled(entries: Entry[]):
 }
 
 /** Tests opening a .exe file. */
-export function testToOpenExeFile(callback: () => void) {
+export async function testToOpenExeFile(done: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.exe');
 
-  reportPromise(
-      showHtmlOfAlertDialogIsCalled(
-          [mockEntry], 'test.exe', 'NO_TASK_FOR_EXECUTABLE'),
-      callback);
+  await showHtmlOfAlertDialogIsCalled(
+      [mockEntry], 'test.exe', 'NO_TASK_FOR_EXECUTABLE');
+  done();
 }
 
 /** Tests opening a .dmg file. */
-export function testToOpenDmgFile(callback: () => void) {
+export async function testToOpenDmgFile(done: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.dmg');
 
-  reportPromise(
-      showHtmlOfAlertDialogIsCalled([mockEntry], 'test.dmg', 'NO_TASK_FOR_DMG'),
-      callback);
+  await showHtmlOfAlertDialogIsCalled(
+      [mockEntry], 'test.dmg', 'NO_TASK_FOR_DMG');
+  done();
 }
 
 /**
  * Tests opening a .crx file.
  */
-export function testToOpenCrxFile(callback: () => void) {
+export async function testToOpenCrxFile(done: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.crx');
 
-  reportPromise(
-      showHtmlOfAlertDialogIsCalled(
-          [mockEntry], 'NO_TASK_FOR_CRX_TITLE', 'NO_TASK_FOR_CRX'),
-      callback);
+  await showHtmlOfAlertDialogIsCalled(
+      [mockEntry], 'NO_TASK_FOR_CRX_TITLE', 'NO_TASK_FOR_CRX');
+  done();
 }
 
 /** Tests opening a .rtf file. */
-export function testToOpenRtfFile(callback: () => void) {
+export async function testToOpenRtfFile(done: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.rtf');
 
-  reportPromise(
-      showHtmlOfAlertDialogIsCalled(
-          [mockEntry], 'test.rtf', 'NO_TASK_FOR_FILE'),
-      callback);
+  await showHtmlOfAlertDialogIsCalled(
+      [mockEntry], 'test.rtf', 'NO_TASK_FOR_FILE');
+  done();
 }
 
 /**
  * Tests opening the task picker with an entry that does not have a default app
  * but there are multiple apps that could open it.
  */
-export function testOpenTaskPicker(callback: () => void) {
+export async function testOpenTaskPicker(done: () => void) {
   chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], callback: (tasks: any) => void) => {
         setTimeout(
@@ -388,7 +384,8 @@ export function testOpenTaskPicker(callback: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.tiff');
 
-  reportPromise(showDefaultTaskDialogCalled([mockEntry]), callback);
+  await showDefaultTaskDialogCalled([mockEntry]);
+  done();
 }
 
 /**
@@ -396,7 +393,7 @@ export function testOpenTaskPicker(callback: () => void) {
  * but there are multiple apps that could open it. The app with the most recent
  * task execution order should execute.
  */
-export function testOpenWithMostRecentlyExecuted(callback: () => void) {
+export async function testOpenWithMostRecentlyExecuted(done: () => void) {
   const latestTaskDescriptor = {
     appId: 'handler-extension-most-recently-executed',
     taskType: 'app',
@@ -472,30 +469,23 @@ export function testOpenWithMostRecentlyExecuted(callback: () => void) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.tiff');
 
-  const promise = new Promise<void>((resolve) => {
-    const fileManager = getMockFileManager();
-    fileManager.ui.defaultTaskPicker = {
-      showDefaultTaskDialog: function(
-          _title, _message, _items, _defaultIdx, _onSuccess) {
-        failWithMessage('should not show task picker');
-      },
-    } as DefaultTaskDialog;
+  const fileManager = getMockFileManager();
+  fileManager.ui.defaultTaskPicker = {
+    showDefaultTaskDialog: function(
+        _title, _message, _items, _defaultIdx, _onSuccess) {
+      failWithMessage('should not show task picker');
+    },
+  } as DefaultTaskDialog;
 
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], taskHistory as TaskHistory,
-            fileManager.crostini, fileManager.progressCenter,
-            fileManager.taskController)
-        .then(tasks => {
-          tasks.executeDefault();
-          assertTrue(util.descriptorEqual(latestTaskDescriptor, executedTask!));
-          resolve();
-        });
-  });
+  const tasks = await FileTasks.create(
+      fileManager.volumeManager, fileManager.metadataModel,
+      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+      [mockEntry], taskHistory as TaskHistory, fileManager.crostini,
+      fileManager.progressCenter, fileManager.taskController);
+  await tasks.executeDefault();
+  assertTrue(util.descriptorEqual(latestTaskDescriptor, executedTask!));
 
-  reportPromise(promise, callback);
+  done();
 }
 
 function setUpInstallLinuxPackage() {
@@ -526,39 +516,35 @@ function setUpInstallLinuxPackage() {
  * Tests opening a .deb file. The crostini linux package install dialog should
  * be called.
  */
-export function testOpenInstallLinuxPackageDialog(callback: () => void) {
+export async function testOpenInstallLinuxPackageDialog(done: () => void) {
   const fileManager = setUpInstallLinuxPackage();
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.deb');
 
-  const promise = new Promise<void>((resolve) => {
+  await new Promise<void>(async (resolve) => {
     fileManager.ui.installLinuxPackageDialog = {
       showInstallLinuxPackageDialog: function(_entry: Entry) {
         resolve();
       },
     } as unknown as InstallLinuxPackageDialog;
 
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], mockTaskHistory,
-            fileManager.crostini, fileManager.progressCenter,
-            fileManager.taskController)
-        .then(tasks => {
-          tasks.executeDefault();
-        });
+    const tasks = await FileTasks.create(
+        fileManager.volumeManager, fileManager.metadataModel,
+        fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+        [mockEntry], mockTaskHistory, fileManager.crostini,
+        fileManager.progressCenter, fileManager.taskController);
+    await tasks.executeDefault();
   });
 
-  reportPromise(promise, callback);
+  done();
 }
 
 /**
  * Tests opening a .tini file. The import crostini image dialog should be
  * called.
  */
-export function testToOpenTiniFileOpensImportCrostiniImageDialog(
-    callback: () => void) {
+export async function testToOpenTiniFileOpensImportCrostiniImageDialog(
+    done: () => void) {
   chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], callback: (tasks: any) => void) => {
         setTimeout(
@@ -581,7 +567,8 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(
   const mockEntry =
       MockFileEntry.create(new MockFileSystem('testfilesystem'), '/test.tini');
 
-  reportPromise(showImportCrostiniImageDialogIsCalled([mockEntry]), callback);
+  await showImportCrostiniImageDialogIsCalled([mockEntry]);
+  done();
 }
 
 /**

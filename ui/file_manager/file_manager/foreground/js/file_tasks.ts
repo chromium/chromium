@@ -8,9 +8,8 @@
  * @suppress {checkTypes}
  */
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {getDirectory, getFileTasks} from '../../common/js/api.js';
+import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -46,7 +45,6 @@ const OfficeFileHandlersHistogramValues = {
   QUICK_OFFICE: 2,
 };
 
-type TaskResultType = chrome.fileManagerPrivate.TaskResult;
 /**
  * Represents a collection of available tasks to execute for a specific list
  * of entries.
@@ -323,51 +321,51 @@ export class FileTasks {
       if (isFilesAppId(appId) && (taskType === 'app' || taskType === 'web')) {
         if (parsedActionId === 'mount-archive') {
           task.iconType = 'archive';
-          task.title = loadTimeData.getString('MOUNT_ARCHIVE');
+          task.title = str('MOUNT_ARCHIVE');
         } else if (parsedActionId === 'open-hosted-generic') {
           if (entries.length > 1) {
             task.iconType = 'generic';
           } else {  // Use specific icon.
             task.iconType = FileType.getIcon(entries[0]!);
           }
-          task.title = loadTimeData.getString('TASK_OPEN');
+          task.title = str('TASK_OPEN');
         } else if (parsedActionId === 'open-hosted-gdoc') {
           task.iconType = 'gdoc';
-          task.title = loadTimeData.getString('TASK_OPEN_GDOC');
+          task.title = str('TASK_OPEN_GDOC');
         } else if (parsedActionId === 'open-hosted-gsheet') {
           task.iconType = 'gsheet';
-          task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
+          task.title = str('TASK_OPEN_GSHEET');
         } else if (parsedActionId === 'open-hosted-gslides') {
           task.iconType = 'gslides';
-          task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
+          task.title = str('TASK_OPEN_GSLIDES');
         } else if (parsedActionId === 'open-web-drive-office-word') {
           task.iconType = 'gdoc';
-          task.title = loadTimeData.getString('TASK_OPEN_GDOC');
+          task.title = str('TASK_OPEN_GDOC');
         } else if (parsedActionId === 'open-web-drive-office-excel') {
           task.iconType = 'gsheet';
-          task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
+          task.title = str('TASK_OPEN_GSHEET');
         } else if (parsedActionId === 'upload-office-to-drive') {
           task.iconType = 'generic';
           task.title = 'Upload to Drive';
         } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
           task.iconType = 'gslides';
-          task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
+          task.title = str('TASK_OPEN_GSLIDES');
         } else if (parsedActionId === 'open-in-office') {
           task.iconUrl =
               toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
-          task.title = loadTimeData.getString('TASK_OPEN_OFFICE');
+          task.title = str('TASK_OPEN_OFFICE');
         } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
-          task.title = loadTimeData.getString('TASK_INSTALL_LINUX_PACKAGE');
+          task.title = str('TASK_INSTALL_LINUX_PACKAGE');
         } else if (parsedActionId === 'import-crostini-image') {
           task.iconType = 'tini';
-          task.title = loadTimeData.getString('TASK_IMPORT_CROSTINI_IMAGE');
+          task.title = str('TASK_IMPORT_CROSTINI_IMAGE');
         } else if (parsedActionId === 'view-pdf') {
           task.iconType = 'pdf';
-          task.title = loadTimeData.getString('TASK_VIEW');
+          task.title = str('TASK_VIEW');
         } else if (parsedActionId === 'view-in-browser') {
           task.iconType = 'generic';
-          task.title = loadTimeData.getString('TASK_VIEW');
+          task.title = str('TASK_VIEW');
         }
       }
       if (!task.iconType && taskType === 'web-intent') {
@@ -418,43 +416,31 @@ export class FileTasks {
     });
   }
 
-  /**
-   * Executes default task.
-   * @param {function()=} callback Called when the default task is executed, or
-   *     the error is occurred.
-   */
-  executeDefault(callback?: (isDefault: boolean, entries: Entry[]) => void) {
+  /** Executes default task.  */
+  async executeDefault(): Promise<void> {
     FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
     FileTasks.recordViewingRootTypeUMA_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
     FileTasks.recordOfficeFileHandlerUMA_(
         this.volumeManager_, this.entries_,
         this.directoryModel_.getCurrentRootType(), this.defaultTask_);
-    this.executeDefaultInternal_(callback);
+    return this.executeDefaultInternal_();
   }
 
-  /**
-   * Executes default task.
-   * @param callback Called when the default task is executed, or the error is
-   *     occurred.
-   */
-  private executeDefaultInternal_(
-      callback?: (isDefault: boolean, entries: Entry[]) => void) {
-    callback = callback || ((_0: boolean, _1: Entry[]) => {});
-
+  private async executeDefaultInternal_(): Promise<void> {
     if (this.defaultTask_) {
       this.executeInternal_(this.defaultTask_);
-      callback(true, this.entries_);
       return;
     }
 
     // If there's policy involved and |defaultTask_| is null, means that policy
     // assignment was incorrect. We should not execute anything in this case.
     if (this.getPolicyDefaultHandlerStatus()) {
-      assert(
+      console.assert(
           this.getPolicyDefaultHandlerStatus() ===
-          chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
-              .INCORRECT_ASSIGNMENT);
+              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+                  .INCORRECT_ASSIGNMENT,
+          'policyDefaultHandlerStatus expected to be INCORRECT, thus not executing the task');
       return;
     }
 
@@ -482,7 +468,31 @@ export class FileTasks {
     const filename = this.entries_[0]!.name;
     const extension = util.splitExtension(filename)[1] || null;
 
-    const showAlert = () => {
+    await this.checkAvailability_();
+
+    try {
+      const descriptor = {
+        appId: LEGACY_FILES_EXTENSION_ID,
+        taskType: 'file',
+        actionId: 'view-in-browser',
+      };
+      const result = await executeTask(descriptor, this.entries_);
+      switch (result) {
+        case 'opened':
+          break;
+        case 'message_sent':
+          util.isTeleported(window).then(teleported => {
+            if (teleported) {
+              this.ui_.showOpenInOtherDesktopAlert(this.entries_);
+            }
+          });
+          break;
+        case 'empty':
+          break;
+        case 'failed':
+          throw new Error();
+      }
+    } catch {
       let textMessageId;
       let titleMessageId;
       switch (extension) {
@@ -503,51 +513,8 @@ export class FileTasks {
 
       const text = strf(textMessageId, str('NO_TASK_FOR_FILE_URL'));
       const title = titleMessageId ? str(titleMessageId) : filename;
-      this.ui_.alertDialog.showHtml(title, text, null, null, null);
-      callback!(false, this.entries_);
-    };
-
-    const onViewFilesFailure = () => {
-      showAlert();
-    };
-
-    const onViewFiles = (result: TaskResultType) => {
-      if (chrome.runtime.lastError) {
-        // Suppress the Unchecked runtime.lastError console message
-        console.debug(chrome.runtime.lastError.message);
-        onViewFilesFailure();
-        return;
-      }
-      switch (result) {
-        case 'opened':
-          callback!(true, this.entries_);
-          break;
-        case 'message_sent':
-          util.isTeleported(window).then(teleported => {
-            if (teleported) {
-              this.ui_.showOpenInOtherDesktopAlert(this.entries_);
-            }
-          });
-          callback!(true, this.entries_);
-          break;
-        case 'empty':
-          callback!(true, this.entries_);
-          break;
-        case 'failed':
-          onViewFilesFailure();
-          break;
-      }
-    };
-
-    this.checkAvailability_(() => {
-      const descriptor = {
-        appId: LEGACY_FILES_EXTENSION_ID,
-        taskType: 'file',
-        actionId: 'view-in-browser',
-      };
-      chrome.fileManagerPrivate.executeTask(
-          descriptor, this.entries_, onViewFiles);
-    });
+      this.ui_.alertDialog.showHtml(title, text);
+    }
   }
 
   /** Executes a single task.  */
@@ -562,19 +529,28 @@ export class FileTasks {
   }
 
   /** The core implementation to execute a single task. */
-  private executeInternal_(task: chrome.fileManagerPrivate.FileTask) {
-    const onFileManagerPrivateExecuteTask = (result: TaskResultType) => {
-      if (chrome.runtime.lastError) {
-        console.warn(
-            'Unable to execute task: ' + chrome.runtime.lastError.message);
-        return;
-      }
+  private async executeInternal_(task: chrome.fileManagerPrivate.FileTask):
+      Promise<void> {
+    const entries = this.entries_;
+    await this.checkAvailability_();
+    this.taskHistory_.recordTaskExecuted(task.descriptor);
+    const msg = (entries.length === 1) ?
+        strf('OPEN_A11Y', entries[0]!.name) :
+        strf('OPEN_A11Y_PLURAL', entries.length);
+    this.ui_.speakA11yMessage(msg);
+    if (FileTasks.isInternalTask_(task.descriptor)) {
+      this.executeInternalTask_(task.descriptor);
+      return;
+    }
+
+    try {
+      const result = await executeTask(task.descriptor, entries);
       const TaskResult = chrome.fileManagerPrivate.TaskResult;
       switch (result) {
         case TaskResult.MESSAGE_SENT:
           util.isTeleported(window).then((teleported) => {
             if (teleported) {
-              this.ui_.showOpenInOtherDesktopAlert(this.entries_);
+              this.ui_.showOpenInOtherDesktopAlert(entries);
             }
           });
           break;
@@ -586,38 +562,24 @@ export class FileTasks {
               'UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE',
               task.title);
           FileTasks.showPluginVmNotSharedDialog(
-              this.entries_, this.volumeManager_, this.metadataModel_, this.ui_,
+              entries, this.volumeManager_, this.metadataModel_, this.ui_,
               moveMessage, copyMessage, this.fileTransferController_,
               this.directoryModel_);
           break;
       }
-    };
-
-    this.checkAvailability_(() => {
-      this.taskHistory_.recordTaskExecuted(task.descriptor);
-      let msg;
-      if (this.entries_.length === 1) {
-        msg = strf('OPEN_A11Y', this.entries_[0]!.name);
-      } else {
-        msg = strf('OPEN_A11Y_PLURAL', this.entries_.length);
-      }
-      this.ui_.speakA11yMessage(msg);
-      if (FileTasks.isInternalTask_(task.descriptor)) {
-        this.executeInternalTask_(task.descriptor);
-      } else {
-        chrome.fileManagerPrivate.executeTask(
-            task.descriptor, this.entries_, onFileManagerPrivateExecuteTask);
-      }
-    });
+    } catch (error) {
+      console.warn(`Failed to execute task ${task.descriptor}: ${error}`);
+    }
   }
 
   /**
    * Ensures that the all files are available right now.
    * Must not call before initialization.
-   * @param callback Called when checking is completed and all files are
-   *     available. Otherwise not called.
+   * Resolved when checking is completed and all files are available
+   * Rejected/throws if the user cancels the confirmation dialog for downloading
+   * in cellular/metered network dialog.
    */
-  private checkAvailability_(callback: () => void) {
+  private async checkAvailability_(): Promise<void> {
     const areAll =
         (entries: Entry[], props: MetadataItem[], name: keyof MetadataItem) => {
           let okEntriesNum = 0;
@@ -640,7 +602,6 @@ export class FileTasks {
     // availableWhenMetered are not exposed for other types of volumes at this
     // moment.
     if (!containsDriveEntries) {
-      callback();
       return;
     }
 
@@ -649,58 +610,48 @@ export class FileTasks {
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE;
 
     if (isDriveOffline) {
-      this.metadataModel_.get(this.entries_, ['availableOffline', 'hosted'])
-          .then((props: MetadataItem[]) => {
-            if (areAll(this.entries_, props, 'availableOffline')) {
-              callback();
-              return;
-            }
+      const props = await this.metadataModel_.get(
+          this.entries_, ['availableOffline', 'hosted']);
+      if (areAll(this.entries_, props, 'availableOffline')) {
+        return;
+      }
+      const msg = props[0]!.hosted ?
+          str(this.entries_.length === 1 ? 'HOSTED_OFFLINE_MESSAGE' :
+                                           'HOSTED_OFFLINE_MESSAGE_PLURAL') :
+          strf(
+              this.entries_.length === 1 ? 'OFFLINE_MESSAGE' :
+                                           'OFFLINE_MESSAGE_PLURAL',
+              str('OFFLINE_COLUMN_LABEL'));
 
-            this.ui_.alertDialog.showHtml(
-                loadTimeData.getString('OFFLINE_HEADER'),
-                props[0]!.hosted ?
-                    loadTimeData.getStringF(
-                        this.entries_.length === 1 ?
-                            'HOSTED_OFFLINE_MESSAGE' :
-                            'HOSTED_OFFLINE_MESSAGE_PLURAL') :
-                    loadTimeData.getStringF(
-                        this.entries_.length === 1 ? 'OFFLINE_MESSAGE' :
-                                                     'OFFLINE_MESSAGE_PLURAL',
-                        loadTimeData.getString('OFFLINE_COLUMN_LABEL')),
-                null, null, null);
-          });
+      this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
       return;
     }
 
     const isOnMetered = this.volumeManager_.getDriveConnectionState().type ===
         chrome.fileManagerPrivate.DriveConnectionStateType.METERED;
 
-    if (isOnMetered) {
-      this.metadataModel_.get(this.entries_, ['availableWhenMetered', 'size'])
-          .then((props: MetadataItem[]) => {
-            if (areAll(this.entries_, props, 'availableWhenMetered')) {
-              callback();
-              return;
-            }
+    if (!isOnMetered) {
+      return;
+    }
+    const props = await this.metadataModel_.get(
+        this.entries_, ['availableWhenMetered', 'size']);
 
-            let sizeToDownload = 0;
-            for (let i = 0; i !== this.entries_.length; i++) {
-              if (!props[i]!.availableWhenMetered) {
-                sizeToDownload += (props[i]!.size || 0);
-              }
-            }
-            this.ui_.confirmDialog.show(
-                loadTimeData.getStringF(
-                    this.entries_.length === 1 ?
-                        'CONFIRM_MOBILE_DATA_USE' :
-                        'CONFIRM_MOBILE_DATA_USE_PLURAL',
-                    util.bytesToString(sizeToDownload)),
-                callback);
-          });
+    if (areAll(this.entries_, props, 'availableWhenMetered')) {
       return;
     }
 
-    callback();
+    let sizeToDownload = 0;
+    for (let i = 0; i !== this.entries_.length; i++) {
+      if (!props[i]!.availableWhenMetered) {
+        sizeToDownload += (props[i]!.size || 0);
+      }
+    }
+    const msg = strf(
+        this.entries_.length === 1 ? 'CONFIRM_MOBILE_DATA_USE' :
+                                     'CONFIRM_MOBILE_DATA_USE_PLURAL',
+        util.bytesToString(sizeToDownload));
+    return new Promise(
+        (resolve, reject) => this.ui_.confirmDialog.show(msg, resolve, reject));
   }
 
   /**
