@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "base/containers/contains.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/about_section.h"
@@ -47,108 +48,84 @@ OsSettingsSections::OsSettingsSections(
     CupsPrintersManager* printers_manager,
     apps::AppServiceProxy* app_service_proxy,
     eche_app::EcheAppManager* eche_app_manager) {
+  auto* prefs = profile->GetPrefs();
+
   // Special case: Main section does not have an associated enum value.
   sections_.push_back(
       std::make_unique<MainSection>(profile, search_tag_registry));
 
-  auto internet_section =
-      std::make_unique<InternetSection>(profile, search_tag_registry);
-  sections_map_[mojom::Section::kNetwork] = internet_section.get();
-  sections_.push_back(std::move(internet_section));
+  AddSection(mojom::Section::kNetwork,
+             std::make_unique<InternetSection>(profile, search_tag_registry));
 
-  auto bluetooth_section = std::make_unique<BluetoothSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kBluetooth] = bluetooth_section.get();
-  sections_.push_back(std::move(bluetooth_section));
+  AddSection(
+      mojom::Section::kBluetooth,
+      std::make_unique<BluetoothSection>(profile, search_tag_registry, prefs));
 
-  auto multidevice_section = std::make_unique<MultiDeviceSection>(
-      profile, search_tag_registry, multidevice_setup_client, phone_hub_manager,
-      android_sms_service, profile->GetPrefs(), eche_app_manager);
-  sections_map_[mojom::Section::kMultiDevice] = multidevice_section.get();
-  sections_.push_back(std::move(multidevice_section));
+  AddSection(
+      mojom::Section::kMultiDevice,
+      std::make_unique<MultiDeviceSection>(
+          profile, search_tag_registry, multidevice_setup_client,
+          phone_hub_manager, android_sms_service, prefs, eche_app_manager));
 
-  auto people_section = std::make_unique<PeopleSection>(
-      profile, search_tag_registry, sync_service, supervised_user_service,
-      identity_manager, profile->GetPrefs());
-  sections_map_[mojom::Section::kPeople] = people_section.get();
-  sections_.push_back(std::move(people_section));
+  AddSection(mojom::Section::kPeople,
+             std::make_unique<PeopleSection>(
+                 profile, search_tag_registry, sync_service,
+                 supervised_user_service, identity_manager, prefs));
 
-  auto device_section = std::make_unique<DeviceSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kDevice] = device_section.get();
-  sections_.push_back(std::move(device_section));
+  AddSection(mojom::Section::kDevice, std::make_unique<DeviceSection>(
+                                          profile, search_tag_registry, prefs));
 
-  auto personalization_section = std::make_unique<PersonalizationSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kPersonalization] =
-      personalization_section.get();
-  sections_.push_back(std::move(personalization_section));
+  AddSection(mojom::Section::kPersonalization,
+             std::make_unique<PersonalizationSection>(
+                 profile, search_tag_registry, prefs));
 
-  auto search_section =
-      std::make_unique<SearchSection>(profile, search_tag_registry);
-  sections_map_[mojom::Section::kSearchAndAssistant] = search_section.get();
-  sections_.push_back(std::move(search_section));
+  AddSection(mojom::Section::kSearchAndAssistant,
+             std::make_unique<SearchSection>(profile, search_tag_registry));
 
-  auto apps_section = std::make_unique<AppsSection>(
-      profile, search_tag_registry, profile->GetPrefs(), arc_app_list_prefs,
-      app_service_proxy);
-  sections_map_[mojom::Section::kApps] = apps_section.get();
-  sections_.push_back(std::move(apps_section));
+  AddSection(mojom::Section::kApps, std::make_unique<AppsSection>(
+                                        profile, search_tag_registry, prefs,
+                                        arc_app_list_prefs, app_service_proxy));
 
-  auto crostini_section = std::make_unique<CrostiniSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kCrostini] = crostini_section.get();
-  sections_.push_back(std::move(crostini_section));
+  AddSection(
+      mojom::Section::kCrostini,
+      std::make_unique<CrostiniSection>(profile, search_tag_registry, prefs));
 
-  auto date_time_section =
-      std::make_unique<DateTimeSection>(profile, search_tag_registry);
-  sections_map_[mojom::Section::kDateAndTime] = date_time_section.get();
-  sections_.push_back(std::move(date_time_section));
+  AddSection(mojom::Section::kDateAndTime,
+             std::make_unique<DateTimeSection>(profile, search_tag_registry));
 
-  auto privacy_section = std::make_unique<PrivacySection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kPrivacyAndSecurity] = privacy_section.get();
-  sections_.push_back(std::move(privacy_section));
+  AddSection(
+      mojom::Section::kPrivacyAndSecurity,
+      std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
 
-  auto language_section = std::make_unique<LanguagesSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kLanguagesAndInput] = language_section.get();
-  sections_.push_back(std::move(language_section));
+  AddSection(
+      mojom::Section::kLanguagesAndInput,
+      std::make_unique<LanguagesSection>(profile, search_tag_registry, prefs));
 
-  auto files_section =
-      std::make_unique<FilesSection>(profile, search_tag_registry);
-  sections_map_[mojom::Section::kFiles] = files_section.get();
-  sections_.push_back(std::move(files_section));
+  AddSection(mojom::Section::kFiles,
+             std::make_unique<FilesSection>(profile, search_tag_registry));
 
-  auto printing_section = std::make_unique<PrintingSection>(
-      profile, search_tag_registry, printers_manager);
-  sections_map_[mojom::Section::kPrinting] = printing_section.get();
-  sections_.push_back(std::move(printing_section));
+  AddSection(mojom::Section::kPrinting,
+             std::make_unique<PrintingSection>(profile, search_tag_registry,
+                                               printers_manager));
 
-  auto accessibility_section = std::make_unique<AccessibilitySection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kAccessibility] = accessibility_section.get();
-  sections_.push_back(std::move(accessibility_section));
+  AddSection(mojom::Section::kAccessibility,
+             std::make_unique<AccessibilitySection>(
+                 profile, search_tag_registry, prefs));
 
-  auto reset_section =
-      std::make_unique<ResetSection>(profile, search_tag_registry);
-  sections_map_[mojom::Section::kReset] = reset_section.get();
-  sections_.push_back(std::move(reset_section));
+  AddSection(mojom::Section::kReset,
+             std::make_unique<ResetSection>(profile, search_tag_registry));
 
+  AddSection(mojom::Section::kAboutChromeOs,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto about_section = std::make_unique<AboutSection>(
-      profile, search_tag_registry, profile->GetPrefs());
+             std::make_unique<AboutSection>(profile, search_tag_registry, prefs)
 #else
-  auto about_section =
-      std::make_unique<AboutSection>(profile, search_tag_registry);
+             std::make_unique<AboutSection>(profile, search_tag_registry)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  sections_map_[mojom::Section::kAboutChromeOs] = about_section.get();
-  sections_.push_back(std::move(about_section));
+  );
 
-  auto kerberos_section = std::make_unique<KerberosSection>(
-      profile, search_tag_registry, kerberos_credentials_manager);
-  sections_map_[mojom::Section::kKerberos] = kerberos_section.get();
-  sections_.push_back(std::move(kerberos_section));
+  AddSection(mojom::Section::kKerberos,
+             std::make_unique<KerberosSection>(profile, search_tag_registry,
+                                               kerberos_credentials_manager));
 }
 
 OsSettingsSections::OsSettingsSections() = default;
@@ -160,6 +137,15 @@ const OsSettingsSection* OsSettingsSections::GetSection(
   const auto it = sections_map_.find(section);
   CHECK(it != sections_map_.end());
   return it->second;
+}
+
+void OsSettingsSections::AddSection(
+    chromeos::settings::mojom::Section section_id,
+    std::unique_ptr<OsSettingsSection> section) {
+  DCHECK(!base::Contains(sections_map_, section_id));
+
+  sections_map_[section_id] = section.get();
+  sections_.push_back(std::move(section));
 }
 
 }  // namespace ash::settings

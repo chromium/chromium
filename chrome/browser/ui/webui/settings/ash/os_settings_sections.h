@@ -79,6 +79,10 @@ class OsSettingsSections {
   std::unordered_map<chromeos::settings::mojom::Section, OsSettingsSection*>
       sections_map_;
   std::vector<std::unique_ptr<OsSettingsSection>> sections_;
+
+ private:
+  void AddSection(chromeos::settings::mojom::Section section_id,
+                  std::unique_ptr<OsSettingsSection> section);
 };
 
 }  // namespace settings
