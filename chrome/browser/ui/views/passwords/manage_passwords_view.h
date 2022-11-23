@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 class PageSwitcherView;
 
@@ -32,11 +33,30 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
 
   std::unique_ptr<views::View> CreatePasswordListTitleView() const;
   std::unique_ptr<views::View> CreatePasswordListView();
-  std::unique_ptr<views::View> CreatePasswordDetailsView(
-      const password_manager::PasswordForm& password_form) const;
-  std::unique_ptr<views::View> CreatePasswordDetailsTitleView(
-      const password_manager::PasswordForm& password_form);
+  std::unique_ptr<views::View> CreatePasswordDetailsView() const;
+  std::unique_ptr<views::View> CreatePasswordDetailsTitleView();
   std::unique_ptr<views::View> CreateFooterView();
+
+  // Changes the contents of the page to either display the details of
+  // `currently_selected_password_` or the list of passwords when
+  // `currently_selected_password_` isn't set.
+  void RecreateLayout();
+
+  // Called when the favicon is loaded. If |favicon| isn't empty, it sets
+  // |favicon_| and invokes RecreateLayout().
+  void OnFaviconReady(const gfx::Image& favicon);
+
+  // Returns the image model representing site favicon. If favicon is empty or
+  // not loaded yet, it returns the image model of the globe icon.
+  ui::ImageModel GetFaviconImageModel() const;
+
+  // Holds the favicon of the page when it is asynchronously loaded.
+  gfx::Image favicon_;
+
+  // If not set, the bubble displays the list of all credentials stored for the
+  // current domain. When set, the bubble displays the password details of the
+  // currently selected password.
+  absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;

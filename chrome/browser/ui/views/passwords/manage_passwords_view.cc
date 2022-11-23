@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -24,6 +25,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -54,6 +56,14 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(CreatePasswordListView()));
+
+  if (!controller_.local_credentials().empty()) {
+    // The request is cancelled when the |controller_| is destroyed.
+    // |controller_| has the same lifetime as |this| and hence it's safe to use
+    // base::Unretained(this).
+    controller_.RequestFavicon(base::BindOnce(
+        &ManagePasswordsView::OnFaviconReady, base::Unretained(this)));
+  }
 
   SetFootnoteView(CreateFooterView());
 }
@@ -101,8 +111,8 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListTitleView()
 }
 
 std::unique_ptr<views::View>
-ManagePasswordsView::CreatePasswordDetailsTitleView(
-    const password_manager::PasswordForm& password_form) {
+ManagePasswordsView::CreatePasswordDetailsTitleView() {
+  DCHECK(currently_selected_password_.has_value());
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
   // Set the space between the icons and title similar to the default behavior
@@ -113,9 +123,8 @@ ManagePasswordsView::CreatePasswordDetailsTitleView(
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(
           [](ManagePasswordsView* view) {
-            view->GetBubbleFrameView()->SetTitleView(
-                view->CreatePasswordListTitleView());
-            view->page_container_->SwitchToPage(view->CreatePasswordListView());
+            view->currently_selected_password_ = absl::nullopt;
+            view->RecreateLayout();
           },
           base::Unretained(this)),
       vector_icons::kArrowBackIcon);
@@ -123,15 +132,12 @@ ManagePasswordsView::CreatePasswordDetailsTitleView(
   views::InstallCircleHighlightPathGenerator(back_button.get());
   header->AddChildView(std::move(back_button));
 
-  // TODO(crbug.com/1382017): Use favicon instead of the GPM icon.
   header->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          GooglePasswordManagerVectorIcon(), ui::kColorIcon,
-          layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+      std::make_unique<views::ImageView>(GetFaviconImageModel()));
 
-  std::string shown_origin =
-      password_manager::GetShownOriginAndLinkUrl(password_form).first;
+  std::string shown_origin = password_manager::GetShownOriginAndLinkUrl(
+                                 currently_selected_password_.value())
+                                 .first;
   header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
       base::UTF8ToUTF16(shown_origin)));
   return header;
@@ -142,7 +148,6 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const password_manager::PasswordForm& password_form :
        controller_.local_credentials()) {
-    // TODO(crbug.com/1382017): Add support for favicons.
     // TODO(crbug.com/1382017): Make sure the alignment works for different use
     // cases. (e.g. long username, federated credentials)
     RichHoverButton* row =
@@ -150,14 +155,11 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
             base::BindRepeating(
                 [](ManagePasswordsView* view,
                    const password_manager::PasswordForm& password_form) {
-                  DCHECK(view->GetBubbleFrameView());
-                  view->GetBubbleFrameView()->SetTitleView(
-                      view->CreatePasswordDetailsTitleView(password_form));
-                  view->page_container_->SwitchToPage(
-                      view->CreatePasswordDetailsView(password_form));
+                  view->currently_selected_password_ = password_form;
+                  view->RecreateLayout();
                 },
                 base::Unretained(this), password_form),
-            /*main_image_icon=*/ui::ImageModel(),
+            /*main_image_icon=*/GetFaviconImageModel(),
             /*title_text=*/GetDisplayUsername(password_form),
             /*secondary_text=*/GetDisplayPassword(password_form),
             /*tooltip_text=*/std::u16string(),
@@ -180,8 +182,9 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   return container_view;
 }
 
-std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView(
-    const password_manager::PasswordForm& password_form) const {
+std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView()
+    const {
+  DCHECK(currently_selected_password_.has_value());
   NOTIMPLEMENTED();
   return std::make_unique<views::View>();
 }
@@ -219,4 +222,29 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           open_password_manager_closure);
   }
+}
+
+void ManagePasswordsView::RecreateLayout() {
+  DCHECK(GetBubbleFrameView());
+  if (currently_selected_password_.has_value()) {
+    GetBubbleFrameView()->SetTitleView(CreatePasswordDetailsTitleView());
+    page_container_->SwitchToPage(CreatePasswordDetailsView());
+  } else {
+    GetBubbleFrameView()->SetTitleView(CreatePasswordListTitleView());
+    page_container_->SwitchToPage(CreatePasswordListView());
+  }
+}
+
+void ManagePasswordsView::OnFaviconReady(const gfx::Image& favicon) {
+  if (!favicon.IsEmpty()) {
+    favicon_ = favicon;
+    RecreateLayout();
+  }
+}
+
+ui::ImageModel ManagePasswordsView::GetFaviconImageModel() const {
+  // Use a globe fallback icon until the actual favicon is loaded.
+  return favicon_.IsEmpty() ? ui::ImageModel::FromVectorIcon(
+                                  kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize)
+                            : ui::ImageModel::FromImage(favicon_);
 }
