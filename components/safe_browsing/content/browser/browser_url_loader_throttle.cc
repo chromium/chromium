@@ -74,11 +74,18 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         can_check_high_confidence_allowlist_(
             can_check_high_confidence_allowlist),
         url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
-        url_lookup_service_(url_lookup_service) {
+        url_lookup_service_(url_lookup_service),
+        creation_time_(base::TimeTicks::Now()) {
     content::WebContents* contents = web_contents_getter_.Run();
     if (!!contents) {
       last_committed_url_ = contents->GetLastCommittedURL();
     }
+  }
+
+  ~CheckerOnIO() {
+    base::UmaHistogramMediumTimes(
+        "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
+        base::TimeTicks::Now() - creation_time_);
   }
 
   // Starts the initial safe browsing check. This check and future checks may be
@@ -194,6 +201,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   std::string url_lookup_service_metric_suffix_;
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
+  base::TimeTicks creation_time_;
 };
 
 // static
@@ -307,6 +315,11 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  will_process_response_count_++;
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.BrowserThrottle.WillProcessResponseCount",
+      will_process_response_count_);
+
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
     // |delegate_->CancelWithError|, but this method is called before the

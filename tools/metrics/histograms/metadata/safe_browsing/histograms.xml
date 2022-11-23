@@ -258,6 +258,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime" units="ms"
+    expires_after="2023-02-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long the BrowserURLLoaderThrottle::CheckerOnIO object exists
+    for. Logged when the object destructs.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2023-03-19">
@@ -321,6 +331,17 @@ chromium-metrics-reviews@google.com.
     <variant name=".NoneFullUrlLookup"
         summary="neither consumer nor enterprise"/>
   </token>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.WillProcessResponseCount"
+    units="times" expires_after="2023-02-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of times that WillProcessResponse has been called for a
+    single BrowserUrlLoaderThrottle. Logged each time WillProcessResponse is
+    called.
+  </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"

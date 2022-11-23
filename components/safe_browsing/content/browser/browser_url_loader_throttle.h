@@ -141,6 +141,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Whether real time lookup is enabled for the user.
   bool real_time_lookup_enabled_;
 
+  // Tracks how many times |WillProcessResponse| is called.
+  int will_process_response_count_ = 0;
+
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };
 
