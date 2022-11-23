@@ -1642,7 +1642,7 @@ void Texture::Update() {
     return;
 
   if (face_infos_.empty() ||
-      static_cast<size_t>(base_level_) >= face_infos_[0].level_infos.size()) {
+      static_cast<size_t>(base_level_) >= MaxValidMipLevel()) {
     texture_complete_ = false;
     cube_complete_ = false;
     return;
@@ -2025,8 +2025,7 @@ bool Texture::CanRenderTo(const FeatureInfo* feature_info, GLint level) const {
   // the time.
   if (face_infos_.size() == 6 && !cube_complete())
     return false;
-  DCHECK(level >= 0 &&
-         level < static_cast<GLint>(face_infos_[0].level_infos.size()));
+  DCHECK(level >= 0 && level < static_cast<GLint>(MaxValidMipLevel()));
   if (level > base_level_ && !texture_complete()) {
     return false;
   }
@@ -2061,7 +2060,7 @@ void Texture::SetCompatibilitySwizzle(const CompatibilitySwizzle* swizzle) {
 
 void Texture::ApplyFormatWorkarounds(const FeatureInfo* feature_info) {
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
-    if (static_cast<size_t>(base_level_) >= face_infos_[0].level_infos.size())
+    if (static_cast<size_t>(base_level_) >= MaxValidMipLevel())
       return;
     const Texture::LevelInfo& info = face_infos_[0].level_infos[base_level_];
     SetCompatibilitySwizzle(GetCompatibilitySwizzleInternal(info.format));
@@ -2295,8 +2294,11 @@ scoped_refptr<TextureRef>
   return default_texture;
 }
 
-bool TextureManager::ValidForTarget(
-    GLenum target, GLint level, GLsizei width, GLsizei height, GLsizei depth) {
+bool TextureManager::ValidForTarget(GLenum target,
+                                    GLint level,
+                                    GLsizei width,
+                                    GLsizei height,
+                                    GLsizei depth) {
   if (level < 0 || level >= MaxLevelsForTarget(target))
     return false;
   GLsizei max_size = MaxSizeForTarget(target) >> level;
@@ -2314,6 +2316,18 @@ bool TextureManager::ValidForTarget(
            !GLES2Util::IsNPOT(depth))) &&
          (target != GL_TEXTURE_CUBE_MAP || (width == height && depth == 1)) &&
          (target != GL_TEXTURE_2D || (depth == 1));
+}
+
+bool TextureManager::ValidForTextureTarget(const Texture* texture,
+                                           GLint level,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLsizei depth) {
+  if (texture->target() == 0)
+    return false;
+  if (level < 0 || static_cast<size_t>(level) >= texture->MaxValidMipLevel())
+    return false;
+  return ValidForTarget(texture->target(), level, width, height, depth);
 }
 
 void TextureManager::SetTarget(TextureRef* ref, GLenum target) {
@@ -2799,14 +2813,6 @@ bool TextureManager::ValidateTexImage(ContextState* state,
       args.internal_format, args.level)) {
     return false;
   }
-  if (!ValidForTarget(args.target, args.level,
-                      args.width, args.height, args.depth) ||
-      args.border != 0) {
-    ERRORSTATE_SET_GL_ERROR(
-        error_state, GL_INVALID_VALUE, function_name,
-        "dimensions out of range");
-    return false;
-  }
   if ((GLES2Util::GetChannelsForFormat(args.format) &
        (GLES2Util::kDepth | GLES2Util::kStencil)) != 0 && args.pixels
       && !feature_info_->IsWebGL2OrES3Context()) {
@@ -2829,7 +2835,13 @@ bool TextureManager::ValidateTexImage(ContextState* state,
         "texture is immutable");
     return false;
   }
-
+  if (!ValidForTextureTarget(local_texture_ref->texture(), args.level,
+                             args.width, args.height, args.depth) ||
+      args.border != 0) {
+    ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_VALUE, function_name,
+                            "dimensions out of range");
+    return false;
+  }
   Buffer* buffer = state->bound_pixel_unpack_buffer.get();
   if (buffer) {
     if (buffer->GetMappedRange()) {
