@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #elif BUILDFLAG(IS_MAC)
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -39,9 +42,10 @@ namespace apps {
 
 namespace {
 
-std::vector<IntentPickerAppInfo> FindAppsForUrl(
+void AppendAppsForUrlSync(
     content::WebContents* web_contents,
     const GURL& url,
+    base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback,
     std::vector<IntentPickerAppInfo> apps) {
 #if BUILDFLAG(IS_MAC)
   // On the Mac, if there is a Universal Link, it goes first.
@@ -64,7 +68,38 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
                        ui::ImageModel(), update.AppId(), update.Name());
         });
   }
-  return apps;
+
+  std::move(callback).Run(std::move(apps));
+}
+
+void FindAppsForUrl(
+    content::WebContents* web_contents,
+    const GURL& url,
+    base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback) {
+  auto append_apps =
+      [](base::WeakPtr<content::WebContents> web_contents,
+         IntentPickerTabHelper* helper, int commit_count, const GURL& url,
+         base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback,
+         std::vector<IntentPickerAppInfo> apps) {
+        if (!web_contents)
+          return;
+        if (helper->commit_count() != commit_count)
+          return;
+
+        AppendAppsForUrlSync(web_contents.get(), url, std::move(callback),
+                             std::move(apps));
+      };
+
+  // TODO(crbug.com/1236141): Move the Mac intent code to be here, called async.
+
+  IntentPickerTabHelper* helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+  int commit_count = helper->commit_count();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(append_apps, web_contents->GetWeakPtr(), helper,
+                                commit_count, url, std::move(callback),
+                                std::vector<IntentPickerAppInfo>()));
 }
 
 void LaunchAppFromIntentPicker(content::WebContents* web_contents,
@@ -138,43 +173,28 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       base::BindOnce(&OnIntentPickerClosed, web_contents->GetWeakPtr(), url));
 }
 
-std::vector<IntentPickerAppInfo> GetAppsForIntentPicker(
-    content::WebContents* web_contents) {
-  std::vector<IntentPickerAppInfo> apps = {};
-  if (!ShouldCheckAppsForUrl(web_contents))
-    return apps;
+void GetAppsForIntentPicker(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback) {
+  if (!ShouldCheckAppsForUrl(web_contents)) {
+    std::move(callback).Run({});
+    return;
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    return apps;
+  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  const GURL& url = web_contents->GetLastCommittedURL();
-  apps = FindAppsForUrl(web_contents, url, std::move(apps));
-  return apps;
+  FindAppsForUrl(web_contents, web_contents->GetLastCommittedURL(),
+                 std::move(callback));
 }
 
-}  // namespace
-
-// for chromeos, this should apply when navigation is not deferred for pwa only
-// case also when navigation deferred and then resumed
-void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  auto apps = GetAppsForIntentPicker(web_contents);
-  IntentPickerTabHelper::FromWebContents(web_contents)->ShowIconForApps(apps);
-#if BUILDFLAG(IS_CHROMEOS)
-  MaybeShowIntentPickerBubble(navigation_handle, std::move(apps));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void MaybeShowIntentPicker(content::WebContents* web_contents) {
-  IntentPickerTabHelper::FromWebContents(web_contents)
-      ->ShowIconForApps(GetAppsForIntentPicker(web_contents));
-}
-
-void ShowIntentPickerOrLaunchApp(content::WebContents* web_contents,
-                                 const GURL& url) {
-  std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
+void ShowIntentPickerOrLaunchAppImpl(content::WebContents* web_contents,
+                                     const GURL& url,
+                                     std::vector<IntentPickerAppInfo> apps) {
   if (apps.empty())
     return;
 
@@ -208,6 +228,75 @@ void ShowIntentPickerOrLaunchApp(content::WebContents* web_contents,
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),
       base::BindOnce(&OnAppIconsLoaded, web_contents, url));
+}
+
+}  // namespace
+
+void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
+  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  IntentPickerTabHelper* helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+  int commit_count = helper->commit_count();
+
+  auto task = [](base::WeakPtr<content::WebContents> web_contents,
+#if BUILDFLAG(IS_CHROMEOS)
+                 NavigationInfo navigation_info,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+                 IntentPickerTabHelper* helper, int commit_count,
+                 std::vector<IntentPickerAppInfo> apps) {
+    if (!web_contents)
+      return;
+    if (helper->commit_count() != commit_count)
+      return;
+
+    helper->ShowIconForApps(apps);
+#if BUILDFLAG(IS_CHROMEOS)
+    MaybeShowIntentPickerBubble(navigation_info, std::move(apps));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+
+#if BUILDFLAG(IS_CHROMEOS)
+  NavigationInfo navigation_info = {
+      .web_contents = web_contents,
+      .url = navigation_handle->GetURL(),
+      .starting_url = GetStartingGURL(navigation_handle),
+      .is_navigate_from_link = IsNavigateFromLink(navigation_handle)};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  GetAppsForIntentPicker(web_contents,
+                         base::BindOnce(task, web_contents->GetWeakPtr(),
+#if BUILDFLAG(IS_CHROMEOS)
+                                        navigation_info,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+                                        helper, commit_count));
+}
+
+void MaybeShowIntentPicker(content::WebContents* web_contents) {
+  IntentPickerTabHelper* helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+  int commit_count = helper->commit_count();
+
+  auto task = [](base::WeakPtr<content::WebContents> web_contents,
+                 IntentPickerTabHelper* helper, int commit_count,
+                 std::vector<IntentPickerAppInfo> apps) {
+    if (!web_contents)
+      return;
+    if (helper->commit_count() != commit_count)
+      return;
+
+    helper->ShowIconForApps(apps);
+  };
+
+  GetAppsForIntentPicker(
+      web_contents,
+      base::BindOnce(task, web_contents->GetWeakPtr(), helper, commit_count));
+}
+
+void ShowIntentPickerOrLaunchApp(content::WebContents* web_contents,
+                                 const GURL& url) {
+  FindAppsForUrl(
+      web_contents, url,
+      base::BindOnce(&ShowIntentPickerOrLaunchAppImpl, web_contents, url));
 }
 
 bool IntentPickerPwaPersistenceEnabled() {

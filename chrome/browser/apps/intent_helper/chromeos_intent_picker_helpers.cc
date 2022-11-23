@@ -45,14 +45,14 @@ namespace {
 
 bool ShouldAutoDisplayUi(
     const std::vector<IntentPickerAppInfo>& apps_for_picker,
-    content::NavigationHandle* navigation_handle) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
+    NavigationInfo navigation_info) {
+  content::WebContents* web_contents = navigation_info.web_contents;
 
   if (web_contents->GetVisibility() == content::Visibility::HIDDEN) {
     return false;
   }
 
-  const GURL& url = navigation_handle->GetURL();
+  const GURL& url = navigation_info.url;
 
   // Disable Auto-display in the new Intent Picker UI unless it is specifically
   // re-enabled.
@@ -65,7 +65,7 @@ bool ShouldAutoDisplayUi(
   if (InAppBrowser(web_contents))
     return false;
 
-  if (!ShouldOverrideUrlLoading(GetStartingGURL(navigation_handle), url))
+  if (!ShouldOverrideUrlLoading(navigation_info.starting_url, url))
     return false;
 
   Profile* profile =
@@ -99,10 +99,10 @@ bool ShouldAutoDisplayUi(
 }
 
 PickerShowState GetPickerShowState(
-    content::NavigationHandle* navigation_handle,
+    NavigationInfo navigation_info,
     const std::vector<IntentPickerAppInfo>& apps_for_picker) {
-  return ShouldAutoDisplayUi(apps_for_picker, navigation_handle) &&
-                 IsNavigateFromLink(navigation_handle)
+  return ShouldAutoDisplayUi(apps_for_picker, navigation_info) &&
+                 navigation_info.is_navigate_from_link
              ? PickerShowState::kPopOut
              : PickerShowState::kOmnibox;
 }
@@ -120,18 +120,18 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 
 }  // namespace
 
-void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
+void MaybeShowIntentPickerBubble(NavigationInfo navigation_info,
                                  std::vector<IntentPickerAppInfo> apps) {
-  if (apps.empty() || GetPickerShowState(navigation_handle, apps) ==
-                          PickerShowState::kOmnibox) {
+  if (apps.empty() ||
+      GetPickerShowState(navigation_info, apps) == PickerShowState::kOmnibox) {
     return;
   }
 
   IntentHandlingMetrics::RecordIntentPickerIconEvent(
       IntentHandlingMetrics::IntentPickerIconEvent::kAutoPopOut);
 
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  const GURL& url = navigation_handle->GetURL();
+  content::WebContents* web_contents = navigation_info.web_contents;
+  const GURL& url = navigation_info.url;
 
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),
