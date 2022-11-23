@@ -86,6 +86,7 @@ class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class ParentAccessAsh;
 class PolicyServiceAsh;
+class PowerAsh;
 class PrefsAsh;
 class PrintingMetricsAsh;
 class RemotingAsh;
@@ -527,6 +528,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
+  std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
