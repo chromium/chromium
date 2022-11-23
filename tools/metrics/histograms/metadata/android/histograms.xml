@@ -3834,7 +3834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AppDataDirectory.Size" units="KiB"
-    expires_after="2022-12-01">
+    expires_after="2023-06-01">
   <owner>xiaq@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3844,7 +3844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AppDataDirectory.TimeToComputeSize" units="ms"
-    expires_after="2022-12-01">
+    expires_after="2023-06-01">
   <owner>xiaq@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
