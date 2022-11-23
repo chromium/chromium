@@ -26,8 +26,6 @@ struct CrossThreadTraits {
 
   template <typename Functor, typename... Args>
   static inline auto BindOnce(Functor&& functor, Args&&... args) {
-    return base::BindOnce(std::forward<Functor>(functor),
-                          std::forward<Args>(args)...);
     return ::base::BindOnce(std::forward<Functor>(functor),
                             std::forward<Args>(args)...);
   }
