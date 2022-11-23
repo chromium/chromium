@@ -701,9 +701,9 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
   // some cases, the task has beend created but window property in aura window
   // haven't been updated and still kept "session_id". In this case, if the
   // session's task created, just return the latest task info.
-  if (session_id_to_task_id_map_.contains(*session_id)) {
+  if (base::Contains(session_id_to_task_id_map_, *session_id)) {
     auto mapped_task_id = session_id_to_task_id_map_[*session_id];
-    if (task_id_to_arc_app_window_info_.contains(mapped_task_id))
+    if (base::Contains(task_id_to_arc_app_window_info_, mapped_task_id))
       return task_id_to_arc_app_window_info_[mapped_task_id].get();
   }
 

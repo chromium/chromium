@@ -287,9 +287,6 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
 // Generate a human-readable name from a PWG self-describing name.  If
 // `pwg_name` is not a valid self-describing media size, return an empty string.
 std::string NameForSelfDescribingSize(const std::string& pwg_name) {
-  using printing::Unit::kInches;
-  using printing::Unit::kMillimeters;
-
   // The expected format is area_description_dimensions, and dimensions are
   // WxHmm or WxHin.  Both W and H can contain decimals.
   static const base::NoDestructor<re2::RE2> media_name_pattern(
@@ -304,7 +301,7 @@ std::string NameForSelfDescribingSize(const std::string& pwg_name) {
                        << pwg_name;
     return "";
   }
-  printing::Unit units = unit_str == "in" ? kInches : kMillimeters;
+  Unit units = unit_str == "in" ? Unit::kInches : Unit::kMillimeters;
 
   // If the name appears to end with approximately the paper dimensions, just
   // display the dimensions.  This avoids having things like "Card 4x6" and
@@ -318,12 +315,12 @@ std::string NameForSelfDescribingSize(const std::string& pwg_name) {
       base::StartsWith(width, name_width) &&
       base::StartsWith(height, name_height)) {
     switch (units) {
-      case kInches:
+      case Unit::kInches:
         return l10n_util::GetStringFUTF8(PRINT_PREVIEW_MEDIA_DIMENSIONS_INCHES,
                                          base::ASCIIToUTF16(width),
                                          base::ASCIIToUTF16(height));
 
-      case kMillimeters:
+      case Unit::kMillimeters:
         return l10n_util::GetStringFUTF8(PRINT_PREVIEW_MEDIA_DIMENSIONS_MM,
                                          base::ASCIIToUTF16(width),
                                          base::ASCIIToUTF16(height));
@@ -349,13 +346,13 @@ std::string NameForSelfDescribingSize(const std::string& pwg_name) {
   std::string clean_name = base::JoinString(words, " ");
 
   switch (units) {
-    case kInches:
+    case Unit::kInches:
       return l10n_util::GetStringFUTF8(
           PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_INCHES,
           base::ASCIIToUTF16(clean_name), base::ASCIIToUTF16(width),
           base::ASCIIToUTF16(height));
 
-    case kMillimeters:
+    case Unit::kMillimeters:
       return l10n_util::GetStringFUTF8(
           PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_MM,
           base::ASCIIToUTF16(clean_name), base::ASCIIToUTF16(width),
