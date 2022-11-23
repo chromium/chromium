@@ -35,9 +35,9 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
+import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
-import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.js';
 
 import {getTemplate} from './os_settings_ui.html.js';
 
@@ -181,7 +181,6 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   private showKerberosSection_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
-  private prefToSettingMetricConverter_: PrefToSettingMetricConverter;
   private scrollEndDebouncer_: Debouncer|null;
 
   constructor() {
@@ -192,11 +191,6 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
      * defer navigation until drawer animation completes.
      */
     this.activeRoute_ = null;
-
-    /**
-     * Converts prefs to settings metrics to help record pref changes.
-     */
-    this.prefToSettingMetricConverter_ = new PrefToSettingMetricConverter();
 
     this.scrollEndDebouncer_ = null;
 
@@ -391,9 +385,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
 
   private onSettingChange_(e: CustomEvent<{prefKey: string, prefValue: any}>) {
     const {prefKey, prefValue} = e.detail;
-    const settingMetric =
-        this.prefToSettingMetricConverter_.convertPrefToSettingMetric(
-            prefKey, prefValue);
+    const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
 
     // New metrics for this setting pref have not yet been implemented.
     if (!settingMetric) {
