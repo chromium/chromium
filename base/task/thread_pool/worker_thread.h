@@ -93,6 +93,10 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // TaskTracker after calling OnMainExit() on the Delegate.
     virtual void OnMainExit(WorkerThread* worker) {}
 
+    // Called by a WorkerThread when it is woken up without any work being
+    // available for it to run.
+    virtual void RecordUnnecessaryWakeup() {}
+
     static constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
   };
 

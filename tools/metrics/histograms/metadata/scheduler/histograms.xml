@@ -293,6 +293,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
+    expires_after="2023-02-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Records a hit when a thread pool worker thread woke up unnecessarily (when
+    the first GetWork called by a WorkerThread post-wakeup doesn't return a
+    task). This count can be compared between experiments aiming to reduce
+    wakeups. Or, it could be used to derive wakeups/{foo} by using UMA formulas
+    against other time-or-event-based metrics.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

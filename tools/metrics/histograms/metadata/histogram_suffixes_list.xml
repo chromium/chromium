@@ -6323,6 +6323,7 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="Renderer"
       label="ThreadPools for renderer processes."/>
   <affected-histogram name="ThreadPool.NumTasksBeforeDetach"/>
+  <affected-histogram name="ThreadPool.UnnecessaryWakeup"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ThreadPoolWorkerGroup" separator=".">
@@ -6333,6 +6334,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Browser"/>
   <affected-histogram name="ThreadPool.NumTasksBeforeDetach.ContentChild"/>
   <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Renderer"/>
+  <affected-histogram name="ThreadPool.UnnecessaryWakeup.Browser"/>
+  <affected-histogram name="ThreadPool.UnnecessaryWakeup.ContentChild"/>
+  <affected-histogram name="ThreadPool.UnnecessaryWakeup.GPU"/>
+  <affected-histogram name="ThreadPool.UnnecessaryWakeup.Renderer"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TileUiSurface" separator="." ordering="prefix,2">

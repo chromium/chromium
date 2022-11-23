@@ -216,9 +216,6 @@ class BASE_EXPORT TaskTracker {
 
   TaskAnnotator task_annotator_;
 
-  // Suffix for histograms recorded by this TaskTracker.
-  const std::string histogram_label_;
-
   // Indicates whether logging information about TaskPriority::BEST_EFFORT tasks
   // was enabled with a command line switch.
   const bool has_log_best_effort_tasks_switch_;

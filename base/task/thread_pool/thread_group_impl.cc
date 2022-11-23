@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
@@ -211,6 +212,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   void DidProcessTask(RegisteredTaskSource task_source) override;
   TimeDelta GetSleepTimeout() override;
   void OnMainExit(WorkerThread* worker) override;
+  void RecordUnnecessaryWakeup() override;
 
   // BlockingObserver:
   void BlockingStarted(BlockingType blocking_type) override;
@@ -334,6 +336,7 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
                                  TrackedRef<TaskTracker> task_tracker,
                                  TrackedRef<Delegate> delegate)
     : ThreadGroup(std::move(task_tracker), std::move(delegate)),
+      histogram_label_(histogram_label),
       thread_group_label_(thread_group_label),
       thread_type_hint_(thread_type_hint),
       idle_workers_set_cv_for_testing_(lock_.CreateConditionVariable()),
@@ -773,6 +776,15 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainExit(
 #endif
   if (outer_->num_workers_cleaned_up_for_testing_cv_)
     outer_->num_workers_cleaned_up_for_testing_cv_->Signal();
+}
+
+void ThreadGroupImpl::WorkerThreadDelegateImpl::RecordUnnecessaryWakeup() {
+  base::BooleanHistogram::FactoryGet(
+      std::string("ThreadPool.UnnecessaryWakeup.") + outer_->histogram_label_,
+      base::Histogram::kUmaTargetedHistogramFlag)
+      ->Add(true);
+
+  TRACE_EVENT_INSTANT("wakeup.flow", "ThreadPool.UnnecessaryWakeup");
 }
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(

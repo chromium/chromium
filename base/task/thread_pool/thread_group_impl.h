@@ -274,6 +274,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     return initialized_in_start_;
   }
 
+  const std::string histogram_label_;
   const std::string thread_group_label_;
   const ThreadType thread_type_hint_;
 
