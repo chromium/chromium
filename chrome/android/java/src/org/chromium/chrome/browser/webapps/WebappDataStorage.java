@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
@@ -16,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -632,14 +632,8 @@ public class WebappDataStorage {
      * Fetches the timestamp that the WebAPK was installed from the PackageManager.
      */
     private long fetchWebApkInstallTimestamp(String webApkPackageName) {
-        try {
-            PackageManager packageManager =
-                    ContextUtils.getApplicationContext().getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(webApkPackageName, 0);
-            return packageInfo.firstInstallTime;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-        return 0;
+        PackageInfo packageInfo = PackageUtils.getPackageInfo(webApkPackageName, 0);
+        return packageInfo == null ? 0 : packageInfo.firstInstallTime;
     }
 
     /**

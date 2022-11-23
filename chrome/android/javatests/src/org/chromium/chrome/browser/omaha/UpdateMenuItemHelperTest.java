@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omaha;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
-import android.content.Context;
 import android.os.Build;
 
 import androidx.test.espresso.intent.Intents;
@@ -72,14 +71,14 @@ public class UpdateMenuItemHelperTest {
         }
 
         @Override
-        public String getCurrentlyUsedVersion(Context applicationContext) {
+        public String getCurrentlyUsedVersion() {
             Assert.assertNotNull("Never set the current version", mCurrentVersion);
             mAskedForCurrentVersion = true;
             return mCurrentVersion;
         }
 
         @Override
-        public String getLatestKnownVersion(Context applicationContext) {
+        public String getLatestKnownVersion() {
             Assert.assertNotNull("Never set the latest version", mLatestVersion);
             mAskedForLatestVersion = true;
             return mLatestVersion;

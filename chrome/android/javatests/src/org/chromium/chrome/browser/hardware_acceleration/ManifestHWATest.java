@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.hardware_acceleration;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
@@ -16,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.PackageUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -29,10 +28,7 @@ public class ManifestHWATest {
     @Test
     @SmallTest
     public void testAccelerationDisabled() throws Exception {
-        Context context = InstrumentationRegistry.getTargetContext();
-        PackageInfo info = context.getPackageManager().getPackageInfo(
-                context.getApplicationInfo().packageName,
-                PackageManager.GET_ACTIVITIES);
+        PackageInfo info = PackageUtils.getApplicationPackageInfo(PackageManager.GET_ACTIVITIES);
         for (ActivityInfo activityInfo : info.activities) {
             String activityName = activityInfo.targetActivity != null ? activityInfo.targetActivity
                                                                       : activityInfo.name;

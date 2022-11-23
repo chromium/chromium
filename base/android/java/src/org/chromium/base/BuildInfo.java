@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.text.TextUtils;
@@ -148,98 +147,81 @@ public class BuildInfo {
     @VisibleForTesting
     BuildInfo() {
         sInitialized = true;
-        try {
-            Context appContext = ContextUtils.getApplicationContext();
-            String hostPackageName = appContext.getPackageName();
-            PackageManager pm = appContext.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(hostPackageName, 0);
-            hostVersionCode = packageVersionCode(pi);
-            if (sBrowserPackageInfo != null) {
-                packageName = sBrowserPackageInfo.packageName;
-                versionCode = packageVersionCode(sBrowserPackageInfo);
-                versionName = nullToEmpty(sBrowserPackageInfo.versionName);
-                sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
-                sBrowserPackageInfo = null;
-            } else {
-                packageName = hostPackageName;
-                versionCode = hostVersionCode;
-                versionName = nullToEmpty(pi.versionName);
-                sBrowserApplicationInfo = appContext.getApplicationInfo();
-            }
 
-            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
-            installerPackageName = nullToEmpty(pm.getInstallerPackageName(packageName));
-
-            PackageInfo gmsPackageInfo = null;
-            try {
-                gmsPackageInfo = pm.getPackageInfo("com.google.android.gms", 0);
-            } catch (NameNotFoundException e) {
-                // TODO(b/197112084): Re-enable the logging
-                // Log.d(TAG, "GMS package is not found.");
-            }
-            gmsVersionCode = gmsPackageInfo != null
-                    ? String.valueOf(packageVersionCode(gmsPackageInfo))
-                    : "gms versionCode not available.";
-
-            String hasCustomThemes = "true";
-            try {
-                // Substratum is a theme engine that enables users to use custom themes provided
-                // by theme apps. Sometimes these can cause crashs if not installed correctly.
-                // These crashes can be difficult to debug, so knowing if the theme manager is
-                // present on the device is useful (http://crbug.com/820591).
-                pm.getPackageInfo("projekt.substratum", 0);
-            } catch (NameNotFoundException e) {
-                hasCustomThemes = "false";
-            }
-            customThemes = hasCustomThemes;
-
-            String currentResourcesVersion = "Not Enabled";
-            // Controlled by target specific build flags.
-            if (BuildConfig.R_STRING_PRODUCT_VERSION != 0) {
-                try {
-                    // This value can be compared with the actual product version to determine if
-                    // corrupted resources were the cause of a crash. This can happen if the app
-                    // loads resources from the outdated package  during an update
-                    // (http://crbug.com/820591).
-                    currentResourcesVersion = ContextUtils.getApplicationContext().getString(
-                            BuildConfig.R_STRING_PRODUCT_VERSION);
-                } catch (Exception e) {
-                    currentResourcesVersion = "Not found";
-                }
-            }
-            resourcesVersion = currentResourcesVersion;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
-            } else {
-                abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
-            }
-
-            // The value is truncated, as this is used for crash and UMA reporting.
-            androidBuildFingerprint = Build.FINGERPRINT.substring(
-                    0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
-
-            // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
-            UiModeManager uiModeManager =
-                    (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
-            isTV = uiModeManager != null
-                    && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-
-            boolean isAutomotive;
-            try {
-                isAutomotive = pm.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE);
-            } catch (SecurityException e) {
-                Log.e(TAG, "Unable to query for Automotive system feature", e);
-
-                // `hasSystemFeature` can possibly throw an exception on modified instances of
-                // Android. In this case, assume the device is not a car since automotive vehicles
-                // should not have such a modification.
-                isAutomotive = false;
-            }
-            this.isAutomotive = isAutomotive;
-        } catch (NameNotFoundException e) {
-            throw new RuntimeException(e);
+        Context appContext = ContextUtils.getApplicationContext();
+        String hostPackageName = appContext.getPackageName();
+        PackageManager pm = appContext.getPackageManager();
+        PackageInfo pi = PackageUtils.getPackageInfo(hostPackageName, 0);
+        hostVersionCode = packageVersionCode(pi);
+        if (sBrowserPackageInfo != null) {
+            packageName = sBrowserPackageInfo.packageName;
+            versionCode = packageVersionCode(sBrowserPackageInfo);
+            versionName = nullToEmpty(sBrowserPackageInfo.versionName);
+            sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
+            sBrowserPackageInfo = null;
+        } else {
+            packageName = hostPackageName;
+            versionCode = hostVersionCode;
+            versionName = nullToEmpty(pi.versionName);
+            sBrowserApplicationInfo = appContext.getApplicationInfo();
         }
+
+        hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
+        installerPackageName = nullToEmpty(pm.getInstallerPackageName(packageName));
+
+        PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
+        gmsVersionCode = gmsPackageInfo != null ? String.valueOf(packageVersionCode(gmsPackageInfo))
+                                                : "gms versionCode not available.";
+
+        // Substratum is a theme engine that enables users to use custom themes provided
+        // by theme apps. Sometimes these can cause crashs if not installed correctly.
+        // These crashes can be difficult to debug, so knowing if the theme manager is
+        // present on the device is useful (http://crbug.com/820591).
+        customThemes = String.valueOf(PackageUtils.isPackageInstalled("projekt.substratum"));
+
+        String currentResourcesVersion = "Not Enabled";
+        // Controlled by target specific build flags.
+        if (BuildConfig.R_STRING_PRODUCT_VERSION != 0) {
+            try {
+                // This value can be compared with the actual product version to determine if
+                // corrupted resources were the cause of a crash. This can happen if the app
+                // loads resources from the outdated package  during an update
+                // (http://crbug.com/820591).
+                currentResourcesVersion = ContextUtils.getApplicationContext().getString(
+                        BuildConfig.R_STRING_PRODUCT_VERSION);
+            } catch (Exception e) {
+                currentResourcesVersion = "Not found";
+            }
+        }
+        resourcesVersion = currentResourcesVersion;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
+        } else {
+            abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
+        }
+
+        // The value is truncated, as this is used for crash and UMA reporting.
+        androidBuildFingerprint = Build.FINGERPRINT.substring(
+                0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
+
+        // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
+        UiModeManager uiModeManager = (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
+        isTV = uiModeManager != null
+                && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+
+        boolean isAutomotive;
+        try {
+            isAutomotive = pm.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE);
+        } catch (SecurityException e) {
+            Log.e(TAG, "Unable to query for Automotive system feature", e);
+
+            // `hasSystemFeature` can possibly throw an exception on modified instances of
+            // Android. In this case, assume the device is not a car since automotive vehicles
+            // should not have such a modification.
+            isAutomotive = false;
+        }
+        this.isAutomotive = isAutomotive;
     }
 
     /**

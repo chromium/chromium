@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omaha;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
@@ -23,6 +22,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -251,7 +251,7 @@ public class UpdateStatusProvider {
         protected UpdateStatus doInBackground() {
             UpdateStatus testStatus = getTestStatus();
             if (testStatus != null) return testStatus;
-            return getRealStatus(mContext);
+            return getRealStatus();
         }
 
         @Override
@@ -286,16 +286,16 @@ public class UpdateStatusProvider {
             return status;
         }
 
-        private UpdateStatus getRealStatus(Context context) {
+        private UpdateStatus getRealStatus() {
             UpdateStatus status = new UpdateStatus();
 
-            if (VersionNumberGetter.isNewerVersionAvailable(context)) {
+            if (VersionNumberGetter.isNewerVersionAvailable()) {
                 status.updateUrl = MarketURLGetter.getMarketUrl();
-                status.latestVersion =
-                        VersionNumberGetter.getInstance().getLatestKnownVersion(context);
+                status.latestVersion = VersionNumberGetter.getInstance().getLatestKnownVersion();
 
-                boolean allowedToUpdate =
-                        checkForSufficientStorage() && isGooglePlayStoreAvailable(context);
+                boolean allowedToUpdate = checkForSufficientStorage()
+                        && PackageUtils.isPackageInstalled(
+                                GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE);
                 status.updateState =
                         allowedToUpdate ? UpdateState.UPDATE_AVAILABLE : UpdateState.NONE;
 
@@ -325,16 +325,6 @@ public class UpdateStatusProvider {
             if (minRequiredStorage == -1) return true;
 
             return size >= minRequiredStorage;
-        }
-
-        private boolean isGooglePlayStoreAvailable(Context context) {
-            try {
-                context.getPackageManager().getPackageInfo(
-                        GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
-            }
-            return true;
         }
 
         private long getSize(StatFs statFs) {

@@ -49,6 +49,7 @@ public class PackageUtils {
      * @return The package's version code if found, -1 otherwise.
      */
     public static int getPackageVersion(String packageName) {
+        // TODO(agrieve): Return a long and move BuildInfo.packageVersionCode() to this class.
         PackageInfo packageInfo = getPackageInfo(packageName, 0);
         if (packageInfo != null) return packageInfo.versionCode;
         return -1;

@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.webapps.launchpad;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -58,15 +58,14 @@ public class LaunchpadUtils {
         intent.addCategory(CATEGORY_WEBAPK_API);
         for (ResolveInfo info :
                 packageManager.queryIntentServices(intent, PackageManager.MATCH_ALL)) {
-            if (info.serviceInfo.packageName != null
-                    && WebApkValidator.isValidV1WebApk(context, info.serviceInfo.packageName)) {
-                try {
-                    PackageInfo packageInfo =
-                            packageManager.getPackageInfo(info.serviceInfo.packageName, 0);
-                    WebappInfo webApkInfo =
-                            WebappInfo.create(WebApkIntentDataProviderFactory.create(new Intent(),
-                                    packageInfo.packageName, "", ShortcutSource.UNKNOWN,
-                                    false /* forceNavigation */,
+            String packageName = info.serviceInfo.packageName;
+            if (packageName != null && WebApkValidator.isValidV1WebApk(context, packageName)) {
+                if (!PackageUtils.isPackageInstalled(packageName)) {
+                    Log.e(TAG, info.serviceInfo.packageName + " doesn't exist");
+                } else {
+                    WebappInfo webApkInfo = WebappInfo.create(
+                            WebApkIntentDataProviderFactory.create(new Intent(), packageName, "",
+                                    ShortcutSource.UNKNOWN, false /* forceNavigation */,
                                     false /* isSplashProvidedByWebApk */, null /* shareData */,
                                     null /* shareDataActivityClassName */));
                     if (webApkInfo != null) {
@@ -75,8 +74,6 @@ public class LaunchpadUtils {
                                 webApkInfo.icon().bitmap(), webApkInfo.shortcutItems());
                         apps.add(item);
                     }
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, info.serviceInfo.packageName + " doesn't exist");
                 }
             }
         }

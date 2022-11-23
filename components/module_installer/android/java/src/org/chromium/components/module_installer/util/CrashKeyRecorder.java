@@ -6,15 +6,13 @@ package org.chromium.components.module_installer.util;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.TextUtils;
 
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 
@@ -33,14 +31,9 @@ class CrashKeyRecorder {
         // Get modules that are fully installed as split APKs (excluding base which is always
         // installed). Tree set to have ordered and, thus, deterministic results.
         Set<String> fullyInstalledModules = new TreeSet<>();
-        try {
-            PackageManager pm = context.getPackageManager();
-            PackageInfo packageInfo = pm.getPackageInfo(BuildInfo.getInstance().packageName, 0);
-            if (packageInfo.splitNames != null) {
-                fullyInstalledModules.addAll(Arrays.asList(packageInfo.splitNames));
-            }
-        } catch (NameNotFoundException e) {
-            throw new RuntimeException(e);
+        PackageInfo packageInfo = PackageUtils.getApplicationPackageInfo(0);
+        if (packageInfo.splitNames != null) {
+            fullyInstalledModules.addAll(Arrays.asList(packageInfo.splitNames));
         }
 
         // Create temporary split install manager to retrieve both fully installed and emulated

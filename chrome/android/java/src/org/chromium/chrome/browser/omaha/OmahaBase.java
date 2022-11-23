@@ -319,7 +319,7 @@ public class OmahaBase {
      * @return version currently installed on the device.
      */
     protected String getInstalledVersion() {
-        return VersionNumberGetter.getInstance().getCurrentlyUsedVersion(getContext());
+        return VersionNumberGetter.getInstance().getCurrentlyUsedVersion();
     }
 
     protected boolean generateAndPostRequest(long currentTimestamp, String sessionID) {

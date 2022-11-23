@@ -24,10 +24,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
+import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
 import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.compat.ApiHelperForP;
 
 import java.security.MessageDigest;
@@ -109,22 +111,20 @@ public final class SafeModeService extends Service {
                 return ApiHelperForP.hasSigningCertificate(context.getPackageManager(), packageName,
                         expectedCertHash, PackageManager.CERT_INPUT_SHA256);
             }
-            try {
-                PackageInfo info = context.getPackageManager().getPackageInfo(
-                        packageName, PackageManager.GET_SIGNATURES);
+            PackageInfo info =
+                    PackageUtils.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+            if (info != null) {
                 Signature[] signatures = info.signatures;
-                if (info.signatures == null) {
+                if (signatures == null) {
                     return false;
                 }
-                for (Signature signature : info.signatures) {
+                for (Signature signature : signatures) {
                     if (Arrays.equals(expectedCertHash, sha256Hash(signature))) {
                         return true;
                     }
                 }
-                return false; // no matches
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
             }
+            return false; // no matches
         }
 
         @Nullable

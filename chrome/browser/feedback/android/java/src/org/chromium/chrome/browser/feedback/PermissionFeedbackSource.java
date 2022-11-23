@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.TextUtils;
-import android.util.Pair;
 
-import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageUtils;
 
 import java.util.Map;
 
@@ -25,28 +21,22 @@ class PermissionFeedbackSource implements FeedbackSource {
         String grantedPermissions = "";
         String notGrantedPermission = "";
 
-        try {
-            Context ctx = ContextUtils.getApplicationContext();
-            PackageInfo pi = ctx.getPackageManager().getPackageInfo(
-                    ctx.getPackageName(), PackageManager.GET_PERMISSIONS);
-            if (pi == null || pi.requestedPermissions == null) return null;
+        PackageInfo pi = PackageUtils.getApplicationPackageInfo(PackageManager.GET_PERMISSIONS);
+        if (pi == null || pi.requestedPermissions == null) return null;
 
-            for (int i = 0; i < pi.requestedPermissions.length; i++) {
-                int flags = pi.requestedPermissionsFlags[i];
-                String permission = pi.requestedPermissions[i];
-                if ((flags & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                    if (!TextUtils.isEmpty(grantedPermissions)) grantedPermissions += ", ";
-                    grantedPermissions += permission;
-                } else {
-                    if (!TextUtils.isEmpty(notGrantedPermission)) notGrantedPermission += ", ";
-                    notGrantedPermission += permission;
-                }
+        for (int i = 0; i < pi.requestedPermissions.length; i++) {
+            int flags = pi.requestedPermissionsFlags[i];
+            String permission = pi.requestedPermissions[i];
+            if ((flags & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                if (!TextUtils.isEmpty(grantedPermissions)) grantedPermissions += ", ";
+                grantedPermissions += permission;
+            } else {
+                if (!TextUtils.isEmpty(notGrantedPermission)) notGrantedPermission += ", ";
+                notGrantedPermission += permission;
             }
-        } catch (NameNotFoundException e) {
-            return null;
         }
 
-        return CollectionUtil.newHashMap(Pair.create("Granted Permissions", grantedPermissions),
-                Pair.create("Not Granted or Requested Permissions", notGrantedPermission));
+        return Map.of("Granted Permissions", grantedPermissions,
+                "Not Granted or Requested Permissions", notGrantedPermission);
     }
 }

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,10 +24,10 @@ import org.chromium.base.BaseFeatureList;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -614,18 +613,10 @@ public class ChildProcessConnection {
             if (childMismatchError != null) {
                 // Check if it looks like the browser's package version has been changed since the
                 // browser process launched (i.e. if the install somehow did not kill our process)
-                boolean versionHasChanged;
-                try {
-                    PackageInfo latestPackage =
-                            ContextUtils.getApplicationContext().getPackageManager().getPackageInfo(
-                                    BuildInfo.getInstance().packageName, 0);
-                    long latestVersionCode = BuildInfo.packageVersionCode(latestPackage);
-                    long loadedVersionCode = BuildInfo.getInstance().versionCode;
-                    versionHasChanged = latestVersionCode != loadedVersionCode;
-                } catch (PackageManager.NameNotFoundException e) {
-                    // Package uninstalled since we launched? Then the version has "changed"...
-                    versionHasChanged = true;
-                }
+                PackageInfo latestPackage = PackageUtils.getApplicationPackageInfo(0);
+                long latestVersionCode = BuildInfo.packageVersionCode(latestPackage);
+                long loadedVersionCode = BuildInfo.getInstance().versionCode;
+                boolean versionHasChanged = latestVersionCode != loadedVersionCode;
                 RecordHistogram.recordBooleanHistogram(
                         "Android.ChildMismatch.BrowserVersionChanged2", versionHasChanged);
                 childMismatchError += "; browser version has changed: " + versionHasChanged;
