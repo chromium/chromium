@@ -35,6 +35,9 @@ message PredictionResult {
   // field. Each entry tells what the result(score) is. The OutputConfig tells
   // us how to interpret it.
   repeated LabeledResult labeled_results = 3;
+
+  // The output config from the metadata.
+  optional OutputConfig output_config = 4;
 }
 
 // Partial training data set with only inputs, used when observation period has

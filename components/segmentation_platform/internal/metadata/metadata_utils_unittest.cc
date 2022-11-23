@@ -104,20 +104,6 @@ TEST_F(MetadataUtilsTest, MetadataValidation) {
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateMetadata(metadata));
 
-  // Verifying adding a single `output_label` in metadata.
-  auto* output_label1 = metadata.add_output_labels();
-  output_label1->set_output_label("Share");
-  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-            metadata_utils::ValidateMetadata(metadata));
-  EXPECT_EQ(1, metadata.output_labels_size());
-
-  // Verifying adding another `output_label` in metadata.
-  auto* output_label2 = metadata.add_output_labels();
-  output_label2->set_output_label("Voice");
-  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-            metadata_utils::ValidateMetadata(metadata));
-  EXPECT_EQ(2, metadata.output_labels_size());
-
   proto::VersionInfo* version_info = metadata.mutable_version_info();
   version_info->set_metadata_min_version(
       proto::CurrentVersion::METADATA_VERSION + 1);

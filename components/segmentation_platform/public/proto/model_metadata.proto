@@ -283,17 +283,49 @@ message UMAOutput {
   optional uint64 duration = 2;
 }
 
+// Defines what type of model is supplied. Results are based on which
+// classifier the model is in.
+message Classifier {
+  // A classifier to interpret model results as a boolean.
+  message BooleanClassifier {
+    // Limit to classify result as false/true.
+    optional float threshold = 1;
+  }
+
+  // A classifier to interpret model results as one of multiple classes. Each
+  // output of the model corresponds to one of the classes.
+  message MultiClassClassifier {
+    // Number of top results the client is interested in. Must be less than
+    // or equal to the number of labels specified.
+    optional int64 top_k_outputs = 1;
+  }
+
+  oneof ClassifierType {
+    // Model result is classified as boolean.
+    BooleanClassifier boolean_classifier = 2;
+
+    // Model result is of multi-class type.
+    MultiClassClassifier multi_class_classifier = 3;
+  }
+}
+
 // Specified by client in the metadata on how to interpret the model results.
-message OutputLabel {
-  // The label to which this output is associated with. Each OutputLabel
-  // corresponds to one output.
-  optional string output_label = 1;
+message OutputConfig {
+  // Each `output_label` corresponds to one output. It signifies how to
+  // interpret the output.
+  repeated string output_label = 1;
+
+  // Tells the return type of the result for model evaluation.
+  optional Classifier classifier = 2;
 }
 
 // Metadata about a segmentation model for a given segment. Contains information
 // on how to use the model such as collecting signals, interpreting results etc.
 // Next tag: 16
 message SegmentationModelMetadata {
+  // Values for obsolete fields.
+  reserved 15;
+
   // The version information needed to validate segmentation models.
   optional VersionInfo version_info = 9;
 
@@ -375,10 +407,11 @@ message SegmentationModelMetadata {
     // Model returns any integer value.
     RETURN_TYPE_INTEGER = 4;
   }
-  // TODO(ritikagup@): Move the field inside OutputLabel.
+  // TODO(ritikagup@): Deprecate the field.
   optional OutputDescription return_type = 14;
 
-  // List of output labels, each label is attached to one of the output result
-  // of the model, describing what that output signify.
-  repeated OutputLabel output_labels = 15;
+  // Contains information about the model results. Supplied by the client. It
+  // gives a description of how should the results look like and how to
+  // interpret them.
+  optional OutputConfig output_config = 16;
 }
