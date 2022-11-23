@@ -13,7 +13,6 @@ async_test(function(t) {
       assert_equals(axFutureParent.childrenCount, 0);
 
       var expected_notifications = new Set();
-      expected_notifications.add("ChildrenChanged");
       expected_notifications.add("MarkDirty");
 
       while (expected_notifications.size) {
@@ -35,7 +34,7 @@ async_test(function(t) {
     var child = document.createElement("li");
     child.id = "future_child";
     futureParent.parentElement.appendChild(child);
-}, "A children changed notification is fired when an aria-owned child gets added to the tree.");
+}, "A mark dirty notification is fired when an aria-owned child gets added to the tree.");
 </script>
 
 <div id="container2">
@@ -54,7 +53,7 @@ async_test(function(t) {
     var axList1 = accessibilityController.accessibleElementById("list1");
     assert_equals(axList1.childrenCount, 0, "No children before setting aria-owns");
     var listener = t.step_func((notification) => {
-        assert_equals(notification, "ChildrenChanged");
+        assert_equals(notification, "MarkDirty");
         assert_equals(axList1.childrenCount, 1, "One child after setting aria-owns");
 
         axList1.removeNotificationListener(listener);
@@ -64,7 +63,7 @@ async_test(function(t) {
 
     var list1 = document.getElementById("list1");
     list1.setAttribute("aria-owns", "item1");
-}, "A children changed notification is fired when an aria-owned attribute is added to an element that causes it to reparent another element to become its child.");
+}, "A mark dirty notification is fired when an aria-owned attribute is added to an element that causes it to reparent another element to become its child.");
 </script>
 
 <div id="container3">
@@ -85,7 +84,7 @@ async_test((t) => {
     var axList2 = accessibilityController.accessibleElementById("newlist2");
     assert_equals(axList2.childrenCount, 1);
     var listener = t.step_func((notification) => {
-        assert_equals(notification, "ChildrenChanged");
+        assert_equals(notification, "MarkDirty");
         assert_equals(axList2.childrenCount, 0);
         assert_equals(axList1.childrenCount, 1);
 
@@ -97,5 +96,5 @@ async_test((t) => {
     list1.setAttribute("aria-owns", "newitem1");
     assert_equals(axList1.childrenCount, 1);
     assert_equals(axList2.childrenCount, 0);
-}, "A children changed notification is fired on the old parent when one of its children gets reparented to another element due to aria-owns.");
+}, "A mark dirty notification is fired on the old parent when one of its children gets reparented to another element due to aria-owns.");
 </script>

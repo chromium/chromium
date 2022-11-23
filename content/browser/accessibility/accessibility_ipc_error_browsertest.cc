@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     // notification triggered by the hide.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
-                                           ax::mojom::Event::kChildrenChanged);
+                                           ax::mojom::Event::kLayoutComplete);
     ASSERT_TRUE(ExecJs(
         shell(), "document.getElementById('p1').style.display = 'none';"));
     ASSERT_TRUE(waiter.WaitForNotification());
