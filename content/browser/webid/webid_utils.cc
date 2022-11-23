@@ -28,6 +28,10 @@ void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status) {
   auto* delegate = context->GetFederatedIdentitySharingPermissionContext();
+  if (!delegate) {
+    // The embedder may not have a delegate (e.g. webview)
+    return;
+  }
   delegate->SetIdpSigninStatus(
       origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
