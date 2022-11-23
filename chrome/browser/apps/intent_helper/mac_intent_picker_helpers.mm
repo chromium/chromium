@@ -8,6 +8,7 @@
 #import <SafariServices/SafariServices.h>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "net/base/mac/url_conversions.h"
@@ -16,6 +17,16 @@
 namespace apps {
 
 namespace {
+
+bool& UseFakeAppForTesting() {
+  static bool value = false;
+  return value;
+}
+
+std::string& FakeAppForTesting() {
+  static base::NoDestructor<std::string> value;
+  return *value;
+}
 
 IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
   NSString* app_name = nil;
@@ -43,6 +54,15 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
 }  // namespace
 
 absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
+  if (UseFakeAppForTesting()) {
+    std::string fake_app = FakeAppForTesting();
+    if (fake_app.empty())
+      return absl::nullopt;
+
+    return AppInfoForAppUrl(
+        [NSURL fileURLWithPath:base::SysUTF8ToNSString(fake_app)]);
+  }
+
   static bool universal_links_enabled =
       base::FeatureList::IsEnabled(features::kEnableUniveralLinks);
   if (!universal_links_enabled)
@@ -80,6 +100,11 @@ void LaunchMacApp(const GURL& url, const std::string& launch_name) {
                configuration:@{}
                        error:nil];
   }
+}
+
+void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path) {
+  UseFakeAppForTesting() = fake;
+  FakeAppForTesting() = app_path;
 }
 
 }  // namespace apps

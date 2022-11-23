@@ -47,12 +47,6 @@ void AppendAppsForUrlSync(
     const GURL& url,
     base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback,
     std::vector<IntentPickerAppInfo> apps) {
-#if BUILDFLAG(IS_MAC)
-  // On the Mac, if there is a Universal Link, it goes first.
-  if (absl::optional<IntentPickerAppInfo> mac_app = FindMacAppForUrl(url))
-    apps.push_back(std::move(mac_app.value()));
-#endif  // BUILDFLAG(IS_MAC)
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -90,16 +84,32 @@ void FindAppsForUrl(
                              std::move(apps));
       };
 
-  // TODO(crbug.com/1236141): Move the Mac intent code to be here, called async.
-
   IntentPickerTabHelper* helper =
       IntentPickerTabHelper::FromWebContents(web_contents);
   int commit_count = helper->commit_count();
 
+#if BUILDFLAG(IS_MAC)
+  // On the Mac, if there is a Universal Link, it goes first. Jump to a worker
+  // thread to do this.
+
+  auto get_mac_app = [](const GURL& url) {
+    std::vector<IntentPickerAppInfo> apps;
+    if (absl::optional<IntentPickerAppInfo> mac_app = FindMacAppForUrl(url))
+      apps.push_back(std::move(mac_app.value()));
+    return apps;
+  };
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(get_mac_app, url),
+      base::BindOnce(append_apps, web_contents->GetWeakPtr(), helper,
+                     commit_count, url, std::move(callback)));
+#else
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(append_apps, web_contents->GetWeakPtr(), helper,
                                 commit_count, url, std::move(callback),
                                 std::vector<IntentPickerAppInfo>()));
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void LaunchAppFromIntentPicker(content::WebContents* web_contents,
