@@ -106,7 +106,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   // Return the relative file path in the "storage/" subdirectory of test data
   // for the SQL file from which to initialize an async shared storage database
   // instance.
-  virtual const char* GetRelativeFilePath() { return nullptr; }
+  virtual std::string GetRelativeFilePath() { return nullptr; }
 
   std::unique_ptr<AsyncSharedStorageDatabase> Create() {
     if (GetType() != DBType::kInMemory)
@@ -663,16 +663,19 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   base::SimpleTestClock clock_;
 };
 
-class AsyncSharedStorageDatabaseImplFromFileV1Test
+class AsyncSharedStorageDatabaseImplFromFileTest
     : public AsyncSharedStorageDatabaseImplTest {
  public:
   DBType GetType() override { return DBType::kFileBackedFromExisting; }
 
-  const char* GetRelativeFilePath() override { return "shared_storage.v1.sql"; }
+  std::string GetRelativeFilePath() override {
+    return GetTestFileNameForCurrentVersion();
+  }
 };
 
-// Test loading version 1 database.
-TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
+// Test loading current version database.
+TEST_F(AsyncSharedStorageDatabaseImplFromFileTest,
+       CurrentVersion_LoadFromFile) {
   ASSERT_TRUE(async_database_);
 
   // Override the clock and set to the last time in the file that is used to
@@ -709,9 +712,9 @@ TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
 }
 
 class AsyncSharedStorageDatabaseImplFromFileV1NoBudgetTableTest
-    : public AsyncSharedStorageDatabaseImplFromFileV1Test {
+    : public AsyncSharedStorageDatabaseImplFromFileTest {
  public:
-  const char* GetRelativeFilePath() override {
+  std::string GetRelativeFilePath() override {
     return "shared_storage.v1.no_budget_table.sql";
   }
 };
@@ -749,14 +752,14 @@ TEST_F(AsyncSharedStorageDatabaseImplFromFileV1NoBudgetTableTest,
 }
 
 struct InitFailureTestCase {
-  const char* relative_file_path;
+  std::string relative_file_path;
   InitStatus expected_status;
 };
 
 std::vector<InitFailureTestCase> GetInitFailureTestCases() {
   return std::vector<InitFailureTestCase>(
-      {{"shared_storage.v1.init_too_new.sql", InitStatus::kTooNew},
-       {"shared_storage.v0.init_too_old.sql", InitStatus::kTooOld}});
+      {{"shared_storage.init_too_new.sql", InitStatus::kTooNew},
+       {GetTestFileNameForLatestDeprecatedVersion(), InitStatus::kTooOld}});
 }
 
 // Used by `testing::PrintToStringParamName()`.
@@ -775,7 +778,7 @@ class AsyncSharedStorageDatabaseImplFromFileWithFailureTest
  public:
   DBType GetType() override { return DBType::kFileBackedFromExisting; }
 
-  const char* GetRelativeFilePath() override {
+  std::string GetRelativeFilePath() override {
     return GetParam().relative_file_path;
   }
 };
@@ -785,8 +788,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetInitFailureTestCases()),
                          testing::PrintToStringParamName());
 
-TEST_P(AsyncSharedStorageDatabaseImplFromFileWithFailureTest,
-       Version1_Destroy) {
+TEST_P(AsyncSharedStorageDatabaseImplFromFileWithFailureTest, Destroy) {
   ASSERT_TRUE(async_database_);
 
   // Call an operation so that the database will attempt to be lazy-initialized.

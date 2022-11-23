@@ -414,7 +414,7 @@ class SharedStorageManagerTest : public testing::Test {
   // Return the relative file path in the "storage/" subdirectory of test data
   // for the SQL file from which to initialize an async shared storage database
   // instance.
-  virtual const char* GetRelativeFilePath() { return nullptr; }
+  virtual std::string GetRelativeFilePath() { return nullptr; }
 
   virtual DBType GetType() { return DBType::kInMemory; }
 
@@ -838,15 +838,17 @@ class SharedStorageManagerTest : public testing::Test {
   bool memory_trimmed_ = false;
 };
 
-class SharedStorageManagerFromFileV1Test : public SharedStorageManagerTest {
+class SharedStorageManagerFromFileTest : public SharedStorageManagerTest {
  public:
   DBType GetType() override { return DBType::kFileBackedFromExisting; }
 
-  const char* GetRelativeFilePath() override { return "shared_storage.v1.sql"; }
+  std::string GetRelativeFilePath() override {
+    return GetTestFileNameForCurrentVersion();
+  }
 };
 
-// Test loading version 1 database.
-TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
+// Test loading current version database.
+TEST_F(SharedStorageManagerFromFileTest, CurrentVersion_LoadFromFile) {
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   EXPECT_EQ(GetSync(google_com, u"key1").data, u"value1");
   EXPECT_EQ(GetSync(google_com, u"key2").data, u"value2");
@@ -974,9 +976,9 @@ TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
 }
 
 class SharedStorageManagerFromFileV1NoBudgetTableTest
-    : public SharedStorageManagerFromFileV1Test {
+    : public SharedStorageManagerFromFileTest {
  public:
-  const char* GetRelativeFilePath() override {
+  std::string GetRelativeFilePath() override {
     return "shared_storage.v1.no_budget_table.sql";
   }
 };

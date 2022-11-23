@@ -327,11 +327,17 @@ void VerifySharedStorageTablesAndColumns(sql::Database& db);
 [[nodiscard]] bool GetTestDataSharedStorageDir(base::FilePath* dir);
 
 [[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
-                                         const char* ascii_path);
+                                         std::string ascii_path);
 
 [[nodiscard]] std::string TimeDeltaToString(base::TimeDelta delta);
 
 [[nodiscard]] BudgetResult MakeBudgetResultForSqlError();
+
+[[nodiscard]] std::string GetTestFileNameForVersion(int version_number);
+
+[[nodiscard]] std::string GetTestFileNameForCurrentVersion();
+
+[[nodiscard]] std::string GetTestFileNameForLatestDeprecatedVersion();
 
 }  // namespace storage
 

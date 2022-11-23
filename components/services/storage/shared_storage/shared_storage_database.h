@@ -46,7 +46,7 @@ struct SharedStorageDatabaseOptions;
 class SpecialStoragePolicy;
 
 // Multiplier for determining the padded total size in bytes that an origin
-// is using.
+// is using. Exposed to content/ for testing.
 extern const int kSharedStorageEntryTotalBytesMultiplier;
 
 // Wraps its own `sql::Database` instance on behalf of the Shared Storage
@@ -72,6 +72,8 @@ class SharedStorageDatabase {
                    // number being too high.
     kTooOld = 4,  // Status if `LazyInit()` failed due to a version number being
                   // too low.
+    kUpgradeFailed =
+        5,  // Status if migration to current database version failed.
   };
 
   enum class DBFileStatus {
@@ -113,16 +115,20 @@ class SharedStorageDatabase {
                         // `Keys()`/`Entries()` exceeds INT_MAX.
   };
 
-  // Bundles a retrieved string from the database along with a field indicating
-  // whether the transaction was free of SQL errors.
+  // Bundles a retrieved string `data` and its last write time `last_used_time`
+  // from the database along with a field `result` indicating whether the
+  // transaction was free of SQL errors.
   struct GetResult {
     std::u16string data;
+    base::Time last_used_time = base::Time::Min();
     OperationResult result = OperationResult::kSqlError;
     GetResult();
     GetResult(const GetResult&) = delete;
     GetResult(GetResult&&);
     explicit GetResult(OperationResult result);
-    GetResult(std::u16string data, OperationResult result);
+    GetResult(std::u16string data,
+              base::Time last_used_time,
+              OperationResult result);
     ~GetResult();
     GetResult& operator=(const GetResult&) = delete;
     GetResult& operator=(GetResult&&);
@@ -183,6 +189,11 @@ class SharedStorageDatabase {
     EntriesResult& operator=(const EntriesResult&) = delete;
     EntriesResult& operator=(EntriesResult&&);
   };
+
+  // Exposed for testing.
+  static const int kCurrentVersionNumber;
+  static const int kCompatibleVersionNumber;
+  static const int kDeprecatedVersionNumber;
 
   // When `db_path` is empty, the database will be opened in memory only.
   SharedStorageDatabase(
@@ -277,7 +288,7 @@ class SharedStorageDatabase {
   [[nodiscard]] OperationResult Clear(url::Origin context_origin);
 
   // Returns the number of entries for `context_origin` in the database, or -1
-  // on error. Note that this call will update the origin's `last_used_time`.
+  // on error. Note that this call will update the origin's `creation_time`.
   // TODO(crbug.com/1277662): Consider renaming to something more descriptive.
   [[nodiscard]] int64_t Length(url::Origin context_origin);
 
@@ -302,7 +313,7 @@ class SharedStorageDatabase {
           pending_listener);
 
   // Clears all origins that match `storage_key_matcher` run on the owning
-  // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
+  // StoragePartition's `SpecialStoragePolicy` and have `creation_time` between
   // the times `begin` and `end`. If `perform_storage_cleanup` is true, vacuums
   // the database afterwards. Returns whether the transaction was successful.
   [[nodiscard]] OperationResult PurgeMatchingOrigins(
@@ -311,10 +322,10 @@ class SharedStorageDatabase {
       base::Time end,
       bool perform_storage_cleanup = false);
 
-  // Clear all entries for all origins whose `last_read_time` (i.e. creation
-  // time) falls before `clock_->Now() - origin_staleness_threshold_`. Also
-  // purges, for all origins, all privacy budget withdrawals that have
-  // `time_stamps` older than `clock_->Now() - budget_interval_`.
+  // Clear all entries for all origins whose `creation_time` falls before
+  // `clock_->Now() - origin_staleness_threshold_`. Also purges, for all
+  // origins, all privacy budget withdrawals that have `time_stamps` older than
+  // `clock_->Now() - budget_interval_`.
   [[nodiscard]] OperationResult PurgeStaleOrigins();
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
@@ -336,8 +347,7 @@ class SharedStorageDatabase {
   // retrieval was successful.
   [[nodiscard]] BudgetResult GetRemainingBudget(url::Origin context_origin);
 
-  // Retrieves the most recent creation time (currently in the schema as
-  // `last_used_time`) for `context_origin`.
+  // Retrieves the most recent `creation_time` for `context_origin`.
   [[nodiscard]] TimeResult GetCreationTime(url::Origin context_origin);
 
   // Calls `Length()`, `GetRemainingBudget()`, and `GetCreationTime()`, then
@@ -355,7 +365,7 @@ class SharedStorageDatabase {
   // Returns the `db_status_` for tests.
   [[nodiscard]] InitStatus DBStatusForTesting() const;
 
-  // Changes `last_used_time` to `new_creation_time` for `context_origin`.
+  // Changes `creation_time` to `new_creation_time` for `context_origin`.
   [[nodiscard]] bool OverrideCreationTimeForTesting(
       url::Origin context_origin,
       base::Time new_creation_time);
@@ -384,8 +394,8 @@ class SharedStorageDatabase {
   //
   // Sets two example key-value pairs for `origin1`, one example pair for
   // `origin2`, and two example pairs for `origin3`, while also overriding the
-  // `last_used_time` for `origin2` so that it is 1 day earlier and the
-  // `last_used_time` for `origin3` so that it is 60 days earlier.
+  // `creation_time` for `origin2` so that it is 1 day earlier and the
+  // `creation_time` for `origin3` so that it is 60 days earlier.
   [[nodiscard]] bool PopulateDatabaseForTesting(url::Origin origin1,
                                                 url::Origin origin2,
                                                 url::Origin origin3);
@@ -448,11 +458,11 @@ class SharedStorageDatabase {
                                  const std::u16string& key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Retrieves the `length` in `out_length`, and `last_used_time` (i.e. creation
-  // time) in `out_creation_time`, of `context_origin`. Leaves the `out_*`
-  // parameters unchanged if `context_origin` is not found in the database.
-  // Returns an `OperationResult` indicating success, error, or that the origin
-  // was not found.
+  // Retrieves the `length` in `out_length`, and `creation_time` in
+  // `out_creation_time`, of `context_origin`. Leaves the `out_*` parameters
+  // unchanged if `context_origin` is not found in the database. Returns an
+  // `OperationResult` indicating success, error, or that the origin was not
+  // found.
   [[nodiscard]] OperationResult GetOriginInfo(const std::string& context_origin,
                                               int64_t* out_length,
                                               base::Time* out_creation_time)
@@ -466,8 +476,9 @@ class SharedStorageDatabase {
                                   bool delete_origin_if_empty = false)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Inserts a triple for `(context_origin,key,value)` into
-  // `values_mapping`.
+  // Inserts a tuple for `(context_origin,key,value,clock_->Now())` into
+  // `values_mapping` (i.e. uses the current time as `last_used_time`).
+  // Also calls `UpdateLength()` with `delta=1`.
   [[nodiscard]] bool InsertIntoValuesMapping(const std::string& context_origin,
                                              const std::u16string& key,
                                              const std::u16string& value)

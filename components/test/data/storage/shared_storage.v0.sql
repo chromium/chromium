@@ -1,4 +1,4 @@
--- components_unittests --gtest_filter=SharedStorageDatabaseTest.Version1_DestroyTooOld
+-- components_unittests --gtest_filter=SharedStorageDatabaseTest.DestroyTooOld
 --
 -- .dump of a version 1 Shared Storage database (although erroneously marked as version 0).
 -- intentionally set up to fail initialization with error SharedStorageDatabase::InitStatus::kTooOld

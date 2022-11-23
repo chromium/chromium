@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
@@ -100,7 +101,7 @@ class SharedStorageDatabaseTest : public testing::Test {
   // Initialize a shared storage database instance from the SQL file at
   // `relative_file_path` in the "storage/" subdirectory of test data.
   std::unique_ptr<SharedStorageDatabase> LoadFromFile(
-      const char* relative_file_path) {
+      std::string relative_file_path) {
     if (!CreateDatabaseFromSQL(file_name_, relative_file_path)) {
       ADD_FAILURE() << "Failed loading " << relative_file_path;
       return nullptr;
@@ -133,9 +134,9 @@ class SharedStorageDatabaseTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// Test loading version 1 database.
-TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
-  db_ = LoadFromFile("shared_storage.v1.sql");
+// Test loading current version database.
+TEST_F(SharedStorageDatabaseTest, CurrentVersion_LoadFromFile) {
+  db_ = LoadFromFile(GetTestFileNameForCurrentVersion());
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -147,7 +148,15 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   EXPECT_EQ(db_->Get(google_com, u"key1").data, u"value1");
+  EXPECT_EQ(db_->Get(google_com, u"key1")
+                .last_used_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds(),
+            13312097333991364);
   EXPECT_EQ(db_->Get(google_com, u"key2").data, u"value2");
+  EXPECT_EQ(db_->Get(google_com, u"key2")
+                .last_used_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds(),
+            13313037427966159);
 
   // Because the SQL database is lazy-initialized, wait to verify tables and
   // columns until after the first call to `Get()`.
@@ -159,6 +168,10 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
 
   url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
   EXPECT_EQ(db_->Get(chromium_org, u"a").data, u"");
+  EXPECT_EQ(db_->Get(chromium_org, u"a")
+                .last_used_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds(),
+            13313037416916308);
 
   TestSharedStorageEntriesListener listener(
       task_environment_.GetMainThreadTaskRunner());
@@ -252,7 +265,8 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
   EXPECT_EQ(base::Time(), result.time);
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 9, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 18, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 1, 1);
@@ -362,7 +376,8 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 9, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 18, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 1, 1);
@@ -374,10 +389,10 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   EXPECT_TRUE(db_->Destroy());
 }
 
-TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
+TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
   // Initialization should fail, since the last compatible version number
   // is too high.
-  db_ = LoadFromFile("shared_storage.v1.init_too_new.sql");
+  db_ = LoadFromFile("shared_storage.init_too_new.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
   ASSERT_TRUE(SqlDB());
@@ -412,10 +427,10 @@ TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
   EXPECT_TRUE(db_->Destroy());
 }
 
-TEST_F(SharedStorageDatabaseTest, Version0_DestroyTooOld) {
+TEST_F(SharedStorageDatabaseTest, DestroyTooOld) {
   // Initialization should fail, since the current version number
   // is too low and we're forcing there not to be a retry attempt.
-  db_ = LoadFromFile("shared_storage.v0.init_too_old.sql");
+  db_ = LoadFromFile(GetTestFileNameForLatestDeprecatedVersion());
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
   ASSERT_TRUE(SqlDB());
@@ -471,7 +486,8 @@ class SharedStorageDatabaseParamTest
     histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram,
                                          db_->is_filebacked(), 1);
     if (db_->is_filebacked()) {
-      histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+      histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+      EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
       histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 0, 1);
       histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
     }
@@ -484,13 +500,31 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::PrintToStringParamName());
 
 TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
+  clock_.SetNow(base::Time::Now());
+
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  base::Time now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1");
 
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  base::Time last_used_time1 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to put distance between the last used times.
+  clock_.Advance(base::Hours(12));
+
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value2"));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value2");
+
+  // Verify that `last_used_time2` is set to `now` (within a tolerance).
+  base::Time last_used_time2 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_GT(last_used_time2, last_used_time1);
+  ASSERT_LE(last_used_time2, now);
+  ASSERT_GE(last_used_time2, now - TestTimeouts::action_max_timeout());
 
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin1, u"key1"));
   EXPECT_EQ(OperationResult::kNotFound, db_->Get(kOrigin1, u"key1").result);
@@ -508,27 +542,61 @@ TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
 }
 
 TEST_P(SharedStorageDatabaseParamTest, IgnoreIfPresent) {
+  clock_.SetNow(base::Time::Now());
+
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  base::Time now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1");
+
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  base::Time last_used_time1 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to put distance between the last used times.
+  clock_.Advance(base::Hours(12));
 
   // The database does not set a new value for "key1", but retains the
   // previously set value "value1" because `behavior` is `kIgnoreIfPresent`.
   EXPECT_EQ(OperationResult::kIgnored,
             db_->Set(kOrigin1, u"key1", u"value2",
                      /*behavior=*/SetBehavior::kIgnoreIfPresent));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1");
 
+  // Verify that `last_used_time2` is set to `now` (within a tolerance).
+  base::Time last_used_time2 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_GT(last_used_time2, last_used_time1);
+  ASSERT_LE(last_used_time2, now);
+  ASSERT_GE(last_used_time2, now - TestTimeouts::action_max_timeout());
+
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value1"));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key2").data, u"value1");
+
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  last_used_time1 = db_->Get(kOrigin1, u"key2").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to put distance between the last used times.
+  clock_.Advance(base::Hours(12));
 
   // Having `behavior` set to `kDefault` makes `Set()` override any previous
   // value.
   EXPECT_EQ(OperationResult::kSet,
             db_->Set(kOrigin1, u"key2", u"value2",
                      /*behavior=*/SetBehavior::kDefault));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key2").data, u"value2");
+
+  // Verify that `last_used_time2` is set to `now` (within a tolerance).
+  last_used_time2 = db_->Get(kOrigin1, u"key2").last_used_time;
+  ASSERT_GT(last_used_time2, last_used_time1);
+  ASSERT_LE(last_used_time2, now);
+  ASSERT_GE(last_used_time2, now - TestTimeouts::action_max_timeout());
 
   const url::Origin kOrigin2 =
       url::Origin::Create(GURL("http://www.example2.test"));
@@ -538,25 +606,65 @@ TEST_P(SharedStorageDatabaseParamTest, IgnoreIfPresent) {
   EXPECT_EQ(OperationResult::kSet,
             db_->Set(kOrigin2, u"key1", u"value1",
                      /*behavior=*/SetBehavior::kIgnoreIfPresent));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin2, u"key1").data, u"value1");
+
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  last_used_time1 = db_->Get(kOrigin2, u"key1").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
 
   EXPECT_EQ(OperationResult::kSet,
             db_->Set(kOrigin2, u"key2", u"value2",
                      /*behavior=*/SetBehavior::kDefault));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin2, u"key2").data, u"value2");
+
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  last_used_time1 = db_->Get(kOrigin2, u"key2").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Append) {
+  clock_.SetNow(base::Time::Now());
+
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
+  base::Time now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1");
 
-  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
-  EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1value1");
+  // Verify that `last_used_time1` is set to `now` (within a tolerance).
+  base::Time last_used_time1 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_LE(last_used_time1, now);
+  ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to put distance between the last used times.
+  clock_.Advance(base::Hours(12));
 
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
+  now = clock_.Now();
+  EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1value1");
+
+  // Verify that `last_used_time2` is set to `now` (within a tolerance).
+  base::Time last_used_time2 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_GT(last_used_time2, last_used_time1);
+  ASSERT_LE(last_used_time2, now);
+  ASSERT_GE(last_used_time2, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to put distance between the last used times.
+  clock_.Advance(base::Hours(12));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
+  now = clock_.Now();
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"value1value1value1");
+
+  // Verify that `last_used_time3` is set to `now` (within a tolerance).
+  base::Time last_used_time3 = db_->Get(kOrigin1, u"key1").last_used_time;
+  ASSERT_GT(last_used_time3, last_used_time2);
+  ASSERT_LE(last_used_time3, now);
+  ASSERT_GE(last_used_time3, now - TestTimeouts::action_max_timeout());
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Length) {
@@ -1395,7 +1503,7 @@ class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
 };
 
 TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
-  db_ = LoadFromFile("shared_storage.v1.iterator.sql");
+  db_ = LoadFromFile("shared_storage.v2.iterator.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1425,7 +1533,8 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
   utility.VerifyNoErrorForId(id2);
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 2, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 227, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 26, 1);
@@ -1436,7 +1545,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
 }
 
 TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
-  db_ = LoadFromFile("shared_storage.v1.iterator.sql");
+  db_ = LoadFromFile("shared_storage.v2.iterator.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1467,7 +1576,8 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
   utility.VerifyNoErrorForId(id2);
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 2, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 227, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 26, 1);
@@ -1480,7 +1590,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
 // Tests correct calculation of five-number summary when there is only one
 // origin.
 TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
-  db_ = LoadFromFile("shared_storage.v1.single_origin.sql");
+  db_ = LoadFromFile("shared_storage.v2.single_origin.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1492,7 +1602,8 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
   EXPECT_THAT(origins, ElementsAre(google_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
@@ -1505,7 +1616,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 // Tests correct calculation of five-number summary when number of origins is
 // greater than one and has remainder 1 modulo 4.
 TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
-  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.5origins.sql");
+  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.5origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1522,7 +1633,8 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
                                    google_org, gv_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
@@ -1535,7 +1647,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 2 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SixOrigins) {
-  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.6origins.sql");
+  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.6origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1553,7 +1665,8 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
                                    google_org, gv_com, waymo_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 6, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
@@ -1566,7 +1679,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 3 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
-  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.7origins.sql");
+  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.7origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1587,7 +1700,8 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
                           waymo_com, with_google_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 7, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
@@ -1600,7 +1714,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 0 modulo 4.
 TEST_F(SharedStorageDatabaseTest, EightOrigins) {
-  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.8origins.sql");
+  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.8origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1622,7 +1736,8 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
                           waymo_com, with_google_com, youtube_com));
 
   histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
+  EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 8, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);

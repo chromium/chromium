@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "sql/database.h"
@@ -530,18 +531,22 @@ void VerifySharedStorageTablesAndColumns(sql::Database& db) {
   // `meta`, `values_mapping`, `per_origin_mapping`, and budget_mapping.
   EXPECT_EQ(4u, sql::test::CountSQLTables(&db));
 
-  // Implicit index on `meta`, `per_origin_mapping_last_used_time_idx`,
-  // and budget_mapping_origin_time_stamp_idx.
-  EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
+  // Implicit index on `meta`, `values_mapping_last_used_time_idx`,
+  // `per_origin_mapping_creation_time_idx`, and
+  // budget_mapping_origin_time_stamp_idx.
+  EXPECT_EQ(4u, sql::test::CountSQLIndices(&db));
 
   // `key` and `value`.
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "meta"));
 
-  // `context_origin`, `script_key`, and `script_value`.
-  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "values_mapping"));
+  // `context_origin`, `key`, `value`, and `last_used_time`.
+  EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "values_mapping"));
 
-  // `context_origin`, `last_used_time`, and `length`.
+  // `context_origin`, `creation_time`, and `length`.
   EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "per_origin_mapping"));
+
+  // `id`, `context_origin`, `time_stamp`, and `bits_debit`.
+  EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "budget_mapping"));
 }
 
 bool GetTestDataSharedStorageDir(base::FilePath* dir) {
@@ -555,7 +560,7 @@ bool GetTestDataSharedStorageDir(base::FilePath* dir) {
 }
 
 bool CreateDatabaseFromSQL(const base::FilePath& db_path,
-                           const char* ascii_path) {
+                           std::string ascii_path) {
   base::FilePath dir;
   if (!GetTestDataSharedStorageDir(&dir))
     return false;
@@ -568,6 +573,22 @@ std::string TimeDeltaToString(base::TimeDelta delta) {
 
 BudgetResult MakeBudgetResultForSqlError() {
   return BudgetResult(0.0, OperationResult::kSqlError);
+}
+
+std::string GetTestFileNameForVersion(int version_number) {
+  // Should be safe cross platform because StringPrintf has overloads for wide
+  // strings.
+  return base::StringPrintf("shared_storage.v%d.sql", version_number);
+}
+
+std::string GetTestFileNameForCurrentVersion() {
+  return GetTestFileNameForVersion(
+      SharedStorageDatabase::kCurrentVersionNumber);
+}
+
+std::string GetTestFileNameForLatestDeprecatedVersion() {
+  return GetTestFileNameForVersion(
+      SharedStorageDatabase::kDeprecatedVersionNumber);
 }
 
 }  // namespace storage

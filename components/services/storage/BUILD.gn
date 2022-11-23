@@ -74,6 +74,8 @@ source_set("storage") {
     "shared_storage/async_shared_storage_database_impl.h",
     "shared_storage/shared_storage_database.cc",
     "shared_storage/shared_storage_database.h",
+    "shared_storage/shared_storage_database_migrations.cc",
+    "shared_storage/shared_storage_database_migrations.h",
     "shared_storage/shared_storage_manager.cc",
     "shared_storage/shared_storage_manager.h",
     "shared_storage/shared_storage_options.cc",
@@ -160,16 +162,17 @@ bundle_data("tests_bundle_data") {
   visibility = [ ":tests" ]
   testonly = true
   sources = [
-    "//components/test/data/storage/shared_storage.v0.init_too_old.sql",
-    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.5origins.sql",
-    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.6origins.sql",
-    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.7origins.sql",
-    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.8origins.sql",
-    "//components/test/data/storage/shared_storage.v1.init_too_new.sql",
-    "//components/test/data/storage/shared_storage.v1.iterator.sql",
+    "//components/test/data/storage/shared_storage.init_too_new.sql",
+    "//components/test/data/storage/shared_storage.v0.sql",
     "//components/test/data/storage/shared_storage.v1.no_budget_table.sql",
-    "//components/test/data/storage/shared_storage.v1.single_origin.sql",
     "//components/test/data/storage/shared_storage.v1.sql",
+    "//components/test/data/storage/shared_storage.v2.empty_values_mapping.5origins.sql",
+    "//components/test/data/storage/shared_storage.v2.empty_values_mapping.6origins.sql",
+    "//components/test/data/storage/shared_storage.v2.empty_values_mapping.7origins.sql",
+    "//components/test/data/storage/shared_storage.v2.empty_values_mapping.8origins.sql",
+    "//components/test/data/storage/shared_storage.v2.iterator.sql",
+    "//components/test/data/storage/shared_storage.v2.single_origin.sql",
+    "//components/test/data/storage/shared_storage.v2.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -203,6 +206,7 @@ source_set("tests") {
     "service_worker/service_worker_storage_test_utils.h",
     "service_worker/service_worker_storage_unittest.cc",
     "shared_storage/async_shared_storage_database_impl_unittest.cc",
+    "shared_storage/shared_storage_database_migrations_unittest.cc",
     "shared_storage/shared_storage_database_unittest.cc",
     "shared_storage/shared_storage_manager_unittest.cc",
     "storage_service_impl_unittest.cc",
