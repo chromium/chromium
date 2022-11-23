@@ -53,6 +53,7 @@ class CORE_EXPORT DocumentSpeculationRules
                             const AtomicString& new_value);
   void ReferrerPolicyAttributeChanged(HTMLAnchorElement* link);
   void RelAttributeChanged(HTMLAnchorElement* link);
+  void DocumentReferrerPolicyChanged();
 
   void Trace(Visitor*) const override;
 

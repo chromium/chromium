@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -1894,6 +1895,43 @@ TEST_F(DocumentRulesTest, RelAttributeChangeCausesLinkInvalidation) {
   EXPECT_THAT(
       candidates,
       ElementsAre(HasReferrerPolicy(network::mojom::ReferrerPolicy::kNever)));
+}
+
+TEST_F(DocumentRulesTest, ReferrerMetaChangeShouldInvalidateCandidates) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://foo.com/abc");
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      ElementsAre(HasReferrerPolicy(
+          network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin)));
+
+  auto* meta =
+      MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
+  meta->setAttribute(html_names::kNameAttr, "referrer");
+  meta->setAttribute(html_names::kContentAttr, "strict-origin");
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { document.head()->appendChild(meta); });
+  EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kStrictOrigin)));
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { meta->setAttribute(html_names::kContentAttr, "same-origin"); });
+  EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kSameOrigin)));
 }
 
 }  // namespace

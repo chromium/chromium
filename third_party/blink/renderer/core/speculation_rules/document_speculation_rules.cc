@@ -241,6 +241,14 @@ void DocumentSpeculationRules::RelAttributeChanged(HTMLAnchorElement* link) {
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
+  if (!initialized_)
+    return;
+
+  InvalidateAllLinks();
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -648,9 +649,18 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementReferrerPolicyOutsideHead);
     }
-
+    network::mojom::ReferrerPolicy old_referrer_policy =
+        GetExecutionContext()->GetReferrerPolicy();
     GetExecutionContext()->ParseAndSetReferrerPolicy(content_value,
                                                      kPolicySourceMetaTag);
+    network::mojom::ReferrerPolicy new_referrer_policy =
+        GetExecutionContext()->GetReferrerPolicy();
+    if (old_referrer_policy != new_referrer_policy) {
+      if (auto* document_rules =
+              DocumentSpeculationRules::FromIfExists(GetDocument())) {
+        document_rules->DocumentReferrerPolicyChanged();
+      }
+    }
   } else if (EqualIgnoringASCIICase(name_value, "handheldfriendly") &&
              EqualIgnoringASCIICase(content_value, "true")) {
     ProcessViewportContentAttribute("width=device-width",
