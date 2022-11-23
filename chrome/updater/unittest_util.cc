@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -137,11 +138,14 @@ void MaybeExcludePathsFromWindowsDefender() {
 }
 
 void StartProcmonLogging() {
-  const base::FilePath dest_dir = GetLogDestinationDir();
+  base::FilePath dest_dir = GetLogDestinationDir();
   if (dest_dir.empty() || !base::PathExists(dest_dir)) {
     LOG(ERROR) << "Cannot log, failed to get log destination dir";
     return;
   }
+
+  dest_dir = dest_dir.AppendASCII(GetTestName());
+  CHECK(base::CreateDirectory(dest_dir));
 
   base::Time::Exploded start_time;
   base::Time::Now().LocalExplode(&start_time);
@@ -167,6 +171,7 @@ void StopProcmonLogging() {
 
   base::LaunchOptions options;
   options.start_hidden = true;
+  options.wait = true;
   VLOG(1) << "Running: " << cmdline;
   base::Process process = base::LaunchProcess(cmdline, options);
   LOG_IF(ERROR, !process.IsValid()) << "Failed to stop procmon: " << cmdline;
