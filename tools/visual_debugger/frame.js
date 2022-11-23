@@ -147,6 +147,11 @@ class DrawFrame {
       canvas.width = this.size_.width * scale;
       canvas.height = this.size_.height * scale;
     }
+    // Some text can be drawn past the canvas boundaries, so add some padding on
+    // each side.
+    const padding = 20;
+    canvas.width += padding * 2;
+    canvas.height += padding * 2;
   }
 
   getFilter(source_index) {

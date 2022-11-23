@@ -41,15 +41,15 @@ class FilterUI extends HTMLElement {
     <div class='row'>
       <div class='label' title='Filter annotation to match.
       For example frame.root.damage' >Annotation </div>
-        <div class='input'>
-          <input placeholder='Substring to match' id='annotation' size=40>
-          <!-- TODO: A fancy drop-down here would be nice. -->
-        </div>
+      <div class='input'>
+        <input placeholder='Substring to match' id='annotation' size=40>
+        <!-- TODO: A fancy drop-down here would be nice. -->
+      </div>
     </div>
     <div class='row'>
       <div class='label'>File name</div>
       <div class='input'>
-        <input placeholder='Substring to match  (usually empty!)'
+        <input placeholder='Substring to match (usually empty!)'
          id='filename' size=40>
         <!-- TODO: A fancy drop-down here would be nice. -->
       </div>
@@ -105,8 +105,7 @@ class FilterUI extends HTMLElement {
   }
 
   setUpButtons_() {
-    const button = this.querySelector('#saveFilter');
-    button.addEventListener('click', () => {
+    const SaveFilter = () => {
       let input = this.querySelector('#filename');
       const filename = input.value || undefined;
       input = this.querySelector('#functionname');
@@ -124,7 +123,11 @@ class FilterUI extends HTMLElement {
       this.dispatchEvent(new CustomEvent('saveFilter', {
         detail: { selector: { filename, func, anno }, action }
       }));
-    });
+    };
+
+    this.querySelector('#saveFilter').addEventListener('click', SaveFilter);
+    this.querySelector('#filter-container').addEventListener('keypress',
+      (e) => { if (e.key === 'Enter') SaveFilter(); });
   }
 };
 
@@ -237,8 +240,8 @@ function showCreateFilterPopup(anchor) {
   filterUi.style.top = (anchor.offsetTop + anchor.offsetHeight) + 'px';
   filterUi.style.left = (anchor.offsetLeft + 20) + 'px';
   filterUi.style.zIndex = maxZIndex;
-  
-  showModal(filterUi);
+
+  showModal(filterUi, '#annotation');
 }
 
 // Traverses through all the filter chips and enables/disables
@@ -329,7 +332,7 @@ function showEditFilterPopup(item) {
   filterUi.style.left = (chip.offsetLeft + 20) + 'px';
   filterUi.style.zIndex = maxZIndex;
 
-  showModal(filterUi);
+  showModal(filterUi, '#annotation');
 
   var filter = Filter.getFilter(index);
 

@@ -267,7 +267,7 @@
   </div>
 
   <div class='section'>
-    <!--We need to fix viewer size to avoid scroll position change when 
+    <!--We need to fix viewer size to avoid scroll position change when
       multiple displays are present. crbug.com/1358526-->
     <div style="height:4000px;  border: 1px dotted gray;">
         <canvas id='canvas' style="top :0px"></canvas>
@@ -472,7 +472,7 @@
         canvas.addEventListener('wheel', function(e) {
           e.preventDefault();
           var delta = e.deltaY;
-          
+
           viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
 
         }, {passive:false});
@@ -495,11 +495,11 @@
   }
 
 
-  function showModal(element) {
+  function showModal(element, focusSelector) {
     const container = document.querySelector('.modalContainer');
     container.appendChild(element);
     container.style.display = 'block';
-    element.focus();
+    element.querySelector(focusSelector).focus();
   }
 
   function hideModal() {
