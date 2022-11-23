@@ -23,7 +23,7 @@ declare_args() {
   # etc.). There is nothing stopping a lazy embedder from ignoring this
   # and unconditionally using PA, but such a setup is inadvisable.
   #
-  # In Chromium, this is set false
+  # In Chromium, this is set true, except:
   #
   # 1.  On Cronet bots, because Cronet doesn't use PartitionAlloc at all,
   #     and doesn't wish to incur the library size increase (crbug.com/674570).
