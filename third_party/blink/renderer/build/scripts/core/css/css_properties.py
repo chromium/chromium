@@ -591,3 +591,7 @@ class CSSProperties(object):
     @property
     def extra_fields(self):
         return self._extra_fields
+
+    @property
+    def max_shorthand_expansion(self):
+        return max(map(lambda s: len(s.longhands), self._shorthands))

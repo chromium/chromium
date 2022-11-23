@@ -59,6 +59,7 @@ const int kNumCSSPropertyIDs = static_cast<int>(kLastUnresolvedCSSProperty) + 1;
 
 const size_t kMaxCSSPropertyNameLength = {{max_name_length}};
 constexpr size_t kCSSPropertyIDBitLength = {{property_id_bit_length}};
+constexpr size_t kMaxShorthandExpansion = {{max_shorthand_expansion}};
 
 static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
                   static_cast<size_t>(kLastUnresolvedCSSProperty),

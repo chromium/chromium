@@ -358,18 +358,18 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
 
 String StylePropertySerializer::CommonShorthandChecks(
     const StylePropertyShorthand& shorthand) const {
-  int longhand_count = shorthand.length();
-  if (!longhand_count || longhand_count > 17) {
+  unsigned longhand_count = shorthand.length();
+  if (!longhand_count || longhand_count > kMaxShorthandExpansion) {
     NOTREACHED();
     return g_empty_string;
   }
 
-  const CSSValue* longhands[17] = {};
+  const CSSValue* longhands[kMaxShorthandExpansion] = {};
 
   bool has_important = false;
   bool has_non_important = false;
 
-  for (int i = 0; i < longhand_count; i++) {
+  for (unsigned i = 0; i < longhand_count; i++) {
     int index = property_set_.FindPropertyIndex(*shorthand.properties()[i]);
     if (index == -1)
       return g_empty_string;
@@ -386,7 +386,7 @@ String StylePropertySerializer::CommonShorthandChecks(
   if (longhands[0]->IsCSSWideKeyword() ||
       longhands[0]->IsPendingSubstitutionValue()) {
     bool success = true;
-    for (int i = 1; i < longhand_count; i++) {
+    for (unsigned i = 1; i < longhand_count; i++) {
       if (!base::ValuesEquivalent(longhands[i], longhands[0])) {
         // This should just return emptyString but some shorthands currently
         // allow 'initial' for their longhands.
@@ -406,7 +406,7 @@ String StylePropertySerializer::CommonShorthandChecks(
   }
 
   bool allow_initial = AllowInitialInShorthand(shorthand.id());
-  for (int i = 0; i < longhand_count; i++) {
+  for (unsigned i = 0; i < longhand_count; i++) {
     const CSSValue& value = *longhands[i];
     if (!allow_initial && value.IsInitialValue())
       return g_empty_string;

@@ -55,6 +55,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             self._css_properties.property_id_bit_length,
             'max_name_length':
             max(map(len, self._css_properties.properties_by_id)),
+            'max_shorthand_expansion':
+            self._css_properties.max_shorthand_expansion,
         }
 
     @gperf.use_jinja_gperf_template(
