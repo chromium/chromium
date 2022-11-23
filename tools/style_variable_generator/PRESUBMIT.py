@@ -12,7 +12,7 @@ USE_PYTHON3 = True
 
 TEST_PATTERNS = [r'.+_test.py$']
 STYLE_VAR_GEN_INPUTS = [
-    r'^tools[\\\/]style_variable_generator[\\\/][^\/]+\.json5$'
+    r'^tools[\\\/]style_variable_generator[\\\/].+\.json5$'
 ]
 
 def _CommonChecks(input_api, output_api):
