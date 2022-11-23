@@ -131,12 +131,13 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void ClearCurrentState();
 
   // BluetoothAdapter::Observer
+  void GattDiscoveryCompleteForService(
+      device::BluetoothAdapter* adapter,
+      device::BluetoothRemoteGattService* service) override;
   void GattCharacteristicValueChanged(
       device::BluetoothAdapter* adapter,
       device::BluetoothRemoteGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value) override;
-  void GattServicesDiscovered(device::BluetoothAdapter* adapter,
-                              device::BluetoothDevice* device) override;
 
   void FindGattCharacteristicsAndStartNotifySessions();
 
