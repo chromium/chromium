@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Present"
-    enum="ExperienceKitCalendarTypes" expires_after="2022-12-31">
+    enum="ExperienceKitCalendarTypes" expires_after="2023-03-01">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -577,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Success"
-    enum="ExperienceKitCalendarTypes" expires_after="2022-12-31">
+    enum="ExperienceKitCalendarTypes" expires_after="2023-03-01">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -2131,8 +2131,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.PresentedOptions.AllPasswords"
     units="Credentials" expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of credentials presented to the user in the
     &quot;Use other password...&quot; view in Manual Fallback. This is logged
@@ -2142,8 +2142,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.PresentedOptions.CreditCards" units="Cards"
     expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of cards presented to the user in Manual
     Fallback. This is logged everytime the user opens this view.
@@ -2152,8 +2152,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.PresentedOptions.Passwords" units="Credentials"
     expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of credentials presented to the user in the
     Passwords Manual Fallback view. This is logged everytime the user opens this
@@ -2163,8 +2163,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.PresentedOptions.Profiles" units="Profiles"
     expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of profiles presented to the user in Manual
     Fallback. This is logged everytime the user opens this view.
@@ -2173,8 +2173,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenCreditCards"
     units="Suggestions" expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of autofill suggestions present when the user
     taps on the credit card button in manual fallback.
@@ -2183,8 +2183,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenPasswords"
     units="Suggestions" expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of password suggestions present when the user
     taps on the password button in manual fallback.
@@ -2193,8 +2193,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
     units="Suggestions" expires_after="2022-12-11">
+  <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of autofill suggestions present when the user
     taps on the profiles (address) button in manual fallback.
