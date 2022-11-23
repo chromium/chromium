@@ -762,6 +762,7 @@ source_set("presence_types") {
   ]
   public_deps = [
     ":connections_credential_proto",
+    ":connections_device_metadata_proto",
     ":platform_base",
     ":platform_base_connection_info",
     ":platform_public_logging",
