@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -49,7 +50,9 @@ using autofill::PASSWORD;
 using autofill::PasswordAttribute;
 using autofill::ServerFieldType;
 using autofill::ServerFieldTypeSet;
+using autofill::SignatureIsSameAs;
 using autofill::SINGLE_USERNAME;
+using autofill::SubmissionEventIsSameAs;
 using autofill::UNKNOWN_TYPE;
 using autofill::mojom::SubmissionIndicatorEvent;
 using base::ASCIIToUTF16;

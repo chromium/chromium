@@ -42,4 +42,7 @@ specific_include_rules = {
   "http_credentials_cleaner_unittest\.cc": [
     "+services/network",
   ],
+  ".*unit_test\.cc": [
+    "+components/autofill/core/browser/test_utils",
+  ]
 }
