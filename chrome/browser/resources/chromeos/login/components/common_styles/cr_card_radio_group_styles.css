@@ -1,0 +1,81 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+:host {
+    --radio-button-height: 120px;
+}
+
+cr-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+cr-card-radio-button {
+    /* Removes the highlight that appears on tap. It has sharp
+    * corners, which don't match the rounded corners of the card. */
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 16px;
+    height: var(--radio-button-height);
+    margin-bottom: 0;
+    --cr-button-edge-spacing: 0;
+    --cr-card-radio-button-checkmark-right: 24px;
+
+    --cr-card-radio-button-checkmark-top:
+        calc(var(--radio-button-height) / 2 - 12px);
+    --cr-card-radio-button-height: var(--radio-button-height);
+    --cr-card-radio-button-margin: 0;
+    --cr-card-radio-button-padding: 0;
+    --cr-card-radio-button-width: 100%;
+    /* TODO(https://crbug.com/1320715) Revise the color
+    --cr-checked-color: var(--google-blue-500);
+    */
+    --cr-radio-button-ink-size: 0;
+    --cr-radio-group-item-padding: 0;
+}
+
+cr-card-radio-button:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.card-container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    /* Same height to center button content in vertical dimension. */
+    height: var(--radio-button-height);
+    padding-bottom: 0;
+    padding-inline-end: 48px;
+    padding-inline-start: 24px;
+    padding-top: 0;
+    text-align: start;
+}
+
+.card-icon {
+    --iron-icon-height: 48px;
+    --iron-icon-width: 48px;
+}
+
+.card-content {
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+}
+
+.card-label {
+    color: var(--oobe-header-text-color);
+    font-family: var(--oobe-header-font-family);
+    font-size: var(--oobe-radio-card-label-font-size);
+    font-weight: 500;
+    line-height: var(--oobe-radio-card-label-line-height);
+}
+
+.card-text {
+    color: var(--oobe-text-color);
+    line-height: 20px;
+}
