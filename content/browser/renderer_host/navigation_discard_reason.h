@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_DISCARD_REASON_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_DISCARD_REASON_H_
 
-// Used to annotate the reason for calling into CleanUpNavigation() /
-// ResetNavigationRequest(). Purely informational for now, but in the future,
-// intended to serve as a signal for how a caller of the aforementioned
+// Used to annotate the reason for calling into methods that delete speculative
+// RenderFrameHosts or ongoing NavigationRequests. Purely informational for now,
+// but in the future, intended to serve as a signal for how a caller of the
 // functions should handle cases when the speculative RenderFrameHost cannot be
 // promptly discarded. See https://crbug.com/1220337 for more info.
 enum class NavigationDiscardReason {
@@ -26,6 +26,11 @@ enum class NavigationDiscardReason {
   kCommittedNavigation,
   // The render process is gone, typically due to a crash.
   kRenderProcessGone,
+  // The RenderFrameHost containing the NavigationRequest is destructed.
+  // This is only used by the RenderFrameHost destructor, and typically other
+  // navigation cancellations will cancel the navigations on the RFH separately
+  // with a more specific reason before destructing the RenderFrameHost.
+  kRenderFrameHostDestruction,
 };
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_DISCARD_REASON_H_

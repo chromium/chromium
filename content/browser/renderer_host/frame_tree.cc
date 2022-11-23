@@ -888,7 +888,8 @@ void FrameTree::Shutdown() {
   // destroyed.
 
   root_manager->current_frame_host()->RenderFrameDeleted();
-  root_manager->current_frame_host()->ResetNavigationRequests();
+  root_manager->current_frame_host()->ResetOwnedNavigationRequests(
+      NavigationDiscardReason::kWillRemoveFrame);
 
   // Do not update state as the FrameTree::Delegate (possibly a WebContents) is
   // being destroyed.

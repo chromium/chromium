@@ -317,11 +317,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void CreatedNavigationRequest(
       std::unique_ptr<NavigationRequest> navigation_request);
 
-  // Resets the current navigation request and any state created by it,
-  // including the speculative RenderFrameHost.
+  // Resets the navigation request owned by `this` (which shouldn't have reached
+  // the "pending commit" stage yet) and any state created by it, including the
+  // speculative RenderFrameHost. Note that this does not affect navigations
+  // that have reached the  "pending commit" stage, which are owned by their
+  // corresponding RenderFrameHosts instead.
   void ResetNavigationRequest(NavigationDiscardReason reason);
 
-  // Resets the current navigation request, but keeping state created by the
+  // Similar to `ResetNavigationRequest()`, but keeps the state created by the
   // NavigationRequest (e.g. speculative RenderFrameHost, loading state).
   void ResetNavigationRequestButKeepState();
 

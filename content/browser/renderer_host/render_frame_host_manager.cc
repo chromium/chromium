@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -573,9 +574,9 @@ void RenderFrameHostManager::BeforeUnloadCompleted(
     // If we're about to close the tab and there's a speculative RFH, cancel it.
     // Otherwise, if the navigation in the speculative RFH completes before the
     // close in the current RFH, we'll lose the tab close.
-    if (speculative_render_frame_host_)
-      CleanUpNavigation(NavigationDiscardReason::kWillRemoveFrame);
-
+    if (speculative_render_frame_host_) {
+      DiscardSpeculativeRFH(NavigationDiscardReason::kWillRemoveFrame);
+    }
     render_frame_host_->render_view_host()->ClosePage();
   }
 }
@@ -662,7 +663,9 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
       was_caused_by_user_gesture) {
     frame_tree_node_->ResetNavigationRequest(
         NavigationDiscardReason::kCommittedNavigation);
-    CleanUpNavigation(NavigationDiscardReason::kCommittedNavigation);
+    // TODO(https://crbug.com/1220337): Don't discard the speculative
+    // RenderFrameHost if it's pending commit.
+    DiscardSpeculativeRFH(NavigationDiscardReason::kCommittedNavigation);
   }
 
   if (render_frame_host_->is_local_root() && render_frame_host_->GetView()) {
@@ -850,7 +853,13 @@ void RenderFrameHostManager::UnloadOldFrame(
 
   // Reset any NavigationRequest in the RenderFrameHost. An unloaded
   // RenderFrameHost should not be trying to commit a navigation.
-  old_render_frame_host->ResetNavigationRequests();
+  // TODO(https://crbug.com/1220337): Ensure that there are no pending commit
+  // cross-document NavigationRequests at this point. With navigation queuing,
+  // this will be guaranteed because there will be only 1 pending commit
+  // navigation at a time, which will be the navigation in the speculative
+  // RenderFrameHost that replaced `old_render_frame_host`.
+  old_render_frame_host->ResetOwnedNavigationRequests(
+      NavigationDiscardReason::kCommittedNavigation);
 
   // Sends out all pending beacons on navigation away.
   // Whether or not `old_render_frame_host` is put into BackForwardCache is not
@@ -1094,7 +1103,9 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // Cleanup existing pending RenderFrameHost. This corresponds to what is
     // done inside GetFrameHostForNavigation(request), but we avoid calling that
     // method for navigations which will be forced into the current document.
-    CleanUpNavigation(NavigationDiscardReason::kNewNavigation);
+    // TODO(https://crbug.com/1220337): Don't delete the speculative
+    // RenderFrameHost when it is pending commit.
+    DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
     request->set_associated_rfh_type(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   } else {
@@ -1211,8 +1222,10 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     // navigation (currently twice, on request and when it's about to commit in
     // the renderer). In the follow up calls an existing pending WebUI should
     // not be recreated if the URL didn't change. So instead of calling
-    // CleanUpNavigation just discard the speculative RenderFrameHost if one
+    // DiscardSpeculativeRFH just discard the speculative RenderFrameHost if one
     // exists.
+    // TODO(https://crbug.com/1220337): Don't delete the speculative
+    // RenderFrameHost when it is pending commit.
     if (speculative_render_frame_host_) {
       DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
           NavigationDiscardReason::kNewNavigation));
@@ -1276,7 +1289,9 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       // If a previous speculative RenderFrameHost didn't exist or if its
       // SiteInstance differs from the one for the current URL, a new one needs
       // to be created.
-      CleanUpNavigation(NavigationDiscardReason::kNewNavigation);
+      // TODO(https://crbug.com/1220337): Don't delete the speculative
+      // RenderFrameHost when it is pending commit.
+      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
           recovering_without_early_commit);
@@ -1427,7 +1442,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   return navigation_rfh;
 }
 
-void RenderFrameHostManager::MaybeCleanUpNavigation(
+void RenderFrameHostManager::DiscardSpeculativeRFHIfUnused(
     NavigationDiscardReason reason) {
   // This is called when a renderer aborts a NavigationRequest
   // that was in the READY_TO_COMMIT state. The caller has already
@@ -1435,7 +1450,7 @@ void RenderFrameHostManager::MaybeCleanUpNavigation(
   // which may or may not have been the speculative one. Either way,
   // if there are no remaining NavigationRequests associated with
   // |speculative_render_frame_host_|, then it is safe to call
-  // CleanUpNavigation() to discard |speculative_render_frame_host_|.
+  // DiscardSpeculativeRFH() to discard |speculative_render_frame_host_|.
   if (!speculative_render_frame_host_ ||
       speculative_render_frame_host_->HasPendingCommitNavigation()) {
     return;
@@ -1447,11 +1462,12 @@ void RenderFrameHostManager::MaybeCleanUpNavigation(
           NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE) {
     return;
   }
-  CleanUpNavigation(reason);
+  DiscardSpeculativeRFH(reason);
 }
 
-void RenderFrameHostManager::CleanUpNavigation(NavigationDiscardReason reason) {
-  TRACE_EVENT("navigation", "RenderFrameHostManager::CleanUpNavigation",
+void RenderFrameHostManager::DiscardSpeculativeRFH(
+    NavigationDiscardReason reason) {
+  TRACE_EVENT("navigation", "RenderFrameHostManager::DiscardSpeculativeRFH",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();
@@ -1479,7 +1495,13 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
   if (base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
-    CHECK(reason != NavigationDiscardReason::kNewNavigation);
+    if (HasPendingCommitForCrossDocumentNavigation()) {
+      // With navigation queueing, pending commit navigations in speculative
+      // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
+      // renderer process is gone/will be gone soon.
+      CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+            reason == NavigationDiscardReason::kWillRemoveFrame);
+    }
   }
 
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
@@ -1619,6 +1641,9 @@ void RenderFrameHostManager::CleanupIfSpeculativeForRenderProcessGone(
     // TODO(nasko, clamy): This should just clean up the speculative RFH
     // without canceling the request.  See https://crbug.com/636119.
     if (frame_tree_node_->navigation_request()) {
+      // TODO(https://crbug.com/636119): This might cancel an unrelated
+      // NavigationRequest. Maybe check if the navigation request uses the
+      // speculative RFH first?
       frame_tree_node_->navigation_request()->set_net_error(net::ERR_ABORTED);
       frame_tree_node_->ResetNavigationRequest(
           NavigationDiscardReason::kRenderProcessGone);
@@ -1627,7 +1652,7 @@ void RenderFrameHostManager::CleanupIfSpeculativeForRenderProcessGone(
       // TransferNavigationRequestOwnership has already been called then the
       // FrameTreeNode no longer owns the NavigationRequest and we need to clean
       // up the speculative RenderFrameHost.
-      CleanUpNavigation(NavigationDiscardReason::kRenderProcessGone);
+      DiscardSpeculativeRFH(NavigationDiscardReason::kRenderProcessGone);
     }
   }
 }
@@ -4244,7 +4269,12 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   DCHECK(is_attaching_inner_delegate());
   // Remove all navigations and any speculative frames which might interfere
   // with the loading state.
-  current_frame_host()->ResetNavigationRequests();
+  // TODO(https://crbug.com/1220337): Ensure that there are no pending commit
+  // cross-document NavigationRequests at this point. Maybe wait for all
+  // navigations to finish from PrepareForInnerDelegateAttach() before
+  // continuing instead of cancelling the navigations from here?
+  current_frame_host()->ResetOwnedNavigationRequests(
+      NavigationDiscardReason::kNewNavigation);
   current_frame_host()->ResetLoadingState();
   // Remove any speculative frames first and ongoing navigation state. This
   // should reset the loading state for good.
@@ -4253,7 +4283,7 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   if (speculative_render_frame_host_) {
     // The FrameTreeNode::ResetNavigationRequest call above may not have cleaned
     // up the speculative RenderFrameHost if the NavigationRequest had already
-    // been transferred to RenderFrameHost.  Ensure it is cleaned up now.
+    // been transferred to RenderFrameHost. Ensure it is cleaned up now.
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
         NavigationDiscardReason::kNewNavigation));
   }

@@ -190,7 +190,10 @@ class CONTENT_EXPORT Navigator {
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request);
 
-  // Cancel a NavigationRequest for |frame_tree_node|.
+  // Cancels the NavigationRequest owned by |frame_tree_node|. Note that this
+  // will only cancel NavigationRequests that haven't reached the "pending
+  // commit" stage yet, as after that the NavigationRequests will no longer be
+  // owned by the FrameTreeNode.
   void CancelNavigation(FrameTreeNode* frame_tree_node,
                         NavigationDiscardReason reason);
 

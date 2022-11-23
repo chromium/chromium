@@ -541,7 +541,8 @@ void FrameTreeNode::CreatedNavigationRequest(
   bool was_previously_loading =
       frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
 
-  // There's no need to reset the state: there's still an ongoing load, and the
+  // Reset the previous NavigationRequest owned by `this`. However, there's no
+  // need to reset the state: there's still an ongoing load, and the
   // RenderFrameHostManager will take care of updates to the speculative
   // RenderFrameHost in DidCreateNavigationRequest below.
   if (was_previously_loading) {
@@ -574,7 +575,11 @@ void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
   // The RenderFrameHostManager should clean up any speculative RenderFrameHost
   // it created for the navigation. Also register that the load stopped.
   DidStopLoading();
-  render_manager_.CleanUpNavigation(reason);
+  // TODO(https://crbug.com/1220337): This might accidentally delete an
+  // unrelated speculative RenderFrameHost that is pending commit. Check if the
+  // speculative RenderFrameHost is really associated with the deleted
+  // NavigationRequest first before deleting.
+  render_manager_.DiscardSpeculativeRFHIfUnused(reason);
 }
 
 void FrameTreeNode::ResetNavigationRequestButKeepState() {

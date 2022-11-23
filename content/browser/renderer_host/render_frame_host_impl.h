@@ -54,6 +54,7 @@
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
+#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -988,8 +989,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   NavigationRequest* GetSameDocumentNavigationRequest(
       const base::UnguessableToken& token);
 
-  // Resets the NavigationRequests stored in this RenderFrameHost.
-  void ResetNavigationRequests();
+  // Resets the NavigationRequests stored in this RenderFrameHost, which are all
+  // "pending commit". Note this won't affect navigations that are "pending
+  // commit" but not owned by this RenderFrameHost, and any navigation that
+  // hasn't reached the "pending commit" stage yet, which would still be owned
+  // by the FrameTreeNode.
+  // TODO(https://crbug.com/1220337): Don't allow this to be called when there
+  // are pending cross-document navigations except for FrameTreeNode detach,
+  // RFH destruction, or when the renderer process is gone, so that we don't
+  // have to "undo" the commit that already happens in the renderer.
+  void ResetOwnedNavigationRequests(NavigationDiscardReason reason);
 
   // Called when a navigation is ready to commit in this
   // RenderFrameHost. Transfers ownership of the NavigationRequest associated
@@ -3430,10 +3439,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this frame's subtree.
   void PendingDeletionCheckCompletedOnSubtree();
 
-  // In this frame and its children, removes every:
-  // - NavigationRequest.
-  // - Speculative RenderFrameHost.
-  void ResetNavigationsForPendingDeletion();
+  // In this RenderFrameHost and its children, removes every:
+  // - Non-pending commit NavigationRequest owned by the FrameTreeNode
+  // - Pending commit NavigationRequest owned by the RenderFrameHost
+  // - Speculative RenderFrameHost (and its pending commit NavigationRequests).
+  void ResetAllNavigationsInSubtreeForPendingDeletion();
 
   // Called on an unloading frame when its unload timeout is reached. This
   // immediately deletes the RenderFrameHost.

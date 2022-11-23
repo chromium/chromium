@@ -1609,7 +1609,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   // Destroying NavigationRequests may call into delegates/observers,
   // so we do it early while |this| object is still in a sane state.
-  ResetNavigationRequests();
+  ResetOwnedNavigationRequests(
+      NavigationDiscardReason::kRenderFrameHostDestruction);
 
   // Release the WebUI instances before all else as the WebUI may accesses the
   // RenderFrameHost during cleanup.
@@ -3004,7 +3005,7 @@ void RenderFrameHostImpl::RenderProcessGone(
     owned_render_widget_host_->RendererExited();
 
   // The renderer process is gone, so this frame can no longer be loading.
-  ResetNavigationRequests();
+  ResetOwnedNavigationRequests(NavigationDiscardReason::kRenderProcessGone);
   ResetLoadingState();
 
   // Any future UpdateState or UpdateTitle messages from this or a recreated
@@ -4171,8 +4172,8 @@ void RenderFrameHostImpl::Detach() {
   // and the speculative / pending commit RenderFrameHost (which is still
   // strongly owned by the RenderFrameHostManager via unique_ptr) will be torn
   // down then. If we do proceed, this ends up with a use-after-free, since
-  // StartPendingDeletionOnSubtree() will ResetNavigationsForPendingDeletion(),
-  // which deletes `this`.
+  // StartPendingDeletionOnSubtree() will call
+  // ResetAllNavigationsInSubtreeForPendingDeletion(), which deletes `this`.
   if (lifecycle_state() == LifecycleStateImpl::kSpeculative ||
       lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
     return;
@@ -4570,7 +4571,16 @@ NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
              : request->second.get();
 }
 
-void RenderFrameHostImpl::ResetNavigationRequests() {
+void RenderFrameHostImpl::ResetOwnedNavigationRequests(
+    NavigationDiscardReason reason) {
+  if (base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
+    // With navigation queueing, pending commit navigations shouldn't get
+    // canceled, unless the FrameTreeNode, RenderFrameHost, or renderer process
+    // is gone/will be gone soon.
+    CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+          reason == NavigationDiscardReason::kWillRemoveFrame ||
+          reason == NavigationDiscardReason::kRenderFrameHostDestruction);
+  }
   // Move the NavigationRequests to new maps first before deleting them. This
   // avoids issues if a re-entrant call is made when a NavigationRequest is
   // being deleted (e.g., if the process goes away as the tab is closing).
@@ -8473,7 +8483,7 @@ void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(
 void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
   DCHECK(IsPendingDeletion());
 
-  ResetNavigationsForPendingDeletion();
+  ResetAllNavigationsInSubtreeForPendingDeletion();
 
   for (std::unique_ptr<FrameTreeNode>& child_frame : children_) {
     for (FrameTreeNode* node : frame_tree()->SubtreeNodes(child_frame.get())) {
@@ -8556,10 +8566,12 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
   }
 }
 
-void RenderFrameHostImpl::ResetNavigationsForPendingDeletion() {
-  for (auto& child : children_)
-    child->current_frame_host()->ResetNavigationsForPendingDeletion();
-  ResetNavigationRequests();
+void RenderFrameHostImpl::ResetAllNavigationsInSubtreeForPendingDeletion() {
+  for (auto& child : children_) {
+    child->current_frame_host()
+        ->ResetAllNavigationsInSubtreeForPendingDeletion();
+  }
+  ResetOwnedNavigationRequests(NavigationDiscardReason::kWillRemoveFrame);
   // TODO(https://crbug.com/1220337): This has an interesting interaction with
   // the experimental implementations of navigation queueing: if the speculative
   // RenderFrameHost is in pending commit when a new navigation tries to start,
@@ -8569,7 +8581,7 @@ void RenderFrameHostImpl::ResetNavigationsForPendingDeletion() {
   // clobbers the navigation request that was specifically queueing...
   frame_tree_node_->ResetNavigationRequest(
       NavigationDiscardReason::kWillRemoveFrame);
-  frame_tree_node_->render_manager()->CleanUpNavigation(
+  frame_tree_node_->render_manager()->DiscardSpeculativeRFH(
       NavigationDiscardReason::kWillRemoveFrame);
 }
 

@@ -399,12 +399,18 @@ class CONTENT_EXPORT RenderFrameHostManager {
   RenderFrameHostImpl* GetFrameHostForNavigation(NavigationRequest* request,
                                                  std::string* reason = nullptr);
 
-  // Clean up any state for any ongoing navigation.
-  void CleanUpNavigation(NavigationDiscardReason reason);
+  // Discards `speculative_render_frame_host_` if it exists, even if there are
+  // NavigationRequests associated with it, including pending commit
+  // navigations.
+  // TODO(https://crbug.com/1220337): Don't allow this to be called when there
+  // are pending commit cross-document navigations except for FrameTreeNode
+  // detach or when the renderer process is gone, so that we don't have to
+  // "undo" the commit that already happens in the renderer.
+  void DiscardSpeculativeRFH(NavigationDiscardReason reason);
 
   // Determines whether any active navigations are associated with
-  // |speculative_render_frame_host_| and if not, discards it.
-  void MaybeCleanUpNavigation(NavigationDiscardReason reason);
+  // `speculative_render_frame_host_` and if not, discards it.
+  void DiscardSpeculativeRFHIfUnused(NavigationDiscardReason reason);
 
   // Clears the speculative RFH when a navigation is cancelled (for example, by
   // being replaced by a new navigation), returning ownership of the

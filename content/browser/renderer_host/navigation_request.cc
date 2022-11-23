@@ -5884,13 +5884,8 @@ void NavigationRequest::OnRendererRequestedNavigationCancellation() {
     // variables to avoid a use-after-free.
     FrameTreeNode* frame_tree_node = frame_tree_node_;
     render_frame_host_->NavigationRequestCancelled(this);
-    // Ensure that the speculative RFH, if any, is also cleaned up. In theory,
-    // `ResetNavigationRequest()` should handle this; however, it early-returns
-    // if there is no navigation request associated with the FrameTreeNode.
-    // Changing it to no longer early return breaks a bunch of other code that
-    // runs in `CommitPendingIfNecessary()` that expects `DidStopLoading()`
-    // won't be called if `FrameTreeNode::navigation_request()` is null...
-    frame_tree_node->render_manager()->MaybeCleanUpNavigation(
+    // Ensure that the speculative RFH, if any, is also cleaned up.
+    frame_tree_node->render_manager()->DiscardSpeculativeRFHIfUnused(
         NavigationDiscardReason::kCancelled);
   }
 
