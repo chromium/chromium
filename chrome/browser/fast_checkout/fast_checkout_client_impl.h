@@ -13,8 +13,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
-class FastCheckoutExternalActionDelegate;
-
 namespace autofill {
 class LogManager;
 }
@@ -64,10 +62,6 @@ class FastCheckoutClientImpl
  protected:
   explicit FastCheckoutClientImpl(content::WebContents* web_contents);
 
-  // Creates the external action delegate.
-  virtual std::unique_ptr<FastCheckoutExternalActionDelegate>
-  CreateFastCheckoutExternalActionDelegate();
-
   // Creates the UI controller.
   virtual std::unique_ptr<FastCheckoutController>
   CreateFastCheckoutController();
@@ -103,11 +97,6 @@ class FastCheckoutClientImpl
 
   // Delegate for the surface being shown.
   base::WeakPtr<autofill::FastCheckoutDelegate> delegate_;
-
-  // The delegate is responsible for handling protos received from backend DSL
-  // actions.
-  std::unique_ptr<FastCheckoutExternalActionDelegate>
-      fast_checkout_external_action_delegate_;
 
   // Fast Checkout UI Controller. Responsible for showing the bottomsheet and
   // handling user selections.

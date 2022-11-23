@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -143,19 +142,6 @@ class MockFastCheckoutDelegate : public autofill::FastCheckoutDelegate {
   base::WeakPtrFactory<MockFastCheckoutDelegate> weak_factory_{this};
 };
 
-class MockFastCheckoutExternalActionDelegate
-    : public FastCheckoutExternalActionDelegate {
- public:
-  MockFastCheckoutExternalActionDelegate() = default;
-  ~MockFastCheckoutExternalActionDelegate() override = default;
-
-  MOCK_METHOD(void,
-              SetOptionsSelected,
-              (const AutofillProfile& selected_profile,
-               const CreditCard& selected_credit_card),
-              (override));
-};
-
 class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
  public:
   static TestFastCheckoutClientImpl* CreateForWebContents(
@@ -174,20 +160,8 @@ class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
     fast_checkout_controller_ = std::move(fast_checkout_controller);
   }
 
-  std::unique_ptr<FastCheckoutExternalActionDelegate>
-  CreateFastCheckoutExternalActionDelegate() override {
-    return std::move(external_action_delegate_);
-  }
-
-  void InjectFastCheckoutExternalActionDelegate(
-      std::unique_ptr<FastCheckoutExternalActionDelegate>
-          external_action_delegate) {
-    external_action_delegate_ = std::move(external_action_delegate);
-  }
-
  private:
   std::unique_ptr<FastCheckoutController> fast_checkout_controller_;
-  std::unique_ptr<FastCheckoutExternalActionDelegate> external_action_delegate_;
 };
 
 // static
@@ -223,13 +197,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     test_client_->InjectFastCheckoutController(
         std::move(fast_checkout_controller));
 
-    // Prepare the FastCheckoutExternalActionDelegate.
-    auto external_action_delegate =
-        std::make_unique<MockFastCheckoutExternalActionDelegate>();
-    external_action_delegate_ = external_action_delegate.get();
-    test_client_->InjectFastCheckoutExternalActionDelegate(
-        std::move(external_action_delegate));
-
     // Prepare the FastCheckoutDelegate.
     autofill_driver_ = std::make_unique<MockAutofillDriver>();
     fast_checkout_delegate_ =
@@ -256,10 +223,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     return fast_checkout_controller_;
   }
 
-  MockFastCheckoutExternalActionDelegate* external_action_delegate() {
-    return external_action_delegate_;
-  }
-
   MockAutofillDriver* autofill_driver() { return autofill_driver_.get(); }
 
   base::WeakPtr<MockFastCheckoutDelegate> delegate() {
@@ -271,7 +234,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   base::HistogramTester histogram_tester_;
 
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
-  raw_ptr<MockFastCheckoutExternalActionDelegate> external_action_delegate_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<MockFastCheckoutDelegate> fast_checkout_delegate_;
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
@@ -542,8 +504,6 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
 
 TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_MovesSelectionsToExternalActionDelegate) {
-  EXPECT_CALL(*external_action_delegate(), SetOptionsSelected);
-
   // Starting the run successfully starts keyboard suppression.
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));

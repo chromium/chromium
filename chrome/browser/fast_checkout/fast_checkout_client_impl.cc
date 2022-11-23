@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -91,9 +90,6 @@ bool FastCheckoutClientImpl::Start(
   url_ = url;
   delegate_ = std::move(delegate);
   personal_data_manager_observation_.Observe(GetPersonalDataManager());
-
-  fast_checkout_external_action_delegate_ =
-      CreateFastCheckoutExternalActionDelegate();
 
   SetShouldSuppressKeyboard(true);
 
@@ -197,11 +193,6 @@ bool FastCheckoutClientImpl::IsRunning() const {
   return is_running_;
 }
 
-std::unique_ptr<FastCheckoutExternalActionDelegate>
-FastCheckoutClientImpl::CreateFastCheckoutExternalActionDelegate() {
-  return std::make_unique<FastCheckoutExternalActionDelegate>();
-}
-
 std::unique_ptr<FastCheckoutController>
 FastCheckoutClientImpl::CreateFastCheckoutController() {
   return std::make_unique<FastCheckoutControllerImpl>(&GetWebContents(), this);
@@ -217,8 +208,7 @@ void FastCheckoutClientImpl::OnHidden() {
 void FastCheckoutClientImpl::OnOptionsSelected(
     std::unique_ptr<autofill::AutofillProfile> selected_profile,
     std::unique_ptr<autofill::CreditCard> selected_credit_card) {
-  fast_checkout_external_action_delegate_->SetOptionsSelected(
-      *selected_profile, *selected_credit_card);
+  // TODO(crbug.com/1334642): Signal that FC options have been selected.
   OnHidden();
 }
 

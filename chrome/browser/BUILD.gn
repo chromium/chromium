@@ -3016,8 +3016,6 @@ static_library("browser") {
       "fast_checkout/fast_checkout_client.h",
       "fast_checkout/fast_checkout_client_impl.cc",
       "fast_checkout/fast_checkout_client_impl.h",
-      "fast_checkout/fast_checkout_external_action_delegate.cc",
-      "fast_checkout/fast_checkout_external_action_delegate.h",
       "fast_checkout/fast_checkout_tab_helper.cc",
       "fast_checkout/fast_checkout_tab_helper.h",
       "feature_guide/notifications/android/feature_notification_guide_bridge.cc",
