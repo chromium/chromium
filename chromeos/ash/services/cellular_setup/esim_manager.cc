@@ -23,7 +23,7 @@ namespace ash::cellular_setup {
 namespace {
 
 // The Stork SM-DS Prod server used to fetch pending ESim profiles.
-const char kStorkSmdsServerAddress[] = "prod.smds.rsp.goog";
+const char kStorkSmdsServerAddress[] = "1$prod.smds.rsp.goog$";
 
 void LogEuiccPaths(const std::set<dbus::ObjectPath>& new_euicc_paths) {
   if (new_euicc_paths.empty()) {
