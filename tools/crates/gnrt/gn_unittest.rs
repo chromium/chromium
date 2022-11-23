@@ -72,6 +72,10 @@ cargo_pkg_version = "1.2.3"
 cargo_pkg_authors = "Somebody <somebody@foo.org>"
 cargo_pkg_name = "foo"
 cargo_pkg_description = "A generic framework for fooNewline'"
+library_configs -= [ "//build/config/compiler:chromium_code" ]
+library_configs += [ "//build/config/compiler:no_chromium_code" ]
+executable_configs -= [ "//build/config/compiler:chromium_code" ]
+executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 deps = [
 "//third_party/rust/bar:lib",
 ]
@@ -150,6 +154,10 @@ sources = [ "crate/src/lib.rs" ]
 edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_name = "foo"
+library_configs -= [ "//build/config/compiler:chromium_code" ]
+library_configs += [ "//build/config/compiler:no_chromium_code" ]
+executable_configs -= [ "//build/config/compiler:chromium_code" ]
+executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 group("test_support") {
 public_deps = [ ":lib" ]
@@ -228,6 +236,10 @@ sources = [ "crate/src/lib.rs" ]
 edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_name = "foo"
+library_configs -= [ "//build/config/compiler:chromium_code" ]
+library_configs += [ "//build/config/compiler:no_chromium_code" ]
+executable_configs -= [ "//build/config/compiler:chromium_code" ]
+executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 deps = [
 "//third_party/rust/bar:lib",
 ]
