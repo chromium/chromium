@@ -172,6 +172,8 @@ void CloseAllTabs() {
     DCHECK(browser);
     browser->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_USER_ACTION);
+    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+        /*immediately=*/true);
   }
   if (GetMainTabCount() && GetForegroundActiveScene()) {
     Browser* browser =
@@ -179,6 +181,8 @@ void CloseAllTabs() {
     DCHECK(browser);
     browser->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_USER_ACTION);
+    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+        /*immediately=*/true);
   }
 }
 

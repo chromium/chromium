@@ -396,7 +396,14 @@ TEST_F(SessionRestorationBrowserAgentTest,
   // Removing the last active webState.
   browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
                                                WebStateList::CLOSE_USER_ACTION);
-  EXPECT_EQ(test_session_service_.saveSessionCallsCount, 5);
+  EXPECT_EQ(test_session_service_.saveSessionCallsCount, 6);
+
+  InsertNewWebState(GURL(kURL1), /*parent=*/nullptr, /*index=*/0,
+                    /*background=*/true);
+  InsertNewWebState(GURL(kURL2), /*parent=*/nullptr, /*index=*/1,
+                    /*background=*/true);
+  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  EXPECT_EQ(test_session_service_.saveSessionCallsCount, 7);
 }
 
 }  // anonymous namespace

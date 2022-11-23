@@ -245,6 +245,19 @@ void SessionRestorationBrowserAgent::WillDetachWebStateAt(
   SaveSession(/*immediately=*/false);
 }
 
+void SessionRestorationBrowserAgent::WebStateDetachedAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  if (!web_state_list_->empty())
+    return;
+
+  // Persist the session state after CloseAllWebStates. SaveSession will discard
+  // calls when the web_state_list is not empty and the active WebState is null,
+  // which is the order CloseAllWebStates uses.
+  SaveSession(/*immediately=*/false);
+}
+
 void SessionRestorationBrowserAgent::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
