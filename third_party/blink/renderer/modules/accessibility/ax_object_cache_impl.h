@@ -70,6 +70,17 @@ class HTMLAreaElement;
 class LocalFrameView;
 class WebLocalFrameClient;
 
+// Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
+// or nothing (which will cause the AX subtree to be pruned at that point).
+// Currently this also mirrors the decision on whether to back the object by a
+// node or a layout object. When the AXObject is backed by a node, it's
+// AXID can be looked up in node_object_mapping_, and when the AXObject is
+// backed by layout, it's AXID can be looked up in layout_object_mapping_.
+// TODO(accessibility) Split the decision of what to use for backing from what
+// type of object to create, and use a node whenever possible, in order to
+// enable more stable IDs for most objects.
+enum AXObjectType { kPruneSubtree = 0, kAXNodeObject, kAXLayoutObject };
+
 // This class should only be used from inside the accessibility directory.
 class MODULES_EXPORT AXObjectCacheImpl
     : public AXObjectCacheBase,
@@ -142,7 +153,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AccessibleNode*) override;
   // Returns false if no associated AXObject exists in the cache.
   bool Remove(LayoutObject*) override;
-  void Remove(Node*) override;
+  void Remove(const Node*) override;
   void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
@@ -510,10 +521,16 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*, AXObject* parent_if_known, AXID use_axid = 0);
-  AXObject* CreateAndInit(LayoutObject*,
-                          AXObject* parent_if_known,
-                          AXID use_axid = 0);
+  AXObject* CreateAndInit(
+      Node*,
+      AXObject* parent_if_known,
+      AXID use_axid = 0,
+      absl::optional<AXObjectType> ax_object_type = absl::nullopt);
+  AXObject* CreateAndInit(
+      LayoutObject*,
+      AXObject* parent_if_known,
+      AXID use_axid = 0,
+      absl::optional<AXObjectType> ax_object_type = absl::nullopt);
 
   // Mark object as invalid and needing to be refreshed when layout is clean.
   // Will result in a new object with the same AXID, and will also call

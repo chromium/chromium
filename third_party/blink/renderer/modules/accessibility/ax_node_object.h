@@ -56,6 +56,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void Trace(Visitor*) const override;
 
+  static bool CanHaveChildren(Element& element);
+
  protected:
 #if DCHECK_IS_ON()
   bool initialized_ = false;

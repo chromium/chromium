@@ -3886,12 +3886,11 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
 
   // content-visibility:hidden or content-visibility: auto.
   if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
-    // Ensure contents of head, style and script are never exposed.
-    // Note: an AXObject is created for <title> to gather the document's name.
+    // Ensure contents of head, style and script are not exposed when
+    // display-locked --the only time they are ever exposed is if author
+    // explicitly makes them visible.
     DCHECK(!Traversal<SVGStyleElement>::FirstAncestorOrSelf(*node)) << node;
-    DCHECK(!Traversal<HTMLHeadElement>::FirstAncestorOrSelf(*node) ||
-           IsA<HTMLTitleElement>(node))
-        << node;
+    DCHECK(!Traversal<HTMLHeadElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLStyleElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLScriptElement>::FirstAncestorOrSelf(*node)) << node;
 

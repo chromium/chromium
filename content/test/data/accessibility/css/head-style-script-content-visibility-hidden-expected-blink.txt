@@ -1,3 +1,6 @@
 rootWebArea htmlTag='#document' name='Done'
 ++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='head'
 ++++genericContainer ignored htmlTag='body'
+++++++genericContainer htmlTag='style'
+++++++genericContainer htmlTag='script'

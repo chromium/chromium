@@ -4380,29 +4380,15 @@ void AXNodeObject::InsertChild(AXObject* child,
 
 bool AXNodeObject::CanHaveChildren() const {
   DCHECK(!IsDetached());
-  DCHECK(!IsA<HTMLMapElement>(GetNode()));
-
-  // Placeholder gets exposed as an attribute on the input accessibility node,
-  // so there's no need to add its text children. Placeholder text is a separate
-  // node that gets removed when it disappears, so this will only be present if
-  // the placeholder is visible.
-  if (GetElement() && GetElement()->ShadowPseudoId() ==
-                          shadow_element_names::kPseudoInputPlaceholder) {
-    return false;
-  }
-
-  if (IsA<HTMLBRElement>(GetNode()) &&
-      (!GetLayoutObject() || !GetLayoutObject()->IsBR())) {
-    // A <br> element that is not treated as a line break could occur when the
-    // <br> element has DOM children. A <br> does not usually have DOM children,
-    // but there is nothing preventing a script from creating this situation.
-    // This anomalous child content is not rendered, and therefore AXObjects
-    // should not be created for the children. Enforcing that <br>s to only have
-    // children when they are line breaks also helps create consistency: any AX
-    // child of a <br> will always be an AXInlineTextBox.
-    return false;
-  }
-
+  // Notes:
+  // * Native text fields expose any children they might have, complying
+  // with browser-side expectations that editable controls have children
+  // containing the actual text content.
+  // * ARIA roles with childrenPresentational:true in the ARIA spec expose
+  // their contents to the browser side, allowing platforms to decide whether
+  // to make them a leaf, ensuring that focusable content cannot be hidden,
+  // and improving stability in Blink.
+  bool result = !GetElement() || CanHaveChildren(*GetElement());
   switch (native_role_) {
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kListBoxOption:
@@ -4417,28 +4403,60 @@ bool AXNodeObject::CanHaveChildren() const {
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
-      return false;
+      DCHECK(!result) << "Expected to disallow children for " << GetElement();
+      break;
     case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kPopUpButton:
-    case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kStaticText:
       // Note: these can have AXInlineTextBox children, but when adding them, we
       // also check AXObjectCache().InlineTextBoxAccessibilityEnabled().
-      return true;
+      DCHECK(result) << "Expected to allow children for " << GetElement()
+                     << " on role " << native_role_;
+      break;
     default:
       break;
   }
+  return result;
+}
 
-  // Allow native text fields to expose any children they might have, complying
-  // with browser-side expectations that editable controls have children
-  // containing the actual text content.
-  if (blink::EnclosingTextControl(GetNode()))
-    return true;
+// static
+bool AXNodeObject::CanHaveChildren(Element& element) {
+  DCHECK(!IsA<HTMLMapElement>(element));
+  // Placeholder gets exposed as an attribute on the input accessibility node,
+  // so there's no need to add its text children. Placeholder text is a separate
+  // node that gets removed when it disappears, so this will only be present if
+  // the placeholder is visible.
+  if (element.ShadowPseudoId() ==
+      shadow_element_names::kPseudoInputPlaceholder) {
+    return false;
+  }
 
-  // ARIA roles with childrenPresentational:true in the ARIA spec expose
-  // their contents to the browser side, allowing platforms to decide whether
-  // to make them a leaf, ensuring that focusable content cannot be hidden,
-  // and improving stability in Blink.
+  if (IsA<HTMLBRElement>(element) &&
+      (!element.GetLayoutObject() || !element.GetLayoutObject()->IsBR())) {
+    // A <br> element that is not treated as a line break could occur when the
+    // <br> element has DOM children. A <br> does not usually have DOM children,
+    // but there is nothing preventing a script from creating this situation.
+    // This anomalous child content is not rendered, and therefore AXObjects
+    // should not be created for the children. Enforcing that <br>s to only have
+    // children when they are line breaks also helps create consistency: any AX
+    // child of a <br> will always be an AXInlineTextBox.
+    return false;
+  }
+
+  if (IsA<HTMLHRElement>(element))
+    return false;
+
+  if (auto* input = DynamicTo<HTMLInputElement>(&element)) {
+    // False for checkbox, radio and range.
+    return !input->IsCheckable() && input->type() != input_type_names::kRange;
+  }
+
+  if (IsA<HTMLOptionElement>(element))
+    return false;
+
+  if (IsA<HTMLProgressElement>(element))
+    return false;
+
   return true;
 }
 
@@ -4684,11 +4702,9 @@ bool AXNodeObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
 }
 
 void AXNodeObject::ChildrenChangedWithCleanLayout() {
-  if (!GetNode() && !GetLayoutObject())
-    return;
-
   DCHECK(!IsDetached()) << "Don't call on detached node: "
                         << ToString(true, true);
+  DCHECK(GetNode() || GetLayoutObject());
 
   // When children changed on a <map> that means we need to forward the
   // children changed to the <img> that parents the <area> elements.

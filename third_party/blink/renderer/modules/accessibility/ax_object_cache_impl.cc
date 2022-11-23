@@ -288,7 +288,7 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
   return CanIgnoreSpaceNextTo(child, is_after, ++counter);
 }
 
-bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
+bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   if (!layout_text.Parent())
     return false;
 
@@ -368,10 +368,51 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   return true;
 }
 
+bool IsHiddenTextNodeRelevantForAccessibility(const Text& text_node,
+                                              bool is_display_locked) {
+  // Children of an <iframe> tag will always be replaced by a new Document,
+  // either loaded from the iframe src or empty. In fact, we don't even parse
+  // them and they are treated like one text node. Consider irrelevant.
+  if (AXObject::IsFrame(text_node.parentElement()))
+    return false;
+
+  // Layout has more info available to determine if whitespace is relevant.
+  // If display-locked, layout object may be missing or stale:
+  // Assume that all display-locked text nodes are relevant, but only create
+  // an AXNodeObject in order to avoid using a stale layout object.
+  if (is_display_locked)
+    return true;
+
+  // If unrendered + no parent, it is in a shadow tree. Consider irrelevant.
+  if (!text_node.parentElement()) {
+    DCHECK(text_node.IsInShadowTree());
+    return false;
+  }
+
+  // If unrendered and in <canvas>, consider even whitespace relevant.
+  if (text_node.parentElement()->IsInCanvasSubtree())
+    return true;
+
+  // Must be unrendered because of CSS. Consider relevant if non-whitespace.
+  // Allowing rendered non-whitespace to be considered relevant will allow
+  // use for accessible relations such as labelledby and describedby.
+  return !text_node.ContainsOnlyWhitespaceOrEmpty();
+}
+
 bool IsShadowContentRelevantForAccessibility(const Node* node) {
   DCHECK(node->ContainingShadowRoot());
 
-  // Native <img> create extra child nodes to hold alt text.
+  // Return false if inside a shadow tree of something that can't have children,
+  // for example, an <img> has a user agent shadow root containing a <span> for
+  // the alt text. Do not create an accessible for that as it would be unable
+  // to have a parent that has it as a child.
+  if (!AXNodeObject::CanHaveChildren(To<Element>(*node->OwnerShadowHost())))
+    return false;
+
+  // Native <img> create extra child nodes to hold alt text, which are not
+  // allowed as children. Note: images can have image map children, but these
+  // are moved from the <map> descendants and are not descendants of the image.
+  // See AXNodeObject::AddImageMapChildren().
   if (node->IsInUserAgentShadowRoot() &&
       IsA<HTMLImageElement>(node->OwnerShadowHost())) {
     return false;
@@ -443,201 +484,188 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     return AXObjectCacheImpl::IsRelevantPseudoElementDescendant(layout_object);
   }
 
-  Node* node = layout_object.GetNode();
-  DCHECK(node) << "Non-anonymous layout objects always have a node";
-
-  if (node->ContainingShadowRoot() &&
-      !IsShadowContentRelevantForAccessibility(node)) {
-    return false;
-  }
-
   if (layout_object.IsText())
-    return IsTextRelevantForAccessibility(To<LayoutText>(layout_object));
+    return IsLayoutTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
   // Menu list option and HTML area elements are indexed by DOM node, never by
   // layout object.
-  if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(node))
+  // TODO(accessibility) Remove this special case once we prefer to always
+  // back/index by DOM node when present.
+  if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(
+          layout_object.GetNode())) {
     return false;
-
-  // TODO(accessibility) Refactor so that the following rules are not repeated
-  // in IsNodeRelevantForAccessibility().
-
-  if (IsA<HTMLAreaElement>(node))
-    return false;
-
-  if (node->IsPseudoElement())
-    return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
-
-  if (const HTMLSlotElement* slot =
-          ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
-    return AXObjectCacheImpl::IsRelevantSlotElement(*slot);
   }
-
-  // <optgroup> is irrelevant inside of a <select> menulist.
-  if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
-    if (auto* select = opt_group->OwnerSelectElement())
-      return !select->UsesMenuList();
-  }
-
-  // An HTML <title> does not require an AXObject: the document's name is
-  // retrieved directly via the inner text.
-  if (IsA<HTMLTitleElement>(node))
+  if (IsA<HTMLAreaElement>(layout_object.GetNode()))
     return false;
 
   return true;
 }
 
-// -----------------------------------------------------------------------------
-// IsNodeRelevantForAccessibility() and IsLayoutObjectRelevantForAccessibility()
-// * if the LayoutObject is relevant and not display-locked,
-//   GetOrCreate() will return an object that will be an AXLayoutObject or
-//   derivative. Note that the node may or may not be relevant.
-// * Else if the Node is relevant, GetOrCreate() will return an object that will
-//   be an AXNodeObject or derivative.
-// * Else neither are relevant, and the tree will be truncated (no descendants)
-//   at this point.
-// -----------------------------------------------------------------------------
-// TODO(accessibility) Merge IsNodeRelevantForAccessibility() and
-// IsLayoutObjectRelevantForAccessibility() producing a function like
-// GetAXType(node, layout_object) returning kTruncateSubtree,
-// kAXNodeObject, or kAXLayoutObject. This will allow some of the checks that
-// currently happen twice, to only happen once.
-bool IsNodeRelevantForAccessibility(const Node* node,
-                                    bool parent_ax_known,
-                                    bool is_layout_object_relevant) {
-  if (!node || !node->isConnected())
-    return false;
-
-  if (const Document* document = DynamicTo<Document>(node))
-    return document->GetFrame();  // Only relevant if the document has a frame.
-
-  if (node->ContainingShadowRoot() &&
-      !IsShadowContentRelevantForAccessibility(node)) {
-    return false;
-  }
-
-  if (node->IsTextNode()) {
-    // Children of an <iframe> tag will always be replaced by a new Document,
-    // either loaded from the iframe src or empty. In fact, we don't even parse
-    // them and they are treated like one text node. Consider irrelevant.
-    if (AXObject::IsFrame(node->parentElement()))
-      return false;
-
-    // Layout has more info available to determine if whitespace is relevant.
-    // If display-locked, layout object may be missing or stale:
-    // Assume that all display-locked text nodes are relevant.
-    if (IsDisplayLocked(node))
-      return true;
-
-    // If rendered, decision is from IsLayoutObjectRelevantForAccessibility().
-    if (node->GetLayoutObject())
-      return is_layout_object_relevant;
-
-    // If unrendered + no parent, it is in a shadow tree. Consider irrelevant.
-    if (!node->parentElement()) {
-      DCHECK(node->IsInShadowTree());
-      return false;
-    }
-
-    // If unrendered and in <canvas>, consider even whitespace relevant.
-    // TODO(aleventhal) Consider including all text, even unrendered whitespace,
-    // whether or not in <canvas>. For now this matches previous behavior.
-    // Including all text would allow simply returning true at this point.
-    if (node->parentElement()->IsInCanvasSubtree())
-      return true;
-
-    // Must be unrendered because of CSS. Consider relevant if non-whitespace.
-    // Allowing rendered non-whitespace to be considered relevant will allow
-    // use for accessible relations such as labelledby and describedby.
-    return !To<Text>(node)->ContainsOnlyWhitespaceOrEmpty();
-  }
-
-  const Element* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;  // Only documents, elements and text nodes get ax objects.
-
-  if (IsA<HTMLAreaElement>(node) && !IsA<HTMLMapElement>(node->parentNode())) {
-    return false;  // <area> without parent <map> is not relevant.
-  }
+bool IsSubtreePrunedForAccessibility(const Element* node) {
+  if (IsA<HTMLAreaElement>(node) && !IsA<HTMLMapElement>(node->parentNode()))
+    return true;  // <area> without parent <map> is not relevant.
 
   if (IsA<HTMLMapElement>(node))
-    return false;  // Contains children for an img, but is not its own object.
+    return true;  // Contains children for an img, but is not its own object.
 
-  if (node->IsPseudoElement())
-    return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
+  if (node->HasTagName(html_names::kColgroupTag))
+    return true;  // Affects table layout, but doesn't get it's own AXObject.
+
+  if (node->IsPseudoElement()) {
+    if (!AXObjectCacheImpl::IsRelevantPseudoElement(*node))
+      return true;
+  }
 
   if (const HTMLSlotElement* slot =
           ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
-    return AXObjectCacheImpl::IsRelevantSlotElement(*slot);
+    if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
+      return true;
   }
 
   // <optgroup> is irrelevant inside of a <select> menulist.
   if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
-    if (auto* select = opt_group->OwnerSelectElement())
-      return !select->UsesMenuList();
-  }
-
-  // When there is a layout object, the element is known to be visible, so
-  // consider it relevant and return early. Checking the layout object is only
-  // useful when display locking (content-visibility) is not used.
-  if (node->GetLayoutObject() && !IsDisplayLocked(node, true)) {
-    return true;
+    if (auto* select = opt_group->OwnerSelectElement()) {
+      if (select->UsesMenuList())
+        return true;
+    }
   }
 
   // An HTML <title> does not require an AXObject: the document's name is
   // retrieved directly via the inner text.
   if (IsA<HTMLTitleElement>(node))
-    return false;
+    return true;
 
-  // Do not consider <head>/<style>/<script> relevant.
-  if (IsA<HTMLHeadElement>(node))
-    return false;
-  if (IsA<HTMLStyleElement>(node))
-    return false;
-  if (IsA<HTMLScriptElement>(node))
-    return false;
+  return false;
+}
 
-  // Style elements in SVG are not display: none, unlike HTML style
-  // elements, but they are still hidden and thus treated as irrelevant for
-  // accessibility.
-  if (IsA<SVGStyleElement>(node))
-    return false;
+// Return true if node is head/style/script or any descendant of those.
+// Also returns true for descendants of any type of frame, because the frame
+// itself is in the tree, but not DOM descendants (their contents are in a
+// different document).
+bool IsInPrunableHiddenContainerInclusive(const Node& node,
+                                          bool parent_ax_known,
+                                          bool is_display_locked) {
+  int max_depth_to_check = INT_MAX;
+  if (parent_ax_known) {
+    // Optimization: only need to check the current object if the parent the
+    // parent_ax is already known, because it we are attempting to add this
+    // object from something already relevant in the AX tree, and therefore
+    // can't be inside a <head>, <style>, <script> or SVG <style> element.
+    // However, there is an edge case that if it is display locked content
+    // we must also check the parent, which can be visible and included
+    // in the tree. This edge case is handled to satisfy tests and is not
+    // likely to be a real-world condition.
+    max_depth_to_check = is_display_locked ? 2 : 1;
+  }
 
-  // Not a <head>/<style>/<script>, or SVG<style>:
-  // Use a slower check to see if this node is anywhere inside of a <head>,
-  // <style> or <script>.
-  // This check is not necessary if the parent_ax is already known, which means
-  // we are attempting to add this object from something already relevant in the
-  // AX tree, and therefore can't be inside a <head>, <style>, <script> or SVG
-  // <style> element.
-  if (parent_ax_known)
-    return true;  // No need to check inside if the parent exists.
-
-  for (const Element* ancestor = element; ancestor;
+  for (const Node* ancestor = &node; ancestor;
        ancestor = ancestor->parentElement()) {
-    // Objects inside <head> are irrelevant.
+    // Objects inside <head> are pruned.
     if (IsA<HTMLHeadElement>(ancestor))
-      return false;
-    // Objects inside a <style> are irrelevant.
+      return true;
+    // Objects inside a <style> are pruned.
     if (IsA<HTMLStyleElement>(ancestor))
-      return false;
-    // Objects inside a <script> are irrelevant.
+      return true;
+    // Objects inside a <script> are true.
     if (IsA<HTMLScriptElement>(ancestor))
-      return false;
-    // Elements inside of a frame/iframe are irrelevant unless inside a document
+      return true;
+    // Elements inside of a frame/iframe are true unless inside a document
     // that is a child of the frame. In the case where descendants are allowed,
     // they will be in a different document, and therefore this loop will not
     // reach the frame/iframe.
     if (AXObject::IsFrame(ancestor))
-      return false;
-    // Objects inside an SVG <style> are irrelevant.
-    // However, when can this condition be reached?
+      return true;
+    // Style elements in SVG are not display: none, unlike HTML style
+    // elements, but they are still hidden along with their contents and thus
+    // treated as true for accessibility.
     if (IsA<SVGStyleElement>(ancestor))
-      return false;
+      return true;
+
+    if (--max_depth_to_check <= 0)
+      break;
   }
 
-  // All other objects are relevant, even if hidden.
-  return true;
+  // All other nodes are relevant, even if hidden.
+  return false;
+}
+
+// -----------------------------------------------------------------------------
+// DetermineAXObjectType() determines what type of AXObject should be created
+// for the given node and layout_object.
+// * Pass in the Node, the LayoutObject or both.
+// * Passing in |parent_ax_known| when there is  known parent is an optimization
+// and does not affect the return value.
+// Some general rules:
+// * If neither the node nor layout object are relevant for accessibility, will
+// return kPruneSubtree, which will cause no AXObject to be created, and
+// result in the entire subtree being pruned at that point.
+// * If the node is part of a forbidden subtree, then kPruneSubtree is used.
+// * If both the node and layout are relevant, kAXLayoutObject is preferred,
+// otherwise: kAXNodeObject for relevant nodes, kLayoutObject for layout.
+// -----------------------------------------------------------------------------
+AXObjectType DetermineAXObjectType(const Node* node,
+                                   const LayoutObject* layout_object,
+                                   bool parent_ax_known = false) {
+  DCHECK(layout_object || node);
+  bool is_display_locked =
+      node ? IsDisplayLocked(node) : IsDisplayLocked(layout_object);
+  if (is_display_locked)
+    layout_object = nullptr;
+  DCHECK(!node || !layout_object || layout_object->GetNode() == node);
+
+  bool is_node_relevant = false;
+
+  if (node) {
+    if (!node->isConnected())
+      return kPruneSubtree;
+
+    if (node->ContainingShadowRoot() &&
+        !IsShadowContentRelevantForAccessibility(node)) {
+      return kPruneSubtree;
+    }
+
+    if (!IsA<Element>(node) && !IsA<Text>(node)) {
+      // All remaining types, such as the document node, doctype node.
+      return layout_object ? kAXLayoutObject : kPruneSubtree;
+    }
+
+    if (const Element* element = DynamicTo<Element>(node)) {
+      if (IsSubtreePrunedForAccessibility(element))
+        return kPruneSubtree;
+      else
+        is_node_relevant = true;
+    } else {  // Text is the only remaining type.
+      if (layout_object) {
+        // If there's layout for this text, it will either be pruned or an
+        // AXLayoutObject will be created for it. The logic of whether to return
+        // kAXLayoutObject or kPruneSubtree will come purely from
+        // is_layout_relevant further down.
+        return IsLayoutObjectRelevantForAccessibility(*layout_object)
+                   ? kAXLayoutObject
+                   : kPruneSubtree;
+      } else {
+        // Otherwise, base the decision on the best info we have on the node.
+        is_node_relevant = IsHiddenTextNodeRelevantForAccessibility(
+            To<Text>(*node), is_display_locked);
+      }
+    }
+  }
+
+  bool is_layout_relevant =
+      layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object);
+
+  // Prune if neither the LayoutObject nor Node are relevant.
+  if (!is_layout_relevant && !is_node_relevant)
+    return kPruneSubtree;
+
+  // If a node is not rendered, prune if it is in head/style/script or a DOM
+  // descendant of an iframe.
+  if (!is_layout_relevant && IsInPrunableHiddenContainerInclusive(
+                                 *node, parent_ax_known, is_display_locked)) {
+    return kPruneSubtree;
+  }
+
+  return is_layout_relevant ? kAXLayoutObject : kAXNodeObject;
 }
 
 }  // namespace
@@ -827,7 +855,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   if (!ax_id)
     return node ? Get(node) : nullptr;
 
-  if (IsDisplayLocked(node) ||
+  if (IsDisplayLocked(layout_object) ||
       !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
     // Change from AXLayoutObject -> AXNodeObject.
     // We previously saved the node in the cache with its layout object,
@@ -959,8 +987,8 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
       !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
     // Only text nodes still are able to become suddenly irrelevant.
     if (layout_id && node->IsTextNode() &&
-        !IsNodeRelevantForAccessibility(node, /*parent known*/ false,
-                                        /*layout relevant*/ false)) {
+        !IsHiddenTextNodeRelevantForAccessibility(To<Text>(*node),
+                                                  IsDisplayLocked(node))) {
       // Layout object and node are now both irrelevant for accessibility.
       // For example, text becomes irrelevant when it changes to whitespace, or
       // if it already is whitespace and the text around it changes to makes it
@@ -1388,9 +1416,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
   return CreateAndInit(node, parent_if_known);
 }
 
-AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
-                                           AXObject* parent_if_known,
-                                           AXID use_axid) {
+AXObject* AXObjectCacheImpl::CreateAndInit(
+    Node* node,
+    AXObject* parent_if_known,
+    AXID use_axid,
+    absl::optional<AXObjectType> ax_type) {
   DCHECK(node);
   DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
 
@@ -1398,12 +1428,15 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // the AXObject, with the exception of the HTMLAreaElement and nodes within
   // a locked subtree, which are created based on its node.
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
-      !IsDisplayLocked(layout_object)) {
-    return CreateAndInit(layout_object, parent_if_known, use_axid);
+  if (!ax_type)
+    ax_type = DetermineAXObjectType(node, layout_object, parent_if_known);
+
+  if (*ax_type == kAXLayoutObject) {
+    return CreateAndInit(layout_object, parent_if_known, use_axid,
+                         kAXLayoutObject);
   }
 
-  if (!IsNodeRelevantForAccessibility(node, parent_if_known, false))
+  if (*ax_type == kPruneSubtree)
     return nullptr;
 
 #if DCHECK_IS_ON()
@@ -1416,19 +1449,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
   DCHECK_NE(node, document_)
       << "The document's AXObject is backed by its layout object.";
-#endif  // DCHECK_IS_ON()
 
-  // Return null if inside a shadow tree of something that can't have children,
-  // for example, an <img> has a user agent shadow root containing a <span> for
-  // the alt text. Do not create an accessible for that as it would be unable
-  // to have a parent that has it as a child.
-  if (node->IsInShadowTree()) {
-    AXObject* shadow_host = Get(node->OwnerShadowHost());
-    if (shadow_host && !shadow_host->CanHaveChildren())
-      return nullptr;
-  }
-
-#if DCHECK_IS_ON()
   if (!IsA<HTMLOptionElement>(node) && node->IsInUserAgentShadowRoot()) {
     if (Node* owner_shadow_host = node->OwnerShadowHost()) {
       DCHECK(!AXObjectCacheImpl::ShouldCreateAXMenuListFor(
@@ -1485,9 +1506,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
   return CreateAndInit(layout_object, parent_if_known);
 }
 
-AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
-                                           AXObject* parent_if_known,
-                                           AXID use_axid) {
+AXObject* AXObjectCacheImpl::CreateAndInit(
+    LayoutObject* layout_object,
+    AXObject* parent_if_known,
+    AXID use_axid,
+    absl::optional<AXObjectType> ax_type) {
 #if DCHECK_IS_ON()
   DCHECK(layout_object);
   Document* document = &layout_object->GetDocument();
@@ -1497,23 +1520,14 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
   DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
 #endif  // DCHECK_IS_ON()
-  if (!IsLayoutObjectRelevantForAccessibility(*layout_object))
-    return nullptr;
-
   Node* node = layout_object->GetNode();
 
-  if (node && !IsNodeRelevantForAccessibility(node, parent_if_known, true))
+  if (!ax_type)
+    ax_type = DetermineAXObjectType(node, layout_object, parent_if_known);
+  if (*ax_type == kAXNodeObject)
+    return CreateAndInit(node, parent_if_known, use_axid, kAXNodeObject);
+  if (*ax_type == kPruneSubtree)
     return nullptr;
-
-  // Return null if inside a shadow tree of something that can't have children,
-  // for example, an <img> has a user agent shadow root containing a <span> for
-  // the alt text. Do not create an accessible for that as it would be unable
-  // to have a parent that has it as a child.
-  if (node && node->IsInShadowTree()) {
-    AXObject* shadow_host = Get(node->OwnerShadowHost());
-    if (shadow_host && !shadow_host->CanHaveChildren())
-      return nullptr;
-  }
 
 #if DCHECK_IS_ON()
   if (node && !IsA<HTMLOptionElement>(node) &&
@@ -1528,28 +1542,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
     }
   }
 #endif
-
-  // Prefer creating AXNodeObjects over AXLayoutObjects in locked subtrees
-  // (e.g. content-visibility: auto), even if a LayoutObject is available,
-  // because the LayoutObject is not guaranteed to be up-to-date (it might come
-  // from a previous layout update), or even it is up-to-date, it may not remain
-  // up-to-date. Blink doesn't update style/layout for nodes in locked
-  // subtrees, so creating a matching AXLayoutObjects could lead to the use of
-  // old information. Note that Blink will recreate the AX objects as
-  // AXLayoutObjects when a locked element is activated, aka it becomes visible.
-  // Visit https://wicg.github.io/display-locking/#accessibility for more info.
-  if (IsDisplayLocked(layout_object)) {
-    if (!node) {
-      // Nodeless objects such as anonymous blocks do not get accessible objects
-      // in a locked subtree. Anonymous blocks are added to help layout when
-      // a block and inline are siblings.
-      // This prevents an odd mixture of ax objects in a locked subtree, e.g.
-      // AXNodeObjects when there is a node, and AXLayoutObjects
-      // when there isn't. The locked subtree should not have AXLayoutObjects.
-      return nullptr;
-    }
-    return CreateAndInit(node, parent_if_known, use_axid);
-  }
 
   AXObject* parent = parent_if_known ? parent_if_known
                                      : AXObject::ComputeNonARIAParent(
@@ -1788,7 +1780,7 @@ bool AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(Node* node) {
+void AXObjectCacheImpl::Remove(const Node* node) {
   if (!node)
     return;
 
@@ -1816,7 +1808,7 @@ void AXObjectCacheImpl::Remove(Node* node) {
 
 void AXObjectCacheImpl::Remove(Document* document) {
   DCHECK(IsPopup(*document)) << "Call Dispose() to remove the main document.";
-  for (Node* node = document; node;
+  for (const Node* node = document; node;
        node = LayoutTreeBuilderTraversal::Next(*node, nullptr)) {
     Remove(node);
   }
@@ -2662,7 +2654,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     bool will_be_ax_layout_object =
         node->GetLayoutObject() &&
         IsLayoutObjectRelevantForAccessibility(*node->GetLayoutObject()) &&
-        !IsDisplayLocked(node->GetLayoutObject());
+        !IsDisplayLocked(node);
     if (is_ax_layout_object == will_be_ax_layout_object)
       return static_cast<AXObject*>(nullptr);  // No change in the AXObject.
 
