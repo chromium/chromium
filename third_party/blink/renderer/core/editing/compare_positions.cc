@@ -251,8 +251,32 @@ class Comparator {
   //  -1 if `Traversal::Index(*child_a) < Traversal::Index(*child_b)`
   //   0 if `Traversal::Index(*child_a) == Traversal::Index(*child_b)`
   //   1 if `Traversal::Index(*child_a) > Traversal::Index(*child_b)`
-  // The number of iteration is `std::min(offset_a, offset_b)`.
-  static Result CompareNodesInSameParent(
+  //  `child_a` and `child_b` should be in a same parent nod or `nullptr`.
+  //
+  //  When `child_a` < `child_b`. ```
+  //                   child_a                           child_b
+  ///   <-- backward_a --|-- forward_a --><-- backward_b --|-- forward_b -->
+  //  |------------------+---------------------------------+----------------|
+  //  ```
+  //  When `child_a` > `child_b`. ```
+  //                   child_b                           child_a
+  ///   <-- backward_b --|-- forward_b --><-- backward_a --|-- forward_a -->
+  //  |------------------+---------------------------------+----------------|
+  //  ```
+  //
+  //  The maximum number of iterations is `number_of_children / 4`.
+  //
+  //  The minimum number of iterations is: ```
+  //    std::min(offset_a, offset_b,
+  //             abs(offset_a - offset_b),
+  //             number_of_children - offset_a,
+  //             number_of_children - offset_b)
+  //  where
+  //    `offset_a` == `Traversal::Index(*child_a)`
+  //    `offset_b` == `Traversal::Index(*child_b)`
+  //
+  //  ```
+  static int16_t CompareNodesInSameParent(
       const Node* child_a,
       const Node* child_b,
       Result result_of_a_is_equal_to_b = kAIsEqualToB) {
@@ -261,13 +285,24 @@ class Comparator {
     if (child_a == child_b)
       return result_of_a_is_equal_to_b;
     DCHECK_EQ(Traversal::Parent(*child_a), Traversal::Parent(*child_b));
-    for (const Node& child :
-         Traversal::ChildrenOf(*Traversal::Parent(*child_a))) {
-      if (child == child_a)
-        return child == child_b ? result_of_a_is_equal_to_b : kAIsBeforeB;
-      if (child == child_b)
+    const Node* backward_a = child_a;
+    const Node* forward_a = child_a;
+    const Node* backward_b = child_b;
+    const Node* forward_b = child_b;
+
+    for (;;) {
+      if (!backward_a || !forward_b)
+        return kAIsBeforeB;
+      if (!forward_a || !backward_b || backward_a == forward_b)
         return kAIsAfterB;
+      if (forward_a == backward_b)
+        return kAIsBeforeB;
+      backward_a = Traversal::PreviousSibling(*backward_a);
+      forward_a = Traversal::NextSibling(*forward_a);
+      backward_b = Traversal::PreviousSibling(*backward_b);
+      forward_b = Traversal::NextSibling(*forward_b);
     }
+
     NOTREACHED();
     return result_of_a_is_equal_to_b;
   }
