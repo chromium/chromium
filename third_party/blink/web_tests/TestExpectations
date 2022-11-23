@@ -77,6 +77,8 @@ crbug.com/1339285 [ Linux ] fast/loader/iframe-window-open-stealing-focus.html [
 crbug.com/1339285 [ Win ] fast/loader/iframe-window-open-stealing-focus.html [ Failure Pass Timeout ]
 crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ Pass Timeout ]
 
+crbug.com/1393073 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/anchor-focus.https.html [ Failure Pass ]
+
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
 
