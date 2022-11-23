@@ -6,7 +6,7 @@ import '../cr_shared_vars.css.js';
 
 import {FlattenedNodesObserver, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert.js';
+import {assert} from '../../js/assert_ts.js';
 import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 import {FocusRow} from '../../js/focus_row.js';
 import {focusWithoutInk} from '../../js/focus_without_ink.js';
@@ -302,7 +302,8 @@ export class CrActionMenuElement extends PolymerElement {
     this.$.dialog.close();
     this.open = false;
     if (this.anchorElement_) {
-      focusWithoutInk(assert(this.anchorElement_));
+      assert(this.anchorElement_);
+      focusWithoutInk(this.anchorElement_);
       this.anchorElement_ = null;
     }
     if (this.lastConfig_) {

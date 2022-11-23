@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../../js/assert.js';
+import {assert} from '../../js/assert_ts.js';
 import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 
 export class CrMenuSelector extends HTMLElement {
