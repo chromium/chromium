@@ -36,6 +36,7 @@ assistant_migrated_imports = [
   "chrome/browser/resources/chromeos/components/oobe_cr_lottie.html",
 
   # Assistant
+  "chrome/browser/resources/chromeos/assistant_optin/assistant_loading.html",
   "chrome/browser/resources/chromeos/assistant_optin/setting_zippy.html",
 
   # Chrome

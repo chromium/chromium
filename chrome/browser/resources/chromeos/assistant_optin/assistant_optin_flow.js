@@ -11,7 +11,7 @@
 import '../components/common_styles/common_styles.m.js';
 import './assistant_common_styles.m.js';
 import './assistant_icon.m.js';
-import './assistant_loading.m.js';
+import './assistant_loading.js';
 import './assistant_related_info.m.js';
 import './assistant_voice_match.m.js';
 import './assistant_value_prop.m.js';
