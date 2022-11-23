@@ -5,32 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
 
-#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
-#include "ui/gl/gl_fence.h"
 
 namespace gpu {
-
-// Overlay representation for a GLImagePbufferBacking.
-class OverlayGLImageRepresentation : public OverlayImageRepresentation {
- public:
-  OverlayGLImageRepresentation(SharedImageManager* manager,
-                               SharedImageBacking* backing,
-                               MemoryTypeTracker* tracker,
-                               scoped_refptr<gl::GLImage> gl_image);
-  ~OverlayGLImageRepresentation() override;
-
- private:
-  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
-  void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
-  gl::GLImage* GetGLImage() override;
-
-  scoped_refptr<gl::GLImage> gl_image_;
-};
 
 // Implementation of SharedImageBacking that takes in a caller-created GL
 // Texture and GLImagePbuffer, scopes their lifetime, and exposes the texture
@@ -62,8 +43,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
 
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
-  std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
-  void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
  private:
   GLImagePbufferBacking(
@@ -131,11 +110,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
-  std::unique_ptr<gl::GLFence> last_write_gl_fence_;
-
-  // If this backing was displayed as an overlay, this fence may be set.
-  // Wait on this fence before allowing another access.
-  gfx::GpuFenceHandle release_fence_;
 
   base::WeakPtrFactory<GLImagePbufferBacking> weak_factory_;
 };

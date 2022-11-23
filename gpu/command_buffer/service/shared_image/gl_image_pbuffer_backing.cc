@@ -32,41 +32,6 @@ using InitializeGLTextureParams =
 
 }  // namespace
 
-///////////////////////////////////////////////////////////////////////////////
-// OverlayGLImageRepresentation
-
-OverlayGLImageRepresentation::OverlayGLImageRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    scoped_refptr<gl::GLImage> gl_image)
-    : OverlayImageRepresentation(manager, backing, tracker),
-      gl_image_(gl_image) {}
-
-OverlayGLImageRepresentation::~OverlayGLImageRepresentation() = default;
-
-bool OverlayGLImageRepresentation::BeginReadAccess(
-    gfx::GpuFenceHandle& acquire_fence) {
-  auto* gl_backing = static_cast<GLImagePbufferBacking*>(backing());
-  std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
-  if (fence)
-    acquire_fence = fence->GetGpuFenceHandle().Clone();
-  return true;
-}
-
-void OverlayGLImageRepresentation::EndReadAccess(
-    gfx::GpuFenceHandle release_fence) {
-  auto* gl_backing = static_cast<GLImagePbufferBacking*>(backing());
-  gl_backing->SetReleaseFence(std::move(release_fence));
-}
-
-gl::GLImage* OverlayGLImageRepresentation::GetGLImage() {
-  return gl_image_.get();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// GLImagePbufferBacking
-
 // static
 std::unique_ptr<GLImagePbufferBacking>
 GLImagePbufferBacking::CreateFromGLTexture(
@@ -166,14 +131,6 @@ GLuint GLImagePbufferBacking::GetGLServiceId() const {
   return 0;
 }
 
-std::unique_ptr<gfx::GpuFence> GLImagePbufferBacking::GetLastWriteGpuFence() {
-  return last_write_gl_fence_ ? last_write_gl_fence_->GetGpuFence() : nullptr;
-}
-
-void GLImagePbufferBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
-  release_fence_ = std::move(release_fence);
-}
-
 scoped_refptr<gfx::NativePixmap> GLImagePbufferBacking::GetNativePixmap() {
   return image_->GetNativePixmap();
 }
@@ -225,8 +182,11 @@ GLImagePbufferBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
 std::unique_ptr<OverlayImageRepresentation>
 GLImagePbufferBacking::ProduceOverlay(SharedImageManager* manager,
                                       MemoryTypeTracker* tracker) {
-  return std::make_unique<OverlayGLImageRepresentation>(manager, this, tracker,
-                                                        image_);
+  // PbufferPictureBuffer does not support overlays (
+  // PbufferPictureBuffer::AllowOverlay() returns false), and so this method
+  // should never be invoked.
+  NOTREACHED();
+  return nullptr;
 }
 
 std::unique_ptr<DawnImageRepresentation> GLImagePbufferBacking::ProduceDawn(
@@ -273,10 +233,6 @@ std::unique_ptr<MemoryImageRepresentation> GLImagePbufferBacking::ProduceMemory(
 
 void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
-    // TODO(dcastagna): Don't wait for the fence if the SharedImage is going
-    // to be scanned out as an HW overlay. Currently we don't know that at
-    // this point and we always bind the image, therefore we need to wait for
-    // the fence.
     std::unique_ptr<gl::GLFence> egl_fence =
         gl::GLFence::CreateFromGpuFence(*in_fence.get());
     egl_fence->ServerWait();
@@ -286,39 +242,11 @@ void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 
 bool GLImagePbufferBacking::GLTextureImageRepresentationBeginAccess(
     bool readonly) {
-  if (!release_fence_.is_null()) {
-    auto fence = gfx::GpuFence(std::move(release_fence_));
-    if (gl::GLFence::IsGpuFenceSupported()) {
-      gl::GLFence::CreateFromGpuFence(std::move(fence))->ServerWait();
-    } else {
-      fence.Wait();
-    }
-  }
   return BindOrCopyImageIfNeeded();
 }
 
 void GLImagePbufferBacking::GLTextureImageRepresentationEndAccess(
-    bool readonly) {
-  // If the image will be used for an overlay, we insert a fence that can be
-  // used by OutputPresenter to synchronize image writes with presentation.
-  if (!readonly && usage() & SHARED_IMAGE_USAGE_SCANOUT &&
-      gl::GLFence::IsGpuFenceSupported()) {
-    // If the image will be used for delegated compositing, no need to put
-    // fences at this moment as there are many raster tasks in the CPU gl
-    // context that end up creating a big number of fences, which may have some
-    // performance overhead depending on the gpu. Instead, when these images
-    // will be scheduled as overlays, a single fence will be created.
-    // TODO(crbug.com/1254033): this block of code shall be removed after cc is
-    // able to set a single (duplicated) fence for bunch of tiles instead of
-    // having the SI framework creating fences for each single message when
-    // write access ends.
-    if (usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING)
-      return;
-
-    last_write_gl_fence_ = gl::GLFence::CreateForGpuFence();
-    DCHECK(last_write_gl_fence_);
-  }
-}
+    bool readonly) {}
 
 void GLImagePbufferBacking::GLTextureImageRepresentationRelease(
     bool has_context) {
