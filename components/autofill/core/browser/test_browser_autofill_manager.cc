@@ -120,7 +120,7 @@ bool TestBrowserAutofillManager::IsAutofillCreditCardEnabled() const {
   return autofill_credit_card_enabled_;
 }
 
-void TestBrowserAutofillManager::UploadFormData(
+void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -151,9 +151,9 @@ void TestBrowserAutofillManager::UploadFormData(
     }
   }
 
-  BrowserAutofillManager::UploadFormData(std::move(submitted_form),
-                                         interaction_time, submission_time,
-                                         observed_submission);
+  BrowserAutofillManager::UploadVotesAndLogQuality(
+      std::move(submitted_form), interaction_time, submission_time,
+      observed_submission);
 }
 
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(

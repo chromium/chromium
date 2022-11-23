@@ -69,10 +69,10 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
-  void UploadFormData(std::unique_ptr<FormStructure> submitted_form,
-                      base::TimeTicks interaction_time,
-                      base::TimeTicks submission_time,
-                      bool observed_submission) override;
+  void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
+                                base::TimeTicks interaction_time,
+                                base::TimeTicks submission_time,
+                                bool observed_submission) override;
   const gfx::Image& GetCardImage(const CreditCard& credit_card) const override;
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
