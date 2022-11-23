@@ -67,9 +67,16 @@ base::FilePath GetLogDestinationDir();
 // updater if test runs with the flag `exclude-paths-from-win-defender`.
 void MaybeExcludePathsFromWindowsDefender();
 
-// Start and stop procmon.exe logging.
-void StartProcmonLogging();
-void StopProcmonLogging();
+// Starts procmon logging if admin and procmon exists at
+// `C:\\tools\\Procmon.exe`. Returns the path to the PML file if procmon could
+// be successfully started.
+base::FilePath StartProcmonLogging();
+
+// Stops procmon logging and exports the PML file to a CSV file at the same
+// location as `pml_file`. Caller needs to be admin, procmon needs to exist at
+// `C:\\tools\\Procmon.exe`, and `pml_file` needs to be a valid path to a
+// procmon PML file returned from `StartProcmonLogging`.
+void StopProcmonLogging(const base::FilePath& pml_file);
 #endif
 
 }  // namespace updater::test

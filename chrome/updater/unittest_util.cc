@@ -30,6 +30,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include "base/win/windows_version.h"
 #endif
 
@@ -97,6 +99,10 @@ base::FilePath GetLogDestinationDir() {
 }
 
 #if BUILDFLAG(IS_WIN)
+namespace {
+const wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";
+}  // namespace
+
 void MaybeExcludePathsFromWindowsDefender() {
   constexpr char kTestLauncherExcludePathsFromWindowDefender[] =
       "exclude-paths-from-win-defender";
@@ -137,44 +143,74 @@ void MaybeExcludePathsFromWindowsDefender() {
       << "Failed to disable Windows Defender: " << cmdline;
 }
 
-void StartProcmonLogging() {
+base::FilePath StartProcmonLogging() {
+  if (!::IsUserAnAdmin()) {
+    LOG(WARNING) << __func__
+                 << ": user is not an admin, skipping procmon logging";
+    return {};
+  }
+
+  if (!base::PathExists(base::FilePath(kProcmonPath))) {
+    LOG(WARNING) << __func__
+                 << ": procmon missing, skipping logging: " << kProcmonPath;
+    return {};
+  }
+
   base::FilePath dest_dir = GetLogDestinationDir();
   if (dest_dir.empty() || !base::PathExists(dest_dir)) {
-    LOG(ERROR) << "Cannot log, failed to get log destination dir";
-    return;
+    LOG(ERROR) << __func__ << ": failed to get log destination dir";
+    return {};
   }
 
   dest_dir = dest_dir.AppendASCII(GetTestName());
-  CHECK(base::CreateDirectory(dest_dir));
+  if (!base::CreateDirectory(dest_dir)) {
+    LOG(ERROR) << __func__
+               << ": failed to create log destination dir: " << dest_dir;
+    return {};
+  }
 
   base::Time::Exploded start_time;
   base::Time::Now().LocalExplode(&start_time);
-  const std::wstring cmdline = base::StrCat(
-      {L"C:\\tools\\Procmon.exe /AcceptEula /BackingFile \"",
-       dest_dir
-           .AppendASCII(base::StringPrintf(
-               "%02d%02d%02d-%02d%02d%02d.PML", start_time.year,
-               start_time.month, start_time.day_of_month, start_time.hour,
-               start_time.minute, start_time.second))
-           .value(),
-       L"\" /Nofilter /Quiet /externalcapture"});
+  const base::FilePath pml_file(dest_dir.Append(base::StringPrintf(
+      L"%02d%02d%02d-%02d%02d%02d.PML", start_time.year, start_time.month,
+      start_time.day_of_month, start_time.hour, start_time.minute,
+      start_time.second)));
 
+  const std::wstring& cmdline =
+      base::StrCat({kProcmonPath, L" /AcceptEula /BackingFile \"",
+                    pml_file.value(), L"\" /Nofilter /Quiet /externalcapture"});
   base::LaunchOptions options;
   options.start_hidden = true;
-  VLOG(1) << "Running: " << cmdline;
-  base::Process process = base::LaunchProcess(cmdline, options);
-  LOG_IF(ERROR, !process.IsValid()) << "Failed to run procmon: " << cmdline;
+  VLOG(1) << __func__ << ": running: " << cmdline;
+  const base::Process process = base::LaunchProcess(cmdline, options);
+
+  if (!process.IsValid()) {
+    LOG(ERROR) << __func__ << ": failed to run: " << cmdline;
+    return {};
+  }
+
+  return pml_file;
 }
 
-void StopProcmonLogging() {
-  const std::wstring cmdline = L"C:\\tools\\Procmon.exe /Terminate";
+void StopProcmonLogging(const base::FilePath& pml_file) {
+  if (!::IsUserAnAdmin() || !base::PathExists(base::FilePath(kProcmonPath)) ||
+      !pml_file.MatchesFinalExtension(L".PML")) {
+    return;
+  }
 
-  base::LaunchOptions options;
-  options.start_hidden = true;
-  options.wait = true;
-  VLOG(1) << "Running: " << cmdline;
-  base::Process process = base::LaunchProcess(cmdline, options);
-  LOG_IF(ERROR, !process.IsValid()) << "Failed to stop procmon: " << cmdline;
+  for (const std::wstring& cmdline :
+       {base::StrCat({kProcmonPath, L" /Terminate"}),
+        base::StrCat({kProcmonPath, L" /AcceptEula /OpenLog \"",
+                      pml_file.value(), L"\" /SaveAs \"",
+                      pml_file.ReplaceExtension(L".CSV").value(), L"\""})}) {
+    base::LaunchOptions options;
+    options.start_hidden = true;
+    options.wait = true;
+    VLOG(1) << __func__ << ": running: " << cmdline;
+    const base::Process process = base::LaunchProcess(cmdline, options);
+    LOG_IF(ERROR, !process.IsValid())
+        << __func__ << ": failed to run: " << cmdline;
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)

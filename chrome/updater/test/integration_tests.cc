@@ -806,9 +806,9 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
 // CIPD is possible.
 TEST_F(IntegrationTest, InstallLowerVersion) {
 #if BUILDFLAG(IS_WIN)
-  updater::test::StartProcmonLogging();
   const base::ScopedClosureRunner stop_procmon_logging(
-      base::BindOnce(&updater::test::StopProcmonLogging));
+      base::BindOnce(&updater::test::StopProcmonLogging,
+                     updater::test::StartProcmonLogging()));
 #endif  // BUILDFLAG(IS_WIN)
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
