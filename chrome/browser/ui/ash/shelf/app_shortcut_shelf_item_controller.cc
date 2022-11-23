@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/app_constants/constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -147,6 +148,8 @@ class AppMatcher {
     return extension_ ? WebContentMatchesHostedApp(web_contents, browser)
                       : WebContentMatchesWebApp(web_contents, browser);
   }
+
+  bool IsAshBrowser() const { return app_id_ == app_constants::kChromeAppId; }
 
  private:
   bool WebContentMatchesHostedApp(content::WebContents* web_contents,
@@ -458,8 +461,10 @@ AppShortcutShelfItemController::GetAppWebContents(
     TabStripModel* tab_strip = browser->tab_strip_model();
     for (int index = 0; index < tab_strip->count(); index++) {
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(index);
-      if (matcher.WebContentMatchesApp(web_contents, browser))
+      if (matcher.IsAshBrowser() ||
+          matcher.WebContentMatchesApp(web_contents, browser)) {
         items.push_back(web_contents);
+      }
     }
   }
   return items;
