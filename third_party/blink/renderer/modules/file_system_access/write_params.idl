@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/file-system-access/#enumdef-writecommandtype
+// https://fs.spec.whatwg.org/#enumdef-writecommandtype
 enum WriteCommandType {
   "truncate",
   "seek",
   "write",
 };
 
-// https://wicg.github.io/file-system-access/#dictdef-writeparams
+// https://fs.spec.whatwg.org/#dictdef-writeparams
 dictionary WriteParams {
   required WriteCommandType type;
   unsigned long long? size;

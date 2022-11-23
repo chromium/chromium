@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/file-system-access/#dictdef-filesystemremoveoptions
+// https://fs.spec.whatwg.org/#dictdef-filesystemremoveoptions
 dictionary FileSystemRemoveOptions {
   boolean recursive = false;
 };

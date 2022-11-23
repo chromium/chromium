@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/file-system-access/#enumdef-filesystemhandlekind
+// https://fs.spec.whatwg.org/#enumdef-filesystemhandlekind
 enum FileSystemHandleKind {
   "file",
   "directory",
 };
 
-// https://wicg.github.io/file-system-access/#filesystemhandle
+// https://fs.spec.whatwg.org/#filesystemhandle
 [
     Exposed=(Window,Worker),
     SecureContext,
