@@ -1257,6 +1257,24 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to highlight spoken words rather than spoken nodes.">
     Highlight each word as it is spoken
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to pick word highlight color.">
+    Highlight color
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_BLUE" desc="In the Select-to-speak settings subpage, the label for a blue highlight color.">
+    Blue
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_ORANGE" desc="In the Select-to-speak settings subpage, the label for a orange highlight color.">
+    Orange
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_YELLOW" desc="In the Select-to-speak settings subpage, the label for a yellow highlight color.">
+    Yellow
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_GREEN" desc="In the Select-to-speak settings subpage, the label for a green highlight color.">
+    Green
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_PINK" desc="In the Select-to-speak settings subpage, the label for a pink highlight color.">
+    Pink
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_BACKGROUND_SHADING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to fade the background outside of the focus ring to improve focus on what is being spoken.">
     Shade background content
   </message>

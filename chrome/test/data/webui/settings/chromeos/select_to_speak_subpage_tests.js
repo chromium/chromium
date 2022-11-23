@@ -6,6 +6,7 @@ import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('SelectToSpeakSubpageTests', function() {
   /** @type {SettingsSelectToSpeakSubpageElement} */
@@ -64,5 +65,22 @@ suite('SelectToSpeakSubpageTests', function() {
     const navigationControlsPref =
         page.getPref('settings.a11y.select_to_speak_navigation_controls');
     assertFalse(navigationControlsPref.value);
+  });
+
+  test('highlight color pref and dropdown synced', async function() {
+    // Make sure highlight color dropdown is blue, matching default pref state.
+    const highlightColorDropdown =
+        page.shadowRoot.querySelector('#highlightColorDropdown');
+    await waitAfterNextRender(highlightColorDropdown);
+    const highlightColorSelectElement =
+        highlightColorDropdown.shadowRoot.querySelector('select');
+    assertEquals('#5e9bff', highlightColorSelectElement.value);
+
+    // Turn highlight color to orange, and verify pref is also orange.
+    highlightColorSelectElement.value = '#ffa13d';
+    highlightColorSelectElement.dispatchEvent(new CustomEvent('change'));
+    const highlightColorPref =
+        page.getPref('settings.a11y.select_to_speak_highlight_color');
+    assertEquals('#ffa13d', highlightColorPref.value);
   });
 });

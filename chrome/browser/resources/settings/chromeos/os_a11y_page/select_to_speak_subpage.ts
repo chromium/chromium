@@ -14,6 +14,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -49,6 +50,44 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get properties() {
     return {
+
+      /**
+       * List of options for the text size drop-down menu.
+       */
+      highlightColorOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: '#5e9bff',
+              name: loadTimeData.getString(
+                  'selectToSpeakOptionsHighlightColorBlue'),
+            },
+            {
+              value: '#ffa13d',
+              name: loadTimeData.getString(
+                  'selectToSpeakOptionsHighlightColorOrange'),
+            },
+            {
+              value: '#eeff41',
+              name: loadTimeData.getString(
+                  'selectToSpeakOptionsHighlightColorYellow'),
+            },
+            {
+              value: '#64dd17',
+              name: loadTimeData.getString(
+                  'selectToSpeakOptionsHighlightColorGreen'),
+            },
+            {
+              value: '#ff4081',
+              name: loadTimeData.getString(
+                  'selectToSpeakOptionsHighlightColorPink'),
+            },
+          ];
+        },
+      },
+
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
        */

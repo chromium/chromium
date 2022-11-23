@@ -17,35 +17,55 @@ found in the LICENSE file.
     padding-inline-start: var(--cr-section-indent-width);
   }
 
-  h2 ~ settings-toggle-button {
-    margin-inline-end: var(--cr-section-padding);
-    margin-inline-start: var(--cr-section-indent-padding);
-    padding-inline-end: 0;
-    padding-inline-start: 0;
+  .indented {
+    margin-inline-start: 32px;
   }
 
   .settings-box {
     padding-inline-start: 0;
   }
+
+  settings-toggle-button {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
 </style>
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
-<settings-toggle-button
-    id="wordHighlightToggle"
-    pref="{{prefs.settings.a11y.select_to_speak_word_highlight}}"
-    label="$i18n{selectToSpeakOptionsHighlightDescription}"
-    deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]">
-</settings-toggle-button>
-
-<settings-toggle-button
-    id="backgroundShadingToggle"
-    pref="{{prefs.settings.a11y.select_to_speak_background_shading}}"
-    label="$i18n{selectToSpeakOptionsBackgroundShadingDescription}"
-    deep-link-focus-id$="[[Setting.kSelectToSpeakBackgroundShading]]">
-</settings-toggle-button>
-
+<div class="sub-item">
+  <settings-toggle-button
+      id="wordHighlightToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.select_to_speak_word_highlight}}"
+      label="$i18n{selectToSpeakOptionsHighlightDescription}"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]">
+  </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.a11y.select_to_speak_word_highlight.value]]">
+    <div class="indented">
+      <div class="settings-box continuation">
+        <div class="start settings-box-text" aria-hidden="true">
+          $i18n{selectToSpeakOptionsHighlightColorDescription}
+        </div>
+        <settings-dropdown-menu id="highlightColorDropdown"
+            label="$i18n{selectToSpeakOptionsHighlightColorDescription}"
+            pref="{{prefs.settings.a11y.select_to_speak_highlight_color}}"
+            menu-options="[[highlightColorOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+    </div>
+  </template>
+  <settings-toggle-button
+      id="backgroundShadingToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.select_to_speak_background_shading}}"
+      label="$i18n{selectToSpeakOptionsBackgroundShadingDescription}"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakBackgroundShading]]">
+  </settings-toggle-button>
+</div>
 <settings-toggle-button
     id="navigationControlsToggle"
+    class="hr"
     pref="{{prefs.settings.a11y.select_to_speak_navigation_controls}}"
     label="$i18n{selectToSpeakOptionsNavigationControlsDescription}"
     sub-label="$i18n{selectToSpeakOptionsNavigationControlsSubtitle}"
