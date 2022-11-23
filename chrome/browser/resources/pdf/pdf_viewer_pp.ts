@@ -8,7 +8,7 @@ import './elements/shared-vars.css.js';
 import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {BrowserApi} from './browser_api.js';
@@ -21,6 +21,8 @@ import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getTemplate} from './pdf_viewer_pp.html.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
+
+let pluginLoaderPolicy: TrustedTypePolicy|null = null;
 
 export interface PdfViewerPpElement {
   $: {
@@ -52,6 +54,39 @@ export class PdfViewerPpElement extends PdfViewerBaseElement {
 
   getBackgroundColor() {
     return PRINT_PREVIEW_BACKGROUND_COLOR;
+  }
+
+  private getStreamUrl_(): TrustedScriptURL {
+    if (pluginLoaderPolicy === null) {
+      pluginLoaderPolicy =
+          window.trustedTypes!.createPolicy('print-preview-plugin-loader', {
+            createScriptURL: (_ignore: string) => {
+              const url = new URL(this.browserApi!.getStreamInfo().streamUrl);
+
+              // Checks based on data_request_filter.cc.
+              assert(url.origin === 'chrome-untrusted://print');
+              if (url.pathname.endsWith('test.pdf')) {
+                return url.toString();
+              }
+
+              const paths = url.pathname.split('/');
+              assert(paths.length === 4);
+              assert(paths[3] === 'print.pdf');
+              // Valid Print Preview UI ID
+              assert(!Number.isNaN(parseInt(paths[1])));
+              // Valid page index (can be negative for PDFs).
+              assert(!Number.isNaN(parseInt(paths[2])));
+              return url.toString();
+            },
+            createHTML: () => assertNotReached(),
+            createScript: () => assertNotReached(),
+          });
+    }
+    return pluginLoaderPolicy.createScriptURL('');
+  }
+
+  setPluginSrc(plugin: HTMLEmbedElement) {
+    plugin.src = this.getStreamUrl_() as unknown as string;
   }
 
   init(browserApi: BrowserApi) {

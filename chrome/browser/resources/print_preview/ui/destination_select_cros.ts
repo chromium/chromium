@@ -78,7 +78,6 @@ export class PrintPreviewDestinationSelectCrosElement extends
         type: String,
         computed:
             'computeStatusText_(destination, destination.printerStatusReason)',
-        observer: 'onStatusTextSet_',
       },
 
       destinationIcon_: {
@@ -105,7 +104,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
   pdfPrinterDisabled: boolean;
   recentDestinationList: Destination[];
   private pdfDestinationKey_: string;
-  private statusText_: string;
+  private statusText_: TrustedHTML;
   private destinationIcon_: string;
   private isCurrentDestinationCrosLocal_: boolean;
   private isDarkModeActive_: boolean;
@@ -165,6 +164,10 @@ export class PrintPreviewDestinationSelectCrosElement extends
     // use, so just return the generic print icon for now. It will be updated
     // when the destination is set.
     return 'print-preview:print';
+  }
+
+  private hideDestinationAdditionalInfo_(): boolean {
+    return this.statusText_ === window.trustedTypes!.emptyHTML;
   }
 
   private fireSelectedOptionChange_(value: string) {
@@ -228,34 +231,32 @@ export class PrintPreviewDestinationSelectCrosElement extends
    * @return An error status for the current destination. If no error
    *     status exists, an empty string.
    */
-  private computeStatusText_(): string {
+  private computeStatusText_(): TrustedHTML {
     // |destination| can be either undefined, or null here.
     if (!this.destination) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     // Non-local printers do not show an error status.
     if (this.destination.origin !== DestinationOrigin.CROS) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     const printerStatusReason = this.destination.printerStatusReason;
     if (printerStatusReason === null ||
         printerStatusReason === PrinterStatusReason.NO_ERROR ||
         printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     return this.getErrorString_(printerStatusReason);
   }
 
-  private onStatusTextSet_() {
-    this.shadowRoot!.querySelector('#statusText')!.innerHTML = this.statusText_;
-  }
-
-  private getErrorString_(printerStatusReason: PrinterStatusReason): string {
+  private getErrorString_(printerStatusReason: PrinterStatusReason):
+      TrustedHTML {
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
-    return errorStringKey ? this.i18n(errorStringKey) : '';
+    return errorStringKey ? this.i18nAdvanced(errorStringKey) :
+                            window.trustedTypes!.emptyHTML;
   }
 
   /**

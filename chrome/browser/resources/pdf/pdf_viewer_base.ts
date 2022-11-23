@@ -73,6 +73,8 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
 
   protected abstract afterZoom(viewportZoom: number): void;
 
+  protected abstract setPluginSrc(plugin: HTMLEmbedElement): void;
+
   /** Whether to enable the new UI. */
   protected isNewUiEnabled(): boolean {
     return true;
@@ -96,7 +98,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     plugin.type = 'application/x-google-chrome-pdf';
 
     plugin.setAttribute('original-url', this.originalUrl);
-    plugin.setAttribute('src', this.browserApi!.getStreamInfo().streamUrl);
+    this.setPluginSrc(plugin);
 
     plugin.setAttribute(
         'background-color', this.getBackgroundColor().toString());

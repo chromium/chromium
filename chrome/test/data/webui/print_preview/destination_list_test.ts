@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -40,7 +41,7 @@ suite(destination_list_test.suiteName, function() {
     ];
 
     // Set up list
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
           <print-preview-destination-list id="testList" has-action-link=true
               loading-destinations=false list-name="test">
           </print-preview-destination-list>`;

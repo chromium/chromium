@@ -130,7 +130,7 @@
 <div id="destinationDropdown" on-keydown="onKeyDown_" tabindex="0"
     on-blur="onBlur_" on-click="onClick_" role="button" aria-haspopup="true"
     aria-label="$i18n{destinationLabel} [[value.displayName]]"
-    aria-description$="[[destinationStatusText]]">
+    aria-description$="[[getAriaDescription_(destinationStatusText)]]">
   <div id="destination-display-container">
     <div id="destination-icon-box">
       <iron-icon icon="[[destinationIcon]]"></iron-icon>

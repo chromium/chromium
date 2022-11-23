@@ -73,6 +73,8 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "lottie-worker-script-loader "
       // Add TrustedTypes policies used during tests.
       "webui-test-script webui-test-html "
+      // Add TrustedTypes policy for creating the PDF plugin.
+      "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
       "polymer-html-literal polymer-template-event-attribute-policy;");
 }

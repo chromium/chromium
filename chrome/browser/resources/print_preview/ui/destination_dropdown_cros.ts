@@ -95,7 +95,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   noDestinations: boolean;
   pdfDestinationKey: string;
   pdfPrinterDisabled: boolean;
-  destinationStatusText: string;
+  destinationStatusText: TrustedHTML;
   private isDarkModeActive_: boolean;
   private highlightedIndex_: number;
   private dropdownLength_: number;
@@ -117,6 +117,10 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
   override focus() {
     this.$.destinationDropdown.focus();
+  }
+
+  private getAriaDescription_(): string {
+    return this.destinationStatusText.toString();
   }
 
   private fireDropdownValueSelected_(element: Element) {

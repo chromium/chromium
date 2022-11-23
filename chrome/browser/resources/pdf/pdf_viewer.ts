@@ -287,6 +287,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return BACKGROUND_COLOR;
   }
 
+  setPluginSrc(plugin: HTMLEmbedElement) {
+    plugin.src = this.browserApi!.getStreamInfo().streamUrl;
+  }
+
   init(browserApi: BrowserApi) {
     this.initInternal(
         browserApi, this.$.scroller, this.$.sizer, this.$.content);

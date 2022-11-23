@@ -48,11 +48,12 @@
   </div>
 </print-preview-settings-section>
 <print-preview-settings-section class="destination-additional-info"
-    hidden$="[[!statusText_]]">
+    hidden$="[[hideDestinationAdditionalInfo_(statusText_)]]">
   <div slot="title"></div>
   <div slot="controls">
     <div id="statusText" class="destination-status" title="[[statusText_]]"
-        aria-hidden="[[isCurrentDestinationCrosLocal_]]">
+        aria-hidden="[[isCurrentDestinationCrosLocal_]]"
+        inner-h-t-m-l="[[statusText_]]">
     </div>
   </div>
 </print-preview-settings-section>
