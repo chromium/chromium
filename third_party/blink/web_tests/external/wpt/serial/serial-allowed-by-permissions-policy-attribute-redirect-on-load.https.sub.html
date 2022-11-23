@@ -2,20 +2,20 @@
 <body>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=/feature-policy/resources/featurepolicy.js></script>
+<script src=/permissions-policy/resources/permissions-policy.js></script>
 <script>
 'use strict';
-const relative_path = '/feature-policy/resources/feature-policy-serial.html';
-const base_src = '/feature-policy/resources/redirect-on-load.html#';
+const relative_path = '/permissions-policy/resources/permissions-policy-serial.html';
+const base_src = '/permissions-policy/resources/redirect-on-load.html#';
 const relative_worker_frame_path =
-    '/feature-policy/resources/feature-policy-serial-worker.html';
+    '/permissions-policy/resources/permissions-policy-serial-worker.html';
 const sub = 'https://{{domains[www]}}:{{ports[https][0]}}';
 const same_origin_src = base_src + relative_path;
 const cross_origin_src = base_src + sub + relative_path;
 const same_origin_worker_frame_src = base_src + relative_worker_frame_path;
 const cross_origin_worker_frame_src = base_src + sub +
     relative_worker_frame_path;
-const header = 'Feature-Policy allow="serial"';
+const header = 'Permissions-Policy allow="serial"';
 
 async_test(t => {
   test_feature_availability(

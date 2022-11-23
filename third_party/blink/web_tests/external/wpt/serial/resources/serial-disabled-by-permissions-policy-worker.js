@@ -2,7 +2,7 @@
 
 importScripts('/resources/testharness.js');
 
-const header = 'Feature-Policy header {"serial" : []}';
+const header = 'Permissions-Policy header serial=()';
 let workerType;
 
 if (typeof postMessage === 'function') {

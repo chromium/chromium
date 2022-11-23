@@ -2,13 +2,13 @@
 <body>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=/feature-policy/resources/featurepolicy.js></script>
+<script src=/permissions-policy/resources/permissions-policy.js></script>
 <script>
 'use strict';
-var same_origin_src = '/feature-policy/resources/feature-policy-serial.html';
+var same_origin_src = '/permissions-policy/resources/permissions-policy-serial.html';
 var cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
   same_origin_src;
-var header = 'Default "serial" feature policy ["self"]';
+var header = 'Default "serial" permissions policy "self"';
 
 promise_test(
     () => navigator.serial.getPorts(),
