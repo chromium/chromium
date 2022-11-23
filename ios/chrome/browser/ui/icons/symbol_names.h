@@ -100,7 +100,7 @@ extern NSString* const kSecureSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpSymbol;
-extern NSString* const kCheckMarkCircleSymbol;
+extern NSString* const kCheckmarkCircleSymbol;
 extern NSString* const kCheckmarkCircleFillSymbol;
 extern NSString* const kErrorCircleFillSymbol;
 extern NSString* const kTrashSymbol;
@@ -124,6 +124,8 @@ extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronForwardSymbol;
+extern NSString* const kGlobeAmericasSymbol;
+extern NSString* const kGlobeSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

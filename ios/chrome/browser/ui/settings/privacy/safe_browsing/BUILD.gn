@@ -44,6 +44,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",

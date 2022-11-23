@@ -12,6 +12,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
@@ -33,6 +34,7 @@
 using ItemArray = NSArray<TableViewItem*>*;
 
 namespace {
+
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeShieldIcon = kItemTypeEnumZero,
@@ -41,6 +43,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSafeBrowsingExtendedReporting,
   ItemTypeSafeBrowsingManagedExtendedReporting,
 };
+
+// The size of the symbols.
+const CGFloat kSymbolSize = 20;
+
 }  // namespace
 
 @interface SafeBrowsingStandardProtectionMediator () <
@@ -179,13 +185,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (SafeBrowsingHeaderItem*)shieldIconHeader {
   if (!_shieldIconHeader) {
+    UIImage* shieldIcon;
+    if (UseSymbols()) {
+      shieldIcon = CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
+    } else {
+      shieldIcon = [[UIImage imageNamed:@"shield"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     SafeBrowsingHeaderItem* shieldIconItem = [self
              detailItemWithType:ItemTypeShieldIcon
                      detailText:
                          IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE
-                          image:[[UIImage imageNamed:@"shield"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]
+                          image:shieldIcon
         accessibilityIdentifier:kSafeBrowsingStandardProtectionShieldCellId];
     _shieldIconHeader = shieldIconItem;
   }
@@ -194,13 +205,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (SafeBrowsingHeaderItem*)metricIconHeader {
   if (!_metricIconHeader) {
+    UIImage* metricIcon;
+    if (UseSymbols()) {
+      metricIcon =
+          DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
+    } else {
+      metricIcon = [[UIImage imageNamed:@"bar_chart"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     SafeBrowsingHeaderItem* metricIconItem = [self
              detailItemWithType:ItemTypeMetricIcon
                      detailText:
                          IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO
-                          image:[[UIImage imageNamed:@"bar_chart"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]
+                          image:metricIcon
         accessibilityIdentifier:kSafeBrowsingStandardProtectionMetricCellId];
     _metricIconHeader = metricIconItem;
   }

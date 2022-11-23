@@ -294,7 +294,7 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
                                                       kSymbolActionPointSize);
 
   NSString* expectedTitle =
@@ -363,7 +363,7 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
                                                       kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS);

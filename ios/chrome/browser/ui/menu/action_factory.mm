@@ -181,7 +181,7 @@
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:
     (ProceduralBlock)block {
   UIImage* image = UseSymbols()
-                       ? DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+                       ? DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
                                                     kSymbolActionPointSize)
                        : [UIImage imageNamed:@"offline"];
   return [self actionWithTitle:l10n_util::GetNSString(
@@ -293,7 +293,7 @@
 
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols()
-                       ? DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+                       ? DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
                                                     kSymbolActionPointSize)
                        : [UIImage imageNamed:@"select"];
   UIAction* action = [self

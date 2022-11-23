@@ -93,7 +93,7 @@ NSString* const kSecureSymbol = @"lock";
 NSString* const kWarningSymbol = @"exclamationmark.triangle";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpSymbol = @"questionmark.circle";
-NSString* const kCheckMarkCircleSymbol = @"checkmark.circle";
+NSString* const kCheckmarkCircleSymbol = @"checkmark.circle";
 NSString* const kCheckmarkCircleFillSymbol = @"checkmark.circle.fill";
 NSString* const kErrorCircleFillSymbol = @"exclamationmark.circle.fill";
 NSString* const kTrashSymbol = @"trash";
@@ -118,6 +118,8 @@ NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.compact";
 NSString* const kOpenInDownloadsiOS14Symbol = @"arrow.down.to.line.alt";
 NSString* const kExternalLinkSymbol = @"arrow.up.forward.square";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
+NSString* const kGlobeAmericasSymbol = @"globe.americas.fill";
+NSString* const kGlobeSymbol = @"globe";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
