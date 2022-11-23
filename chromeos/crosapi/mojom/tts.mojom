@@ -144,6 +144,18 @@ interface TtsClient {
   // |all_voices| contains the new voices (provided by both Ash and
   // Lacros).
   VoicesChanged@0(array<TtsVoice> all_voices);
+
+  // Called from Ash to request a Lacros Tts engine to speak the |utterance|
+  // with the given |voice|. |utterance_client| is provided only if |utterance|
+  // is issued by Ash.
+  [MinVersion=1]
+  SpeakWithLacrosVoice@1(TtsUtterance utterance, TtsVoice voice,
+      pending_remote<TtsUtteranceClient>? ash_utterance_client);
+
+  // Called from Ash to request the specified Lacros speech engine to stop
+  // speaking.
+  [MinVersion=1]
+  Stop@2(string engine_id);
 };
 
 // This interface serves as a remote client of a TtsUtterance in Ash which is

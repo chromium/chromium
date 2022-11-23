@@ -45,6 +45,15 @@ class TtsAsh : public mojom::Tts,
   void GetCrosapiVoices(base::UnguessableToken browser_context_id,
                         std::vector<content::VoiceData>* out_voices);
 
+  // Requests to the associated Lacros speech engine to speak the given
+  // |utterance| with the given |voice|.
+  void SpeakWithLacrosVoice(content::TtsUtterance* utterance,
+                            const content::VoiceData& voice);
+
+  // Requests the associated Lacros speech engine to stop speaking the
+  // |utterance|.
+  void StopRemoteEngine(content::TtsUtterance* utterance);
+
   // crosapi::mojom::Tts:
   void RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
                          const base::UnguessableToken& browser_context_id,

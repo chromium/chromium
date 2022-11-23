@@ -37,3 +37,17 @@ void CrosapiTtsEngineDelegateAsh::GetVoices(
                               out_voices);
   }
 }
+
+void CrosapiTtsEngineDelegateAsh::Speak(content::TtsUtterance* utterance,
+                                        const content::VoiceData& voice) {
+  DCHECK(voice.from_remote_tts_engine);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->tts_ash()
+      ->SpeakWithLacrosVoice(utterance, voice);
+}
+
+void CrosapiTtsEngineDelegateAsh::Stop(content::TtsUtterance* utterance) {
+  crosapi::CrosapiManager::Get()->crosapi_ash()->tts_ash()->StopRemoteEngine(
+      utterance);
+}

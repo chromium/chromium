@@ -74,7 +74,8 @@ crosapi::mojom::TtsEventType ToMojo(content::TtsEventType event_type) {
 content::VoiceData FromMojo(const crosapi::mojom::TtsVoicePtr& mojo_voice) {
   content::VoiceData voice_data;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  voice_data.from_crosapi = true;
+  // The mojo_voice is from the remote TTS engine in Lacros.
+  voice_data.from_remote_tts_engine = true;
 #endif
   voice_data.name = mojo_voice->voice_name;
   voice_data.lang = mojo_voice->lang;

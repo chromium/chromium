@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/crosapi_tts_engine_delegate_ash.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -29,21 +30,24 @@ namespace {
 // The lifetime of instance of this class is bound to the lifetime of the
 // associated TtsUtterance. It will be deleted when the associated TtsUtterance
 // receives the final event.
-class CrosapiUtteranceEventDelegate : public content::UtteranceEventDelegate {
+class LacrosUtteranceEventDelegate : public content::UtteranceEventDelegate {
  public:
-  CrosapiUtteranceEventDelegate(
+  LacrosUtteranceEventDelegate(
       int utterance_id,
+      int remote_utterance_id,
       mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> client)
-      : utterance_id_(utterance_id), client_(std::move(client)) {
+      : utterance_id_(utterance_id),
+        remote_utterance_id_(remote_utterance_id),
+        client_(std::move(client)) {
     client_.set_disconnect_handler(base::BindOnce(
-        &CrosapiUtteranceEventDelegate::OnTtsUtteranceClientDisconnected,
+        &LacrosUtteranceEventDelegate::OnTtsUtteranceClientDisconnected,
         weak_ptr_factory_.GetWeakPtr()));
   }
 
-  CrosapiUtteranceEventDelegate(const CrosapiUtteranceEventDelegate&) = delete;
-  CrosapiUtteranceEventDelegate& operator=(
-      const CrosapiUtteranceEventDelegate&) = delete;
-  ~CrosapiUtteranceEventDelegate() override = default;
+  LacrosUtteranceEventDelegate(const LacrosUtteranceEventDelegate&) = delete;
+  LacrosUtteranceEventDelegate& operator=(const LacrosUtteranceEventDelegate&) =
+      delete;
+  ~LacrosUtteranceEventDelegate() override = default;
 
   // content::UtteranceEventDelegate methods:
   void OnTtsEvent(content::TtsUtterance* utterance,
@@ -59,6 +63,8 @@ class CrosapiUtteranceEventDelegate : public content::UtteranceEventDelegate {
       delete this;
   }
 
+  int GetRemoteUtteranceId() const { return remote_utterance_id_; }
+
  private:
   void OnTtsUtteranceClientDisconnected() {
     content::TtsController::GetInstance()->OnTtsUtteranceBecameInvalid(
@@ -68,12 +74,29 @@ class CrosapiUtteranceEventDelegate : public content::UtteranceEventDelegate {
   // Id of the TtsUtterance to be processed by Ash's TtsController.
   int utterance_id_;
 
+  // Id of the associate TtsUtterace living in Lacros.
+  int remote_utterance_id_;
+
   // Can be used to forward the Tts events back to Lacros, or notify Ash
   // TtsController when the original utterance in Lacros becomes invalid.
   mojo::Remote<crosapi::mojom::TtsUtteranceClient> client_;
 
-  base::WeakPtrFactory<CrosapiUtteranceEventDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LacrosUtteranceEventDelegate> weak_ptr_factory_{this};
 };
+
+// Returns id for the TtsUtterance living in Lacros associated with the given
+// |utternace| (in Ash).
+// Note: A Lacros utterance has a TtsUtterance object created in Lacros
+// which forwards TTS events back to callback function in Lacros; it also
+// has a TtsUtterance object created in Ash to be queued in the Ash
+// TtsController's utterance queue.
+int GetRemoteUtteranceId(content::TtsUtterance* utterance) {
+  DCHECK(utterance->ShouldAlwaysBeSpoken());
+  LacrosUtteranceEventDelegate* lacros_utterance_event_delegate =
+      static_cast<LacrosUtteranceEventDelegate*>(utterance->GetEventDelegate());
+  DCHECK(lacros_utterance_event_delegate);
+  return lacros_utterance_event_delegate->GetRemoteUtteranceId();
+}
 
 }  // namespace
 
@@ -117,6 +140,10 @@ void TtsAsh::RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
     // This code path is only called when running lacros browser tests.
     content::TtsController::GetInstance()->SetRemoteTtsEngineDelegate(
         CrosapiTtsEngineDelegateAsh::GetInstance());
+    // Disable the built-in TTS engine for testing.
+    // This will be used by the Lacros browser test running with Ash.
+    TtsExtensionEngine::GetInstance()
+        ->DisableBuiltInTTSEngineForTesting();  // IN-TEST
   }
 
   mojo::Remote<mojom::TtsClient> remote(std::move(client));
@@ -150,10 +177,48 @@ void TtsAsh::SpeakOrEnqueue(
     mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) {
   std::unique_ptr<content::TtsUtterance> utterance =
       tts_crosapi_util::FromMojo(mojo_utterance);
-  utterance->SetEventDelegate(new CrosapiUtteranceEventDelegate(
-      utterance->GetId(), std::move(utterance_client)));
+  utterance->SetEventDelegate(new LacrosUtteranceEventDelegate(
+      utterance->GetId(), mojo_utterance->utterance_id,
+      std::move(utterance_client)));
 
   content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
+}
+
+void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,
+                                  const content::VoiceData& voice) {
+  if (!HasTtsClient())
+    return;
+
+  DCHECK(voice.from_remote_tts_engine);
+  if (utterance->ShouldAlwaysBeSpoken()) {
+    // Speak Lacros utterance.
+    auto mojo_voice = tts_crosapi_util::ToMojo(voice);
+    auto mojo_utterance = tts_crosapi_util::ToMojo(utterance);
+    mojo_utterance->utterance_id = GetRemoteUtteranceId(utterance);
+
+    // Don't need to pass utterance text back to Lacros via crosapi, since its
+    // associated TtsUtterance object living in Lacros already has it.
+    mojo_utterance->text = "";
+
+    // TODO(crbug.com/1251979): Support secondary profile of Lacros.
+    base::UnguessableToken browser_context_id =
+        GetPrimaryProfileBrowserContextId();
+    mojo_utterance->browser_context_id = browser_context_id;
+    auto item = tts_clients_.find(browser_context_id);
+    DCHECK(item != tts_clients_.end());
+    item->second->SpeakWithLacrosVoice(std::move(mojo_utterance),
+                                       std::move(mojo_voice),
+                                       /*ash_utterance_client=*/{});
+  } else {
+    // TODO(crbug.com/1227543): Implement speaking Ash utterance with Lacros
+    // voice. Speak Ash utterance.
+  }
+}
+
+void TtsAsh::StopRemoteEngine(content::TtsUtterance* utterance) {
+  auto item = tts_clients_.find(GetPrimaryProfileBrowserContextId());
+  DCHECK(item != tts_clients_.end());
+  item->second->Stop(utterance->GetEngineId());
 }
 
 void TtsAsh::GetCrosapiVoices(base::UnguessableToken browser_context_id,

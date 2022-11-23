@@ -5,6 +5,8 @@
 #include "chrome/browser/speech/tts_external_platform_delegate_impl_lacros.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
@@ -37,4 +39,16 @@ void ExternalPlatformDelegateImplLacros::Enqueue(
     std::unique_ptr<content::TtsUtterance> utterance) {
   TtsClientLacros::GetForBrowserContext(utterance->GetBrowserContext())
       ->SpeakOrEnqueue(std::move(utterance));
+}
+
+void ExternalPlatformDelegateImplLacros::OnTtsEvent(
+    content::BrowserContext* browser_context,
+    int utterance_id,
+    content::TtsEventType event_type,
+    int char_index,
+    int length,
+    const std::string& error_message) {
+  TtsClientLacros::GetForBrowserContext(browser_context)
+      ->OnLacrosSpeechEngineTtsEvent(utterance_id, event_type, char_index,
+                                     length, error_message);
 }

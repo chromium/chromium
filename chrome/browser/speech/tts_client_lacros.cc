@@ -41,6 +41,8 @@ constexpr char kErrorUnsupportedVersion[] = "crosapi: Unsupported ash version";
 }  // namespace
 
 // This class implements crosapi::mojom::TtsUtteranceClient.
+// It is used to create a remote pending utterance client for a Lacros
+// utterance sent to Ash's TtsController.
 // It observes the WebContent associated with the original utterance in Lacros.
 class TtsClientLacros::TtsUtteraneClient
     : public crosapi::mojom::TtsUtteranceClient,
@@ -57,9 +59,10 @@ class TtsClientLacros::TtsUtteraneClient
   ~TtsUtteraneClient() override = default;
 
   // crosapi::mojom::TtsUtteranceClient:
-  // Called from Ash to forward the speech engine event back to the original
+  // Called from Ash to forward the Ash speech engine event back to the original
   // TtsUtterance in Lacros, which will forward the event to its
-  // UtteranceEventDelegate.
+  // UtteranceEventDelegate. This is used when the utterance is spoken by
+  // a Ash voice.
   void OnTtsEvent(crosapi::mojom::TtsEventType mojo_tts_event,
                   uint32_t char_index,
                   uint32_t char_length,
@@ -67,6 +70,24 @@ class TtsClientLacros::TtsUtteraneClient
     content::TtsEventType event_type =
         tts_crosapi_util::FromMojo(mojo_tts_event);
     utterance_->OnTtsEvent(event_type, char_index, char_length, error_message);
+
+    if (content::IsFinalTtsEventType(event_type)) {
+      utterance_->Finish();
+      owner_->DeletePendingUtteranceClient(utterance_->GetId());
+      // Note: |this| is deleted at this point.
+    }
+  }
+
+  // Handle TtsEvent received from Lacros speech engine if the utterance is
+  // spoken by a Lacros TTS engine, forward the event to callback function and
+  // finishing the current utterance processing if receiving completion or error
+  // events.
+  void OnLacrosSpeechEngineTtsEvent(int utterance_id,
+                                    content::TtsEventType event_type,
+                                    int char_index,
+                                    int length,
+                                    const std::string& error_message) {
+    utterance_->OnTtsEvent(event_type, char_index, length, error_message);
 
     if (content::IsFinalTtsEventType(event_type)) {
       utterance_->Finish();
@@ -92,6 +113,8 @@ class TtsClientLacros::TtsUtteraneClient
   BindTtsUtteranceClient() {
     return receiver_.BindNewPipeAndPassRemoteWithVersion();
   }
+
+  content::TtsUtterance* GetUttenrance() { return utterance_.get(); }
 
  private:
   TtsClientLacros* owner_;  // now owned
@@ -142,6 +165,31 @@ void TtsClientLacros::VoicesChanged(
 
   // Notify TtsPlatform that the cached voices have changed.
   content::TtsController::GetInstance()->VoicesChanged();
+}
+
+void TtsClientLacros::SpeakWithLacrosVoice(
+    crosapi::mojom::TtsUtterancePtr mojo_utterance,
+    crosapi::mojom::TtsVoicePtr mojo_voice,
+    mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
+        ash_pending_utterance_client) {
+  // Speak a Lacros utterance with a Lacros voice.
+  content::VoiceData voice = tts_crosapi_util::FromMojo(mojo_voice);
+  if (!ash_pending_utterance_client) {
+    auto item = pending_utterance_clients_.find(mojo_utterance->utterance_id);
+    if (item != pending_utterance_clients_.end()) {
+      // Speaking a Lacros utterance.
+      content::TtsUtterance* current_utterance_to_speak =
+          item->second->GetUttenrance();
+      current_utterance_to_speak->SetEngineId(mojo_utterance->engine_id);
+      content::TtsController::GetInstance()->GetTtsEngineDelegate()->Speak(
+          current_utterance_to_speak, voice);
+    }
+  }
+}
+
+void TtsClientLacros::Stop(const std::string& engine_id) {
+  content::TtsController::GetInstance()->GetTtsEngineDelegate()->Stop(
+      browser_context_, engine_id);
 }
 
 void TtsClientLacros::GetAllVoices(
@@ -263,6 +311,20 @@ void TtsClientLacros::SpeakOrEnqueue(
 
   // We don't need this for just supporting speaking ash voice from lacros.
   pending_utterance_clients_.emplace(utterance_id, std::move(pending_client));
+}
+
+void TtsClientLacros::OnLacrosSpeechEngineTtsEvent(
+    int utterance_id,
+    content::TtsEventType event_type,
+    int char_index,
+    int length,
+    const std::string& error_message) {
+  auto item = pending_utterance_clients_.find(utterance_id);
+  if (item != pending_utterance_clients_.end()) {
+    // Lacros utterance.
+    item->second->OnLacrosSpeechEngineTtsEvent(
+        utterance_id, event_type, char_index, length, error_message);
+  }
 }
 
 void TtsClientLacros::DeletePendingUtteranceClient(int utterance_id) {

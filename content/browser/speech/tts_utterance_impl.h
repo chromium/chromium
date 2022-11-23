@@ -38,6 +38,11 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
     return was_created_with_web_contents_;
   }
 
+  void set_spoken_by_remote_engine(bool value) {
+    spoken_by_remote_engine_ = value;
+  }
+  bool spoken_by_remote_engine() const { return spoken_by_remote_engine_; }
+
   // TtsUtterance overrides.
   void OnTtsEvent(TtsEventType event_type,
                   int char_index,
@@ -106,6 +111,9 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
   // The content embedder engine ID of the engine providing TTS for this
   // utterance, or empty if native TTS is being used.
   std::string engine_id_;
+
+  // True if this utterance is spoken by a remote TTS engine.
+  bool spoken_by_remote_engine_ = false;
 
   // The unique ID of this utterance, used to associate callback functions
   // with utterances.

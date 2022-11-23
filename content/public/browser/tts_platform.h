@@ -34,6 +34,25 @@ class CONTENT_EXPORT ExternalPlatformDelegate {
   // utterance will be added to the utterance queue of the external
   // TtsController and processed in sequence.
   virtual void Enqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
+
+  // Handles TTS event received from the speech engine. Events are forwarded to
+  // the callback function, and in addition, completion and error events
+  // trigger finishing the current utterance.
+  // |utterance_id|: id of the utterance TtsEvent is associated with.
+  // |char_index|: The index of the current character in the utterance. For word
+  // events, the event fires at the end of one word and before the beginning of
+  // the next.The charIndex represents a point in the text at the beginning of
+  // the next word to be spoken.
+  // |length|: The length of the next part of the utterance. For example, in a
+  // word event, this is the length of the word which will be spoken next.
+  // If the |char_index| or |length| are not available, the speech engine should
+  // pass -1.
+  virtual void OnTtsEvent(content::BrowserContext* browser_context,
+                          int utterance_id,
+                          TtsEventType event_type,
+                          int char_index,
+                          int length,
+                          const std::string& error_message) = 0;
 };
 
 // Abstract class that defines the native platform TTS interface,

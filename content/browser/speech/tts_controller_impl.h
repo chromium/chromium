@@ -195,8 +195,9 @@ class CONTENT_EXPORT TtsControllerImpl
   TtsControllerDelegate* GetTtsControllerDelegate();
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   TtsControllerDelegate* delegate_ = nullptr;
-  RemoteTtsEngineDelegate* remote_engine_delegate_ = nullptr;
 #endif
+
+  RemoteTtsEngineDelegate* remote_engine_delegate_ = nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 

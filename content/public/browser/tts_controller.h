@@ -44,10 +44,8 @@ struct CONTENT_EXPORT VoiceData {
   bool native;
   std::string native_voice_identifier;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If true, the voice is from a remote tts engine.
-  bool from_crosapi = false;
-#endif
+  // If true, the voice is provided by a remote TTS engine.
+  bool from_remote_tts_engine = false;
 };
 
 // Interface that delegates TTS requests to engines in content embedders.
@@ -67,6 +65,10 @@ class CONTENT_EXPORT TtsEngineDelegate {
   // Stop speaking the given utterance by sending an event to the target
   // associated with this utterance.
   virtual void Stop(TtsUtterance* utterance) = 0;
+
+  // Stop the given speech engine loaded in |browser_context|.
+  virtual void Stop(BrowserContext* browser_context,
+                    const std::string& engine_id) = 0;
 
   // Pause in the middle of speaking this utterance.
   virtual void Pause(TtsUtterance* utterance) = 0;
@@ -91,6 +93,13 @@ class CONTENT_EXPORT RemoteTtsEngineDelegate {
   // Returns a list of voices from remote tts engine for |browser_context|.
   virtual void GetVoices(BrowserContext* browser_context,
                          std::vector<VoiceData>* out_voices) = 0;
+
+  // Requests the given remote TTS engine to speak |utterance| with |voice|.
+  virtual void Speak(TtsUtterance* utterance, const VoiceData& voice) = 0;
+
+  // Requests the remote TTS engine associated with |utterance| to stop
+  // speaking the |utterance|.
+  virtual void Stop(TtsUtterance* utterance) = 0;
 };
 
 // Class that wants to be notified when the set of

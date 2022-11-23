@@ -39,6 +39,12 @@ class TtsClientLacros
   // crosapi::mojom::TtsClient:
   void VoicesChanged(
       std::vector<crosapi::mojom::TtsVoicePtr> mojo_all_voices) override;
+  void SpeakWithLacrosVoice(
+      crosapi::mojom::TtsUtterancePtr utterance,
+      crosapi::mojom::TtsVoicePtr voice,
+      mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
+          ash_utterance_client) override;
+  void Stop(const std::string& engine_id) override;
 
   const base::UnguessableToken& browser_context_id() const {
     return browser_context_id_;
@@ -50,6 +56,13 @@ class TtsClientLacros
 
   // Forwards the given utterance to Ash to be processed by Ash TtsController.
   void SpeakOrEnqueue(std::unique_ptr<content::TtsUtterance> utterance);
+
+  // Handle events received from the Lacros speech engine.
+  void OnLacrosSpeechEngineTtsEvent(int utterance_id,
+                                    content::TtsEventType event_type,
+                                    int char_index,
+                                    int length,
+                                    const std::string& error_message);
 
   void DeletePendingUtteranceClient(int utterance_id);
 
@@ -88,7 +101,7 @@ class TtsClientLacros
 
   bool is_offline_;
 
-  // Pending Tts Utterance clients by by utterance id.
+  // Pending Lacros Tts Utterance clients by by utterance id.
   std::map<int, std::unique_ptr<TtsUtteraneClient>> pending_utterance_clients_;
 
   base::WeakPtrFactory<TtsClientLacros> weak_ptr_factory_{this};
