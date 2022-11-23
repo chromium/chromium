@@ -549,24 +549,14 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     }
     needs_descendant_dependent_flags_update_ = false;
 
-    if (needs_visual_overflow_recalc_) {
-      if (IsSelfPaintingLayer()) {
-        PhysicalRect old_visual_rect =
-            PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
-        GetLayoutObject().RecalcVisualOverflow();
-        if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
-          MarkAncestorChainForFlagsUpdate(
-              kDoesNotNeedDescendantDependentUpdate);
-        }
-      }
-      if (base::FeatureList::IsEnabled(
-              features::kFastPathPaintPropertyUpdates)) {
-        GetLayoutObject().InvalidateIntersectionObserverCachedRects();
-        GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
-            LocalFrameView::kDesired);
-      }
-      needs_visual_overflow_recalc_ = false;
+    if (IsSelfPaintingLayer() && needs_visual_overflow_recalc_) {
+      PhysicalRect old_visual_rect =
+          PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
+      GetLayoutObject().RecalcVisualOverflow();
+      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect())
+        MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
     }
+    needs_visual_overflow_recalc_ = false;
   }
 
   bool previously_has_visible_content = has_visible_content_;
@@ -818,15 +808,7 @@ void PaintLayer::SetNeedsVisualOverflowRecalc() {
   GetLayoutObject().InvalidateVisualOverflow();
 #endif
   needs_visual_overflow_recalc_ = true;
-  // |MarkAncestorChainForFlagsUpdate| will cause a paint property update which
-  // is only needed if visual overflow actually changes. To avoid this, only
-  // mark this as needing a descendant dependent flags update, which will
-  // cause a paint property update if needed (see:
-  // PaintLayer::UpdateDescendantDependentFlags).
-  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    SetNeedsDescendantDependentFlagsUpdate();
-  else
-    MarkAncestorChainForFlagsUpdate();
+  MarkAncestorChainForFlagsUpdate();
 }
 
 bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
