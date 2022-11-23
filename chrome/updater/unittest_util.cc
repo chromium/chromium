@@ -18,6 +18,7 @@
 #include "base/process/process_iterator.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
@@ -89,6 +90,11 @@ bool DeleteFileAndEmptyParentDirectories(
   return Local::DeleteDirsIfEmpty(file_path->DirName());
 }
 
+base::FilePath GetLogDestinationDir() {
+  const char* var = std::getenv("ISOLATED_OUTDIR");
+  return var ? base::FilePath::FromUTF8Unsafe(var) : base::FilePath();
+}
+
 #if BUILDFLAG(IS_WIN)
 void MaybeExcludePathsFromWindowsDefender() {
   constexpr char kTestLauncherExcludePathsFromWindowDefender[] =
@@ -129,6 +135,43 @@ void MaybeExcludePathsFromWindowsDefender() {
   LOG_IF(ERROR, !process.IsValid())
       << "Failed to disable Windows Defender: " << cmdline;
 }
+
+void StartProcmonLogging() {
+  const base::FilePath dest_dir = GetLogDestinationDir();
+  if (dest_dir.empty() || !base::PathExists(dest_dir)) {
+    LOG(ERROR) << "Cannot log, failed to get log destination dir";
+    return;
+  }
+
+  base::Time::Exploded start_time;
+  base::Time::Now().LocalExplode(&start_time);
+  const std::wstring cmdline = base::StrCat(
+      {L"C:\\tools\\Procmon.exe /AcceptEula /BackingFile \"",
+       dest_dir
+           .AppendASCII(base::StringPrintf(
+               "%02d%02d%02d-%02d%02d%02d.PML", start_time.year,
+               start_time.month, start_time.day_of_month, start_time.hour,
+               start_time.minute, start_time.second))
+           .value(),
+       L"\" /Nofilter /Quiet /externalcapture"});
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  VLOG(1) << "Running: " << cmdline;
+  base::Process process = base::LaunchProcess(cmdline, options);
+  LOG_IF(ERROR, !process.IsValid()) << "Failed to run procmon: " << cmdline;
+}
+
+void StopProcmonLogging() {
+  const std::wstring cmdline = L"C:\\tools\\Procmon.exe /Terminate";
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  VLOG(1) << "Running: " << cmdline;
+  base::Process process = base::LaunchProcess(cmdline, options);
+  LOG_IF(ERROR, !process.IsValid()) << "Failed to stop procmon: " << cmdline;
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater::test

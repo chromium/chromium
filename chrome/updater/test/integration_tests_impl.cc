@@ -264,13 +264,6 @@ void PrintLog(UpdaterScope scope) {
   }
 }
 
-base::FilePath GetLogDestinationDir() {
-  // Fetch path to ${ISOLATED_OUTDIR} env var.
-  // ResultDB reads logs and test artifacts info from there.
-  const char* var = std::getenv("ISOLATED_OUTDIR");
-  return var ? base::FilePath::FromUTF8Unsafe(var) : base::FilePath();
-}
-
 // Copies the updater log file present in `src_dir` to a test-specific directory
 // name in Swarming/Isolate. Avoids overwriting the destination log file if
 // other instances of it exist in the destination directory. Swarming retries

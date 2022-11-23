@@ -58,10 +58,18 @@ absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope);
 bool DeleteFileAndEmptyParentDirectories(
     const absl::optional<base::FilePath>& file_path);
 
+// Fetches the path to the ${ISOLATED_OUTDIR} env var.
+// ResultDB reads logs and test artifacts info from there.
+base::FilePath GetLogDestinationDir();
+
 #if BUILDFLAG(IS_WIN)
 // Change Windows Defender settings to skip scanning the paths used by the
 // updater if test runs with the flag `exclude-paths-from-win-defender`.
 void MaybeExcludePathsFromWindowsDefender();
+
+// Start and stop procmon.exe logging.
+void StartProcmonLogging();
+void StopProcmonLogging();
 #endif
 
 }  // namespace updater::test
