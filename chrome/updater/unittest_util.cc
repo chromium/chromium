@@ -144,6 +144,11 @@ void MaybeExcludePathsFromWindowsDefender() {
 }
 
 base::FilePath StartProcmonLogging() {
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    LOG(WARNING) << __func__ << ": skipping procmon logging on Win7.";
+    return {};
+  }
+
   if (!::IsUserAnAdmin()) {
     LOG(WARNING) << __func__
                  << ": user is not an admin, skipping procmon logging";
