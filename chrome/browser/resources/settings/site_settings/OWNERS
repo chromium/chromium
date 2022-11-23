@@ -1,3 +1,4 @@
 sauski@google.com
 
 per-file review_notification_permissions.*=rainhard@chromium.org
+per-file site_settings_permissions_browser_proxy.ts=rainhard@chromium.org

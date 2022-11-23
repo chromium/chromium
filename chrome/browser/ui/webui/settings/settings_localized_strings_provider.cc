@@ -1992,8 +1992,6 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
     {"safetyCheckIconWarningAriaLabel",
      IDS_SETTINGS_SAFETY_CHECK_ICON_WARNING_ARIA_LABEL},
     {"safetyCheckReview", IDS_SETTINGS_SAFETY_CHECK_REVIEW},
-    {"safetyCheckUnusedSitePermissionsPrimaryLabel",
-     IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL},
     {"safetyCheckUpdatesPrimaryLabel",
      IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL},
     {"safetyCheckUpdatesButtonAriaLabel", IDS_UPDATE_RECOMMENDED_DIALOG_TITLE},
@@ -2035,6 +2033,8 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_DONE_LABEL},
     {"safetyCheckNotificationPermissionReviewBlockAllLabel",
      IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_BLOCK_ALL_LABEL},
+    {"safetyCheckUnusedSitePermissionsHeaderAriaLabel",
+     IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_HEADER_ARIA_LABEL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"safetyCheckChromeCleanerPrimaryLabel",
      IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_PRIMARY_LABEL},

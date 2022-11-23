@@ -141,6 +141,7 @@ non_preprocessed_files = [
   "test_profile_info_browser_proxy.ts",
   "test_reset_browser_proxy.ts",
   "test_search_engines_browser_proxy.ts",
+  "test_site_settings_permissions_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.ts",
   "test_util.ts",
   "trusted_html.ts",

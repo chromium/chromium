@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
+#include "chrome/browser/ui/webui/settings/site_settings_permissions_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -207,6 +208,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
   AddSettingsPageUIHandler(std::make_unique<SafetyCheckHandler>());
+  AddSettingsPageUIHandler(std::make_unique<SiteSettingsPermissionsHandler>());
   AddSettingsPageUIHandler(std::make_unique<DownloadsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ExtensionControlHandler>());
   AddSettingsPageUIHandler(std::make_unique<FontHandler>(profile));
@@ -401,6 +403,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "safetyCheckNotificationPermissionReviewPrimaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL);
+  plural_string_handler->AddLocalizedString(
+      "safetyCheckUnusedSitePermissionsHeaderLabel",
+      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_HEADER_LABEL);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

@@ -24,4 +24,5 @@ per-file site_list_entry_tests.ts=sauski@google.com
 per-file site_list_tests.ts=sauski@google.com
 per-file site_settings_page_test.ts=sauski@google.com
 per-file test_privacy_page_browser_proxy.ts=sauski@google.com
+per-file test_site_settings_permissions_browser_proxy.ts=rainhard@chromium.org,sauski@google.com
 per-file test_site_settings_prefs_browser_proxy.ts=sauski@google.com

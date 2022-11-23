@@ -1684,6 +1684,8 @@ static_library("ui") {
       "webui/settings/site_settings_handler.h",
       "webui/settings/site_settings_helper.cc",
       "webui/settings/site_settings_helper.h",
+      "webui/settings/site_settings_permissions_handler.cc",
+      "webui/settings/site_settings_permissions_handler.h",
       "webui/side_panel/bookmarks/bookmarks_page_handler.cc",
       "webui/side_panel/bookmarks/bookmarks_page_handler.h",
       "webui/side_panel/bookmarks/bookmarks_side_panel_ui.cc",

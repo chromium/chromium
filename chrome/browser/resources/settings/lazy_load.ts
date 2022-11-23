@@ -201,6 +201,7 @@ export {SiteDetailsPermissionElement} from './site_settings/site_details_permiss
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
+export {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from './site_settings/site_settings_permissions_browser_proxy.js';
 export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, NotificationPermission, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';

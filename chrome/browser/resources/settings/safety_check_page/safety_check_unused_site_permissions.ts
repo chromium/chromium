@@ -9,15 +9,20 @@
  * some granted permissions.
  */
 
+// clang-format off
 import './safety_check_child.js';
 
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {UnusedSitePermissions, SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl} from '../site_settings/site_settings_permissions_browser_proxy.js';
 
 import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_child.js';
 import {getTemplate} from './safety_check_unused_site_permissions.html.js';
+// clang-format on
 
 export interface SettingsSafetyCheckUnusedSitePermissionsElement {
   $: {
@@ -25,8 +30,11 @@ export interface SettingsSafetyCheckUnusedSitePermissionsElement {
   };
 }
 
+const SettingsSafetyCheckUnusedSitePermissionsElementBase =
+    WebUiListenerMixin(PolymerElement);
+
 export class SettingsSafetyCheckUnusedSitePermissionsElement extends
-    PolymerElement {
+    SettingsSafetyCheckUnusedSitePermissionsElementBase {
   static get is() {
     return 'settings-safety-check-unused-site-permissions';
   }
@@ -43,10 +51,36 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
           return SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS;
         },
       },
+
+      headerString_: String,
     };
   }
 
+  private headerString_: string;
   private iconStatus_: SafetyCheckIconStatus;
+
+  private browserProxy_: SiteSettingsPermissionsBrowserProxy =
+      SiteSettingsPermissionsBrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Register for review notification permission list updates.
+    this.addWebUIListener(
+        'unused-permission-review-list-maybe-changed',
+        (sites: UnusedSitePermissions[]) => {
+          this.onSitesChanged_(sites);
+        });
+
+    this.browserProxy_.getRevokedUnusedSitePermissionsList().then(
+        this.onSitesChanged_.bind(this));
+  }
+
+  private async onSitesChanged_(sites: UnusedSitePermissions[]) {
+    this.headerString_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsHeaderLabel', sites.length);
+  }
 
   private onButtonClick_() {
     Router.getInstance().navigateTo(

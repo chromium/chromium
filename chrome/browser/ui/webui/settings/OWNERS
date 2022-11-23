@@ -7,6 +7,7 @@ per-file hats_handler*=sauski@google.com
 per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=sauski@google.com
+per-file site_settings_permissions_handler*=rainhard@chromium.org
 per-file safe_browsing_handler*=msramek@chromium.org
 per-file safe_browsing_handler*=sauski@google.com
 per-file safety_check_handler*=andzaytsev@google.com,rainhard@chromium.org

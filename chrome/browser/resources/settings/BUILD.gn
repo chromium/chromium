@@ -362,6 +362,7 @@ build_webui("build") {
     "settings_routes.ts",
     "site_settings/constants.ts",
     "site_settings/site_settings_mixin.ts",
+    "site_settings/site_settings_permissions_browser_proxy.ts",
     "site_settings/site_settings_prefs_browser_proxy.ts",
     "site_settings/website_usage_browser_proxy.ts",
   ]
