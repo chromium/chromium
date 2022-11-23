@@ -207,6 +207,7 @@ bn_mul_mont_gather5:
 	por	%xmm2,%xmm0
 	por	%xmm3,%xmm1
 	por	%xmm1,%xmm0
+
 	pshufd	$0x4e,%xmm0,%xmm1
 	por	%xmm1,%xmm0
 	leaq	256(%r12),%r12
@@ -330,6 +331,7 @@ bn_mul_mont_gather5:
 	por	%xmm2,%xmm4
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	leaq	256(%r12),%r12
@@ -698,6 +700,7 @@ mul4x_internal:
 	por	%xmm2,%xmm0
 	por	%xmm3,%xmm1
 	por	%xmm1,%xmm0
+
 	pshufd	$0x4e,%xmm0,%xmm1
 	por	%xmm1,%xmm0
 	leaq	256(%r12),%r12
@@ -905,6 +908,7 @@ mul4x_internal:
 	por	%xmm2,%xmm4
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	leaq	256(%r12),%r12
@@ -2321,6 +2325,7 @@ mulx4x_internal:
 	por	%xmm2,%xmm0
 	por	%xmm3,%xmm1
 	pxor	%xmm1,%xmm0
+
 	pshufd	$0x4e,%xmm0,%xmm1
 	por	%xmm1,%xmm0
 	leaq	256(%rdi),%rdi
@@ -2471,6 +2476,7 @@ mulx4x_internal:
 	por	%xmm2,%xmm4
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	leaq	256(%rdi),%rdi
@@ -3419,6 +3425,15 @@ bn_scatter5:
 .cfi_startproc	
 	cmpl	$0,%esi
 	jz	.Lscatter_epilogue
+
+
+
+
+
+
+
+
+
 	leaq	(%rdx,%rcx,8),%rdx
 .Lscatter:
 	movq	(%rdi),%rax
@@ -3587,6 +3602,7 @@ bn_gather5:
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
 	leaq	256(%r11),%r11
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	movq	%xmm0,(%rdi)
