@@ -289,6 +289,54 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
 }
 
+// https://www.w3.org/TR/scroll-animations-1/#named-range-getTime
+CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
+  if (!IsActive())
+    return nullptr;
+
+  Timing::Delay range_start;
+  Timing::Delay range_end;
+  if (rangeName == "cover") {
+    range_start.phase = Timing::TimelineNamedPhase::kCover;
+  } else if (rangeName == "contain") {
+    range_start.phase = Timing::TimelineNamedPhase::kContain;
+  } else if (rangeName == "enter") {
+    range_start.phase = Timing::TimelineNamedPhase::kEnter;
+  } else if (rangeName == "exit") {
+    range_start.phase = Timing::TimelineNamedPhase::kExit;
+  } else {
+    return nullptr;
+  }
+
+  range_start.relative_offset = 0;
+  range_end.phase = range_start.phase;
+  range_end.relative_offset = 1;
+
+  double relative_start_offset = ToFractionalOffset(range_start).value();
+  double relative_end_offset = ToFractionalOffset(range_end).value();
+  double range = relative_end_offset - relative_start_offset;
+
+  // TODO(https://github.com/w3c/csswg-drafts/issues/8114): Update and add tests
+  // once ratified in the spec.
+  if (range == 0)
+    return nullptr;
+
+  absl::optional<base::TimeDelta> current_time = CurrentPhaseAndTime().time;
+  // If current time is null then the timeline must be inactive, which is
+  // handled above.
+  DCHECK(current_time);
+  DCHECK(GetDuration());
+
+  double timeline_progress =
+      CurrentPhaseAndTime().time.value().InMillisecondsF() /
+      GetDuration().value().InMillisecondsF();
+
+  double named_range_progress =
+      (timeline_progress - relative_start_offset) / range;
+
+  return CSSUnitValues::percent(named_range_progress * 100);
+}
+
 absl::optional<double> ViewTimeline::ToFractionalOffset(
     const Timing::Delay& delay) const {
   absl::optional<double> result;

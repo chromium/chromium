@@ -50,6 +50,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   bool IsViewTimeline() const override { return true; }
 
+  CSSNumericValue* getCurrentTime(const String& rangeName) override;
+
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Timing&) override;
 

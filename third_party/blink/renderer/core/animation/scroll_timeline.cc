@@ -189,12 +189,15 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
       CalculateOffsets(scrollable_area, physical_orientation);
   DCHECK(scroll_offsets);
 
-  // TODO(crbug.com/1338167): Update once
-  // github.com/w3c/csswg-drafts/issues/7401 is resolved.
-  double progress = (scroll_offsets->start == scroll_offsets->end)
-                        ? 1
-                        : (current_offset - scroll_offsets->start) /
-                              (scroll_offsets->end - scroll_offsets->start);
+  // Make the timeline inactive when the scroll offset range is zero.
+  // github.com/w3c/csswg-drafts/issues/7401
+  if (std::abs(scroll_offsets->end - scroll_offsets->start) < 1) {
+    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
+            scroll_offsets};
+  }
+
+  double progress = (current_offset - scroll_offsets->start) /
+                    (scroll_offsets->end - scroll_offsets->start);
 
   base::TimeDelta duration = base::Seconds(GetDuration()->InSecondsF());
   absl::optional<base::TimeDelta> calculated_current_time =

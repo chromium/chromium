@@ -40,6 +40,10 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   ~AnimationTimeline() override = default;
 
   virtual V8CSSNumberish* currentTime();
+  virtual CSSNumericValue* getCurrentTime(const String& rangeName) {
+    return nullptr;
+  }
+
   absl::optional<AnimationTimeDelta> CurrentTime();
   absl::optional<double> CurrentTimeMilliseconds();
   absl::optional<double> CurrentTimeSeconds();
