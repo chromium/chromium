@@ -2822,6 +2822,9 @@ extern const char kDesksSaveAndRecallDescription[];
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 
+extern const char kDnsOverHttpsWithIdentifiersReuseOldPolicyName[];
+extern const char kDnsOverHttpsWithIdentifiersReuseOldPolicyDescription[];
+
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 

@@ -4913,6 +4913,13 @@ const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "
     "launchable template in a new desk";
 
+extern const char kDnsOverHttpsWithIdentifiersReuseOldPolicyName[] =
+    "Experiment: Allows using identifiers in the DoH template URI";
+extern const char kDnsOverHttpsWithIdentifiersReuseOldPolicyDescription[] =
+    "Enables early testing of the DoH template URI with identifiers by "
+    "evaluating user identifiers in the existing policy DnsOverHttpsTemplates "
+    "and hashing them using a hardcoded salt.";
+
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "

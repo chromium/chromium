@@ -58342,6 +58342,8 @@ from previous Chrome versions.
   <int value="-1311204345" label="FuseBox:disabled"/>
   <int value="-1311133348" label="VrBrowsingNativeAndroidUi:enabled"/>
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
+  <int value="-1309955811"
+      label="DnsOverHttpsWithIdentifiersReuseOldPolicy:disabled"/>
   <int value="-1309828996"
       label="AutofillSaveCreditCardUsesImprovedMessaging:enabled"/>
   <int value="-1309205592" label="SideSearchDSESupport:disabled"/>
@@ -61684,6 +61686,8 @@ from previous Chrome versions.
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
+  <int value="671427343"
+      label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
   <int value="671800756" label="TabStripImprovements:enabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="673565219" label="AutofillCountryFromLocalName:enabled"/>

@@ -1459,6 +1459,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "dns-over-https-with-identifiers-reuse-old-policy",
+    "owners": [ "acostinas", "pmarko" ,"srad" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "dns-proxy-enable-doh",
     "owners": [ "garrick", "jasongustaman" ],
     "expiry_milestone": 111
