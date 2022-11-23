@@ -760,12 +760,13 @@ TimeTicks StackSamplingProfiler::TestPeer::GetNextSampleTime(
 }
 
 // static
-// The profiler is currently supported for Windows x64, macOS, iOS 64-bit, and
-// Android ARM32.
+// The profiler is currently supported for Windows x64, macOS, iOS 64-bit,
+// Android ARM32, and Android ARM64.
 bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) ||  \
-    (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                      \
-    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                     \
+    (BUILDFLAG(IS_ANDROID) &&                                               \
+     (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64)))
 #if BUILDFLAG(IS_WIN)
   // Do not start the profiler when Application Verifier is in use; running them
   // simultaneously can cause crashes and has no known use case.
