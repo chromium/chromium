@@ -19,6 +19,8 @@ crbug.com/1380449 external/wpt/css/css-contain/content-visibility/content-visibi
 # ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
 crbug.com/1380449 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
 crbug.com/1380449 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
+# Check failed: IsLogicalHeightKnown():
+crbug.com/1383373 external/wpt/css/css-multicol/crashtests/float-becomes-non-float-spanner-surprises-inside.html [ Crash ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
