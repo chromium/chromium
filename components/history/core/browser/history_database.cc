@@ -40,7 +40,9 @@ namespace {
 // our database without *too* many bad effects.
 const int kCurrentVersionNumber = 59;
 const int kCompatibleVersionNumber = 16;
+
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
+const char kDeleteForeignVisitsUntilId[] = "delete_foreign_visits_until_id";
 
 // Logs a migration failure to UMA and logging. The return value will be
 // what to return from ::Init (to simplify the call sites). Migration failures
@@ -444,6 +446,16 @@ void HistoryDatabase::UpdateEarlyExpirationThreshold(base::Time threshold) {
   meta_table_.SetValue(kEarlyExpirationThresholdKey,
                        threshold.ToInternalValue());
   cached_early_expiration_threshold_ = threshold;
+}
+
+VisitID HistoryDatabase::GetDeleteForeignVisitsUntilId() {
+  VisitID visit_id = kInvalidVisitID;
+  meta_table_.GetValue(kDeleteForeignVisitsUntilId, &visit_id);
+  return visit_id;
+}
+
+void HistoryDatabase::SetDeleteForeignVisitsUntilId(VisitID visit_id) {
+  meta_table_.SetValue(kDeleteForeignVisitsUntilId, visit_id);
 }
 
 TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {

@@ -68,12 +68,17 @@ using favicon_base::IconType;
 using favicon_base::IconTypeSet;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 const int kSmallEdgeSize = 16;
 const int kLargeEdgeSize = 32;
 
 const gfx::Size kSmallSize = gfx::Size(kSmallEdgeSize, kSmallEdgeSize);
 const gfx::Size kLargeSize = gfx::Size(kLargeEdgeSize, kLargeEdgeSize);
+
+MATCHER_P(HasVisitID, visit_id, "") {
+  return arg.visit_id == visit_id;
+}
 
 // Minimal representation of a `Cluster` for verifying 2 clusters are equal.
 struct ClusterExpectation {
@@ -277,7 +282,8 @@ class HistoryBackendTestBase : public testing::Test {
     modified_content_model_annotations_.push_back(model_annotations);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   HistoryClientFakeBookmarks history_client_;
   scoped_refptr<TestHistoryBackend> backend_;  // Will be NULL on init failure.
   std::unique_ptr<InMemoryHistoryBackend> mem_backend_;
@@ -1076,8 +1082,8 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
 
   // Simulate the initial URL opening a page that then redirects.
   HistoryAddPageArgs request(
-      client_redirect_url, base::Time::Now(), context_id2, 0, GURL(),
-      /*redirects=*/{server_redirect_url, client_redirect_url},
+      client_redirect_url, base::Time::Now() - base::Seconds(1), context_id2, 0,
+      GURL(), /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true,
       absl::nullopt, Opener(context_id1, nav_entry_id, initial_url));
   backend_->AddPage(request);
@@ -4237,6 +4243,198 @@ TEST_F(HistoryBackendTest, GetRedirectChain) {
   EXPECT_EQ(chain3[0].visit_id, chain3_ids[0]);
   EXPECT_EQ(chain3[1].visit_id, chain3_ids[1]);
   EXPECT_EQ(chain3[2].visit_id, chain3_ids[2]);
+}
+
+TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  const base::Time initial_time = base::Time::Now();
+
+  // Setup: Add some visits, both local and foreign.
+
+  VisitID local_visit_id1 =
+      backend_
+          ->AddPageVisit(GURL("https://local1.url"), base::Time::Now(),
+                         /*referring_visit=*/kInvalidVisitID, kLink,
+                         /*hidden=*/false, SOURCE_BROWSED,
+                         /*should_increment_typed_count=*/false,
+                         /*opener_visit=*/kInvalidVisitID)
+          .second;
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  VisitRow foreign_visit1;
+  foreign_visit1.visit_time = base::Time::Now();
+  foreign_visit1.transition = kLink;
+  foreign_visit1.originator_cache_guid = "originator";
+  VisitID foreign_visit_id1 = backend_->AddSyncedVisit(
+      GURL("https://remote1.url"), u"Title 1", /*hidden=*/false, foreign_visit1,
+      absl::nullopt, absl::nullopt);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  VisitID local_visit_id2 =
+      backend_
+          ->AddPageVisit(GURL("https://local2.url"), base::Time::Now(),
+                         /*referring_visit=*/kInvalidVisitID, kLink,
+                         /*hidden=*/false, SOURCE_BROWSED,
+                         /*should_increment_typed_count=*/false,
+                         /*opener_visit=*/kInvalidVisitID)
+          .second;
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  VisitRow foreign_visit2;
+  foreign_visit2.visit_time = base::Time::Now();
+  foreign_visit2.transition = kLink;
+  foreign_visit2.originator_cache_guid = "originator";
+  VisitID foreign_visit_id2 = backend_->AddSyncedVisit(
+      GURL("https://remote2.url"), u"Title 2", /*hidden=*/true, foreign_visit2,
+      absl::nullopt, absl::nullopt);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Setup finished - verify that the visits are there.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/5, &visits);
+    ASSERT_THAT(visits, UnorderedElementsAre(HasVisitID(local_visit_id1),
+                                             HasVisitID(local_visit_id2),
+                                             HasVisitID(foreign_visit_id1),
+                                             HasVisitID(foreign_visit_id2)));
+  }
+
+  // Main test body: Instruct backend to delete foreign visits.
+  backend_->DeleteAllForeignVisits();
+  // The deletions happens asynchronously, so wait for it to complete.
+  task_environment_.RunUntilIdle();
+
+  // Make sure the foreign visits (and only those) got deleted.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/5, &visits);
+    ASSERT_THAT(visits, UnorderedElementsAre(HasVisitID(local_visit_id1),
+                                             HasVisitID(local_visit_id2)));
+  }
+}
+
+TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  const int visits_per_batch =
+      HistoryBackend::GetForeignVisitsToDeletePerBatchForTest();
+  const int total_visits = visits_per_batch + 5;
+
+  const base::Time initial_time = base::Time::Now();
+
+  // Setup: Add enough foreign visits that they'll need more than one batch to
+  // delete.
+  for (int i = 0; i < visits_per_batch + 5; ++i) {
+    VisitRow foreign_visit;
+    foreign_visit.visit_time = base::Time::Now();
+    foreign_visit.transition = kLink;
+    foreign_visit.originator_cache_guid = "originator";
+    backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
+                             /*hidden=*/false, foreign_visit, absl::nullopt,
+                             absl::nullopt);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Setup finished - verify that the visits are there.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/total_visits + 1,
+                                        &visits);
+    ASSERT_EQ(static_cast<int>(visits.size()), total_visits);
+  }
+
+  // Instruct the backend to delete foreign visits.
+  backend_->DeleteAllForeignVisits();
+
+  // Wait for the deletions to happen.
+  task_environment_.RunUntilIdle();
+
+  // Make sure that all the foreign visits got deleted.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/total_visits + 1,
+                                        &visits);
+    EXPECT_TRUE(visits.empty());
+  }
+}
+
+TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  const base::Time initial_time = base::Time::Now();
+
+  // Setup: Add some foreign visits.
+  for (int i = 0; i < 5; ++i) {
+    VisitRow foreign_visit;
+    foreign_visit.visit_time = base::Time::Now();
+    foreign_visit.transition = kLink;
+    foreign_visit.originator_cache_guid = "originator";
+    backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
+                             /*hidden=*/false, foreign_visit, absl::nullopt,
+                             absl::nullopt);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Setup finished - verify that the visits are there.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/10, &visits);
+    ASSERT_EQ(visits.size(), 5u);
+  }
+
+  // Instruct the backend to delete foreign visits.
+  backend_->DeleteAllForeignVisits();
+
+  // Before the actual (async) deletion happens, add some more foreign visits.
+  // These should *not* be affected by the previous DeleteAllForeignVisits()
+  // call!
+  std::vector<VisitID> new_foreign_visit_ids;
+  for (int i = 0; i < 5; ++i) {
+    VisitRow foreign_visit;
+    foreign_visit.visit_time = base::Time::Now();
+    foreign_visit.transition = kLink;
+    foreign_visit.originator_cache_guid = "originator";
+    new_foreign_visit_ids.push_back(backend_->AddSyncedVisit(
+        GURL("https://remote.url"), /*title=*/u"",
+        /*hidden=*/false, foreign_visit, absl::nullopt, absl::nullopt));
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Wait for the scheduled deletions to happen.
+  task_environment_.RunUntilIdle();
+
+  // Make sure that (only) the visits added after the DeleteAllForeignVisits()
+  // call remain.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/10, &visits);
+    std::vector<VisitID> remaining_visit_ids;
+    for (const VisitRow& visit : visits) {
+      remaining_visit_ids.push_back(visit.visit_id);
+    }
+    EXPECT_THAT(remaining_visit_ids,
+                UnorderedElementsAreArray(new_foreign_visit_ids));
+  }
 }
 
 }  // namespace history

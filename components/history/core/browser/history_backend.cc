@@ -199,6 +199,46 @@ void MergeUpdateIntoExistingModelAnnotations(
   }
 }
 
+// Killswitch for the logic to start deleting foreign history on startup (if a
+// previous foreign-history-deletion operation didn't finish before browser
+// shutdown).
+BASE_FEATURE(kDeleteForeignVisitsOnStartup,
+             "DeleteForeignVisitsOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+int GetForeignVisitsToDeletePerBatch() {
+  return syncer::kSyncHistoryForeignVisitsToDeletePerBatch.Get();
+}
+
+class DeleteForeignVisitsDBTask : public HistoryDBTask {
+ public:
+  ~DeleteForeignVisitsDBTask() override = default;
+
+  bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
+    VisitID max_visit_id = db->GetDeleteForeignVisitsUntilId();
+    int max_count = GetForeignVisitsToDeletePerBatch();
+
+    VisitVector visits;
+    if (!db->GetSomeForeignVisits(max_visit_id, max_count, &visits)) {
+      // Some error happened; no point in going on.
+      return true;
+    }
+
+    backend->RemoveVisits(visits);
+
+    bool done = visits.size() < static_cast<size_t>(max_count);
+    if (done) {
+      // Nothing more to be deleted; clean up the deletion flag.
+      db->SetDeleteForeignVisitsUntilId(kInvalidVisitID);
+    }
+    // Note: As long as this returns false, RunOnDBThread() will get run again
+    // (see also comment on HistoryDBTask::RunOnDBThread()).
+    return done;
+  }
+
+  void DoneRunOnMainThread() override {}
+};
+
 }  // namespace
 
 std::u16string FormatUrlForRedirectComparison(const GURL& url) {
@@ -220,7 +260,7 @@ base::Time MidnightNDaysLater(base::Time time, int days) {
 
 QueuedHistoryDBTask::QueuedHistoryDBTask(
     std::unique_ptr<HistoryDBTask> task,
-    scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
+    scoped_refptr<base::SequencedTaskRunner> origin_loop,
     const base::CancelableTaskTracker::IsCanceledCallback& is_canceled)
     : task_(std::move(task)),
       origin_loop_(origin_loop),
@@ -336,6 +376,16 @@ void HistoryBackend::Init(
         std::make_unique<ClientTagBasedModelTypeProcessor>(
             syncer::HISTORY, /*dump_stack=*/base::RepeatingClosure()));
   }
+
+  if (base::FeatureList::IsEnabled(kDeleteForeignVisitsOnStartup) && db_ &&
+      (db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID)) {
+    // A deletion of foreign visits was still ongoing during the previous
+    // browser shutdown. Continue it.
+    StartDeletingForeignVisits();
+  }
+  // TODO(crbug.com/1347733): If there is no ongoing deletion, but the
+  // kSyncEnableHistoryDataType feature is disabled, then any existing foreign
+  // visits should also be cleaned up.
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&HistoryBackend::OnMemoryPressure,
@@ -1268,6 +1318,11 @@ bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) const {
   return time < expirer_.GetCurrentExpirationTime();
 }
 
+// static
+int HistoryBackend::GetForeignVisitsToDeletePerBatchForTest() {
+  return GetForeignVisitsToDeletePerBatch();
+}
+
 void HistoryBackend::SetPageTitle(const GURL& url,
                                   const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::SetPageTitle");
@@ -1481,6 +1536,14 @@ VisitID HistoryBackend::UpdateSyncedVisit(
 
   VisitID visit_id = original_row.visit_id;
 
+  // If the existing foreign visit is about to be deleted, don't update it. The
+  // HistorySyncBridge will instead create a new visit. (This can happen if Sync
+  // gets stopped, then started again before all the old foreign visits are
+  // cleaned up.)
+  if (visit_id <= db_->GetDeleteForeignVisitsUntilId()) {
+    return 0;
+  }
+
   VisitRow updated_row = visit;
   // The fields `visit_id` and `url_id` aren't set in visits coming from sync,
   // so take those from the existing row.
@@ -1541,14 +1604,24 @@ bool HistoryBackend::DeleteAllForeignVisits() {
   if (!db_)
     return false;
 
-  // TODO(crbug.com/1347733): There may be lots (1000s) of foreign visits, so
-  // querying and removing them all at once may be very expensive. We need to do
-  // this in multiple passes instead.
-  VisitVector visits;
-  if (!db_->GetAllForeignVisits(&visits))
-    return false;
+  bool already_running =
+      db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID;
 
-  return RemoveVisits(visits);
+  // Set the max-foreign-visit-to-delete to the current max visit ID in the DB.
+  // This ensures that any visits added in the future (after the
+  // DeleteAllForeignVisits() call) will not be affected. (This matters if Sync
+  // gets enabled again, and starts adding foreign visits again, before the
+  // deletion process has completed.)
+  VisitID max_visit_to_delete = db_->GetMaxVisitIDInUse();
+  db_->SetDeleteForeignVisitsUntilId(max_visit_to_delete);
+
+  // Only schedule a deletion task if there isn't one already running. If there
+  // is one already running, it'll pick up the new limit automatically.
+  if (!already_running) {
+    StartDeletingForeignVisits();
+  }
+
+  return true;
 }
 
 bool HistoryBackend::RemoveVisits(const VisitVector& visits) {
@@ -3048,7 +3121,7 @@ void HistoryBackend::KillHistoryDatabase() {
 
 void HistoryBackend::ProcessDBTask(
     std::unique_ptr<HistoryDBTask> task,
-    scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
+    scoped_refptr<base::SequencedTaskRunner> origin_loop,
     const base::CancelableTaskTracker::IsCanceledCallback& is_canceled) {
   TRACE_EVENT0("browser", "HistoryBackend::ProcessDBTask");
   bool scheduled = !queued_history_db_tasks_.empty();
@@ -3236,6 +3309,11 @@ bool HistoryBackend::ProcessSetFaviconsResult(
   for (const GURL& page_url : result.updated_page_urls)
     SendFaviconChangedNotificationForPageAndRedirects(page_url);
   return true;
+}
+
+void HistoryBackend::StartDeletingForeignVisits() {
+  ProcessDBTask(std::make_unique<DeleteForeignVisitsDBTask>(), task_runner_,
+                /*is_canceled=*/base::BindRepeating([]() { return false; }));
 }
 
 }  // namespace history

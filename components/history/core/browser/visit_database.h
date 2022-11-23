@@ -124,10 +124,12 @@ class VisitDatabase {
                                      ui::PageTransition transition,
                                      VisitVector* visits);
 
-  // Fills all foreign visits (i.e. those with a non-empty
-  // `originator_cache_guid`) into `visits`. Returns true on success and false
-  // otherwise.
-  bool GetAllForeignVisits(VisitVector* visits);
+  // Fills some foreign visits (i.e. with a non-empty `originator_cache_guid`)
+  // into `visits` - at most `max_visits` of them, and only those with a (local)
+  // visit_id <= `max_visit_id`. Returns true on success and false otherwise.
+  bool GetSomeForeignVisits(VisitID max_visit_id,
+                            int max_results,
+                            VisitVector* visits);
 
   // Looks up URLIDs for all visits with specified transition. Returns true on
   // success and false otherwise.
@@ -240,6 +242,12 @@ class VisitDatabase {
 
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);
+
+  // Returns the maximum VisitID that is currently used in the DB. Due to
+  // AUTOINCREMENT, any VisitIDs created after this call are guaranteed to be
+  // larger than the returned value.
+  // If there are no visits in the table, returns `kInvalidVisitId` (aka 0).
+  VisitID GetMaxVisitIDInUse();
 
   // Get the source information about the given visit(s).
   void GetVisitsSource(const VisitVector& visits, VisitSourceMap* sources);

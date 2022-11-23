@@ -158,7 +158,11 @@ BASE_DECLARE_FEATURE(kUseSyncInvalidationsForWalletAndOffer);
 // DeviceInfo has been updated.
 BASE_DECLARE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
 
+// If enabled, the HISTORY data type replaces TYPED_URLS.
 BASE_DECLARE_FEATURE(kSyncEnableHistoryDataType);
+inline constexpr base::FeatureParam<int>
+    kSyncHistoryForeignVisitsToDeletePerBatch{
+        &kSyncEnableHistoryDataType, "foreign_visit_deletions_per_batch", 100};
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 

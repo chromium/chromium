@@ -90,7 +90,7 @@ class QueuedHistoryDBTask {
  public:
   QueuedHistoryDBTask(
       std::unique_ptr<HistoryDBTask> task,
-      scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
+      scoped_refptr<base::SequencedTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
 
   QueuedHistoryDBTask(const QueuedHistoryDBTask&) = delete;
@@ -104,7 +104,7 @@ class QueuedHistoryDBTask {
 
  private:
   std::unique_ptr<HistoryDBTask> task_;
-  scoped_refptr<base::SingleThreadTaskRunner> origin_loop_;
+  scoped_refptr<base::SequencedTaskRunner> origin_loop_;
   base::CancelableTaskTracker::IsCanceledCallback is_canceled_;
 };
 
@@ -557,7 +557,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void ProcessDBTask(
       std::unique_ptr<HistoryDBTask> task,
-      scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
+      scoped_refptr<base::SequencedTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
 
   bool GetAllTypedURLs(URLRows* urls);
@@ -614,8 +614,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                     VisitID referrer_id,
                                     VisitID opener_id) override;
 
-  // Deletes all foreign visits, i.e. those with a non-empty
-  // `originator_cache_guid`. (This is called when History Sync is disabled.)
+  // Starts the asynchronous process of deleting all foreign visits, i.e. those
+  // with a non-empty `originator_cache_guid`. (This is called when History Sync
+  // is disabled.)
+  // Even though the process is async, only visits that already exist at the
+  // time this is called will be deleted. Visits added afterwards will *not* be
+  // deleted.
   bool DeleteAllForeignVisits() override;
 
   bool RemoveVisits(const VisitVector& visits);
@@ -734,6 +738,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   base::Time GetFirstRecordedTimeForTest() { return first_recorded_time_; }
 
+  static int GetForeignVisitsToDeletePerBatchForTest();
+
  protected:
   ~HistoryBackend() override;
 
@@ -746,9 +752,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Returns the name of the Favicons database.
   base::FilePath GetFaviconsFileName() const;
-
-  class URLQuerier;
-  friend class URLQuerier;
 
   // Does the work of Init.
   void InitImpl(const HistoryDatabaseParams& history_database_params);
@@ -925,6 +928,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool ProcessSetFaviconsResult(const favicon::SetFaviconsResult& result,
                                 const GURL& icon_url);
+
+  // Implementation of DeleteAllForeignVisits(): Since there may be many (1000s)
+  // of foreign visits, the deletion is implemented in multiple small batches to
+  // keep the memory overhead manageable. This method schedules a HistoryDBTask
+  // that will perform the deletion in multiple steps.
+  void StartDeletingForeignVisits();
+
   // Data ----------------------------------------------------------------------
 
   // Delegate. See the class definition above for more information. This will

@@ -165,6 +165,12 @@ class HistoryDatabase : public DownloadDatabase,
   virtual base::Time GetEarlyExpirationThreshold();
   virtual void UpdateEarlyExpirationThreshold(base::Time threshold);
 
+  // Retrieves/updates the max-foreign-visit-to-delete threshold. If this is
+  // not kInvalidVisitID, then all foreign visits with an ID <= this value
+  // should be deleted from the DB.
+  VisitID GetDeleteForeignVisitsUntilId();
+  void SetDeleteForeignVisitsUntilId(VisitID visit_id);
+
   // Sync metadata storage ----------------------------------------------------
 
   // Returns the sub-database used for storing Sync metadata for Typed URLs.
