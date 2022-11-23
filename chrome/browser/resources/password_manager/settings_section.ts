@@ -9,7 +9,7 @@ import './prefs/pref_toggle_button.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BlockedSite, BlockedSitesListChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
@@ -79,6 +79,14 @@ export class SettingsSectionElement extends I18nMixin
     // TODO(crbug.com/1358448): Hide the button for users after the shortcut is
     // installed.
     PasswordManagerImpl.getInstance().showAddShortcutDialog();
+  }
+
+  /**
+   * Fires an event that should delete the blocked password entry.
+   */
+  private onRemoveBlockedSiteClick_(
+      event: DomRepeatEvent<chrome.passwordsPrivate.ExceptionEntry>) {
+    PasswordManagerImpl.getInstance().removeBlockedSite(event.model.item.id);
   }
 }
 

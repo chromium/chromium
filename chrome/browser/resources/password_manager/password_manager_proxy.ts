@@ -138,6 +138,13 @@ export interface PasswordManagerProxy {
    */
   requestCredentialsDetails(ids: number[]):
       Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
+
+  /**
+   * Should remove the blocked site and notify that the list has changed.
+   * @param id The id for the blocked url entry being removed. No-op if |id|
+   *     is not in the list.
+   */
+  removeBlockedSite(id: number): void;
 }
 
 /**
@@ -220,6 +227,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   requestCredentialsDetails(ids: number[]) {
     return chrome.passwordsPrivate.requestCredentialsDetails(ids);
+  }
+
+  removeBlockedSite(id: number) {
+    chrome.passwordsPrivate.removePasswordException(id);
   }
 
   static getInstance(): PasswordManagerProxy {

@@ -83,7 +83,8 @@
         <site-favicon class="favicon" url="[[item.urls.link]]"></site-favicon>
         <div class="blocked-site-content flex-centered" first$="[[!index]]">
           <div class="label site-url">[[item.urls.shown]]</div>
-          <cr-icon-button class="icon-clear"></cr-icon-button>
+          <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
+              on-click="onRemoveBlockedSiteClick_"></cr-icon-button>
         </div>
       </div>
     </template>

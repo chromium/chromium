@@ -96,4 +96,48 @@ suite('SettingsSectionTest', function() {
             '.blocked-site-content'),
         passwordManager.data.blockedSites);
   });
+
+  test('blockedSites can be deleted', async function() {
+    const blockedId = 1;
+    passwordManager.data.blockedSites =
+        [createBlockedSiteEntry('test.com', blockedId)];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getBlockedSitesList');
+    assertTrue(isVisible(settings.$.blockedSitesList));
+
+    settings.$.blockedSitesList
+        .querySelector<HTMLElement>('#removeBlockedValueButton')!.click();
+    const removedId = await passwordManager.whenCalled('removeBlockedSite');
+    assertEquals(blockedId, removedId);
+  });
+
+  test('blockedSites listener updates the list', async function() {
+    passwordManager.data.blockedSites = [createBlockedSiteEntry('test.com', 1)];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getBlockedSitesList');
+    // Check that only one entry is shown.
+    assertTrue(isVisible(settings.$.blockedSitesList));
+    assertEquals(
+        settings.$.blockedSitesList
+            .querySelectorAll<HTMLElement>('.blocked-site-content')
+            .length,
+        1);
+
+    passwordManager.data.blockedSites.push(
+        createBlockedSiteEntry('test2.com', 2));
+    passwordManager.listeners.blockedSitesListChangedListener!
+        (passwordManager.data.blockedSites);
+    await flushTasks();
+    // Check that two entries are shown.
+    assertTrue(isVisible(settings.$.blockedSitesList));
+    assertEquals(
+        settings.$.blockedSitesList
+            .querySelectorAll<HTMLElement>('.blocked-site-content')
+            .length,
+        2);
+  });
 });
