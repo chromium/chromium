@@ -163,6 +163,74 @@ ParseResult ParseFileSystemURL(const fusebox::MonikerMap& moniker_map,
 // looks unused, but we need to keep the storage::FileSystemContext reference
 // alive until the callbacks are run.
 
+void RunCreateAndThenStatCallback(
+    Server::CreateCallback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    bool read_only,
+    uint64_t fuse_handle,
+    base::OnceClosure on_failure,
+    base::File::Error error_code,
+    const base::File::Info& info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  int posix_error_code = FileErrorToErrno(error_code);
+  if (posix_error_code) {
+    std::move(on_failure).Run();
+    fusebox_staging::CreateResponseProto response_proto;
+    response_proto.set_posix_error_code(posix_error_code);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  fusebox_staging::CreateResponseProto response_proto;
+  response_proto.set_fuse_handle(fuse_handle);
+  fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
+  stat->set_mode_bits(Server::MakeModeBits(info.is_directory, read_only));
+  stat->set_size(info.size);
+  stat->set_mtime(
+      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  std::move(callback).Run(response_proto);
+}
+
+void RunCreateCallback(
+    Server::CreateCallback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    storage::FileSystemURL fs_url,
+    bool read_only,
+    uint64_t fuse_handle,
+    base::OnceClosure on_failure,
+    base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  int posix_error_code = FileErrorToErrno(error_code);
+  if (posix_error_code) {
+    std::move(on_failure).Run();
+    fusebox_staging::CreateResponseProto response_proto;
+    response_proto.set_posix_error_code(posix_error_code);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  constexpr auto metadata_fields =
+      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
+      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
+      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+
+  auto outer_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RunCreateAndThenStatCallback, std::move(callback),
+                     fs_context, read_only, fuse_handle,
+                     std::move(on_failure)));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata),
+          // Unretained is safe: fs_context owns its operation_runner.
+          base::Unretained(fs_context->operation_runner()), fs_url,
+          metadata_fields, std::move(outer_callback)));
+}
+
 void RunMkDirAndThenStatCallback(
     Server::MkDirCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -634,6 +702,52 @@ void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
   }
 }
 
+void Server::Create(const fusebox_staging::CreateRequestProto& request_proto,
+                    CreateCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string fs_url_as_string = request_proto.has_file_system_url()
+                                     ? request_proto.file_system_url()
+                                     : std::string();
+
+  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  if (common.error_code != base::File::Error::FILE_OK) {
+    fusebox_staging::CreateResponseProto response_proto;
+    response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (common.read_only) {
+    fusebox_staging::CreateResponseProto response_proto;
+    response_proto.set_posix_error_code(EACCES);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  constexpr bool readable = true;
+  constexpr bool writable = true;
+
+  uint64_t fuse_handle = InsertFuseFileMapEntry(
+      FuseFileMapEntry(common.fs_context, common.fs_url, readable, writable));
+
+  auto on_failure = base::BindOnce(&Server::EraseFuseFileMapEntry,
+                                   weak_ptr_factory_.GetWeakPtr(), fuse_handle);
+
+  auto outer_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RunCreateCallback, std::move(callback), common.fs_context,
+                     common.fs_url, common.read_only, fuse_handle,
+                     std::move(on_failure)));
+
+  constexpr bool exclusive = true;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::CreateFile),
+          // Unretained is safe: context owns operation runner.
+          base::Unretained(common.fs_context->operation_runner()),
+          common.fs_url, exclusive, std::move(outer_callback)));
+}
+
 void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
                    MkDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -711,15 +825,9 @@ void Server::Open2(const fusebox_staging::Open2RequestProto& request_proto,
                   ((access_mode == fusebox_staging::AccessMode::WRITE_ONLY) ||
                    (access_mode == fusebox_staging::AccessMode::READ_WRITE));
 
-  static uint64_t next_fuse_handle = 0;
-  uint64_t fuse_handle = ++next_fuse_handle;
-  // As the fusebox.proto comment says, "The high bit (also known as the 1<<63
-  // bit) is also always zero for valid values".
-  DCHECK((fuse_handle >> 63) == 0);
-  fuse_file_map_.insert(
-      {fuse_handle,
-       FuseFileMapEntry(std::move(common.fs_context), std::move(common.fs_url),
-                        readable, writable)});
+  uint64_t fuse_handle = InsertFuseFileMapEntry(
+      FuseFileMapEntry(std::move(common.fs_context), std::move(common.fs_url),
+                       readable, writable));
 
   fusebox_staging::Open2ResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);
@@ -1065,6 +1173,25 @@ void Server::OnReadDirectory(
   if (iter->second.Reply(cookie, ReadDir2Callback())) {
     read_dir_2_map_.erase(iter);
   }
+}
+
+void Server::EraseFuseFileMapEntry(uint64_t fuse_handle) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  fuse_file_map_.erase(fuse_handle);
+}
+
+uint64_t Server::InsertFuseFileMapEntry(FuseFileMapEntry&& entry) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  static uint64_t next_fuse_handle = 0;
+  uint64_t fuse_handle = ++next_fuse_handle;
+  // As the fusebox.proto comment says, "The high bit (also known as the 1<<63
+  // bit) is also always zero for valid values".
+  DCHECK((fuse_handle >> 63) == 0);
+
+  fuse_file_map_.insert({fuse_handle, std::move(entry)});
+  return fuse_handle;
 }
 
 }  // namespace fusebox

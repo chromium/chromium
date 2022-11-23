@@ -97,6 +97,12 @@ class Server {
   void Close2(const fusebox_staging::Close2RequestProto& request,
               Close2Callback callback);
 
+  // Create creates a file (not a directory).
+  using CreateCallback = base::OnceCallback<void(
+      const fusebox_staging::CreateResponseProto& response)>;
+  void Create(const fusebox_staging::CreateRequestProto& request,
+              CreateCallback callback);
+
   // MkDir is analogous to "/usr/bin/mkdir".
   using MkDirCallback = base::OnceCallback<void(
       const fusebox_staging::MkDirResponseProto& response)>;
@@ -323,6 +329,11 @@ class Server {
                        base::File::Error error_code,
                        storage::AsyncFileUtil::EntryList entry_list,
                        bool has_more);
+
+  // Removes the entry (if present) for the given map key.
+  void EraseFuseFileMapEntry(uint64_t fuse_handle);
+  // Returns the fuse_handle that is the map key.
+  uint64_t InsertFuseFileMapEntry(FuseFileMapEntry&& entry);
 
   Delegate* delegate_;
   FuseFileMap fuse_file_map_;

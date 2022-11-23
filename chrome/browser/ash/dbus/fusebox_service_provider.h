@@ -40,6 +40,8 @@ class FuseBoxServiceProvider : public CrosDBusService::ServiceProviderInterface,
              dbus::ExportedObject::ResponseSender sender);
   void Close2(dbus::MethodCall* method_call,
               dbus::ExportedObject::ResponseSender sender);
+  void Create(dbus::MethodCall* method_call,
+              dbus::ExportedObject::ResponseSender sender);
   void MkDir(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
   void Open(dbus::MethodCall* method_call,

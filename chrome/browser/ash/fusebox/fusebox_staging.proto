@@ -51,6 +51,22 @@ message Close2ResponseProto {
   optional int32 posix_error_code = 1;
 }
 
+// Create creates and opens (in the Open2 sense) a file. It is exclusive (it
+// fails if the name already exists).
+//
+// There are no mode_bits in the request proto, as there's no mode_bits arg to
+// the storage::FileSystemOperationRunner::CreateFile method.
+
+message CreateRequestProto {
+  optional string file_system_url = 3;
+}
+
+message CreateResponseProto {
+  optional int32 posix_error_code = 1;
+  optional uint64 fuse_handle = 2;
+  optional DirEntryProto stat = 3;
+}
+
 // MkDir is exclusive (it fails if the name already exists) and non-recursive
 // (it's plain "mkdir", not "mkdir -p").
 //
