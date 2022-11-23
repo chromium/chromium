@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_IMPL_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_IMPL_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/page_entities_model_handler.h"
+#include "components/optimization_guide/core/page_entities_model_executor.h"
 
 namespace optimization_guide {
 
@@ -20,8 +20,8 @@ class EntityAnnotatorNativeLibrary;
 class OptimizationGuideModelProvider;
 
 // A configuration that manages the necessary feature params required by the
-// PageEntitiesModelHandler.
-struct PageEntitiesModelHandlerConfig {
+// PageEntitiesModelExecutor.
+struct PageEntitiesModelExecutorConfig {
   // Whether the page entities model should be reset on shutdown.
   bool should_reset_entity_annotator_on_shutdown = false;
 
@@ -29,17 +29,17 @@ struct PageEntitiesModelHandlerConfig {
   // model.
   bool should_provide_filter_path = true;
 
-  PageEntitiesModelHandlerConfig();
-  PageEntitiesModelHandlerConfig(const PageEntitiesModelHandlerConfig& other);
-  ~PageEntitiesModelHandlerConfig();
+  PageEntitiesModelExecutorConfig();
+  PageEntitiesModelExecutorConfig(const PageEntitiesModelExecutorConfig& other);
+  ~PageEntitiesModelExecutorConfig();
 };
 
 // Gets the current configuration.
-const PageEntitiesModelHandlerConfig& GetPageEntitiesModelHandlerConfig();
+const PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfig();
 
-// Overrides the config returned by |GetPageEntitiesModelHandlerConfig()|.
-void SetPageEntitiesModelHandlerConfigForTesting(
-    const PageEntitiesModelHandlerConfig& config);
+// Overrides the config returned by |GetPageEntitiesModelExecutorConfig()|.
+void SetPageEntitiesModelExecutorConfigForTesting(
+    const PageEntitiesModelExecutorConfig& config);
 
 // An object used to hold an entity annotator on a background thread.
 class EntityAnnotatorHolder {
@@ -75,8 +75,8 @@ class EntityAnnotatorHolder {
   // Should be invoked on |background_task_runner_|.
   void GetMetadataForEntityIdOnBackgroundThread(
       const std::string& entity_id,
-      PageEntitiesModelHandler::PageEntitiesModelEntityMetadataRetrievedCallback
-          callback);
+      PageEntitiesModelExecutor::
+          PageEntitiesModelEntityMetadataRetrievedCallback callback);
 
   // Gets the weak ptr to |this| on the background thread.
   base::WeakPtr<EntityAnnotatorHolder> GetBackgroundWeakPtr();
@@ -99,18 +99,18 @@ class EntityAnnotatorHolder {
 };
 
 // Manages the loading and execution of the page entities model.
-class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
-                                     public PageEntitiesModelHandler {
+class PageEntitiesModelExecutorImpl : public OptimizationTargetModelObserver,
+                                      public PageEntitiesModelExecutor {
  public:
-  PageEntitiesModelHandlerImpl(
+  PageEntitiesModelExecutorImpl(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
-  ~PageEntitiesModelHandlerImpl() override;
-  PageEntitiesModelHandlerImpl(const PageEntitiesModelHandlerImpl&) = delete;
-  PageEntitiesModelHandlerImpl& operator=(const PageEntitiesModelHandlerImpl&) =
-      delete;
+  ~PageEntitiesModelExecutorImpl() override;
+  PageEntitiesModelExecutorImpl(const PageEntitiesModelExecutorImpl&) = delete;
+  PageEntitiesModelExecutorImpl& operator=(
+      const PageEntitiesModelExecutorImpl&) = delete;
 
-  // PageEntitiesModelHandler:
+  // PageEntitiesModelExecutor:
   void GetMetadataForEntityId(
       const std::string& entity_id,
       PageEntitiesModelEntityMetadataRetrievedCallback callback) override;
@@ -143,9 +143,9 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
   // model file is available, then is notified when |OnModelUpdated| is called.
   base::OnceClosureList on_model_updated_callbacks_;
 
-  base::WeakPtrFactory<PageEntitiesModelHandlerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PageEntitiesModelExecutorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_IMPL_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_

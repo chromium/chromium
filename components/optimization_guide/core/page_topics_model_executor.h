@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_HANDLER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_HANDLER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_EXECUTOR_H_
 
 #include <string>
 #include <unordered_map>
@@ -24,14 +24,14 @@ namespace optimization_guide {
 // A BERT-based mode executor for page topics annotations. All the derived
 // functionality of this class is exclusive to the UI thread, but may post
 // things to the background task runner.
-class PageTopicsModelHandler : public PageContentAnnotationJobExecutor,
-                               public BertModelHandler {
+class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
+                                public BertModelHandler {
  public:
-  PageTopicsModelHandler(
+  PageTopicsModelExecutor(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const absl::optional<proto::Any>& model_metadata);
-  ~PageTopicsModelHandler() override;
+  ~PageTopicsModelExecutor() override;
 
   // PageContentAnnotationJobExecutor:
   void ExecuteJob(base::OnceClosure on_job_complete_callback,
@@ -95,9 +95,9 @@ class PageTopicsModelHandler : public PageContentAnnotationJobExecutor,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<PageTopicsModelHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PageTopicsModelExecutor> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_HANDLER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_TOPICS_MODEL_EXECUTOR_H_

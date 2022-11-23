@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_topics_model_handler.h"
+#include "components/optimization_guide/core/page_topics_model_executor.h"
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/page_entities_model_handler.h"
+#include "components/optimization_guide/core/page_entities_model_executor.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -56,16 +56,16 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
       registered_model_metadata_;
 };
 
-class TestPageTopicsModelHandler : public PageTopicsModelHandler {
+class TestPageTopicsModelExecutor : public PageTopicsModelExecutor {
  public:
-  TestPageTopicsModelHandler(
+  TestPageTopicsModelExecutor(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const absl::optional<proto::Any>& model_metadata)
-      : PageTopicsModelHandler(model_provider,
-                               background_task_runner,
-                               model_metadata) {}
-  ~TestPageTopicsModelHandler() override = default;
+      : PageTopicsModelExecutor(model_provider,
+                                background_task_runner,
+                                model_metadata) {}
+  ~TestPageTopicsModelExecutor() override = default;
 
   void ExecuteModelWithInput(ExecutionCallback callback,
                              const std::string& input) override {
@@ -79,18 +79,18 @@ class TestPageTopicsModelHandler : public PageTopicsModelHandler {
   std::vector<std::string> inputs_;
 };
 
-class PageTopicsModelHandlerTest : public testing::Test {
+class PageTopicsModelExecutorTest : public testing::Test {
  public:
-  PageTopicsModelHandlerTest() {
+  PageTopicsModelExecutorTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kPageContentAnnotations},
         {features::kPreventLongRunningPredictionModels});
   }
-  ~PageTopicsModelHandlerTest() override = default;
+  ~PageTopicsModelExecutorTest() override = default;
 
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
-    model_executor_ = std::make_unique<TestPageTopicsModelHandler>(
+    model_executor_ = std::make_unique<TestPageTopicsModelExecutor>(
         model_observer_tracker_.get(),
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         /*model_metadata=*/absl::nullopt);
@@ -126,7 +126,7 @@ class PageTopicsModelHandlerTest : public testing::Test {
     return model_observer_tracker_.get();
   }
 
-  TestPageTopicsModelHandler* model_executor() const {
+  TestPageTopicsModelExecutor* model_executor() const {
     return model_executor_.get();
   }
 
@@ -136,11 +136,11 @@ class PageTopicsModelHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
-  std::unique_ptr<TestPageTopicsModelHandler> model_executor_;
+  std::unique_ptr<TestPageTopicsModelExecutor> model_executor_;
 };
 
 TEST_F(
-    PageTopicsModelHandlerTest,
+    PageTopicsModelExecutorTest,
     GetContentModelAnnotationsFromOutputNonNumericAndLowWeightCategoriesPruned) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -170,7 +170,7 @@ TEST_F(
                                             WeightedIdentifier(3, 0.3)));
 }
 
-TEST_F(PageTopicsModelHandlerTest,
+TEST_F(PageTopicsModelExecutorTest,
        GetContentModelAnnotationsFromOutputNoneWeightTooStrong) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -198,7 +198,7 @@ TEST_F(PageTopicsModelHandlerTest,
   EXPECT_FALSE(categories);
 }
 
-TEST_F(PageTopicsModelHandlerTest,
+TEST_F(PageTopicsModelExecutorTest,
        GetContentModelAnnotationsFromOutputNoneInTopButNotStrongSoPruned) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -228,7 +228,7 @@ TEST_F(PageTopicsModelHandlerTest,
                                             WeightedIdentifier(2, 0.4)));
 }
 
-TEST_F(PageTopicsModelHandlerTest,
+TEST_F(PageTopicsModelExecutorTest,
        GetContentModelAnnotationsFromOutputPrunedAfterNormalization) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -261,7 +261,7 @@ TEST_F(PageTopicsModelHandlerTest,
                                             WeightedIdentifier(2, 0.4)));
 }
 
-TEST_F(PageTopicsModelHandlerTest,
+TEST_F(PageTopicsModelExecutorTest,
        PostprocessCategoriesToBatchAnnotationResult) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -304,7 +304,7 @@ TEST_F(PageTopicsModelHandlerTest,
 }
 
 // Regression test for crbug.com/1303304.
-TEST_F(PageTopicsModelHandlerTest, NoneCategoryBelowMinWeight) {
+TEST_F(PageTopicsModelExecutorTest, NoneCategoryBelowMinWeight) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -341,7 +341,7 @@ TEST_F(PageTopicsModelHandlerTest, NoneCategoryBelowMinWeight) {
                                         }));
 }
 
-TEST_F(PageTopicsModelHandlerTest,
+TEST_F(PageTopicsModelExecutorTest,
        NullPostprocessCategoriesToBatchAnnotationResult) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
@@ -366,7 +366,7 @@ TEST_F(PageTopicsModelHandlerTest,
             BatchAnnotationResult::CreatePageTopicsResult("", absl::nullopt));
 }
 
-TEST_F(PageTopicsModelHandlerTest, HostPreprocessingV1) {
+TEST_F(PageTopicsModelExecutorTest, HostPreprocessingV1) {
   std::vector<std::pair<std::string, std::string>> tests = {
       {"www.chromium.org", "chromium org"},
       {"foo-bar.com", "foo bar com"},
@@ -400,7 +400,7 @@ TEST_F(PageTopicsModelHandlerTest, HostPreprocessingV1) {
   }
 }
 
-TEST_F(PageTopicsModelHandlerTest, HostPreprocessingV2) {
+TEST_F(PageTopicsModelExecutorTest, HostPreprocessingV2) {
   std::vector<std::pair<std::string, std::string>> tests = {
       {"www.chromium.org", "chromium org"},
       {"foo-bar.com", "foo bar com"},
@@ -454,7 +454,7 @@ TEST_F(PageTopicsModelHandlerTest, HostPreprocessingV2) {
   }
 }
 
-TEST_F(PageTopicsModelHandlerTest, PreprocessingNewVersion) {
+TEST_F(PageTopicsModelExecutorTest, PreprocessingNewVersion) {
   std::vector<std::pair<std::string, std::string>> tests = {
       {"www.chromium.org", "chromium org"},
       {"foo-bar.com", "foo bar com"},
@@ -508,14 +508,14 @@ TEST_F(PageTopicsModelHandlerTest, PreprocessingNewVersion) {
   }
 }
 
-class PageTopicsModelHandlerOverrideListTest
-    : public PageTopicsModelHandlerTest {
+class PageTopicsModelExecutorOverrideListTest
+    : public PageTopicsModelExecutorTest {
  public:
-  PageTopicsModelHandlerOverrideListTest() = default;
-  ~PageTopicsModelHandlerOverrideListTest() override = default;
+  PageTopicsModelExecutorOverrideListTest() = default;
+  ~PageTopicsModelExecutorOverrideListTest() override = default;
 
   void SetUp() override {
-    PageTopicsModelHandlerTest::SetUp();
+    PageTopicsModelExecutorTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -569,7 +569,7 @@ class PageTopicsModelHandlerOverrideListTest
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, NoAdditionalFiles) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, NoAdditionalFiles) {
   base::HistogramTester histogram_tester;
   SendModelWithAdditionalFilesToExecutor({});
 
@@ -577,7 +577,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, NoAdditionalFiles) {
       "OptimizationGuide.PageTopicsOverrideList.GotFile", false, 1);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, WrongAdditionalFileName) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, WrongAdditionalFileName) {
   base::HistogramTester histogram_tester;
 
   base::FilePath add_file =
@@ -588,7 +588,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, WrongAdditionalFileName) {
       "OptimizationGuide.PageTopicsOverrideList.GotFile", false, 1);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, FileDoesntExist) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, FileDoesntExist) {
   base::HistogramTester histogram_tester;
 
   base::FilePath doesnt_exist = temp_file_path().Append(
@@ -612,7 +612,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, FileDoesntExist) {
       "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, BadGzip) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, BadGzip) {
   base::HistogramTester histogram_tester;
 
   base::FilePath add_file =
@@ -636,7 +636,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, BadGzip) {
       "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, BadProto) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, BadProto) {
   base::HistogramTester histogram_tester;
 
   base::FilePath add_file =
@@ -660,7 +660,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, BadProto) {
       "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, SuccessCase) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, SuccessCase) {
   base::HistogramTester histogram_tester;
 
   proto::PageTopicsOverrideList override_list;
@@ -701,7 +701,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, SuccessCase) {
       "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 1);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, InputNotInOverride) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, InputNotInOverride) {
   base::HistogramTester histogram_tester;
 
   proto::PageTopicsOverrideList override_list;
@@ -741,7 +741,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, InputNotInOverride) {
 }
 
 // Regression test for crbug.com/1321808.
-TEST_F(PageTopicsModelHandlerOverrideListTest, KeepsOrdering) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, KeepsOrdering) {
   base::HistogramTester histogram_tester;
 
   proto::PageTopicsOverrideList override_list;
@@ -782,7 +782,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, KeepsOrdering) {
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, ModelUnloadsOverrideList) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, ModelUnloadsOverrideList) {
   base::HistogramTester histogram_tester;
 
   proto::PageTopicsOverrideList override_list;
@@ -836,7 +836,7 @@ TEST_F(PageTopicsModelHandlerOverrideListTest, ModelUnloadsOverrideList) {
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
 }
 
-TEST_F(PageTopicsModelHandlerOverrideListTest, NewModelUnloadsOverrideList) {
+TEST_F(PageTopicsModelExecutorOverrideListTest, NewModelUnloadsOverrideList) {
   base::HistogramTester histogram_tester;
 
   {
