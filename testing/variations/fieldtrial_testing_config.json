@@ -10972,6 +10972,21 @@
             ]
         }
     ],
+    "TailoredSecurityIntegrationIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TailoredSecurityIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
