@@ -405,13 +405,6 @@ public abstract class ToolbarLayout
     }
 
     /**
-     * @return The helper for menu button UI interactions.
-     */
-    AppMenuButtonHelper getMenuButtonHelper() {
-        return mAppMenuButtonHelper;
-    }
-
-    /**
      * @return Whether or not the native library is loaded and ready.
      */
     boolean isNativeLibraryReady() {
@@ -735,37 +728,6 @@ public abstract class ToolbarLayout
      * Notified when a navigation to a different page has occurred.
      */
     protected void onNavigatedToDifferentPage() {}
-
-    /**
-     * Starts load progress.
-     */
-    void startLoadProgress() {
-        mProgressBar.start();
-    }
-
-    /**
-     * Sets load progress.
-     * @param progress The load progress between 0 and 1.
-     */
-    void setLoadProgress(float progress) {
-        mProgressBar.setProgress(progress);
-    }
-
-    /**
-     * Finishes load progress.
-     * @param delayed Whether hiding progress bar should be delayed to give enough time for user to
-     *                        recognize the last state.
-     */
-    void finishLoadProgress(boolean delayed) {
-        mProgressBar.finish(delayed);
-    }
-
-    /**
-     * @return True if the progress bar is started.
-     */
-    boolean isProgressStarted() {
-        return mProgressBar.isStarted();
-    }
 
     /**
      * Finish any toolbar animations.
