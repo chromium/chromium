@@ -288,7 +288,9 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
         sender: "Desktop Screenshots"
         description:
           "The user may capture a selection of the current page. This bubble "
-          "view has a download button to save the generated image to disk. "
+          "view has a download button to save the generated image via a data "
+          "URL to the disk on the local client. The feature is only for Mac, "
+          "Windows and Linux OS."
         trigger: "User clicks 'download' in a bubble view launched from the "
           "omnibox after the 'Screenshot' option is selected in the sharing "
           "hub and a selection is made on the page. "
@@ -299,7 +301,8 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
         cookies_allowed: NO
         setting:
           "No user-visible setting for this feature. Experiment and rollout to "
-          "be coordinated via Chrome Variations."
+          "be coordinated via Chrome Variations. This feature reads settings "
+          "from prefs::kDisableScreenshots which is controlled by this policy."
         policy_exception_justification:
           "Not implemented, considered not required."
       })");
