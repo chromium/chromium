@@ -4421,6 +4421,25 @@
       'services_unittests': {},
     },
 
+    'perfetto_gtests_android': {
+      'android_browsertests': {
+        'args': [
+          '--gtest_filter=StartupMetricsTest.*',
+        ],
+      },
+      'base_unittests': {},
+      'content_browsertests': {
+        'android_swarming': {
+          'shards': 15,
+        },
+        'swarming': {
+          'shards': 8,
+        },
+      },
+      'perfetto_unittests': {},
+      'services_unittests': {},
+    },
+
     'performance_smoke_test_isolated_scripts': {
       'performance_test_suite': {
         'args': [

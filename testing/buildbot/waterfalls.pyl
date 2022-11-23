@@ -2934,7 +2934,7 @@
       },
 
       'android-perfetto-rel': {
-        'additional_compile_targets': [ 'chrome' ],
+        'additional_compile_targets': [ 'all' ],
         'mixins': [
           '12-x64-emulator',
           'emulator-8-cores',
@@ -2943,7 +2943,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'perfetto_gtests',
+          'gtest_tests': 'perfetto_gtests_android',
         },
       },
 
@@ -3406,7 +3406,7 @@
         },
       },
       'linux-perfetto-rel': {
-        'additional_compile_targets': [ 'chrome' ],
+        'additional_compile_targets': [ 'all' ],
         'mixins': [
           'linux-bionic',
         ],
@@ -3537,7 +3537,7 @@
         },
       },
       'mac-perfetto-rel': {
-        'additional_compile_targets': [ 'chrome' ],
+        'additional_compile_targets': [ 'all' ],
         'mixins': [
           'mac_10.15',
         ],
@@ -3593,7 +3593,7 @@
         },
       },
       'win-perfetto-rel': {
-        'additional_compile_targets': [ 'chrome' ],
+        'additional_compile_targets': [ 'all' ],
         'mixins': [
           'win10',
         ],
