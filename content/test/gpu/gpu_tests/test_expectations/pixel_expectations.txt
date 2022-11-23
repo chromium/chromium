@@ -313,6 +313,9 @@ crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
+# Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
+crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
+
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
