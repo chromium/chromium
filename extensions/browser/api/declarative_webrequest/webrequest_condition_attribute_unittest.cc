@@ -19,9 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::ListValue;
-using base::Value;
-
 namespace extensions {
 
 namespace keys = declarative_webrequest_constants;
@@ -34,7 +31,7 @@ TEST(WebRequestConditionAttributeTest, CreateConditionAttribute) {
   scoped_refptr<const WebRequestConditionAttribute> result;
   base::Value string_value("main_frame");
   base::Value resource_types(base::Value::Type::LIST);
-  resource_types.Append("main_frame");
+  resource_types.GetList().Append("main_frame");
 
   // Test wrong condition name passed.
   error.clear();
@@ -70,7 +67,7 @@ TEST(WebRequestConditionAttributeTest, CreateConditionAttribute) {
 TEST(WebRequestConditionAttributeTest, ResourceType) {
   std::string error;
   base::Value resource_types(base::Value::Type::LIST);
-  resource_types.Append("sub_frame");
+  resource_types.GetList().Append("sub_frame");
 
   scoped_refptr<const WebRequestConditionAttribute> attribute =
       WebRequestConditionAttribute::Create(
@@ -102,7 +99,8 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
                                         "Content-Type: text/plain; UTF-8\r\n"));
 
   base::Value content_types(base::Value::Type::LIST);
-  content_types.Append("text/plain");
+  base::Value::List& content_types_list = content_types.GetList();
+  content_types_list.Append("text/plain");
   scoped_refptr<const WebRequestConditionAttribute> attribute_include =
       WebRequestConditionAttribute::Create(
           keys::kContentTypeKey, &content_types, &error);
@@ -122,8 +120,8 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
   EXPECT_FALSE(attribute_exclude->IsFulfilled(WebRequestData(
       &request_info, ON_HEADERS_RECEIVED, response_headers.get())));
 
-  content_types.ClearList();
-  content_types.Append("something/invalid");
+  content_types_list.clear();
+  content_types_list.Append("something/invalid");
   scoped_refptr<const WebRequestConditionAttribute> attribute_unincluded =
       WebRequestConditionAttribute::Create(
           keys::kContentTypeKey, &content_types, &error);
@@ -177,7 +175,7 @@ TEST(WebRequestConditionAttributeTest, Stages) {
   // Create an attribute with all possible applicable stages.
   base::Value all_stages(base::Value::Type::LIST);
   for (size_t i = 0; i < std::size(active_stages); ++i)
-    all_stages.Append(active_stages[i].second);
+    all_stages.GetList().Append(active_stages[i].second);
   scoped_refptr<const WebRequestConditionAttribute> attribute_with_all =
       WebRequestConditionAttribute::Create(keys::kStagesKey,
                                            &all_stages,
@@ -192,7 +190,7 @@ TEST(WebRequestConditionAttributeTest, Stages) {
 
   for (size_t i = 0; i < std::size(active_stages); ++i) {
     base::Value single_stage_list(base::Value::Type::LIST);
-    single_stage_list.Append(active_stages[i].second);
+    single_stage_list.GetList().Append(active_stages[i].second);
     one_stage_attributes.push_back(
         WebRequestConditionAttribute::Create(keys::kStagesKey,
                                              &single_stage_list,
@@ -258,7 +256,7 @@ base::Value::Dict GetDictFromArray(
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
-          base::Value list(base::Value::Type::LIST);
+          base::Value::List list;
           // No need to check again, we already verified the entry is there.
           entry_owned = dict.Extract(*name);
           list.Append(std::move(*entry_owned));
@@ -288,9 +286,9 @@ void MatchAndCheck(const std::vector<std::vector<const std::string*>>& tests,
                    RequestStage stage,
                    const WebRequestInfo& request_info,
                    bool* result) {
-  base::ListValue contains_headers;
+  base::Value contains_headers(base::Value::Type::LIST);
   for (const auto& test : tests) {
-    contains_headers.Append(base::Value(GetDictFromArray(test)));
+    contains_headers.GetList().Append(GetDictFromArray(test));
   }
 
   std::string error;
