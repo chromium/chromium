@@ -154,7 +154,7 @@ class BrowserTabStripController : public TabStripController,
   void SetTabDataAt(content::WebContents* web_contents, int model_index);
 
   // Adds a tab.
-  void AddTab(content::WebContents* contents, int index, bool is_active);
+  void AddTab(content::WebContents* contents, int index);
 
   raw_ptr<TabStripModel> model_;
 

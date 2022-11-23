@@ -218,7 +218,7 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   // Walk the model, calling our insertion observer method for each item within
   // it.
   for (int i = 0; i < model_->count(); ++i)
-    AddTab(model_->GetWebContentsAt(i), i, model_->active_index() == i);
+    AddTab(model_->GetWebContentsAt(i), i);
 }
 
 bool BrowserTabStripController::IsCommandEnabledForTab(
@@ -611,8 +611,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     case TabStripModelChange::kInserted: {
       for (const auto& contents : change.GetInsert()->contents) {
         DCHECK(model_->ContainsIndex(contents.index));
-        AddTab(contents.contents, contents.index,
-               selection.new_contents == contents.contents);
+        AddTab(contents.contents, contents.index);
       }
       break;
     }
@@ -778,9 +777,7 @@ void BrowserTabStripController::SetTabDataAt(content::WebContents* web_contents,
                         TabRendererData::FromTabInModel(model_, model_index));
 }
 
-void BrowserTabStripController::AddTab(WebContents* contents,
-                                       int index,
-                                       bool is_active) {
+void BrowserTabStripController::AddTab(WebContents* contents, int index) {
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
 
