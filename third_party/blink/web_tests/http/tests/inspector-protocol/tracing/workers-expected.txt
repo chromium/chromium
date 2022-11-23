@@ -1,0 +1,35 @@
+Tests the data of worker trace events
+Recording started
+Tracing complete
+Got TracingSessionIdForWorker event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			url: string
+			workerId: string
+			workerThreadId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got Worker thread name event:
+Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Data was found for worker.
+
