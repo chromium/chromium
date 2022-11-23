@@ -10,6 +10,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace power_bookmarks {
+class PowerBookmarkService;
+}
+
 class UserNotesSidePanelUI;
 class Profile;
 
@@ -25,10 +29,27 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler {
 
   // side_panel::mojom::UserNotesPageHandler:
   void ShowUI() override;
+  void GetNoteOverviews(const std::string& user_input,
+                        GetNoteOverviewsCallback callback) override;
+  void GetNotesForCurrentTab(GetNotesForCurrentTabCallback callback) override;
+  void NewNoteFinished(const std::string& text,
+                       NewNoteFinishedCallback callback) override;
+  void UpdateNote(const std::string& guid,
+                  const std::string& text,
+                  UpdateNoteCallback callback) override;
+  void DeleteNote(const std::string& guid,
+                  DeleteNoteCallback callback) override;
+  void DeleteNotesForUrl(const ::GURL& url,
+                         DeleteNotesForUrlCallback callback) override;
+
+  void SetCurrentTabUrlForTesting(GURL url) { current_tab_url_ = url; }
 
  private:
   mojo::Receiver<side_panel::mojom::UserNotesPageHandler> receiver_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;
+  GURL current_tab_url_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_USER_NOTES_USER_NOTES_PAGE_HANDLER_H_

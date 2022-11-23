@@ -4,8 +4,70 @@
 
 module side_panel.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "url/mojom/url.mojom";
+
+// Data structure representing a note.
+struct Note {
+  //unique identifier of the note.
+  string guid;
+
+  // URL of the page where the note is created.
+  url.mojom.Url url;
+
+  // Last modification time of the note.
+  mojo_base.mojom.Time last_modification_time;
+
+  // Last modification time text to display
+  string last_modification_time_text;
+
+  // Text of the note.
+  string text;
+};
+
+// Data structure representing a note overview.
+struct NoteOverview {
+  // URL of the page.
+  url.mojom.Url url;
+
+  // Title of the corresponding bookmark, or URL if no bookmarks found.
+  string title;
+
+  // The text of the first (matched) note of this URL.
+  string text;
+
+  // The number of notes added to this URL.
+  int32 num_notes;
+
+  // Whether the overview item is the current tab.
+  bool is_current_tab;
+
+  // The last modification time of the notes from the url.
+  mojo_base.mojom.Time last_modification_time;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface UserNotesPageHandler {
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
+
+  // API to render view all notes UI.
+  // User input can be empty (initial case) or non-empty (search case).
+  GetNoteOverviews(string user_input) => (array<NoteOverview> overviews);
+
+  // API to render view notes in tabs UI.
+  GetNotesForCurrentTab() => (array<Note> notes);
+
+  // Called when finishing a new note from the UI.
+  NewNoteFinished(string text) => (bool success);
+
+  // Called when updating a note from the UI.
+  UpdateNote(string guid, string text) => (bool success);
+
+  // Called when deleting a note from the UI.
+  DeleteNote(string guid) => (bool success);
+
+  // Called when deleting all notes for a url.
+  DeleteNotesForUrl(url.mojom.Url url) => (bool success);
 };
