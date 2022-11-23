@@ -19,6 +19,8 @@ include_rules = [
   "+components/omnibox/common",
   "+components/security_interstitials",
   "+components/security_state",
+  "+components/search",
+  "+components/search_engines",
   "+components/signin",
   "+components/ssl_errors",
   "+components/strings",

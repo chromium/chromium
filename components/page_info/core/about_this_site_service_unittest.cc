@@ -10,6 +10,7 @@
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "components/search_engines/template_url_service.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,17 +89,23 @@ class AboutThisSiteServiceTest : public testing::Test {
   void SetUp() override {
     auto client_mock =
         std::make_unique<testing::StrictMock<MockAboutThisSiteServiceClient>>();
+
     client_ = client_mock.get();
+    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
+
     service_ = std::make_unique<AboutThisSiteService>(
-        std::move(client_mock), /*allow_missing_description*/ false);
+        std::move(client_mock), template_url_service_.get(),
+        /*allow_missing_description*/ false);
   }
 
   MockAboutThisSiteServiceClient* client() { return client_; }
+  TemplateURLService* templateService() { return template_url_service_.get(); }
   AboutThisSiteService* service() { return service_.get(); }
 
  private:
   raw_ptr<MockAboutThisSiteServiceClient> client_;
   std::unique_ptr<AboutThisSiteService> service_;
+  std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
 // Tests that correct proto messages are accepted.
@@ -171,6 +178,30 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
                        AboutThisSiteStatus::kUnknown, 1);
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
                        AboutThisSiteInteraction::kNotShown, 1);
+}
+
+// Tests that ATP not shown when Google is not set as DSE
+TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
+  base::HistogramTester t;
+
+  // Changing default provider to other than Google
+  TemplateURL* template_url =
+      templateService()->Add(std::make_unique<TemplateURL>(TemplateURLData(
+          u"shortname", u"keyword", "https://cs.chromium.org",
+          base::StringPiece(), base::StringPiece(), base::StringPiece(),
+          base::StringPiece(), base::StringPiece(), base::StringPiece(),
+          base::StringPiece(), base::StringPiece(), base::StringPiece(),
+          base::StringPiece(), base::StringPiece(), std::vector<std::string>(),
+          base::StringPiece(), base::StringPiece(), base::StringPiece16(),
+          base::ListValue(), false, false, 0)));
+  templateService()->SetUserSelectedDefaultSearchProvider(template_url);
+
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_FALSE(info.has_value());
+
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kNotShownNonGoogleDSE, 1);
 }
 
 }  // namespace page_info

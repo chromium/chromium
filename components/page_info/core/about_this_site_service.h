@@ -17,6 +17,7 @@
 #include "url/origin.h"
 
 class GURL;
+class TemplateURLService;
 
 namespace page_info {
 namespace proto {
@@ -52,11 +53,13 @@ class AboutThisSiteService : public KeyedService {
     kClickedWithDescription = 3,
     kClickedWithoutDescription = 4,
     kOpenedDirectlyFromSidePanel = 5,
+    kNotShownNonGoogleDSE = 6,
 
-    kMaxValue = kOpenedDirectlyFromSidePanel
+    kMaxValue = kNotShownNonGoogleDSE,
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client,
+                                TemplateURLService* template_url_service,
                                 bool allow_missing_description);
   ~AboutThisSiteService() override;
 
@@ -76,6 +79,7 @@ class AboutThisSiteService : public KeyedService {
  private:
   std::unique_ptr<Client> client_;
   base::flat_set<url::Origin> dismissed_banners_;
+  raw_ptr<TemplateURLService> template_url_service_;
   const bool allow_missing_description_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};

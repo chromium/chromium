@@ -11,6 +11,8 @@
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "components/search/search.h"
+#include "components/search_engines/template_url_service.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -39,14 +41,24 @@ enum class BannerInteraction {
   kMaxValue = kDismissed
 };
 
-AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client,
-                                           bool allow_missing_description)
+AboutThisSiteService::AboutThisSiteService(
+    std::unique_ptr<Client> client,
+    TemplateURLService* template_url_service,
+    bool allow_missing_description)
     : client_(std::move(client)),
+      template_url_service_(template_url_service),
       allow_missing_description_(allow_missing_description) {}
 
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
     ukm::SourceId source_id) const {
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service_)) {
+    RecordAboutThisSiteInteraction(
+        AboutThisSiteInteraction::kNotShownNonGoogleDSE);
+
+    return absl::nullopt;
+  }
+
   optimization_guide::OptimizationMetadata metadata;
   auto decision = client_->CanApplyOptimization(url, &metadata);
   absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata =
