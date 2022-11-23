@@ -5,7 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "weblayer/app/jni_onload.h"
-#include "weblayer/browser/java/test_weblayer_jni_registration.h"
+#include "weblayer/browser/java/test_weblayer_jni_registration_generated.h"
 #include "weblayer/browser/web_view_compatibility_helper_impl.h"
 
 namespace {

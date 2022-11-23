@@ -345,12 +345,6 @@ java_group("upstream_java") {
   ]
 }
 
-generate_jni_registration("weblayer_jni_registration") {
-  targets = [ ":java" ]
-  header_output = "$target_gen_dir/$target_name.h"
-  namespace = "weblayer"
-}
-
 android_resources("weblayer_test_resources") {
   sources = [
     "res_test/layout/test_layout.xml",
@@ -456,11 +450,19 @@ robolectric_binary("weblayer_junit_tests") {
   ]
 }
 
-generate_jni_registration("test_weblayer_jni_registration") {
-  testonly = true
-  targets = [ ":test_java" ]
-  header_output = "$target_gen_dir/$target_name.h"
-  namespace = "weblayer_test"
+if (current_toolchain == default_toolchain) {
+  generate_jni_registration("weblayer_jni_registration") {
+    targets = [ ":java" ]
+    manual_jni_registration = true
+    namespace = "weblayer"
+  }
+
+  generate_jni_registration("test_weblayer_jni_registration") {
+    testonly = true
+    targets = [ ":test_java" ]
+    manual_jni_registration = true
+    namespace = "weblayer_test"
+  }
 }
 
 generate_jni("test_jni") {

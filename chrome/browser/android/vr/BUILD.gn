@@ -175,14 +175,14 @@ if (current_toolchain == default_toolchain) {
   generate_jni_registration("jni_registration") {
     targets =
         [ "//chrome/android:chrome_modern_public_bundle__vr_bundle_module" ]
-    header_output = "$target_gen_dir/${target_name}.h"
+    manual_jni_registration = true
     namespace = "vr"
   }
 
   generate_jni_registration("jni_registration_for_testing") {
     targets =
         [ "//chrome/android:chrome_modern_public_bundle__vr_bundle_module" ]
-    header_output = "$target_gen_dir/${target_name}.h"
+    manual_jni_registration = true
     namespace = "vr"
     testonly = true
   }

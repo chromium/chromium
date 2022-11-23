@@ -369,9 +369,8 @@ if (enable_java_templates && is_android) {
   #
   # Variables
   #   targets: List of .build_config.json supported targets to provide java sources.
-  #   header_output: Path to the generated .h file (optional).
-  #   manual_jni_registration: Manually do JNI registration - required for
-  #     crazy linker. (optional)
+  #   manual_jni_registration: Manually do JNI registration - required for feature
+  #     splits which provide their own native library. (optional)
   #   sources_exclusions: List of .java files that should be skipped. (optional)
   #   namespace: Registration functions will be wrapped into this. (optional)
   #   require_native_mocks: Enforce that any native calls using
@@ -387,7 +386,6 @@ if (enable_java_templates && is_android) {
   # Example
   #   generate_jni_registration("chrome_jni_registration") {
   #     targets = [ ":chrome_public_apk" ]
-  #     header_output = "$target_gen_dir/$target_name.h"
   #     manual_jni_registration = false
   #     sources_exclusions = [
   #       "//path/to/Exception.java",
@@ -441,10 +439,6 @@ if (enable_java_templates && is_android) {
         args += [ "--use_proxy_hash" ]
       }
 
-      if (enable_jni_multiplexing) {
-        args += [ "--enable_jni_multiplexing" ]
-      }
-
       if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
         args += [ "--enable_proxy_mocks" ]
 
@@ -454,17 +448,30 @@ if (enable_java_templates && is_android) {
         }
       }
 
-      if (defined(invoker.header_output)) {
-        outputs += [ invoker.header_output ]
-        args += [
-          "--header-path",
-          rebase_path(invoker.header_output, root_build_dir),
-        ]
+      _manual_jni_registration = defined(invoker.manual_jni_registration) &&
+                                 invoker.manual_jni_registration
 
-        if (!defined(invoker.manual_jni_registration) ||
-            invoker.manual_jni_registration) {
+      if (_manual_jni_registration || enable_jni_multiplexing) {
+        assert(current_toolchain == default_toolchain,
+               "We do not need >1 toolchain copies of the same header.")
+        if (_manual_jni_registration) {
           args += [ "--manual_jni_registration" ]
         }
+        if (enable_jni_multiplexing) {
+          args += [ "--enable_jni_multiplexing" ]
+        }
+
+        _subdir = rebase_path(target_gen_dir, root_gen_dir)
+        _jni_header_output =
+            "$jni_headers_dir/$_subdir/${target_name}_generated.h"
+        outputs += [ _jni_header_output ]
+        args += [
+          "--header-path",
+          rebase_path(_jni_header_output, root_build_dir),
+        ]
+
+        # This gives targets depending on this registration access to our generated header.
+        public_configs = [ "//build/config/android:jni_include_dir" ]
       }
 
       if (defined(invoker.sources_exclusions)) {
@@ -2372,9 +2379,8 @@ if (enable_java_templates && is_android) {
   #     generated is solely controlled by this flag. Otherwise, the default behavior
   #     is NativeLibraries.java will only be generated for the base module/apk when
   #     its `shared_libraries` is not empty.
-  #   jni_registration_header: If specified, causes the
-  #     ${target_name}__final_jni target to additionally output a
-  #     header file to this path for use with manual JNI registration.
+  #   manual_jni_registration: If true, causes the ${target_name}__final_jni target
+  #     to additionally output a header file for use with manual JNI registration.
   #   jni_sources_exclusions: List of source path to exclude from the
   #     final_jni step.
   #   aapt_locale_allowlist: If set, all locales not in this list will be
@@ -3070,6 +3076,7 @@ if (enable_java_templates && is_android) {
         forward_variables_from(invoker,
                                [
                                  "enable_native_mocks",
+                                 "manual_jni_registration",
                                  "require_native_mocks",
                                ])
         if (defined(invoker.bundle_target)) {
@@ -3082,21 +3089,13 @@ if (enable_java_templates && is_android) {
             targets += [ _target.name ]
           }
         }
-        if (defined(invoker.jni_registration_header)) {
-          header_output = invoker.jni_registration_header
-          manual_jni_registration = true
-        }
         if (defined(invoker.jni_sources_exclusions)) {
           sources_exclusions = invoker.jni_sources_exclusions
         }
       }
       _srcjar_deps += [ ":${_template_name}__final_jni" ]
     } else {
-      not_needed(invoker,
-                 [
-                   "enable_native_mocks",
-                   "jni_registration_header",
-                 ])
+      not_needed(invoker, [ "enable_native_mocks" ])
     }
 
     if (_is_bundle_module) {
@@ -3765,7 +3764,6 @@ if (enable_java_templates && is_android) {
                                "use_modern_linker",
                                "jacoco_never_instrument",
                                "javac_args",
-                               "jni_registration_header",
                                "jni_sources_exclusions",
                                "keystore_name",
                                "keystore_password",
@@ -3777,6 +3775,7 @@ if (enable_java_templates && is_android) {
                                "load_library_from_apk",
                                "loadable_modules",
                                "manifest_package",
+                               "manual_jni_registration",
                                "max_sdk_version",
                                "product_config_java_packages",
                                "main_component_library",
@@ -3904,13 +3903,13 @@ if (enable_java_templates && is_android) {
                                "jacoco_never_instrument",
                                "jar_excluded_patterns",
                                "javac_args",
-                               "jni_registration_header",
                                "jni_sources_exclusions",
                                "load_library_from_apk",
                                "loadable_modules",
                                "product_config_java_packages",
                                "main_component_library",
                                "manifest_package",
+                               "manual_jni_registration",
                                "max_sdk_version",
                                "min_sdk_version",
                                "native_lib_placeholders",

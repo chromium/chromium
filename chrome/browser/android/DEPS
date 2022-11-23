@@ -3,7 +3,7 @@ include_rules = [
   "+components/resources/android",
   "+cc/input/browser_controls_state.h",
   "+cc/layers/layer.h",
-  "+chrome/android/test_support_jni_headers",
+  "+chrome/android",
   "+chrome/browser/web_share_target",
   "+chrome_jni_registration/chrome_jni_registration.h",
   "+components/browser_ui/site_settings/android",

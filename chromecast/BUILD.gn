@@ -667,7 +667,7 @@ if (is_android) {
     if (chromecast_branding != "public") {
       targets += [ ":cast_browser_bundle_module" ]
     }
-    header_output = "$root_gen_dir/chromecast/android/${target_name}.h"
+    manual_jni_registration = true
   }
 
   android_assets("cast_shell_apk_assets") {

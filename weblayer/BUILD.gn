@@ -857,10 +857,9 @@ if (is_android) {
     deps = [
       "//base",
       "//weblayer/browser/java:jni",
-      "//weblayer/browser/java:weblayer_jni_registration",
+      "//weblayer/browser/java:weblayer_jni_registration($default_toolchain)",
     ]
     sources = [
-      "$target_gen_dir/browser/java/weblayer_jni_registration.h",
       "browser/web_view_compatibility_helper_impl.cc",
       "browser/web_view_compatibility_helper_impl.h",
     ]
@@ -885,10 +884,9 @@ if (is_android) {
       ":weblayer_android_test_jni_impl",
       "//base",
       "//weblayer/browser/java:jni",
-      "//weblayer/browser/java:weblayer_jni_registration",
+      "//weblayer/browser/java:weblayer_jni_registration($default_toolchain)",
     ]
     sources = [
-      "$target_gen_dir/browser/java/weblayer_jni_registration.h",
       "browser/web_view_compatibility_helper_impl.cc",
       "browser/web_view_compatibility_helper_impl.h",
     ]
@@ -918,16 +916,13 @@ if (is_android) {
 
   shared_library("libweblayer_test") {
     testonly = true
-    sources = [
-      "$target_gen_dir/browser/java/test_weblayer_jni_registration.h",
-      "app/entry_point.cc",
-    ]
+    sources = [ "app/entry_point.cc" ]
     deps = [
       ":weblayer_lib_webview_test",
       "//base",
       "//components/android_autofill/browser/test_support:component_autofill_provider_native_test_support",
       "//content/public/app",
-      "//weblayer/browser/java:test_weblayer_jni_registration",
+      "//weblayer/browser/java:test_weblayer_jni_registration($default_toolchain)",
     ]
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [ "//build/config/android:hide_all_but_jni" ]

@@ -46,10 +46,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   assert(current_toolchain != android_secondary_abi_toolchain)
 }
 
-chrome_jni_registration_header =
-    "$root_build_dir/gen/chrome/browser/android/chrome_jni_registration.h"
-chrome_jni_for_test_registration_header = "$root_build_dir/gen/chrome/browser/android/chrome_jni_for_test_registration.h"
-
 if (current_toolchain == default_toolchain) {
   _default_package = "org.chromium.chrome"
   if (use_stable_package_name_for_trichrome) {
@@ -2166,7 +2162,7 @@ if (current_toolchain == default_toolchain) {
 
   generate_jni_registration("chrome_jni_registration") {
     targets = [ ":chrome_public_base_module_java" ]
-    header_output = chrome_jni_registration_header
+    manual_jni_registration = true
     sources_exclusions = chrome_jni_sources_exclusions
   }
 
@@ -2175,7 +2171,7 @@ if (current_toolchain == default_toolchain) {
   generate_jni_registration("chrome_jni_for_test_registration") {
     testonly = true
     targets = [ ":chrome_public_base_module_java_for_test" ]
-    header_output = chrome_jni_for_test_registration_header
+    manual_jni_registration = true
     sources_exclusions = chrome_jni_sources_exclusions
   }
 
@@ -2537,13 +2533,13 @@ if (current_toolchain == default_toolchain) {
                                "apk_name",
                                "bundle_target",
                                "is_base_module",
-                               "jni_registration_header",
                                "target_type",
                                "enable_lint",
                                "enable_multidex",
                                "lint_baseline_file",
                                "lint_suppressions_dep",
                                "lint_suppressions_file",
+                               "manual_jni_registration",
                              ])
       deps = _chrome_public_shared_deps
 
@@ -4278,10 +4274,7 @@ group("jni_headers") {
 # Chrome APK's native library.
 template("libchrome_impl") {
   chrome_common_shared_library(target_name) {
-    sources = [
-      "../browser/android/chrome_entry_point.cc",
-      chrome_jni_registration_header,
-    ]
+    sources = [ "../browser/android/chrome_entry_point.cc" ]
     deps = [ ":chrome_jni_registration($default_toolchain)" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
@@ -4316,10 +4309,7 @@ chrome_common_shared_library("libchromefortest") {
   testonly = true
   define_unwind_table_target =
       add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
-  sources = [
-    "../browser/android/chrome_entry_point_for_test.cc",
-    chrome_jni_for_test_registration_header,
-  ]
+  sources = [ "../browser/android/chrome_entry_point_for_test.cc" ]
   deps = [
     ":browser_test_support",
     ":chrome_jni_for_test_registration($default_toolchain)",

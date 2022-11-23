@@ -5,7 +5,7 @@
 #if defined(WEBLAYER_MANUAL_JNI_REGISTRATION)
 #include "base/android/library_loader/library_loader_hooks.h"  // nogncheck
 #include "weblayer/browser/java/jni/WebViewCompatibilityHelperImpl_jni.h"  // nogncheck
-#include "weblayer/browser/java/weblayer_jni_registration.h"  // nogncheck
+#include "weblayer/browser/java/weblayer_jni_registration_generated.h"  // nogncheck
 #endif
 
 namespace weblayer {

@@ -38,7 +38,7 @@
 #endif
 
 #if !BUILDFLAG(INTEGRATED_MODE)
-#include "components/cronet/android/cronet_jni_registration.h"
+#include "components/cronet/android/cronet_jni_registration_generated.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #endif
 

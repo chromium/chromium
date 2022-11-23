@@ -25,7 +25,7 @@ group("native") {
 component("cablev2_authenticator") {
   sources = [ "entrypoints.cc" ]
   deps = [
-    ":jni_registration",
+    ":jni_registration($default_toolchain)",
     "//base",
     "//chrome/android/features/cablev2_authenticator:native",
   ]
@@ -36,9 +36,11 @@ component("cablev2_authenticator") {
   }
 }
 
-generate_jni_registration("jni_registration") {
-  no_transitive_deps = true
-  targets = [ "//chrome/android/features/cablev2_authenticator:java" ]
-  header_output = "$target_gen_dir/jni_registration.h"
-  namespace = "cablev2_authenticator"
+if (current_toolchain == default_toolchain) {
+  generate_jni_registration("jni_registration") {
+    no_transitive_deps = true
+    targets = [ "//chrome/android/features/cablev2_authenticator:java" ]
+    manual_jni_registration = true
+    namespace = "cablev2_authenticator"
+  }
 }

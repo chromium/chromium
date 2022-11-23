@@ -25,7 +25,7 @@ group("native") {
 component("test_dummy") {
   sources = [ "entrypoints.cc" ]
   deps = [
-    ":jni_registration",
+    ":jni_registration($default_toolchain)",
     "//base",
     "//chrome/browser/test_dummy/internal:native",
   ]
@@ -36,9 +36,11 @@ component("test_dummy") {
   }
 }
 
-generate_jni_registration("jni_registration") {
-  no_transitive_deps = true
-  targets = [ "//chrome/browser/test_dummy/internal:java" ]
-  header_output = "$target_gen_dir/jni_registration.h"
-  namespace = "test_dummy"
+if (current_toolchain == default_toolchain) {
+  generate_jni_registration("jni_registration") {
+    no_transitive_deps = true
+    targets = [ "//chrome/browser/test_dummy/internal:java" ]
+    manual_jni_registration = true
+    namespace = "test_dummy"
+  }
 }

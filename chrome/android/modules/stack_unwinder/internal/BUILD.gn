@@ -19,11 +19,13 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
 }
 
-generate_jni_registration("jni_registration") {
-  targets = [ ":java" ]
-  header_output = "$target_gen_dir/jni_registration.h"
-  namespace = "stack_unwinder"
-  no_transitive_deps = true
+if (current_toolchain == default_toolchain) {
+  generate_jni_registration("jni_registration") {
+    targets = [ ":java" ]
+    manual_jni_registration = true
+    namespace = "stack_unwinder"
+    no_transitive_deps = true
+  }
 }
 
 # This group is effectively an alias representing the module's native code,
@@ -41,7 +43,7 @@ component("stack_unwinder") {
   ]
   deps = [
     ":jni_headers",
-    ":jni_registration",
+    ":jni_registration($default_toolchain)",
     "//base",
     "//base:native_unwinder_android",
     "//chrome/android/features/stack_unwinder/public:native",

@@ -8,9 +8,9 @@
 #include "chrome/browser/android/vr/register_gvr_jni.h"
 
 #if defined(JNI_REGISTRATION_FOR_TESTING)
-#include "chrome/browser/android/vr/jni_registration_for_testing.h"  // nogncheck
+#include "chrome/browser/android/vr/jni_registration_for_testing_generated.h"  // nogncheck
 #else
-#include "chrome/browser/android/vr/jni_registration.h"  // nogncheck
+#include "chrome/browser/android/vr/jni_registration_generated.h"  // nogncheck
 #endif  // defined(JNI_REGISTRATION_FOR_TESTING)
 
 namespace vr {
