@@ -23,13 +23,6 @@ content::VideoOverlayWindow::Create(
   return std::make_unique<OverlayWindowAndroid>(controller);
 }
 
-// static
-std::unique_ptr<content::DocumentOverlayWindow>
-content::DocumentOverlayWindow::Create(
-    DocumentPictureInPictureWindowController* controller) {
-  return nullptr;
-}
-
 OverlayWindowAndroid::OverlayWindowAndroid(
     content::VideoPictureInPictureWindowController* controller)
     : window_android_(nullptr),
@@ -213,15 +206,11 @@ void OverlayWindowAndroid::CloseInternal() {
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
 }
 
-bool OverlayWindowAndroid::IsActive() {
+bool OverlayWindowAndroid::IsActive() const {
   return true;
 }
 
-bool OverlayWindowAndroid::IsVisible() {
-  return true;
-}
-
-bool OverlayWindowAndroid::IsAlwaysOnTop() {
+bool OverlayWindowAndroid::IsVisible() const {
   return true;
 }
 
@@ -328,10 +317,6 @@ void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
   // Set the surface after frame sink hierarchy update.
   surface_layer_->SetSurfaceId(surface_id,
                                cc::DeadlinePolicy::UseDefaultDeadline());
-}
-
-cc::Layer* OverlayWindowAndroid::GetLayerForTesting() {
-  return nullptr;
 }
 
 void OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged() {

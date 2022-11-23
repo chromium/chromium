@@ -57,17 +57,14 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void OnActivityStopped() override;
   void OnActivityStarted() override {}
 
-  // OverlayWindow implementation.
-  bool IsActive() override;
+  // VideoOverlayWindow implementation.
+  bool IsActive() const override;
   void Close() override;
   void ShowInactive() override {}
   void Hide() override;
-  bool IsVisible() override;
-  bool IsAlwaysOnTop() override;
+  bool IsVisible() const override;
   gfx::Rect GetBounds() override;
   void UpdateNaturalSize(const gfx::Size& natural_size) override;
-
-  // VideoOverlayWindow implementation
   void SetPlaybackState(PlaybackState playback_state) override;
   void SetPlayPauseButtonVisibility(bool is_visible) override;
   void SetSkipAdButtonVisibility(bool is_visible) override {}
@@ -79,7 +76,6 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetToggleCameraButtonVisibility(bool is_visible) override;
   void SetHangUpButtonVisibility(bool is_visible) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
-  cc::Layer* GetLayerForTesting() override;
 
  private:
   // Notify PictureInPictureActivity that visible actions have changed.

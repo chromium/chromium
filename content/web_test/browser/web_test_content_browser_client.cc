@@ -117,12 +117,11 @@ class BoundsMatchVideoSizeOverlayWindow : public VideoOverlayWindow {
   BoundsMatchVideoSizeOverlayWindow& operator=(
       const BoundsMatchVideoSizeOverlayWindow&) = delete;
 
-  bool IsActive() override { return false; }
+  bool IsActive() const override { return false; }
   void Close() override {}
   void ShowInactive() override {}
   void Hide() override {}
-  bool IsVisible() override { return false; }
-  bool IsAlwaysOnTop() override { return false; }
+  bool IsVisible() const override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
   void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
@@ -138,7 +137,6 @@ class BoundsMatchVideoSizeOverlayWindow : public VideoOverlayWindow {
   void SetToggleCameraButtonVisibility(bool is_visible) override {}
   void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
-  cc::Layer* GetLayerForTesting() override { return nullptr; }
 
  private:
   gfx::Size size_;

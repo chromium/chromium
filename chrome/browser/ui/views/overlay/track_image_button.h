@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_TRACK_IMAGE_BUTTON_H_
 
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
-#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace gfx {

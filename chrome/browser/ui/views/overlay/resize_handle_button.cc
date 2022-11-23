@@ -47,38 +47,38 @@ void ResizeHandleButton::OnThemeChanged() {
 
 int ResizeHandleButton::GetHTComponent() const {
   switch (current_quadrant_) {
-    case OverlayWindowViews::WindowQuadrant::kBottomLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomLeft:
       return HTTOPRIGHT;
-    case OverlayWindowViews::WindowQuadrant::kBottomRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomRight:
       return HTTOPLEFT;
-    case OverlayWindowViews::WindowQuadrant::kTopLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopLeft:
       return HTBOTTOMRIGHT;
-    case OverlayWindowViews::WindowQuadrant::kTopRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopRight:
       return HTBOTTOMLEFT;
   }
 }
 
 void ResizeHandleButton::SetPosition(
     const gfx::Size& size,
-    OverlayWindowViews::WindowQuadrant quadrant) {
+    VideoOverlayWindowViews::WindowQuadrant quadrant) {
   // The resize handle should appear towards the center of the working area.
   // This is determined as the opposite quadrant on the window.
   switch (quadrant) {
-    case OverlayWindowViews::WindowQuadrant::kBottomLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomLeft:
       views::ImageButton::SetPosition(gfx::Point(
           size.width() - kResizeHandleButtonSize - kResizeHandleButtonMargin,
           kResizeHandleButtonMargin));
       break;
-    case OverlayWindowViews::WindowQuadrant::kBottomRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomRight:
       views::ImageButton::SetPosition(
           gfx::Point(kResizeHandleButtonMargin, kResizeHandleButtonMargin));
       break;
-    case OverlayWindowViews::WindowQuadrant::kTopLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopLeft:
       views::ImageButton::SetPosition(gfx::Point(
           size.width() - kResizeHandleButtonSize - kResizeHandleButtonMargin,
           size.height() - kResizeHandleButtonSize - kResizeHandleButtonMargin));
       break;
-    case OverlayWindowViews::WindowQuadrant::kTopRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopRight:
       views::ImageButton::SetPosition(gfx::Point(
           kResizeHandleButtonMargin,
           size.height() - kResizeHandleButtonSize - kResizeHandleButtonMargin));
@@ -90,7 +90,7 @@ void ResizeHandleButton::SetPosition(
 }
 
 void ResizeHandleButton::SetQuadrant(
-    OverlayWindowViews::WindowQuadrant quadrant) {
+    VideoOverlayWindowViews::WindowQuadrant quadrant) {
   if (current_quadrant_ == quadrant)
     return;
   current_quadrant_ = quadrant;
@@ -103,23 +103,23 @@ void ResizeHandleButton::UpdateImageForQuadrant() {
   gfx::ImageSkia icon =
       gfx::CreateVectorIcon(kResizeHandleIcon, kResizeHandleButtonSize, color);
   switch (current_quadrant_) {
-    case OverlayWindowViews::WindowQuadrant::kBottomLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
       SetImageVerticalAlignment(views::ImageButton::ALIGN_TOP);
       break;
-    case OverlayWindowViews::WindowQuadrant::kBottomRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kBottomRight:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_LEFT);
       SetImageVerticalAlignment(views::ImageButton::ALIGN_TOP);
       icon = gfx::ImageSkiaOperations::CreateRotatedImage(
           icon, SkBitmapOperations::ROTATION_270_CW);
       break;
-    case OverlayWindowViews::WindowQuadrant::kTopLeft:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
       SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
       icon = gfx::ImageSkiaOperations::CreateRotatedImage(
           icon, SkBitmapOperations::ROTATION_90_CW);
       break;
-    case OverlayWindowViews::WindowQuadrant::kTopRight:
+    case VideoOverlayWindowViews::WindowQuadrant::kTopRight:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_LEFT);
       SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
       icon = gfx::ImageSkiaOperations::CreateRotatedImage(

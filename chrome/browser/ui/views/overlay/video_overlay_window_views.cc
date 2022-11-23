@@ -10,11 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -29,23 +28,22 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/video_picture_in_picture_window_controller.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/resize_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -65,9 +63,16 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/aura/window_tree_host.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
 namespace {
+
+// Lower bound size of the window is a fixed value to allow for minimal sizes
+// on UI affordances, such as buttons.
+constexpr gfx::Size kMinWindowSize(260, 146);
+
+constexpr int kOverlayBorderThickness = 10;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // The opacity of the resize handle control.
@@ -88,6 +93,28 @@ constexpr int kSecondaryControlBottomMargin = 8;
 
 // Margin between controls.
 constexpr int kControlMargin = 16;
+
+// Returns the quadrant the VideoOverlayWindowViews is primarily in on the
+// current work area.
+VideoOverlayWindowViews::WindowQuadrant GetCurrentWindowQuadrant(
+    const gfx::Rect window_bounds,
+    content::PictureInPictureWindowController* controller) {
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(
+              controller->GetWebContents()->GetTopLevelNativeWindow())
+          .work_area();
+  const gfx::Point window_center = window_bounds.CenterPoint();
+
+  // Check which quadrant the center of the window appears in.
+  const bool top = window_center.y() < work_area.height() / 2;
+  if (window_center.x() < work_area.width() / 2) {
+    return top ? VideoOverlayWindowViews::WindowQuadrant::kTopLeft
+               : VideoOverlayWindowViews::WindowQuadrant::kBottomLeft;
+  }
+  return top ? VideoOverlayWindowViews::WindowQuadrant::kTopRight
+             : VideoOverlayWindowViews::WindowQuadrant::kBottomRight;
+}
 
 template <typename T>
 T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
@@ -138,6 +165,93 @@ END_METADATA
 
 }  // namespace
 
+// OverlayWindow implementation of NonClientFrameView.
+class OverlayWindowFrameView : public views::NonClientFrameView {
+ public:
+  explicit OverlayWindowFrameView(views::Widget* widget) : widget_(widget) {}
+
+  OverlayWindowFrameView(const OverlayWindowFrameView&) = delete;
+  OverlayWindowFrameView& operator=(const OverlayWindowFrameView&) = delete;
+
+  ~OverlayWindowFrameView() override = default;
+
+  // views::NonClientFrameView:
+  gfx::Rect GetBoundsForClientView() const override { return bounds(); }
+  gfx::Rect GetWindowBoundsForClientBounds(
+      const gfx::Rect& client_bounds) const override {
+    return bounds();
+  }
+  int NonClientHitTest(const gfx::Point& point) override {
+    // Outside of the window bounds, do nothing.
+    if (!bounds().Contains(point))
+      return HTNOWHERE;
+
+    constexpr int kResizeAreaCornerSize = 16;
+    int window_component = GetHTComponentForFrame(
+        point, gfx::Insets(kOverlayBorderThickness), kResizeAreaCornerSize,
+        kResizeAreaCornerSize, GetWidget()->widget_delegate()->CanResize());
+
+    // The overlay controls should take and handle user interaction.
+    VideoOverlayWindowViews* window =
+        static_cast<VideoOverlayWindowViews*>(widget_);
+    if (window->ControlsHitTestContainsPoint(point)) {
+      return window_component;
+    }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // If the resize handle is clicked on, we want to force the hit test to
+    // force a resize drag.
+    if (window->AreControlsVisible() &&
+        window->GetResizeHandleControlsBounds().Contains(point))
+      return window->GetResizeHTComponent();
+#endif
+
+    // Allows for dragging and resizing the window.
+    return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
+  }
+  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
+  void ResetWindowControls() override {}
+  void UpdateWindowIcon() override {}
+  void UpdateWindowTitle() override {}
+  void SizeConstraintsChanged() override {}
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(target, this);
+    return false;
+  }
+
+ private:
+  raw_ptr<views::Widget> widget_;
+};
+
+// OverlayWindow implementation of WidgetDelegate.
+class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
+ public:
+  OverlayWindowWidgetDelegate() {
+    SetCanResize(true);
+    SetModalType(ui::MODAL_TYPE_NONE);
+    // While not shown, the title is still used to identify the window in the
+    // window switcher.
+    SetShowTitle(false);
+    SetTitle(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
+    SetOwnedByWidget(true);
+  }
+
+  OverlayWindowWidgetDelegate(const OverlayWindowWidgetDelegate&) = delete;
+  OverlayWindowWidgetDelegate& operator=(const OverlayWindowWidgetDelegate&) =
+      delete;
+
+  ~OverlayWindowWidgetDelegate() override = default;
+
+  // views::WidgetDelegate:
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override {
+    return std::make_unique<OverlayWindowFrameView>(widget);
+  }
+};
+
 // static
 std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
     content::VideoPictureInPictureWindowController* controller) {
@@ -160,7 +274,7 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   params.remove_standard_frame = true;
   params.name = "PictureInPictureWindow";
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.delegate = OverlayWindowViews::CreateDelegate();
+  params.delegate = new OverlayWindowWidgetDelegate();
 
   overlay_window->Init(std::move(params));
   overlay_window->OnRootViewReady();
@@ -198,9 +312,349 @@ content::VideoOverlayWindow::Create(
 
 VideoOverlayWindowViews::VideoOverlayWindowViews(
     content::VideoPictureInPictureWindowController* controller)
-    : controller_(controller) {}
+    : controller_(controller),
+      min_size_(kMinWindowSize),
+      hide_controls_timer_(
+          FROM_HERE,
+          base::Milliseconds(2500),
+          base::BindRepeating(
+              &VideoOverlayWindowViews::UpdateControlsVisibility,
+              base::Unretained(this),
+              false /* is_visible */)) {
+  display::Screen::GetScreen()->AddObserver(this);
+}
 
-VideoOverlayWindowViews::~VideoOverlayWindowViews() = default;
+VideoOverlayWindowViews::~VideoOverlayWindowViews() {
+  display::Screen::GetScreen()->RemoveObserver(this);
+}
+
+gfx::Size& VideoOverlayWindowViews::GetNaturalSize() {
+  return natural_size_;
+}
+
+gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
+  gfx::Rect work_area = GetWorkAreaForWindow();
+
+  UpdateMaxSize(work_area);
+
+  const gfx::Rect bounds = native_widget() ? GetRestoredBounds() : gfx::Rect();
+
+  gfx::Size window_size = bounds.size();
+  if (!has_been_shown_)
+    window_size = gfx::Size(work_area.width() / 5, work_area.height() / 5);
+
+  // Even though we define the minimum and maximum sizes for our views::Widget,
+  // it's possible for the current size to be outside of those bounds
+  // transiently on some platforms, so we need to cap it.
+  window_size.SetToMin(max_size_);
+  window_size.SetToMax(min_size_);
+
+  // Determine the window size by fitting |natural_size_| within |window_size|,
+  // keeping to |natural_size_|'s aspect ratio.
+  if (!natural_size_.IsEmpty()) {
+    float aspect_ratio = (float)natural_size_.width() / natural_size_.height();
+
+    WindowQuadrant quadrant = GetCurrentWindowQuadrant(bounds, GetController());
+    gfx::ResizeEdge resize_edge;
+    switch (quadrant) {
+      case WindowQuadrant::kBottomRight:
+        resize_edge = gfx::ResizeEdge::kTopLeft;
+        break;
+      case WindowQuadrant::kBottomLeft:
+        resize_edge = gfx::ResizeEdge::kTopRight;
+        break;
+      case WindowQuadrant::kTopLeft:
+        resize_edge = gfx::ResizeEdge::kBottomRight;
+        break;
+      case WindowQuadrant::kTopRight:
+        resize_edge = gfx::ResizeEdge::kBottomLeft;
+        break;
+    }
+
+    // Update the window size to adhere to the aspect ratio.
+    gfx::Rect window_rect(bounds.origin(), window_size);
+    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size_, max_size_,
+                               &window_rect);
+    window_size = window_rect.size();
+
+    UpdateLayerBoundsWithLetterboxing(window_size);
+  }
+
+  // Use the previous window origin location, if exists.
+  gfx::Point origin = bounds.origin();
+
+  int window_diff_width = work_area.right() - window_size.width();
+  int window_diff_height = work_area.bottom() - window_size.height();
+
+  // Keep a margin distance of 2% the average of the two window size
+  // differences, keeping the margins consistent.
+  int buffer = (window_diff_width + window_diff_height) / 2 * 0.02;
+
+  gfx::Point default_origin =
+      gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
+
+  if (has_been_shown_) {
+    // Make sure window is displayed entirely in the work area.
+    origin.SetToMin(default_origin);
+  } else {
+    origin = default_origin;
+  }
+
+  return gfx::Rect(origin, window_size);
+}
+
+void VideoOverlayWindowViews::OnNativeFocus() {
+  UpdateControlsVisibility(true);
+  views::Widget::OnNativeFocus();
+}
+
+void VideoOverlayWindowViews::OnNativeBlur() {
+  // Controls should be hidden when there is no more focus on the window. This
+  // is used for tabbing and touch interactions. For mouse interactions, the
+  // window cannot be blurred before the ui::ET_MOUSE_EXITED event is handled.
+  UpdateControlsVisibility(false);
+
+  views::Widget::OnNativeBlur();
+}
+
+gfx::Size VideoOverlayWindowViews::GetMinimumSize() const {
+  return min_size_;
+}
+
+gfx::Size VideoOverlayWindowViews::GetMaximumSize() const {
+  return max_size_;
+}
+
+void VideoOverlayWindowViews::OnNativeWidgetMove() {
+  // Hide the controls when the window is moving. The controls will reappear
+  // when the user interacts with the window again.
+  UpdateControlsVisibility(false);
+
+  // Update the maximum size of the widget in case we have moved to another
+  // window.
+  UpdateMaxSize(GetWorkAreaForWindow());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Update the positioning of some icons when the window is moved.
+  WindowQuadrant quadrant =
+      GetCurrentWindowQuadrant(GetRestoredBounds(), GetController());
+  close_controls_view_->SetPosition(GetRestoredBounds().size(), quadrant);
+  UpdateResizeHandleBounds(quadrant);
+#endif
+}
+
+void VideoOverlayWindowViews::OnNativeWidgetSizeChanged(
+    const gfx::Size& new_size) {
+  // Hide the controls when the window is being resized. The controls will
+  // reappear when the user interacts with the window again.
+  UpdateControlsVisibility(false);
+
+  // Update the view layers to scale to |new_size|.
+  UpdateLayerBoundsWithLetterboxing(new_size);
+
+  views::Widget::OnNativeWidgetSizeChanged(new_size);
+}
+
+void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
+  // Every time a user uses a keyboard to interact on the window, restart the
+  // timer to automatically hide the controls.
+  hide_controls_timer_.Reset();
+
+  // Any keystroke will make the controls visible, if not already. The Tab key
+  // needs to be handled separately.
+  // If the controls are already visible, this is a no-op.
+  if (event->type() == ui::ET_KEY_PRESSED ||
+      event->key_code() == ui::VKEY_TAB) {
+    UpdateControlsVisibility(true);
+  }
+
+// On Windows, the Alt+F4 keyboard combination closes the window. Only handle
+// closure on key press so Close() is not called a second time when the key
+// is released.
+#if BUILDFLAG(IS_WIN)
+  if (event->type() == ui::ET_KEY_PRESSED && event->IsAltDown() &&
+      event->key_code() == ui::VKEY_F4) {
+    GetController()->Close(true /* should_pause_video */);
+    event->SetHandled();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  // If there is no focus affordance on the buttons and play/pause button is
+  // visible, only handle space key for TogglePlayPause().
+  views::View* focused_view = GetFocusManager()->GetFocusedView();
+  if (!focused_view && event->type() == ui::ET_KEY_PRESSED &&
+      event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
+    TogglePlayPause();
+    event->SetHandled();
+  }
+
+  views::Widget::OnKeyEvent(event);
+}
+
+void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
+  switch (event->type()) {
+      // Only show the media controls when the mouse is hovering over the
+      // window.
+    case ui::ET_MOUSE_MOVED:
+    case ui::ET_MOUSE_ENTERED:
+      UpdateControlsVisibility(true);
+      break;
+
+    case ui::ET_MOUSE_EXITED: {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // On Lacros, the |event| will always occur within
+      // |window_background_view_| despite the mouse exiting the respective
+      // surface so always hide the controls.
+      const bool should_update_control_visibility = true;
+#else
+      // On Windows, ui::ET_MOUSE_EXITED is triggered when hovering over the
+      // media controls because of the HitTest. This check ensures the controls
+      // are visible if the mouse is still over the window.
+      const bool should_update_control_visibility =
+          !GetWindowBackgroundView()->bounds().Contains(event->location());
+#endif
+      if (should_update_control_visibility)
+        UpdateControlsVisibility(false);
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  // If the user interacts with the window using a mouse, stop the timer to
+  // automatically hide the controls.
+  hide_controls_timer_.Reset();
+
+  views::Widget::OnMouseEvent(event);
+}
+
+bool VideoOverlayWindowViews::OnGestureEventHandledOrIgnored(
+    ui::GestureEvent* event) {
+  if (event->type() != ui::ET_GESTURE_TAP)
+    return true;
+
+  // Every time a user taps on the window, restart the timer to automatically
+  // hide the controls.
+  hide_controls_timer_.Reset();
+
+  // If the controls were not shown, make them visible. All controls related
+  // layers are expected to have the same visibility.
+  // TODO(apacible): This placeholder logic should be updated with touchscreen
+  // specific investigation. https://crbug/854373
+  if (!AreControlsVisible()) {
+    UpdateControlsVisibility(true);
+    return true;
+  }
+  return false;
+}
+
+void VideoOverlayWindowViews::RecordTapGesture(
+    OverlayWindowControl window_control) {
+  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.TapGesture",
+                            window_control);
+}
+
+void VideoOverlayWindowViews::RecordButtonPressed(
+    OverlayWindowControl window_control) {
+  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.ButtonPressed",
+                            window_control);
+}
+
+void VideoOverlayWindowViews::ForceControlsVisibleForTesting(bool visible) {
+  force_controls_visible_ = visible;
+  UpdateControlsVisibility(visible);
+}
+
+bool VideoOverlayWindowViews::AreControlsVisible() const {
+  return GetControlsContainerView()->GetVisible();
+}
+
+void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
+  GetControlsContainerView()->SetVisible(
+      force_controls_visible_.value_or(is_visible));
+}
+
+void VideoOverlayWindowViews::UpdateControlsBounds() {
+  // If controls are hidden, let's update controls bounds immediately.
+  // Otherwise, wait a bit before updating controls bounds to avoid too many
+  // changes happening too quickly.
+  if (!AreControlsVisible()) {
+    OnUpdateControlsBounds();
+    return;
+  }
+
+  update_controls_bounds_timer_ = std::make_unique<base::OneShotTimer>();
+  update_controls_bounds_timer_->Start(
+      FROM_HERE, base::Seconds(1),
+      base::BindOnce(&VideoOverlayWindowViews::OnUpdateControlsBounds,
+                     base::Unretained(this)));
+}
+
+bool VideoOverlayWindowViews::IsLayoutPendingForTesting() const {
+  return update_controls_bounds_timer_ &&
+         update_controls_bounds_timer_->IsRunning();
+}
+
+void VideoOverlayWindowViews::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  // Some display metric changes, such as display scaling, can affect the work
+  // area, so max size needs to be updated.
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA &&
+      display.id() == display::Screen::GetScreen()
+                          ->GetDisplayNearestWindow(GetNativeWindow())
+                          .id()) {
+    UpdateMaxSize(GetWorkAreaForWindow());
+  }
+}
+
+gfx::Rect VideoOverlayWindowViews::GetWorkAreaForWindow() const {
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestWindow(
+          native_widget() && IsVisible()
+              ? GetNativeWindow()
+              : GetController()->GetWebContents()->GetTopLevelNativeWindow())
+      .work_area();
+}
+
+void VideoOverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
+  // An empty |work_area| is not valid, but it is sometimes reported as a
+  // transient value.
+  if (work_area.IsEmpty())
+    return;
+
+  auto new_max_size =
+      gfx::Size(work_area.width() * 0.8, work_area.height() * 0.8);
+
+  // Ensure |new_max_size| is not smaller than |min_size_|, or else we will
+  // crash.
+  new_max_size.SetToMax(min_size_);
+
+  // Make sure we only run the logic to update the current size if the maximum
+  // size actually changes. Running it unconditionally means also running it
+  // when DPI <-> pixel computations introduce off-by-1 errors, which leads to
+  // incorrect window sizing/positioning.
+  if (new_max_size == max_size_)
+    return;
+
+  max_size_ = new_max_size;
+
+  if (!native_widget())
+    return;
+
+  // native_widget() is required for OnSizeConstraintsChanged.
+  OnSizeConstraintsChanged();
+
+  if (GetRestoredBounds().width() <= max_size_.width() &&
+      GetRestoredBounds().height() <= max_size_.height()) {
+    return;
+  }
+
+  gfx::Size clamped_size = GetRestoredBounds().size();
+  clamped_size.SetToMin(max_size_);
+  SetSize(clamped_size);
+}
 
 bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
     const gfx::Point& point) {
@@ -499,8 +953,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   larger_window_bounds.Inset(-1);
   controls_scrim_view_->SetBoundsRect(larger_window_bounds);
 
-  WindowQuadrant quadrant =
-      OverlayWindowViews::GetCurrentWindowQuadrant(GetBounds(), controller_);
+  WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
 
   if (back_to_tab_label_button_)
@@ -653,10 +1106,6 @@ void VideoOverlayWindowViews::UpdateResizeHandleBounds(
 }
 #endif
 
-bool VideoOverlayWindowViews::IsActive() {
-  return views::Widget::IsActive();
-}
-
 bool VideoOverlayWindowViews::IsActive() const {
   return views::Widget::IsActive();
 }
@@ -667,24 +1116,37 @@ void VideoOverlayWindowViews::Close() {
 }
 
 void VideoOverlayWindowViews::ShowInactive() {
-  DoShowInactive();
+  views::Widget::ShowInactive();
+  views::Widget::SetVisibleOnAllWorkspaces(true);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
+  // views::DesktopWindowTreeHostLinux.
+  auto* desktop_window_tree_host =
+      views::DesktopWindowTreeHostLacros::From(GetNativeWindow()->GetHost());
+
+  // At this point, the aura surface will be created so we can set it to pip and
+  // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
+  desktop_window_tree_host->GetWaylandExtension()->SetPip();
+  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::SetCornerRadius(GetNativeWindow(), GetRootView()->layer(),
+                       chromeos::kPipRoundedCornerRadius);
+#endif
+
+  // If this is not the first time the window is shown, this will be a no-op.
+  has_been_shown_ = true;
 }
 
 void VideoOverlayWindowViews::Hide() {
-  OverlayWindowViews::Hide();
+  views::Widget::Hide();
   MaybeUnregisterFrameSinkHierarchy();
-}
-
-bool VideoOverlayWindowViews::IsVisible() {
-  return views::Widget::IsVisible();
 }
 
 bool VideoOverlayWindowViews::IsVisible() const {
   return views::Widget::IsVisible();
-}
-
-bool VideoOverlayWindowViews::IsAlwaysOnTop() {
-  return true;
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBounds() {
@@ -692,7 +1154,13 @@ gfx::Rect VideoOverlayWindowViews::GetBounds() {
 }
 
 void VideoOverlayWindowViews::UpdateNaturalSize(const gfx::Size& natural_size) {
-  DoUpdateNaturalSize(natural_size);
+  DCHECK(!natural_size.IsEmpty());
+  natural_size_ = natural_size;
+  SetAspectRatio(gfx::SizeF(natural_size_));
+
+  // Update the views::Widget bounds to adhere to sizing spec. This will also
+  // update the layout of the controls.
+  SetBounds(CalculateAndUpdateWindowBounds());
 }
 
 void VideoOverlayWindowViews::SetPlaybackState(PlaybackState playback_state) {
@@ -782,17 +1250,6 @@ void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
       true /* stretch_content_to_fill_bounds */);
 }
 
-void VideoOverlayWindowViews::OnNativeWidgetMove() {
-  OverlayWindowViews::OnNativeWidgetMove();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Update the positioning of some icons when the window is moved.
-  WindowQuadrant quadrant =
-      GetCurrentWindowQuadrant(GetRestoredBounds(), GetController());
-  close_controls_view_->SetPosition(GetRestoredBounds().size(), quadrant);
-  UpdateResizeHandleBounds(quadrant);
-#endif
-}
-
 void VideoOverlayWindowViews::OnNativeWidgetDestroying() {
   views::Widget::OnNativeWidgetDestroying();
   MaybeUnregisterFrameSinkHierarchy();
@@ -820,21 +1277,8 @@ void VideoOverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
   MaybeUnregisterFrameSinkHierarchy();
 }
 
-void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
-  // If there is no focus affordance on the buttons and play/pause button is
-  // visible, only handle space key for TogglePlayPause().
-  views::View* focused_view = GetFocusManager()->GetFocusedView();
-  if (!focused_view && event->type() == ui::ET_KEY_PRESSED &&
-      event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
-    TogglePlayPause();
-    event->SetHandled();
-  }
-
-  OverlayWindowViews::OnKeyEvent(event);
-}
-
 void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
-  if (OverlayWindowViews::OnGestureEventHandledOrIgnored(event))
+  if (OnGestureEventHandledOrIgnored(event))
     return;
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {
@@ -966,11 +1410,6 @@ HangUpButton* VideoOverlayWindowViews::hang_up_button_for_testing() const {
   return hang_up_button_;
 }
 
-BackToTabLabelButton*
-VideoOverlayWindowViews::back_to_tab_label_button_for_testing() const {
-  return back_to_tab_label_button_;
-}
-
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {
   return close_controls_view_;
 }
@@ -992,10 +1431,6 @@ VideoOverlayWindowViews::playback_state_for_testing() const {
 
 ui::Layer* VideoOverlayWindowViews::video_layer_for_testing() const {
   return video_view_->layer();
-}
-
-cc::Layer* VideoOverlayWindowViews::GetLayerForTesting() {
-  return GetRootView()->layer()->cc_layer_for_testing();  // IN-TEST
 }
 
 const viz::FrameSinkId* VideoOverlayWindowViews::GetCurrentFrameSinkId() const {

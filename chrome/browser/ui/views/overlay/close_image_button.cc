@@ -38,9 +38,9 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
 
 void CloseImageButton::SetPosition(
     const gfx::Size& size,
-    OverlayWindowViews::WindowQuadrant quadrant) {
+    VideoOverlayWindowViews::WindowQuadrant quadrant) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (quadrant == OverlayWindowViews::WindowQuadrant::kBottomLeft) {
+  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
     views::ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
     return;

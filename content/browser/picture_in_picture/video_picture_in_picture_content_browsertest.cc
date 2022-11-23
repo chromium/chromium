@@ -35,12 +35,11 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
 
   ~TestVideoOverlayWindow() override = default;
 
-  bool IsActive() override { return false; }
+  bool IsActive() const override { return false; }
   void Close() override { visible_ = false; }
   void ShowInactive() override { visible_ = true; }
   void Hide() override { visible_ = false; }
-  bool IsVisible() override { return visible_; }
-  bool IsAlwaysOnTop() override { return false; }
+  bool IsVisible() const override { return visible_; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
   void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
@@ -70,7 +69,6 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetToggleCameraButtonVisibility(bool is_visible) override {}
   void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
-  cc::Layer* GetLayerForTesting() override { return nullptr; }
 
   const absl::optional<PlaybackState>& playback_state() const {
     return playback_state_;
