@@ -47,11 +47,13 @@ _log = logging.getLogger(os.path.basename(__file__))
 # Extend this script to compare the results between wptrunner/Chrome
 # and rwt/content_shell on Linux
 PRODUCTS = PRODUCTS + [
-    'chrome_linux', 'content_shell', 'wpt_content_shell_linux'
+    'chrome_linux', 'content_shell', 'wpt_content_shell_linux',
+    'wpt_content_shell_win10'
 ]
 PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
-    'wpt_content_shell_linux': 'wpt_tests_suite',
+    'wpt_content_shell_linux': 'wpt_tests_suite_linux',
+    'wpt_content_shell_win10': 'wpt_tests_suite_win10',
     'content_shell': 'blink_wpt_tests'
 })
 PRODUCTS_TO_BUILDER_NAME = {
@@ -59,6 +61,7 @@ PRODUCTS_TO_BUILDER_NAME = {
     'chrome_android': 'android-chrome-pie-x86-wpt-fyi-rel',
     'chrome_linux': 'linux-wpt-fyi-rel',
     'wpt_content_shell_linux': 'linux-wpt-content-shell-fyi-rel',
+    'wpt_content_shell_win10': 'win10-wpt-content-shell-fyi-rel',
     'content_shell': "Linux Tests"
 }
 
@@ -66,7 +69,10 @@ STEP_NAME_VARIANTS = {
     'chrome_public_wpt': ['chrome_public_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
     'system_webview_wpt':
     ['system_webview_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
-    'wpt_tests_suite': ['wpt_tests_suite (experimental) on Ubuntu-18.04'],
+    'wpt_tests_suite_linux':
+    ['wpt_tests_suite (experimental) on Ubuntu-18.04'],
+    'wpt_tests_suite_win10':
+    ['wpt_tests_suite (experimental) on Windows-10-19042'],
     'blink_wpt_tests': ['blink_wpt_tests on Ubuntu-18.04']
 }
 
@@ -286,8 +292,8 @@ def main(args):
         # names to their results map
         tests_to_actual_results = {}
         tests_to_baseline_results = {}
-        if (args.product_to_compare.startswith('chrome_linux') or
-                args.product_to_compare.startswith('wpt_content_shell_linux')):
+        if (args.product_to_compare.startswith('chrome_linux')
+                or args.product_to_compare.startswith('wpt_content_shell')):
             path = '/external/wpt'
         else:
             path = ''
@@ -295,8 +301,8 @@ def main(args):
                              actual_results_json['tests'],
                              path=path)
 
-        if (args.baseline_product.startswith('chrome_linux') or
-                args.baseline_product.startswith('wpt_content_shell_linux')):
+        if (args.baseline_product.startswith('chrome_linux')
+                or args.baseline_product.startswith('wpt_content_shell')):
             path = '/external/wpt'
         else:
             path = ''
