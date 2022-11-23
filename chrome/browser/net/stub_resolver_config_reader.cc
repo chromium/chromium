@@ -201,6 +201,11 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDnsOverHttpsMode, std::string());
   registry->RegisterStringPref(prefs::kDnsOverHttpsTemplates, std::string());
   registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterStringPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                               std::string());
+  registry->RegisterStringPref(prefs::kDnsOverHttpsSalt, std::string());
+#endif
 }
 
 SecureDnsConfig StubResolverConfigReader::GetSecureDnsConfiguration(

@@ -1032,6 +1032,8 @@ policies:
   1031: OffsetParentNewSpecBehaviorEnabled
   1032: SendMouseEventsDisabledFormControlsEnabled
   1033: BruschettaVMConfiguration
+  1034: DnsOverHttpsSalt
+  1035: DnsOverHttpsTemplatesWithIdentifiers
 atomic_groups:
   1: Homepage
   2: RemoteAccess

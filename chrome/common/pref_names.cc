@@ -2372,11 +2372,32 @@ const char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 // String specifying the secure DNS mode to use. Any string other than
 // "secure" or "automatic" will be mapped to the default "off" mode.
 const char kDnsOverHttpsMode[] = "dns_over_https.mode";
+
 // String containing a space-separated list of DNS over HTTPS templates to use
 // in secure mode or automatic mode. If no templates are specified in automatic
 // mode, we will attempt discovery of DoH servers associated with the configured
 // insecure resolvers.
 const char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
+
+#if BUILDFLAG(IS_CHROMEOS)
+// String containing a space-separated list of DNS over HTTPS templates to use
+// in secure mode or automatic mode. If no templates are specified in automatic
+// mode, we will attempt discovery of DoH servers associated with the configured
+// insecure resolvers.
+// This is very similar to kDnsOverHttpsTemplates except that on ChromeOS it
+// supports additional variables which are used to transport identity
+// information to the DNS provider. This is ignored on all other platforms than
+// ChromeOS. On ChromeOS if it exists it will override kDnsOverHttpsTemplates,
+// otherwise kDnsOverHttpsTemplates will be used. This pref is only evaluated if
+// kDnsOverHttpsSalt is set.
+const char kDnsOverHttpsTemplatesWithIdentifiers[] =
+    "dns_over_https.templates_with_identifiers";
+// String containing a salt value. This is used together with
+// kDnsOverHttpsTemplatesWithIdentifiers, only. The value will be used as a salt
+// to a hash applied to the various identity variables to prevent dictionary
+// attacks.
+const char kDnsOverHttpsSalt[] = "dns_over_https.salt";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Boolean that specifies whether additional DNS query types (e.g. HTTPS) may be
 // queried alongside the traditional A and AAAA queries.

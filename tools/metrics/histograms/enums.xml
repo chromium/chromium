@@ -32465,6 +32465,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
   <int value="1032" label="SendMouseEventsDisabledFormControlsEnabled"/>
   <int value="1033" label="BruschettaVMConfiguration"/>
+  <int value="1034" label="DnsOverHttpsSalt"/>
+  <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -289,6 +289,12 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplates] =
       settings_api::PrefType::PREF_TYPE_STRING;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  (*s_allowlist)[::prefs::kDnsOverHttpsSalt] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[::prefs::kDnsOverHttpsTemplatesWithIdentifiers] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+#endif
 
   // Privacy Guide
   (*s_allowlist)[::prefs::kPrivacyGuideViewed] =

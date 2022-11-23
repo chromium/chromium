@@ -887,6 +887,10 @@ extern const char kEncryptedClientHelloEnabled[];
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];
 extern const char kDnsOverHttpsTemplates[];
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kDnsOverHttpsTemplatesWithIdentifiers[];
+extern const char kDnsOverHttpsSalt[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
 extern const char kAdditionalDnsQueryTypesEnabled[];
 
 #if BUILDFLAG(IS_MAC)

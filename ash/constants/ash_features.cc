@@ -594,6 +594,20 @@ BASE_FEATURE(kDisplayAlignAssist,
              "DisplayAlignAssist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable DNS over HTTPS (DoH) with identifiers. Only available on ChromeOS.
+BASE_FEATURE(kDnsOverHttpsWithIdentifiers,
+             "DnsOverHttpsWithIdentifiers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable experiment to support identifiers in the existing policy
+// DnsOverHttpsTemplates. When this option is enabled, a hard-coded salt value
+// is used for hashing the identifiers in the template URI. Only available on
+// ChromeOS.
+// TODO(acostinas, srad, b/233845305) Remove when policy is added to DPanel.
+BASE_FEATURE(kDnsOverHttpsWithIdentifiersReuseOldPolicy,
+             "DnsOverHttpsWithIdentifiersReuseOldPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the docked (a.k.a. picture-in-picture) magnifier.
 // TODO(afakhry): Remove this after the feature is fully launched.
 // https://crbug.com/709824.
@@ -2325,6 +2339,15 @@ bool IsClipboardHistoryReorderEnabled() {
 
 bool IsDesksCloseAllEnabled() {
   return base::FeatureList::IsEnabled(kDesksCloseAll);
+}
+
+bool IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled() {
+  return base::FeatureList::IsEnabled(
+      kDnsOverHttpsWithIdentifiersReuseOldPolicy);
+}
+
+bool IsDnsOverHttpsWithIdentifiersEnabled() {
+  return base::FeatureList::IsEnabled(kDnsOverHttpsWithIdentifiers);
 }
 
 bool IsLauncherItemColorSyncEnabled() {

@@ -89,6 +89,10 @@ enum PrefPath {
   [MinVersion=5] kSharedStorage = 30,
   // M104: prefs::kProtectedContentDefault (extension)
   [MinVersion=6] kProtectedContentDefault = 31,
+  // M109: prefs::kDnsOverHttpsTemplatesWithIdentifiers (local state)
+  [MinVersion=7] kDnsOverHttpsTemplatesWithIdentifiers = 32,
+  // M109: prefs::kDnsOverHttpsSalt (local state)
+  [MinVersion=7] kDnsOverHttpsSalt = 33,
 };
 
 // Information about who or what is controlling a particular pref. This is used

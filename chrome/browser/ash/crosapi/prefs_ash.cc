@@ -263,9 +263,15 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDnsOverHttpsMode:
       return State{local_state_, &local_state_registrar_, false,
                    prefs::kDnsOverHttpsMode};
+    case mojom::PrefPath::kDnsOverHttpsSalt:
+      return State{local_state_, &local_state_registrar_, false,
+                   prefs::kDnsOverHttpsSalt};
     case mojom::PrefPath::kDnsOverHttpsTemplates:
       return State{local_state_, &local_state_registrar_, false,
                    prefs::kDnsOverHttpsTemplates};
+    case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
+      return State{local_state_, &local_state_registrar_, false,
+                   prefs::kDnsOverHttpsTemplatesWithIdentifiers};
     case mojom::PrefPath::kDockedMagnifierEnabled:
     case mojom::PrefPath::kAccessibilityAutoclickEnabled:
     case mojom::PrefPath::kAccessibilityCaretHighlightEnabled:

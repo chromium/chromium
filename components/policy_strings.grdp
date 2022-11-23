@@ -255,6 +255,18 @@
   <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_ERROR" desc="The text displayed in the status column when one or more of the DnsOverHttpsTemplates server template URIs is invalid.">
     One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.
   </message>
+  <message name="IDS_POLICY_SECURE_DNS_SALT_IRRELEVANT_ERROR" desc="The text displayed in the status column when the DnsOverHttpsSalt policy is set but the DnsOverHttpsTemplateWithIdentifiers policy is not set.">
+    The <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> value is not relevant, and will not be used, unless the <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS">DnsOverHttpsTemplateWithIdentifiers</ph> policy is set.
+  </message>
+    <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS_IRRELEVANT_ERROR" desc="The text displayed in the status column when the DnsOverHttpsSalt policy is EMPTY but the DnsOverHttpsTemplateWithIdentifiers policy is set.">
+    The <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS">DnsOverHttpsTemplateWithIdentifiers</ph> policy is not used unless the <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> policy is set.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_SALT_INVALID_ERROR" desc="The text displayed in the status column when the value of DnsOverHttpsSalt is invalid.">
+    The <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> value is invalid and will not be used.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_SALT_INVALID_SIZE_ERROR" desc="The text displayed in the status column when the size of DnsOverHttpsSalt is invalid.">
+    The <ph name="SECURE_DNS_SALT">DnsOverHttpsSalt</ph> value does not meet the size requirements.
+  </message>
   <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_IRRELEVANT_MODE_ERROR" desc="The text displayed in the status column when the DnsOverHttpsTemplate policy is specified but DnsOverHttpsMode is not set to a value that makes the templates relevant.">
     The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC">'automatic'</ph> or <ph name="SECURE_DNS_MODE_SECURE">'secure'</ph>.
   </message>
