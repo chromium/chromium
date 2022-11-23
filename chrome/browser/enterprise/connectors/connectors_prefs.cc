@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
-#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 
 #include "components/prefs/pref_registry_simple.h"
@@ -47,20 +46,6 @@ const char kOnFileTransferScopePref[] =
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
-namespace {
-
-void RegisterFileSystemPrefs(PrefRegistrySimple* registry) {
-  const auto* service_provider_config = GetServiceProviderConfig();
-  for (const auto& name_and_configs : *service_provider_config) {
-    if (name_and_configs.second.file_system) {
-      RegisterFileSystemPrefsForServiceProvider(
-          registry, std::string(name_and_configs.first));
-    }
-  }
-}
-
-}  // namespace
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kSendDownloadToCloudPref);
   registry->RegisterListPref(kOnFileAttachedPref);
@@ -80,7 +65,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
   RegisterDeviceTrustConnectorProfilePrefs(registry);
-  RegisterFileSystemPrefs(registry);
 }
 
 #if BUILDFLAG(IS_MAC)

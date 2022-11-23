@@ -196,13 +196,6 @@ const char* ConnectorPref(ReportingConnector connector) {
   }
 }
 
-const char* ConnectorPref(FileSystemConnector connector) {
-  switch (connector) {
-    case FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD:
-      return kSendDownloadToCloudPref;
-  }
-}
-
 const char* ConnectorScopePref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:

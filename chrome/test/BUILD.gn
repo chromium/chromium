@@ -2414,8 +2414,6 @@ if (!is_android) {
       sources += [
         # crbug.com/1230268 These tests need to be fixed for Lacros.
         "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
-        "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
-        "../browser/enterprise/connectors/file_system/browsertest_helper.h",
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
 
         # Lacros does not seem to have any actual WebView-based UI to test.
@@ -6660,7 +6658,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/connectors_manager_unittest.cc",
       "../browser/enterprise/connectors/connectors_service_unittest.cc",
       "../browser/enterprise/connectors/enterprise_connectors_policy_handler_unittest.cc",
-      "../browser/enterprise/connectors/file_system/service_settings_unittest.cc",
       "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/realtime_reporting_client_unittest.cc",
       "../browser/enterprise/connectors/reporting/reporting_service_settings_unittest.cc",
@@ -8521,22 +8518,6 @@ test("unit_tests") {
     sources += [
       "../browser/safe_browsing/android/password_reuse_controller_android_unittest.cc",
       "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc",
-    ]
-  }
-
-  if (is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
-    sources += [
-      "../browser/enterprise/connectors/file_system/access_token_fetcher_unittest.cc",
-      "../browser/enterprise/connectors/file_system/box_api_call_flow_unittest.cc",
-      "../browser/enterprise/connectors/file_system/box_api_call_test_helper.cc",
-      "../browser/enterprise/connectors/file_system/box_api_call_test_helper.h",
-      "../browser/enterprise/connectors/file_system/box_upload_file_chunks_handler_unittest.cc",
-      "../browser/enterprise/connectors/file_system/box_uploader_test_helper.cc",
-      "../browser/enterprise/connectors/file_system/box_uploader_test_helper.h",
-      "../browser/enterprise/connectors/file_system/box_uploader_unittest.cc",
-      "../browser/enterprise/connectors/file_system/signin_confirmation_unittest.cc",
-      "../browser/enterprise/connectors/file_system/test_helper.cc",
-      "../browser/enterprise/connectors/file_system/test_helper.h",
     ]
   }
 
@@ -10765,9 +10746,6 @@ if (!is_android) {
     test("enterprise_connector_file_system_interactive_tests") {
       use_xvfb = use_xvfb_in_this_config
       sources = [
-        "../browser/enterprise/connectors/file_system/box_captured_sites_interactive_uitest.cc",
-        "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
-        "../browser/enterprise/connectors/file_system/browsertest_helper.h",
         "//chrome/browser/enterprise/connectors/internal/enterprise_connectors_interactive_uitest_test_accounts.h",
         "base/interactive_ui_tests_main.cc",
       ]
@@ -10775,31 +10753,10 @@ if (!is_android) {
       configs += [ "//build/config:precompiled_headers" ]
 
       data = [
-        "//chrome/test/data/enterprise/connectors/file_system/captured_sites/",
-        "//chrome/test/data/enterprise/connectors/file_system/captures/",
-        "//chrome/test/data/enterprise/connectors/file_system/downloads/",
         "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
         "//third_party/catapult/telemetry/telemetry/bin/",
         "//third_party/catapult/web_page_replay_go/deterministic.js",
       ]
-
-      if (is_fuchsia) {
-        # TODO(crbug.com/1310351): Once WPR is supported, update the test and
-        # remove these exceptions.
-        sources -= [ "../browser/enterprise/connectors/file_system/box_captured_sites_interactive_uitest.cc" ]
-        data -= [ "//third_party/catapult/telemetry/telemetry/bin/" ]
-
-        # Fuchsia needs |data| dependencies when building the test package, but
-        # these files are only downloaded if the disabled by default
-        # `checkout_chromium_fsc_test_dependencies` is true.
-        # TODO(crbug.com/1310966): Find a solution for including this data
-        # without requiring that `checkout_chromium_fsc_test_dependencies` be
-        # true when `checkout_fuchsia`.
-        data -= [
-          "//chrome/test/data/enterprise/connectors/file_system/captured_sites/",
-          "//chrome/test/data/enterprise/connectors/file_system/downloads/",
-        ]
-      }
 
       if (is_linux || is_chromeos || is_win) {
         data_deps = [ "//chrome:packed_resources" ]

@@ -161,7 +161,6 @@ after discussions on the right group.
       <annotation id="cast_socket"/>
       <annotation id="dom_distiller"/>
       <annotation id="download_manager_resume"/>
-      <annotation id="file_system_connector_to_box"/>
       <annotation id="parallel_download_job"/>
       <annotation id="mirroring_get_setup_info"/>
       <annotation id="cast_udp_socket"/>
@@ -234,7 +233,6 @@ after discussions on the right group.
       <annotation id="webrtc_peer_connection"/>
       <annotation id="direct_sockets"/>
       <annotation id="sanitized_image_source"/>
-      <annotation id="box_access_token_fetcher"/>
       <annotation id="web_app_origin_association_download"/>
       <annotation id="digital_asset_links"/>
       <annotation id="device_trust_key_rotation"/>

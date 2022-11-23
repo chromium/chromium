@@ -28,7 +28,6 @@ Refer to README.md for content description and update process.
  <item id="blink_extension_resource_loader" added_in_milestone="63" content_hash_code="03c97c39" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
  <item id="blink_resource_loader" added_in_milestone="62" content_hash_code="047d7664" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
  <item id="bluetooth_socket" added_in_milestone="65" content_hash_code="01d7fd7d" os_list="linux,windows,chromeos,android" file_path="device/bluetooth/bluetooth_socket_net.cc" />
- <item id="box_access_token_fetcher" added_in_milestone="89" content_hash_code="0729581c" os_list="linux,windows,chromeos" file_path="chrome/browser/enterprise/connectors/file_system/access_token_fetcher.cc" />
  <item id="brandcode_config" added_in_milestone="62" content_hash_code="07ae0010" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/brandcode_config_fetcher.cc" />
  <item id="browser_switcher_ieem_sitelist" added_in_milestone="72" content_hash_code="07b15836" os_list="linux,windows" file_path="chrome/browser/browser_switcher/browser_switcher_service.cc" />
  <item id="cablev2_websocket_from_authenticator" added_in_milestone="87" content_hash_code="0724f93c" os_list="linux,windows,chromeos,android" file_path="device/fido/cable/v2_authenticator.cc" />
@@ -86,7 +85,6 @@ Refer to README.md for content description and update process.
  <item id="extension_manifest_fetcher" added_in_milestone="62" content_hash_code="05983aa9" os_list="linux,windows,chromeos" file_path="extensions/browser/updater/extension_downloader.cc" />
  <item id="external_policy_fetcher" added_in_milestone="62" content_hash_code="03d48984" os_list="linux,windows,chromeos" file_path="components/policy/core/common/cloud/external_policy_data_fetcher.cc" />
  <item id="favicon_loader" added_in_milestone="63" content_hash_code="0437e97c" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
- <item id="file_system_connector_to_box" added_in_milestone="89" type="partial" second_id="oauth2_api_call_flow" content_hash_code="02587cd7" os_list="linux,windows,chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,4" file_path="chrome/browser/enterprise/connectors/file_system/box_api_call_flow.cc" />
  <item id="ftl_messaging_client_ack_messages" added_in_milestone="86" content_hash_code="013f1ddb" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_messaging_client_receive_messages" added_in_milestone="86" content_hash_code="022e9c77" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="006864f3" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />

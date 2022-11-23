@@ -78,10 +78,6 @@ enum class ReportingConnector {
   SECURITY_EVENT,
 };
 
-enum class FileSystemConnector {
-  SEND_DOWNLOAD_TO_CLOUD,
-};
-
 // Struct holding the necessary data to tweak the behavior of the reporting
 // Connector.
 struct ReportingSettings {
@@ -130,7 +126,6 @@ struct FileSystemSettings {
 // Returns the pref path corresponding to a connector.
 const char* ConnectorPref(AnalysisConnector connector);
 const char* ConnectorPref(ReportingConnector connector);
-const char* ConnectorPref(FileSystemConnector connector);
 const char* ConnectorScopePref(AnalysisConnector connector);
 const char* ConnectorScopePref(ReportingConnector connector);
 
