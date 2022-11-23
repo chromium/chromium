@@ -407,6 +407,11 @@ void WaylandSurface::ApplyPendingState() {
         if (!next_explicit_release_request_.is_null()) {
           auto* linux_buffer_release =
               zwp_linux_surface_synchronization_v1_get_release(surface_sync);
+          // This must be very unlikely to happen, but there is a bug for this.
+          // Thus, add a check for this object to ensure it's not null. See
+          // https://crbug.com/1382976
+          LOG_IF(FATAL, !linux_buffer_release)
+              << "Unable to get an explicit release object.";
 
           static struct zwp_linux_buffer_release_v1_listener release_listener =
               {
