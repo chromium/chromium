@@ -463,6 +463,7 @@ TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
 // Tab switching
 ////////////////////////////////////////////////////////////////////////////////
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
@@ -472,11 +473,7 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   ASSERT_EQ(prompt_factory_->request_count(), 2);
 
   MockTabSwitchAway();
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(prompt_factory_->is_visible());
-#else
-  EXPECT_FALSE(prompt_factory_->is_visible());
-#endif
 
   MockTabSwitchBack();
   WaitForBubbleToBeShown();
@@ -487,6 +484,7 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   EXPECT_TRUE(request_mic_.granted());
   EXPECT_TRUE(request_camera_.granted());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(PermissionRequestManagerTest, PermissionRequestWhileTabSwitchedAway) {
   MockTabSwitchAway();

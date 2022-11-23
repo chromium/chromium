@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -133,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        PermissionRequestIsAutoIgnored) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histograms;
 
   content::WebContents* embedder_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -193,13 +195,19 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // Wait until a permission request is shown or finalized.
   observer.Wait();
 
-  // Permission request was finalized without showing a prompt bubble.
-  EXPECT_FALSE(manager->IsRequestInProgress());
+  // Permission request was is in progress without showing a prompt bubble.
+  EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_FALSE(observer.request_shown());
+  EXPECT_TRUE(observer.is_view_recreate_failed());
+  EXPECT_FALSE(manager->view_for_testing());
 
   EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
                                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
                    .value.GetBool());
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.AudioCapture.Gesture.Attempt", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,

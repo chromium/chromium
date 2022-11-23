@@ -691,7 +691,10 @@ bool PermissionRequestManager::RecreateView() {
   if (!view_) {
     current_request_prompt_disposition_ =
         PermissionPromptDisposition::NONE_VISIBLE;
-    FinalizeCurrentRequests(PermissionAction::IGNORED);
+    if (ShouldDropCurrentRequestIfCannotShowQuietly()) {
+      FinalizeCurrentRequests(PermissionAction::IGNORED);
+    }
+    NotifyPromptRecreateFailed();
     return false;
   }
 
@@ -704,7 +707,6 @@ PermissionRequestManager::PermissionRequestManager(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PermissionRequestManager>(*web_contents),
       view_factory_(base::BindRepeating(&PermissionPrompt::Create)),
-      view_(nullptr),
       tab_is_hidden_(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN),
       auto_response_for_test_(NONE),
@@ -808,8 +810,10 @@ void PermissionRequestManager::ShowPrompt() {
   DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
   DCHECK(current_request_ui_to_use_);
 
-  if (tab_is_hidden_)
+  if (tab_is_hidden_) {
+    NotifyPromptCreationFailedHiddenTab();
     return;
+  }
 
   if (!ReprioritizeCurrentRequestIfNeeded())
     return;
@@ -1072,6 +1076,20 @@ bool PermissionRequestManager::IsRequestInProgress() const {
   return !requests_.empty();
 }
 
+bool PermissionRequestManager::CanRestorePrompt() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return IsRequestInProgress() &&
+         current_request_prompt_disposition_.has_value() && !view_;
+#endif
+}
+
+void PermissionRequestManager::RestorePrompt() {
+  if (CanRestorePrompt())
+    ShowPrompt();
+}
+
 bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
     const {
   absl::optional<QuietUiReason> quiet_ui_reason = ReasonForUsingQuietUi();
@@ -1100,6 +1118,16 @@ void PermissionRequestManager::NotifyPromptAdded() {
 void PermissionRequestManager::NotifyPromptRemoved() {
   for (Observer& observer : observer_list_)
     observer.OnPromptRemoved();
+}
+
+void PermissionRequestManager::NotifyPromptRecreateFailed() {
+  for (Observer& observer : observer_list_)
+    observer.OnPromptRecreateViewFailed();
+}
+
+void PermissionRequestManager::NotifyPromptCreationFailedHiddenTab() {
+  for (Observer& observer : observer_list_)
+    observer.OnPromptCreationFailedHiddenTab();
 }
 
 void PermissionRequestManager::NotifyRequestDecided(
