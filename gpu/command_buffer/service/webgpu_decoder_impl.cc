@@ -1120,14 +1120,12 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   wire_server_->InjectInstance(dawn_instance_->Get(), 1, 0);
 
-  // If there is no isolation key provider (or unsafe webgpu is not enabled), we
-  // don't want to wait for an isolation key to come when processing device
-  // requests. Therefore, we can set the isolation key to an empty string to
-  // avoid blocking and disable caching in Dawn. Note that the isolation key
-  // provider is not available in some testing scenarios and the in-process
-  // command buffer case.
-  // TODO(dawn:549) Enable by default when tested and DocumentToken is used.
-  if (isolation_key_provider_ == nullptr || !enable_unsafe_webgpu_) {
+  // If there is no isolation key provider we don't want to wait for an
+  // isolation key to come when processing device requests. Therefore, we can
+  // set the isolation key to an empty string to avoid blocking and disable
+  // caching in Dawn. Note that the isolation key provider is not available in
+  // some testing scenarios and the in-process command buffer case.
+  if (isolation_key_provider_ == nullptr) {
     isolation_key_ = "";
   }
 }
@@ -1346,10 +1344,9 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   if (!enable_unsafe_webgpu_) {
     force_enabled_toggles.push_back("disallow_spirv");
   }
-  // Enable the blob cache only if we have an isolation key.
-  // TODO(dawn:549) Change the flag so that default is enabled.
-  if (enable_unsafe_webgpu_ && !isolation_key_->empty()) {
-    force_enabled_toggles.push_back("enable_blob_cache");
+  // Disable the blob cache if we don't have an isolation key.
+  if (isolation_key_->empty()) {
+    force_enabled_toggles.push_back("disable_blob_cache");
   }
 
   for (const std::string& toggles : force_enabled_toggles_) {
@@ -1366,8 +1363,8 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&dawn_toggles);
 
   // Dawn caching isolation key information needs to be passed per device. If an
-  // isolation key is empty, we do not pass this extra descriptor to tell Dawn
-  // not to use the blob store caching.
+  // isolation key is empty, we do not pass this extra descriptor, and disable
+  // the blob cache via toggles above.
   WGPUDawnCacheDeviceDescriptor dawn_cache = {};
   if (!isolation_key_->empty()) {
     dawn_cache.isolationKey = isolation_key_->c_str();
