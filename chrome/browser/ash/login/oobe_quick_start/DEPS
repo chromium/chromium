@@ -1,3 +1,4 @@
 include_rules = [
-	"+components/qr_code_generator/qr_code_generator.h",
+  "+components/qr_code_generator/qr_code_generator.h",
+  "+components/endpoint_fetcher",
 ]
