@@ -4682,6 +4682,11 @@ const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "
     "system UI and related infrastructure.";
 
+const char kAppDiscoveryForOobeName[] =
+    "OOBE app recommendations with App Discovery Service.";
+const char kAppDiscoveryForOobeDescription[] =
+    "Use the App Discovery Service to request recommended apps for OOBE.";
+
 const char kAppProvisioningStaticName[] =
     "App Provisioning with static server setup.";
 const char kAppProvisioningStaticDescription[] =

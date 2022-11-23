@@ -1466,6 +1466,11 @@ BASE_FEATURE(kOobeMaterialNext,
              "OobeMaterialNext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the new recommend apps screen is shown.
+BASE_FEATURE(kOobeNewRecommendApps,
+             "OobeNewRecommendApps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Removes "Shut down" button from OOBE, except first login screen and
 // successful enrollment step.
 BASE_FEATURE(kOobeRemoveShutdownButton,
@@ -2786,6 +2791,10 @@ bool IsOobeConsolidatedConsentEnabled() {
 
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
+}
+
+bool IsOobeNewRecommendAppsEnabled() {
+  return base::FeatureList::IsEnabled(kOobeNewRecommendApps);
 }
 
 bool IsOobeRemoveShutdownButtonEnabled() {
