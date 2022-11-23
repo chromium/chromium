@@ -1,0 +1,34 @@
+include_rules = [
+  # Do not take new base/ dependencies in here.
+  # Please check with bbe@ if you run afoul of this
+  # TODO(crbug.com/1322914): Remove exceptions.
+  "-base",
+  "+base/base_paths.h",
+  "+base/callback_forward.h",
+  "+base/compiler_specific.h",
+  "+base/containers/contains.h",
+  "+base/containers/span.h",
+  "+base/files/file_util.h",
+  "+base/logging.h",
+  "+base/memory/raw_ptr.h",
+  "+base/memory/ref_counted.h",
+  "+base/memory/scoped_refptr.h",
+  "+base/metrics/histogram_functions.h",
+  "+base/numerics/clamped_math.h",
+  "+base/path_service.h",
+  "+base/ranges/algorithm.h",
+  "+base/stl_util.h",
+  "+base/strings/string_number_conversions.h",
+  "+base/strings/string_piece.h",
+  "+base/supports_user_data.h",
+  "+base/time/time.h",
+  "+base/win/wincrypt_shim.h",
+]
+specific_include_rules = {
+  "path_builder_unittest\.cc": [
+    "+base/test/bind.h",
+    "+base/test/metrics/histogram_tester.h",
+    "+base/test/task_environment.h",
+  ],
+}
+
