@@ -542,7 +542,7 @@ class TestEventRewriterChromeOSDelegate
  public:
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override {
-    return suppress_modifier_key_rewrites_;
+    return !suppress_modifier_key_rewrites_;
   }
   void SuppressModifierKeyRewrites(bool should_supress) override {
     suppress_modifier_key_rewrites_ = should_supress;
@@ -1706,7 +1706,8 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocus) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts, however
   // since the widget is not in focus, it does not block
@@ -1714,7 +1715,8 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocus) {
       kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 }
 
 TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocusSwitching) {
@@ -1732,24 +1734,28 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocusSwitching) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
-  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // Hide widget and check that we can use shortcuts
   provider_->attached_widget_->Hide();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // Show widget and check that shortcuts are blocked
   provider_->attached_widget_->Show();
   EXPECT_FALSE(OpenAndCloseLauncher());
-  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(InputDataProvider::ShouldCloseDialogOnEscape());
 }
 
 TEST_F(InputDataProviderTest, ShortcutBlockingObeysLastObserverDisconnect) {
@@ -1771,33 +1777,38 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysLastObserverDisconnect) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer1->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
-  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // When second observer is added, shortcuts should still be blocked
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer2->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
-  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // When first observer is destroyed, shortcuts should still be blocked
   fake_observer1.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
-  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(InputDataProvider::ShouldCloseDialogOnEscape());
 
   // After second observer is destroyed, shortcuts should be unblocked
   fake_observer2.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
-  EXPECT_TRUE(ModifierRewritesAreSuppressed());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
+  EXPECT_TRUE(InputDataProvider::ShouldCloseDialogOnEscape());
 }
 
 // Test overlapping lifetimes of separate observers of one device.

@@ -56,6 +56,10 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
 
 }  // namespace
 
+// Escape should be able to close the dialog as long as shortcuts are not
+// blocked. This boolean is updated within |BlockShortcuts|.
+bool InputDataProvider::should_close_dialog_on_escape_ = true;
+
 InputDataProvider::InputDataProvider(aura::Window* window,
                                      KeyboardInputLog* keyboard_input_log_ptr)
     : keyboard_input_log_ptr_(keyboard_input_log_ptr),
@@ -298,6 +302,10 @@ void InputDataProvider::BlockShortcuts(bool should_block) {
 
   DCHECK(event_rewriter_delegate_);
   event_rewriter_delegate_->SuppressModifierKeyRewrites(should_block);
+
+  // While we are blocking shortcuts, esc should not close the diagnostcs
+  // dialog.
+  should_close_dialog_on_escape_ = !should_block;
 }
 
 void InputDataProvider::ForwardKeyboardInput(uint32_t id) {

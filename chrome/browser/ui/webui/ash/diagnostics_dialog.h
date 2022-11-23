@@ -37,6 +37,7 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
 
   // SystemWebDialogDelegate
   const std::string& Id() override;
+  bool ShouldCloseDialogOnEscape() const override;
 
   // ui::WebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;

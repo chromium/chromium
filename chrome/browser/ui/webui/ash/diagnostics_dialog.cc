@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
+#include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/strings/strcat.h"
 #include "ui/display/display.h"
@@ -68,6 +69,10 @@ void DiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
                            display_size.height() * kDiagnosticsDialogScale);
 
   *size = display_size;
+}
+
+bool DiagnosticsDialog::ShouldCloseDialogOnEscape() const {
+  return DiagnosticsDialogUI::ShouldCloseDialogOnEscape();
 }
 
 }  // namespace ash

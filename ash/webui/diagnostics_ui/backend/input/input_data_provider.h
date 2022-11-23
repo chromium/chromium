@@ -63,6 +63,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   InputDataProvider& operator=(const InputDataProvider&) = delete;
   ~InputDataProvider() override;
 
+  static bool ShouldCloseDialogOnEscape() {
+    return should_close_dialog_on_escape_;
+  }
+
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDataProvider> pending_receiver);
 
@@ -160,6 +164,10 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   base::raw_ptr<KeyboardInputLog> keyboard_input_log_ptr_ =
       nullptr;  // Not Owned.
+
+  // Denotes whether DiagnosticsDialog should be closed when escape is pressed.
+  // Currently, this is only false when the keyboard tester is actively in use.
+  static bool should_close_dialog_on_escape_;
 
   // Whether a tablet mode switch is present (which we use as a hint for the
   // top-right key glyph).
