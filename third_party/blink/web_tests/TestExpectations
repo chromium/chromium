@@ -3024,7 +3024,6 @@ crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-none-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-none-vertical.optional.html [ Failure ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-pseudo/text-selection.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-traversal.html [ Timeout ]
