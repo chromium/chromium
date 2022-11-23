@@ -81,6 +81,8 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_error.js", IDR_PARENT_ACCESS_ERROR_JS);
   source->AddResourcePath("flows/local_web_approvals_after.js",
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
+  source->AddResourcePath("parent_access_offline.js",
+                          IDR_PARENT_ACCESS_OFFLINE_JS);
   source->AddResourcePath("parent_access_ui.mojom-webui.js",
                           IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
   source->AddResourcePath("webview_manager.js",
@@ -100,6 +102,8 @@ void ParentAccessUI::SetUpResources() {
       {"localWebApprovalsAfterDetails",
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS},
       {"webviewLoadingMessage", IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE},
+      {"offlineTitle", IDS_PARENT_ACCESS_OFFLINE_HEADING},
+      {"offlineDescription", IDS_PARENT_ACCESS_OFFLINE_DESCRIPTION},
       {"errorTitle", IDS_PARENT_ACCESS_ERROR_TITLE},
       {"errorDescription", IDS_PARENT_ACCESS_ERROR_DESCRIPTION},
   };

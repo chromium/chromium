@@ -9,9 +9,8 @@ import 'chrome://parent-access/strings.m.js';
 import {Screens} from 'chrome://parent-access/parent_access_app.js';
 import {GetOAuthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {buildWebApprovalsParams} from './parent_access_test_utils.js';
 import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
@@ -24,6 +23,10 @@ parent_access_app_tests.TestNames = {
   TestShowWebApprovalsAfterFlow:
       'Tests that the web approvals after flow is shown',
   TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
+  TestWebApprovalsOffline:
+      'Tests that dialog switches in/out of offline screen',
+  TestErrorStateIsTerminal:
+      'Tests that going offline/online does not switch away from error screen',
 };
 
 suite(parent_access_app_tests.suiteName, function() {
@@ -77,4 +80,57 @@ suite(parent_access_app_tests.suiteName, function() {
         // Verify error screen is showing.
         assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
       });
+
+  test(parent_access_app_tests.TestNames.TestWebApprovalsOffline, async () => {
+    // Set up the ParentAccessParams for the web approvals flow.
+    const handler = new TestParentAccessUIHandler();
+    handler.setParentAccessParams(buildWebApprovalsParams());
+    handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
+    setParentAccessUIHandlerForTest(handler);
+
+    // Create app element.
+    const parentAccessApp = document.createElement('parent-access-app');
+    document.body.appendChild(parentAccessApp);
+    await flushTasks();
+
+    // Verify online flow is showing
+    assertEquals(parentAccessApp.currentScreen_, Screens.ONLINE_FLOW);
+
+    // Verify offline screen shows when window triggers offline event
+    window.dispatchEvent(new Event('offline'));
+    await flushTasks();
+    assertEquals(parentAccessApp.currentScreen_, Screens.OFFLINE);
+
+    // Verify online screen shows when window triggers online event after being
+    // offline
+    window.dispatchEvent(new Event('online'));
+    await flushTasks();
+    assertEquals(parentAccessApp.currentScreen_, Screens.ONLINE_FLOW);
+  });
+
+  test(parent_access_app_tests.TestNames.TestErrorStateIsTerminal, async () => {
+    // Set up the TestParentAccessUIHandler
+    const handler = new TestParentAccessUIHandler();
+    handler.setParentAccessParams(buildWebApprovalsParams());
+    handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kError);
+    setParentAccessUIHandlerForTest(handler);
+
+    // Create app element.
+    const parentAccessApp = document.createElement('parent-access-app');
+    document.body.appendChild(parentAccessApp);
+    await flushTasks();
+
+    // Verify error screen is showing.
+    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+
+    // Verify error screen still showing after triggering offline event.
+    window.dispatchEvent(new Event('offline'));
+    await flushTasks();
+    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+
+    // Verify error screen still showing after triggering online event.
+    window.dispatchEvent(new Event('online'));
+    await flushTasks();
+    assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
+  });
 });

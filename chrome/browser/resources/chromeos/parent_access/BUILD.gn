@@ -42,6 +42,7 @@ js_library("parent_access_app") {
   deps = [
     ":parent_access_after",
     ":parent_access_error",
+    ":parent_access_offline",
     ":parent_access_ui",
     ":parent_access_ui_handler",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
@@ -58,6 +59,12 @@ js_library("parent_access_controller") {
 }
 
 js_library("parent_access_error") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("parent_access_offline") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -89,6 +96,7 @@ html_to_js("web_components") {
   js_files = [
     "parent_access_after.js",
     "parent_access_app.js",
+    "parent_access_offline.js",
     "parent_access_error.js",
     "parent_access_ui.js",
   ]

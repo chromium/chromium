@@ -8,6 +8,7 @@
 import './strings.m.js';
 import './parent_access_after.js';
 import './parent_access_error.js';
+import './parent_access_offline.js';
 import './parent_access_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
@@ -21,6 +22,7 @@ export const Screens = {
   ONLINE_FLOW: 'parent-access-ui',
   AFTER_FLOW: 'parent-access-after',
   ERROR: 'parent-access-error',
+  OFFLINE: 'parent-access-offline',
 };
 
 class ParentAccessApp extends PolymerElement {
@@ -59,8 +61,24 @@ class ParentAccessApp extends PolymerElement {
       this.onError_();
     });
 
-    // TODO(b/200187536): Show offline screen if device is offline.
-    this.currentScreen_ = Screens.ONLINE_FLOW;
+    window.addEventListener('online', () => {
+      if (this.currentScreen_ !== Screens.ERROR) {
+        this.currentScreen_ = Screens.ONLINE_FLOW;
+        /** @type {CrViewManagerElement} */ (this.$.viewManager)
+            .switchView(this.currentScreen_);
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      if (this.currentScreen_ !== Screens.ERROR) {
+        this.currentScreen_ = Screens.OFFLINE;
+        /** @type {CrViewManagerElement} */ (this.$.viewManager)
+            .switchView(this.currentScreen_);
+      }
+    });
+
+    this.currentScreen_ =
+        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
   }
