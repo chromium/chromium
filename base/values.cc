@@ -1368,10 +1368,6 @@ bool Value::DictEmpty() const {
   return GetDict().empty();
 }
 
-void Value::DictClear() {
-  GetDict().clear();
-}
-
 void Value::MergeDictionary(const Value* dictionary) {
   return GetDict().Merge(dictionary->GetDict().Clone());
 }

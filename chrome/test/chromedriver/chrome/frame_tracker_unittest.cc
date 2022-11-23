@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -21,9 +21,8 @@ TEST(FrameTracker, GetContextIdForFrame) {
   const char context[] =
       "{\"uniqueId\":\"100\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}"
       "}";
-  base::DictionaryValue params;
-  params.GetDict().Set("context",
-                       std::move(*base::JSONReader::ReadDeprecated(context)));
+  base::Value::Dict params;
+  params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -33,12 +32,12 @@ TEST(FrameTracker, GetContextIdForFrame) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ("100", context_id);
 
-  base::DictionaryValue nav_params;
-  nav_params.GetDict().SetByDottedPath("frame.parentId", "1");
+  base::Value::Dict nav_params;
+  nav_params.SetByDottedPath("frame.parentId", "1");
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
-  nav_params.DictClear();
+  nav_params.clear();
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
   ASSERT_EQ(kNoSuchExecutionContext,
@@ -53,11 +52,10 @@ TEST(FrameTracker, AuxData) {
   ASSERT_EQ("", context_id);
 
   const char context[] = "{\"uniqueId\":\"100\",\"auxData\":{}}";
-  base::DictionaryValue params;
-  params.GetDict().Set("context",
-                       std::move(*base::JSONReader::ReadDeprecated(context)));
-  params.GetDict().SetByDottedPath("context.auxData.frameId", "f");
-  params.GetDict().SetByDottedPath("context.auxData.isDefault", true);
+  base::Value::Dict params;
+  params.Set("context", base::test::ParseJson(context));
+  params.SetByDottedPath("context.auxData.frameId", "f");
+  params.SetByDottedPath("context.auxData.isDefault", true);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -74,9 +72,8 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
 
   const char context[] =
       "{\"uniqueId\":\"1\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
-  base::DictionaryValue params;
-  params.GetDict().Set("context",
-                       std::move(*base::JSONReader::ReadDeprecated(context)));
+  base::Value::Dict params;
+  params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -84,7 +81,7 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ("1", context_id);
 
-  params.GetDict().SetByDottedPath("context.uniqueId", "2");
+  params.SetByDottedPath("context.uniqueId", "2");
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -98,9 +95,8 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
 
   const char context[] =
       "{\"uniqueId\":\"1\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
-  base::DictionaryValue params;
-  params.GetDict().Set("context",
-                       std::move(*base::JSONReader::ReadDeprecated(context)));
+  base::Value::Dict params;
+  params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -108,8 +104,8 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ("1", context_id);
 
-  params.GetDict().SetByDottedPath("context.uniqueId", "2");
-  params.GetDict().SetByDottedPath("context.auxData.isDefault", false);
+  params.SetByDottedPath("context.uniqueId", "2");
+  params.SetByDottedPath("context.auxData.isDefault", false);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());

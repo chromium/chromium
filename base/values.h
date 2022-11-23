@@ -984,9 +984,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::empty()`.
   bool DictEmpty() const;
 
-  // DEPRECATED: prefer `Value::Dict::clear()`.
-  void DictClear();
-
   // Merge `dictionary` into this value. This is done recursively, i.e. any
   // sub-dictionaries will be merged as well. In case of key collisions, the
   // passed in dictionary takes precedence and data already present will be
