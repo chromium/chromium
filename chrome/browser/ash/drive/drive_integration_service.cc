@@ -42,6 +42,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -373,6 +374,12 @@ class DriveIntegrationService::PreferenceWatcher
           base::BindRepeating(&PreferenceWatcher::ToggleLocalMirroring,
                               weak_ptr_factory_.GetWeakPtr()));
     }
+    if (ash::features::IsDriveFsBulkPinningEnabled()) {
+      pref_change_registrar_.Add(
+          prefs::kDriveFsBulkPinningEnabled,
+          base::BindRepeating(&PreferenceWatcher::UpdateBulkPinningState,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   PreferenceWatcher(const PreferenceWatcher&) = delete;
@@ -435,6 +442,16 @@ class DriveIntegrationService::PreferenceWatcher
                      &DriveIntegrationService::OnDisableMirroringStatusUpdate,
                      integration_service_->weak_ptr_factory_.GetWeakPtr()));
     }
+  }
+
+  void UpdateBulkPinningState() {
+    DCHECK(integration_service_);
+    if (!ash::features::IsDriveFsBulkPinningEnabled()) {
+      return;
+    }
+
+    integration_service_->SetBulkPinningEnabled(
+        pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
   }
 
   void AddNetworkPortalDetectorObserver() {
@@ -667,6 +684,11 @@ DriveIntegrationService::DriveIntegrationService(
   }
 
   SetEnabled(drive::util::IsDriveEnabledForProfile(profile));
+
+  if (ash::features::IsDriveFsBulkPinningEnabled()) {
+    pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
+        profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
+  }
 }
 
 DriveIntegrationService::~DriveIntegrationService() {
@@ -1416,6 +1438,15 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
   // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
+}
+
+void DriveIntegrationService::SetBulkPinningEnabled(bool enabled) {
+  if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
+      !GetDriveFsInterface() || pin_manager_) {
+    return;
+  }
+
+  pin_manager_->SetBulkPinningEnabled(enabled);
 }
 
 //===================== DriveIntegrationServiceFactory =======================

@@ -4,8 +4,7 @@
 
 #include "components/drive/drive_pref_names.h"
 
-namespace drive {
-namespace prefs {
+namespace drive::prefs {
 
 // A boolean pref to disable Google Drive integration.
 // The pref prefix should remain as "gdata" for backward compatibility.
@@ -37,5 +36,8 @@ const char kDriveFsEnableMirrorSync[] = "drivefs.enable_mirror_sync";
 const char kDriveFsMirrorSyncMachineRootId[] =
     "drivefs.mirror_sync_machine_root_id";
 
-}  // namespace prefs
-}  // namespace drive
+// A boolean pref that maintains whether the feature is enabled or disabled by
+// the user.
+const char kDriveFsBulkPinningEnabled[] = "drivefs.bulk_pinning_enabled";
+
+}  // namespace drive::prefs

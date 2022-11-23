@@ -7,8 +7,7 @@
 #ifndef COMPONENTS_DRIVE_DRIVE_PREF_NAMES_H_
 #define COMPONENTS_DRIVE_DRIVE_PREF_NAMES_H_
 
-namespace drive {
-namespace prefs {
+namespace drive::prefs {
 
 extern const char kDisableDrive[];
 extern const char kDisableDriveOverCellular[];
@@ -18,8 +17,8 @@ extern const char kDriveFsPinnedMigrated[];
 extern const char kDriveFsWasLaunchedAtLeastOnce[];
 extern const char kDriveFsEnableMirrorSync[];
 extern const char kDriveFsMirrorSyncMachineRootId[];
+extern const char kDriveFsBulkPinningEnabled[];
 
-}  // namespace prefs
-}  // namespace drive
+}  // namespace drive::prefs
 
 #endif  // COMPONENTS_DRIVE_DRIVE_PREF_NAMES_H_

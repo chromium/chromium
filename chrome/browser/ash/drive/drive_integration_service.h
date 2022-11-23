@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
@@ -274,6 +275,9 @@ class DriveIntegrationService : public KeyedService,
   void ForceReSyncFile(const base::FilePath& local_path,
                        base::OnceClosure callback);
 
+  // Enable / disable the bulk pinning functionality.
+  void SetBulkPinningEnabled(bool enabled);
+
  private:
   enum State {
     NOT_INITIALIZED,
@@ -389,6 +393,7 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
   std::unique_ptr<PreferenceWatcher> preference_watcher_;
+  std::unique_ptr<drivefs::pinning::DriveFsPinManager> pin_manager_;
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
   bool remount_when_online_ = false;

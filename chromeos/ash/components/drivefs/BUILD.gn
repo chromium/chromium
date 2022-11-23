@@ -18,6 +18,8 @@ component("drivefs") {
     "drivefs_host_observer.h",
     "drivefs_http_client.cc",
     "drivefs_http_client.h",
+    "drivefs_pin_manager.cc",
+    "drivefs_pin_manager.h",
     "drivefs_search.cc",
     "drivefs_search.h",
     "drivefs_session.cc",
