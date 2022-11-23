@@ -101,7 +101,7 @@ class InMemoryURLIndex : public KeyedService,
                                             size_t max_matches);
 
   // Returns URL hosts that have been visited more than a threshold.
-  std::vector<std::string> HighlyVisitedHosts() const;
+  const std::vector<std::string>& HighlyVisitedHosts() const;
 
   // Deletes the index entry, if any, for the given |url|.
   void DeleteURL(const GURL& url);

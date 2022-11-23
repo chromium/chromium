@@ -137,7 +137,7 @@ ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
       template_url_service_);
 }
 
-std::vector<std::string> InMemoryURLIndex::HighlyVisitedHosts() const {
+const std::vector<std::string>& InMemoryURLIndex::HighlyVisitedHosts() const {
   return private_data_->HighlyVisitedHosts();
 }
 

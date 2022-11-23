@@ -235,7 +235,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
       // following "x" or "xn" in this case because those characters no longer
       // exist in the displayed URL string.
       size_t offset =
-        best_inlineable_prefix->prefix.length() + terms_vector[0].length();
+          best_inlineable_prefix->prefix.length() + terms_vector[0].length();
       base::OffsetAdjuster::UnadjustOffset(adjustments, &offset);
       if (offset != std::u16string::npos) {
         // Initialize innermost_match.

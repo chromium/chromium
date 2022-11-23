@@ -89,8 +89,7 @@ class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
 UpdateRecentVisitsFromHistoryDBTask::UpdateRecentVisitsFromHistoryDBTask(
     URLIndexPrivateData* private_data,
     history::URLID url_id)
-    : private_data_(private_data), url_id_(url_id), succeeded_(false) {
-}
+    : private_data_(private_data), url_id_(url_id), succeeded_(false) {}
 
 bool UpdateRecentVisitsFromHistoryDBTask::RunOnDBThread(
     history::HistoryBackend* backend,
@@ -107,9 +106,8 @@ void UpdateRecentVisitsFromHistoryDBTask::DoneRunOnMainThread() {
     private_data_->UpdateRecentVisits(url_id_, recent_visits_);
 }
 
-UpdateRecentVisitsFromHistoryDBTask::~UpdateRecentVisitsFromHistoryDBTask() {
-}
-
+UpdateRecentVisitsFromHistoryDBTask::~UpdateRecentVisitsFromHistoryDBTask() =
+    default;
 
 // URLIndexPrivateData ---------------------------------------------------------
 
@@ -236,7 +234,8 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
   return scored_items;
 }
 
-std::vector<std::string> URLIndexPrivateData::HighlyVisitedHosts() const {
+const std::vector<std::string>& URLIndexPrivateData::HighlyVisitedHosts()
+    const {
   return highly_visited_hosts_;
 }
 
@@ -509,8 +508,7 @@ HistoryIDSet URLIndexPrivateData::HistoryIDsForTerm(
     auto best_prefix(search_term_cache_.end());
     for (auto cache_iter = search_term_cache_.begin();
          cache_iter != search_term_cache_.end(); ++cache_iter) {
-      if (base::StartsWith(term_lower,
-                           base::i18n::ToLower(cache_iter->first),
+      if (base::StartsWith(term_lower, base::i18n::ToLower(cache_iter->first),
                            base::CompareCase::SENSITIVE) &&
           (best_prefix == search_term_cache_.end() ||
            cache_iter->first.length() > best_prefix->first.length()))
@@ -796,11 +794,11 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
   const std::u16string& url = bookmarks::CleanUpUrlForMatching(gurl, nullptr);
-  String16Set url_words = String16SetFromString16(url,
-      word_starts ? &word_starts->url_word_starts_ : nullptr);
+  String16Set url_words = String16SetFromString16(
+      url, word_starts ? &word_starts->url_word_starts_ : nullptr);
   const std::u16string& title = bookmarks::CleanUpTitleForMatching(row.title());
-  String16Set title_words = String16SetFromString16(title,
-      word_starts ? &word_starts->title_word_starts_ : nullptr);
+  String16Set title_words = String16SetFromString16(
+      title, word_starts ? &word_starts->title_word_starts_ : nullptr);
   for (const auto& word :
        base::STLSetUnion<String16Set>(url_words, title_words))
     AddWordToIndex(word, history_id);
@@ -922,11 +920,9 @@ bool URLIndexPrivateData::ShouldExclude(
 URLIndexPrivateData::SearchTermCacheItem::SearchTermCacheItem(
     const WordIDSet& word_id_set,
     const HistoryIDSet& history_id_set)
-    : word_id_set_(word_id_set), history_id_set_(history_id_set), used_(true) {
-}
+    : word_id_set_(word_id_set), history_id_set_(history_id_set), used_(true) {}
 
-URLIndexPrivateData::SearchTermCacheItem::SearchTermCacheItem() : used_(true) {
-}
+URLIndexPrivateData::SearchTermCacheItem::SearchTermCacheItem() : used_(true) {}
 
 URLIndexPrivateData::SearchTermCacheItem::SearchTermCacheItem(
     const SearchTermCacheItem& other) = default;
@@ -936,18 +932,16 @@ size_t URLIndexPrivateData::SearchTermCacheItem::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(history_id_set_);
 }
 
-URLIndexPrivateData::SearchTermCacheItem::~SearchTermCacheItem() {
-}
+URLIndexPrivateData::SearchTermCacheItem::~SearchTermCacheItem() = default;
 
 // URLIndexPrivateData::HistoryItemFactorGreater -------------------------------
 
 URLIndexPrivateData::HistoryItemFactorGreater::HistoryItemFactorGreater(
     const HistoryInfoMap& history_info_map)
-    : history_info_map_(history_info_map) {
-}
+    : history_info_map_(history_info_map) {}
 
-URLIndexPrivateData::HistoryItemFactorGreater::~HistoryItemFactorGreater() {
-}
+URLIndexPrivateData::HistoryItemFactorGreater::~HistoryItemFactorGreater() =
+    default;
 
 bool URLIndexPrivateData::HistoryItemFactorGreater::operator()(
     const HistoryID h1,

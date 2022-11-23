@@ -30,7 +30,7 @@ class BookmarkModel;
 namespace history {
 class HistoryDatabase;
 class InMemoryURLIndex;
-}
+}  // namespace history
 
 // A structure private to InMemoryURLIndex describing its internal data and
 // providing for restoring, rebuilding and updating that internal data. As
@@ -75,7 +75,7 @@ class URLIndexPrivateData
       TemplateURLService* template_url_service);
 
   // Returns URL hosts that have been visited more than a threshold.
-  std::vector<std::string> HighlyVisitedHosts() const;
+  const std::vector<std::string>& HighlyVisitedHosts() const;
 
   // Adds the history item in |row| to the index if it does not already already
   // exist and it meets the minimum 'quick' criteria. If the row already exists
