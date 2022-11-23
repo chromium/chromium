@@ -57,10 +57,6 @@ found in the LICENSE file.
         vertical-align: top;
       }
 
-      #attributePromptMessage {
-        color: black;
-      }
-
       #enterpriseExplanation {
         margin-top: 8px;
       }
@@ -242,23 +238,20 @@ found in the LICENSE file.
     <!-- ATTRIBUTE PROMPT DIALOG -->
     <oobe-adaptive-dialog id="step-attribute-prompt"
         for-step="attribute-prompt">
-      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <iron-icon slot="icon" icon="[[getIcon_(licenseType_)]]"></iron-icon>
       <h1 slot="title">
-        [[getAttributePromptTitle_(locale, licenseType_)]]
+        [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
       </h1>
       <p slot="subtitle">
-        [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
+        <span>
+          [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
+        </span>
+        <a id="learnMoreLink" class="oobe-local-link" is="action-link"
+            on-click="onLearnMore_">
+          [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
+        </a>
       </p>
       <div slot="content" class="flex layout vertical">
-        <div class="step-message">
-          <span id="attributePromptMessage">
-            [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
-          </span>
-          <a id="learnMoreLink" class="oobe-local-link" is="action-link"
-              on-click="onLearnMore_">
-            [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
-          </a>
-        </div>
         <div class="oobe-form">
           <cr-input id="assetId" type="text" value="{{assetId_}}"
               class="focus-on-show"

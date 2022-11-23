@@ -2897,7 +2897,7 @@
   <message name="IDS_ENTERPRISE_ACCOUNT_CHECK_TITLE" desc="The title of spinner dialog shown during account check.">
     Checking eligibility
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION" desc="The subtitle on the device attribute prompt screen.">
+  <message name="IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION" desc="The title on the device attribute prompt screen.">
     Device information
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE" desc="Title of the screen to be shown upon an error during enterprise enrollment.">
@@ -3145,7 +3145,7 @@
   </message>
 
   <message name="IDS_ENTERPRISE_ENROLLMENT_ATTRIBUTE_EXPLANATION" desc="Device attribute message to be shown on attribute update prompt screen.">
-    Optional — enter new or update existing information to be associated with this device.
+    Enter new or update existing information to be associated with this device.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_EXPLAIN_ATTRIBUTE_LINK" desc="Text on the link to the device attribute update help article.">
     Learn more.
