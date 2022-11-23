@@ -6,8 +6,11 @@
 #define IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SEED_STORE_H_
 
 #import <Foundation/Foundation.h>
+#import <memory>
 
-@class IOSChromeSeedResponse;
+namespace variations {
+struct SeedResponse;
+}  // namespace variations
 
 // Storage for variations seed fetched by
 // IOSChromeVariationsSeedFetcher.
@@ -15,7 +18,7 @@
 
 // Returns the seed response and resets it; called by the variations service to
 // import the seed into Chrome Prefs.
-+ (IOSChromeSeedResponse*)popSeed;
++ (std::unique_ptr<variations::SeedResponse>)popSeed;
 
 @end
 

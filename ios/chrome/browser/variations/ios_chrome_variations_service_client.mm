@@ -10,7 +10,6 @@
 #import "components/variations/seed_response.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/variations/ios_chrome_seed_response.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -55,20 +54,5 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
 
 std::unique_ptr<variations::SeedResponse>
 IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
-  IOSChromeSeedResponse* ios_seed = [IOSChromeVariationsSeedStore popSeed];
-  if (!ios_seed) {
-    return nullptr;
-  }
-
-  auto seed = std::make_unique<variations::SeedResponse>();
-  if (ios_seed.data != nil) {
-    NSString* base64EncodedNSString =
-        [ios_seed.data base64EncodedStringWithOptions:0];
-    seed->data = base::SysNSStringToUTF8(base64EncodedNSString);
-  }
-  seed->signature = base::SysNSStringToUTF8(ios_seed.signature);
-  seed->country = base::SysNSStringToUTF8(ios_seed.country);
-  seed->date = base::Time::FromNSDate(ios_seed.time);
-  seed->is_gzip_compressed = ios_seed.compressed;
-  return seed;
+  return [IOSChromeVariationsSeedStore popSeed];
 }

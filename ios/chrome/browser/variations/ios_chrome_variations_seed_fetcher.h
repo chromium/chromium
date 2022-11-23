@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class IOSChromeSeedResponse;
-
 // Enum for the seed fetch result histogram. Must stay in sync with
 // `VariationsSeedFetchResult` from enums.xml.
 enum class IOSSeedFetchException : int {

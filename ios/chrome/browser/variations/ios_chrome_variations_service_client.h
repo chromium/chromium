@@ -7,11 +7,14 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "components/variations/service/variations_service_client.h"
-#import "ios/chrome/browser/variations/ios_chrome_seed_response.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace variations {
+struct SeedResponse;
+}  // namespace variations
 
 // IOSChromeVariationsServiceClient provides an implementation of
 // VariationsServiceClient that depends on ios/chrome/.

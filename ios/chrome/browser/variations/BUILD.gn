@@ -30,6 +30,7 @@ source_set("fetcher") {
   ]
   deps = [
     ":store",
+    ":store_private",
     "//base",
     "//build:branding_buildflags",
     "//components/variations",
@@ -42,11 +43,22 @@ source_set("fetcher") {
 source_set("store") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_seed_response.h",
-    "ios_chrome_seed_response.mm",
     "ios_chrome_variations_seed_store.h",
     "ios_chrome_variations_seed_store.mm",
   ]
+  deps = [
+    ":store_private",
+    "//components/variations",
+  ]
+}
+
+source_set("store_private") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [
+    ":fetcher",
+    ":store",
+  ]
+  sources = [ "ios_chrome_variations_seed_store+private.h" ]
 }
 
 generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {

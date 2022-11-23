@@ -10,13 +10,15 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/variations/seed_response.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/variations/ios_chrome_seed_response.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "net/http/http_status_code.h"
+
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+private.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,14 +39,6 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 static BOOL g_seed_fetching_in_progress = NO;
 
 }  // namespace
-
-// Extraction of seed update method in IOSChromeVariationsSeedStore to
-// be used (and ONLY used) by the fetcher.
-@interface IOSChromeVariationsSeedStore (Fetcher)
-
-+ (void)updateSharedSeed:(IOSChromeSeedResponse*)seed;
-
-@end
 
 @interface IOSChromeVariationsSeedFetcher () {
   // The variations server domain name.
@@ -194,16 +188,16 @@ static BOOL g_seed_fetching_in_progress = NO;
     base::UmaHistogramTimes(
         kSeedFetchTimeHistogram,
         base::Time::Now() - self.startTimeOfOngoingSeedRequest);
-    IOSChromeSeedResponse* seed = [self seedResponseForHTTPResponse:httpResponse
-                                                               data:data];
-    if (seed == nil) {
+    std::unique_ptr<variations::SeedResponse> seed =
+        [self seedResponseForHTTPResponse:httpResponse data:data];
+    if (seed) {
+      [IOSChromeVariationsSeedStore updateSharedSeed:std::move(seed)];
+    } else {
       // Currently, only the IM header is mandatory to create a first run seed,
       // and is the only possible reason that a seed is downloaded but not
       // created.
       exception = IOSSeedFetchException::kInvalidIMHeader;
       success = NO;
-    } else {
-      [IOSChromeVariationsSeedStore updateSharedSeed:seed];
     }
   } else if (error.code == NSURLErrorTimedOut) {
     exception = IOSSeedFetchException::kHTTPSRequestTimeout;
@@ -225,9 +219,9 @@ static BOOL g_seed_fetching_in_progress = NO;
 
 // Generates and returns the SeedResponse by parsing the HTTP response returned
 // by the variations server. Returns `nil` if the HTTP response is invalid.
-- (IOSChromeSeedResponse*)seedResponseForHTTPResponse:
-                              (NSHTTPURLResponse*)httpResponse
-                                                 data:(NSData*)data {
+- (std::unique_ptr<variations::SeedResponse>)
+    seedResponseForHTTPResponse:(NSHTTPURLResponse*)httpResponse
+                           data:(NSData*)data {
   NSString* signature =
       [httpResponse valueForHTTPHeaderField:@"X-Seed-Signature"];
   NSString* country = [httpResponse valueForHTTPHeaderField:@"X-Country"];
@@ -246,15 +240,18 @@ static BOOL g_seed_fetching_in_progress = NO;
   if ([instanceManipulations count] == 1 &&
       [[instanceManipulations[0] stringByTrimmingCharactersInSet:whitespace]
           isEqualToString:@"gzip"]) {
-    IOSChromeSeedResponse* seed =
-        [[IOSChromeSeedResponse alloc] initWithSignature:signature
-                                                 country:country
-                                                    time:[NSDate now]
-                                                    data:data
-                                              compressed:YES];
+    auto seed = std::make_unique<variations::SeedResponse>();
+    if (data) {
+      NSString* base64EncodedNSString = [data base64EncodedStringWithOptions:0];
+      seed->data = base::SysNSStringToUTF8(base64EncodedNSString);
+    }
+    seed->signature = base::SysNSStringToUTF8(signature);
+    seed->country = base::SysNSStringToUTF8(country);
+    seed->date = base::Time::Now();
+    seed->is_gzip_compressed = YES;
     return seed;
   }
-  return nil;
+  return nullptr;
 }
 
 // Notifies the delegate of the seed fetching result. Since the seed fetch
