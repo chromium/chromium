@@ -6,7 +6,35 @@
  * @fileoverview Polymer element for Enterprise Enrollment screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/gaia_dialog.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Authenticator, AuthFlow, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
+import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
+import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.m.js';
+import {OobeTypes} from '../../components/oobe_types.m.js';
+import {Oobe} from '../../cr_ui.m.js';
+import {DisplayManager, invokePolymerMethod} from '../../display_manager.m.js';
+import {keyboard} from '../../keyboard_utils.m.js';
+import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
+
 
 /**
  * @constructor
@@ -15,9 +43,8 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const EnterpriseEnrollmentElementBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+const EnterpriseEnrollmentElementBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @polymer
@@ -27,7 +54,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     return 'enterprise-enrollment-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -306,8 +335,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       this.authenticator_.setWebviewPartition(
           'webviewPartitionName' in data ? data.webviewPartitionName : '');
 
-      this.authenticator_.load(
-          cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
+      this.authenticator_.load(AuthMode.DEFAULT, gaiaParams);
 
       if (data.gaia_buttons_type) {
         this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
@@ -318,7 +346,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }
     }
 
-    cr.ui.login.invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
+    invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
     this.showStep(
         this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
                              OobeTypes.EnrollmentStep.LOADING);
@@ -724,7 +752,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * Whether authFlow is the SAML.
    */
   isSaml_(authFlow) {
-    return authFlow === cr.login.Authenticator.AuthFlow.SAML;
+    return authFlow === AuthFlow.SAML;
   }
 
   /*

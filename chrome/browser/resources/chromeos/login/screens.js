@@ -58,7 +58,7 @@ import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
-import './screens/oobe/enterprise_enrollment.m.js';
+import './screens/oobe/enterprise_enrollment.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
