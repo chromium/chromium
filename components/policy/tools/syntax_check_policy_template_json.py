@@ -2013,7 +2013,10 @@ class PolicyTemplateChecker(object):
       Returns warnings and errors found in the policies.
     '''
     self.features = known_features
-    modified_policies = [pc['new_policy'] for pc in policy_change_list]
+    modified_policies = [
+        pc['new_policy'] for pc in policy_change_list
+        if pc['new_policy'] is not None
+    ]
     for policy in modified_policies:
       self._CheckPolicyDefinition(policy, current_version)
     self.non_compatibility_error_count = 0
