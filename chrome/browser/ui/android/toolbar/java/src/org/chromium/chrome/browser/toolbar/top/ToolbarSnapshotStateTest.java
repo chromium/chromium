@@ -172,6 +172,20 @@ public class ToolbarSnapshotStateTest {
     }
 
     @Test
+    public void testSameColorStateList() {
+        // Create the ColorStateList by hand. ColorStateList.valueOf will inconsistently reuse
+        // objects, but this ColorStateList should never have reference equality with the default.
+        ColorStateList colorStateList =
+                new ColorStateList(new int[][] {new int[] {}}, new int[] {DEFAULT_TINT});
+        Assert.assertNotEquals(mDefaultColorStateList, colorStateList);
+
+        ToolbarSnapshotState otherToolbarSnapshotState =
+                new ToolbarSnapshotStateBuilder().setColorStateList(colorStateList).build();
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+                otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
+    }
+
+    @Test
     public void testDifferentIsShowingUpdateBadgeDuringLastCapture() {
         ToolbarSnapshotState otherToolbarSnapshotState =
                 new ToolbarSnapshotStateBuilder()

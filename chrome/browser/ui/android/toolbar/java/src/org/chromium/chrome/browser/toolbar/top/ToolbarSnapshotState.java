@@ -122,7 +122,10 @@ public class ToolbarSnapshotState {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
         } else if (!isVisibleUrlTextSame(that)) {
             return ToolbarSnapshotDifference.URL_TEXT;
-        } else if (!Objects.equals(mColorStateList, that.mColorStateList)) {
+        } else if (mColorStateList.getDefaultColor() != that.mColorStateList.getDefaultColor()) {
+            // While there's more to the ColorStateList than just the default color, there's no
+            // great way to check for equality. Currently default colors should be sufficient for
+            // detecting changes to the toolbar.
             return ToolbarSnapshotDifference.HOME_BUTTON_COLOR;
         }
         return ToolbarSnapshotDifference.NONE;
