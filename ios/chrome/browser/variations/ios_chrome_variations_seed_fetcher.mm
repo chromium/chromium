@@ -242,8 +242,9 @@ static BOOL g_seed_fetching_in_progress = NO;
           isEqualToString:@"gzip"]) {
     auto seed = std::make_unique<variations::SeedResponse>();
     if (data) {
-      NSString* base64EncodedNSString = [data base64EncodedStringWithOptions:0];
-      seed->data = base::SysNSStringToUTF8(base64EncodedNSString);
+      // "data" is binary, for which protobuf uses strings.
+      seed->data = std::string(reinterpret_cast<const char*>([data bytes]),
+                               [data length]);
     }
     seed->signature = base::SysNSStringToUTF8(signature);
     seed->country = base::SysNSStringToUTF8(country);
