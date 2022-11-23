@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
+#include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -1108,6 +1110,30 @@ TEST_F(AshNotificationViewTest, CollapseProgressNotificationWithImage) {
   notification_view()->UpdateWithNotification(*notification);
 
   notification_view()->ToggleExpand();
+}
+
+TEST_F(AshNotificationViewTest, ButtonStateUpdated) {
+  auto notification = CreateTestNotification();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+  notification_view()->UpdateWithNotification(*notification);
+
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification->id());
+  ash::AshNotificationInputContainer* inline_reply =
+      static_cast<AshNotificationInputContainer*>(
+          GetInlineReply(notification_view));
+
+  EXPECT_TRUE(inline_reply->textfield()->GetText().empty());
+
+  inline_reply->UpdateButtonImage();
+
+  EXPECT_FALSE(inline_reply->button()->GetEnabled());
+
+  inline_reply->textfield()->SetText(u"test");
+  inline_reply->UpdateButtonImage();
+
+  EXPECT_TRUE(inline_reply->button()->GetEnabled());
 }
 
 }  // namespace ash

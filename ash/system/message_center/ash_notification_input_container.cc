@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -101,13 +102,23 @@ void AshNotificationInputContainer::SetSendButtonHighlightPath() {
 void AshNotificationInputContainer::UpdateButtonImage() {
   if (!GetWidget())
     return;
-
-  button()->SetImage(
+  UpdateButtonState();
+  button()->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kSendIcon, kInputReplyButtonSize,
-                            ash::AshColorProvider::Get()->GetControlsLayerColor(
-                                ash::AshColorProvider::ControlsLayerType::
-                                    kControlBackgroundColorActive)));
+      ui::ImageModel::FromVectorIcon(kSendIcon, cros_tokens::kColorProminent,
+                                     kInputReplyButtonSize));
+  button()->SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(kSendIcon, cros_tokens::kColorDisabled,
+                                     kInputReplyButtonSize));
+}
+
+void AshNotificationInputContainer::UpdateButtonState() {
+  button()->SetEnabled(!IsInputEmpty());
+}
+
+bool AshNotificationInputContainer::IsInputEmpty() {
+  return textfield()->GetText().empty();
 }
 
 void AshNotificationInputContainer::OnThemeChanged() {

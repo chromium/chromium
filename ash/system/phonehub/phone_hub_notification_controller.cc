@@ -224,6 +224,8 @@ class PhoneHubAshNotificationView : public AshNotificationView {
   // message_center::NotificationView:
   void OnNotificationInputSubmit(size_t index,
                                  const std::u16string& text) override {
+    if (text.empty())
+      return;
     AshNotificationView::OnNotificationInputSubmit(index, text);
 
     DCHECK(reply_button_);
