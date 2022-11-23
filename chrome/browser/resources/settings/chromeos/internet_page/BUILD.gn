@@ -41,7 +41,16 @@ js_type_check("closure_compile_module") {
 js_library("apn_subpage") {
   deps = [
     "//ash/webui/common/resources/network:apn_list",
+    "//ash/webui/common/resources/network:cellular_utils",
+    "//ash/webui/common/resources/network:mojo_interface_provider",
+    "//ash/webui/common/resources/network:network_listener_behavior",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chrome/browser/resources/settings:router",
+    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
   ]
 
   externs_list = []

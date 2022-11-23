@@ -35,8 +35,12 @@
     </div>
   </template>
 </div>
-<iron-list items="[[apns]]">
+
+<iron-list items="[[getApns_(managedCellularProperties)]]">
   <template>
-    <apn-list-item apn="[[item]]"></apn-list-item>
+    <apn-list-item
+        apn="[[item]]"
+        is-connected="[[isApnConnected_(index)]]">
+    </apn-list-item>
   </template>
 </iron-list>

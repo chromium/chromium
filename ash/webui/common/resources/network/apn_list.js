@@ -14,6 +14,8 @@ import 'chrome://resources/ash/common/network/apn_list_item.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {ApnProperties, ApnState, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 
@@ -24,16 +26,47 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    // TODO(b/162365553): Populate with real data and remove dummy values.
-    apns: {
-      type: Array,
-      value: [{name: 'apn1'}, {name: 'apn2'}, {name: 'apn3'}],
+    /**@type {!ManagedCellularProperties}*/
+    managedCellularProperties: {
+      type: Object,
     },
 
     shouldOmitLinks: {
       type: Boolean,
       value: false,
     },
+  },
+
+  /**
+   * Returns an array with all the APN properties that need to be displayed.
+   * TODO(b/162365553): Implement logic for customApnList.
+   * TODO(b/162365553): Handle managedCellularProperties.apnList.policyValue
+   * when policies are included.
+   * @return {Array<!ApnProperties>}
+   * @private
+   */
+  getApns_() {
+    if (!this.managedCellularProperties) {
+      return [];
+    }
+
+    const connectedApn = this.managedCellularProperties.connectedApn;
+    if (connectedApn) {
+      return [connectedApn];
+    }
+    // TODO(b/162365553): Handle the case when there is no connected APN.
+    return [];
+  },
+
+  /**
+   * Returns true if the APN on this index is connected.
+   * @param {number} index index in the APNs array.
+   * @return {boolean}
+   * @private
+   */
+  isApnConnected_(index) {
+    return !!this.managedCellularProperties &&
+        !!this.managedCellularProperties.connectedApn && index === 0;
   },
 
   /**

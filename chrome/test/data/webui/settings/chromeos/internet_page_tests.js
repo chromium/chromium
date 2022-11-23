@@ -766,8 +766,10 @@ suite('InternetPage', function() {
       'Create apn button opens dialogs and clicking cancel button removes it',
       async function() {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
-        await init();
-        Router.getInstance().navigateTo(routes.APN);
+        await navigateToCellularDetailPage();
+        internetPage.shadowRoot.querySelector('settings-internet-detail-page')
+            .shadowRoot.querySelector('#apnSubpageButton')
+            .click();
         await flushAsync();
         const getApnDetailDialog = () =>
             internetPage.shadowRoot.querySelector('apn-detail-dialog');
@@ -787,6 +789,43 @@ suite('InternetPage', function() {
         await onCloseEventPromise;
 
         assertFalse(!!getApnDetailDialog());
+      });
+
+  test(
+      'Navigate to APN subpage and remove cellular properties.',
+      async function() {
+        loadTimeData.overrideValues({isApnRevampEnabled: true});
+        await navigateToCellularDetailPage();
+        internetPage.shadowRoot.querySelector('settings-internet-detail-page')
+            .shadowRoot.querySelector('#apnSubpageButton')
+            .click();
+        await flushAsync();
+        assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+        assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
+        // We use the same guid as in navigateToCellularDetailPage so that
+        // we trigger onNetworkStateChanged
+        const network = OncMojo.getDefaultManagedProperties(
+            NetworkType.kWiFi, 'cellular1', 'name1');
+        const windowPopstatePromise = eventToPromise('popstate', window);
+        mojoApi_.setManagedPropertiesForTest(network);
+        await windowPopstatePromise;
+        await waitBeforeNextRender(internetPage);
+        // Because there were no cellular properties we call apn_subpage close
+        // which navigates to the previous page.
+        assertEquals(
+            Router.getInstance().getCurrentRoute(), routes.NETWORK_DETAIL);
+      });
+
+  test(
+      'Navigate to APN subpage without providing guid as parameter',
+      async function() {
+        loadTimeData.overrideValues({isApnRevampEnabled: true});
+        await navigateToCellularDetailPage();
+        const windowPopstatePromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateTo(routes.APN);
+        await windowPopstatePromise;
+        await waitBeforeNextRender(internetPage);
+        assertNotEquals(Router.getInstance().getCurrentRoute(), routes.APN);
       });
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.

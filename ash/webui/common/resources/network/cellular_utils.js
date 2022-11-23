@@ -5,6 +5,7 @@
 import 'chrome://resources/ash/common/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -95,4 +96,59 @@ export function isActiveSim(networkState, deviceState) {
     return simInfo.iccid === iccid && simInfo.isPrimary;
   });
   return !!isActiveSim;
+}
+
+/**
+ * Returns true if all significant DeviceState fields match. Ignores
+ * |scanning| which can be noisy and is handled separately.
+ * @param {!OncMojo.DeviceStateProperties} a
+ * @param {!OncMojo.DeviceStateProperties} b
+ * @return {boolean}
+ */
+export function deviceStatesMatch(a, b) {
+  return a.type === b.type && a.macAddress === b.macAddress &&
+      a.simAbsent === b.simAbsent && a.deviceState === b.deviceState &&
+      a.managedNetworkAvailable === b.managedNetworkAvailable &&
+      OncMojo.ipAddressMatch(a.ipv4Address, b.ipv4Address) &&
+      OncMojo.ipAddressMatch(a.ipv6Address, b.ipv6Address) &&
+      OncMojo.simLockStatusMatch(a.simLockStatus, b.simLockStatus) &&
+      OncMojo.simInfosMatch(a.simInfos, b.simInfos) &&
+      a.inhibitReason === b.inhibitReason;
+}
+
+/**
+ * @param {!NetworkType} type
+ * @param {!Array<!DeviceStateProperties>} devices
+ * @param {?OncMojo.DeviceStateProperties} deviceState
+ * @return {{deviceState: OncMojo.DeviceStateProperties,
+ *           shouldGetNetworkDetails: boolean}}
+ */
+export function processDeviceState(type, devices, deviceState) {
+  const newDeviceState = devices.find(device => device.type === type) || null;
+  let shouldGetNetworkDetails = false;
+  if (!deviceState || !newDeviceState) {
+    deviceState = /**@type {?OncMojo.DeviceStateProperties}*/ (newDeviceState);
+    shouldGetNetworkDetails = !!deviceState;
+  } else if (!deviceStatesMatch(deviceState, newDeviceState)) {
+    // Only request a network state update if the deviceState changed.
+    shouldGetNetworkDetails =
+        deviceState.deviceState !== newDeviceState.deviceState;
+    deviceState = /**@type {?OncMojo.DeviceStateProperties}*/ (newDeviceState);
+  } else if (deviceState.scanning !== newDeviceState.scanning) {
+    // Update just the scanning state to avoid interrupting other parts of
+    // the UI (e.g. custom IP addresses or nameservers).
+    deviceState.scanning = newDeviceState.scanning;
+    // Cellular properties are not updated while scanning (since they
+    // may be invalid), so request them on scan completion.
+    if (type === NetworkType.kCellular) {
+      shouldGetNetworkDetails = true;
+    }
+  } else if (type === NetworkType.kCellular) {
+    // If there are no device state property changes but type is
+    // cellular, then always fetch network details. This is because
+    // for cellular networks, some shill device level properties are
+    // represented at network level in ONC.
+    shouldGetNetworkDetails = true;
+  }
+  return {deviceState, shouldGetNetworkDetails};
 }

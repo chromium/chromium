@@ -70,8 +70,10 @@ js_library("cr_policy_network_indicator_mojo") {
 
 js_library("apn_list") {
   deps = [
+    ":onc_mojo",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:apn_list_item",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -81,6 +83,7 @@ js_library("apn_list") {
 js_library("apn_list_item") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
