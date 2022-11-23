@@ -27,8 +27,7 @@ include_rules = [
 specific_include_rules = {
   "path_builder_unittest\.cc": [
     "+base/test/bind.h",
-    "+base/test/metrics/histogram_tester.h",
-    "+base/test/task_environment.h",
+    "+base/test/metrics/histogram_tester.h"
   ],
 }
 
