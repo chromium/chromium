@@ -52,6 +52,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -1865,7 +1866,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 // See crbug.com/1320453 for why this is off for lacros.
 class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDocumentPictureInPictureAPI};
+      blink::features::kDocumentPictureInPictureAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
@@ -1908,8 +1909,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_FeatureMustBeEnabled) {
   // Creating a picture in picture window should not work if the feature is off.
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(features::kDocumentPictureInPictureAPI));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      blink::features::kDocumentPictureInPictureAPI));
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   Navigate(&params);

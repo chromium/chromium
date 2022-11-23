@@ -57,6 +57,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -289,11 +290,10 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_ANDROID)
-      // We may receive a PiP request with the feature disabled if the user has
-      // explicitly turned on the Blink feature without turning on the
-      // browser-side feature.
-      if (!base::FeatureList::IsEnabled(features::kDocumentPictureInPictureAPI))
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kDocumentPictureInPictureAPI)) {
         return {nullptr, -1};
+      }
 
       // Picture in picture windows may not be opened by other picture in
       // picture windows.

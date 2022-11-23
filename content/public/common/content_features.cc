@@ -736,16 +736,6 @@ BASE_FEATURE(kPersistentOriginTrials,
              "PersistentOriginTrials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A browser-side equivalent of the Blink feature "DocumentPictureInPictureAPI".
-// This is used for sanity checks to ensure that the feature can't be enabled by
-// a compromised renderer despite the Blink flag not being enabled.
-//
-// Tracking bug: https://crbug.com/1269059
-// Removal bug (when no longer experimental): https://crbug.com/1285144
-BASE_FEATURE(kDocumentPictureInPictureAPI,
-             "DocumentPictureInPictureAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables process sharing for sites that do not require a dedicated process
 // by using a default SiteInstance. Default SiteInstances will only be used
 // on platforms that do not use full site isolation.

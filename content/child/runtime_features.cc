@@ -213,8 +213,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDevicePosture, features::kDevicePosture},
     {wf::EnableDigitalGoods, features::kDigitalGoodsApi, kSetOnlyIfOverridden},
     {wf::EnableDirectSockets, features::kIsolatedWebApps},
-    {wf::EnableDocumentPictureInPictureAPI,
-     features::kDocumentPictureInPictureAPI},
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},

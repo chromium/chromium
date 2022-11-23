@@ -1065,6 +1065,7 @@
         "default": "experimental",
       },
       settable_from_internals: true,
+      base_feature: "DocumentPictureInPictureAPI",
     },
     {
       name: "DocumentPolicy",
