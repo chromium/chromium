@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
   EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
                       default_user_image::kFirstDefaultImageIndex,
-                      GetUserImagePath(test_account_id1_, "jpg"));
+                      base::FilePath());
 }
 
 // Verifies that SaveUserImage() correctly sets and persists the chosen user
@@ -743,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
                       default_user_image::kFirstDefaultImageIndex,
-                      GetUserImagePath(enterprise_account_id_, "jpg"));
+                      base::FilePath());
 
   // Set policy. Verify that the policy-provided user image is downloaded, set
   // and persisted, overriding the previously set image.

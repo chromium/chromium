@@ -302,15 +302,11 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
                                        weak_factory_.GetWeakPtr(), true));
       }
     } else {
-      gfx::ImageSkia default_image =
-          default_user_image::GetDefaultImageDeprecated(image_index_);
       std::unique_ptr<user_manager::UserImage> user_image(
-          user_manager::UserImage::CreateAndEncode(
-              default_image, user_manager::UserImage::ChooseImageFormat(
-                                 *default_image.bitmap())));
-      // Cache the in-use default image as part of the migration of avatar
-      // images to cloud.
-      UpdateUserAndSaveImage(std::move(user_image));
+          new user_manager::UserImage(
+              default_user_image::GetDefaultImageDeprecated(image_index_)));
+      UpdateUser(std::move(user_image));
+      NotifyJobDone();
     }
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
@@ -345,17 +341,13 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
         image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                    weak_factory_.GetWeakPtr(), true));
   } else {
-    gfx::ImageSkia default_image =
-        default_user_image::GetDefaultImageDeprecated(image_index_);
     std::unique_ptr<user_manager::UserImage> user_image(
-        user_manager::UserImage::CreateAndEncode(
-            default_image, user_manager::UserImage::ChooseImageFormat(
-                               *default_image.bitmap())));
+        new user_manager::UserImage(
+            default_user_image::GetDefaultImageDeprecated(image_index_)));
 
-    // Now that default images are served from the cloud, the current in-use
-    // user avatar image needs to be saved and cached in local state for
-    // offline usage.
-    UpdateUserAndSaveImage(std::move(user_image));
+    UpdateUser(std::move(user_image));
+    UpdateLocalState();
+    NotifyJobDone();
   }
 }
 
