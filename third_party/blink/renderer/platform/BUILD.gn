@@ -8,6 +8,7 @@ import("//build/compiled_action.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//build/nocompile.gni")
 import("//media/media_options.gni")
 import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -2683,4 +2684,21 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
   ]
   public_deps = [ "//gpu:raster" ]
+}
+
+if (enable_nocompile_tests) {
+  nocompile_test("blink_platform_nocompile_tests") {
+    sources = [ "wtf/functional_test.nc" ]
+
+    deps = [
+      ":platform",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//testing/gtest",
+    ]
+
+    # Since the nocompile test is not able to inspect the contents of
+    # include_dirs, we need to specify the v8 include dir manually.
+    include_dirs = [ "//v8/include" ]
+  }
 }

@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 
+#include <type_traits>
+
+#include "base/functional/disallow_unretained.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
@@ -51,5 +54,19 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
 }
 
 }  // namespace blink
+
+namespace base::internal {
+
+// Do not copy this code. Chromium code should just use DISALLOW_UNRETAINED()
+// directly. This is needed because v8 lives outside the Chromium repository and
+// does not want to even indirectly rely on //base concepts.
+template <typename T>
+struct TypeSupportsUnretained<
+    T,
+    std::enable_if_t<cppgc::IsGarbageCollectedOrMixinTypeV<T>>> {
+  static constexpr inline bool kValue = false;
+};
+
+}  // namespace base::internal
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
