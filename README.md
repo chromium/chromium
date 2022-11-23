@@ -87,6 +87,8 @@ On Ubuntu/Debian, make sure Python 3.9 is being used instead of Python 3.10. [Go
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 # set 3.9 as the default
 ```
 
+**WARNING**: On Ubuntu 22.*, this will seriously mess with `apt` and a whole bunch of other things (e.g. the Terminal app won't start from the Gnome app bar). I found that things work fine, if you only use `python3.9` during initial (or maybe some other builds), but is generally not necessary for incremental builds. I thus recommend, using `sudo update-alternatives` in interactive mode to revert that change.
+
 ## Missing symlinks
 
 When facing the following:
