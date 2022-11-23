@@ -1078,6 +1078,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         pinnedTabsAvailable:isTabGridPageRegularTabs];
   }
   [self updateToolbarsAppearance];
+  // Make sure the current page becomes the first responder, so that it can
+  // register and handle key commands.
+  [self.currentPageViewController becomeFirstResponder];
 }
 
 // Sets the value of `currentPage`, adjusting the position of the scroll view
