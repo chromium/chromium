@@ -4,17 +4,21 @@
 
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
 
-#include "base/command_line.h"
+#include <linux/kcmp.h>
+
 #include "media/gpu/buildflags.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
+#include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
-#include "sandbox/policy/linux/bpf_cros_amd_gpu_policy_linux.h"
-#include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
-#include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
-#include "sandbox/policy/switches.h"
 
+using sandbox::bpf_dsl::AllOf;
+using sandbox::bpf_dsl::Allow;
+using sandbox::bpf_dsl::Arg;
+using sandbox::bpf_dsl::Error;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox::policy {
@@ -49,33 +53,93 @@ HardwareVideoDecodingProcessPolicy::ComputePolicyType(
 
 HardwareVideoDecodingProcessPolicy::HardwareVideoDecodingProcessPolicy(
     PolicyType policy_type)
-    : policy_type_(policy_type) {
-  switch (policy_type_) {
-    case PolicyType::kVaapiOnIntel:
-      gpu_process_policy_ = std::make_unique<GpuProcessPolicy>();
-      break;
-    case PolicyType::kVaapiOnAMD:
-      gpu_process_policy_ = std::make_unique<CrosAmdGpuProcessPolicy>();
-      break;
-    case PolicyType::kV4L2:
-      gpu_process_policy_ = std::make_unique<CrosArmGpuProcessPolicy>(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kGpuSandboxAllowSysVShm));
-      break;
-  }
-}
-
-HardwareVideoDecodingProcessPolicy::~HardwareVideoDecodingProcessPolicy() =
-    default;
+    : policy_type_(policy_type) {}
 
 ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscall(
     int system_call_number) const {
   switch (policy_type_) {
     case PolicyType::kVaapiOnIntel:
+      return EvaluateSyscallForVaapiOnIntel(system_call_number);
     case PolicyType::kVaapiOnAMD:
+      return EvaluateSyscallForVaapiOnAMD(system_call_number);
     case PolicyType::kV4L2:
-      return gpu_process_policy_->EvaluateSyscall(system_call_number);
+      return EvaluateSyscallForV4L2(system_call_number);
   }
+}
+
+ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnIntel(
+    int system_call_number) const {
+  if (SyscallSets::IsTruncate(system_call_number)) {
+    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
+    // that a video decoder process can change the size of a file (including,
+    // e.g., a dma-buf).
+    return CrashSIGSYS();
+  }
+
+  if (system_call_number == __NR_ioctl)
+    return Allow();
+
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
+    return sandbox_linux->HandleViaBroker(system_call_number);
+
+  return BPFBasePolicy::EvaluateSyscall(system_call_number);
+}
+
+ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnAMD(
+    int system_call_number) const {
+  if (SyscallSets::IsTruncate(system_call_number)) {
+    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
+    // that a video decoder process can change the size of a file (including,
+    // e.g., a dma-buf).
+    return CrashSIGSYS();
+  }
+
+  switch (system_call_number) {
+    case __NR_getdents64:
+    case __NR_ioctl:
+    case __NR_sysinfo:
+    case __NR_sched_setscheduler:
+      return Allow();
+    case __NR_sched_setaffinity:
+      return RestrictSchedTarget(GetPolicyPid(), system_call_number);
+    case __NR_kcmp: {
+      const Arg<pid_t> pid1(0);
+      const Arg<pid_t> pid2(1);
+      const Arg<int> type(2);
+      const pid_t policy_pid = GetPolicyPid();
+      // Only allowed when comparing file handles for the calling thread.
+      return If(AllOf(pid1 == policy_pid, pid2 == policy_pid,
+                      type == KCMP_FILE),
+                Allow())
+          .Else(Error(EPERM));
+    }
+  }
+
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
+    return sandbox_linux->HandleViaBroker(system_call_number);
+
+  return BPFBasePolicy::EvaluateSyscall(system_call_number);
+}
+
+ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForV4L2(
+    int system_call_number) const {
+  if (SyscallSets::IsTruncate(system_call_number)) {
+    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
+    // that a video decoder process can change the size of a file (including,
+    // e.g., a dma-buf).
+    return CrashSIGSYS();
+  }
+
+  if (system_call_number == __NR_ioctl)
+    return Allow();
+
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
+    return sandbox_linux->HandleViaBroker(system_call_number);
+
+  return BPFBasePolicy::EvaluateSyscall(system_call_number);
 }
 
 }  // namespace sandbox::policy

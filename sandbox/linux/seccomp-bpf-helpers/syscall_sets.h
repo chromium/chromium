@@ -29,6 +29,7 @@ class SANDBOX_EXPORT SyscallSets {
   // a new file descriptor or otherwise perform an operation directly
   // via a path.
   static bool IsFileSystem(int sysno);
+  static bool IsTruncate(int sysno);
   static bool IsAllowedFileSystemAccessViaFd(int sysno);
   static bool IsDeniedFileSystemAccessViaFd(int sysno);
   static bool IsGetSimpleId(int sysno);

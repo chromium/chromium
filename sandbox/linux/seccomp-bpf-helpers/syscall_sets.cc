@@ -194,6 +194,21 @@ bool SyscallSets::IsFileSystem(int sysno) {
   }
 }
 
+bool SyscallSets::IsTruncate(int sysno) {
+  switch (sysno) {
+    case __NR_ftruncate:
+    case __NR_truncate:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_ftruncate64:
+    case __NR_truncate64:
+#endif
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
   switch (sysno) {
     case __NR_fstat:

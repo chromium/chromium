@@ -11,8 +11,6 @@
 
 namespace sandbox::policy {
 
-class GpuProcessPolicy;
-
 // Policy used to sandbox utility processes that perform hardware video decoding
 // on behalf of untrusted clients (Chrome renderer processes or ARC++/ARCVM).
 //
@@ -36,14 +34,19 @@ class SANDBOX_POLICY_EXPORT HardwareVideoDecodingProcessPolicy
       const HardwareVideoDecodingProcessPolicy&) = delete;
   HardwareVideoDecodingProcessPolicy& operator=(
       const HardwareVideoDecodingProcessPolicy&) = delete;
-  ~HardwareVideoDecodingProcessPolicy() override;
+  ~HardwareVideoDecodingProcessPolicy() override = default;
 
   // sandbox::bpf_dsl::Policy implementation.
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
 
  private:
+  bpf_dsl::ResultExpr EvaluateSyscallForVaapiOnIntel(
+      int system_call_number) const;
+  bpf_dsl::ResultExpr EvaluateSyscallForVaapiOnAMD(
+      int system_call_number) const;
+  bpf_dsl::ResultExpr EvaluateSyscallForV4L2(int system_call_number) const;
+
   const PolicyType policy_type_;
-  std::unique_ptr<GpuProcessPolicy> gpu_process_policy_;
 };
 
 }  // namespace sandbox::policy
