@@ -49,6 +49,9 @@ class WaylandManager {
 
   static WaylandManager* Get();
 
+  // Cleans up reference to runner. (Needed only for testing)
+  void CleanupRunnerForTest();
+
   // The singleton instance should be initialized by the host process on the
   // UI thread right after creation.
   void Init(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);

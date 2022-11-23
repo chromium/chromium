@@ -38,6 +38,10 @@
 #include "base/linux_util.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_manager.h"
+#endif  // BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_WAYLAND)
+
 namespace remoting {
 
 using protocol::ErrorCode;
@@ -262,6 +266,7 @@ void It2MeHostTest::SetUp() {
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 #endif
+
   run_loop_ = std::make_unique<base::RunLoop>();
 
   network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
@@ -279,6 +284,9 @@ void It2MeHostTest::TearDown() {
   // Shutdown the host if it hasn't been already. Without this, the call to
   // run_loop_->Run() may never return.
   it2me_host_->Disconnect();
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_WAYLAND)
+  WaylandManager::Get()->CleanupRunnerForTest();
+#endif
   network_task_runner_ = nullptr;
   ui_task_runner_ = nullptr;
   host_context_.reset();

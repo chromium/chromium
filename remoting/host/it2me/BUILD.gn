@@ -48,6 +48,10 @@ source_set("common") {
     "it2me_native_messaging_host.h",
   ]
 
+  if (remoting_use_wayland) {
+    defines = [ "REMOTING_USE_WAYLAND" ]
+  }
+
   if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }

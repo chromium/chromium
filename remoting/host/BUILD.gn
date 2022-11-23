@@ -836,6 +836,11 @@ source_set("unit_tests") {
     "//ui/events:events",
   ]
 
+  if (remoting_use_wayland && is_linux) {
+    defines = [ "REMOTING_USE_WAYLAND" ]
+    deps += [ "//ui/gtk:gtk_config" ]
+  }
+
   if (is_linux) {
     sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
     deps += [ "//remoting/host/linux:unit_tests" ]

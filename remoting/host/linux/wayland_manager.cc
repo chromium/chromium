@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "remoting/host/linux/wayland_manager.h"
+#include "remoting/base/logging.h"
 
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
@@ -23,8 +24,17 @@ WaylandManager* WaylandManager::Get() {
 void WaylandManager::Init(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;
+  const char* wayland_display = getenv("WAYLAND_DISPLAY");
+  if (!wayland_display) {
+    LOG(WARNING) << "WAYLAND_DISPLAY env variable is not set";
+    return;
+  }
   wayland_connection_ =
       std::make_unique<WaylandConnection>(getenv("WAYLAND_DISPLAY"));
+}
+
+void WaylandManager::CleanupRunnerForTest() {
+  ui_task_runner_ = nullptr;
 }
 
 void WaylandManager::AddCapturerMetadataCallback(
