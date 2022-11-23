@@ -1961,11 +1961,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_TITLE" desc="Title of the dialog for entering details to create a new Linux container.">
     Create a new container
   </message>
-  <!-- TODO(crbug/1300764): Remove translateable on error strings once they are finalized.-->
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_CONTAINER_EXISTS_ERROR" translateable="false" desc="Error for invalid input when creating a new Linux container.">
-    This container and VM name combination already exists.
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_CONTAINER_EXISTS_ERROR" desc="Error for invalid input when creating a new Linux container.">
+    This container already exists.
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_EMPTY_CONTAINER_NAME_ERROR" translateable="false" desc="Error for invalid input when creating a new Linux container.">
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_EMPTY_CONTAINER_NAME_ERROR" desc="Error for invalid input when creating a new Linux container.">
     Container name cannot be empty.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_SERVER" desc="Heading for the input field for entering the image server URL when creating a new Linux container.">
