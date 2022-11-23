@@ -42,10 +42,11 @@ interface SpeechRecognitionService {
   BindAudioSourceSpeechRecognitionContext(
       pending_receiver<AudioSourceSpeechRecognitionContext> context);
 
-  // Sets the file path to the Speech On-Device API (SODA) binary and
-  // the config file for the language pack.
-  SetSodaPath(mojo_base.mojom.FilePath binary_path,
-              mojo_base.mojom.FilePath config_path);
+  // Sets the file path to the Speech On-Device API (SODA) binary, the config
+  // file paths for the language packs, and the primary language name.
+  SetSodaPaths(mojo_base.mojom.FilePath binary_path,
+              map<string, mojo_base.mojom.FilePath> config_paths,
+              string primary_language_name);
 };
 
 // The interface used to start and stop fetching audio from the microphone

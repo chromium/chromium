@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -128,10 +130,12 @@ void SpeechRecognitionRecognizerImpl::Create(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
-    const base::FilePath& config_path) {
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(remote), std::move(options), binary_path, config_path),
+          std::move(remote), std::move(options), binary_path, config_paths,
+          primary_language_name),
       std::move(receiver));
 }
 
@@ -176,10 +180,12 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
-    const base::FilePath& config_path)
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name)
     : options_(std::move(options)),
       client_remote_(std::move(remote)),
-      config_path_(config_path) {
+      config_paths_(config_paths),
+      primary_language_name_(primary_language_name) {
   recognition_event_callback_ = media::BindToCurrentLoop(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
@@ -293,7 +299,6 @@ void SpeechRecognitionRecognizerImpl::
   }
 
   CHECK(soda_client_);
-  DCHECK(base::PathExists(config_path_));
   if (!soda_client_->IsInitialized() ||
       soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
     ResetSoda();
@@ -311,9 +316,11 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
     return;
 
   // Only reset SODA if the language changed.
-  LanguageCode language_code = language_component_config.value().language_code;
-  if (language_code == language_ || language_code == LanguageCode::kNone)
+  if (language_component_config.value().language_name ==
+          primary_language_name_ ||
+      language_component_config.value().language_code == LanguageCode::kNone) {
     return;
+  }
 
   if (!task_runner_) {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -338,16 +345,16 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
           config_file_path),
       base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
                      weak_factory_.GetWeakPtr(), config_file_path,
-                     language_code));
+                     language_component_config.value().language_name));
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
     base::FilePath config_path,
-    speech::LanguageCode language_code,
+    std::string language_name,
     bool config_exists) {
   if (config_exists) {
-    config_path_ = config_path;
-    language_ = language_code;
+    config_paths_[language_name] = config_path;
+    primary_language_name_ = language_name;
     ResetSoda();
   }
 }
@@ -379,7 +386,8 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   // to determine the appropriate language pack path. Note that
   // SodaInstaller::GetLanguagePath() is not implemented outside of Chrome OS,
   // and options_->language is not set for Live Caption.
-  std::string language_pack_directory = config_path_.AsUTF8Unsafe();
+  std::string language_pack_directory =
+      config_paths_[primary_language_name_].AsUTF8Unsafe();
 
   // Initialize the SODA instance with the serialized config.
   soda::chrome::ExtendedSodaConfigMsg config_msg;
@@ -394,6 +402,18 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_enable_formatting(options_->enable_formatting);
   config_msg.set_enable_speaker_change_detection(
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      config_paths_.size() > 0) {
+    auto* multilang_config = config_msg.mutable_multilang_config();
+    multilang_config->set_rewind_when_switching_language(true);
+    auto& multilang_language_pack_directory =
+        *(multilang_config->mutable_multilang_language_pack_directory());
+    for (const auto& config : config_paths_) {
+      multilang_language_pack_directory[base::ToLowerASCII(config.first)] =
+          config.second.AsUTF8Unsafe();
+    }
+  }
+
   auto serialized = config_msg.SerializeAsString();
 
   SerializedSodaConfig config;

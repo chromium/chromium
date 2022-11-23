@@ -4,6 +4,9 @@
 
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "chrome/services/speech/soda/cros_soda_client.h"
 #include "google_apis/google_api_keys.h"
@@ -44,10 +47,12 @@ void CrosSpeechRecognitionRecognizerImpl::Create(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
-    const base::FilePath& config_path) {
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
-          std::move(remote), std::move(options), binary_path, config_path),
+          std::move(remote), std::move(options), binary_path, config_paths,
+          primary_language_name),
       std::move(receiver));
 }
 CrosSpeechRecognitionRecognizerImpl::~CrosSpeechRecognitionRecognizerImpl() =
@@ -57,13 +62,14 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
-    const base::FilePath& config_path)
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name)
     : SpeechRecognitionRecognizerImpl(std::move(remote),
                                       std::move(options),
                                       binary_path,
-                                      config_path),
-      binary_path_(binary_path),
-      languagepack_path_(config_path) {
+                                      config_paths,
+                                      primary_language_name),
+      binary_path_(binary_path) {
   cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
 }
 
@@ -92,7 +98,7 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->channel_count = channel_count;
     config->sample_rate = sample_rate;
     config->api_key = google_apis::GetSodaAPIKey();
-    config->language_dlc_path = languagepack_path_.value();
+    config->language_dlc_path = config_paths()[primary_language_name()].value();
     config->library_dlc_path = binary_path_.value();
     config->recognition_mode =
         GetSodaSpeechRecognitionMode(options_->recognition_mode);

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/constants/ash_features.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
@@ -32,9 +36,10 @@ namespace {
 constexpr char kInvalidSpeechRecogntionOptions[] =
     "Invalid SpeechRecognitionOptions provided";
 
-void PopulateFilePaths(const std::string* language,
-                       base::FilePath& binary_path,
-                       base::FilePath& languagepack_path) {
+void PopulateFilePaths(
+    const std::string* language,
+    base::FilePath& binary_path,
+    base::flat_map<std::string, base::FilePath>& config_paths) {
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   // TODO(crbug.com/1161569): Language should not be optional in
   // PopulateFilePaths, as it will be required once we support multiple
@@ -49,8 +54,11 @@ void PopulateFilePaths(const std::string* language,
                    "already installed";
     return;
   }
+
   binary_path = soda_installer->GetSodaBinaryPath();
-  languagepack_path =
+  // TODO(crbug.com/1161569): Populate config_paths with all language packs
+  // once the new language packs are available on ChromeOS.
+  config_paths[GetLanguageName(language_code)] =
       soda_installer->GetLanguagePath(GetLanguageName(language_code));
 }
 
@@ -87,13 +95,17 @@ void CrosSpeechRecognitionService::BindRecognizer(
     return;
   }
 
-  base::FilePath binary_path, languagepack_path;
+  base::FilePath binary_path;
+  base::flat_map<std::string, base::FilePath> config_paths;
+  std::string language_name = options->language
+                                  ? options->language.value()
+                                  : GetLanguageName(LanguageCode::kEnUs);
   PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
-                    languagepack_path);
+                    config_paths);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path,
-      languagepack_path);
+      config_paths, language_name);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -104,10 +116,14 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   if (!options->is_server_based) {
-    base::FilePath binary_path, languagepack_path;
+    base::FilePath binary_path;
+    base::flat_map<std::string, base::FilePath> config_paths;
     PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
-                      languagepack_path);
+                      config_paths);
 
+    std::string language_name = options->language
+                                    ? options->language.value()
+                                    : GetLanguageName(LanguageCode::kEnUs);
     // CrosSpeechRecognitionService runs on browser UI thread.
     // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
     // Note that its CrosSpeechRecognitionRecognizer must also run
@@ -119,8 +135,8 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
             &CrosSpeechRecognitionService::
                 CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread,
             weak_factory_.GetWeakPtr(), std::move(fetcher_receiver),
-            std::move(client), std::move(options), binary_path,
-            languagepack_path));
+            std::move(client), std::move(options), binary_path, config_paths,
+            language_name));
     std::move(callback).Run(
         CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
     return;
@@ -156,14 +172,15 @@ void CrosSpeechRecognitionService::
             client,
         media::mojom::SpeechRecognitionOptionsPtr options,
         const base::FilePath& binary_path,
-        const base::FilePath& languagepack_path) {
+        const base::flat_map<std::string, base::FilePath>& config_paths,
+        const std::string& primary_language_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!options->is_server_based);
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
-          std::move(client), std::move(options), binary_path,
-          languagepack_path),
+          std::move(client), std::move(options), binary_path, config_paths,
+          primary_language_name),
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported(),
       /*is_server_based=*/false);
 }

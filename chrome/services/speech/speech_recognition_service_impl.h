@@ -5,6 +5,9 @@
 #ifndef CHROME_SERVICES_SPEECH_SPEECH_RECOGNITION_SERVICE_IMPL_H_
 #define CHROME_SERVICES_SPEECH_SPEECH_RECOGNITION_SERVICE_IMPL_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -38,8 +41,10 @@ class SpeechRecognitionServiceImpl
   void BindAudioSourceSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
           context) override;
-  void SetSodaPath(const base::FilePath& binary_path,
-                   const base::FilePath& config_path) override;
+  void SetSodaPaths(
+      const base::FilePath& binary_path,
+      const base::flat_map<std::string, base::FilePath>& config_paths,
+      const std::string& primary_language_name) override;
 
   // media::mojom::SpeechRecognitionContext:
   void BindRecognizer(
@@ -58,6 +63,9 @@ class SpeechRecognitionServiceImpl
       BindAudioSourceFetcherCallback callback) override;
 
  protected:
+  // Returns whether the binary and config paths exist.
+  bool FilePathsExist();
+
   mojo::Receiver<media::mojom::SpeechRecognitionService> receiver_;
 
   // The sets of receivers used to receive messages from the clients.
@@ -67,7 +75,8 @@ class SpeechRecognitionServiceImpl
       audio_source_speech_recognition_contexts_;
 
   base::FilePath binary_path_ = base::FilePath();
-  base::FilePath config_path_ = base::FilePath();
+  base::flat_map<std::string, base::FilePath> config_paths_;
+  std::string primary_language_name_;
 
   base::WeakPtrFactory<SpeechRecognitionServiceImpl> weak_factory_{this};
 };

@@ -6,7 +6,9 @@
 #define CHROME_SERVICES_SPEECH_CROS_SPEECH_RECOGNITION_RECOGNIZER_IMPL_H_
 
 #include <memory>
+#include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
@@ -31,7 +33,8 @@ class CrosSpeechRecognitionRecognizerImpl
           remote,
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
-      const base::FilePath& config_path);
+      const base::flat_map<std::string, base::FilePath>& config_paths,
+      const std::string& primary_language_name);
   ~CrosSpeechRecognitionRecognizerImpl() override;
 
   static void Create(
@@ -40,7 +43,8 @@ class CrosSpeechRecognitionRecognizerImpl
           remote,
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
-      const base::FilePath& config_path);
+      const base::flat_map<std::string, base::FilePath>& config_paths,
+      const std::string& primary_language_name);
 
   // SpeechRecognitionRecognizerImpl:
   void SendAudioToSpeechRecognitionServiceInternal(
@@ -51,8 +55,7 @@ class CrosSpeechRecognitionRecognizerImpl
  private:
   std::unique_ptr<soda::CrosSodaClient> cros_soda_client_;
 
-  const base::FilePath binary_path_, languagepack_path_;
-
+  const base::FilePath binary_path_;
   base::WeakPtrFactory<CrosSpeechRecognitionRecognizerImpl> weak_factory_{this};
 };
 }  // namespace speech

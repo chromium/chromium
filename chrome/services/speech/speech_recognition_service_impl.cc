@@ -4,6 +4,9 @@
 
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -43,11 +46,13 @@ void SpeechRecognitionServiceImpl::BindSpeechRecognitionContext(
   speech_recognition_contexts_.Add(this, std::move(context));
 }
 
-void SpeechRecognitionServiceImpl::SetSodaPath(
+void SpeechRecognitionServiceImpl::SetSodaPaths(
     const base::FilePath& binary_path,
-    const base::FilePath& config_path) {
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::string& primary_language_name) {
   binary_path_ = binary_path;
-  config_path_ = config_path;
+  config_paths_ = config_paths;
+  primary_language_name_ = primary_language_name;
 }
 
 void SpeechRecognitionServiceImpl::BindRecognizer(
@@ -66,15 +71,15 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
 
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
-  if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
+  if (!FilePathsExist()) {
     speech_recognition_contexts_.Clear();
     receiver_.reset();
     return;
   }
 
-  SpeechRecognitionRecognizerImpl::Create(std::move(receiver),
-                                          std::move(client), std::move(options),
-                                          binary_path_, config_path_);
+  SpeechRecognitionRecognizerImpl::Create(
+      std::move(receiver), std::move(client), std::move(options), binary_path_,
+      config_paths_, primary_language_name_);
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -96,7 +101,7 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
 
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
-  if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
+  if (!FilePathsExist()) {
     speech_recognition_contexts_.Clear();
     receiver_.reset();
     return;
@@ -106,9 +111,22 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(client), std::move(options), binary_path_, config_path_),
+          std::move(client), std::move(options), binary_path_, config_paths_,
+          primary_language_name_),
       is_multi_channel_supported, is_server_based);
   std::move(callback).Run(is_multi_channel_supported);
+}
+
+bool SpeechRecognitionServiceImpl::FilePathsExist() {
+  if (!base::PathExists(binary_path_))
+    return false;
+
+  for (const auto& config : config_paths_) {
+    if (!base::PathExists(config.second))
+      return false;
+  }
+
+  return true;
 }
 
 }  // namespace speech

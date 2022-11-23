@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
@@ -48,7 +51,8 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
   void LaunchIfNotRunning();
 
   // Gets the path of the SODA configuration file for the selected language.
-  base::FilePath GetSodaConfigPath(PrefService* prefs);
+  base::flat_map<std::string, base::FilePath> GetSodaConfigPaths(
+      PrefService* prefs);
 
   // The browser context associated with the keyed service.
   raw_ptr<content::BrowserContext> context_;
