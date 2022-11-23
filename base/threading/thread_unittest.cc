@@ -296,13 +296,15 @@ TEST_F(ThreadTest, DISABLED_StopOnNonOwningThreadIsDeath) {
 
   Thread b("NonOwningThread");
   b.Start();
-  EXPECT_DCHECK_DEATH({
-    // Stopping |a| on |b| isn't allowed.
-    b.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&Thread::Stop, base::Unretained(&a)));
-    // Block here so the DCHECK on |b| always happens in this scope.
-    base::PlatformThread::Sleep(base::TimeDelta::Max());
-  });
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        // Stopping |a| on |b| isn't allowed.
+        b.task_runner()->PostTask(
+            FROM_HERE, base::BindOnce(&Thread::Stop, base::Unretained(&a)));
+        // Block here so the DCHECK on |b| always happens in this scope.
+        base::PlatformThread::Sleep(base::TimeDelta::Max());
+      },
+      "owning_sequence_checker_.CalledOnValidSequence()");
 }
 
 TEST_F(ThreadTest, TransferOwnershipAndStop) {
