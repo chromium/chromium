@@ -211,6 +211,19 @@ void RequestUnwindPrerequisitesInstallation(
 bool AreUnwindPrerequisitesAvailable(
     version_info::Channel channel,
     UnwindPrerequisitesDelegate* prerequites_delegate) {
+// While non-Android platforms do not need any specific prerequisites beyond
+// what is already bundled and available with Chrome for their platform-specific
+// unwinders to work, Android, in particular, requires a DFM to be installed.
+//
+// Therefore, unwind prerequisites for non-supported Android platforms are not
+// considered to be available by default, but prerequisites for non-Android
+// platforms are considered to be available by default.
+//
+// This is also why we do not need to check `prerequites_delegate` for
+// non-Android platforms. Regardless of the provided delegate, unwind
+// prerequisites are always considered to be available for non-Android
+// platforms.
+#if BUILDFLAG(IS_ANDROID)
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sometimes, DFMs can be installed even if not requested by Chrome
@@ -229,8 +242,11 @@ bool AreUnwindPrerequisitesAvailable(
   }
   return prerequites_delegate->AreAvailable(channel);
 #else   // ANDROID_ARM32_UNWINDING_SUPPORTED
-  return true;
+  return false;
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+#else   // BUILDFLAG(IS_ANDROID)
+  return true;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
