@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -107,6 +108,8 @@ class ConnectorsService : public KeyedService {
   ConnectorsManager* ConnectorsManagerForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);
+
   struct DmToken {
     DmToken(const std::string& value, policy::PolicyScope scope);
     DmToken(DmToken&&);

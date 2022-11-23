@@ -11,7 +11,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -469,5 +473,68 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(FILE_ATTACHED,
                                          FILE_DOWNLOADED,
                                          BULK_DATA_ENTRY));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
+ public:
+  ConnectorsServiceProfileTypeBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
+  }
+
+ protected:
+  TestingProfile* regular_profile() {
+    return profile_testing_helper_.regular_profile();
+  }
+  Profile* incognito_profile() {
+    return profile_testing_helper_.incognito_profile();
+  }
+
+  TestingProfile* guest_profile() {
+    return profile_testing_helper_.guest_profile();
+  }
+  Profile* guest_profile_otr() {
+    return profile_testing_helper_.guest_profile_otr();
+  }
+
+  TestingProfile* system_profile() {
+    return profile_testing_helper_.system_profile();
+  }
+  Profile* system_profile_otr() {
+    return profile_testing_helper_.system_profile_otr();
+  }
+
+  std::unique_ptr<ConnectorsService> CreateService(Profile* profile) {
+    ExtensionInstallEventRouter router(profile);
+
+    auto manager = std::make_unique<ConnectorsManager>(
+        nullptr, router, profile->GetPrefs(), GetServiceProviderConfig(),
+        false);
+
+    return std::make_unique<ConnectorsService>(profile, std::move(manager));
+  }
+
+ private:
+  void SetUp() override {
+    testing::Test::SetUp();
+    profile_testing_helper_.SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ProfileTestingHelper profile_testing_helper_;
+};
+
+TEST_F(ConnectorsServiceProfileTypeBrowserTest, IsEnabled) {
+  EXPECT_TRUE(CreateService(regular_profile())->ConnectorsEnabled());
+  EXPECT_FALSE(CreateService(incognito_profile())->ConnectorsEnabled());
+
+  EXPECT_FALSE(CreateService(guest_profile())->ConnectorsEnabled());
+  EXPECT_TRUE(CreateService(guest_profile_otr())->ConnectorsEnabled());
+
+  EXPECT_FALSE(CreateService(system_profile())->ConnectorsEnabled());
+  EXPECT_FALSE(CreateService(system_profile_otr())->ConnectorsEnabled());
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_connectors

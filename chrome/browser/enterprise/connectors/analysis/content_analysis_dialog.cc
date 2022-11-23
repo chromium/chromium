@@ -278,10 +278,9 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 }
 
 void ContentAnalysisDialog::ShowDialogNow() {
-  // If the contents is valid and dialog is not already either accepted or
-  // cancelled, show it now.  The dialog could already be either if the
-  // verdict was returned before the delay timeout.
-  if (web_contents_ && !accepted_or_cancelled_)
+  // If the web contents is still valid when the delay timer goes off, show the
+  // dialog now.
+  if (web_contents_)
     constrained_window::ShowWebModalDialogViews(this, web_contents_);
 }
 
@@ -530,7 +529,16 @@ void ContentAnalysisDialog::UpdateViews() {
 }
 
 void ContentAnalysisDialog::UpdateDialog() {
-  DCHECK(contents_view_);
+  if (!contents_view_) {
+    // If the dialog is no longer pending, a final verdict was received before
+    // the dalog was displayed.  In this case close the dialog.  Otherwise the
+    // dialog will leak.
+    if (!is_pending())
+      CancelDialogAndDelete();
+
+    return;
+  }
+
   DCHECK(is_result());
 
   int height_before = contents_view_->GetPreferredSize().height();
@@ -689,11 +697,6 @@ std::u16string ContentAnalysisDialog::GetBypassWarningButtonText() const {
 }
 
 std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
-  // The side icon is created either:
-  // - When the pending dialog is shown
-  // - When the response was fast enough that the failure dialog is shown first
-  DCHECK(!is_success());
-
   // The icon left of the text has the appearance of a blue "Enterprise" logo
   // with a spinner when the scan is pending.
   auto icon = std::make_unique<views::View>();
