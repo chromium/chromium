@@ -202,11 +202,6 @@ void PaymentRequestBrowserTestBase::OnShippingOptionSectionOpened() {
     event_waiter_->OnEvent(DialogEvent::SHIPPING_OPTION_SECTION_OPENED);
 }
 
-void PaymentRequestBrowserTestBase::OnCreditCardEditorOpened() {
-  if (event_waiter_)
-    event_waiter_->OnEvent(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-}
-
 void PaymentRequestBrowserTestBase::OnShippingAddressEditorOpened() {
   if (event_waiter_)
     event_waiter_->OnEvent(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -245,11 +240,6 @@ void PaymentRequestBrowserTestBase::OnErrorMessageShown() {
 void PaymentRequestBrowserTestBase::OnSpecDoneUpdating() {
   if (event_waiter_)
     event_waiter_->OnEvent(DialogEvent::SPEC_DONE_UPDATING);
-}
-
-void PaymentRequestBrowserTestBase::OnCvcPromptShown() {
-  if (event_waiter_)
-    event_waiter_->OnEvent(DialogEvent::CVC_PROMPT_SHOWN);
 }
 
 void PaymentRequestBrowserTestBase::OnProcessingSpinnerShown() {
@@ -665,11 +655,6 @@ PaymentRequestBrowserTestBase::GetShippingOptionLabelValues(
 }
 
 void PaymentRequestBrowserTestBase::OpenCVCPromptWithCVC(
-    const std::u16string& cvc) {
-  OpenCVCPromptWithCVC(cvc, delegate_->dialog_view());
-}
-
-void PaymentRequestBrowserTestBase::OpenCVCPromptWithCVC(
     const std::u16string& cvc,
     PaymentRequestDialogView* dialog_view) {
   ResetEventWaiter(DialogEvent::CVC_PROMPT_SHOWN);
@@ -679,22 +664,6 @@ void PaymentRequestBrowserTestBase::OpenCVCPromptWithCVC(
       static_cast<views::Textfield*>(dialog_view->GetViewByID(
           static_cast<int>(DialogViewID::CVC_PROMPT_TEXT_FIELD)));
   cvc_field->InsertOrReplaceText(cvc);
-}
-
-void PaymentRequestBrowserTestBase::PayWithCreditCardAndWait(
-    const std::u16string& cvc) {
-  PayWithCreditCardAndWait(cvc, delegate_->dialog_view());
-}
-
-void PaymentRequestBrowserTestBase::PayWithCreditCardAndWait(
-    const std::u16string& cvc,
-    PaymentRequestDialogView* dialog_view) {
-  OpenCVCPromptWithCVC(cvc, dialog_view);
-
-  ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-  ClickOnDialogViewAndWait(DialogViewID::CVC_PROMPT_CONFIRM_BUTTON,
-                           dialog_view);
 }
 
 void PaymentRequestBrowserTestBase::PayWithCreditCard(

@@ -68,8 +68,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
     virtual void OnShippingOptionSectionOpened() = 0;
 
-    virtual void OnCreditCardEditorOpened() = 0;
-
     virtual void OnShippingAddressEditorOpened() = 0;
 
     virtual void OnContactInfoEditorOpened() = 0;
@@ -83,8 +81,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
     virtual void OnErrorMessageShown() = 0;
 
     virtual void OnSpecDoneUpdating() = 0;
-
-    virtual void OnCvcPromptShown() = 0;
 
     virtual void OnProcessingSpinnerShown() = 0;
 

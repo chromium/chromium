@@ -133,7 +133,6 @@ class PaymentRequestBrowserTestBase
   void OnPaymentMethodOpened() override;
   void OnShippingAddressSectionOpened() override;
   void OnShippingOptionSectionOpened() override;
-  void OnCreditCardEditorOpened() override;
   void OnShippingAddressEditorOpened() override;
   void OnContactInfoEditorOpened() override;
   void OnBackNavigation() override;
@@ -142,7 +141,6 @@ class PaymentRequestBrowserTestBase
   void OnEditorViewUpdated() override;
   void OnErrorMessageShown() override;
   void OnSpecDoneUpdating() override;
-  void OnCvcPromptShown() override;
   void OnProcessingSpinnerShown() override;
   void OnProcessingSpinnerHidden() override;
   void OnPaymentHandlerWindowOpened() override;
@@ -218,13 +216,11 @@ class PaymentRequestBrowserTestBase
   std::vector<std::u16string> GetShippingOptionLabelValues(
       DialogViewID parent_view_id);
 
-  void OpenCVCPromptWithCVC(const std::u16string& cvc);
+  // TODO(crbug.com/1209835): Remove remaining test usage and delete these.
   void OpenCVCPromptWithCVC(const std::u16string& cvc,
                             PaymentRequestDialogView* dialog_view);
-  void PayWithCreditCardAndWait(const std::u16string& cvc);
-  void PayWithCreditCardAndWait(const std::u16string& cvc,
-                                PaymentRequestDialogView* dialog_view);
   void PayWithCreditCard(const std::u16string& cvc);
+
   void RetryPaymentRequest(const std::string& validation_errors,
                            PaymentRequestDialogView* dialog_view);
   void RetryPaymentRequest(const std::string& validation_errors,
