@@ -342,6 +342,8 @@ export class Video extends ModeBase {
         if (!state.get(state.State.RECORDING_PAUSED)) {
           this.autoStopped = true;
           this.stop();
+        } else {
+          this.toggleLowStorageWarning(true);
         }
       }
     };
