@@ -8590,10 +8590,18 @@ void GLES2DecoderImpl::DoFramebufferTexture2DCommon(
     service_id = texture_ref->service_id();
   }
 
+  bool valid_target = false;
+  if (texture_ref) {
+    valid_target = texture_manager()->ValidForTextureTarget(
+        texture_ref->texture(), level, 0, 0, 1);
+  } else {
+    valid_target = texture_manager()->ValidForTarget(textarget, level, 0, 0, 1);
+  }
+
   if ((level > 0 && !feature_info_->IsWebGL2OrES3Context() &&
        !(fbo_render_mipmap_explicitly_enabled_ &&
          feature_info_->feature_flags().oes_fbo_render_mipmap)) ||
-      !texture_manager()->ValidForTarget(textarget, level, 0, 0, 1)) {
+      !valid_target) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE,
         name, "level out of range");
@@ -8665,8 +8673,8 @@ void GLES2DecoderImpl::DoFramebufferTextureLayer(
             "texture is neither TEXTURE_3D nor TEXTURE_2D_ARRAY");
         return;
     }
-    if (!texture_manager()->ValidForTarget(texture_target, level,
-                                           0, 0, layer)) {
+    if (!texture_manager()->ValidForTextureTarget(texture_ref->texture(), level,
+                                                  0, 0, layer)) {
       LOCAL_SET_GL_ERROR(
           GL_INVALID_VALUE, function_name, "invalid level or layer");
       return;
@@ -14718,11 +14726,6 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "imageSize < 0");
     return error::kNoError;
   }
-  if (!texture_manager()->ValidForTarget(target, level, width, height, depth) ||
-      border != 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "dimensions out of range");
-    return error::kNoError;
-  }
   TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
       &state_, target);
   if (!texture_ref) {
@@ -14731,6 +14734,12 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
     return error::kNoError;
   }
   Texture* texture = texture_ref->texture();
+  if (!texture_manager()->ValidForTextureTarget(texture, level, width, height,
+                                                depth) ||
+      border != 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "dimensions out of range");
+    return error::kNoError;
+  }
   if (texture->IsImmutable()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "texture is immutable");
     return error::kNoError;
@@ -15100,10 +15109,6 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "imageSize < 0");
     return error::kNoError;
   }
-  if (!texture_manager()->ValidForTarget(target, level, width, height, depth)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "dimensions out of range");
-    return error::kNoError;
-  }
   TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
       &state_, target);
   if (!texture_ref) {
@@ -15111,7 +15116,14 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
         GL_INVALID_OPERATION, func_name, "no texture bound at target");
     return error::kNoError;
   }
+
   Texture* texture = texture_ref->texture();
+  if (!texture_manager()->ValidForTextureTarget(texture, level, width, height,
+                                                depth)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "dimensions out of range");
+    return error::kNoError;
+  }
+
   GLenum type = 0;
   GLenum internal_format = 0;
   if (!texture->GetLevelType(target, level, &type, &internal_format)) {
@@ -15236,7 +15248,8 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
         GL_INVALID_OPERATION, func_name, "texture is immutable");
     return;
   }
-  if (!texture_manager()->ValidForTarget(target, level, width, height, 1) ||
+  if (!texture_manager()->ValidForTextureTarget(texture, level, width, height,
+                                                1) ||
       border != 0) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, func_name, "dimensions out of range");
@@ -17810,8 +17823,8 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
     }
 
     // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTarget(source_target, source_level,
-                                           source_width, source_height, 1)) {
+    if (!texture_manager()->ValidForTextureTarget(
+            source_texture, source_level, source_width, source_height, 1)) {
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "Bad dimensions");
       return;
     }
@@ -17978,8 +17991,8 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
     }
 
     // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTarget(source_target, source_level,
-                                           source_width, source_height, 1)) {
+    if (!texture_manager()->ValidForTextureTarget(
+            source_texture, source_level, source_width, source_height, 1)) {
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
                          "source texture bad dimensions");
       return;
@@ -18219,11 +18232,20 @@ void GLES2DecoderImpl::TexStorageImpl(GLenum target,
       return;
     }
   }
+  TextureRef* texture_ref =
+      texture_manager()->GetTextureInfoForTarget(&state_, target);
+  if (!texture_ref) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, function_name,
+                       "unknown texture for target");
+    return;
+  }
+  Texture* texture = texture_ref->texture();
   // The glTexStorage entry points require width, height, and depth to be
   // at least 1, but the other texture entry points (those which use
-  // ValidForTarget) do not. So we have to add an extra check here.
+  // ValidForTextureTarget) do not. So we have to add an extra check here.
   bool is_invalid_texstorage_size = width < 1 || height < 1 || depth < 1;
-  if (!texture_manager()->ValidForTarget(target, 0, width, height, depth) ||
+  if (!texture_manager()->ValidForTextureTarget(texture, 0, width, height,
+                                                depth) ||
       is_invalid_texstorage_size) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, function_name, "dimensions out of range");
@@ -18236,14 +18258,6 @@ void GLES2DecoderImpl::TexStorageImpl(GLenum target,
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, function_name, "too many levels");
     return;
   }
-  TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
-      &state_, target);
-  if (!texture_ref) {
-    LOCAL_SET_GL_ERROR(
-        GL_INVALID_OPERATION, function_name, "unknown texture for target");
-    return;
-  }
-  Texture* texture = texture_ref->texture();
   if (texture->IsAttachedToFramebuffer()) {
     framebuffer_state_.clear_state_dirty = true;
   }
