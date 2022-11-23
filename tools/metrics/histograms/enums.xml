@@ -68521,6 +68521,12 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Unknown"/>
 </enum>
 
+<enum name="MultitaskMenuEntryType">
+  <int value="0" label="Frame size button hover"/>
+  <int value="1" label="Frame size button long press"/>
+  <int value="2" label="Frame size button long touch"/>
+</enum>
+
 <enum name="MultitouchEvent">
   <int value="0" label="Released"/>
   <int value="1" label="Canceled (deprecated)">

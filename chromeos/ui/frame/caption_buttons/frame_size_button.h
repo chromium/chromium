@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   ~FrameSizeButton() override;
 
-  void ShowMultitaskMenu();
+  void ShowMultitaskMenu(MultitaskMenuEntryType entry_type);
 
   // views::Button:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -74,8 +74,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   void StartSetButtonsToSnapModeTimer(const ui::LocatedEvent& event);
 
   // Starts the pie animation, which gives a visual inidicator of when the
-  // multitask menu will show up on long press or long touch.
-  void StartPieAnimation(base::TimeDelta duration);
+  // multitask menu will show up on long press or long touch, where `entry_type`
+  // indicates the method the user started this animation (but hasn't shown the
+  // menu yet).
+  void StartPieAnimation(base::TimeDelta duration,
+                         MultitaskMenuEntryType entry_type);
 
   // Animates the buttons adjacent to the size button to snap left and right.
   void AnimateButtonsToSnapMode();
@@ -102,8 +105,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // whether the buttons should animate back to their original icons.
   void SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate animate);
 
-  // Show Multitask Menu when pie animation is completed.
-  void OnPieAnimationCompleted();
+  // Show Multitask Menu when pie animation is completed, where `entry_type`
+  // indicates the method the user started and completed this animation and show
+  // the menu.
+  void OnPieAnimationCompleted(MultitaskMenuEntryType entry_type);
   void DestroyPieAnimation();
 
   // Not owned.

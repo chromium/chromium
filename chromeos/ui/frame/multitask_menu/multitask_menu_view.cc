@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
@@ -136,6 +137,13 @@ MultitaskMenuView::MultitaskMenuView(
 }
 
 MultitaskMenuView::~MultitaskMenuView() = default;
+
+// static
+std::string MultitaskMenuView::GetEntryTypeHistogramName() {
+  return std::string(kMultitaskMenuEntryTypeHistogram)
+      .append(TabletState::Get()->InTabletMode() ? ".TabletMode"
+                                                 : ".ClamshellMode");
+}
 
 void MultitaskMenuView::SplitButtonPressed(bool left_top) {
   SnapController::Get()->CommitSnap(

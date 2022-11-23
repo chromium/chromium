@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -47,8 +48,12 @@ using ::chromeos::FrameCaptionButtonContainerView;
 using ::chromeos::FrameSizeButton;
 using ::chromeos::MultitaskButton;
 using ::chromeos::MultitaskMenu;
+using ::chromeos::MultitaskMenuEntryType;
+using ::chromeos::MultitaskMenuView;
 using ::chromeos::SplitButtonView;
 using ::chromeos::WindowStateType;
+
+constexpr char kMultitaskMenuBubbleWidgetName[] = "MultitaskMenuBubbleWidget";
 
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
@@ -664,9 +669,11 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
   void ShowMultitaskMenu() {
     DCHECK(size_button());
 
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "MultitaskMenuBubbleWidget");
-    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu();
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        std::string(kMultitaskMenuBubbleWidgetName));
+    static_cast<FrameSizeButton*>(size_button())
+        ->ShowMultitaskMenu(MultitaskMenuEntryType::kFrameSizeButtonHover);
     views::WidgetDelegate* delegate =
         waiter.WaitIfNeededAndGet()->widget_delegate();
     multitask_menu_ = static_cast<MultitaskMenu*>(delegate->AsDialogDelegate());
@@ -692,8 +699,6 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
   MultitaskMenu* multitask_menu_ = nullptr;
 };
 
@@ -830,15 +835,43 @@ TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
 // Regression test for https://crbug.com/1367376.
 TEST_F(MultitaskMenuTest, LongTouchShowsMultitaskMenu) {
   ASSERT_TRUE(size_button());
+  base::HistogramTester histogram_tester;
 
   // Touch until the multitask bubble shows up. This would time out if long
   // touch was not working.
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "MultitaskMenuBubbleWidget");
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kMultitaskMenuBubbleWidgetName));
   GetEventGenerator()->PressTouch(
       size_button()->GetBoundsInScreen().CenterPoint());
   views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(bubble_widget);
+
+  histogram_tester.ExpectBucketCount(
+      MultitaskMenuView::GetEntryTypeHistogramName(),
+      MultitaskMenuEntryType::kFrameSizeButtonLongTouch, 1);
 }
 
+// Verifies that metrics are recorded properly for clamshell entry points.
+TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // Check that mouse hover increments the correct bucket.
+  GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
+  histogram_tester.ExpectBucketCount(
+      MultitaskMenuView::GetEntryTypeHistogramName(),
+      MultitaskMenuEntryType::kFrameSizeButtonHover, 1);
+
+  // Check that long press increments the correct bucket.
+  GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
+  GetEventGenerator()->PressLeftButton();
+  histogram_tester.ExpectBucketCount(
+      MultitaskMenuView::GetEntryTypeHistogramName(),
+      MultitaskMenuEntryType::kFrameSizeButtonLongPress, 1);
+
+  // Check total counts for each histogram to ensure calls aren't counted in
+  // multiple buckets.
+  histogram_tester.ExpectTotalCount(
+      MultitaskMenuView::GetEntryTypeHistogramName(), 2);
+}
 }  // namespace ash
