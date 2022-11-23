@@ -12,6 +12,9 @@
 @protocol CarouselItemMenuProvider;
 @class OmniboxPopupCarouselControl;
 
+/// Accessibility identifier for the label.
+extern NSString* const kCarouselControlLabelIdentifier;
+
 // Delegate for events happening in OmniboxPopupCarouselControl.
 @protocol OmniboxPopupCarouselControlDelegate <NSObject>
 

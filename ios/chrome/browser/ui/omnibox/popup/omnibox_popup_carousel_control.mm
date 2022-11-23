@@ -15,6 +15,10 @@
 #error "This file requires ARC support."
 #endif
 
+/// Accessibility identifier for the label.
+NSString* const kCarouselControlLabelIdentifier =
+    @"CarouselControlLabelIdentifier";
+
 namespace {
 
 // Size of the view behind the icon.
@@ -45,6 +49,7 @@ UILabel* CarouselItemLabel() {
   label.numberOfLines = kLabelNumLines;
   label.textAlignment = NSTextAlignmentCenter;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+  label.accessibilityIdentifier = kCarouselControlLabelIdentifier;
   return label;
 }
 

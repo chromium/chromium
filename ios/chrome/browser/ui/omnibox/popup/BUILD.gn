@@ -245,6 +245,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
+    "omnibox_popup_carousel_control_unittest.mm",
+    "omnibox_popup_carousel_control_unittest_util.h",
+    "omnibox_popup_carousel_control_unittest_util.mm",
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_row_cell_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
@@ -260,6 +263,8 @@ source_set("unit_tests") {
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/common/ui/favicon",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
