@@ -26,29 +26,28 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
                                         ContentLayerClient* content_client) {
   if (!val.is_dict())
     return nullptr;
+  const base::Value::Dict& dict = val.GetDict();
 
-  const std::string* layer_type = val.FindStringKey("LayerType");
+  const std::string* layer_type = dict.FindString("LayerType");
   if (!layer_type)
     return nullptr;
 
-  const base::Value* bounds_list_value = val.FindListKey("Bounds");
-  if (!bounds_list_value)
+  const base::Value::List* bounds_list = dict.FindList("Bounds");
+  if (!bounds_list)
     return nullptr;
-  base::Value::ConstListView bounds_list =
-      bounds_list_value->GetListDeprecated();
-  if (bounds_list.size() < 2)
+  if (bounds_list->size() < 2)
     return nullptr;
 
-  absl::optional<int> width = bounds_list[0].GetIfInt();
-  absl::optional<int> height = bounds_list[1].GetIfInt();
+  absl::optional<int> width = (*bounds_list)[0].GetIfInt();
+  absl::optional<int> height = (*bounds_list)[1].GetIfInt();
   if (!width.has_value() || !height.has_value())
     return nullptr;
 
-  absl::optional<bool> draws_content = val.FindBoolKey("DrawsContent");
+  absl::optional<bool> draws_content = dict.FindBool("DrawsContent");
   if (!draws_content.has_value())
     return nullptr;
 
-  absl::optional<bool> hit_testable = val.FindBoolKey("HitTestable");
+  absl::optional<bool> hit_testable = dict.FindBool("HitTestable");
   // If we cannot load hit_testable, we may try loading the old version, since
   // we do not record |hit_testable_without_draws_content| in the past, we use
   // |draws_content| as the value of |hit_testable|.
@@ -60,53 +59,47 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   if (*layer_type == "SolidColorLayer") {
     new_layer = SolidColorLayer::Create();
   } else if (*layer_type == "NinePatchLayer") {
-    const base::Value* aperture_list_value = val.FindListKey("ImageAperture");
-    if (!aperture_list_value)
+    const base::Value::List* aperture_list = dict.FindList("ImageAperture");
+    if (!aperture_list)
       return nullptr;
-    base::Value::ConstListView aperture_list =
-        aperture_list_value->GetListDeprecated();
-    if (aperture_list.size() < 4)
+    if (aperture_list->size() < 4)
       return nullptr;
 
-    absl::optional<int> aperture_x = aperture_list[0].GetIfInt();
-    absl::optional<int> aperture_y = aperture_list[1].GetIfInt();
-    absl::optional<int> aperture_width = aperture_list[2].GetIfInt();
-    absl::optional<int> aperture_height = aperture_list[3].GetIfInt();
+    absl::optional<int> aperture_x = (*aperture_list)[0].GetIfInt();
+    absl::optional<int> aperture_y = (*aperture_list)[1].GetIfInt();
+    absl::optional<int> aperture_width = (*aperture_list)[2].GetIfInt();
+    absl::optional<int> aperture_height = (*aperture_list)[3].GetIfInt();
     if (!(aperture_x.has_value() && aperture_y.has_value() &&
           aperture_width.has_value() && aperture_height.has_value()))
       return nullptr;
 
-    const base::Value* image_bounds_list_value = val.FindListKey("ImageBounds");
-    if (!image_bounds_list_value)
+    const base::Value::List* image_bounds_list = dict.FindList("ImageBounds");
+    if (!image_bounds_list)
       return nullptr;
-    base::Value::ConstListView image_bounds_list =
-        image_bounds_list_value->GetListDeprecated();
-    if (image_bounds_list.size() < 2)
+    if (image_bounds_list->size() < 2)
       return nullptr;
 
-    absl::optional<double> image_width = image_bounds_list[0].GetIfDouble();
-    absl::optional<double> image_height = image_bounds_list[1].GetIfDouble();
+    absl::optional<double> image_width = (*image_bounds_list)[0].GetIfDouble();
+    absl::optional<double> image_height = (*image_bounds_list)[1].GetIfDouble();
     if (!(image_width.has_value() && image_height.has_value()))
       return nullptr;
 
-    const base::Value* border_list_value = val.FindListKey("Border");
-    if (!border_list_value)
+    const base::Value::List* border_list = dict.FindList("Border");
+    if (!border_list)
       return nullptr;
-    base::Value::ConstListView border_list =
-        border_list_value->GetListDeprecated();
-    if (border_list.size() < 4)
+    if (border_list->size() < 4)
       return nullptr;
 
-    absl::optional<int> border_x = border_list[0].GetIfInt();
-    absl::optional<int> border_y = border_list[1].GetIfInt();
-    absl::optional<int> border_width = border_list[2].GetIfInt();
-    absl::optional<int> border_height = border_list[3].GetIfInt();
+    absl::optional<int> border_x = (*border_list)[0].GetIfInt();
+    absl::optional<int> border_y = (*border_list)[1].GetIfInt();
+    absl::optional<int> border_width = (*border_list)[2].GetIfInt();
+    absl::optional<int> border_height = (*border_list)[3].GetIfInt();
 
     if (!(border_x.has_value() && border_y.has_value() &&
           border_width.has_value() && border_height.has_value()))
       return nullptr;
 
-    absl::optional<bool> fill_center = val.FindBoolKey("FillCenter");
+    absl::optional<bool> fill_center = dict.FindBool("FillCenter");
     if (!fill_center.has_value())
       return nullptr;
 
@@ -134,26 +127,23 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   new_layer->SetIsDrawable(*draws_content);
   new_layer->SetHitTestable(*hit_testable);
 
-  absl::optional<double> opacity = val.FindDoubleKey("Opacity");
+  absl::optional<double> opacity = dict.FindDouble("Opacity");
   if (opacity.has_value())
     new_layer->SetOpacity(*opacity);
 
-  absl::optional<bool> contents_opaque = val.FindBoolKey("ContentsOpaque");
+  absl::optional<bool> contents_opaque = dict.FindBool("ContentsOpaque");
   if (contents_opaque.has_value())
     new_layer->SetContentsOpaque(*contents_opaque);
 
-  const base::Value* touch_region_list_value = val.FindListKey("TouchRegion");
+  const base::Value::List* touch_region_list = dict.FindList("TouchRegion");
 
-  if (touch_region_list_value) {
-    base::Value::ConstListView touch_region_list =
-        touch_region_list_value->GetListDeprecated();
-
+  if (touch_region_list) {
     TouchActionRegion touch_action_region;
-    for (size_t i = 0; i + 3 < touch_region_list.size(); i += 4) {
-      absl::optional<int> rect_x = touch_region_list[i + 0].GetIfInt();
-      absl::optional<int> rect_y = touch_region_list[i + 1].GetIfInt();
-      absl::optional<int> rect_width = touch_region_list[i + 2].GetIfInt();
-      absl::optional<int> rect_height = touch_region_list[i + 3].GetIfInt();
+    for (size_t i = 0; i + 3 < touch_region_list->size(); i += 4) {
+      absl::optional<int> rect_x = (*touch_region_list)[i + 0].GetIfInt();
+      absl::optional<int> rect_y = (*touch_region_list)[i + 1].GetIfInt();
+      absl::optional<int> rect_width = (*touch_region_list)[i + 2].GetIfInt();
+      absl::optional<int> rect_height = (*touch_region_list)[i + 3].GetIfInt();
 
       if (!(rect_x.has_value() && rect_y.has_value() &&
             rect_width.has_value() && rect_height.has_value()))
@@ -166,12 +156,10 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     new_layer->SetTouchActionRegion(std::move(touch_action_region));
   }
 
-  const base::Value* transform_list_value = val.FindListKey("Transform");
-  if (!transform_list_value)
+  const base::Value::List* transform_list = dict.FindList("Transform");
+  if (!transform_list)
     return nullptr;
-  base::Value::ConstListView transform_list =
-      transform_list_value->GetListDeprecated();
-  if (transform_list.size() < 16)
+  if (transform_list->size() < 16)
     return nullptr;
 
   float transform[16];
@@ -179,19 +167,19 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     // GetDouble can implicitly convert from either double or int; however, it's
     // not clear if "is_double" is sufficient for this check. Given that int is
     // also a valid type that can be gotten, check it here.
-    if (!(transform_list[i].is_double() || transform_list[i].is_int())) {
+    if (!((*transform_list)[i].is_double() || (*transform_list)[i].is_int())) {
       return nullptr;
     }
 
-    transform[i] = transform_list[i].GetDouble();
+    transform[i] = (*transform_list)[i].GetDouble();
   }
 
   new_layer->SetTransform(gfx::Transform::ColMajorF(transform));
 
-  const base::Value* child_list_value = val.FindListKey("Children");
-  if (!child_list_value)
+  const base::Value::List* child_list = dict.FindList("Children");
+  if (!child_list)
     return nullptr;
-  for (const auto& value : child_list_value->GetListDeprecated()) {
+  for (const auto& value : *child_list) {
     new_layer->AddChild(ParseTreeFromValue(value, content_client));
   }
 

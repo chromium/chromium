@@ -37,21 +37,23 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     return image_asset_sizes;
   }
 
-  const base::Value* assets = animation_dict->FindListKey(kAssetsKey);
+  const base::Value::List* assets =
+      animation_dict->GetDict().FindList(kAssetsKey);
   // An animation may legitimately have no assets in it.
   if (!assets)
     return image_asset_sizes;
 
-  for (const base::Value& asset : assets->GetListDeprecated()) {
+  for (const base::Value& asset : *assets) {
     if (!asset.is_dict()) {
       LOG(ERROR) << "Found invalid asset in animation with type "
                  << base::Value::GetTypeName(asset.type());
       continue;
     }
+    const base::Value::Dict& asset_dict = asset.GetDict();
 
-    const std::string* id = asset.FindStringKey(kIdKey);
-    absl::optional<int> width = asset.FindIntKey(kWidthKey);
-    absl::optional<int> height = asset.FindIntKey(kHeightKey);
+    const std::string* id = asset_dict.FindString(kIdKey);
+    absl::optional<int> width = asset_dict.FindInt(kWidthKey);
+    absl::optional<int> height = asset_dict.FindInt(kHeightKey);
     if (id && width && height && *width > 0 && *height > 0 &&
         !image_asset_sizes.emplace(*id, gfx::Size(*width, *height)).second) {
       LOG(WARNING) << "Multiple assets found in animation with id " << *id;
