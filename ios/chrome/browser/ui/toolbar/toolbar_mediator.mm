@@ -417,16 +417,10 @@
   UIAction* openNewIncognitoTab =
       [self.actionFactory actionToOpenNewIncognitoTab];
 
-  UIMenu* newTabActions =
-      [UIMenu menuWithTitle:@""
-                      image:nil
-                 identifier:nil
-                    options:UIMenuOptionsDisplayInline
-                   children:@[ openNewTab, openNewIncognitoTab ]];
-
   UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
 
-  return [UIMenu menuWithTitle:@"" children:@[ newTabActions, closeTab ]];
+  return [UIMenu menuWithTitle:@""
+                      children:@[ closeTab, openNewTab, openNewIncognitoTab ]];
 }
 
 // Returns the UIMenuElement for the content of the pasteboard. Can return nil.
