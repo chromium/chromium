@@ -127,6 +127,9 @@ bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
 gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
                                           const gfx::Size& size) const {
   DCHECK(IsValidPlaneIndex(plane_index));
+  if (is_single_plane())
+    return size;
+
   switch (plane_config()) {
     case PlaneConfig::kY_V_U:
       if (plane_index == 0) {

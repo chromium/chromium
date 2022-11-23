@@ -4,9 +4,11 @@
 
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -39,22 +41,39 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker) {
-  DCHECK(backing->format().is_single_plane());
-  GrBackendTexture backend_texture;
-  // TODO(hitawala): Use format/size per plane for multiplanar formats.
-  if (!GetGrBackendTexture(
-          context_state->feature_info(),
-          gl_representation->GetTextureBase()->target(), backing->size(),
-          gl_representation->GetTextureBase()->service_id(),
-          backing->format().resource_format(),
-          context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
-    return nullptr;
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  auto format = backing->format();
+  // Check if wrapped GL representation contains same number of
+  // SharedImageFormat plane(s) and essentially same number of texture(s) as the
+  // number for SharedImageFormat plane(s) from backing used to create
+  // GrBackendTexture(s).
+  DCHECK_EQ(format.NumberOfPlanes(),
+            gl_representation->format().NumberOfPlanes());
+  for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+       plane_index++) {
+    GrBackendTexture backend_texture;
+    bool angle_rgbx_internal_format = context_state->feature_info()
+                                          ->feature_flags()
+                                          .angle_rgbx_internal_format;
+    // Use the format and size per plane for multiplanar formats.
+    GLenum plane_gl_storage_format =
+        TextureStorageFormat(format, angle_rgbx_internal_format, plane_index);
+    gfx::Size plane_size = format.GetPlaneSize(plane_index, backing->size());
+    if (!GetGrBackendTexture(
+            context_state->feature_info(),
+            gl_representation->GetTextureBase(plane_index)->target(),
+            plane_size,
+            gl_representation->GetTextureBase(plane_index)->service_id(),
+            plane_gl_storage_format,
+            context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
+      return nullptr;
+    }
+    auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
+    if (!promise_texture)
+      return nullptr;
+    promise_textures.push_back(promise_texture);
   }
-  auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
-  if (!promise_texture)
-    return nullptr;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
-      promise_texture};
+
   return base::WrapUnique(new SkiaGLImageRepresentation(
       std::move(gl_representation), std::move(promise_textures),
       std::move(context_state), manager, backing, tracker));
@@ -105,19 +124,24 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
   if (!surfaces_.empty())
     return surfaces_;
 
-  DCHECK(format().is_single_plane());
-  // TODO(hitawala): Get SkColorType based on plane_idx for multiplanar
-  // formats.
-  SkColorType sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, format());
-  auto surface = SkSurface::MakeFromBackendTexture(
-      context_state_->gr_context(), promise_textures_[0]->backendTexture(),
-      surface_origin(), final_msaa_count, sk_color_type,
-      backing()->color_space().ToSkColorSpace(), &surface_props);
-  if (!surface)
-    return {};
+  DCHECK_EQ(static_cast<int>(promise_textures_.size()),
+            format().NumberOfPlanes());
+  std::vector<sk_sp<SkSurface>> surfaces;
+  for (int plane_index = 0; plane_index < format().NumberOfPlanes();
+       plane_index++) {
+    // Use the color type per plane for multiplanar formats.
+    SkColorType sk_color_type = viz::ToClosestSkColorType(
+        /*gpu_compositing=*/true, format(), plane_index);
+    auto surface = SkSurface::MakeFromBackendTexture(
+        context_state_->gr_context(),
+        promise_textures_[plane_index]->backendTexture(), surface_origin(),
+        final_msaa_count, sk_color_type,
+        backing()->color_space().ToSkColorSpace(), &surface_props);
+    if (!surface)
+      return {};
+    surfaces.push_back(surface);
+  }
 
-  std::vector<sk_sp<SkSurface>> surfaces = {surface};
   surfaces_ = surfaces;
   return surfaces;
 }
