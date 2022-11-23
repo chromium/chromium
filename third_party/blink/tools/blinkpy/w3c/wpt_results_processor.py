@@ -25,6 +25,8 @@ from blinkpy.web_tests.models.typ_types import (
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import manifestexpected, wptmanifest
+from wptrunner.wptmanifest import node as wptnode
+from wptrunner.wptmanifest.backends.base import ManifestItem
 
 _log = logging.getLogger(__name__)
 
@@ -32,6 +34,43 @@ _log = logging.getLogger(__name__)
 def _remove_query_params(test_name):
     index = test_name.rfind('?')
     return test_name if index == -1 else test_name[:index]
+
+
+def update_with_static_expectations(test_or_subtest: ManifestItem):
+    """Update a (sub)test's metadata with evaluated expectations.
+
+    wptrunner manages test expectations with a high-level API (i.e.,
+    manifestexpected) calling low-level ones dealing with the abstract syntax
+    tree (i.e., wptmanifest). This function transfers the expectations evaluated
+    against run info from the high-level `TestNode` object to the low-level AST.
+
+    Note:
+        This function destructively modifies the AST.
+    """
+    if test_or_subtest.node:
+        for child_node in test_or_subtest.node.children:
+            if (isinstance(child_node, wptnode.KeyValueNode)
+                    and child_node.data == 'expected'):
+                # Overwrite any branches or default values with the statically
+                # evaluated expectation.
+                for status_or_condition in list(child_node.children):
+                    status_or_condition.remove()
+                try:
+                    statuses = test_or_subtest.get('expected')
+                except KeyError:
+                    # Remove the `expected` key with no value
+                    child_node.remove()
+                    continue
+                if isinstance(statuses, str):
+                    child_node.append(wptnode.ValueNode(statuses))
+                else:
+                    assert isinstance(statuses, list)
+                    statuses_node = wptnode.ListNode()
+                    for status in statuses:
+                        statuses_node.append(wptnode.ValueNode(status))
+                    child_node.append(statuses_node)
+    for child_item in test_or_subtest.iterchildren():
+        update_with_static_expectations(child_item)
 
 
 class WPTResultsProcessor:
@@ -276,6 +315,7 @@ class WPTResultsProcessor:
         test_manifest = manifest.get_test('/' + test_name)
         if not test_manifest:
             raise ValueError('test ID does not exist')
+        update_with_static_expectations(test_manifest)
         return wptmanifest.serialize(test_manifest.node)
 
     def _write_text_results(self, test_name: str, artifacts: Artifacts,

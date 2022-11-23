@@ -666,14 +666,18 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # Also create a checked-in metadata file for this test
         checked_in_metadata = textwrap.dedent("""\
             [test.html]
-              expected: OK
+              expected:
+                if flag_specific != "highdpi": OK
               [Assert something]
-                expected: FAIL
+                expected:
+                  if flag_specific != "highdpi": PASS
+                  [FAIL, TIMEOUT]
             """)
         self.fs.write_text_file(
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
                          'test.html.ini'), checked_in_metadata)
 
+        self.processor.run_info['flag_specific'] = 'highdpi'
         with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir)
@@ -687,10 +691,15 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     expected: CRASH
                 """), self.fs.read_text_file(actual_path))
 
-        # The checked-in metadata file gets renamed from .ini to -expected.txt
+        # The checked-in metadata file gets renamed from .ini to -expected.txt.
+        # Any conditions are also evaluated against the test run's properties.
         expected_path = self.fs.join(artifacts_subdir, 'test-expected.txt')
-        self.assertEqual(checked_in_metadata,
-                         self.fs.read_text_file(expected_path))
+        self.assertEqual(
+            textwrap.dedent("""\
+                [test.html]
+                  [Assert something]
+                    expected: [FAIL, TIMEOUT]
+                """), self.fs.read_text_file(expected_path))
 
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
@@ -710,7 +719,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # validate the entire diff files to avoid checking line numbers/markup.
         diff_lines = self.fs.read_text_file(
             self.fs.join(artifacts_subdir, 'test-diff.txt')).splitlines()
-        self.assertIn('-    expected: FAIL', diff_lines)
+        self.assertIn('-    expected: [FAIL, TIMEOUT]', diff_lines)
         self.assertIn('+    expected: CRASH', diff_lines)
         self.assertEqual(
             [self.fs.join(path_from_out_dir_base, 'test-diff.txt')],
@@ -718,7 +727,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
         pretty_diff_contents = self.fs.read_text_file(
             self.fs.join(artifacts_subdir, 'test-pretty-diff.html'))
-        self.assertIn('expected: FAIL', pretty_diff_contents)
+        self.assertIn('expected: [FAIL, TIMEOUT]', pretty_diff_contents)
         self.assertIn('expected: CRASH', pretty_diff_contents)
         self.assertEqual(
             [self.fs.join(path_from_out_dir_base, 'test-pretty-diff.html')],
