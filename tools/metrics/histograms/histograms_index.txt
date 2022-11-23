@@ -123,6 +123,7 @@ tools/metrics/histograms/metadata/signin/histograms.xml
 tools/metrics/histograms/metadata/simple/histograms.xml
 tools/metrics/histograms/metadata/software/histograms.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
+tools/metrics/histograms/metadata/start_surface/histograms.xml
 tools/metrics/histograms/metadata/startup/histograms.xml
 tools/metrics/histograms/metadata/storage/histograms.xml
 tools/metrics/histograms/metadata/subresource/histograms.xml

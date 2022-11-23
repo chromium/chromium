@@ -316,7 +316,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
-                mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView);
+                mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView,
+                mActivityLifecycleDispatcher);
 
         mayUpdateLayoutParams(ApiCompatibilityUtils.isInMultiWindowMode(mActivity));
         startSurfaceOneshotSupplier.set(this);
@@ -354,6 +355,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     public void onHide() {
         if (mIsInitializedWithNative) {
             if (mTasksSurface != null) {
+                mStartSurfaceMediator.mayRecordHomepageSessionEnd();
                 mTasksSurface.onHide();
             }
             if (mSecondaryTasksSurface != null) {

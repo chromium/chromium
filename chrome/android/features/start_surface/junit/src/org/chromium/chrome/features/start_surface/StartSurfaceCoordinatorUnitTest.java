@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
         ChromeFeatureList.SHOPPING_LIST, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
 public class StartSurfaceCoordinatorUnitTest {
     private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
+    private static final String START_SURFACE_TIME_SPENT = "StartSurface.TimeSpent";
 
     @Rule
     public StartSurfaceCoordinatorUnitTestRule mTestRule =
@@ -333,6 +334,18 @@ public class StartSurfaceCoordinatorUnitTest {
                 (FrameLayout) mCoordinator.getPrimaryTasksSurface().getBodyViewContainer();
         LayoutParams params = layout.getLayoutParams();
         Assert.assertEquals(MATCH_PARENT, params.height);
+    }
+
+    /**
+     * Tests the logic of recording time spend in start surface.
+     */
+    @Test
+    public void testRecordTimeSpendInStart() {
+        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
+        mCoordinator.showOverview(false);
+        mCoordinator.onHide();
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
     }
 
     /**

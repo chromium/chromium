@@ -69,6 +69,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -79,6 +80,8 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
@@ -126,6 +129,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowGURL.class)
 public class StartSurfaceMediatorUnitTest {
+    private static final String START_SURFACE_TIME_SPENT = "StartSurface.TimeSpent";
     private PropertyModel mPropertyModel;
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
 
@@ -191,6 +195,8 @@ public class StartSurfaceMediatorUnitTest {
     private Profile mProfile;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -202,6 +208,9 @@ public class StartSurfaceMediatorUnitTest {
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderCaptor;
+    @Captor
+    private ArgumentCaptor<PauseResumeWithNativeObserver>
+            mPauseResumeWithNativeObserverArgumentCaptor;
 
     private ObservableSupplierImpl<Boolean> mControllerBackPressStateSupplier =
             new ObservableSupplierImpl<>();
@@ -1655,6 +1664,37 @@ public class StartSurfaceMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
     }
 
+    /**
+     * Tests the logic of recording time spend in start surface.
+     */
+    @Test
+    public void testRecordTimeSpendInStart() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
+        verify(mActivityLifecycleDispatcher)
+                .register(mPauseResumeWithNativeObserverArgumentCaptor.capture());
+        // Verifies that the histograms are logged in the following transitions:
+        // Start Surface -> Grid Tab Switcher -> Start Surface -> onPauseWithNative ->
+        // onResumeWithNative -> destroy.
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWING_START);
+        mediator.showOverview(false);
+        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mPauseResumeWithNativeObserverArgumentCaptor.getValue().onPauseWithNative();
+        Assert.assertEquals(
+                2, RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
+        mPauseResumeWithNativeObserverArgumentCaptor.getValue().onResumeWithNative();
+        mediator.destroy();
+        Assert.assertEquals(
+                3, RecordHistogram.getHistogramTotalCountForTesting(START_SURFACE_TIME_SPENT));
+    }
+
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
         return createStartSurfaceMediator(isStartSurfaceEnabled, /* hadWarmStart= */ false);
     }
@@ -1681,7 +1721,8 @@ public class StartSurfaceMediatorUnitTest {
                 mBrowserControlsStateProvider, mActivityStateChecker, true /* excludeQueryTiles */,
                 mStartSurfaceSupplier, hadWarmStart, new DummyJankTracker(),
                 mInitializeMVTilesRunnable, mParentTabSupplier, mLogoContainerView,
-                mBackPressManager, null /* feedPlaceholderParentView */);
+                mBackPressManager, null /* feedPlaceholderParentView */,
+                mActivityLifecycleDispatcher);
     }
 
     private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {

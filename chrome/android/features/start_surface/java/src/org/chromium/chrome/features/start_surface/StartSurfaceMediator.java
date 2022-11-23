@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -93,7 +95,8 @@ import org.chromium.ui.util.ColorUtils;
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.OnClickListener,
                                       StartSurface.OnTabSelectingListener, BackPressHandler,
-                                      LogoCoordinator.VisibilityObserver {
+                                      LogoCoordinator.VisibilityObserver,
+                                      PauseResumeWithNativeObserver {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -133,6 +136,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final CallbackController mCallbackController = new CallbackController();
     private final View mLogoContainerView;
     private final boolean mIsFeedGoneImprovementEnabled;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -140,6 +144,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     @VisibleForTesting
     static final String FEED_VISIBILITY_CONSISTENCY =
             "Startup.Android.CachedFeedVisibilityConsistency";
+    private static final int LAST_SHOW_TIME_NOT_SET = -1;
     @Nullable
     private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
     @Nullable
@@ -196,6 +201,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private ViewGroup mTabSwitcherContainer;
     private SnackbarManager mSnackbarManager;
     private boolean mIsNativeInitialized;
+    // The timestamp at which the Start Surface was last shown to the user.
+    private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
 
     StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
             TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
@@ -206,7 +213,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
             JankTracker jankTracker, Runnable initializeMVTilesRunnable,
             Supplier<Tab> parentTabSupplier, View logoContainerView,
-            BackPressManager backPressManager, ViewGroup feedPlaceholderParentView) {
+            BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabModelSelector = tabModelSelector;
@@ -224,6 +232,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mInitializeMVTilesRunnable = initializeMVTilesRunnable;
         mParentTabSupplier = parentTabSupplier;
         mLogoContainerView = logoContainerView;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
         // We need to check #shouldImproveStartWhenFeedIsDisabled and save it in the constructor
         // here to keep consistent with toolbar's check. This cannot be moved to other places, since
         // FEED_ARTICLES_LIST_VISIBLE may be changed after feed header is rendered, which then
@@ -484,6 +494,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mCallbackController != null) {
             mCallbackController.destroy();
         }
+        mayRecordHomepageSessionEnd();
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     /**
@@ -684,6 +696,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController = */ true);
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
+                mayRecordHomepageSessionBegin();
+            }
             boolean hasNormalTab = getNormalTabCount() > 0;
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
@@ -708,6 +723,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 mPendingObserver = true;
             }
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
+            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                mayRecordHomepageSessionEnd();
+            }
             setTabCarouselVisibility(false);
             setMVTilesVisibility(false);
             setLogoVisibility(false);
@@ -807,7 +825,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
             }
         }
-
+        mayRecordHomepageSessionBegin();
         mController.showTabSwitcherView(animate);
     }
 
@@ -1422,6 +1440,42 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                         resources.getDimensionPixelOffset(
                                 R.dimen.single_tab_view_top_margin_for_feed_improvement));
             }
+        }
+    }
+
+    @Override
+    public void onResumeWithNative() {
+        mayRecordHomepageSessionBegin();
+    }
+
+    @Override
+    public void onPauseWithNative() {
+        mayRecordHomepageSessionEnd();
+    }
+
+    /** Records UMA for the time spent on Start Surface. */
+    private void recordTimeSpendInStart() {
+        RecordHistogram.recordMediumTimesHistogram(
+                "StartSurface.TimeSpent", System.currentTimeMillis() - mLastShownTimeMs);
+    }
+
+    /**
+     * If mLastShownTimeMs is set as an actual time and hasn't been recorded by other start surface
+     * hiding actions, the recordTimeSpendInStart function will be called. We then reset
+     * mLastShownTimeMs as the default value in case it will be recorded again by another hiding
+     * action.
+     */
+    void mayRecordHomepageSessionEnd() {
+        if (mLastShownTimeMs != LAST_SHOW_TIME_NOT_SET) {
+            recordTimeSpendInStart();
+            mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
+        }
+    }
+
+    private void mayRecordHomepageSessionBegin() {
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                && mLastShownTimeMs == LAST_SHOW_TIME_NOT_SET) {
+            mLastShownTimeMs = System.currentTimeMillis();
         }
     }
 }
