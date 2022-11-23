@@ -66,9 +66,9 @@ binary (`updater_integration_tests_helper`) that runs at high privilege
 commands it handles can use gtest asserts.
 
 ### Installation
-IntegrationTest.InstallUninstall tests that the updater can be installed on a
-clean OS, that it is immediately active after installation, and then can be
-cleanly uninstalled.
+IntegrationTest.Install tests that the updater can be installed on a clean OS,
+that it is immediately active after installation, and then can be cleanly
+uninstalled.
 
 Overinstall cases are tested by IntegrationTest.OverinstallWorking and
 IntegrationTest.OverinstallBroken, to ensure that the updater can be installed
@@ -87,7 +87,7 @@ implementation can install and activate the updater on a machine where no
 updater exists.
 
 IntegrationTest.OfflineInstall, IntegrationTest.SilentOfflineInstall, and
-IntegrationTest.LegacySilentOfflineInstall test that the updater can handle 
+IntegrationTest.LegacySilentOfflineInstall test that the updater can handle
 handoffs from offline installers. *Windows Only*
 
 ### Updates
