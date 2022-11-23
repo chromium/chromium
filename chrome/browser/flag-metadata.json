@@ -3716,7 +3716,7 @@
   {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "filling-across-affiliated-websites",
@@ -6841,8 +6841,8 @@
   },
   {
     "name": "username-first-flow-fallback-crowdsourcing",
-    "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 110
+    "owners": [ "kolos", "shaikhitdin@google.com" ],
+    "expiry_milestone": 116
   },
   {
     "name": "uxstudy1",
