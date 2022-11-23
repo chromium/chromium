@@ -2361,6 +2361,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setAddToButtonEnabled:NO];
   [self.bottomToolbar setShareTabsButtonEnabled:NO];
   [self.bottomToolbar setCloseTabsButtonEnabled:NO];
+  if (IsPinnedTabsEnabled()) {
+    [self.pinnedTabsViewController dragSessionEnabled:YES];
+  }
 }
 
 - (void)gridViewControllerDragSessionDidEnd:
@@ -2369,6 +2372,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
   [self configureNewTabButtonBasedOnContentPermissions];
+  if (IsPinnedTabsEnabled()) {
+    [self.pinnedTabsViewController dragSessionEnabled:NO];
+  }
   if (self.tabGridMode == TabGridModeSelection) {
     [self updateSelectionModeToolbars];
   }

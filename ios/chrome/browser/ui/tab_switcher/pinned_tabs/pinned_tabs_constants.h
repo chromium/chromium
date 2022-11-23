@@ -19,6 +19,7 @@ extern const CGFloat kPinnedViewTopPadding;
 
 // Pinned view animations.
 extern const NSTimeInterval kPinnedViewFadeInTime;
+extern const NSTimeInterval kPinnedViewDragAnimationTime;
 
 // Pinned cell identifier.
 extern NSString* const kPinnedCellIdentifier;

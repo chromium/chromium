@@ -26,6 +26,10 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
 }  // namespace
 
+@interface PinnedTabsViewController () <UICollectionViewDragDelegate,
+                                        UICollectionViewDropDelegate>
+@end
+
 @implementation PinnedTabsViewController {
   // The local model backing the collection view.
   NSMutableArray<TabSwitcherItem*>* _items;
@@ -59,6 +63,9 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   collectionView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   collectionView.layer.cornerRadius = kPinnedViewCornerRadius;
   collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  collectionView.dragDelegate = self;
+  collectionView.dropDelegate = self;
+  collectionView.dragInteractionEnabled = YES;
 
   self.view = collectionView;
 
@@ -72,6 +79,19 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 }
 
 #pragma mark - Public
+
+- (void)dragSessionEnabled:(BOOL)enabled {
+  [UIView animateWithDuration:kPinnedViewDragAnimationTime
+                   animations:^{
+                     self->_dragEnabledConstraint.active = enabled;
+                     self->_defaultConstraint.active = !enabled;
+                     [self.view.superview layoutIfNeeded];
+                   }
+                   completion:nil];
+
+  self.collectionView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+}
 
 - (void)pinnedTabsAvailable:(BOOL)available {
   if (available == _available)
@@ -117,6 +137,75 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
   [self configureCell:cell withItem:item];
   return cell;
+}
+
+#pragma mark - UICollectionViewDragDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dragSessionWillBegin:(id<UIDragSession>)session {
+  [self dragSessionEnabled:YES];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+     dragSessionDidEnd:(id<UIDragSession>)session {
+  [self dragSessionEnabled:NO];
+}
+
+- (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
+           itemsForBeginningDragSession:(id<UIDragSession>)session
+                            atIndexPath:(NSIndexPath*)indexPath {
+  // TODO(crbug.com/1382015): Implement this.
+  return @[ [[UIDragItem alloc]
+      initWithItemProvider:[[NSItemProvider alloc] initWithObject:@""]] ];
+}
+
+- (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
+            itemsForAddingToDragSession:(id<UIDragSession>)session
+                            atIndexPath:(NSIndexPath*)indexPath
+                                  point:(CGPoint)point {
+  // Prevent more items from getting added to the drag session.
+  return @[];
+}
+
+- (UIDragPreviewParameters*)collectionView:(UICollectionView*)collectionView
+    dragPreviewParametersForItemAtIndexPath:(NSIndexPath*)indexPath {
+  PinnedCell* pinedCell = base::mac::ObjCCastStrict<PinnedCell>(
+      [self.collectionView cellForItemAtIndexPath:indexPath]);
+  return pinedCell.dragPreviewParameters;
+}
+
+#pragma mark - UICollectionViewDropDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidEnter:(id<UIDropSession>)session {
+  self.collectionView.backgroundColor = [UIColor colorNamed:kBlueColor];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidExit:(id<UIDropSession>)session {
+  self.collectionView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+- (UICollectionViewDropProposal*)
+              collectionView:(UICollectionView*)collectionView
+        dropSessionDidUpdate:(id<UIDropSession>)session
+    withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  return [[UICollectionViewDropProposal alloc]
+      initWithDropOperation:UIDropOperationMove
+                     intent:
+                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    performDropWithCoordinator:
+        (id<UICollectionViewDropCoordinator>)coordinator {
+  // TODO(crbug.com/1382015): Implement this.
+}
+
+- (BOOL)collectionView:(UICollectionView*)collectionView
+    canHandleDropSession:(id<UIDropSession>)session {
+  return _available;
 }
 
 #pragma mark - Private

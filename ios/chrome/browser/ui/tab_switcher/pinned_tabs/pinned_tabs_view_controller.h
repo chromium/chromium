@@ -15,6 +15,9 @@
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
 
+// Updates the view when starting or ending a drag action.
+- (void)dragSessionEnabled:(BOOL)enabled;
+
 // Makes the pinned tabs view available. The pinned view should only be
 // available when the regular tabs grid is displayed.
 - (void)pinnedTabsAvailable:(BOOL)available;
