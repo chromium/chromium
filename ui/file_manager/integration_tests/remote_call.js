@@ -902,4 +902,67 @@ export class RemoteCallFilesApp extends RemoteCall {
     chrome.test.assertTrue(
         await this.callRemoteTestUtil('disableNudgeExpiry', appId, []));
   }
+
+  /**
+   * Selects the file and displays the context menu for the file.
+   * @return {!Promise<void>} resolved when the context menu is visible.
+   */
+  async showContextMenuFor(appId, fileName) {
+    // Select the file.
+    await this.waitUntilSelected(appId, fileName);
+
+    // Right-click to display the context menu.
+    await this.waitAndRightClick(appId, '.table-row[selected]');
+
+    // Wait for the context menu to appear.
+    await this.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+    // Wait for the tasks to be fully fetched.
+    await this.waitForElement(appId, '#tasks[get-tasks-completed]');
+  }
+
+  /**
+   * @param {string} appId App window Id.
+   * @return {!Promise<void>}
+   */
+  async dismissMenu(appId) {
+    await this.fakeKeyDown(appId, 'body', 'Escape', false, false, false);
+  }
+
+  /**
+   * @param {string} appId App window Id.
+   * @param {string|!Array<string>} query Query to find the elements.
+   * @return {!Promise<!ElementObject>} Promise to be fulfilled with the
+   *     elements.
+   * @private
+   */
+  async queryElements_(appId, query) {
+    return this.callRemoteTestUtil('deepQueryAllElements', appId, [query]);
+  }
+
+  /**
+   * Returns the menu as ElementObject and its menu-items (including separators)
+   * in the `items` property.
+   * @param {string} appId App window Id.
+   * @param {string|!Array<string>} menu Query to find the elements.
+   * @return {!Promise<undefined|!ElementObject>} Promise to be fulfilled with
+   *     the menu.
+   */
+  async getMenu(appId, menu) {
+    let menuId = '';
+    // TODO: Implement for other menus.
+    if (menu === 'context-menu') {
+      menuId = '#file-context-menu';
+    }
+    if (!menuId) {
+      console.error(`Invalid menu '${menu}'`);
+      return;
+    }
+
+    // Get the top level menu element.
+    const menuElement = await this.waitForElement(appId, menuId);
+    // Query all the menu items.
+    menuElement.items = await this.queryElements_(appId, `${menuId} > *`);
+    return menuElement;
+  }
 }

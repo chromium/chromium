@@ -977,7 +977,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkContextMenusForInputElements"),
         TestCase("checkDeleteDisabledInRecents"),
         TestCase("checkGoToFileLocationEnabledInRecents"),
-        TestCase("checkGoToFileLocationDisabledInMultipleSelection")));
+        TestCase("checkGoToFileLocationDisabledInMultipleSelection"),
+        TestCase("checkDefaultTask")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
