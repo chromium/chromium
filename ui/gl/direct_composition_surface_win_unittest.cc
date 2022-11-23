@@ -33,7 +33,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dxgi.h"
-#include "ui/gl/gl_image_ref_counted_memory.h"
+#include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
@@ -42,6 +42,33 @@
 
 namespace gl {
 namespace {
+
+class GLImageRefCountedMemory : public GLImageMemory {
+ public:
+  explicit GLImageRefCountedMemory(const gfx::Size& size)
+      : GLImageMemory(size) {}
+
+  GLImageRefCountedMemory(const GLImageRefCountedMemory&) = delete;
+  GLImageRefCountedMemory& operator=(const GLImageRefCountedMemory&) = delete;
+
+  bool Initialize(base::RefCountedMemory* ref_counted_memory,
+                  gfx::BufferFormat format) {
+    if (!GLImageMemory::Initialize(
+            ref_counted_memory->front(), format,
+            gfx::RowSizeForBufferFormat(GetSize().width(), format, 0))) {
+      return false;
+    }
+
+    DCHECK(!ref_counted_memory_.get());
+    ref_counted_memory_ = ref_counted_memory;
+    return true;
+  }
+
+ private:
+  ~GLImageRefCountedMemory() override = default;
+  scoped_refptr<base::RefCountedMemory> ref_counted_memory_;
+};
+
 class TestPlatformDelegate : public ui::PlatformWindowDelegate {
  public:
   // ui::PlatformWindowDelegate implementation.
