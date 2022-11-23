@@ -601,9 +601,9 @@ WGPUTextureFormat ToWGPUFormat(ResourceFormat format) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
 }
 
-SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                               SharedImageFormat format,
-                                               int plane_index) {
+SkColorType ToClosestSkColorType(bool gpu_compositing,
+                                 SharedImageFormat format,
+                                 int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (!gpu_compositing) {
     // TODO(crbug.com/986405): Remove this assumption and have clients tag

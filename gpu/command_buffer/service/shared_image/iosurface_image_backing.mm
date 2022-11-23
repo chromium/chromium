@@ -173,7 +173,7 @@ std::vector<sk_sp<SkSurface>> SkiaIOSurfaceRepresentation::BeginWriteAccess(
   if (!promise_texture_)
     return {};
 
-  SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
+  SkColorType sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, format());
   // Gray is not a renderable single channel format, but alpha is.
   if (sk_color_type == kGray_8_SkColorType)

@@ -123,8 +123,8 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(ImageContext* image_context) {
     return;
   }
 
-  auto sk_color_type = ResourceFormatToClosestSkColorType(
-      true /* gpu_compositing */, image_context->format());
+  auto sk_color_type =
+      ToClosestSkColorType(true /* gpu_compositing */, image_context->format());
   image_context->SetImage(
       SkImage::MakeFromTexture(gr_context(), backend_texture,
                                kTopLeft_GrSurfaceOrigin, sk_color_type,

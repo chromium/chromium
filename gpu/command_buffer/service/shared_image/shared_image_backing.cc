@@ -97,7 +97,7 @@ void SharedImageBacking::OnContextLost() {
 
 SkImageInfo SharedImageBacking::AsSkImageInfo() const {
   return SkImageInfo::Make(size_.width(), size_.height(),
-                           viz::ResourceFormatToClosestSkColorType(
+                           viz::ToClosestSkColorType(
                                /*gpu_compositing=*/true, format()),
                            alpha_type_, color_space_.ToSkColorSpace());
 }

@@ -165,8 +165,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   }
 
   SkColorType GetSkColorType() {
-    return viz::ResourceFormatToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
+    return viz::ToClosestSkColorType(/*gpu_compositing=*/true, format());
   }
 
   sk_sp<SkSurface> GetSkSurface(

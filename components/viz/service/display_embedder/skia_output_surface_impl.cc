@@ -410,8 +410,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
   if (image_context->has_image())
     return;
 
-  SkColorType color_type = ResourceFormatToClosestSkColorType(
-      true /* gpu_compositing */, image_context->format());
+  SkColorType color_type =
+      ToClosestSkColorType(true /* gpu_compositing */, image_context->format());
   GrBackendFormat backend_format = GetGrBackendFormatForTexture(
       image_context->format().resource_format(),
       image_context->mailbox_holder().texture_target,

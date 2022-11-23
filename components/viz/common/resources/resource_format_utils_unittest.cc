@@ -19,8 +19,7 @@ class ResourceFormatUtilTest : public testing::Test {
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
       EXPECT_EQ(expected_types[plane_index],
-                ResourceFormatToClosestSkColorType(gpu_compositing, format,
-                                                   plane_index));
+                ToClosestSkColorType(gpu_compositing, format, plane_index));
     }
   }
 };

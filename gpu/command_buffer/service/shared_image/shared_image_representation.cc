@@ -270,8 +270,7 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
     SkImage::TextureReleaseProc texture_release_proc,
     SkImage::ReleaseContext release_context) const {
   auto surface_origin = representation()->surface_origin();
-  auto color_type =
-      viz::ResourceFormatToClosestSkColorType(true, representation()->format());
+  auto color_type = viz::ToClosestSkColorType(true, representation()->format());
   auto alpha_type = representation()->alpha_type();
   auto sk_color_space =
       representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();

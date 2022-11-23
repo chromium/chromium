@@ -87,9 +87,9 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int ToMTLPixelFormat(ResourceFormat format);
 // default to 0; in such cases the corresponding function with ResourceFormat is
 // called. For multiplanar formats a plane_index is required.
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                   SharedImageFormat format,
-                                   int plane_index = 0);
+ToClosestSkColorType(bool gpu_compositing,
+                     SharedImageFormat format,
+                     int plane_index = 0);
 
 }  // namespace viz
 

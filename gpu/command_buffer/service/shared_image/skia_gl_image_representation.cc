@@ -108,7 +108,7 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
   DCHECK(format().is_single_plane());
   // TODO(hitawala): Get SkColorType based on plane_idx for multiplanar
   // formats.
-  SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
+  SkColorType sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, format());
   auto surface = SkSurface::MakeFromBackendTexture(
       context_state_->gr_context(), promise_textures_[0]->backendTexture(),

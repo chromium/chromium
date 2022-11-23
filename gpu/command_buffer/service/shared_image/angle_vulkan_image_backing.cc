@@ -91,8 +91,8 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     // reuse the cached SkSurface.
     if (!surface || surface_props != surface->props() ||
         final_msaa_count != backing_impl()->surface_msaa_count_) {
-      SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
-          true /* gpu_compositing */, format());
+      SkColorType sk_color_type =
+          viz::ToClosestSkColorType(true /* gpu_compositing */, format());
       surface = SkSurface::MakeFromBackendTexture(
           backing_impl()->gr_context(), backing_impl()->backend_texture_,
           surface_origin(), final_msaa_count, sk_color_type,

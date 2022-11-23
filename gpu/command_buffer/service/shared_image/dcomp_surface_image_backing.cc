@@ -281,7 +281,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
   GrGLFramebufferInfo framebuffer_info = {0};
   DCHECK_EQ(gl_surface_->GetBackingFramebufferObject(), 0u);
 
-  SkColorType color_type = viz::ResourceFormatToClosestSkColorType(
+  SkColorType color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, format());
   switch (color_type) {
     case kRGBA_8888_SkColorType:

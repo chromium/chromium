@@ -201,7 +201,7 @@ bool GPUCanvasContext::PushFrame() {
   // encapsulate an external mailbox, synctoken and release callback.
   SkImageInfo resource_info = SkImageInfo::Make(
       transferable_resource.size.width(), transferable_resource.size.height(),
-      viz::ResourceFormatToClosestSkColorType(
+      viz::ToClosestSkColorType(
           /*gpu_compositing=*/true, transferable_resource.format),
       kPremul_SkAlphaType);
   auto canvas_resource = ExternalCanvasResource::Create(
@@ -251,7 +251,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   const auto& sk_image_sync_token =
       transferable_resource.mailbox_holder.sync_token;
 
-  auto sk_color_type = viz::ResourceFormatToClosestSkColorType(
+  auto sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, transferable_resource.format);
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(

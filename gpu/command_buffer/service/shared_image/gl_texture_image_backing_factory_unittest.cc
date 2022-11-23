@@ -546,8 +546,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
       alpha_type, usage, false /* is_thread_safe */);
   ASSERT_TRUE(backing);
 
-  SkColorType color_type =
-      viz::ResourceFormatToClosestSkColorType(true, format);
+  SkColorType color_type = viz::ToClosestSkColorType(true, format);
 
   // Allocate a bitmap with red pixels and upload from it. RED_8 will be filled
   // with 0xFF repeating and RG_88 will be filled with OxFF00 repeating.
@@ -595,8 +594,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
       alpha_type, usage, false /* is_thread_safe */);
   ASSERT_TRUE(backing);
 
-  SkColorType color_type =
-      viz::ResourceFormatToClosestSkColorType(true, format);
+  SkColorType color_type = viz::ToClosestSkColorType(true, format);
 
   // Allocate a bitmap with red pixels and upload from it. RED_8 will be filled
   // with 0xFF repeating and RG_88 will be filled with OxFF00 repeating.

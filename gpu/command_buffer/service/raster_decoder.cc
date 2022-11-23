@@ -2181,8 +2181,8 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
-  if (SkColorTypeBytesPerPixel(viz::ResourceFormatToClosestSkColorType(
-          true, dest_shared_image->format())) !=
+  if (SkColorTypeBytesPerPixel(
+          viz::ToClosestSkColorType(true, dest_shared_image->format())) !=
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(src_sk_color_type))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Bytes per pixel for src SkColorType and dst "
@@ -3111,7 +3111,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   DCHECK(locked_handles_.empty());
   DCHECK(!raster_canvas_);
 
-  SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
+  SkColorType sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, shared_image->format());
 
   int final_msaa_count;
