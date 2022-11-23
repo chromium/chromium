@@ -27,10 +27,31 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
-using DeveloperPrivateApiTest = ExtensionApiTest;
+class DeveloperPrivateApiTest : public ExtensionApiTest {
+ protected:
+  std::unique_ptr<api::developer_private::ExtensionInfo> GetExtensionInfo(
+      const Extension& extension) {
+    auto get_info_function =
+        base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
+    std::unique_ptr<base::Value> result =
+        extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            get_info_function.get(),
+            content::JsReplace(R"([$1])", extension.id()), browser());
+    if (!result) {
+      ADD_FAILURE() << "No result back when getting extension info";
+      return nullptr;
+    }
+    std::unique_ptr<api::developer_private::ExtensionInfo> info =
+        api::developer_private::ExtensionInfo::FromValue(*result);
+    if (!info)
+      ADD_FAILURE() << "Problem creating ExtensionInfo from result data";
+    return info;
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, Basics) {
   // Load up some extensions so that we can query their info and adjust their
@@ -58,16 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   const Extension* app = LoadAndLaunchApp(dir);
 
   // Get the info about the app, including the inspectable views.
-  scoped_refptr<ExtensionFunction> function =
-      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-  std::unique_ptr<base::Value> result(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), base::StringPrintf("[\"%s\"]", app->id().c_str()),
-          browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(*result);
-  ASSERT_TRUE(info);
+  auto info = GetExtensionInfo(*app);
 
   // There should be two inspectable views - the background page and the app
   // window.  Find the app window.
@@ -82,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   ASSERT_TRUE(window_view);
 
   // Inspect the app window.
-  function = base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
   extension_function_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",
@@ -112,16 +125,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   WaitForExtensionNotIdle(extension->id());
 
   // Get the info about the extension, including the inspectable views.
-  scoped_refptr<ExtensionFunction> function =
-      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-  std::unique_ptr<base::Value> result(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(),
-          base::StringPrintf("[\"%s\"]", extension->id().c_str()), browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(*result);
-  ASSERT_TRUE(info);
+  auto info = GetExtensionInfo(*extension);
 
   // The embedded options page should show up.
   ASSERT_EQ(1u, info->views.size());
@@ -129,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_EQ(api::developer_private::VIEW_TYPE_EXTENSION_GUEST, view.type);
 
   // Inspect the embedded options page.
-  function = base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
   extension_function_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",
@@ -164,16 +169,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
                                                              extension->id());
 
   // Get the info about the extension, including the inspectable views.
-  auto get_info_function =
-      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-  std::unique_ptr<base::Value> result(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_info_function.get(),
-          base::StringPrintf("[\"%s\"]", extension->id().c_str()), browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(*result);
-  ASSERT_TRUE(info);
+  auto info = GetExtensionInfo(*extension);
 
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
@@ -230,16 +226,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult());
 
   // Get the info about the extension, including the inspectable views.
-  auto get_info_function =
-      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-  std::unique_ptr<base::Value> result(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_info_function.get(),
-          base::StringPrintf("[\"%s\"]", extension->id().c_str()), browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(*result);
-  ASSERT_TRUE(info);
+  auto info = GetExtensionInfo(*extension);
 
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
@@ -282,6 +269,112 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
+                       InspectSplitModeServiceWorkerBackgrounds) {
+  ResultCatcher result_catcher;
+  // Load an extension that is service worker based, split mode and enabled in
+  // incognito.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Split mode worker test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "worker.js"},
+           "incognito": "split"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"),
+                     "chrome.test.notifyPass();");
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  // Get the info about the extension, including the inspectable views.
+  auto info = GetExtensionInfo(*extension);
+
+  // With no incognito window open, there should be a single worker based
+  // background page for the extension.
+  ASSERT_EQ(1u, info->views.size());
+  int main_render_process_id = -1;
+  {
+    const api::developer_private::ExtensionView& view = info->views[0];
+    EXPECT_EQ(
+        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        view.type);
+    EXPECT_NE(-1, view.render_process_id);
+    main_render_process_id = view.render_process_id;
+    EXPECT_FALSE(view.incognito);
+  }
+
+  // Now open up an incognito browser window page and check the inspectable
+  // views again. Waiting for the result catcher will wait for the incognito
+  // service worker to have become active.
+  Browser* inconito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(inconito_browser);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+  info = GetExtensionInfo(*extension);
+  // The views should now have 2 entries, one for the main worker which will be
+  // the same as before and a new one for the incognito worker.
+  ASSERT_EQ(2u, info->views.size());
+  EXPECT_NE(info->views[0].incognito, info->views[1].incognito);
+  int incognito_render_process_id = -1;
+  for (auto& view : info->views) {
+    EXPECT_EQ(
+        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        view.type);
+    EXPECT_NE(-1, view.render_process_id);
+    if (view.incognito) {
+      EXPECT_NE(main_render_process_id, view.render_process_id);
+      incognito_render_process_id = view.render_process_id;
+    } else {
+      EXPECT_EQ(main_render_process_id, view.render_process_id);
+    }
+  }
+
+  // Open a devtools window for both the primary and incognito worker.
+  std::string kOpenDevToolsParams =
+      R"([{"renderViewId": -1,
+           "renderProcessId": $1,
+           "isServiceWorker": true,
+           "extensionId": $2,
+           "incognito": $3
+         }])";
+  DevToolsWindow* main_devtools_window = nullptr;
+  {
+    DevToolsWindowCreationObserver devtools_window_created_observer;
+    auto dev_tools_function =
+        base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+    extension_function_test_utils::RunFunction(
+        dev_tools_function.get(),
+        content::JsReplace(kOpenDevToolsParams, main_render_process_id,
+                           extension->id().c_str(), /*incognito:*/ false),
+        browser(), api_test_utils::NONE);
+    devtools_window_created_observer.WaitForLoad();
+    main_devtools_window = devtools_window_created_observer.devtools_window();
+  }
+  DevToolsWindow* incognito_devtools_window = nullptr;
+  {
+    DevToolsWindowCreationObserver devtools_window_created_observer;
+    auto dev_tools_function =
+        base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+    extension_function_test_utils::RunFunction(
+        dev_tools_function.get(),
+        content::JsReplace(kOpenDevToolsParams, incognito_render_process_id,
+                           extension->id().c_str(), /*incognito:*/ true),
+        browser(), api_test_utils::NONE);
+    devtools_window_created_observer.WaitForLoad();
+    incognito_devtools_window =
+        devtools_window_created_observer.devtools_window();
+  }
+
+  // Both windows should have opened and should not point to the same window.
+  ASSERT_TRUE(main_devtools_window);
+  ASSERT_TRUE(incognito_devtools_window);
+  ASSERT_NE(main_devtools_window, incognito_devtools_window);
+}
+
 // Test that offscreen documents show up in the list of inspectable views and
 // can be inspected.
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
@@ -315,16 +408,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   }
 
   // Get the list of inspectable views for the extension.
-  auto get_info_function =
-      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-  std::unique_ptr<base::Value> result =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_info_function.get(),
-          content::JsReplace(R"([$1])", extension->id()), browser());
-  ASSERT_TRUE(result);
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(*result);
-  ASSERT_TRUE(info);
+  auto info = GetExtensionInfo(*extension);
 
   // The only inspectable view should be the offscreen document. Validate the
   // metadata.
