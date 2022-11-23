@@ -1282,7 +1282,10 @@ Use Ctrl + Alt + Brightness down to zoom out.
     Light background
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_BACKGROUND_SHADING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to fade the background outside of the focus ring to improve focus on what is being spoken.">
-    Shade background content
+    Dim background content
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SAMPLE_TEXT" desc="In the Select-to-speak settings subpage, the sample text around which will be drawn a Select to Speak visual preview. This should be less than one line long.">
+    The quick brown fox jumped over the lazy dog.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated.">
     Enable navigation controls
