@@ -212,6 +212,27 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
               testing::UnorderedElementsAre(existing_profiles.at(0)));
 }
 
+// Tests that an incorrectly complemented country doesn't lead to an almost-
+// duplicate profile import.
+// Regression test for crbug.com/1376937.
+TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
+  AutofillProfile profile = test::StandardProfile();
+  EXPECT_EQ(u"US", profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  std::vector<AutofillProfile> existing_profiles = {profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // Suppose the country was incorrectly complemented to "DE".
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+
+  // Test that the import is correctly classified as a duplicate.
+  ProfileImportProcess import_data(
+      profile, "en_US", url_, &personal_data_manager_,
+      /*allow_only_silent_updates=*/false,
+      ProfileImportMetadata{.did_complement_country = true});
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+}
+
 // Tests the import of a profile that is an exact duplicate of an already
 // existing profile along with other profiles that are not mergeable or
 // updateable with the observed profile.
