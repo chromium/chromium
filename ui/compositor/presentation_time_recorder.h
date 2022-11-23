@@ -34,11 +34,7 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
     void OnCompositingDidCommit(ui::Compositor* compositor);
     void OnPresented(int count,
                      base::TimeTicks requested_time,
-                     const gfx::PresentationFeedback& feedback);
-
-    int GetMaxLatencyMs() const;
-    int GetSuccessCount() const;
-    int GetFailureRatio() const;
+                     base::TimeTicks presentation_timestamp);
 
    private:
     raw_ptr<PresentationTimeRecorder> recorder_;
