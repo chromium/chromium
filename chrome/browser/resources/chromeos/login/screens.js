@@ -34,7 +34,7 @@ import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
 import './screens/common/parental_handoff.js';
 import './screens/common/pin_setup.js';
-import './screens/common/recommend_apps.m.js';
+import './screens/common/recommend_apps.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.m.js';

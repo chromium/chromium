@@ -7,7 +7,24 @@
  * screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OobeAppsList} from '../../components/oobe_apps_list.js';
+
+
 
 /**
  * UI mode for the dialog.
@@ -27,9 +44,14 @@ const BLANK_PAGE_URL = 'about:blank';
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const RecommendAppsElementBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior, MultiStepBehavior],
-  Polymer.Element);
+const RecommendAppsElementBase = mixinBehaviors(
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -50,7 +72,9 @@ class RecommendAppsElement extends RecommendAppsElementBase {
     return 'recommend-apps-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
