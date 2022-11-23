@@ -860,7 +860,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Creates and returns a new separator, with constraints on its height/width.
 - (UIView*)newSeparator {
   UIView* separator = [[UIView alloc] init];
-  separator.backgroundColor = [UIColor colorNamed:kGrey700Color];
+  separator.backgroundColor = [UIColor colorNamed:kStaticGrey300Color];
   separator.layer.cornerRadius = kSeparatorWidth / 2.0;
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight].active =
