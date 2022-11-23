@@ -69,7 +69,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void Initialize() override;
   void CloseBubble() override;
   void ShowBubble() override;
-  bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;

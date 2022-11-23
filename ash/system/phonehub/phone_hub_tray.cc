@@ -65,6 +65,10 @@ constexpr auto kBubblePadding =
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPhoneHub),
       ui_controller_(new PhoneHubUiController()) {
+  // By default, if the individual buttons did not handle the event consider it
+  // as a phone hub icon event.
+  SetPressedCallback(base::BindRepeating(&PhoneHubTray::PhoneHubIconActivated,
+                                         base::Unretained(this)));
   observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
   observed_session_.Observe(Shell::Get()->session_controller());
 
@@ -259,13 +263,6 @@ void PhoneHubTray::ShowBubble() {
 
   phone_hub_metrics::LogScreenOnBubbleOpen(
       content_view_->GetScreenForMetrics());
-}
-
-bool PhoneHubTray::PerformAction(const ui::Event& event) {
-  // By default, if the individual buttons did not handle the event consider it
-  // as a phone hub icon event.
-  PhoneHubIconActivated(event);
-  return true;
 }
 
 TrayBubbleView* PhoneHubTray::GetBubbleView() {
