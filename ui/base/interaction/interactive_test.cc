@@ -226,7 +226,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
 InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
     MultiStep steps) {
   for (auto& step : steps)
-    step.SetFindElementInAnyContext(true);
+    step.SetContext(InteractionSequence::ContextMode::kAny);
   return steps;
 }
 

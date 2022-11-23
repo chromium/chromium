@@ -74,8 +74,8 @@ class InteractiveTestApi {
   // Convenience methods for creating interaction steps of type kShown. The
   // resulting step's start callback is already set; therefore, do not try to
   // add additional logic. However, any other parameter on the step may be set,
-  // such as SetMustBeVisibleAtStart(), SetFindElementInAnyContext(),
-  // SetTransitionOnlyOnEvent(), etc.
+  // such as SetMustBeVisibleAtStart(), SetTransitionOnlyOnEvent(),
+  // SetContext(), etc.
   //
   // TODO(dfried): in the future, these will be supplanted/supplemented by more
   // flexible primitives that allow multiple actions in the same step in the
@@ -138,8 +138,8 @@ class InteractiveTestApi {
 
   // Shorthand methods for working with basic ElementTracker events. The element
   // will have `step_callback` called on it. You may specify additional
-  // constraints such as SetMustBeVisibleAtStart(),
-  // SetFindElementInAnyContext(), SetTransitionOnlyOnEvent(), etc.
+  // constraints such as SetMustBeVisibleAtStart(), SetTransitionOnlyOnEvent(),
+  // SetContext(), etc.
   template <class T>
   [[nodiscard]] static StepBuilder AfterShow(ElementSpecifier element,
                                              T&& step_callback);
@@ -191,7 +191,7 @@ class InteractiveTestApi {
   // or test step rather than after. For example the following are equivalent:
   //
   //    PressButton(kElementIdentifier)
-  //        .SetFindElementInAnyContext(true)
+  //        .SetContext(InteractionSequence::ContextMode::kAny)
   //
   //    InAnyContext(PressButton(kElementIdentifier))
   //
@@ -342,7 +342,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
 // static
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InAnyContext(T&& step) {
-  return std::move(step.SetFindElementInAnyContext(true));
+  return std::move(step.SetContext(InteractionSequence::ContextMode::kAny));
 }
 
 // static

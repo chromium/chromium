@@ -32,6 +32,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);
 const ElementContext kTestContext1(1);
 const ElementContext kTestContext2(2);
+const ElementContext kTestContext3(3);
 
 }  // namespace
 
@@ -3911,7 +3912,7 @@ TEST(InteractionSequenceTest, StartsOnElementShownInAnyContext) {
           .SetContext(kTestContext1)
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element.identifier())
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetType(InteractionSequence::StepType::kShown)
                        .Build())
           .Build();
@@ -3938,7 +3939,7 @@ TEST(InteractionSequenceTest, TransitionsOnElementShownInAnyContext) {
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .Build())
           .Build();
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
@@ -3957,7 +3958,7 @@ TEST(InteractionSequenceTest,
           .SetContext(kTestContext1)
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element.identifier())
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetMustBeVisibleAtStart(true)
                        .SetType(InteractionSequence::StepType::kShown)
                        .Build())
@@ -3986,7 +3987,7 @@ TEST(InteractionSequenceTest,
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
                        .SetMustBeVisibleAtStart(true)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .Build())
           .Build();
   EXPECT_CALL_IN_SCOPE(aborted, Run, sequence->Start());
@@ -4012,7 +4013,7 @@ TEST(InteractionSequenceTest, ElementShownInAnyContextTransitionOnEvent) {
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
                        .SetTransitionOnlyOnEvent(true)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .Build())
           .Build();
   sequence->Start();
@@ -4038,7 +4039,7 @@ TEST(InteractionSequenceTest, ElementShownInAnyContextAssignNameAndActivate) {
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4075,7 +4076,7 @@ TEST(InteractionSequenceTest,
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4113,7 +4114,7 @@ TEST(InteractionSequenceTest, ElementShownInAnyContextActivateDuringCallback) {
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4150,7 +4151,7 @@ TEST(InteractionSequenceTest,
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4188,7 +4189,7 @@ TEST(InteractionSequenceTest,
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4226,7 +4227,7 @@ TEST(InteractionSequenceTest,
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
-                       .SetFindElementInAnyContext(true)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](InteractionSequence* sequence,
                                TrackedElement* element) {
@@ -4465,6 +4466,193 @@ TEST(InteractionSequenceTest, FailForTestingOnLastStepCallback) {
           InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kFailedForTesting),
       element.Activate());
+}
+
+// Context-switching and ContextMode tests.
+
+TEST(InteractionSequenceTest, ExplicitContextChange) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  element.Show();
+  element2.Show();
+
+  auto sequence = InteractionSequence::Builder()
+                      .SetAbortedCallback(aborted.Get())
+                      .SetCompletedCallback(completed.Get())
+                      .AddStep(InteractionSequence::StepBuilder()
+                                   .SetElementID(element.identifier())
+                                   .SetContext(element.context())
+                                   .SetStartCallback(step1.Get()))
+                      .AddStep(InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetContext(element2.context())
+                                   .SetStartCallback(step2.Get()))
+                      .Build();
+
+  EXPECT_CALLS_IN_SCOPE_3(step1, Run(sequence.get(), &element), step2,
+                          Run(sequence.get(), &element2), completed, Run,
+                          sequence->Start());
+}
+
+TEST(InteractionSequenceTest, InheritContextFromPreviousStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  element.Show();
+  element2.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetContext(element2.context())
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetContext(element.context()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetContext(
+                           InteractionSequence::ContextMode::kFromPreviousStep)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetContext(element2.context()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetContext(
+                           InteractionSequence::ContextMode::kFromPreviousStep)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  sequence->Start();
+  element2.Activate();
+  EXPECT_CALL_IN_SCOPE(step1, Run, element.Activate());
+  element.Activate();
+  EXPECT_CALLS_IN_SCOPE_2(step2, Run, completed, Run, element2.Activate());
+}
+
+TEST(InteractionSequenceTest, InheritContextFromNamedElement) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  constexpr char kOtherElementName[] = "Other Element";
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  test::TestElement element3(kTestIdentifier2, kTestContext2);
+  element.Show();
+  element2.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetContext(element.context())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement*) {
+                             seq->NameElement(&element2, kOtherElementName);
+                           })))
+          .AddStep(InteractionSequence::StepBuilder().SetElementName(
+              kOtherElementName))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kOtherElementName)
+                       .SetType(InteractionSequence::StepType::kActivated))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetContext(
+                           InteractionSequence::ContextMode::kFromPreviousStep))
+          .Build();
+
+  sequence->Start();
+  element2.Activate();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element3.Show());
+}
+
+TEST(InteractionSequenceTest,
+     InheritContextFromNamedElement_TransitionOnEventDuringCallback) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  constexpr char kOtherElementName[] = "Other Element";
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  test::TestElement element3(kTestIdentifier2, kTestContext2);
+  element.Show();
+  element2.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetContext(element.context())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement*) {
+                             seq->NameElement(&element2, kOtherElementName);
+                           })))
+          .AddStep(InteractionSequence::StepBuilder().SetElementName(
+              kOtherElementName))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kOtherElementName)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&]() { element3.Show(); })))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetContext(
+                           InteractionSequence::ContextMode::kFromPreviousStep)
+                       .SetTransitionOnlyOnEvent(true))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Activate());
+}
+
+TEST(InteractionSequenceTest, AnyContext_TransitionOnEventDuringCallback) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  constexpr char kOtherElementName[] = "Other Element";
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  test::TestElement element3(kTestIdentifier2, kTestContext3);
+  element.Show();
+  element2.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetContext(element.context())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement*) {
+                             seq->NameElement(&element2, kOtherElementName);
+                           })))
+          .AddStep(InteractionSequence::StepBuilder().SetElementName(
+              kOtherElementName))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kOtherElementName)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&]() { element3.Show(); })))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetContext(InteractionSequence::ContextMode::kAny)
+                       .SetTransitionOnlyOnEvent(true))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Activate());
 }
 
 }  // namespace ui
