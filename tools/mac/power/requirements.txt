@@ -7,3 +7,4 @@ psutil>=5.8.0
 protobuf>=3.19.1
 PyAutoGUI>=0.9.53
 pyobjc>=8.1
+python-kasa==0.5.0
