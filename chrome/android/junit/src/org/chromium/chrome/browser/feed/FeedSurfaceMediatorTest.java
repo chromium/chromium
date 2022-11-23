@@ -508,37 +508,41 @@ public class FeedSurfaceMediatorTest {
     @Config(qualifiers = "en-sw600dp")
     @Test
     public void testOnHeaderSelected_selectedWithLatestOptionsOnTablet() {
-        when(mFollowingStream.supportsOptions()).thenReturn(true);
-        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
-        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        mFeedSurfaceMediator =
-                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+
+        // Set up mediator with For_you feed (2 column)
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
+
+        // Switch to following feed with latest option. Uses 2 column.
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderSelected(1);
-
-        verify(mListLayoutHelper).setSpanCount(2);
+        verify(mListLayoutHelper, times(2)).setSpanCount(2);
     }
 
     @Config(qualifiers = "en-sw600dp")
     @Test
     public void testOnHeaderSelected_selectedWithSortOptionsOnTablet() {
-        when(mFollowingStream.supportsOptions()).thenReturn(true);
-        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
-        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        mFeedSurfaceMediator =
-                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+
+        // Set up mediator with For_you feed (2 column)
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
+        verify(mListLayoutHelper).setSpanCount(2);
+
+        // Switch to following feed with sort option. Uses 1 column.
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
-
         listener.onSectionHeaderSelected(1);
-
         verify(mListLayoutHelper).setSpanCount(1);
     }
 
@@ -549,14 +553,17 @@ public class FeedSurfaceMediatorTest {
         when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
-        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        mFeedSurfaceMediator =
-                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+
+        // Set up mediator with Following feed with default sort option (1 column)
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
+                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
-
-        mFeedSurfaceMediator.onOptionChanged();
-
         verify(mListLayoutHelper).setSpanCount(1);
+
+        // Switch to latest sort. Verify 2 column
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
+        mFeedSurfaceMediator.onOptionChanged();
+        verify(mListLayoutHelper).setSpanCount(2);
     }
 
     @Config(qualifiers = "en-sw600dp")
@@ -565,16 +572,19 @@ public class FeedSurfaceMediatorTest {
     public void testOnHeaderSelected_withFollowingAndSortDisabledOnTablet() {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
-        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        mFeedSurfaceMediator =
-                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
-        mFeedSurfaceMediator.updateContent();
 
+        // Set up mediator with For_you feed (2 column)
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
+        mFeedSurfaceMediator.updateContent();
+        verify(mListLayoutHelper).setSpanCount(2);
+
+        // Switch to following feed with sort option. Uses 1 column.
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
+        when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
-
         listener.onSectionHeaderSelected(1);
-
         verify(mListLayoutHelper).setSpanCount(1);
     }
 
