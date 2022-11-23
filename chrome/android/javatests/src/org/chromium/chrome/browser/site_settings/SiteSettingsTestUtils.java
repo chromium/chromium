@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -21,6 +24,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Util functions for testing SiteSettings functionality.
@@ -41,6 +45,14 @@ public class SiteSettingsTestUtils {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(
                 SingleCategorySettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
+        String title = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            Context context = InstrumentationRegistry.getInstrumentation().getContext();
+            var delegate =
+                    new ChromeSiteSettingsDelegate(context, Profile.getLastUsedRegularProfile());
+            return context.getResources().getString(ContentSettingsResources.getTitle(
+                    SiteSettingsCategory.contentSettingsType(type), delegate));
+        });
+        fragmentArgs.putString(SingleCategorySettings.EXTRA_TITLE, title);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
                 InstrumentationRegistry.getTargetContext(), SingleCategorySettings.class.getName(),

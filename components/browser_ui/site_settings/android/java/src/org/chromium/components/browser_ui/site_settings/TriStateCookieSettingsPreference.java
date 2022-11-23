@@ -80,7 +80,7 @@ public class TriStateCookieSettingsPreference extends Preference
         super(context, attrs);
 
         // Sets the layout resource that will be inflated for the view.
-        setLayoutResource(R.layout.four_state_cookie_settings_preference);
+        setLayoutResource(R.layout.tri_state_cookie_settings_preference);
 
         // Make unselectable, otherwise FourStateCookieSettingsPreference is treated as one
         // selectable Preference, instead of four selectable radio buttons.
@@ -134,7 +134,6 @@ public class TriStateCookieSettingsPreference extends Preference
         mViewHolder = holder;
         mAllowButton = (RadioButtonWithDescription) holder.findViewById(R.id.allow);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
-        holder.findViewById(R.id.block).setVisibility(View.GONE);
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (SettingsFeatureList.isEnabled(
@@ -206,10 +205,10 @@ public class TriStateCookieSettingsPreference extends Preference
 
     private void setBlockThirdPartyCookieDescription(Params params) {
         String defaultDescription = getResources().getString(
-                R.string.website_settings_category_cookie_block_third_party_addition);
+                R.string.website_settings_third_party_cookies_page_block_radio_sub_label);
         if (params.isFirstPartySetsDataAccessEnabled) {
             String fpsAdditionalDescription = getResources().getString(
-                    R.string.website_settings_category_cookie_block_third_party_fps_addition);
+                    R.string.website_settings_third_party_cookies_page_block_radio_sub_label_fps_addition);
             String description = getResources().getString(R.string.concat_two_strings_with_periods,
                     defaultDescription, fpsAdditionalDescription);
             mBlockThirdPartyButton.setDescriptionText(description);

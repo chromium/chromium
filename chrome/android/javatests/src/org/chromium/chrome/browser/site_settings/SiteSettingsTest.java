@@ -158,7 +158,7 @@ public class SiteSettingsTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -1326,8 +1326,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesCookies() {
-        String[] cookie =
-                new String[] {"cookie_info_text", "four_state_cookie_toggle", "add_exception"};
+        String[] cookie = new String[] {"info_text", "four_state_cookie_toggle", "add_exception"};
         setFourStateCookieToggle(CookieSettingsState.ALLOW);
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
         setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
@@ -1344,8 +1343,8 @@ public class SiteSettingsTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedPreferencesThirdPartyCookies() {
         testExpectedPreferences(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                new String[] {"tri_state_cookie_toggle", "add_exception"},
-                new String[] {"tri_state_cookie_toggle"});
+                new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"},
+                new String[] {"info_text", "tri_state_cookie_toggle"});
     }
 
     @Test

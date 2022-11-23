@@ -12,8 +12,7 @@ found in the LICENSE file.
 
     <!-- A text message describing cookie settings. -->
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="cookie_info_text"
-        android:summary="@string/website_settings_cookie_info"/>
+        android:key="info_text"/>
 
     <!-- A common binary toggle, only shown for specific categories that allow
          turning default values for that category on/off.-->

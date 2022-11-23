@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout used by the TriStateCookieSettingsPreference. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:orientation="vertical">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/radio_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/allow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/website_settings_third_party_cookies_page_allow_radio_label"
+            app:descriptionText="@string/website_settings_third_party_cookies_page_allow_radio_sub_label" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/block_third_party_incognito"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/website_settings_third_party_cookies_page_block_incognito_radio_label"
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_incognito_radio_sub_label" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/block_third_party"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/website_settings_third_party_cookies_page_block_radio_label"
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+            android:id="@+id/block_third_party_incognito_with_aux"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:primaryText="@string/website_settings_third_party_cookies_page_block_incognito_radio_label"
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_incognito_radio_sub_label" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+            android:id="@+id/block_third_party_with_aux"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:primaryText="@string/website_settings_third_party_cookies_page_block_radio_label"
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/managed_view_legacy"
+        android:text="@string/managed_by_your_organization"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:drawablePadding="10dp"
+        app:chromeDrawableTint="@macro/default_icon_color"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/managed_disclaimer_text"
+        style="@style/ManagedDisclaimerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="20dp"
+        android:padding="16dp"
+        android:paddingStart="20dp"
+        android:visibility="gone" />
+
+</LinearLayout>

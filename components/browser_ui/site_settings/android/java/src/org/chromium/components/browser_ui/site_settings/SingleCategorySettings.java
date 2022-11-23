@@ -192,7 +192,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     public static final String DESKTOP_SITE_DISPLAY_TOGGLE_KEY = "desktop_site_display";
     public static final String EXPLAIN_PROTECTED_MEDIA_KEY = "protected_content_learn_more";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
-    public static final String COOKIE_INFO_TEXT_KEY = "cookie_info_text";
+    public static final String INFO_TEXT_KEY = "info_text";
 
     // Keys for Allowed/Blocked preference groups/headers.
     public static final String ALLOWED_GROUP = "allowed_group";
@@ -674,8 +674,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 resource = getCookieControlsMode() == CookieControlsMode.BLOCK_THIRD_PARTY
-                        ? R.string.website_settings_add_site_description_third_party_cookies_block
-                        : R.string.website_settings_add_site_description_third_party_cookies_allow;
+                        ? R.string.website_settings_third_party_cookies_page_add_block_exception_description
+                        : R.string.website_settings_third_party_cookies_page_add_allow_exception_description;
                 break;
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
                 assert WebsitePreferenceBridge.isCategoryEnabled(
@@ -1058,8 +1058,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 break;
         }
 
-        if (mCategory.getType() != SiteSettingsCategory.Type.COOKIES) {
-            screen.removePreference(screen.findPreference(COOKIE_INFO_TEXT_KEY));
+        Preference infoText = screen.findPreference(INFO_TEXT_KEY);
+        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
+            infoText.setSummary(R.string.website_settings_cookie_info);
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
+        } else {
+            screen.removePreference(infoText);
         }
 
         if (permissionBlockedByOs) {
