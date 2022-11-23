@@ -9,6 +9,6 @@ if (typeof postMessage === 'function') {
 }
 
 promise_test(() => navigator.usb.getDevices(),
-    `Inherited header feature policy allows ${workerType} workers.`);
+    `Inherited header permissions policy allows ${workerType} workers.`);
 
 done();

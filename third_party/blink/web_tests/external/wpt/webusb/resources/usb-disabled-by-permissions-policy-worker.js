@@ -2,7 +2,7 @@
 
 importScripts('/resources/testharness.js');
 
-const header = 'Feature-Policy header {"usb" : []}';
+const header = 'Permissions-Policy header usb=()';
 let workerType;
 
 if (typeof postMessage === 'function') {
