@@ -102,13 +102,17 @@ void AttributionReportNetworkSender::SendReport(GURL url,
             "views with event-level and aggregatable reports without using "
             "cross-site persistent identifiers like third-party cookies."
           trigger:
-            "When a triggered attribution has become eligible for reporting."
+            "When a triggered attribution has become eligible for reporting "
+            "or when an attribution source or trigger registration has failed "
+            "and is eligible for error reporting."
           data:
             "Event-level reports include a high-entropy identifier declared "
             "by the site on which the user clicked on or viewed a source and "
             "a noisy low-entropy data value declared on the destination site."
             "Aggregatable reports include encrypted information generated "
             "from both source-side and trigger-side registrations."
+            "Verbose debug reports include data related to attribution source "
+            "or trigger registration failures."
           destination:OTHER
         }
         policy {
