@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -39,6 +38,7 @@ class FakeOsIntegrationManager;
 class WebAppIconManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
+class OsIntegrationSubManager;
 class WebAppUiManager;
 
 // OsHooksErrors contains the result of all Os hook deployments.
@@ -75,10 +75,6 @@ using UninstallOsHooksCallback =
 using UpdateOsHooksCallback =
     base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
-// Callback made when sub-managers are called
-using SubManagerCompletedCallback =
-    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
-
 using BarrierCallback =
     base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>;
 
@@ -113,8 +109,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void Start();
 
-  virtual void Synchronize(const AppId& app_id,
-                           SubManagerCompletedCallback callback);
+  // Start OS Integration synchronization from external points. This should be
+  // the only point of call into OsIntegrationManager from external places.
+  virtual void Synchronize(const AppId& app_id, base::OnceClosure callback);
 
   // Install all needed OS hooks for the web app.
   // If provided |web_app_info| is a nullptr, it will read icons data from disk,
@@ -294,15 +291,12 @@ class OsIntegrationManager : public AppRegistrarObserver {
       const AppId& app_id,
       const proto::WebAppOsIntegrationState& desired_state,
       const absl::optional<proto::WebAppOsIntegrationState>& expected_state,
-      SubManagerCompletedCallback callback);
+      base::OnceClosure callback);
 
   virtual void WriteStateToDB(
       const AppId& app_id,
       const proto::WebAppOsIntegrationState& desired_state,
-      SubManagerCompletedCallback done_callback);
-
-  virtual void OnSynchronizationComplete(
-      SubManagerCompletedCallback done_callback);
+      base::OnceClosure callback);
 
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebAppInstallInfo> web_app_info,
@@ -336,10 +330,10 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
+  std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
+
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
-
-  std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
