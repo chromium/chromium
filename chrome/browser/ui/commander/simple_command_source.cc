@@ -9,6 +9,7 @@
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
 #include "chrome/grit/generated_resources.h"
