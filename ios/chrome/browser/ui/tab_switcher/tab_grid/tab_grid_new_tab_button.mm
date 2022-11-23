@@ -120,12 +120,13 @@ const CGFloat kLargeSymbolSize = 37;
     case TabGridPageRegularTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-      [self setImage:SymbolWithPalette(self.symbol,
-                                       @[
-                                         UIColor.blackColor,
-                                         [UIColor colorNamed:kBlue400Color]
-                                       ])
-            forState:UIControlStateNormal];
+      [self
+          setImage:SymbolWithPalette(self.symbol,
+                                     @[
+                                       UIColor.blackColor,
+                                       [UIColor colorNamed:kStaticBlue400Color]
+                                     ])
+          forState:UIControlStateNormal];
       break;
     case TabGridPageRemoteTabs:
       break;
