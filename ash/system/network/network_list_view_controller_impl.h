@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_IMPL_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_IMPL_H_
 
-#include "ash/ash_export.h"
+#include <string>
 
+#include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
@@ -85,8 +86,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 
-  // Checks |networks| and caches whether Mobile network, WiFi networks and vpn
-  // networks exist in the list of |networks|. Also caches if a Mobile and
+  // Checks `networks` and caches whether Mobile network, WiFi networks and vpn
+  // networks exist in the list of `networks`. Also caches if a Mobile and
   // WiFi networks are enabled.
   void UpdateNetworkTypeExistence(
       const std::vector<
@@ -102,9 +103,15 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   // Creates if missing and adds a Mobile or Wifi separator to the view.
   // Also reorders separator view in network list. A reference to the
-  // separator is captured in |*separator_view|.
+  // separator is captured in `*separator_view`.
   size_t CreateSeparatorIfMissingAndReorder(size_t index,
                                             views::Separator** separator_view);
+
+  // Creates the wifi group header for wifi networks. If `is_known` is `true`,
+  // it creates the "Known networks" header, which is the `known_header_`. If
+  // `is_known` is false, it creates "Unknown networks" header, which is the
+  // `unknown_header_`.
+  size_t CreateWifiGroupHeader(size_t index, const bool is_known);
 
   // Updates Mobile data section, updates add eSIM button states and
   // calls UpdateMobileToggleAndSetStatusMessage().
@@ -168,6 +175,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
   NetworkListWifiHeaderView* wifi_header_view_ = nullptr;
   views::Separator* wifi_separator_view_ = nullptr;
   TrayInfoLabel* wifi_status_message_ = nullptr;
+
+  // Owned by views hierarchy.
+  views::Label* known_header_ = nullptr;
+  views::Label* unknown_header_ = nullptr;
 
   bool has_mobile_networks_;
   bool has_wifi_networks_;

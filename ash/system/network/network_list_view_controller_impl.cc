@@ -4,6 +4,9 @@
 
 #include "ash/system/network/network_list_view_controller_impl.h"
 
+#include <memory>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -22,6 +25,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -244,8 +249,42 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
   network_detailed_network_view()->network_list()->ReorderChildView(
       wifi_header_view_, index++);
 
-  index = CreateItemViewsIfMissingAndReorder(NetworkType::kWiFi, index,
-                                             networks, &previous_network_views);
+  // In the revamped view the wifi networks are grouped into known and unknown
+  // groups.
+  if (features::IsQsRevampEnabled()) {
+    std::vector<NetworkStatePropertiesPtr> known_networks;
+    std::vector<NetworkStatePropertiesPtr> unknown_networks;
+    for (NetworkStatePropertiesPtr& network : networks) {
+      const NetworkState* network_state =
+          NetworkHandler::Get()
+              ->network_state_handler()
+              ->GetNetworkStateFromGuid(network->guid);
+      if (network_state && network_state->IsInProfile() &&
+          NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
+        known_networks.push_back(std::move(network));
+      } else if (NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
+        unknown_networks.push_back(std::move(network));
+      }
+    }
+    if (!known_networks.empty()) {
+      index = CreateWifiGroupHeader(index, /*is_known=*/true);
+      index = CreateItemViewsIfMissingAndReorder(
+          NetworkType::kWiFi, index, known_networks, &previous_network_views);
+    } else {
+      RemoveAndResetViewIfExists(&known_header_);
+    }
+    if (!unknown_networks.empty()) {
+      index = CreateWifiGroupHeader(index, /*is_known=*/false);
+      index = CreateItemViewsIfMissingAndReorder(
+          NetworkType::kWiFi, index, unknown_networks, &previous_network_views);
+    } else {
+      RemoveAndResetViewIfExists(&unknown_header_);
+    }
+  } else {
+    index = CreateItemViewsIfMissingAndReorder(
+        NetworkType::kWiFi, index, networks, &previous_network_views);
+  }
+
   if (wifi_status_message_) {
     network_detailed_network_view()->network_list()->ReorderChildView(
         wifi_status_message_, index++);
@@ -365,6 +404,42 @@ size_t NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
   *separator_view =
       network_detailed_network_view()->network_list()->AddChildViewAt(
           std::move(separator), index++);
+  return index;
+}
+
+size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
+    size_t index,
+    const bool is_known) {
+  DCHECK(index);
+
+  // If the headers are already created, reorder the child views and return.
+  if (is_known && known_header_) {
+    network_detailed_network_view()->network_list()->ReorderChildView(
+        known_header_, index++);
+    return index;
+  }
+  if (!is_known && unknown_header_) {
+    network_detailed_network_view()->network_list()->ReorderChildView(
+        unknown_header_, index++);
+    return index;
+  }
+
+  auto header = std::make_unique<views::Label>();
+  header->SetText(l10n_util::GetStringUTF16(
+      is_known ? IDS_ASH_QUICK_SETTINGS_KNOWN_NETWORKS
+               : IDS_ASH_QUICK_SETTINGS_UNKNOWN_NETWORKS));
+  header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+
+  if (is_known) {
+    known_header_ =
+        network_detailed_network_view()->network_list()->AddChildViewAt(
+            std::move(header), index++);
+    return index;
+  }
+
+  unknown_header_ =
+      network_detailed_network_view()->network_list()->AddChildViewAt(
+          std::move(header), index++);
   return index;
 }
 
