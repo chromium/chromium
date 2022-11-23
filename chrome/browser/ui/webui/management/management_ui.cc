@@ -49,8 +49,6 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIManagementHost);
 
-  source->DisableTrustedTypesCSP();
-
   source->AddString("pageSubtitle",
                     ManagementUI::GetManagementPageSubtitle(profile));
 

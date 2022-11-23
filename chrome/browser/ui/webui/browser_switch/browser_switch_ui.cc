@@ -93,8 +93,6 @@ content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIBrowserSwitchHost);
 
-  source->DisableTrustedTypesCSP();
-
   auto* service = GetBrowserSwitcherService(web_ui);
   source->AddInteger("launchDelay", service->prefs().GetDelay());
 

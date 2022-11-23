@@ -25,7 +25,6 @@ content::WebUIDataSource* CreateWebuiGalleryUIHtmlSource(Profile* profile) {
       IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
   webui::EnableTrustedTypesCSP(source);
 
-  source->DisableTrustedTypesCSP();
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");
   source->OverrideContentSecurityPolicy(
