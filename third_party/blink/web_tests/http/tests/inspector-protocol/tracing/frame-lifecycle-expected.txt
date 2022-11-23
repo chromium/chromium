@@ -1,0 +1,136 @@
+Tests the data of page load and web vitals trace events
+Recording started
+Tracing complete
+Got SetLayerTreeId event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			layerTreeId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got BeginFrame event:
+Object: {
+	args: {
+		frameSeqId: number
+		layerTreeId: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got DrawFrame event:
+Object: {
+	args: {
+		frameSeqId: number
+		layerTreeId: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ActivateLayerTree event:
+Object: {
+	args: {
+		frameId: number
+		layerTreeId: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got NeedsBeginFrameChanged event:
+Object: {
+	args: {
+		data: {
+			needsBeginFrame: number
+		}
+		layerTreeId: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got BeginMainThreadFrame event:
+Object: {
+	args: {
+		data: {
+			frameId: number
+		}
+		layerTreeId: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got Paint event:
+Object: {
+	args: {
+		data: {
+			clip: [
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+				number,
+			]
+			frame: string
+			layerId: number
+			nodeId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got CompositeLayers event:
+Object: {
+	args: {
+		frameSeqId: number
+		layerTreeId: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+All screenshots have image data.
+

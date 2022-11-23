@@ -120,10 +120,10 @@
   }
 
   logEventShape(evt, excludedProperties = []) {
-    // The tts field in trace events is optional, and as such we omit it
-    // to prevent flakiness as it may or not be included on each
-    // occasion an event is dispatched.
-    excludedProperties.push('tts');
+    // The tts, scope, and tdur fields in trace events are optional, and as
+    // such we omit them to prevent flakiness as it may or not be included
+    // on each occasion an event is dispatched.
+    excludedProperties.push('tts', 'tdur', 'scope');
 
     const logArray = (prefix, name, array) => {
       let start = name ? `${name}: ` : '';
