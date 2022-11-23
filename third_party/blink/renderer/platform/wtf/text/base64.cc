@@ -32,83 +32,7 @@
 
 namespace WTF {
 
-static const char kBase64EncMap[64] = {
-    0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B,
-    0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56,
-    0x57, 0x58, 0x59, 0x5A, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-    0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72,
-    0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x30, 0x31, 0x32,
-    0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2B, 0x2F};
-
 namespace {
-
-class Base64EncoderImpl {
- public:
-  explicit Base64EncoderImpl(wtf_size_t len);
-
-  wtf_size_t out_length() const { return out_length_; }
-  void Encode(base::span<const uint8_t> data, base::span<char> out) const;
-
- private:
-  wtf_size_t in_length_ = 0;
-  wtf_size_t out_length_ = 0;
-};
-
-Base64EncoderImpl::Base64EncoderImpl(wtf_size_t len) {
-  if (!len)
-    return;
-
-  // If the input string is pathologically large, just return nothing.
-  // Note: Keep this in sync with the "outLength" computation below.
-  // Rather than being perfectly precise, this is a bit conservative.
-  const unsigned kMaxInputBufferSize = UINT_MAX / 77 * 76 / 4 * 3 - 2;
-  if (len > kMaxInputBufferSize)
-    return;
-
-  in_length_ = len;
-  out_length_ = ((len + 2) / 3) * 4;
-}
-
-void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
-                               base::span<char> out) const {
-  DCHECK_EQ(in_length_, data.size());
-  DCHECK_EQ(out_length_, out.size());
-  DCHECK_NE(0u, out.size());
-
-  auto len = data.size();
-  unsigned sidx = 0;
-  unsigned didx = 0;
-
-  // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-  if (len > 1) {
-    while (sidx < len - 2) {
-      out[didx++] = kBase64EncMap[(data[sidx] >> 2) & 077];
-      out[didx++] = kBase64EncMap[((data[sidx + 1] >> 4) & 017) |
-                                  ((data[sidx] << 4) & 077)];
-      out[didx++] = kBase64EncMap[((data[sidx + 2] >> 6) & 003) |
-                                  ((data[sidx + 1] << 2) & 077)];
-      out[didx++] = kBase64EncMap[data[sidx + 2] & 077];
-      sidx += 3;
-    }
-  }
-
-  if (sidx < len) {
-    out[didx++] = kBase64EncMap[(data[sidx] >> 2) & 077];
-    if (sidx < len - 1) {
-      out[didx++] = kBase64EncMap[((data[sidx + 1] >> 4) & 017) |
-                                  ((data[sidx] << 4) & 077)];
-      out[didx++] = kBase64EncMap[(data[sidx + 1] << 2) & 077];
-    } else {
-      out[didx++] = kBase64EncMap[(data[sidx] << 4) & 077];
-    }
-  }
-
-  // Add padding
-  while (didx < out.size()) {
-    out[didx] = '=';
-    ++didx;
-  }
-}
 
 // https://infra.spec.whatwg.org/#ascii-whitespace
 // Matches the definition of IsHTMLSpace in html_parser_idioms.h.
@@ -148,28 +72,29 @@ bool Base64DecodeRaw(const StringView& in,
 }  // namespace
 
 String Base64Encode(base::span<const uint8_t> data) {
-  Base64EncoderImpl encoder(data.size());
-  auto size = encoder.out_length();
-  if (size == 0)
+  size_t encode_len = modp_b64_encode_data_len(data.size());
+  CHECK_LE(data.size(), MODP_B64_MAX_INPUT_LEN);
+  StringBuffer<LChar> result(encode_len);
+  if (encode_len == 0)
     return String();
-
-  StringBuffer<LChar> result(size);
-  base::span<char> result_span(reinterpret_cast<char*>(result.Characters()),
-                               result.length());
-  encoder.Encode(data, result_span);
+  const size_t output_size = modp_b64_encode_data(
+      reinterpret_cast<char*>(result.Characters()),
+      reinterpret_cast<const char*>(data.data()), data.size());
+  DCHECK_EQ(output_size, encode_len);
   return result.Release();
 }
 
 void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
-  Base64EncoderImpl encoder(data.size());
-  auto size = encoder.out_length();
-  if (size == 0) {
+  size_t encode_len = modp_b64_encode_data_len(data.size());
+  CHECK_LE(data.size(), MODP_B64_MAX_INPUT_LEN);
+  if (encode_len == 0) {
     out.clear();
     return;
   }
-
-  out.resize(size);
-  encoder.Encode(data, out);
+  out.resize(encode_len);
+  const size_t output_size = modp_b64_encode_data(
+      out.data(), reinterpret_cast<const char*>(data.data()), data.size());
+  DCHECK_EQ(output_size, encode_len);
 }
 
 bool Base64Decode(const StringView& in,
