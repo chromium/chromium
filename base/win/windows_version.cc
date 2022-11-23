@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
 
@@ -216,6 +217,11 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
 OSInfo::~OSInfo() = default;
 
 Version OSInfo::Kernel32Version() const {
+  // Allow the calls to `Kernel32BaseVersion()` to block, as they only happen
+  // once (after which the result is cached in `kernel32_version`), and reading
+  // from kernel32.dll is fast in practice because it is used by all processes
+  // and therefore likely to be in the OS's file cache.
+  base::ScopedAllowBlocking allow_blocking;
   static const Version kernel32_version =
       MajorMinorBuildToVersion(Kernel32BaseVersion().components()[0],
                                Kernel32BaseVersion().components()[1],

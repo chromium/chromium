@@ -375,6 +375,10 @@ class JobTaskSource;
 class TaskTracker;
 }  // namespace internal
 
+namespace win {
+class OSInfo;
+}
+
 class AdjustOOMScoreHelper;
 class FileDescriptorWatcher;
 class FilePath;
@@ -467,6 +471,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::RenderWidgetHostViewMac;  // http://crbug.com/121917
   friend class content::ShellPathProvider;
 #if BUILDFLAG(IS_WIN)
+  friend class base::win::OSInfo;
   friend class content::WebContentsImpl;  // http://crbug.com/1262162
 #endif
   friend class content::WebContentsViewMac;
