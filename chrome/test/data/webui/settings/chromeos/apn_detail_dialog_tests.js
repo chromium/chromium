@@ -14,6 +14,13 @@ suite('ApnDetailDialog', function() {
   /** @type {ApnDetalDialog} */
   let apnDetailDialog = null;
 
+  async function toggleAdvancedSettings() {
+    const advancedSettingsBtn =
+        apnDetailDialog.shadowRoot.querySelector('#advancedSettingsBtn');
+    assertTrue(!!advancedSettingsBtn);
+    advancedSettingsBtn.click();
+  }
+
   setup(function() {
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
@@ -42,6 +49,15 @@ suite('ApnDetailDialog', function() {
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#apnInput'));
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#usernameInput'));
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#passwordInput'));
+
+    assertTrue(!!apnDetailDialog.shadowRoot.querySelector(
+        '#authenticationTypeSelection'));
+    assertTrue(
+        !!apnDetailDialog.shadowRoot.querySelector('#apnDefaultTypeCheckbox'));
+    assertTrue(
+        !!apnDetailDialog.shadowRoot.querySelector('#apnAttachTypeCheckbox'));
+    assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#ipTypeSelection'));
+
   });
 
   test('Clicking the cancel button fires the close event', async function() {
@@ -61,10 +77,45 @@ suite('ApnDetailDialog', function() {
         const isAdvancedSettingShowing = () =>
             apnDetailDialog.shadowRoot.querySelector('iron-collapse').opened;
         assertFalse(!!isAdvancedSettingShowing());
-        const advancedSettingsBtn =
-            apnDetailDialog.shadowRoot.querySelector('#advancedSettingsBtn');
-        assertTrue(!!advancedSettingsBtn);
-        advancedSettingsBtn.click();
+        toggleAdvancedSettings();
         assertTrue(!!isAdvancedSettingShowing());
+        toggleAdvancedSettings();
+        assertFalse(!!isAdvancedSettingShowing());
+        toggleAdvancedSettings();
+        const assertOptions = (expectedTextArray, optionNodes) => {
+          for (const [idx, expectedText] of expectedTextArray.entries()) {
+            assertTrue(!!optionNodes[idx]);
+            assertTrue(!!optionNodes[idx].text);
+            assertEquals(expectedText, optionNodes[idx].text);
+          }
+        };
+        const authTypeDropDown =
+            apnDetailDialog.shadowRoot.querySelector('#authTypeDropDown');
+        assertTrue(!!authTypeDropDown);
+        const authTypeOptionNodes = authTypeDropDown.querySelectorAll('option');
+        assertEquals(3, authTypeOptionNodes.length);
+        // Note: We are also checking that the items appear in a certain order.
+        assertOptions(
+            [
+              apnDetailDialog.i18n('apnDetailTypeAuto'),
+              apnDetailDialog.i18n('apnDetailAuthTypePAP'),
+              apnDetailDialog.i18n('apnDetailAuthTypeCHAP'),
+            ],
+            authTypeOptionNodes);
+
+        const ipTypeDropDown =
+            apnDetailDialog.shadowRoot.querySelector('#ipTypeDropDown');
+        assertTrue(!!ipTypeDropDown);
+        const ipTypeOptionNodes = ipTypeDropDown.querySelectorAll('option');
+        assertEquals(4, ipTypeOptionNodes.length);
+
+        assertOptions(
+            [
+              apnDetailDialog.i18n('apnDetailTypeAuto'),
+              apnDetailDialog.i18n('apnDetailIPTypeIPV4'),
+              apnDetailDialog.i18n('apnDetailIPTypeIPV6'),
+              apnDetailDialog.i18n('apnDetailIPTypeIPV4_IPV6'),
+            ],
+            ipTypeOptionNodes);
       });
 });

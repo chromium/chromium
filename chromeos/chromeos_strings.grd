@@ -3651,7 +3651,40 @@ Try tapping the mic to ask me anything.
         APN
       </message>
       <message name="IDS_SETTINGS_APN_DIALOG_ADVANCED_SETTING" desc="Title for the button which toggles the advanced settings section">
-        Advanced Settings
+        Advanced settings
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_AUTO" desc="Name of the automatic authentication and IP type dropdown select item">
+        Automatic
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_AUTH_TYPE_LABEL" desc="Title of the section with the Authentication type dropdown">
+        Authentication type
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_AUTH_TYPE_CHAP" desc="Name of the CHAP authentication type dropdown select item ">
+        CHAP
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_AUTH_TYPE_PAP" desc="Name of the PAP authentication type dropdown select item ">
+        PAP
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_LABEL" desc="Title of the section with the IP type dropdown">
+        IP type
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4" desc="Name of the IPv4 IP type dropdown select item ">
+        IPv4
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV6" desc="Name of the IPv6 IP type dropdown select item ">
+        IPv6
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4_IPV6" desc="Name of the IPv4/IPv6 IP type dropdown select item ">
+        IPv4/IPv6
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPES" desc="Title of the section with the APN types">
+        APN types
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_DEFAULT_CHECKBOX" desc="Label for checkbox that specifies that the default APN type will be used">
+        Default
+      </message>
+      <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN  type will be used">
+        Attach
       </message>
       <!-- End of APN -->
     </messages>

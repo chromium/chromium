@@ -1,14 +1,36 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style md-select">
+  cr-dialog {
+    --cr-dialog-width: 416px;
+  }
+
   .advanced-settings {
     font-size: 0.625rem;
     font-weight: 500;
     line-height: 10px;
     --cr-section-padding: 4px;
-    --cr-section-min-height: 36px;
+    --cr-section-min-height: 45px;
   }
 
   .cr-row-line {
     --cr-section-min-height: 0px;
+  }
+
+  .dropdown-section {
+    margin-bottom: var(--cr-form-field-bottom-spacing);
+    padding-top: 13px;
+  }
+
+  .select-field {
+    width: 100%;
+  }
+
+  .checkbox-section {
+    --cr-checkbox-label-padding-start: 11px;
+    margin-bottom: 14px;
+  }
+
+  .checkbox-text-area {
+    margin: 5px 0;
   }
 </style>
 <cr-dialog id="apnDetailDialog"
@@ -32,7 +54,55 @@
       <div>[[i18n('apnDetailAdvancedSettings')]]</div>
     </cr-expand-button>
     <iron-collapse opened="[[advancedSettingsExpanded_]]">
-      <!-- TODO(b/162365553): Add advanced settings. -->
+      <div id="authenticationTypeSelection" class="dropdown-section">
+        <div id="authenticationTypeLabel" class="cr-form-field-label">
+          [[i18n('apnDetailAuthType')]]
+        </div>
+        <select id="authTypeDropDown" class="select-field md-select"
+            value="{{selectedAuthType_::change}}"
+            aria-labelledby="authenticationTypeLabel">
+          <template is="dom-repeat"
+              items="[[authTypes_]]">
+              <option value="[[item]]"
+                  selected="[[isEqual_(item, selectedAuthType_)]]">
+                [[getAuthTypeLocalizedLabel_(item)]]
+              </option>
+          </template>
+        </select>
+      </div>
+      <div class="cr-form-field-label">
+        [[i18n('apnDetailAPNTypes')]]
+      </div>
+      <div id="checkboxContainer" class="checkbox-section">
+        <cr-checkbox id="apnDefaultTypeCheckbox"
+            aria-labelledby="apnDefaultTypelabel">
+          <div id="apnDefaultTypelabel" class="checkbox-text-area">
+            [[i18n('apnDetailAPNTypeDefault')]]
+          </div>
+        </cr-checkbox>
+        <cr-checkbox id="apnAttachTypeCheckbox"
+            aria-labelledby="apnAttachTypeLabel">
+          <div id="apnAttachTypeLabel" class="checkbox-text-area">
+            [[i18n('apnDetailAPNTypeAttach')]]
+          </div>
+        </cr-checkbox>
+      </div>
+      <div id="ipTypeSelection" class="dropdown-section">
+        <div id="ipTypeLabel" class="cr-form-field-label">
+          [[i18n('apnDetailIPType')]]
+        </div>
+          <select id="ipTypeDropDown" class="md-select select-field"
+              value="{{selectedIPType_::change}}"
+              aria-labelledby="ipTypeLabel">
+          <template is="dom-repeat"
+              items="[[ipTypes_]]">
+            <option value="[[item]]"
+                selected="[[isEqual_(item, selectedIPType_)]]">
+              [[getIPTypeLocalizedLabel_(item)]]
+            </option>
+          </template>
+        </select>
+      </div>
     </iron-collapse>
     <div class="cr-row-line cr-row"></div>
   </div>
