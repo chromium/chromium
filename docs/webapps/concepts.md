@@ -124,6 +124,10 @@ For an app to become locally installed, the user must do one of the following:
 
 This was done because on non-ChromeOS devices it was considered a bad user experience to fully install all of the profile's web apps (creating platform shortcuts, etc), as this might not be expected by the user.
 
+### Isolated Web Apps
+
+See [this document][21] for more information.
+
 [2]: https://www.w3.org/TR/appmanifest/
 [3]: https://wicg.github.io/manifest-incubations/index.html
 [4]: manifest_representations.md
@@ -143,3 +147,4 @@ This was done because on non-ChromeOS devices it was considered a bad user exper
 [18]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_utils.cc;l=481?q=CanUserUninstallWebApp&ss=chromium%2Fchromium%2Fsrc
 [19]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/externally_managed_app_install_task.cc;l=215?q=OnPlaceholderUninstalled&ss=chromium%2Fchromium%2Fsrc
 [20]: manifest_update_process.md
+[21]: isolated_web_apps.md
