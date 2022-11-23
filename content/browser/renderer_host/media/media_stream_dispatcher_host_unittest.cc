@@ -363,7 +363,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                 info.descriptor.capture_api = kStubCaptureApi;
                 result.push_back(info);
               }
-              std::move(result_callback).Run(result);
+              std::move(result_callback)
+                  .Run(media::mojom::DeviceEnumerationResult::kSuccess, result);
             }));
 
     base::RunLoop run_loop;

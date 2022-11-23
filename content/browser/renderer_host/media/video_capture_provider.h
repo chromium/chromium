@@ -20,6 +20,7 @@ class VideoCaptureDeviceLauncher;
 class VideoCaptureProvider {
  public:
   using GetDeviceInfosCallback = base::OnceCallback<void(
+      media::mojom::DeviceEnumerationResult result_code,
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
   virtual ~VideoCaptureProvider() {}

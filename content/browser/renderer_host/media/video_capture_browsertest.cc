@@ -209,7 +209,9 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
 
   void OnDeviceDescriptorsReceived(
       base::OnceClosure continuation,
+      media::mojom::DeviceEnumerationResult result,
       const media::VideoCaptureDeviceDescriptors& descriptors) {
+    ASSERT_EQ(media::mojom::DeviceEnumerationResult::kSuccess, result);
     ASSERT_TRUE(params_.device_index_to_use < descriptors.size());
     const auto& descriptor = descriptors[params_.device_index_to_use];
     blink::MediaStreamDevice media_stream_device(

@@ -741,6 +741,7 @@ void VideoCaptureManager::OnClosed(
 void VideoCaptureManager::OnDeviceInfosReceived(
     base::ElapsedTimer timer,
     EnumerationCallback client_callback,
+    media::mojom::DeviceEnumerationResult error_code,
     const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -749,6 +750,17 @@ void VideoCaptureManager::OnDeviceInfosReceived(
   base::UmaHistogramTimes(
       "Media.VideoCaptureManager.GetAvailableDevicesInfoOnDeviceThreadTime",
       timer.Elapsed());
+
+  if (error_code != media::mojom::DeviceEnumerationResult::kSuccess) {
+    EmitLogMessage(
+        base::StringPrintf("VideoCaptureManager::OnDeviceInfosReceived: Failed "
+                           "to list device infos with error_code %d",
+                           error_code),
+        0);
+    std::move(client_callback).Run(error_code, {});
+    return;
+  }
+
   devices_info_cache_ = device_infos;
 
   std::ostringstream string_stream;
@@ -774,7 +786,7 @@ void VideoCaptureManager::OnDeviceInfosReceived(
         descriptors_and_formats);
   }
 
-  std::move(client_callback).Run(devices);
+  std::move(client_callback).Run(error_code, devices);
 }
 
 void VideoCaptureManager::DestroyControllerIfNoClients(

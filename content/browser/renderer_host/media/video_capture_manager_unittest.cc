@@ -234,6 +234,7 @@ class VideoCaptureManagerTest : public testing::Test {
 
   void HandleEnumerationResult(
       base::OnceClosure quit_closure,
+      media::mojom::DeviceEnumerationResult result,
       const media::VideoCaptureDeviceDescriptors& descriptors) {
     blink::MediaStreamDevices devices;
     for (const auto& descriptor : descriptors) {
@@ -246,6 +247,7 @@ class VideoCaptureManagerTest : public testing::Test {
 
   void HandleEnumerationResultAsDisplayMediaDevices(
       base::OnceClosure quit_closure,
+      media::mojom::DeviceEnumerationResult result,
       const media::VideoCaptureDeviceDescriptors& descriptors) {
     blink::MediaStreamDevices devices;
     for (const auto& descriptor : descriptors) {

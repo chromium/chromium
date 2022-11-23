@@ -280,7 +280,9 @@ class MediaStreamManagerTest : public ::testing::Test {
         .WillByDefault(Invoke(
             [](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::vector<media::VideoCaptureDeviceInfo> stub_results;
-              std::move(result_callback).Run(stub_results);
+              std::move(result_callback)
+                  .Run(media::mojom::DeviceEnumerationResult::kSuccess,
+                       stub_results);
             }));
   }
 

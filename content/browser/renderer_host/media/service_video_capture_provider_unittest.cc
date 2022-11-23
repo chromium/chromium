@@ -154,7 +154,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 
 // Tests that if connection to the service is lost during an outstanding call
 // to GetDeviceInfos(), the callback passed into GetDeviceInfos() still gets
-// invoked.
+// invoked but with an error.
 TEST_F(ServiceVideoCaptureProviderTest,
        GetDeviceInfosAsyncInvokesCallbackWhenLosingConnection) {
   base::RunLoop run_loop;
@@ -173,13 +173,18 @@ TEST_F(ServiceVideoCaptureProviderTest,
             wait_for_call_to_arrive_at_service.Quit();
           }));
   base::RunLoop wait_for_callback_from_service;
-  EXPECT_CALL(results_cb_, Run(_))
-      .WillOnce(Invoke(
-          [&wait_for_callback_from_service](
-              const std::vector<media::VideoCaptureDeviceInfo>& results) {
-            EXPECT_EQ(0u, results.size());
-            wait_for_callback_from_service.Quit();
-          }));
+  EXPECT_CALL(results_cb_, Run(_, _))
+      .WillOnce(Invoke([&wait_for_callback_from_service](
+                           media::mojom::DeviceEnumerationResult result,
+                           const std::vector<media::VideoCaptureDeviceInfo>&
+                               results) {
+        // The disconnect should result in a failed result code.
+        EXPECT_EQ(
+            media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
+            result);
+        EXPECT_EQ(0u, results.size());
+        wait_for_callback_from_service.Quit();
+      }));
 
   // Exercise
   provider_->GetDeviceInfosAsync(results_cb_.Get());
@@ -258,13 +263,13 @@ TEST_F(ServiceVideoCaptureProviderTest,
   base::RunLoop wait_for_get_device_infos_response_1;
   base::RunLoop wait_for_get_device_infos_response_2;
   provider_->GetDeviceInfosAsync(base::BindRepeating(
-      [](base::RunLoop* run_loop,
+      [](base::RunLoop* run_loop, media::mojom::DeviceEnumerationResult,
          const std::vector<media::VideoCaptureDeviceInfo>&) {
         run_loop->Quit();
       },
       &wait_for_get_device_infos_response_1));
   provider_->GetDeviceInfosAsync(base::BindRepeating(
-      [](base::RunLoop* run_loop,
+      [](base::RunLoop* run_loop, media::mojom::DeviceEnumerationResult,
          const std::vector<media::VideoCaptureDeviceInfo>&) {
         run_loop->Quit();
       },

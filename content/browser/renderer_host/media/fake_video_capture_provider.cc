@@ -18,7 +18,9 @@ FakeVideoCaptureProvider::~FakeVideoCaptureProvider() = default;
 
 void FakeVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
-  system_.GetDeviceInfosAsync(std::move(result_callback));
+  system_.GetDeviceInfosAsync(
+      base::BindOnce(std::move(result_callback),
+                     media::mojom::DeviceEnumerationResult::kSuccess));
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>

@@ -383,3 +383,9 @@ enum CropRequestResult {
   kNonIncreasingCropVersion,
   kInvalidCropTarget,
 };
+
+enum DeviceEnumerationResult {
+  kSuccess,
+  kUnknownError,
+  kErrorCaptureServiceCrash
+};

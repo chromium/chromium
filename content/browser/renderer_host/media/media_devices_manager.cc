@@ -941,8 +941,19 @@ void MediaDevicesManager::EnumerateAudioDevices(bool is_input) {
 }
 
 void MediaDevicesManager::VideoInputDevicesEnumerated(
+    media::mojom::DeviceEnumerationResult result_code,
     const media::VideoCaptureDeviceDescriptors& descriptors) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (result_code != media::mojom::DeviceEnumerationResult::kSuccess) {
+    std::string log_message = base::StringPrintf(
+        "VideoInputDevicesEnumerated got error %d", result_code);
+    // Log to both WebRTC logs (for feedback reports) and text logs for
+    // manually-collected chrome logs at customers.
+    SendLogMessage(log_message);
+    VLOG(1) << log_message;
+    // TODO(crbug.com/1313822): Propagate this as an error response to the
+    // page and expose in the JS API.
+  }
   blink::WebMediaDeviceInfoArray snapshot;
   for (const auto& descriptor : descriptors) {
     snapshot.emplace_back(descriptor);

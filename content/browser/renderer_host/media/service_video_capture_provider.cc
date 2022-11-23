@@ -324,7 +324,8 @@ void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     }
   }
 #endif
-  std::move(result_callback).Run(infos);
+  std::move(result_callback)
+      .Run(media::mojom::DeviceEnumerationResult::kSuccess, infos);
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
@@ -345,7 +346,9 @@ void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
                                SERVICE_DROPPED_DEVICE_INFOS_REQUEST_ON_RETRY);
   }
 #endif
-  std::move(result_callback).Run(std::vector<media::VideoCaptureDeviceInfo>());
+  std::move(result_callback)
+      .Run(media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
+           std::vector<media::VideoCaptureDeviceInfo>());
 }
 
 void ServiceVideoCaptureProvider::OnLostConnectionToSourceProvider() {

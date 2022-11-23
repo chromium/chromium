@@ -269,6 +269,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Callback for VideoCaptureManager::EnumerateDevices.
   void VideoInputDevicesEnumerated(
+      media::mojom::DeviceEnumerationResult result_code,
       const media::VideoCaptureDeviceDescriptors& descriptors);
 
   // Callback for AudioSystem::GetDeviceDescriptions.

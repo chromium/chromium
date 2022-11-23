@@ -208,7 +208,8 @@ class CONTENT_EXPORT VideoCaptureManager
 #endif
 
   using EnumerationCallback =
-      base::OnceCallback<void(const media::VideoCaptureDeviceDescriptors&)>;
+      base::OnceCallback<void(media::mojom::DeviceEnumerationResult result_code,
+                              const media::VideoCaptureDeviceDescriptors&)>;
   // Asynchronously obtains descriptors for the available devices.
   // As a side-effect, updates |devices_info_cache_|.
   void EnumerateDevices(EnumerationCallback client_callback);
@@ -246,6 +247,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void OnDeviceInfosReceived(
       base::ElapsedTimer timer,
       EnumerationCallback client_callback,
+      media::mojom::DeviceEnumerationResult error_code,
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
 
   // Helpers to report an event to our Listener.

@@ -155,8 +155,14 @@ void LookupAndLogNameAndIdOfFirstCamera() {
             media_stream_manager->video_capture_manager()->EnumerateDevices(
                 base::BindOnce(
                     [](base::OnceClosure quit_closure,
+                       media::mojom::DeviceEnumerationResult result,
                        const media::VideoCaptureDeviceDescriptors&
                            descriptors) {
+                      if (result !=
+                          media::mojom::DeviceEnumerationResult::kSuccess) {
+                        LOG(WARNING) << "Camera enumeration failed";
+                        return;
+                      }
                       if (descriptors.empty()) {
                         LOG(WARNING) << "No camera found";
                         return;
