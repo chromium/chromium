@@ -343,6 +343,7 @@ test("vaapi_unittest") {
     "//build:chromeos_buildflags",
     "//gpu",
     "//media/gpu/test:helpers",
+    "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video",
     "//testing/gtest",
     "//third_party/minigbm",
     "//ui/gfx/linux:gbm",

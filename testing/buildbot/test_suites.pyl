@@ -834,8 +834,8 @@
           '--stop-ui',
           # Tell libva to do dummy encoding/decoding. For more info, see:
           # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
-          '--env-var', 'LIBVA_DRIVERS_PATH', '/usr/local/lib64',
-          '--env-var', 'LIBVA_DRIVER_NAME', 'fake',
+          '--env-var', 'LIBVA_DRIVERS_PATH', './',
+          '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
           '--env-var', 'LIBVA_FOOL_DECODE', '1',
           '--env-var', 'LIBVA_FOOL_POSTP', '1',
           '--gtest_filter="VaapiTest.*"',
