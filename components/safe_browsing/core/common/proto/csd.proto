@@ -1832,6 +1832,21 @@ message ExtensionTelemetryReportRequest {
     // Bit positions are defined in extensions::disable_reason::DisableReason
     // (located in //extensions/browser/disable_reason.h)
     optional uint32 disable_reasons = 13;
+
+    // Manifest.json file associated with the extension. Only populated for
+    // off-store extensions.
+    optional string manifest_json = 14;
+
+    // Extension file names and hashes.
+    message FileInfo {
+      // Extension file name.
+      optional string name = 1;
+      // Extension file hash calculated with SHA256.
+      optional bytes hash = 2;
+    }
+
+    // Only populated for off-store extensions.
+    repeated FileInfo file_infos = 15;
   }
 
   // Information about the various telemetry signals.
