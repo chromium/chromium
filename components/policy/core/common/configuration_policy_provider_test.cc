@@ -377,18 +377,18 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   test_harness_->InstallDictionaryPolicy(test_keys::kKeyDictionary,
                                          policy_dict.Clone());
   // Install them as 3rd party policies too.
-  base::DictionaryValue policy_3rdparty;
-  policy_3rdparty.SetPath({"extensions", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
-                          base::Value(policy_dict.Clone()));
-  policy_3rdparty.SetPath({"extensions", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
-                          base::Value(policy_dict.Clone()));
+  base::Value::Dict policy_3rdparty;
+  policy_3rdparty.SetByDottedPath("extensions.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                                  base::Value(policy_dict.Clone()));
+  policy_3rdparty.SetByDottedPath("extensions.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                                  base::Value(policy_dict.Clone()));
   // Install invalid 3rd party policies that shouldn't be loaded. These also
   // help detecting memory leaks in the code paths that detect invalid input.
-  policy_3rdparty.SetPath({"invalid-domain", "component"},
-                          base::Value(policy_dict.Clone()));
-  policy_3rdparty.SetStringPath("extensions.cccccccccccccccccccccccccccccccc",
-                                "invalid-value");
-  test_harness_->Install3rdPartyPolicy(policy_3rdparty.GetDict());
+  policy_3rdparty.SetByDottedPath("invalid-domain.component",
+                                  base::Value(policy_dict.Clone()));
+  policy_3rdparty.SetByDottedPath("extensions.cccccccccccccccccccccccccccccccc",
+                                  "invalid-value");
+  test_harness_->Install3rdPartyPolicy(policy_3rdparty);
 
   provider_->RefreshPolicies();
   task_environment_.RunUntilIdle();
