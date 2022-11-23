@@ -262,22 +262,26 @@ Use the `ContextWrapper` created via: [BundleUtils.createContextForInflation()]
 
 [BundleUtils.createContextForInflation()]: https://source.chromium.org/search?q=symbol:BundleUtils.createContextForInflation&ss=chromium
 
-### Using Fragments
+### onRestoreInstanceState with Classes From Splits
 
 When Android kills an app, it normally calls `onSaveInstanceState()` to allow
 the app to first save state. The saved state includes the class names of active
-Fragments. Upon re-launch, these class names are used to reflectively
-instantiate the fragments. `FragmentManager` uses the ClassLoader of the
-Activity to instantiate them, which doesn't work if the Activity and fragment
-classes live in different splits.
+Fragments, RecyclerViews, and potentially other classes from splits. Upon
+re-launch, these class names are used to reflectively instantiate instances.
+`FragmentManager` uses the ClassLoader of the Activity to instantiate them,
+and `RecyclerView` uses the ClassLoader associated with the `Bundle` object.
+The reflection fails if the active Activity resides in a different spilt from
+the reflectively instantiated classes.
 
 **Work-around:**
 
 Chrome stores the list of all splits that have been used for inflation during
-[onSaveInstanceState] and then uses [a custom ClassLoader] to look within them
-for classes that do not exist in the application's ClassLoader.
+[`onSaveInstanceState`] and then uses [a custom ClassLoader] to look within them
+for classes that do not exist in the application's ClassLoader. The custom
+ClassLoader is passed to `Bundle` instances in
+`ChromeBaseAppCompatActivity.onRestoreInstanceState()`.
 
-[onSaveInstanceState]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.onSaveInstanceState&ss=chromium
+[`onSaveInstanceState`]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.onSaveInstanceState&ss=chromium
 [a custom ClassLoader]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.getClassLoader&ss=chromium
 
 ### Calling Methods Across a Split Boundary

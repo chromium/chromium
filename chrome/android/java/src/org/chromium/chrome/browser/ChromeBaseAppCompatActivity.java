@@ -131,6 +131,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onRestoreInstanceState(@Nullable Bundle state) {
+        if (state != null) {
+            // Ensure that classes from previously loaded splits can be read from the bundle.
+            // https://crbug.com/1382227
+            state.setClassLoader(BundleUtils.getSplitCompatClassLoader());
+        }
+        super.onRestoreInstanceState(state);
+    }
+
+    @Override
     public void setTheme(@StyleRes int resid) {
         super.setTheme(resid);
         mThemeResIds.add(resid);
