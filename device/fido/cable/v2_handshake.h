@@ -150,10 +150,11 @@ namespace sync {
 // timestamp.
 COMPONENT_EXPORT(DEVICE_FIDO) uint32_t IDNow();
 
-// IDIsValid returns true iff |candidate| is an acceptable pairing ID. This
-// determination is based on the current time since Sync pairing IDs are
-// timestamps in disguise.
-COMPONENT_EXPORT(DEVICE_FIDO) bool IDIsValid(uint32_t candidate);
+// IDIsMoreThanNPeriodsOld returns true iff |candidate| is a pairing ID that
+// was generated more than `periods` time periods before the current time. A
+// time period is 86400 seconds, i.e. basically a day.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool IDIsMoreThanNPeriodsOld(uint32_t candidate, unsigned periods);
 
 }  // namespace sync
 

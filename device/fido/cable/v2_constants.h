@@ -65,6 +65,19 @@ constexpr auto kTunnelServer = tunnelserver::KnownDomainID(0);
 // to the post-handshake message. This should be sufficiently large to pad away
 // all information about the contents of this message.
 constexpr size_t kPostHandshakeMsgPaddingGranularity = 512;
+// kMaxSyncInfoDaysForConsumer is the maximum age, in days, of sync info that
+// consumers (i.e. desktops) will accept. Information in Sync's DeviceInfo
+// records that is older than this will be ignored. This should be smaller than
+// `kMaxSyncInfoDaysForProducer` so that the phone will always accept a
+// connection.
+constexpr unsigned kMaxSyncInfoDaysForConsumer = 31;
+// kMaxSyncInfoDaysForProducer is the maximum age, in days, of sync info that
+// producers (i.e. phones) will accept. If a desktop tries to connect using
+// information that was published before this time, the request will be
+// rejected. This should be larger than `kMaxSyncInfoDaysForConsumer` so that
+// this doesn't happen with honest clients.
+constexpr unsigned kMaxSyncInfoDaysForProducer =
+    kMaxSyncInfoDaysForConsumer + 7;
 
 // MessageType enumerates the types of caBLEv2 messages on the wire.
 enum class MessageType : uint8_t {

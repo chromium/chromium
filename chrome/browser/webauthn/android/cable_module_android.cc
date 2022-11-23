@@ -194,8 +194,15 @@ class RegistrationState {
       uint64_t id;
       static_assert(EXTENT(event->pairing_id) == sizeof(id), "");
       memcpy(&id, event->pairing_id.data(), sizeof(id));
+
+      // A maximum age is enforced for sync secrets so that any leak of
+      // information isn't valid forever. The desktop ignores DeviceInfo
+      // records with information that is too old so this should never happen
+      // with honest clients.
       if (id > std::numeric_limits<uint32_t>::max() ||
-          !device::cablev2::sync::IDIsValid(static_cast<uint32_t>(id))) {
+          device::cablev2::sync::IDIsMoreThanNPeriodsOld(
+              static_cast<uint32_t>(id),
+              device::cablev2::kMaxSyncInfoDaysForProducer)) {
         LOG(ERROR) << "Pairing ID " << id << " is too old. Dropping.";
         return;
       }
