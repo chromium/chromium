@@ -4588,7 +4588,7 @@ crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box
 # Sheriff 2020-06-17
 crbug.com/1092975 http/tests/inspector-protocol/target/target-expose-devtools-protocol.js [ Failure Pass ]
 
-crbug.com/1096493 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/processing-after-resume.https.html [ Failure ]
+crbug.com/1385294 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/processing-after-resume.https.html [ Crash Failure Pass Timeout ]
 
 crbug.com/1097005 http/tests/devtools/console/console-object-preview.js [ Crash Failure Pass Timeout ]
 crbug.com/1097005 http/tests/devtools/console/console-preserve-scroll.js [ Crash Failure Pass Timeout ]
