@@ -4,8 +4,6 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "ash/accelerators/accelerator_layout_table.h"
@@ -14,7 +12,6 @@
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/webui/shortcut_customization_ui/backend/shortcut_customization_delegate.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -135,13 +132,9 @@ bool IsModifierSet(const ui::Accelerator accelerator, int modifier) {
 
 namespace shortcut_ui {
 
-AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
-    std::unique_ptr<ShortcutCustomizationDelegate>
-        shortcut_customization_delegate)
+AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
     : ash_accelerator_configuration_(
-          Shell::Get()->ash_accelerator_configuration()),
-      shortcut_customization_delegate_(
-          std::move(shortcut_customization_delegate)) {
+          Shell::Get()->ash_accelerator_configuration()) {
   // Observe connected keyboard events.
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 

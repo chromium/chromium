@@ -20,29 +20,20 @@ class WebUI;
 
 namespace ash {
 
-namespace shortcut_ui {
-class ShortcutCustomizationDelegate;
-}  // namespace shortcut_ui
-
 class ShortcutCustomizationAppUI;
 
 // The WebUIConfig for chrome://shortcut-customization.
 class ShortcutCustomizationAppUIConfig
     : public SystemWebAppUIConfig<ShortcutCustomizationAppUI> {
  public:
-  explicit ShortcutCustomizationAppUIConfig(
-      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+  ShortcutCustomizationAppUIConfig()
       : SystemWebAppUIConfig(kChromeUIShortcutCustomizationAppHost,
-                             SystemWebAppType::SHORTCUT_CUSTOMIZATION,
-                             create_controller_func) {}
+                             SystemWebAppType::SHORTCUT_CUSTOMIZATION) {}
 };
 
 class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
  public:
-  ShortcutCustomizationAppUI(
-      content::WebUI* web_ui,
-      std::unique_ptr<shortcut_ui::ShortcutCustomizationDelegate>
-          shortcut_customization_delegate);
+  explicit ShortcutCustomizationAppUI(content::WebUI* web_ui);
   ShortcutCustomizationAppUI(const ShortcutCustomizationAppUI&) = delete;
   ShortcutCustomizationAppUI& operator=(const ShortcutCustomizationAppUI&) =
       delete;

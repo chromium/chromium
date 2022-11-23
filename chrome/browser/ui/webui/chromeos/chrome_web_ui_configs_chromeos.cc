@@ -14,7 +14,6 @@
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/shortcut_customization_ui/chrome_shortcut_customization_delegate.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -91,11 +90,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       MakeComponentConfig<ash::CameraAppUIConfig, ash::CameraAppUI,
                           ChromeCameraAppUIDelegate>());
-  map.AddWebUIConfig(
-      MakeComponentConfig<ash::ShortcutCustomizationAppUIConfig,
-                          ash::ShortcutCustomizationAppUI,
-                          ChromeShortcutCustomizationDelegate>());
-
   map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
@@ -139,6 +133,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowUIConfig>());
   map.AddWebUIConfig(

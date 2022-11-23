@@ -10,7 +10,6 @@ static_library("backend") {
   sources = [
     "accelerator_configuration_provider.cc",
     "accelerator_configuration_provider.h",
-    "shortcut_customization_delegate.h",
   ]
 
   deps = [
