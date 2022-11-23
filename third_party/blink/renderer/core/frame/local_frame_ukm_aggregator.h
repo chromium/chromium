@@ -112,9 +112,10 @@ enum class DocumentUpdateReason;
 //
 // |ukm_enum| should be an entry in LocalFrameUkmAggregator's enum of
 // metric names (which in turn corresponds to names from ukm.xml).
-#define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum) \
-  auto scoped_ukm_hierarchical_timer =                 \
-      aggregator.GetScopedTimer(static_cast<size_t>(ukm_enum));
+#define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum)                       \
+  absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer; \
+  if (aggregator)                                                            \
+    timer.emplace(aggregator->GetScopedTimer(static_cast<size_t>(ukm_enum)));
 
 class CORE_EXPORT LocalFrameUkmAggregator
     : public RefCounted<LocalFrameUkmAggregator> {

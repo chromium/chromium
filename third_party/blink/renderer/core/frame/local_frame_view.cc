@@ -934,16 +934,18 @@ void LocalFrameView::WillStartForcedLayout() {
   if (forced_layout_stack_depth_ > 1)
     return;
   forced_layout_start_time_ = base::TimeTicks::Now();
-  EnsureUkmAggregator().BeginForcedLayout();
+  if (auto* metrics_aggregator = GetUkmAggregator())
+    metrics_aggregator->BeginForcedLayout();
 }
 
 void LocalFrameView::DidFinishForcedLayout(DocumentUpdateReason reason) {
   CHECK_GT(forced_layout_stack_depth_, (unsigned)0);
   forced_layout_stack_depth_--;
   if (!forced_layout_stack_depth_ && base::TimeTicks::IsHighResolution()) {
-    LocalFrameUkmAggregator& aggregator = EnsureUkmAggregator();
-    aggregator.RecordForcedLayoutSample(reason, forced_layout_start_time_,
-                                        base::TimeTicks::Now());
+    if (auto* metrics_aggregator = GetUkmAggregator()) {
+      metrics_aggregator->RecordForcedLayoutSample(
+          reason, forced_layout_start_time_, base::TimeTicks::Now());
+    }
   }
 }
 
@@ -1082,7 +1084,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::UpdateViewportIntersectionsForSubtree");
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kIntersectionObservation);
 
   // Populating monotonic_time may be expensive, and may be unnecessary, so
@@ -1564,8 +1566,7 @@ void LocalFrameView::ComputePostLayoutIntersections(
 
   if (auto* controller =
           GetFrame().GetDocument()->GetIntersectionObserverController()) {
-    controller->ComputeIntersections(flags, EnsureUkmAggregator(),
-                                     monotonic_time);
+    controller->ComputeIntersections(flags, GetUkmAggregator(), monotonic_time);
   }
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
@@ -2335,10 +2336,11 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // Hit testing metrics include the entire time processing a document update
   // in preparation for a hit test.
   if (reason == DocumentUpdateReason::kHitTest) {
-    LocalFrameUkmAggregator& aggregator = EnsureUkmAggregator();
-    aggregator.RecordTimerSample(
-        static_cast<size_t>(LocalFrameUkmAggregator::kHitTestDocumentUpdate),
-        lifecycle_data_.start_time, base::TimeTicks::Now());
+    if (auto* metrics_aggregator = GetUkmAggregator()) {
+      metrics_aggregator->RecordTimerSample(
+          static_cast<size_t>(LocalFrameUkmAggregator::kHitTestDocumentUpdate),
+          lifecycle_data_.start_time, base::TimeTicks::Now());
+    }
   }
 
   return Lifecycle().GetState() == target_state;
@@ -2650,7 +2652,7 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingInputs);
   // TODO(pdr): This descendant dependent treewalk should be integrated into
   // the prepaint tree walk.
@@ -2730,7 +2732,7 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
       kPostOrder);
 
   {
-    SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+    SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                              LocalFrameUkmAggregator::kPrePaint);
 
     GetPage()->GetLinkHighlight().UpdateBeforePrePaint();
@@ -2845,7 +2847,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 void LocalFrameView::RunAccessibilitySteps() {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunAccessibilitySteps");
 
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kAccessibility);
 
   // Reduce redundant ancestor chain walking for display lock computations.
@@ -2904,8 +2906,7 @@ void LocalFrameView::EnqueueScrollEvents() {
 
 bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
                                PaintControllerCycleScope& cycle_scope) {
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
-                           LocalFrameUkmAggregator::kPaint);
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
 
   DCHECK(GetFrame().IsLocalRoot());
 
@@ -3065,7 +3066,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   paint_artifact_compositor_->SetPrefersLCDText(
       !page->GetSettings().GetPreferCompositingToLCDTextEnabled());
 
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingCommit);
 
   // Skip updating property trees, pushing cc::Layers, and issuing raster
@@ -3296,7 +3297,7 @@ bool LocalFrameView::UpdateStyleAndLayoutInternal() {
   }
 
   if (NeedsLayout()) {
-    SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
+    SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                              LocalFrameUkmAggregator::kLayout);
     UpdateLayout();
     return true;
@@ -4057,8 +4058,7 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
                                              const CullRect& cull_rect) {
   DCHECK(PaintOutsideOfLifecycleIsAllowed(context, *this));
 
-  SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
-                           LocalFrameUkmAggregator::kPaint);
+  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
@@ -4298,14 +4298,14 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     if (IntersectionObserverController* controller =
             GetFrame().GetDocument()->GetIntersectionObserverController()) {
       needs_occlusion_tracking |= controller->ComputeIntersections(
-          flags, EnsureUkmAggregator(), monotonic_time);
+          flags, GetUkmAggregator(), monotonic_time);
     }
     intersection_observation_state_ = kNotNeeded;
   }
 
   {
     SCOPED_UMA_AND_UKM_TIMER(
-        EnsureUkmAggregator(),
+        GetUkmAggregator(),
         LocalFrameUkmAggregator::kUpdateViewportIntersection);
     UpdateViewportIntersection(flags, needs_occlusion_tracking);
   }
@@ -4731,16 +4731,22 @@ void LocalFrameView::RegisterTapEvent(Element* target) {
   }
 }
 
-LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
+LocalFrameUkmAggregator* LocalFrameView::GetUkmAggregator() {
   DCHECK(frame_->IsLocalRoot() || !ukm_aggregator_);
   LocalFrameView* local_root = frame_->LocalFrameRoot().View();
+
+  // TODO(crbug.com/1392462): Avoid checking whether we need to create the
+  // aggregator on every access.
   if (!local_root->ukm_aggregator_) {
-    local_root->ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
-        local_root->frame_->GetDocument()->UkmSourceID(),
-        local_root->frame_->GetDocument()->UkmRecorder(),
-        local_root->frame_->IsMainFrame());
+    if (!local_root->frame_->GetChromeClient().IsSVGImageChromeClient()) {
+      local_root->ukm_aggregator_ =
+          base::MakeRefCounted<LocalFrameUkmAggregator>(
+              local_root->frame_->GetDocument()->UkmSourceID(),
+              local_root->frame_->GetDocument()->UkmRecorder(),
+              local_root->frame_->IsMainFrame());
+    }
   }
-  return *local_root->ukm_aggregator_;
+  return local_root->ukm_aggregator_.get();
 }
 
 void LocalFrameView::ResetUkmAggregatorForTesting() {
@@ -4756,7 +4762,8 @@ void LocalFrameView::OnFirstContentfulPaint() {
       FontPerformance::MarkFirstContentfulPaint();
   }
 
-  EnsureUkmAggregator().DidReachFirstContentfulPaint();
+  if (auto* metrics_aggregator = GetUkmAggregator())
+    metrics_aggregator->DidReachFirstContentfulPaint();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

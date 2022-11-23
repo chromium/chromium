@@ -2161,11 +2161,9 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
-    ukm_timer.emplace(LocalRootImpl()
-                          ->GetFrame()
-                          ->View()
-                          ->EnsureUkmAggregator()
-                          .GetScopedTimer(LocalFrameUkmAggregator::kAnimate));
+    ukm_timer.emplace(
+        LocalRootImpl()->GetFrame()->View()->GetUkmAggregator()->GetScopedTimer(
+            LocalFrameUkmAggregator::kAnimate));
   }
 
   GetPage()->Animate(last_frame_time);
@@ -2213,9 +2211,9 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
   LocalRootImpl()
       ->GetFrame()
       ->View()
-      ->EnsureUkmAggregator()
-      .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
-                                  commit_start_time, commit_finish_time);
+      ->GetUkmAggregator()
+      ->RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
+                                   commit_start_time, commit_finish_time);
   commit_compositor_frame_start_time_ =
       next_commit_compositor_frame_start_time_;
   next_commit_compositor_frame_start_time_.reset();
@@ -2264,13 +2262,9 @@ void WebFrameWidgetImpl::RecordManipulationTypeCounts(
 void WebFrameWidgetImpl::RecordDispatchRafAlignedInputTime(
     base::TimeTicks raf_aligned_input_start_time) {
   if (LocalRootImpl()) {
-    LocalRootImpl()
-        ->GetFrame()
-        ->View()
-        ->EnsureUkmAggregator()
-        .RecordTimerSample(LocalFrameUkmAggregator::kHandleInputEvents,
-                           raf_aligned_input_start_time,
-                           base::TimeTicks::Now());
+    LocalRootImpl()->GetFrame()->View()->GetUkmAggregator()->RecordTimerSample(
+        LocalFrameUkmAggregator::kHandleInputEvents,
+        raf_aligned_input_start_time, base::TimeTicks::Now());
   }
 }
 
@@ -2310,8 +2304,8 @@ WebFrameWidgetImpl::GetBeginMainFrameMetrics() {
   return LocalRootImpl()
       ->GetFrame()
       ->View()
-      ->EnsureUkmAggregator()
-      .GetBeginMainFrameMetrics();
+      ->GetUkmAggregator()
+      ->GetBeginMainFrameMetrics();
 }
 
 std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetImpl::GetWebVitalMetrics() {
@@ -2359,13 +2353,9 @@ void WebFrameWidgetImpl::BeginUpdateLayers() {
 void WebFrameWidgetImpl::EndUpdateLayers() {
   if (LocalRootImpl()) {
     DCHECK(update_layers_start_time_);
-    LocalRootImpl()
-        ->GetFrame()
-        ->View()
-        ->EnsureUkmAggregator()
-        .RecordTimerSample(LocalFrameUkmAggregator::kUpdateLayers,
-                           update_layers_start_time_.value(),
-                           base::TimeTicks::Now());
+    LocalRootImpl()->GetFrame()->View()->GetUkmAggregator()->RecordTimerSample(
+        LocalFrameUkmAggregator::kUpdateLayers,
+        update_layers_start_time_.value(), base::TimeTicks::Now());
     probe::LayerTreeDidChange(LocalRootImpl()->GetFrame());
   }
   update_layers_start_time_.reset();
@@ -2375,7 +2365,7 @@ void WebFrameWidgetImpl::RecordStartOfFrameMetrics() {
   if (!LocalRootImpl())
     return;
 
-  LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().BeginMainFrame();
+  LocalRootImpl()->GetFrame()->View()->GetUkmAggregator()->BeginMainFrame();
 }
 
 void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
@@ -2387,9 +2377,9 @@ void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
   LocalRootImpl()
       ->GetFrame()
       ->View()
-      ->EnsureUkmAggregator()
-      .RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
-                               trackers);
+      ->GetUkmAggregator()
+      ->RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
+                                trackers);
 }
 
 void WebFrameWidgetImpl::WillHandleGestureEvent(const WebGestureEvent& event,

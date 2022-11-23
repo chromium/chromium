@@ -305,9 +305,11 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
     std::unique_ptr<CachedCSSTokenizer> cached_tokenizer) {
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer;
   if (context->GetDocument() && context->GetDocument()->View()) {
-    timer.emplace(
-        context->GetDocument()->View()->EnsureUkmAggregator().GetScopedTimer(
-            static_cast<size_t>(LocalFrameUkmAggregator::kParseStyleSheet)));
+    if (auto* metrics_aggregator =
+            context->GetDocument()->View()->GetUkmAggregator()) {
+      timer.emplace(metrics_aggregator->GetScopedTimer(
+          static_cast<size_t>(LocalFrameUkmAggregator::kParseStyleSheet)));
+    }
   }
   TRACE_EVENT_BEGIN2("blink,blink_style", "CSSParserImpl::parseStyleSheet",
                      "baseUrl", context->BaseURL().GetString().Utf8(), "mode",

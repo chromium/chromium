@@ -709,8 +709,8 @@ class CORE_EXPORT LocalFrameView final
   void RegisterTapEvent(Element* target);
 
   // Returns the UKM aggregator for this frame's local root, creating it if
-  // necessary.
-  LocalFrameUkmAggregator& EnsureUkmAggregator();
+  // necessary. Returns null if no aggregator is needed, such as for SVG images.
+  LocalFrameUkmAggregator* GetUkmAggregator();
   void ResetUkmAggregatorForTesting();
 
   // Report the First Contentful Paint signal to the LocalFrameView.

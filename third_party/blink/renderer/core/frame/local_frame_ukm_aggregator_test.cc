@@ -656,7 +656,7 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
 class LocalFrameUkmAggregatorSimTest : public SimTest {
  protected:
   LocalFrameUkmAggregator& local_root_aggregator() {
-    return LocalFrameRoot().GetFrame()->View()->EnsureUkmAggregator();
+    return *LocalFrameRoot().GetFrame()->View()->GetUkmAggregator();
   }
 
   void ChooseNextFrameForTest() {
@@ -712,9 +712,9 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         2);
 
     // Simulate the first contentful paint in the main frame.
-    document.View()->EnsureUkmAggregator().BeginMainFrame();
+    document.View()->GetUkmAggregator()->BeginMainFrame();
     PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
-    document.View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+    document.View()->GetUkmAggregator()->RecordEndOfFrameMetrics(
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
 
     target1->setAttribute(html_names::kStyleAttr, "width: 60px");
@@ -738,7 +738,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
   }
 };
 
-TEST_F(LocalFrameUkmAggregatorSimTest, EnsureUkmAggregator) {
+TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
   LoadURL("https://example.com/");
@@ -751,11 +751,11 @@ TEST_F(LocalFrameUkmAggregatorSimTest, EnsureUkmAggregator) {
       To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
           ->contentDocument()
           ->View();
-  auto& aggregator_from_subframe = subframe_view->EnsureUkmAggregator();
-  auto& aggregator_from_root = root_view->EnsureUkmAggregator();
-  EXPECT_EQ(&aggregator_from_root, &aggregator_from_subframe);
-  EXPECT_EQ(&aggregator_from_root, &subframe_view->EnsureUkmAggregator());
-  EXPECT_EQ(&aggregator_from_root, &root_view->EnsureUkmAggregator());
+  auto* aggregator_from_subframe = subframe_view->GetUkmAggregator();
+  auto* aggregator_from_root = root_view->GetUkmAggregator();
+  EXPECT_EQ(aggregator_from_root, aggregator_from_subframe);
+  EXPECT_EQ(aggregator_from_root, subframe_view->GetUkmAggregator());
+  EXPECT_EQ(aggregator_from_root, root_view->GetUkmAggregator());
 }
 
 TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
@@ -944,6 +944,30 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
   EXPECT_FALSE(IsBeforeFCPForTesting());
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 1);
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
+  base::HistogramTester histogram_tester;
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'
+        fill='red' width='10' height='10'><path d='M0 0 L8 0 L4 7 Z'/></svg>">
+    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'
+        fill='green' width='10' height='10'><path d='M0 0 L8 0 L4 7 Z'/></svg>">
+    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'
+        fill='blue' width='10' height='10'><path d='M0 0 L8 0 L4 7 Z'/></svg>">
+  )HTML");
+
+  // Do a pre-FCP frame.
+  Compositor().BeginFrame();
+
+  // Metrics should only be reported for the root frame, not for each svg image.
+  histogram_tester.ExpectTotalCount("Blink.Style.UpdateTime.PreFCP", 1);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 1);
 }
 
 }  // namespace blink

@@ -2156,7 +2156,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     }
   }
 
-  SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
+  SCOPED_UMA_AND_UKM_TIMER(View()->GetUkmAggregator(),
                            LocalFrameUkmAggregator::kStyle);
   FontPerformance::StyleScope font_performance_scope;
   ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), GetFrame(),

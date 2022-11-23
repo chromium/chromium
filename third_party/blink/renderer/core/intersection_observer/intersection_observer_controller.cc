@@ -62,7 +62,7 @@ void IntersectionObserverController::DeliverNotifications(
 
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
-    LocalFrameUkmAggregator& ukm_aggregator,
+    LocalFrameUkmAggregator* metrics_aggregator,
     absl::optional<base::TimeTicks>& monotonic_time) {
   needs_occlusion_tracking_ = false;
   if (!GetExecutionContext())
@@ -77,10 +77,13 @@ bool IntersectionObserverController::ComputeIntersections(
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {
-    LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
+    absl::optional<LocalFrameUkmAggregator::IterativeTimer> metrics_timer;
+    if (metrics_aggregator)
+      metrics_timer.emplace(*metrics_aggregator);
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
-        ukm_timer.StartInterval(observer->GetUkmMetricId());
+        if (metrics_timer)
+          metrics_timer->StartInterval(observer->GetUkmMetricId());
         int64_t count = observer->ComputeIntersections(flags, monotonic_time);
         if (observer->IsInternal())
           internal_observation_count += count;
@@ -92,7 +95,8 @@ bool IntersectionObserverController::ComputeIntersections(
       }
     }
     for (auto& observation : observations_to_process) {
-      ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
+      if (metrics_timer)
+        metrics_timer->StartInterval(observation->Observer()->GetUkmMetricId());
       int64_t count = observation->ComputeIntersection(flags, monotonic_time);
       if (observation->Observer()->IsInternal())
         internal_observation_count += count;
@@ -102,12 +106,14 @@ bool IntersectionObserverController::ComputeIntersections(
     }
   }
 
-  ukm_aggregator.RecordCountSample(
-      LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
-      internal_observation_count);
-  ukm_aggregator.RecordCountSample(
-      LocalFrameUkmAggregator::kIntersectionObservationJavascriptCount,
-      javascript_observation_count);
+  if (metrics_aggregator) {
+    metrics_aggregator->RecordCountSample(
+        LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
+        internal_observation_count);
+    metrics_aggregator->RecordCountSample(
+        LocalFrameUkmAggregator::kIntersectionObservationJavascriptCount,
+        javascript_observation_count);
+  }
 
   return needs_occlusion_tracking_;
 }

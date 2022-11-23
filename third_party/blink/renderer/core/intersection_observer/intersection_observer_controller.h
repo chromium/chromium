@@ -38,7 +38,7 @@ class IntersectionObserverController
   // communicates whether observer->trackVisibility() is true for any tracked
   // observer.
   bool ComputeIntersections(unsigned flags,
-                            LocalFrameUkmAggregator& ukm_aggregator,
+                            LocalFrameUkmAggregator* metrics_aggregator,
                             absl::optional<base::TimeTicks>& monotonic_time);
 
   // The second argument indicates whether the Element is a target of any
