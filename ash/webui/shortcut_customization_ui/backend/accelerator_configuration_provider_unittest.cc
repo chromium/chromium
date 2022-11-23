@@ -401,6 +401,11 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
        BRIGHTNESS_UP},
       {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN,
        KEYBOARD_BRIGHTNESS_UP},
+      // Fake accelerator data - [search] is part of the original accelerator.
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN,
+       TOGGLE_FULLSCREEN},
   };
 
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
@@ -424,27 +429,35 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   // When TopRowKeysAsFunctionKeys enabled, top row shortcut will become [Fkey]
   // + [search] + [modifier].
   const AcceleratorData expected_test_data[] = {
-      // alt + tab = alt + tab
+      // alt + tab -> alt + tab
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
        CYCLE_FORWARD_MRU},
-      // alt + shift + tab = alt + shift + tab
+      // alt + shift + tab -> alt + shift + tab
       {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
-      // search + esc = search + esc
+      // search + esc -> search + esc
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
-      // shift + zoom = shift + search + F4
+      // shift + zoom -> shift + search + F4
       {/*trigger_on_press=*/true, ui::VKEY_F4,
        ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, TOGGLE_FULLSCREEN},
-      // zoom = search + F4
+      // zoom -> search + F4
       {/*trigger_on_press=*/true, ui::VKEY_F4, ui::EF_COMMAND_DOWN,
        TOGGLE_FULLSCREEN},
-      // brightness_up = search + F7
+      // brightness_up -> search + F7
       {/*trigger_on_press=*/true, ui::VKEY_F7, ui::EF_COMMAND_DOWN,
        BRIGHTNESS_UP},
-      // alt + brightness_up = alt + search + F7
+      // alt + brightness_up -> alt + search + F7
       {/*trigger_on_press=*/true, ui::VKEY_F7,
        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      // When [search] is part of the original accelerator, no remapping is
+      // done.
+      // search + alt + brightness_up -> search + alt + brightness_up
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      // search + zoom -> search + zoom
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN,
+       TOGGLE_FULLSCREEN},
   };
 
   EXPECT_EQ(2, observer.num_times_notified());

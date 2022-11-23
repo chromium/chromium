@@ -273,7 +273,9 @@ AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateRemappedTopRowAcceleratorInfo(
     ui::Accelerator accelerator) const {
-  if (!TopRowKeysAreFunctionKeys() ||
+  // Avoid remapping if [Search] is part of original accelerator.
+  if (IsModifierSet(accelerator, ui::EF_COMMAND_DOWN) ||
+      !TopRowKeysAreFunctionKeys() ||
       !kLayout2TopRowKeyToFKeyMap.contains(accelerator.key_code())) {
     // No remapping is done.
     return nullptr;
