@@ -27,10 +27,13 @@ class BruschettaService : public KeyedService {
   // Helper method to get the service instance for the given profile.
   static BruschettaService* GetForProfile(Profile* profile);
 
-  // Register a bruschetta instance with the GuestOS service. This is called at
-  // service construction for all installed instances, and from the installer
-  // for new instances.
+  // Register an existing bruschetta instance with the GuestOS service.
   void Register(const guest_os::GuestId& guest_id);
+
+  // Register a new bruschetta instance in prefs. `config_id` controls which
+  // enterprise policy manages this instance.
+  void RegisterInPrefs(const guest_os::GuestId& guest_id,
+                       std::string config_id);
 
   // Returns a handle to the launcher for the vm specified by `vm_name`. Will
   // return a null pointer if the name isn't recognised.

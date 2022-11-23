@@ -15,6 +15,8 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
@@ -36,7 +38,9 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   // Migrate VMs installed during the alpha. These will have been set up by hand
   // using vmc so chrome doesn't know about this, but we know what the VM name
   // should be, so register it here is nothing has been registered from prefs
-  // and the migration flag is turned on.
+  // and the migration flag is turned on. Note that we do not call
+  // `RegisterInPrefs` because these VMs are currently outside of enterprise
+  // policy.
   if (!registered_guests && base::FeatureList::IsEnabled(
                                 chromeos::features::kBruschettaAlphaMigrate)) {
     Register(GetBruschettaId());
@@ -47,6 +51,15 @@ BruschettaService::~BruschettaService() = default;
 
 BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
   return BruschettaServiceFactory::GetForProfile(profile);
+}
+
+void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
+                                        std::string config_id) {
+  base::Value::Dict properties;
+  properties.Set(guest_os::prefs::kBruschettaConfigId, std::move(config_id));
+  guest_os::AddContainerToPrefs(profile_, guest_id, std::move(properties));
+
+  Register(guest_id);
 }
 
 void BruschettaService::Register(const guest_os::GuestId& guest_id) {

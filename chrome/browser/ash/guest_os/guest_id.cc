@@ -36,6 +36,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kTerminalSupportedKey,
     prefs::kTerminalLabel,
     prefs::kContainerSharedVmDevicesKey,
+    prefs::kBruschettaConfigId,
 }};
 
 }  // namespace

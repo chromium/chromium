@@ -50,6 +50,7 @@ extern const char kTerminalSupportedKey[];
 // The display name to use in the terminal.
 extern const char kTerminalLabel[];
 extern const char kContainerSharedVmDevicesKey[];
+extern const char kBruschettaConfigId[];
 
 // Terminal
 // Dictionary of terminal UI settings such as font style, colors, etc.
