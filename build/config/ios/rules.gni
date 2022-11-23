@@ -1467,7 +1467,7 @@ template("ios_framework_bundle") {
         }
 
         args = [
-                 rebase_path(_header_map_filename),
+                 rebase_path(_header_map_filename, root_build_dir),
                  rebase_path(_framework_root_dir, root_build_dir),
                ] + rebase_path(sources, root_build_dir)
       }
