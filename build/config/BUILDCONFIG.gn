@@ -632,6 +632,7 @@ foreach(_target_type, [ "action" ]) {
                                "args",
                                "assert_no_deps",
                                "check_includes",
+                               "configs",
                                "data_deps",
                                "data",
                                "depfile",
