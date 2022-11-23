@@ -131,6 +131,7 @@ ScoredHistoryMatch::ScoredHistoryMatch()
                          RowWordStarts(),
                          false,
                          1,
+                         false,
                          base::Time::Max()) {}
 
 ScoredHistoryMatch::ScoredHistoryMatch(
@@ -142,6 +143,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     const RowWordStarts& word_starts,
     bool is_url_bookmarked,
     size_t num_matching_pages,
+    bool is_highly_visited_host,
     base::Time now)
     : raw_score(0) {
   // Initialize HistoryMatch fields. TODO(tommycli): Merge these two classes.
@@ -278,8 +280,15 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   const float frequency_score = GetFrequency(now, is_url_bookmarked, visits);
   const float specificity_score =
       GetDocumentSpecificityScore(num_matching_pages);
+
+  static float domain_suggestions_score_factor =
+      OmniboxFieldTrial::kDomainSuggestionsScoreFactor.Get();
+  DCHECK_GE(domain_suggestions_score_factor, 1);
+  const float domain_score =
+      is_highly_visited_host ? domain_suggestions_score_factor : 1;
+
   raw_score = base::saturated_cast<int>(GetFinalRelevancyScore(
-      topicality_score, frequency_score, specificity_score));
+      topicality_score, frequency_score, specificity_score, domain_score));
 
   if (also_do_hup_like_scoring_ && likely_can_inline) {
     // HistoryURL-provider-like scoring gives any match that is
@@ -723,7 +732,8 @@ float ScoredHistoryMatch::GetDocumentSpecificityScore(
 // static
 float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
                                                  float frequency_score,
-                                                 float specificity_score) {
+                                                 float specificity_score,
+                                                 float domain_score) {
   // |relevance_buckets| gives a mapping from intermediate score to the final
   // relevance score.
   static base::NoDestructor<ScoreMaxRelevances> default_relevance_buckets(
@@ -760,7 +770,7 @@ float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
   // The score maxes out at 1399 (i.e., cannot beat a good inlineable result
   // from HistoryURL provider).
   const float intermediate_score =
-      topicality_score * frequency_score * specificity_score;
+      topicality_score * frequency_score * specificity_score * domain_score;
 
   // Find the threshold where intermediate score is greater than bucket.
   size_t i = 1;

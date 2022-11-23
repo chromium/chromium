@@ -831,7 +831,7 @@ ScoredHistoryMatch BuildScoredHistoryMatch(const std::string& url_text,
                                            const std::u16string& input_term) {
   return ScoredHistoryMatch(history::URLRow(GURL(url_text)), VisitInfoVector(),
                             input_term, String16Vector(1, input_term),
-                            WordStarts(1, 0), RowWordStarts(), false, 0,
+                            WordStarts(1, 0), RowWordStarts(), false, 0, false,
                             base::Time());
 }
 
@@ -907,7 +907,7 @@ TEST_F(HistoryQuickProviderTest, CorrectAutocompleteWithTrailingSlash) {
   word_starts.url_word_starts_ = {0};
   ScoredHistoryMatch sh_match(history::URLRow(GURL("http://cr/")),
                               VisitInfoVector(), u"cr/", {u"cr"}, {0},
-                              word_starts, false, 0, base::Time());
+                              word_starts, false, 0, false, base::Time());
   AutocompleteMatch ac_match(QuickMatchToACMatch(sh_match, 0));
   EXPECT_EQ(u"cr/", ac_match.fill_into_edit);
   EXPECT_EQ(u"", ac_match.inline_autocompletion);

@@ -582,6 +582,10 @@ extern const base::FeatureParam<int> kDomainSuggestionsTypedVisitCapPerVisit;
 extern const base::FeatureParam<int> kDomainSuggestionsMinInputLength;
 // The maximum number of matches per domain to suggest.
 extern const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain;
+// The scoring factor used to boost HQP suggestions from highly visited domains.
+// A value of 1 is the control behavior. A value of 2 will boost scores, but not
+// necessarily double them due to how HQP maps the factors to actual scores.
+extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

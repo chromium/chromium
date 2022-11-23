@@ -685,11 +685,16 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
     const history::URLRow& hist_item = hist_pos->second.url_row;
     auto starts_pos = word_starts_map_.find(history_id);
     DCHECK(starts_pos != word_starts_map_.end());
+
+    bool is_highly_visited_host =
+        !host_filter.empty() ||
+        base::ranges::find(HighlyVisitedHosts(), hist_item.url().host()) !=
+            HighlyVisitedHosts().end();
     ScoredHistoryMatch new_scored_match(
         hist_item, hist_pos->second.visits, lower_raw_string, lower_raw_terms,
         lower_terms_to_word_starts_offsets, starts_pos->second,
         bookmark_model && bookmark_model->IsBookmarked(hist_item.url()),
-        num_unique_hosts, now);
+        num_unique_hosts, is_highly_visited_host, now);
     // Filter new matches that ended up scoring 0. (These are usually matches
     // which didn't match the user's raw terms.)
     if (new_scored_match.raw_score > 0)

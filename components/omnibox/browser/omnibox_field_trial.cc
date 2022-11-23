@@ -968,6 +968,11 @@ const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain(
     "DomainSuggestionsMaxMatchesPerDomain",
     2);
 
+const base::FeatureParam<double> kDomainSuggestionsScoreFactor(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsScoreFactor",
+    1);
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

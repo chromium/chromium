@@ -67,6 +67,7 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
                      const RowWordStarts& word_starts,
                      bool is_url_bookmarked,
                      size_t num_matching_pages,
+                     bool is_highly_visited_host,
                      base::Time now);
 
   ~ScoredHistoryMatch();
@@ -159,11 +160,12 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // user's input.
   float GetDocumentSpecificityScore(size_t num_matching_pages) const;
 
-  // Combines the three component scores into a final score that's
-  // an appropriate value to use as a relevancy score.
+  // Combines the four component scores into a final score that's an appropriate
+  // value to use as a relevancy score.
   static float GetFinalRelevancyScore(float topicality_score,
                                       float frequency_score,
-                                      float specificity_score);
+                                      float specificity_score,
+                                      float domain_score);
 
   // Helper function that returns the string containing the scoring buckets
   // (either the default ones or ones specified in an experiment).
