@@ -161,11 +161,6 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
 
 std::u16string MicrophoneMuteNotificationController::GetNotificationMessage(
     const std::vector<std::u16string>& app_names) const {
-  if (mic_muted_by_mute_switch_) {
-    return l10n_util::GetStringUTF16(
-        IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE);
-  }
-
   if (app_names.size() == 1) {
     return l10n_util::GetStringFUTF16(
         IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
@@ -184,7 +179,12 @@ std::u16string MicrophoneMuteNotificationController::GetNotificationMessage(
 
 std::u16string MicrophoneMuteNotificationController::GetNotificationTitle()
     const {
-  return l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE);
+  if (mic_muted_by_mute_switch_) {
+    return l10n_util::GetStringUTF16(
+        IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE);
+  }
+  return l10n_util::GetStringUTF16(
+      IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE);
 }
 
 void MicrophoneMuteNotificationController::RemoveMicrophoneMuteNotification() {

@@ -431,11 +431,11 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   EXPECT_TRUE(GetPopupNotification());
 }
 
-TEST_F(MicrophoneMuteNotificationControllerTest, NotificationContents) {
+TEST_F(MicrophoneMuteNotificationControllerTest, NotificationText) {
   // No notification initially.
   EXPECT_FALSE(GetNotification());
 
-  // Mute the mic, still no notification.
+  // Mute the mic using sw switch, still no notification.
   MuteMicrophone();
   EXPECT_FALSE(GetNotification());
 
@@ -449,7 +449,8 @@ TEST_F(MicrophoneMuteNotificationControllerTest, NotificationContents) {
   SetNumberOfActiveInputStreams(1);
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE),
             GetNotification()->title());
   // The notification body should not contain any app name.
   EXPECT_EQ(
@@ -491,6 +492,18 @@ TEST_F(MicrophoneMuteNotificationControllerTest, NotificationContents) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
       GetNotification()->message());
+
+  EXPECT_FALSE(
+      ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on());
+  // Toggle the hw switch.
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+  // The title of the notification should be different when microphone is muted
+  // by the hw switch.
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE),
+            GetNotification()->title());
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest, MetricCollection) {
