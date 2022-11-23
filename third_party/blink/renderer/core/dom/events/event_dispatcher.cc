@@ -265,9 +265,6 @@ DispatchEventResult EventDispatcher::Dispatch() {
                            pre_dispatch_event_handler_result);
 
   auto result = EventTarget::GetDispatchEventResult(*event_);
-  if (soft_navigation_scope) {
-    soft_navigation_scope->SetResult(result);
-  }
 
   return result;
 }

@@ -44,7 +44,15 @@ const testSoftNavigation =
 const testNavigationApi = (testName, navigateEventHandler, link) => {
   promise_test(async t => {
     const preClickLcp = await getLcpEntries();
-    navigation.addEventListener('navigate', navigateEventHandler);
+    const eventHandlerWrapper = async e => {
+      const localCounter = counter;
+      timestamps[localCounter]["eventStart"] = performance.now();
+      navigateEventHandler(e);
+      await new Promise(r => t.step_timeout(r, 10));
+      timestamps[localCounter]["eventEnd"] = performance.now();
+    };
+
+    navigation.addEventListener('navigate', eventHandlerWrapper);
     click(link);
     await new Promise(resolve => {
       (new PerformanceObserver(() => resolve())).observe({
@@ -107,7 +115,8 @@ const doubleRaf = () => {
 const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
   const eventObject = (eventType == "click") ? button : window;
   eventObject.addEventListener(eventType, async e => {
-    timestamps[counter]["eventStart"] = performance.now();
+    const localCounter = counter;
+    timestamps[localCounter]["eventStart"] = performance.now();
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));
 
@@ -125,6 +134,7 @@ const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
     await new Promise(r => t.step_timeout(r, 10));
 
     await addContent(url);
+    timestamps[localCounter]["eventEnd"] = performance.now();
     ++counter;
 
     clicked = true;
@@ -147,10 +157,13 @@ const validateSoftNavigationEntry = async (clicks, extraValidations,
     assert_true(entry.name.includes(pushUrl ? URL : document.location.href),
                 "The soft navigation name is properly set");
     const entryTimestamp = entry.startTime;
-    assert_less_than_equal(timestamps[i]["syncPostClick"], entryTimestamp);
-    assert_greater_than_equal(
-        timestamps[i]['eventStart'], entryTimestamp,
-        'Event start timestamp matches');
+
+    assert_greater_than_equal(entryTimestamp, timestamps[i]["syncPostClick"],
+      "Entry timestamp is greater than (or equals) the click timestamp");
+    assert_less_than_equal(entryTimestamp, timestamps[i]["eventStart"],
+        "Entry timestamp is lower than (or equals) the event handler start");
+    assert_less_than(entryTimestamp, timestamps[i]["eventEnd"], "eventEnd",
+        "Entry timestamp is strictly lower than the event handler end");
     assert_not_equals(entry.navigationId,
                       performance.getEntriesByType("navigation")[0].navigationId,
                       "The navigation ID was incremented");
