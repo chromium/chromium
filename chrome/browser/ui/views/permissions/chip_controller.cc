@@ -109,7 +109,6 @@ void ChipController::OnPromptRemoved() {
   bool is_tab_hidden = active_chip_permission_request_manager_.value()
                            ->GetWebContents()
                            .GetVisibility() == content::Visibility::HIDDEN;
-
   if (is_tab_hidden || !is_confirmation_showing_) {
     ResetPermissionPromptChip();
   }
@@ -177,16 +176,19 @@ bool ChipController::ShouldWaitForConfirmationToComplete() {
 
 void ChipController::InitializePermissionPrompt(
     content::WebContents* web_contents,
-    permissions::PermissionPrompt::Delegate* delegate,
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::OnceCallback<void()> callback) {
   DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
+    delay_prompt_timer_.Start(
+        FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::InitializePermissionPrompt,
                        weak_factory_.GetWeakPtr(), web_contents, delegate,
-                       std::move(callback)),
-        collapse_timer_.GetCurrentDelay());
+                       std::move(callback)));
+    return;
+  }
+
+  if (delegate.WasInvalidated()) {
     return;
   }
 
@@ -198,7 +200,7 @@ void ChipController::InitializePermissionPrompt(
   // the chip should become visible.
   chip_->SetVisible(false);
   permission_prompt_model_ =
-      std::make_unique<PermissionPromptChipModel>(delegate);
+      std::make_unique<PermissionPromptChipModel>(delegate.get());
 
   if (active_chip_permission_request_manager_.has_value()) {
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
@@ -212,14 +214,17 @@ void ChipController::InitializePermissionPrompt(
 
 void ChipController::ShowPermissionPrompt(
     content::WebContents* web_contents,
-    permissions::PermissionPrompt::Delegate* delegate) {
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
   DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
+    delay_prompt_timer_.Start(
+        FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::ShowPermissionPrompt,
-                       weak_factory_.GetWeakPtr(), web_contents, delegate),
-        collapse_timer_.GetCurrentDelay());
+                       weak_factory_.GetWeakPtr(), web_contents, delegate));
+    return;
+  }
+
+  if (delegate.WasInvalidated()) {
     return;
   }
 
@@ -608,6 +613,7 @@ void ChipController::StartDismissTimer() {
 void ChipController::ResetTimers() {
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
+  delay_prompt_timer_.AbandonAndStop();
 }
 
 LocationBarView* ChipController::GetLocationBarView() {
