@@ -40,4 +40,8 @@ void TestRankerManager::UpdateCategoryRanks(const ResultsMap& results,
   }
 }
 
+void TestRankerManager::Train(const LaunchData& launch) {
+  did_train_ = true;
+}
+
 }  // namespace app_list

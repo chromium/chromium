@@ -11,14 +11,15 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/test/search_controller_test_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_ranker_manager.h"
-#include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_provider.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +34,32 @@ using Category = ash::AppListSearchResultCategory;
 using DisplayType = ash::SearchResultDisplayType;
 using Result = ash::AppListSearchResultType;
 
+LaunchData CreateFakeLaunchData(const std::string& id) {
+  app_list::LaunchData launch;
+  launch.id = id;
+  launch.result_type = ash::AppListSearchResultType::kPlayStoreApp;
+  launch.score = 0.0;
+
+  return launch;
+}
+
+class FakeObserver : public SearchController::Observer {
+ public:
+  FakeObserver() = default;
+  ~FakeObserver() override = default;
+
+  void OnResultsAdded(
+      const std::u16string& query,
+      const std::vector<const ChromeSearchResult*>& results) override {
+    results_added_ = true;
+  }
+
+  bool results_added() const { return results_added_; }
+
+ private:
+  bool results_added_ = false;
+};
+
 }  // namespace
 
 class SearchControllerImplTest : public testing::Test {
@@ -45,7 +72,8 @@ class SearchControllerImplTest : public testing::Test {
 
   void SetUp() override {
     search_controller_ = std::make_unique<SearchControllerImpl>(
-        /*model_updater=*/&model_updater_, /*list_controller=*/nullptr,
+        /*model_updater=*/&model_updater_,
+        /*list_controller=*/&list_controller_,
         /*notifier=*/nullptr, &profile_);
 
     auto ranker_manager = std::make_unique<TestRankerManager>(&profile_);
@@ -76,8 +104,8 @@ class SearchControllerImplTest : public testing::Test {
 
     for (const auto& category : actual_categories_list) {
       if (category.burnin_iteration != -1) {
-        actual_categories_to_burnin_iteration.push_back(
-            {category.category, category.burnin_iteration});
+        actual_categories_to_burnin_iteration.emplace_back(
+            category.category, category.burnin_iteration);
       }
     }
 
@@ -104,8 +132,10 @@ class SearchControllerImplTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  void ElapseBurnInPeriod() {
-    task_environment_.FastForwardBy(base::Seconds(1));
+  // Add a wait period in milliseconds to allow results collected from search
+  // providers. The default period is 1000 milliseconds (i.e., 1 second).
+  void WaitInMilliseconds(int n = 1000) {
+    task_environment_.FastForwardBy(base::Milliseconds(n));
   }
 
  protected:
@@ -113,6 +143,7 @@ class SearchControllerImplTest : public testing::Test {
   TestingProfile profile_;
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
   std::unique_ptr<SearchControllerImpl> search_controller_;
+  test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
   TestRankerManager* ranker_manager_{nullptr};
 };
@@ -133,7 +164,7 @@ TEST_F(SearchControllerImplTest, BestMatchesOrderedAboveOtherResults) {
   // unimportant for the test.
   search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(results_1));
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   // Expect that:
   //   - best matches are ordered first,
   //   - best matches are ordered by best match rank,
@@ -181,7 +212,7 @@ TEST_F(SearchControllerImplTest,
   ExpectIdsToBurnInIterations({{"a", 0}, {"b", 0}});
 
   // Simulate a provider returning results after the burn-in period.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(web_results_first_arrival));
   ExpectIdsToBurnInIterations({{"a", 0}, {"b", 0}, {"c", 1}, {"d", 1}});
@@ -231,7 +262,7 @@ TEST_F(SearchControllerImplTest,
       {{Category::kFiles, 0}, {Category::kApps, 0}});
 
   // Simulate a third provider returning results after the burn-in period.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(web_results_first_arrival));
   ExpectCategoriesToBurnInIterations(
@@ -273,7 +304,7 @@ TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectly_PreBurnIn) {
                                  std::move(app_results));
   search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
                                  std::move(file_results));
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
 
   ExpectIdOrder({"a", "b", "c", "d", "e"});
 }
@@ -293,7 +324,7 @@ TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectly_PostBurnIn) {
   // Simulate starting a search.
   search_controller_->StartSearch(u"abc");
   // Simulate several providers returning results post-burn-in.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(web_results));
   ExpectIdOrder({"a", "b", "c"});
@@ -328,7 +359,7 @@ TEST_F(
   ExpectIdOrder({});
 
   // Expect results to appear after burn-in period has elapsed.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   ExpectIdOrder({"b", "c", "d"});
 
   // Simulate several providers returning results after the burn-in period.
@@ -373,7 +404,7 @@ TEST_F(SearchControllerImplTest,
 
   // Expect results to appear after burn-in period has elapsed. Expect the
   // Search and Assistant category to appear at the bottom.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   ExpectIdOrder({"d", "b", "c", "a"});
 
   // Simulate a provider returning results after the burn-in period. Expect the
@@ -414,7 +445,7 @@ TEST_F(
   ExpectIdOrder({});
 
   // Expect results to appear after burn-in period has elapsed.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   ExpectIdOrder({"a", "b", "c"});
 
   // When a single provider returns multiple times for a category, sorting by
@@ -457,7 +488,7 @@ TEST_F(
   ExpectIdOrder({});
 
   // Expect results to appear after burn-in period has elapsed.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   ExpectIdOrder({"a", "b", "c"});
 
   // When there are multiple providers returning for a category, sorting by
@@ -487,7 +518,7 @@ TEST_F(SearchControllerImplTest, FirstSearchResultsNotShownInSecondSearch) {
   ExpectIdOrder({});
 
   // Provider has returned and the A result should be published.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"AAA"});
 
   provider_ptr->SetNextResults({});
@@ -502,7 +533,7 @@ TEST_F(SearchControllerImplTest, FirstSearchResultsNotShownInSecondSearch) {
   ExpectIdOrder({});
 
   // Provider has returned and the B result should be published.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"BBB"});
 }
 
@@ -531,14 +562,14 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsNotOverridingBurnIn) {
 
   // Fast-forward time so zero state provider returns results, and zero state
   // timeout fires.
-  task_environment_.FastForwardBy(base::Milliseconds(50));
+  WaitInMilliseconds(50);
 
   // The burn-in period has not elapsed, so no results should have been
   // published.
   ExpectIdOrder({});
 
   // Expect results to appear after burn-in period has elapsed.
-  ElapseBurnInPeriod();
+  WaitInMilliseconds();
   ExpectIdOrder({"zero", "a", "b", "c"});
 }
 
@@ -589,23 +620,23 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsAreBlocked) {
                                      base::Seconds(3));
 
   // The fast provider has returned but shouldn't have published.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({});
 
   // Verify results are not published if a non-zero state provider (provider_c)
   // returns results.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({});
 
   // Fast forward time enough for the zero state callback to run.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"a", "b", "c"});
 
   // At this  point, provider "d" finished, but the results are not published
   // because d provider supplies non-zero state results, and zero state search
   // is in progress - in practice, non-zero state providers should not start
   // during zero state search, but test provider runs either way.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"a", "b", "c"});
 
   //  The latecomer should still be added when it arrives - note that the list
@@ -613,7 +644,7 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsAreBlocked) {
   //  published.
   //  Note that results "c" and "d" are trailing due to their later burn-in
   //  iteration.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  WaitInMilliseconds(2000);
   ExpectIdOrder({"e", "f", "a", "b", "c", "d"});
 }
 
@@ -638,15 +669,15 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsGetTimedOut) {
       base::Seconds(2));
 
   // The fast provider has returned but shouldn't have published.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({});
 
   // The timeout finished, the fast provider's result should be published.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"a"});
 
   // The slow provider should still publish when it returns.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  WaitInMilliseconds();
   ExpectIdOrder({"a", "b"});
 }
 
@@ -674,6 +705,101 @@ TEST_F(SearchControllerImplTest, ContinueRanksDriveAboveLocal) {
 
   Wait();
   ExpectIdOrder({"drive_a", "drive_b", "local_a", "local_b"});
+}
+
+TEST_F(SearchControllerImplTest, FindSearchResultByIdAndOpenIt) {
+  auto results_1 = MakeListResults(
+      {"a", "b", "c", "d"},
+      {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
+      {0, -1, 1, -1}, {0.4, 0.7, 0.2, 0.8});
+
+  search_controller_->StartSearch(u"abc");
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(results_1));
+  WaitInMilliseconds();
+
+  // Return nullptr if result cannot be found.
+  ChromeSearchResult* result = search_controller_->FindSearchResult("e");
+  EXPECT_EQ(result, nullptr);
+
+  // Return the result with the target id.
+  result = search_controller_->FindSearchResult("b");
+  EXPECT_EQ(result->id(), "b");
+  EXPECT_EQ(result->category(), Category::kGames);
+
+  search_controller_->OpenResult(result, ui::EF_NONE);
+
+  // We expect that |DismissView()| in |list_controller_| to be called.
+  EXPECT_TRUE(list_controller_.did_dismiss_view());
+}
+
+TEST_F(SearchControllerImplTest, InvokeResult) {
+  auto results_1 = MakeListResults(
+      {"a", "b", "c", "d"},
+      {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
+      {0, -1, 1, -1}, {0.4, 0.7, 0.2, 0.8});
+
+  search_controller_->StartSearch(u"abc");
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(results_1));
+  WaitInMilliseconds();
+  ExpectIdOrder({"a", "c", "d", "b"});
+
+  // Return the result with the target id.
+  ChromeSearchResult* result = search_controller_->FindSearchResult("b");
+  EXPECT_EQ(result->id(), "b");
+  EXPECT_EQ(result->category(), Category::kGames);
+
+  // The results should not change if the invoke action is |kAppend|.
+  search_controller_->InvokeResultAction(result,
+                                         ash::SearchResultActionType::kAppend);
+  WaitInMilliseconds();
+  ExpectIdOrder({"a", "c", "d", "b"});
+
+  // The result should be removed if the invoke action is |kRemove|.
+  search_controller_->InvokeResultAction(result,
+                                         ash::SearchResultActionType::kRemove);
+  WaitInMilliseconds();
+  ExpectIdOrder({"a", "c", "d"});
+}
+
+TEST_F(SearchControllerImplTest, Train) {
+  auto results_1 = MakeListResults(
+      {"a", "b", "c", "d"},
+      {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
+      {0, -1, 1, -1}, {0.4, 0.7, 0.2, 0.8});
+
+  search_controller_->StartSearch(u"abc");
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(results_1));
+  WaitInMilliseconds();
+
+  search_controller_->Train(CreateFakeLaunchData("e"));
+  // We expect that |Train()| in |ranker_manager_| to be called.
+  EXPECT_TRUE(ranker_manager_->did_train());
+}
+
+TEST_F(SearchControllerImplTest, NotifyObserverWhenPublished) {
+  // Create two fake observers.
+  FakeObserver observer1;
+  FakeObserver observer2;
+
+  search_controller_->Publish();
+  WaitInMilliseconds();
+  // Do not observe if the observers are not added.
+  EXPECT_FALSE(observer1.results_added());
+  EXPECT_FALSE(observer2.results_added());
+
+  // Add two observers and remove observer2.
+  search_controller_->AddObserver(&observer1);
+  search_controller_->AddObserver(&observer2);
+  search_controller_->RemoveObserver(&observer2);
+
+  search_controller_->Publish();
+  WaitInMilliseconds();
+  // We expect observer1 to observe while observer2 is not.
+  EXPECT_TRUE(observer1.results_added());
+  EXPECT_FALSE(observer2.results_added());
 }
 
 }  // namespace app_list

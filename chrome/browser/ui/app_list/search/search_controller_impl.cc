@@ -11,8 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/bind.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +66,7 @@ SearchControllerImpl::SearchControllerImpl(
       model_updater_(model_updater),
       list_controller_(list_controller) {}
 
-SearchControllerImpl::~SearchControllerImpl() {}
+SearchControllerImpl::~SearchControllerImpl() = default;
 
 void SearchControllerImpl::StartSearch(const std::u16string& query) {
   DCHECK(!query.empty());

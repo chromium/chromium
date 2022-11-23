@@ -40,11 +40,15 @@ class TestRankerManager : public RankerManager {
   void Start(const std::u16string& query,
              ResultsMap& results,
              CategoriesList& categories) override {}
-  void Train(const LaunchData& launch) override {}
+  void Train(const LaunchData& launch) override;
   void Remove(ChromeSearchResult* result) override {}
+
+  // Return true if |Train()| has been called. Otherwise, return false;
+  bool did_train() const { return did_train_; }
 
  private:
   base::flat_map<Category, double> category_ranks_;
+  bool did_train_ = false;
 };
 
 }  // namespace app_list

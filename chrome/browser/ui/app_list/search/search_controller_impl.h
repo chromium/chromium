@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AppListModelUpdater;
