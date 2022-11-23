@@ -9,11 +9,34 @@ build_webui("build") {
 
   static_files = [ "metrics_internals.html" ]
 
-  non_web_component_files = [ "metrics_internals.ts" ]
+  web_component_files = [ "app.ts" ]
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "log_utils.ts",
+    "metrics_internals.ts",
+  ]
 
+  html_to_wrapper_template = "native"
+
+  ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [ "//ui/webui/resources:library" ]
   ts_use_local_config = false
 
   grit_output_dir = "$root_gen_dir/components"
+}
+
+static_library("debug") {
+  sources = [
+    "metrics_internals_utils.cc",
+    "metrics_internals_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/metrics_services_manager",
+    "//components/variations",
+    "//components/variations/service",
+  ]
 }

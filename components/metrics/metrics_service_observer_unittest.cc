@@ -4,9 +4,13 @@
 
 #include "components/metrics/metrics_service_observer.h"
 
+#include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/bind.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -17,6 +21,7 @@
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
 namespace {
@@ -495,7 +500,7 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   ASSERT_TRUE(logs_value->is_dict());
   base::Value::Dict& logs_dict = logs_value->GetDict();
 
-  base::Value* log_type = logs_dict.Find("log_type");
+  base::Value* log_type = logs_dict.Find("logType");
   ASSERT_TRUE(log_type);
   ASSERT_TRUE(log_type->is_string());
   EXPECT_EQ(log_type->GetString(), "UMA");
@@ -530,6 +535,15 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
     ASSERT_TRUE(log_data);
     ASSERT_TRUE(log_data->is_string());
     EXPECT_FALSE(log_data->GetString().empty());
+
+    // Verify that the proto data can be parsed.
+    std::string gzipped_log_data;
+    ASSERT_TRUE(base::Base64Decode(log_data->GetString(), &gzipped_log_data));
+    ChromeUserMetricsExtension uma_proto;
+    ASSERT_TRUE(DecodeLogDataToProto(gzipped_log_data, &uma_proto));
+    EXPECT_TRUE(uma_proto.has_client_id());
+    EXPECT_TRUE(uma_proto.has_session_id());
+    EXPECT_TRUE(uma_proto.has_system_profile());
   } else {
     EXPECT_FALSE(log_data);
   }
@@ -571,6 +585,44 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   EXPECT_FALSE(second_log_event_timestamp->GetString().empty());
 
   service.RemoveLogsObserver(&logs_observer);
+}
+
+// Verifies that callbacks registered to a MetricsServiceObserver instance are
+// run every time it is notified.
+TEST_F(MetricsServiceObserverTest, NotifiedCallbacks) {
+  // Create a MetricsServiceObserver.
+  MetricsServiceObserver logs_observer(
+      MetricsServiceObserver::MetricsServiceType::UMA);
+
+  int num_callback_executed = 0;
+
+  {
+    // Add a callback to |logs_observer| that increments |num_callback_executed|
+    // every time it is run.
+    base::CallbackListSubscription callback_subscription =
+        logs_observer.AddNotifiedCallback(base::BindLambdaForTesting(
+            [&num_callback_executed]() { num_callback_executed++; }));
+    EXPECT_EQ(num_callback_executed, 0);
+
+    // Verify that OnLogCreated() triggers the callback.
+    const std::string kLogHash = "test";
+    logs_observer.OnLogCreated(kLogHash, /*log_data=*/"", /*log_timestamp=*/"");
+    EXPECT_EQ(num_callback_executed, 1);
+
+    // Verify that OnLogEvent() triggers the callback.
+    logs_observer.OnLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
+                             kLogHash, /*message=*/"");
+    EXPECT_EQ(num_callback_executed, 2);
+  }
+
+  // Verify that after the callback list subscription |callback_subscription| is
+  // destroyed, it is automatically de-registered from |logs_observer|.
+  const std::string kLogHash2 = "test2";
+  num_callback_executed = 0;
+  logs_observer.OnLogCreated(kLogHash2, /*log_data=*/"", /*log_timestamp=*/"");
+  logs_observer.OnLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
+                           kLogHash2, /*message=*/"");
+  EXPECT_EQ(num_callback_executed, 0);
 }
 
 }  // namespace metrics

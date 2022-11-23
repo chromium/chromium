@@ -5,6 +5,7 @@
 #include "components/metrics/metrics_service_observer.h"
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -75,6 +76,9 @@ void MetricsServiceObserver::OnLogCreated(base::StringPiece log_hash,
 
   indexed_logs_.emplace(log->hash, log.get());
   logs_.push_back(std::move(log));
+
+  // Call all registered callbacks.
+  notified_callbacks_.Notify();
 }
 
 void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
@@ -94,6 +98,9 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
   if (!message.empty())
     log_event.message = std::string(message);
   log->events.push_back(std::move(log_event));
+
+  // Call all registered callbacks.
+  notified_callbacks_.Notify();
 }
 
 void MetricsServiceObserver::OnLogType(
@@ -140,12 +147,16 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
   // Create a last |dict| that contains all the logs and |service_type_|,
   // convert it to a JSON string, and write it to |json_output|.
   base::Value::Dict dict;
-  dict.Set("log_type",
-           service_type_ == MetricsServiceType::UMA ? "UMA" : "UKM");
+  dict.Set("logType", service_type_ == MetricsServiceType::UMA ? "UMA" : "UKM");
   dict.Set("logs", std::move(logs_list));
 
   JSONStringValueSerializer serializer(json_output);
   return serializer.Serialize(dict);
+}
+
+base::CallbackListSubscription MetricsServiceObserver::AddNotifiedCallback(
+    base::RepeatingClosure callback) {
+  return notified_callbacks_.Add(callback);
 }
 
 MetricsServiceObserver::Log* MetricsServiceObserver::GetLogFromHash(

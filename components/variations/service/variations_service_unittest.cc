@@ -149,9 +149,7 @@ class TestVariationsService : public VariationsService {
   ~TestVariationsService() override {}
 
   GURL interception_url() { return interception_url_; }
-  void set_intercepts_fetch(bool value) {
-    intercepts_fetch_ = value;
-  }
+  void set_intercepts_fetch(bool value) { intercepts_fetch_ = value; }
   void set_insecure_url(const GURL& url) {
     set_insecure_variations_server_url(url);
   }
@@ -257,9 +255,7 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
     return best_effort_changes_notified_;
   }
 
-  int crticial_changes_notified() const {
-    return crticial_changes_notified_;
-  }
+  int crticial_changes_notified() const { return crticial_changes_notified_; }
 
  private:
   // Number of notification received with BEST_EFFORT severity.
@@ -602,7 +598,7 @@ TEST_F(VariationsServiceTest, RequestDeltaCompressedSeed) {
 }
 
 TEST_F(VariationsServiceTest, InstanceManipulations) {
-  struct  {
+  struct {
     std::string im;
     bool delta_compressed;
     bool gzip_compressed;
@@ -678,17 +674,9 @@ TEST_F(VariationsServiceTest, Observer) {
     int expected_best_effort_notifications;
     int expected_crtical_notifications;
   } cases[] = {
-      {0, 0, 0, 0, 0},
-      {1, 0, 0, 0, 0},
-      {10, 0, 0, 0, 0},
-      {0, 1, 0, 1, 0},
-      {0, 10, 0, 1, 0},
-      {0, 0, 1, 0, 1},
-      {0, 0, 10, 0, 1},
-      {0, 1, 1, 0, 1},
-      {1, 1, 1, 0, 1},
-      {1, 1, 0, 1, 0},
-      {1, 0, 1, 0, 1},
+      {0, 0, 0, 0, 0},  {1, 0, 0, 0, 0}, {10, 0, 0, 0, 0}, {0, 1, 0, 1, 0},
+      {0, 10, 0, 1, 0}, {0, 0, 1, 0, 1}, {0, 0, 10, 0, 1}, {0, 1, 1, 0, 1},
+      {1, 1, 1, 0, 1},  {1, 1, 0, 1, 0}, {1, 0, 1, 0, 1},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
@@ -702,9 +690,11 @@ TEST_F(VariationsServiceTest, Observer) {
     service.NotifyObservers(result);
 
     EXPECT_EQ(cases[i].expected_best_effort_notifications,
-              observer.best_effort_changes_notified()) << i;
+              observer.best_effort_changes_notified())
+        << i;
     EXPECT_EQ(cases[i].expected_crtical_notifications,
-              observer.crticial_changes_notified()) << i;
+              observer.crticial_changes_notified())
+        << i;
 
     service.RemoveObserver(&observer);
   }
@@ -1005,7 +995,7 @@ TEST_F(VariationsServiceTest, FieldTrialCreatorInitializedCorrectly) {
 
   // Call will crash in service's VariationsFieldTrialCreator if not initialized
   // correctly.
-  service.GetClientFilterableStateForVersionCalledForTesting();
+  service.GetClientFilterableStateForVersion();
 }
 
 TEST_F(VariationsServiceTest, RetryOverHTTPIfURLisSet) {
@@ -1108,8 +1098,7 @@ TEST_F(VariationsServiceTest, NullResponseReceivedWithHTTPOk) {
                                       net::ERR_FAILED, 1);
 }
 
-TEST_F(VariationsServiceTest,
-       VariationsServiceStartsRequestOnNetworkChange) {
+TEST_F(VariationsServiceTest, VariationsServiceStartsRequestOnNetworkChange) {
   // Verifies VariationsService does a request when network status changes from
   // none to connected. This is a regression test for https://crbug.com/826930.
   VariationsService::EnableFetchForTesting();

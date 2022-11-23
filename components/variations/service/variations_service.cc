@@ -196,8 +196,8 @@ bool GetInstanceManipulations(const net::HttpResponseHeaders* headers,
   *is_gzip_compressed = gzip_im != ims.end();
 
   // The IM field should not have anything but x-bm and gzip.
-  size_t im_count = (*is_delta_compressed ? 1 : 0) +
-      (*is_gzip_compressed ? 1 : 0);
+  size_t im_count =
+      (*is_delta_compressed ? 1 : 0) + (*is_gzip_compressed ? 1 : 0);
   if (im_count != ims.size()) {
     DVLOG(1) << "Unrecognized instance manipulations in "
              << base::JoinString(ims, ",")
@@ -924,12 +924,12 @@ void VariationsService::RecordSuccessfulFetch() {
   safe_seed_manager_.RecordSuccessfulFetch(field_trial_creator_.seed_store());
 }
 
-void VariationsService::GetClientFilterableStateForVersionCalledForTesting() {
+std::unique_ptr<ClientFilterableState>
+VariationsService::GetClientFilterableStateForVersion() {
   const base::Version current_version(version_info::GetVersionNumber());
-  if (!current_version.IsValid())
-    return;
-
-  field_trial_creator_.GetClientFilterableStateForVersion(current_version);
+  DCHECK(current_version.IsValid());
+  return field_trial_creator_.GetClientFilterableStateForVersion(
+      current_version);
 }
 
 std::string VariationsService::GetLatestCountry() const {

@@ -44,7 +44,7 @@ class DomainReliabilityServiceFactory;
 namespace extensions {
 class ChromeGuestViewManagerDelegate;
 class ChromeMetricsPrivateDelegate;
-}
+}  // namespace extensions
 
 namespace first_run {
 class FirstRunMasterPrefsVariationsSeedTest;
@@ -53,7 +53,7 @@ class FirstRunMasterPrefsVariationsSeedTest;
 namespace metrics {
 class ChromeOSPerUserMetricsBrowserTestBase;
 class UkmConsentParamBrowserTest;
-}
+}  // namespace metrics
 
 namespace welcome {
 void JoinOnboardingGroup(Profile* profile);
@@ -174,6 +174,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ClonedInstallClientIdResetBrowserTest;
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
+  friend class MetricsInternalsUIBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,
