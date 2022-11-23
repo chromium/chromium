@@ -31,7 +31,7 @@ const connectorTabs: ConnectorTab[] = [{
   isEnabled: loadTimeData.getBoolean('deviceTrustConnectorEnabled'),
 }];
 
-export class ConnectorsTabsElement extends CustomElement {
+class ConnectorsTabsElement extends CustomElement {
   static get is() {
     return 'connectors-tabs';
   }
@@ -129,7 +129,7 @@ export class ConnectorsTabsElement extends CustomElement {
     const contentElement = document.createElement('div');
     contentElement.classList.add('tabcontent');
     contentElement.id = tab.directive;
-    contentElement.innerHTML = `<${tab.directive}></${tab.directive}>`;
+    contentElement.appendChild(document.createElement(tab.directive));
     contentRoot.appendChild(contentElement);
   }
 

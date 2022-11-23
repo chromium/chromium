@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './connectors_tabs.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getTemplate} from './app.html.js';
-import {ConnectorsTabsElement} from './connectors_tabs.js';
 
 class ConnectorsInternalsAppElement extends CustomElement {
   static get is() {
@@ -33,8 +33,8 @@ class ConnectorsInternalsAppElement extends CustomElement {
       rootClass = 'valid-context';
       const tabsRoot = this.$('#tabs-root');
       if (tabsRoot) {
-        tabsRoot.innerHTML =
-            `<${ConnectorsTabsElement.is}></${ConnectorsTabsElement.is}>`;
+        const tabsElement = document.createElement('connectors-tabs');
+        tabsRoot.appendChild(tabsElement);
       } else {
         console.error('Could not find tabs root.');
       }
