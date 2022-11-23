@@ -190,19 +190,6 @@ const char* GetSaveAndUpdatePromptDecisionMetricsSuffix(
   return "";
 }
 
-std::string GetCreditCardTypeSuffix(
-    AutofillClient::PaymentsRpcCardType card_type) {
-  switch (card_type) {
-    case AutofillClient::PaymentsRpcCardType::kServerCard:
-      return ".ServerCard";
-    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
-      return ".VirtualCard";
-    case AutofillClient::PaymentsRpcCardType::kUnknown:
-      NOTREACHED();
-      return std::string();
-  }
-}
-
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -973,7 +960,7 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido" +
-                                  GetCreditCardTypeSuffix(card_type) +
+                                  GetHistogramStringForCardType(card_type) +
                                   PaymentsRpcResultToMetricsSuffix(result),
                               duration);
 }
@@ -994,7 +981,8 @@ void AutofillMetrics::LogCardUnmaskPreflightDuration(
 void AutofillMetrics::LogServerCardUnmaskAttempt(
     AutofillClient::PaymentsRpcCardType card_type) {
   base::UmaHistogramBoolean("Autofill.ServerCardUnmask" +
-                                GetCreditCardTypeSuffix(card_type) + ".Attempt",
+                                GetHistogramStringForCardType(card_type) +
+                                ".Attempt",
                             true);
 }
 
@@ -1020,7 +1008,7 @@ void AutofillMetrics::LogServerCardUnmaskResult(
   }
 
   base::UmaHistogramEnumeration("Autofill.ServerCardUnmask" +
-                                    GetCreditCardTypeSuffix(card_type) +
+                                    GetHistogramStringForCardType(card_type) +
                                     ".Result" + flow_type_suffix,
                                 unmask_result);
 }
@@ -1029,7 +1017,7 @@ void AutofillMetrics::LogServerCardUnmaskResult(
 void AutofillMetrics::LogServerCardUnmaskFormSubmission(
     AutofillClient::PaymentsRpcCardType card_type) {
   base::UmaHistogramBoolean("Autofill.ServerCardUnmask" +
-                                GetCreditCardTypeSuffix(card_type) +
+                                GetHistogramStringForCardType(card_type) +
                                 ".FormSubmission",
                             true);
 }
@@ -3399,7 +3387,7 @@ const std::string PaymentsRpcResultToMetricsSuffix(
   return result_suffix;
 }
 
-// // static
+// static
 void AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
     bool collision) {
   base::UmaHistogramBoolean(
@@ -3413,6 +3401,37 @@ void AutofillMetrics::
   base::UmaHistogramBoolean(
       "Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction",
       accepted);
+}
+
+// static
+std::string AutofillMetrics::GetHistogramStringForCardType(
+    absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
+        card_type) {
+  if (absl::holds_alternative<AutofillClient::PaymentsRpcCardType>(card_type)) {
+    switch (absl::get<AutofillClient::PaymentsRpcCardType>(card_type)) {
+      case AutofillClient::PaymentsRpcCardType::kServerCard:
+        return ".ServerCard";
+      case AutofillClient::PaymentsRpcCardType::kVirtualCard:
+        return ".VirtualCard";
+      case AutofillClient::PaymentsRpcCardType::kUnknown:
+        NOTREACHED();
+        break;
+    }
+  } else if (absl::holds_alternative<CreditCard::RecordType>(card_type)) {
+    switch (absl::get<CreditCard::RecordType>(card_type)) {
+      case CreditCard::FULL_SERVER_CARD:
+      case CreditCard::MASKED_SERVER_CARD:
+        return ".ServerCard";
+      case CreditCard::VIRTUAL_CARD:
+        return ".VirtualCard";
+      case CreditCard::LOCAL_CARD:
+        // We do not offer CVC auth for local cards.
+        NOTREACHED();
+        break;
+    }
+  }
+
+  return "";
 }
 
 }  // namespace autofill

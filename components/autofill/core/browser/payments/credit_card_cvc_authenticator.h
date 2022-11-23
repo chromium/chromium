@@ -104,6 +104,7 @@ class CreditCardCVCAuthenticator
       const CreditCard& card,
       const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
+      CreditCard::RecordType card_type,
       payments::FullCardRequest::FailureType failure_type) override;
 
   // payments::FullCardRequest::UIDelegate

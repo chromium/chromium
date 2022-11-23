@@ -203,6 +203,7 @@ class CreditCardFIDOAuthenticator
       const CreditCard& card,
       const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
+      CreditCard::RecordType card_type,
       payments::FullCardRequest::FailureType failure_type) override;
 
   // Converts |request_options| from JSON to mojom pointer.

@@ -489,6 +489,7 @@ void CreditCardFIDOAuthenticator::OnFullCardRequestSucceeded(
 }
 
 void CreditCardFIDOAuthenticator::OnFullCardRequestFailed(
+    CreditCard::RecordType card_type,
     payments::FullCardRequest::FailureType failure_type) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;

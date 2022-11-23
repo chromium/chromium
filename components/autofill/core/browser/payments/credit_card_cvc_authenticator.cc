@@ -35,6 +35,7 @@ void CreditCardCVCAuthenticator::Authenticate(
   requester_ = requester;
   if (!card) {
     return OnFullCardRequestFailed(
+        card->record_type(),
         payments::FullCardRequest::FailureType::GENERIC_FAILURE);
   }
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
@@ -61,8 +62,8 @@ void CreditCardCVCAuthenticator::Authenticate(
     // frame origin, end the card unmasking and treat it as a transient failure.
     if (!last_committed_primary_main_frame_origin.is_valid()) {
       return OnFullCardRequestFailed(
-          payments::FullCardRequest::FailureType::
-              VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
+          card->record_type(), payments::FullCardRequest::FailureType::
+                                   VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
     }
 
     return full_card_request_->GetFullVirtualCardViaCVC(
@@ -81,6 +82,9 @@ void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
     const std::u16string& cvc) {
+  autofill_metrics::LogCvcAuthResult(card.record_type(),
+                                     autofill_metrics::CvcAuthEvent::kSuccess);
+
   if (!requester_)
     return;
 
@@ -96,7 +100,34 @@ void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
 }
 
 void CreditCardCVCAuthenticator::OnFullCardRequestFailed(
+    CreditCard::RecordType card_type,
     payments::FullCardRequest::FailureType failure_type) {
+  autofill_metrics::CvcAuthEvent event =
+      autofill_metrics::CvcAuthEvent::kUnknown;
+  switch (failure_type) {
+    case payments::FullCardRequest::FailureType::PROMPT_CLOSED:
+      event = autofill_metrics::CvcAuthEvent::kFlowCancelled;
+      break;
+    case payments::FullCardRequest::FailureType::VERIFICATION_DECLINED:
+      event = autofill_metrics::CvcAuthEvent::kUnmaskCardAuthError;
+      break;
+    case payments::FullCardRequest::FailureType::
+        VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE:
+    case payments::FullCardRequest::FailureType::
+        VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE:
+      event =
+          autofill_metrics::CvcAuthEvent::kUnmaskCardVirtualCardRetrievalError;
+      break;
+    case payments::FullCardRequest::FailureType::GENERIC_FAILURE:
+      event = autofill_metrics::CvcAuthEvent::kGenericError;
+      break;
+    case payments::FullCardRequest::FailureType::UNKNOWN:
+      NOTREACHED();
+      event = autofill_metrics::CvcAuthEvent::kUnknown;
+      break;
+  }
+  autofill_metrics::LogCvcAuthResult(card_type, event);
+
   if (!requester_)
     return;
 

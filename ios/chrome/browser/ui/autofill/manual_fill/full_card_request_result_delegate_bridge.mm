@@ -33,6 +33,7 @@ void FullCardRequestResultDelegateBridge::OnFullCardRequestSucceeded(
 }
 
 void FullCardRequestResultDelegateBridge::OnFullCardRequestFailed(
+    autofill::CreditCard::RecordType /* card_type */,
     autofill::payments::FullCardRequest::FailureType /* failure_type */) {
   [delegate_ onFullCardRequestFailed];
 }
