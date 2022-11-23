@@ -129,6 +129,8 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 
 CameraSWPrivacySwitchSetting
 CameraPrivacySwitchController::GetUserSwitchPreference() {
+  DCHECK(pref_change_registrar_);
+  DCHECK(pref_change_registrar_->prefs());
   const bool allowed =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kUserCameraAllowed);
 
