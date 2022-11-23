@@ -601,6 +601,9 @@ void CompoundImageBacking::LazyAllocateGpuBacking() {
 
   gpu_backing_->SetNotRefCounted();
   gpu_backing_->SetClearedRect(gfx::Rect(size()));
+
+  // Update peak GPU memory tracking with the new estimated size.
+  UpdateEstimatedSize(EstimatedSizeForMemTracking());
 }
 
 }  // namespace gpu

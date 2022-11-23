@@ -235,6 +235,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   ProduceLegacyOverlay(SharedImageManager* manager, MemoryTypeTracker* tracker);
 #endif
 
+  // Updates the estimated size if memory usage changes after creation.
+  void UpdateEstimatedSize(size_t estimated_size_bytes);
+
   // Used by subclasses during destruction.
   bool have_context() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -293,7 +296,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const GrSurfaceOrigin surface_origin_;
   const SkAlphaType alpha_type_;
   const uint32_t usage_;
-  const size_t estimated_size_;
+  size_t estimated_size_;
 
   bool is_ref_counted_ = true;
 
