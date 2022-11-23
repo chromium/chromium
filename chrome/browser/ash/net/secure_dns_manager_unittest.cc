@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -14,17 +17,32 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-
-#include "base/logging.h"
 
 namespace ash {
 namespace {
 
+using testing::_;
+using testing::Contains;
+using testing::Key;
+using testing::Return;
+using testing::SizeIs;
+
 constexpr const char kGoogleDns[] = "https://dns.google/dns-query{?dns}";
 constexpr const char kCloudflareDns[] =
     "https://chrome.cloudflare-dns.com/dns-query";
+
+class MockDoHTemplatesUriResolver
+    : public dns_over_https::TemplatesUriResolver {
+ public:
+  MockDoHTemplatesUriResolver() = default;
+  MOCK_METHOD1(UpdateFromPrefs, void(PrefService*));
+  MOCK_METHOD0(GetDoHWithIdentifiersActive, bool());
+  MOCK_METHOD0(GetEffectiveTemplates, std::string());
+  MOCK_METHOD0(GetDisplayTemplates, std::string());
+};
 
 void OnGetProperties(bool* success_out,
                      std::map<std::string, std::string>* props_out,
@@ -68,6 +86,9 @@ class SecureDnsManagerTest : public testing::Test {
                                                  SecureDnsConfig::kModeOff);
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
                                                  "");
+    pref_service_.registry()->RegisterStringPref(
+        prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
+    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
   }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -148,6 +169,44 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   EXPECT_TRUE(it != providers.end());
   EXPECT_FALSE(it->second.empty());
   EXPECT_EQ(providers.size(), 2u);
+}
+
+// Tests that the `DoHTemplatesUriResolver` resolver is called when secure DNS
+// prefs change and that the result, provided by `GetEffectiveTemplates` is
+// read.
+TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
+  constexpr char effectiveTemplate[] = "effectiveTemplate";
+  // The test will update the four prefs that `SecureDnsManager` is observing.
+  constexpr int prefUpdatesCallCount = 4;
+
+  MockDoHTemplatesUriResolver* templateUriResolver =
+      new MockDoHTemplatesUriResolver();
+  EXPECT_CALL(*templateUriResolver, UpdateFromPrefs(_))
+      .Times(prefUpdatesCallCount);
+  EXPECT_CALL(*templateUriResolver, GetEffectiveTemplates())
+      .Times(prefUpdatesCallCount)
+      .WillRepeatedly(Return(effectiveTemplate));
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+      base::WrapUnique(templateUriResolver));
+
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(
+      prefs::kDnsOverHttpsTemplates,
+      base::Value("https://dns.google/dns-query{?dns}  "
+                  "https://chrome.cloudflare-dns.com/dns-query "));
+  pref_service()->Set(
+      prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+      base::Value("https://dns.google/dns-query{?dns}  "
+                  "https://chrome.cloudflare-dns.com/dns-query "));
+  pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+
+  auto providers = GetDOHProviders();
+
+  EXPECT_THAT(providers, SizeIs(1));
+  EXPECT_THAT(providers, Contains(Key(effectiveTemplate)));
 }
 
 }  // namespace

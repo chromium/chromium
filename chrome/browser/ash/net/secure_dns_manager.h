@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
+#include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -23,6 +26,10 @@ class SecureDnsManager {
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
   ~SecureDnsManager();
+
+  void SetDoHTemplatesUriResolverForTesting(
+      std::unique_ptr<dns_over_https::TemplatesUriResolver>
+          doh_templates_uri_resolver);
 
  private:
   // Retrieves the list of secure DNS providers, preprocesses and caches it for
@@ -40,12 +47,16 @@ class SecureDnsManager {
   void OnPrefChanged();
 
   PrefChangeRegistrar registrar_;
+  PrefService* pref_service_;
 
   // Maps secure DNS provider URL templates to their corresponding standard DNS
   // name servers. Providers that are either disabled or not applicable for the
   // country have been pre-filtered.
   base::flat_map<net::DnsOverHttpsServerConfig, std::string>
       local_doh_providers_;
+
+  std::unique_ptr<dns_over_https::TemplatesUriResolver>
+      doh_templates_uri_resolver_;
 };
 
 }  // namespace ash

@@ -10,10 +10,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/common/pref_names.h"
@@ -26,12 +28,21 @@
 
 namespace ash {
 
-SecureDnsManager::SecureDnsManager(PrefService* pref_service) {
+SecureDnsManager::SecureDnsManager(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  doh_templates_uri_resolver_ =
+      std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
   registrar_.Init(pref_service);
   registrar_.Add(prefs::kDnsOverHttpsMode,
                  base::BindRepeating(&SecureDnsManager::OnPrefChanged,
                                      base::Unretained(this)));
   registrar_.Add(prefs::kDnsOverHttpsTemplates,
+                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+                                     base::Unretained(this)));
+  registrar_.Add(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+                                     base::Unretained(this)));
+  registrar_.Add(prefs::kDnsOverHttpsSalt,
                  base::BindRepeating(&SecureDnsManager::OnPrefChanged,
                                      base::Unretained(this)));
   LoadProviders();
@@ -40,6 +51,13 @@ SecureDnsManager::SecureDnsManager(PrefService* pref_service) {
 
 SecureDnsManager::~SecureDnsManager() {
   registrar_.RemoveAll();
+}
+
+void SecureDnsManager::SetDoHTemplatesUriResolverForTesting(
+    std::unique_ptr<dns_over_https::TemplatesUriResolver>
+        doh_templates_uri_resolver) {
+  CHECK_IS_TEST();
+  doh_templates_uri_resolver_ = std::move(doh_templates_uri_resolver);
 }
 
 void SecureDnsManager::LoadProviders() {
@@ -90,9 +108,11 @@ base::Value SecureDnsManager::GetProviders(const std::string& mode,
 }
 
 void SecureDnsManager::OnPrefChanged() {
-  const auto doh_providers = GetProviders(
-      registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
-      registrar_.prefs()->GetString(prefs::kDnsOverHttpsTemplates));
+  doh_templates_uri_resolver_->UpdateFromPrefs(pref_service_);
+
+  const auto doh_providers =
+      GetProviders(registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
+                   doh_templates_uri_resolver_->GetEffectiveTemplates());
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty, doh_providers);
