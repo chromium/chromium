@@ -153,34 +153,30 @@ final class ClassLoaderPatcher {
 
     @SuppressLint("SetWorldReadable")
     private void safeCopyAllFiles(File srcDir, File dstDir) throws IOException {
+        if (!mIsPrimaryProcess) {
+            // TODO: Work around this issue by using APK splits to install each dex / lib.
+            throw new RuntimeException("Incremental install does not work on Android M+ "
+                    + "with isolated processes. Build system should have removed this. "
+                    + "Please file a bug.");
+        }
+
         // The library copying is not necessary on older devices, but we do it anyways to
         // simplify things (it's fast compared to dexing).
         // https://code.google.com/p/android/issues/detail?id=79480
+        ensureAppFilesSubDirExists();
         File lockFile = new File(mAppFilesSubDir, dstDir.getName() + ".lock");
-        if (mIsPrimaryProcess) {
-            ensureAppFilesSubDirExists();
-            LockFile lock = LockFile.acquireRuntimeLock(lockFile);
-            if (lock == null) {
-                LockFile.waitForRuntimeLock(lockFile, 10 * 1000);
-            } else {
-                try {
-                    dstDir.mkdir();
-                    dstDir.setReadable(true, false);
-                    dstDir.setExecutable(true, false);
-                    copyChangedFiles(srcDir, dstDir);
-                } finally {
-                    lock.release();
-                }
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // TODO: Work around this issue by using APK splits to install each dex / lib.
-                throw new RuntimeException("Incremental install does not work on Android M+ "
-                        + "with isolated processes. Build system should have removed this. "
-                        + "Please file a bug.");
-            }
-            // Other processes: Waits for primary process to finish copying.
+        LockFile lock = LockFile.acquireRuntimeLock(lockFile);
+        if (lock == null) {
             LockFile.waitForRuntimeLock(lockFile, 10 * 1000);
+        } else {
+            try {
+                dstDir.mkdir();
+                dstDir.setReadable(true, false);
+                dstDir.setExecutable(true, false);
+                copyChangedFiles(srcDir, dstDir);
+            } finally {
+                lock.release();
+            }
         }
     }
 
@@ -291,14 +287,9 @@ final class ClassLoaderPatcher {
         File emptyDir = new File("");
         for (int i = 0; i < files.length; ++i) {
             File file = files[i];
-            Object dexFile;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // loadDexFile requires that ret contain all previously added elements.
-                dexFile = Reflect.invokeMethod(clazz, "loadDexFile", file, optimizedDirectory,
-                                               mClassLoader, ret);
-            } else {
-                dexFile = Reflect.invokeMethod(clazz, "loadDexFile", file, optimizedDirectory);
-            }
+            // loadDexFile requires that ret contain all previously added elements.
+            Object dexFile = Reflect.invokeMethod(
+                    clazz, "loadDexFile", file, optimizedDirectory, mClassLoader, ret);
             Object dexElement;
             if (Build.VERSION.SDK_INT >= 26) {
                 dexElement = Reflect.newInstance(entryClazz, dexFile, file);
