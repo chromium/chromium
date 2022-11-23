@@ -27,6 +27,8 @@ interface PageHandler {
   GetApps() => (array<AppInfo> app_list);
   // Uninstall app for specific `app_id`.
   UninstallApp(string app_id);
+  // Open app’s site setting page.
+  ShowAppSettings(string app_id);
 };
 
 // The `Page` interface is used for sending mojom action messsage

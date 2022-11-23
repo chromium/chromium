@@ -7,14 +7,17 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_ui.h"
@@ -67,6 +70,18 @@ AppHomePageHandler::~AppHomePageHandler() {
 
 Browser* AppHomePageHandler::GetCurrentBrowser() {
   return chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+}
+
+void AppHomePageHandler::ShowWebAppSettings(const std::string& app_id) {
+  chrome::ShowWebAppSettings(
+      GetCurrentBrowser(), app_id,
+      web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
+}
+
+void AppHomePageHandler::ShowExtensionAppSettings(
+    const extensions::Extension* extension) {
+  ShowAppInfoInNativeDialog(web_ui_->GetWebContents(), profile_, extension,
+                            base::DoNothing());
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
@@ -254,6 +269,24 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
           ->GetInstalledExtension(app_id);
   if (extension) {
     UninstallExtensionApp(extension);
+  }
+}
+
+void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
+  if (web_app_provider_->registrar().IsInstalled(app_id) &&
+      !IsYoutubeExtension(app_id)) {
+    ShowWebAppSettings(app_id);
+    return;
+  }
+
+  const Extension* extension =
+      extensions::ExtensionRegistry::Get(extension_service_->profile())
+          ->GetExtensionById(app_id,
+                             extensions::ExtensionRegistry::ENABLED |
+                                 extensions::ExtensionRegistry::DISABLED |
+                                 extensions::ExtensionRegistry::TERMINATED);
+  if (extension) {
+    ShowExtensionAppSettings(extension);
   }
 }
 

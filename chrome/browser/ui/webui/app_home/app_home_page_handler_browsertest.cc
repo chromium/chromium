@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -312,4 +313,20 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallExtensionApp) {
   page_handler->Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ShowWebAppSettings) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  // First, install a test web app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  AppId installed_app_id = InstallTestWebApp();
+  page_handler->Wait();
+
+  content::WebContentsAddedObserver nav_observer;
+  page_handler->ShowAppSettings(installed_app_id);
+  // Wait for new web content to be created.
+  nav_observer.GetWebContents();
+  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + installed_app_id));
+}
 }  // namespace webapps
