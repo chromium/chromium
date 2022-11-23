@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -155,6 +156,19 @@ void ForwardVerifyContentToIO(VerifyContentInfo info) {
       FROM_HERE, base::BindOnce(&VerifyContent, std::move(info)));
 }
 
+void RecordContentScriptLength(const std::string& script_content) {
+  // Max bucket at 10 GB, which is way above the reasonable maximum size of a
+  // script.
+  static constexpr int kMaxUmaLength = 1024 * 1024 * 10;
+  static constexpr int kMinUmaLength = 1;
+  static constexpr int kBucketCount = 50;
+
+  size_t content_script_length_kb = script_content.length() / 1024;
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ContentScripts.ContentScriptLength",
+                              content_script_length_kb, kMinUmaLength,
+                              kMaxUmaLength, kBucketCount);
+}
+
 // Loads user scripts from the extension who owns these scripts.
 void LoadScriptContent(const mojom::HostID& host_id,
                        UserScript::File* script_file,
@@ -194,8 +208,12 @@ void LoadScriptContent(const mojom::HostID& host_id,
   // Remove BOM from the content.
   if (base::StartsWith(*content, base::kUtf8ByteOrderMark,
                        base::CompareCase::SENSITIVE)) {
-    script_file->set_content(content->substr(strlen(base::kUtf8ByteOrderMark)));
+    std::string trimmed_content =
+        content->substr(strlen(base::kUtf8ByteOrderMark));
+    RecordContentScriptLength(trimmed_content);
+    script_file->set_content(trimmed_content);
   } else {
+    RecordContentScriptLength(*content);
     script_file->set_content(*content);
   }
 }
