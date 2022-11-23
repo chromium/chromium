@@ -14,10 +14,12 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -37,18 +39,6 @@ namespace content {
 
 namespace {
 
-// The shared task runner for all private aggregation storage operations. Note
-// that different PrivateAggregationManagerImpl instances perform operations on
-// the same task runner. This prevents any potential races when a given storage
-// context is destroyed and recreated using the same backing storage. This uses
-// BLOCK_SHUTDOWN as some data deletion operations may be running when the
-// browser is closed, and we want to ensure all data is deleted correctly.
-base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::TaskPriority::BEST_EFFORT,
-                         base::MayBlock(),
-                         base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
-
 void RecordBudgeterResultHistogram(
     PrivateAggregationBudgeter::RequestResult request_result) {
   base::UmaHistogramEnumeration(
@@ -64,7 +54,16 @@ PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
     StoragePartitionImpl* storage_partition)
     : PrivateAggregationManagerImpl(
           std::make_unique<PrivateAggregationBudgeter>(
-              g_storage_task_runner.Get(),
+              // This uses BLOCK_SHUTDOWN as some data deletion operations may
+              // be running when the browser is closed, and we want to ensure
+              // all data is deleted correctly. Additionally, we use
+              // MUST_USE_FOREGROUND to avoid priority inversions if a task is
+              // already running when the priority is increased.
+              base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+                  base::TaskTraits(base::TaskPriority::BEST_EFFORT,
+                                   base::MayBlock(),
+                                   base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                                   base::ThreadPolicy::MUST_USE_FOREGROUND)),
               exclusively_run_in_memory,
               /*path_to_db_dir=*/user_data_directory),
           std::make_unique<PrivateAggregationHost>(

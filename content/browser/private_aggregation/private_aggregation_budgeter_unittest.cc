@@ -20,8 +20,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -49,7 +49,7 @@ const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
  public:
   PrivateAggregationBudgeterUnderTest(
-      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+      scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner,
       bool exclusively_run_in_memory,
       const base::FilePath& path_to_db_dir,
       base::OnceClosure on_storage_done_initializing)
@@ -118,9 +118,10 @@ class PrivateAggregationBudgeterTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    db_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+    db_task_runner_ = base::ThreadPool::CreateUpdateableSequencedTaskRunner(
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+         base::ThreadPolicy::MUST_USE_FOREGROUND});
   }
 
   void TearDown() override {
@@ -183,7 +184,7 @@ class PrivateAggregationBudgeterTest : public testing::Test {
 
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<PrivateAggregationBudgeterUnderTest> budgeter_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -1386,6 +1387,39 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
       expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
+}
+
+TEST_F(PrivateAggregationBudgeterTest,
+       BudgeterDestroyedImmedatelyAfterClearData_CallbackStillRun) {
+  int num_queries_processed = 0;
+
+  CreateBudgeterAndWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationBudgetKey::Api::kFledge);
+
+  budgeter()->ConsumeBudget(
+      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kApproved);
+            ++num_queries_processed;
+          }));
+
+  base::RunLoop run_loop;
+  budgeter()->ClearData(base::Time(), base::Time(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
+  DestroyBudgeter();
+
+  // Callback still run even though the budgeter was immediately destroyed.
+  run_loop.Run();
+  EXPECT_EQ(num_queries_processed, 2);
 }
 
 }  // namespace

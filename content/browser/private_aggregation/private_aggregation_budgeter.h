@@ -9,18 +9,16 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 
-template <class T>
-class scoped_refptr;
-
 namespace base {
 class FilePath;
-class SequencedTaskRunner;
+class UpdateableSequencedTaskRunner;
 }  // namespace base
 
 namespace content {
@@ -93,7 +91,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
 
   // `db_task_runner` should not be nullptr.
   PrivateAggregationBudgeter(
-      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+      scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner,
       bool exclusively_run_in_memory,
       const base::FilePath& path_to_db_dir);
 
@@ -153,6 +151,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
                      base::Time delete_end,
                      StoragePartition::StorageKeyMatcherFunction filter,
                      base::OnceClosure done);
+  void OnClearDataComplete();
 
   void ProcessAllPendingCalls();
 
@@ -161,6 +160,15 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // initialized. The size is limited to `kMaxPendingCalls` except that
   // `ClearData()` can store additional tasks beyond that limit.
   std::vector<base::OnceClosure> pending_calls_;
+
+  // The task runner for all private aggregation storage operations. Updateable
+  // to allow for priority to be temporarily increased to `USER_VISIBLE` when a
+  // clear data task is queued or running. Otherwise `BEST_EFFORT` is used.
+  scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
+
+  // How many clear data storage tasks are queued or running currently, i.e.
+  // have been posted but the reply has not been run.
+  int num_pending_clear_data_tasks_ = 0;
 
   // `nullptr` until initialization is complete or if initialization failed.
   // Otherwise, owned by this class until destruction. Iff present,
