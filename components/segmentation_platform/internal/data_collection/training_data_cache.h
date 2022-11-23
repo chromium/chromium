@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/types/id_type.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,7 +28,7 @@ class TrainingDataCache {
   // Stores the inputs for a segment given a request ID.
   void StoreInputs(proto::SegmentId segment_id,
                    RequestId request_id,
-                   const std::vector<float>& inputs);
+                   const ModelProvider::Request& inputs);
 
   // Retrieves and deletes the inputs for a segment given a request ID from the
   // cache. Returns nullopt when the associated request ID is not found.

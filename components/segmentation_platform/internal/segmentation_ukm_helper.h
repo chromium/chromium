@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +39,7 @@ class SegmentationUkmHelper {
   ukm::SourceId RecordModelExecutionResult(
       SegmentId segment_id,
       int64_t model_version,
-      const std::vector<float>& input_tensor,
+      const ModelProvider::Request& input_tensor,
       float result);
 
   // Record segmentation model training data as UKM message.
@@ -53,8 +54,8 @@ class SegmentationUkmHelper {
   ukm::SourceId RecordTrainingData(
       SegmentId segment_id,
       int64_t model_version,
-      const std::vector<float>& input_tensors,
-      const std::vector<float>& outputs,
+      const ModelProvider::Request& input_tensors,
+      const ModelProvider::Response& outputs,
       const std::vector<int>& output_indexes,
       absl::optional<proto::PredictionResult> prediction_result,
       absl::optional<SelectedSegment> selected_segment);
@@ -79,10 +80,10 @@ class SegmentationUkmHelper {
   bool AddInputsToUkm(ukm::builders::Segmentation_ModelExecution* ukm_builder,
                       SegmentId segment_id,
                       int64_t model_version,
-                      const std::vector<float>& input_tensor);
+                      const ModelProvider::Request& input_tensor);
 
   bool AddOutputsToUkm(ukm::builders::Segmentation_ModelExecution* ukm_builder,
-                       const std::vector<float>& outputs,
+                       const ModelProvider::Response& outputs,
                        const std::vector<int>& output_indexes);
 
   friend class base::NoDestructor<SegmentationUkmHelper>;

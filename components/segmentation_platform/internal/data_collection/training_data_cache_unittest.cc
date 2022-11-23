@@ -44,7 +44,7 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromEmptyCache) {
 }
 
 TEST_F(TrainingDataCacheTest, GetTrainingDataFromCache) {
-  std::vector<float> data = {1, 2, 3};
+  ModelProvider::Request data = {1, 2, 3};
   training_data_cache_->StoreInputs(kSegmentId, kRequestId, data);
   auto training_data =
       training_data_cache_->GetInputsAndDelete(kSegmentId, kRequestId);

@@ -169,8 +169,8 @@ class FeatureListQueryProcessorTest : public testing::Test {
 
   void ExpectProcessedFeatureList(
       bool expected_error,
-      const std::vector<float>& expected_input_tensor,
-      const std::vector<float>& expected_output_tensor,
+      const ModelProvider::Request& expected_input_tensor,
+      const ModelProvider::Response& expected_output_tensor,
       base::Time prediction_time,
       FeatureListQueryProcessor::ProcessOption process_option =
           FeatureListQueryProcessor::ProcessOption::kInputsOnly) {
@@ -187,19 +187,19 @@ class FeatureListQueryProcessorTest : public testing::Test {
 
   void ExpectProcessedFeatureList(
       bool expected_error,
-      const std::vector<float>& expected_input_tensor) {
+      const ModelProvider::Request& expected_input_tensor) {
     ExpectProcessedFeatureList(expected_error, expected_input_tensor,
-                               std::vector<float>(), clock_.Now());
+                               ModelProvider::Response(), clock_.Now());
   }
 
   void OnProcessingFinishedCallback(
       base::RepeatingClosure closure,
       bool expected_error,
-      const std::vector<float>& expected_input_tensor,
-      const std::vector<float>& expected_output_tensor,
+      const ModelProvider::Request& expected_input_tensor,
+      const ModelProvider::Response& expected_output_tensor,
       bool error,
-      const std::vector<float>& input_tensor,
-      const std::vector<float>& output_tensor) {
+      const ModelProvider::Request& input_tensor,
+      const ModelProvider::Response& output_tensor) {
     EXPECT_EQ(expected_error, error);
     EXPECT_EQ(expected_input_tensor, input_tensor);
     EXPECT_EQ(expected_output_tensor, output_tensor);
@@ -230,7 +230,7 @@ TEST_F(FeatureListQueryProcessorTest, InvalidMetadata) {
                 1, proto::Aggregation::COUNT, {});
 
   // The next step should be to run the feature processor.
-  ExpectProcessedFeatureList(true, std::vector<float>{});
+  ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
 TEST_F(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
@@ -244,7 +244,7 @@ TEST_F(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
 
   // The next step should be to run the feature processor, the input tensor
   // should not allow non float type value such as TIME values.
-  ExpectProcessedFeatureList(true, std::vector<float>{});
+  ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
 TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
@@ -258,7 +258,7 @@ TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
 
   // The next step should be to run the feature processor, the input tensor
   // should contain the default values 1 and 2.
-  ExpectProcessedFeatureList(false, std::vector<float>{1, 2});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{1, 2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
@@ -293,7 +293,7 @@ TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
       .WillOnce(Return(std::vector<float>{3}));
 
   // The next step should be to run the feature processor.
-  ExpectProcessedFeatureList(false, std::vector<float>{3});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{3});
 }
 
 TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
@@ -348,7 +348,7 @@ TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
       .WillOnce(Return(absl::nullopt));
 
   // The next step should be to run the feature processor.
-  ExpectProcessedFeatureList(false, std::vector<float>{3, 6});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6});
 }
 
 TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
@@ -366,7 +366,7 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
 
   // The next step should be to run the feature processor, the input tensor
   // should contain {3, 1, 2}.
-  ExpectProcessedFeatureList(false, std::vector<float>{3, 1, 2});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{3, 1, 2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
@@ -383,7 +383,7 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
   AddCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {});
 
   // The next step should be to run the feature processor.
-  ExpectProcessedFeatureList(true, std::vector<float>{});
+  ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
 TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
@@ -468,7 +468,7 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
       .WillRepeatedly(Return(std::vector<float>{4}));
 
   // The input tensor should contain all three values: 3, 6, and 4.
-  ExpectProcessedFeatureList(false, std::vector<float>{3, 6, 4});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6, 4});
 
   // Output is also enum histogram
   std::vector<SignalDatabaseSample> output_histogram_enum_samples{
@@ -490,12 +490,13 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
   // The input tensor should contain all three values: {3, 6, 4}, output
   // contains {5}
   ExpectProcessedFeatureList(
-      false, std::vector<float>{3, 6, 4}, std::vector<float>{5}, clock_.Now(),
+      false, ModelProvider::Request{3, 6, 4}, ModelProvider::Response{5},
+      clock_.Now(),
       FeatureListQueryProcessor::ProcessOption::kInputsAndOutputs);
 
   // Only return tensors for output features.
   ExpectProcessedFeatureList(
-      false, std::vector<float>(), std::vector<float>{5}, clock_.Now(),
+      false, ModelProvider::Request(), ModelProvider::Response{5}, clock_.Now(),
       FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 }
 
@@ -559,7 +560,7 @@ TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
       .WillOnce(Return(std::vector<float>{6}));
 
   // The input tensor should contain only the first and last uma feature.
-  ExpectProcessedFeatureList(false, std::vector<float>{3, 6});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6});
 }
 
 TEST_F(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
@@ -580,7 +581,7 @@ TEST_F(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
 
   // The next step should be to run the feature processor, the input tensor
   // should contain the first and last custom input of 1 and 4.
-  ExpectProcessedFeatureList(false, std::vector<float>{1, 4});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{1, 4});
 }
 
 TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
@@ -623,7 +624,7 @@ TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
       .WillOnce(Return(std::vector<float>{2}));
 
   // The input tensor should contain a single value.
-  ExpectProcessedFeatureList(false, std::vector<float>{2});
+  ExpectProcessedFeatureList(false, ModelProvider::Request{2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
@@ -693,7 +694,8 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
       .WillOnce(Return(std::vector<float>{4, 5, 6, 7}));
 
   // The input tensor should contain all values flattened to a single vector.
-  ExpectProcessedFeatureList(false, std::vector<float>{1, 2, 3, 4, 5, 6, 7});
+  ExpectProcessedFeatureList(false,
+                             ModelProvider::Request{1, 2, 3, 4, 5, 6, 7});
 }
 
 }  // namespace segmentation_platform::processing

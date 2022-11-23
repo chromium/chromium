@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,22 +82,22 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       TrainingDataCache::RequestId request_id,
       const proto::SegmentInfo& segment_info,
       bool has_error,
-      const std::vector<float>& input_tensors,
-      const std::vector<float>& output_tensors);
+      const ModelProvider::Request& input_tensors,
+      const ModelProvider::Response& output_tensors);
 
   void onGetOutputsOnObservationTrigger(
       TrainingDataCache::RequestId request_id,
       const proto::SegmentInfo& segment_info,
-      const std::vector<float>& cached_input_tensors,
+      const ModelProvider::Request& cached_input_tensors,
       bool has_error,
-      const std::vector<float>& input_tensors,
-      const std::vector<float>& output_tensors);
+      const ModelProvider::Request& input_tensors,
+      const ModelProvider::Response& output_tensors);
 
   void OnGetTrainingTensors(const absl::optional<ImmediaCollectionParam>& param,
                             const proto::SegmentInfo& segment_info,
                             bool has_error,
-                            const std::vector<float>& input_tensors,
-                            const std::vector<float>& output_tensors);
+                            const ModelProvider::Request& input_tensors,
+                            const ModelProvider::Response& output_tensors);
 
   // Returns whether training data can be reported through UKM. If
   // |include_output| is false, only input data will be checked to see if they

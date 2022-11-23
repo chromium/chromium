@@ -108,7 +108,7 @@ SegmentationUkmHelper* SegmentationUkmHelper::GetInstance() {
 ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
     SegmentId segment_id,
     int64_t model_version,
-    const std::vector<float>& input_tensor,
+    const ModelProvider::Request& input_tensor,
     float result) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
@@ -128,8 +128,8 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
 ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     SegmentId segment_id,
     int64_t model_version,
-    const std::vector<float>& input_tensor,
-    const std::vector<float>& outputs,
+    const ModelProvider::Request& input_tensor,
+    const ModelProvider::Response& outputs,
     const std::vector<int>& output_indexes,
     absl::optional<proto::PredictionResult> prediction_result,
     absl::optional<SelectedSegment> selected_segment) {
@@ -163,7 +163,7 @@ bool SegmentationUkmHelper::AddInputsToUkm(
     ukm::builders::Segmentation_ModelExecution* ukm_builder,
     SegmentId segment_id,
     int64_t model_version,
-    const std::vector<float>& input_tensor) {
+    const ModelProvider::Request& input_tensor) {
   if (input_tensor.size() > ARRAY_SIZE(kSegmentationUkmInputMethods)) {
     // Don't record UKM if there are too many tensors.
     stats::RecordTooManyInputTensors(input_tensor.size());
@@ -180,7 +180,7 @@ bool SegmentationUkmHelper::AddInputsToUkm(
 
 bool SegmentationUkmHelper::AddOutputsToUkm(
     ukm::builders::Segmentation_ModelExecution* ukm_builder,
-    const std::vector<float>& outputs,
+    const ModelProvider::Response& outputs,
     const std::vector<int>& output_indexes) {
   DCHECK(!outputs.empty());
   if (outputs.size() != output_indexes.size())

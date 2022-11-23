@@ -68,7 +68,7 @@ void OptimizationGuideSegmentationModelProvider::InitAndFetchModel(
 }
 
 void OptimizationGuideSegmentationModelProvider::ExecuteModelWithInput(
-    const std::vector<float>& inputs,
+    const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   if (!model_handler_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

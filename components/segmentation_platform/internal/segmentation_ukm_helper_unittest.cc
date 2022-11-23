@@ -115,7 +115,7 @@ class SegmentationUkmHelperTest : public testing::Test {
 TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
   // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
   InitializeAllowedSegmentIds("4");
-  std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
+  ModelProvider::Request input_tensors = {0.1, 0.7, 0.8, 0.5};
   SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
   ExpectUkmMetrics(Segmentation_ModelExecution::kEntryName,
@@ -141,8 +141,8 @@ TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
 TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
   // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
   InitializeAllowedSegmentIds("4");
-  std::vector<float> input_tensors = {0.1};
-  std::vector<float> outputs = {1.0, 0.0};
+  ModelProvider::Request input_tensors = {0.1};
+  ModelProvider::Response outputs = {1.0, 0.0};
   std::vector<int> output_indexes = {2, 3};
 
   SelectedSegment selected_segment(
@@ -238,7 +238,7 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
   std::string histogram_name(
       "SegmentationPlatform.StructuredMetrics.TooManyTensors.Count");
   InitializeAllowedSegmentIds("4");
-  std::vector<float> input_tensors(100, 0.1);
+  ModelProvider::Request input_tensors(100, 0.1);
   ukm::SourceId source_id =
       SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
           proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
@@ -251,10 +251,10 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
 // Tests output validation for |RecordTrainingData|.
 TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
   InitializeAllowedSegmentIds("4");
-  std::vector<float> input_tensors{0.1};
+  ModelProvider::Request input_tensors{0.1};
 
   // outputs, output_indexes size doesn't match.
-  std::vector<float> outputs{1.0, 0.0};
+  ModelProvider::Response outputs{1.0, 0.0};
   std::vector<int> output_indexes{0};
 
   ukm::SourceId source_id =

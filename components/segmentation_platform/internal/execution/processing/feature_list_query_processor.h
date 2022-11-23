@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
@@ -65,8 +66,8 @@ class FeatureListQueryProcessor {
 
   using FeatureProcessorCallback =
       base::OnceCallback<void(bool,
-                              const std::vector<float>& /*inputs*/,
-                              const std::vector<float>& /*outputs*/)>;
+                              const ModelProvider::Request& /*inputs*/,
+                              const ModelProvider::Response& /*outputs*/)>;
 
   // Options for determining what should be included in the result.
   enum class ProcessOption { kInputsOnly, kOutputsOnly, kInputsAndOutputs };

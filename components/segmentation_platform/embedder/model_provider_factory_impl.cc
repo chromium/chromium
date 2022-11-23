@@ -19,7 +19,7 @@ class DummyModelProvider : public ModelProvider {
   void InitAndFetchModel(
       const ModelUpdatedCallback& model_updated_callback) override {}
 
-  void ExecuteModelWithInput(const std::vector<float>& inputs,
+  void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override {
     std::move(callback).Run(absl::nullopt);
   }

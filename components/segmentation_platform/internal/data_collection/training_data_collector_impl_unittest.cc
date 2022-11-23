@@ -77,9 +77,10 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
         features::kSegmentationStructuredMetricsFeature, params);
 
     // Setup behavior for |feature_list_processor_|.
-    std::vector<float> inputs({1.f});
+    ModelProvider::Request inputs({1.f});
     ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _, _))
-        .WillByDefault(RunOnceCallback<5>(false, inputs, std::vector<float>()));
+        .WillByDefault(
+            RunOnceCallback<5>(false, inputs, ModelProvider::Response()));
     ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
         .WillByDefault(Return(true));
 
@@ -336,8 +337,8 @@ TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
 // Tests that continuous collection happens on startup.
 TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartup) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo();
   clock()->Advance(base::Hours(24));
   Init();
@@ -357,8 +358,8 @@ TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartup) {
 // no data is reported on start up.
 TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo();
   Init();
   clock()->Advance(base::Hours(24));
@@ -385,8 +386,8 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
 TEST_F(TrainingDataCollectorImplTest,
        NoImmediateDataCollectionAfterLastCollection) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo();
   Init();
   clock()->Advance(base::Hours(24));
@@ -409,8 +410,8 @@ TEST_F(TrainingDataCollectorImplTest,
 // collection won't happen.
 TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
   LocalStateHelper::GetInstance().SetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey, base::Time());
   CreateSegmentInfo();
@@ -424,8 +425,8 @@ TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
 // trigger histogram is observed.
 TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a time delay trigger and a uma trigger.
   CreateSegmentInfoWithTriggers(10);
@@ -461,8 +462,8 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
 // the time delay passes.
 TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTimeTrigger) {
   ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
-                                        std::vector<float>{2.f, 3.f}));
+      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+                                        ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a time delay trigger and a uma trigger.
   CreateSegmentInfoWithTriggers(10);

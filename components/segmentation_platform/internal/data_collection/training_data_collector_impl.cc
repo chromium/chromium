@@ -316,8 +316,8 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
     const absl::optional<ImmediaCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
     bool has_error,
-    const std::vector<float>& input_tensors,
-    const std::vector<float>& output_tensors) {
+    const ModelProvider::Request& input_tensors,
+    const ModelProvider::Response& output_tensors) {
   if (has_error) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
@@ -342,7 +342,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
 
   auto ukm_source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       segment_info.segment_id(), segment_info.model_version(), input_tensors,
-      param.has_value() ? std::vector<float>{param->output_value}
+      param.has_value() ? ModelProvider::Response{param->output_value}
                         : output_tensors,
       output_indexes, segment_info.prediction_result(),
       result_prefs_->ReadSegmentationResultFromPref(segmentation_key));
@@ -430,8 +430,8 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
     TrainingDataCache::RequestId request_id,
     const proto::SegmentInfo& segment_info,
     bool has_error,
-    const std::vector<float>& input_tensors,
-    const std::vector<float>& output_tensors) {
+    const ModelProvider::Request& input_tensors,
+    const ModelProvider::Response& output_tensors) {
   // Store inputs to cache.
   training_cache_->StoreInputs(segment_info.segment_id(), request_id,
                                input_tensors);
@@ -478,17 +478,17 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
       base::BindOnce(
           &TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger,
           weak_ptr_factory_.GetWeakPtr(), request_id, segment_info,
-          std::vector<float>(input.value().inputs().begin(),
-                             input.value().inputs().end())));
+          ModelProvider::Response(input.value().inputs().begin(),
+                                  input.value().inputs().end())));
 }
 
 void TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger(
     TrainingDataCache::RequestId request_id,
     const proto::SegmentInfo& segment_info,
-    const std::vector<float>& cached_input_tensors,
+    const ModelProvider::Request& cached_input_tensors,
     bool has_error,
-    const std::vector<float>& input_tensors,
-    const std::vector<float>& output_tensors) {
+    const ModelProvider::Request& input_tensors,
+    const ModelProvider::Response& output_tensors) {
   // Upload input and output tensors.
   // TODO(haileywang): Add state in cache for each request; never seen,
   // fulfilled, unfullfilled. (Or make triggers cancellable callbacks)

@@ -17,7 +17,7 @@ TrainingDataCache::~TrainingDataCache() = default;
 
 void TrainingDataCache::StoreInputs(SegmentId segment_id,
                                     RequestId request_id,
-                                    const std::vector<float>& inputs) {
+                                    const ModelProvider::Request& inputs) {
   TrainingData training_data;
   for (const auto& input : inputs) {
     training_data.add_inputs(input);
