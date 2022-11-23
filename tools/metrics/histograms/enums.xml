@@ -41651,6 +41651,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4399"
       label="V8DocumentPictureInPictureEvent_Window_AttributeGetter"/>
   <int value="4400" label="DocumentPictureInPictureEnterEvent"/>
+  <int value="4401" label="SoftNavigationHeuristics"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

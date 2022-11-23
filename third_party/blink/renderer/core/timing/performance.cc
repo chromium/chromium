@@ -296,13 +296,18 @@ PerformanceEntryVector Performance::getEntries() {
     InsertEntryIntoSortedList(entries_list, *first_contentful_paint_timing_);
   }
 
-  if (RuntimeEnabledFeatures::NavigationIdEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationIdEnabled(GetExecutionContext())) {
     MergePerformanceEntryVectorIntoList(entries_list,
                                         back_forward_cache_restoration_buffer_);
   }
 
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled())
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
+          GetExecutionContext()) &&
+      soft_navigation_buffer_.size()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kSoftNavigationHeuristics);
     MergePerformanceEntryVectorIntoList(entries_list, soft_navigation_buffer_);
+  }
 
   // Convert entries_list into a PerformanceEntryVector.
   PerformanceEntryVector entries;
@@ -411,13 +416,17 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       return visibility_state_buffer_;
 
     case PerformanceEntry::kBackForwardCacheRestoration:
-      if (RuntimeEnabledFeatures::NavigationIdEnabled())
+      if (RuntimeEnabledFeatures::NavigationIdEnabled(GetExecutionContext()))
         return back_forward_cache_restoration_buffer_;
       break;
 
     case PerformanceEntry::kSoftNavigation:
-      if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled())
+      if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
+              GetExecutionContext())) {
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kSoftNavigationHeuristics);
         return soft_navigation_buffer_;
+      }
       break;
 
     case PerformanceEntry::kInvalid:
