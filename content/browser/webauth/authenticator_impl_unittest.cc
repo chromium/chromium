@@ -2154,6 +2154,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 };
 
 TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
+  NavigateAndCommit(GURL(kTestOrigin1));
   test_client_.GetTestWebAuthenticationDelegate()
       ->is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialCreationOptionsPtr options =
@@ -2163,12 +2164,47 @@ TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
+  NavigateAndCommit(GURL(kTestOrigin1));
   test_client_.GetTestWebAuthenticationDelegate()
       ->is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::CERTIFICATE_ERROR);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       MakeCredentialSkipTLSCheckWithVirtualEnvironment) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  content::AuthenticatorEnvironmentImpl::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(main_rfh())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetAssertionSkipTLSCheckWithVirtualEnvironment) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  content::AuthenticatorEnvironmentImpl::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(main_rfh())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, kTestRelyingPartyId));
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
 }
 
 // Test that credentials can be created and used from an extension origin when

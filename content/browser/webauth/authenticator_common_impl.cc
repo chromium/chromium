@@ -523,12 +523,6 @@ void AuthenticatorCommonImpl::MakeCredential(
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);
 
-  if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
-          GetRenderFrameHost(), caller_origin)) {
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
-    return;
-  }
   BeginRequestTimeout(options->timeout);
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -564,6 +558,14 @@ void AuthenticatorCommonImpl::MakeCredential(
   if (!request_delegate_) {
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::PENDING_REQUEST);
+    return;
+  }
+
+  if (!request_delegate_->IsVirtualEnvironmentEnabled() &&
+      !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+          GetRenderFrameHost(), caller_origin)) {
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
     return;
   }
 
@@ -841,12 +843,6 @@ void AuthenticatorCommonImpl::GetAssertion(
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
 
-  if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
-          GetRenderFrameHost(), caller_origin)) {
-    CompleteGetAssertionRequest(
-        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
-    return;
-  }
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
   }
@@ -891,6 +887,13 @@ void AuthenticatorCommonImpl::GetAssertion(
   if (!request_delegate_) {
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::PENDING_REQUEST);
+    return;
+  }
+  if (!request_delegate_->IsVirtualEnvironmentEnabled() &&
+      !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+          GetRenderFrameHost(), caller_origin)) {
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
     return;
   }
 
