@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.gsa;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.text.TextUtils;
@@ -82,11 +81,6 @@ public class GSAState {
      * received.
      */
     private @Nullable String mGsaAccount;
-
-    // TODO(agrieve): Delete internal references.
-    public static GSAState getInstance(Context unused) {
-        return getInstance();
-    }
 
     /**
      * Returns the singleton instance of GSAState and creates one if necessary.

@@ -166,11 +166,6 @@ public class BundleUtils {
         return getSplitApkPath(splitName) != null;
     }
 
-    // TODO(agrieve): Delete downstream references.
-    public static boolean isIsolatedSplitInstalled(Context unused, String splitName) {
-        return isIsolatedSplitInstalled(splitName);
-    }
-
     /**
      * The lock to hold when calling {@link Context#createContextForSplit(String)}.
      */
