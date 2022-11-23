@@ -457,7 +457,10 @@ bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
 
 DesignerExample::DesignerExample() : ExampleBase("Designer") {}
 
-DesignerExample::~DesignerExample() = default;
+DesignerExample::~DesignerExample() {
+  if (tracker_.view())
+    inspector_->SetModel(nullptr);
+}
 
 void DesignerExample::CreateExampleView(View* container) {
   Builder<View>(container)
@@ -506,6 +509,10 @@ void DesignerExample::CreateExampleView(View* container) {
   grab_handles_.Initialize(designer_panel_);
   designer_container_->SetFlexForView(designer_panel_, 75);
   class_registrations_ = GetClassRegistrations();
+
+  // TODO(crbug.com/1392538): Refactor such that the TableModel is not
+  // responsible for managing the lifetimes of views
+  tracker_.SetView(inspector_);
 }
 
 void DesignerExample::OnEvent(ui::Event* event) {

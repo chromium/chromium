@@ -21,6 +21,7 @@
 #include "ui/views/examples/example_base.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace ui {
 class Event;
@@ -164,6 +165,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   GrabHandles grab_handles_;
 
   std::vector<std::unique_ptr<BaseClassRegistration>> class_registrations_;
+
+  views::ViewTracker tracker_;
 };
 
 }  // namespace examples

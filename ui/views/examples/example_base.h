@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/views_examples_export.h"
 
 namespace views {
@@ -27,17 +28,19 @@ class VIEWS_EXAMPLES_EXPORT ExampleBase {
   virtual void CreateExampleView(View* parent) = 0;
 
   const std::string& example_title() const { return example_title_; }
-  View* example_view() { return container_.get(); }
+  raw_ptr<View> example_view() { return container_; }
+  void SetContainer(View* container) { container_ = container; }
 
  protected:
   explicit ExampleBase(const char* title);
 
  private:
-  // Name of the example - used as title in the combobox list.
+  // Name of the example - used as title in the side panel.
   std::string example_title_;
 
   // The view that contains the views example.
-  std::unique_ptr<View> container_;
+  // The tab of the respective view in the tabbed pane owns the view.
+  raw_ptr<View> container_;
 };
 
 using ExampleVector = std::vector<std::unique_ptr<ExampleBase>>;
