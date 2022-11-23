@@ -21,10 +21,7 @@ import {
 
 {#--- Constants #}
 {%- for constant in module.constants %}
-/**
- * @const { {{constant.kind|type_in_js_module_with_nullability}} }
- */
-export const {{constant.name}} = {{constant|constant_value_in_js_module}};
+export const {{constant.name}}: {{constant.kind|ts_type_maybe_nullable}} = {{constant|constant_value}};
 
 {% endfor -%}
 

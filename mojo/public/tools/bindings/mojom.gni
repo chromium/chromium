@@ -45,7 +45,7 @@ declare_args() {
   enable_mojom_closure_compile = enable_js_type_check && optimize_webui
 
   # Enables generating Typescript bindings and compiling them to JS bindings.
-  enable_typescript_bindings = false
+  enable_typescript_bindings = true
 
   # Enables generating javascript fuzzing-related code and the bindings for the
   # MojoLPM fuzzer targets. Off by default.
@@ -2005,7 +2005,7 @@ template("mojom") {
 
         outputs = []
         foreach(base_path, output_file_base_paths) {
-          outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.ts" ]
+          outputs += [ "$root_gen_dir/$base_path-webui.ts" ]
         }
         args = common_generator_args
         response_file_contents = source_filelist

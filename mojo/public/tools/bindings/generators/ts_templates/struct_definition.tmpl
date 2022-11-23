@@ -1,12 +1,9 @@
 {%  for constant in struct.constants %}
-/**
- * @const { {{constant.kind|type_in_js_module_with_nullability}} }
- */
-export const {{struct.name}}_{{constant.name}} =
-    {{constant|constant_value_in_js_module}};
+export const {{struct.name}}_{{constant.name}}: {{constant.kind|ts_type_maybe_nullable}} =
+    {{constant|constant_value}};
 {%  endfor %}
 
-{%- from "lite/enum_definition_for_module.tmpl" import enum_def with context %}
+{%- from "enum_definition.tmpl" import enum_def with context %}
 {%  for enum in struct.enums %}
 {{enum_def(enum)}}
 {%  endfor %}
@@ -20,8 +17,8 @@ mojo.internal.Struct(
         '{{packed_field.field.name}}', {{packed_field.offset}},
         {% if packed_field.field.kind|is_bool_kind %}{{packed_field.bit}}
         {%- else %}0{% endif %},
-        {{packed_field.field.kind|spec_type_in_js_module}},
-        {{packed_field.field|default_value_in_js_module}},
+        {{packed_field.field.kind|spec_type}},
+        {{packed_field.field|default_ts_value}},
 {%-   if packed_field.field.kind.is_nullable %}
         true /* nullable */,
 {%-   else %}
@@ -41,14 +38,9 @@ export const {{struct.name}}_Deserialize =
     mojo.internal.createStructDeserializer({{struct.name}}Spec.$);
 {% endif %}
 
-/**
- * @record
- */
-export class {{struct.name}} {
-  constructor() {
+export interface {{struct.name}} {
 {%- for packed_field in struct.packed.packed_fields %}
-    /** @type { {{packed_field.field.kind|field_type_in_js_module}} } */
-    this.{{packed_field.field.name}};
-{%-  endfor %}
-  }
+  {% set f = packed_field.field -%}
+  {{f.name}}{% if f.kind.is_nullable %}?{% endif %}: {{f.kind|ts_type}};
+{%- endfor %}
 }

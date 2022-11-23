@@ -5,7 +5,6 @@
 
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
-import mojom.generate.pack as pack
 import os
 import sys
 import urllib.request
@@ -39,7 +38,7 @@ _kind_to_javascript_default_value = {
     mojom.NULLABLE_STRING: "null"
 }
 
-_kind_to_closure_type = {
+_kind_to_ts_type = {
     mojom.BOOL: "boolean",
     mojom.INT8: "number",
     mojom.UINT8: "number",
@@ -48,8 +47,8 @@ _kind_to_closure_type = {
     mojom.INT32: "number",
     mojom.UINT32: "number",
     mojom.FLOAT: "number",
-    mojom.INT64: "number",
-    mojom.UINT64: "number",
+    mojom.INT64: "bigint",
+    mojom.UINT64: "bigint",
     mojom.DOUBLE: "number",
     mojom.STRING: "string",
     mojom.NULLABLE_STRING: "string",
@@ -163,7 +162,7 @@ def _GetWebUiModulePath(module):
   return '/{}/'.format(path.strip('/'))
 
 
-class JavaScriptStylizer(generator.Stylizer):
+class TypeScriptStylizer(generator.Stylizer):
   def StylizeConstant(self, mojom_name):
     return generator.ToUpperSnakeCase(mojom_name)
 
@@ -226,21 +225,17 @@ class Generator(generator.Generator):
     return "ts_templates"
 
   def GetFilters(self):
-    js_filters = {
+    ts_filters = {
         "constant_value": self._GetConstantValue,
-        "constant_value_in_js_module": self._GetConstantValueInJsModule,
-        "default_value": self._JavaScriptDefaultValue,
-        "default_value_in_js_module": self._DefaultValueInJsModule,
-        "field_type_in_js_module": self._GetFieldTypeInJsModule,
+        "default_ts_value": self._GetDefaultValue,
         "imports_for_kind": self._GetImportsForKind,
         "is_bool_kind": mojom.IsBoolKind,
-        "spec_type_in_js_module": self._GetSpecTypeInJsModule,
-        "type_in_js_module": self._GetTypeInJsModule,
-        "type_in_js_module_with_nullability":
-        self._GetTypeInJsModuleWithNullability,
-        "sanitize_identifier": self._JavaScriptSanitizeIdentifier,
+        "spec_type": self._GetSpecType,
+        "ts_type": self._TypescriptType,
+        "ts_type_maybe_nullable": self._TypescriptTypeMaybeNullable,
+        "sanitize_identifier": self._TypeScriptSanitizeIdentifier,
     }
-    return js_filters
+    return ts_filters
 
   @UseJinja("module_definition.tmpl")
   def _GenerateWebUiModule(self):
@@ -250,7 +245,7 @@ class Generator(generator.Generator):
     if self.variant:
       raise Exception("Variants not supported in JavaScript bindings.")
 
-    self.module.Stylize(JavaScriptStylizer())
+    self.module.Stylize(TypeScriptStylizer())
 
     # TODO(crbug.com/795977): Change the media router extension to not mess with
     # the mojo namespace, so that namespaces such as "mojo.common.mojom" are not
@@ -259,7 +254,7 @@ class Generator(generator.Generator):
 
     assert(_GetWebUiModulePath(self.module) is not None)
     self.WriteWithComment(self._GenerateWebUiModule(),
-                          "mojom-webui/%s-webui.ts" % self.module.path)
+                          "%s-webui.ts" % self.module.path)
 
   def _GetBindingsLibraryPath(self):
     return "//resources/mojo/mojo/public/js/bindings.js"
@@ -293,28 +288,28 @@ class Generator(generator.Generator):
             or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind)
             or mojom.IsEnumKind(kind))
 
-  def _GetTypeNameForNewBindings(self,
-                                 kind,
-                                 with_nullability=False,
-                                 for_module=False):
-    def recurse_with_nullability(kind):
-      return self._GetTypeNameForNewBindings(kind,
-                                             with_nullability=True,
-                                             for_module=for_module)
+  def _TypescriptType(self, kind, maybe_nullable=False):
+    def recurse_nullable(kind):
+      return self._TypescriptType(kind, maybe_nullable=True)
 
     def get_type_name(kind):
-      if kind == mojom.INT64 or kind == mojom.UINT64:
-        return "bigint"
-      if kind in mojom.PRIMITIVES:
-        return _kind_to_closure_type[kind]
+      if self._IsPrimitiveKind(kind):
+        return _kind_to_ts_type[kind]
+
       if mojom.IsArrayKind(kind):
-        return "Array<%s>" % recurse_with_nullability(kind.kind)
-      if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
-        return "Object<%s, %s>" % (recurse_with_nullability(
-            kind.key_kind), recurse_with_nullability(kind.value_kind))
+        if (mojom.IsNullableKind(kind.kind)):
+          return "Array<%s>" % recurse_nullable(kind.kind)
+        else:
+          return "%s[]" % get_type_name(kind.kind)
+
+      if (mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind)
+          and not mojom.IsNullableKind(kind.key_kind)):
+        return "{[key: %s]: %s}" % (get_type_name(
+            kind.key_kind), recurse_nullable(kind.value_kind))
+
       if mojom.IsMapKind(kind):
-        return "Map<%s, %s>" % (recurse_with_nullability(
-            kind.key_kind), recurse_with_nullability(kind.value_kind))
+        return "Map<%s, %s>" % (recurse_nullable(
+            kind.key_kind), recurse_nullable(kind.value_kind))
 
       if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
           or mojom.IsPendingRemoteKind(kind)
@@ -326,21 +321,19 @@ class Generator(generator.Generator):
         named_kind = kind
 
       name = []
-      qualified = (not for_module) or (self.module is not named_kind.module)
+      qualified = self.module is not named_kind.module
       if qualified and named_kind.module:
         name.append(named_kind.module.namespace)
       if named_kind.parent_kind:
         name.append(named_kind.parent_kind.name)
 
       if mojom.IsEnumKind(kind) and named_kind.parent_kind:
-        name = ".".join(name)
+        name = "_".join(name)
         name += "_" + named_kind.name
       else:
         name.append("" + named_kind.name)
-        name = ".".join(name)
-
-      if for_module:
-        name = name.replace(".", "_")
+        name = "_".join(name)
+      name = name.replace('.', '_')
 
       if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
           or mojom.IsEnumKind(kind)):
@@ -353,37 +346,21 @@ class Generator(generator.Generator):
       # TODO(calamity): Support associated interfaces properly.
       if (mojom.IsAssociatedInterfaceKind(kind)
           or mojom.IsPendingAssociatedRemoteKind(kind)):
-        return "Object"
+        return "object"
       # TODO(calamity): Support associated interface requests properly.
       if (mojom.IsAssociatedInterfaceRequestKind(kind)
           or mojom.IsPendingAssociatedReceiverKind(kind)):
-        return "Object"
-      raise Exception("No valid closure type: %s" % kind)
+        return "object"
 
-    if with_nullability:
-      return ('?' if mojom.IsNullableKind(kind) else '!') + get_type_name(kind)
+      raise Exception("Type is not supported yet.")
+
+    if (maybe_nullable and mojom.IsNullableKind(kind)):
+      return "(" + get_type_name(kind) + " | null)"
 
     return get_type_name(kind)
 
-  def _GetTypeInJsModule(self, kind):
-    return self._GetTypeNameForNewBindings(kind,
-                                           with_nullability=False,
-                                           for_module=True)
-
-  def _GetTypeInJsModuleWithNullability(self, kind):
-    return self._GetTypeNameForNewBindings(kind,
-                                           with_nullability=True,
-                                           for_module=True)
-
-  def _GetFieldTypeForNewBindings(self, kind, for_module=False):
-    if mojom.IsNullableKind(kind):
-      return "({}|undefined)".format(
-          self._GetTypeNameForNewBindings(kind, for_module=for_module))
-    else:
-      return "!" + self._GetTypeNameForNewBindings(kind, for_module=for_module)
-
-  def _GetFieldTypeInJsModule(self, kind):
-    return self._GetFieldTypeForNewBindings(kind, for_module=True)
+  def _TypescriptTypeMaybeNullable(self, kind):
+    return self._TypescriptType(kind, maybe_nullable=True)
 
   def _GetNameInJsModule(self, kind):
     qualifier = ""
@@ -414,16 +391,7 @@ class Generator(generator.Generator):
       ]
     assert False, kind.name
 
-  def _JavaScriptType(self, kind):
-    name = []
-    if kind.module and kind.module.path != self.module.path:
-      name.append(kind.module.unique_name)
-    if kind.parent_kind:
-      name.append(kind.parent_kind.name)
-    name.append(kind.name)
-    return ".".join(name)
-
-  def _GetSpecType(self, kind, for_module=False):
+  def _GetSpecType(self, kind):
     def get_spec(kind):
       if self._IsPrimitiveKind(kind):
         return _kind_to_lite_js_type[kind]
@@ -445,18 +413,15 @@ class Generator(generator.Generator):
         named_kind = kind
 
       name = []
-      qualified = (not for_module) or (self.module is not named_kind.module)
+      qualified = self.module is not named_kind.module
       if qualified and named_kind.module:
         name.append(named_kind.module.namespace)
       if named_kind.parent_kind:
         parent_name = named_kind.parent_kind.name
-        if mojom.IsStructKind(named_kind.parent_kind) and not for_module:
-          parent_name += "Spec"
         name.append(parent_name)
       name.append(named_kind.name)
-      name = ".".join(name)
-      if for_module:
-        name = name.replace(".", "_")
+      name = "_".join(name)
+      name = name.replace(".", "_")
 
       if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
           or mojom.IsEnumKind(kind)):
@@ -479,43 +444,7 @@ class Generator(generator.Generator):
 
     return get_spec(kind)
 
-  def _GetSpecTypeInJsModule(self, kind):
-    return self._GetSpecType(kind, for_module=True)
-
-  def _JavaScriptDefaultValue(self, field):
-    if field.default:
-      if mojom.IsStructKind(field.kind):
-        assert field.default == "default"
-        return "new %s()" % self._JavaScriptType(field.kind)
-      return self._ExpressionToText(field.default)
-    if field.kind in mojom.PRIMITIVES:
-      return _kind_to_javascript_default_value[field.kind]
-    if mojom.IsStructKind(field.kind):
-      return "null"
-    if mojom.IsUnionKind(field.kind):
-      return "null"
-    if mojom.IsArrayKind(field.kind):
-      return "null"
-    if mojom.IsMapKind(field.kind):
-      return "null"
-    if mojom.IsInterfaceKind(field.kind):
-      return "new %sPtr()" % self._JavaScriptType(field.kind)
-    if mojom.IsPendingRemoteKind(field.kind):
-      return "new %sPtr()" % self._JavaScriptType(field.kind.kind)
-    if (mojom.IsInterfaceRequestKind(field.kind)
-        or mojom.IsPendingReceiverKind(field.kind)):
-      return "new bindings.InterfaceRequest()"
-    if (mojom.IsAssociatedInterfaceKind(field.kind)
-        or mojom.IsPendingAssociatedRemoteKind(field.kind)):
-      return "new associatedBindings.AssociatedInterfacePtrInfo()"
-    if (mojom.IsAssociatedInterfaceRequestKind(field.kind)
-        or mojom.IsPendingAssociatedReceiverKind(field.kind)):
-      return "new associatedBindings.AssociatedInterfaceRequest()"
-    if mojom.IsEnumKind(field.kind):
-      return "0"
-    raise Exception("No valid default: %s" % field)
-
-  def _GetDefaultValue(self, field, for_module=False):
+  def _GetDefaultValue(self, field):
     if field.default:
       if mojom.IsStructKind(field.kind):
         assert field.default == "default"
@@ -525,7 +454,7 @@ class Generator(generator.Generator):
               field.default,
               (mojom.EnumValue, mojom.NamedValue, mojom.BuiltinValue))):
         return "BigInt('{}')".format(int(field.default, 0))
-      return self._ExpressionToTextLite(field.default, for_module=for_module)
+      return self._ExpressionToText(field.default)
     if field.kind == mojom.INT64 or field.kind == mojom.UINT64:
       return "BigInt(0)"
     if field.kind in mojom.PRIMITIVES:
@@ -534,16 +463,13 @@ class Generator(generator.Generator):
       return "0"
     return "null"
 
-  def _DefaultValueInJsModule(self, field):
-    return self._GetDefaultValue(field, for_module=True)
-
-  def _JavaScriptSanitizeIdentifier(self, identifier):
+  def _TypeScriptSanitizeIdentifier(self, identifier):
     if identifier in _js_reserved_keywords:
       return identifier + '_'
 
     return identifier
 
-  def _ExpressionToText(self, token):
+  def _ExpressionOrConstantToText(self, token):
     if isinstance(token, (mojom.EnumValue, mojom.NamedValue)):
       # Both variable and enum constants are constructed like:
       # NamespaceUid.Struct[.Enum].CONSTANT_NAME
@@ -568,47 +494,39 @@ class Generator(generator.Generator):
 
     return token
 
-  def _ExpressionToTextLite(self, token, for_module=False):
+  def _ExpressionToText(self, token):
     if isinstance(token, (mojom.EnumValue, mojom.NamedValue)):
       # Generate the following for:
       #  - Enums: NamespaceUid.Enum.CONSTANT_NAME
       #  - Struct: NamespaceUid.Struct_CONSTANT_NAME
 
       namespace_components = []
-      qualified = (not for_module) or (token.module is not self.module)
+      qualified = token.module is not self.module
       if token.module and qualified:
         namespace_components.append(token.module.namespace)
       if token.parent_kind:
         namespace_components.append(token.parent_kind.name)
       name_prefix = '.'.join(namespace_components)
-      if for_module:
-        name_prefix = name_prefix.replace('.', '_')
+      name_prefix = name_prefix.replace('.', '_')
 
       name = []
       if isinstance(token, mojom.EnumValue):
         name.append(token.enum.name)
       name.append(token.name)
 
-      separator = "."
-      if mojom.IsStructKind(token.parent_kind) or for_module:
-        separator = "_"
-
       if len(name_prefix) > 0:
-        return name_prefix + separator + ".".join(name)
+        return f"{name_prefix}_{'.'.join(name)}"
 
       return ".".join(name)
 
-    return self._ExpressionToText(token)
+    return self._ExpressionOrConstantToText(token)
 
-  def _GetConstantValue(self, constant, for_module=False):
+  def _GetConstantValue(self, constant):
     assert isinstance(constant, mojom.Constant)
-    text = self._ExpressionToTextLite(constant.value, for_module=for_module)
+    text = self._ExpressionOrConstantToText(constant.value)
     if constant.kind == mojom.INT64 or constant.kind == mojom.UINT64:
       return "BigInt('{}')".format(int(text, 0))
     return text
-
-  def _GetConstantValueInJsModule(self, constant):
-    return self._GetConstantValue(constant, for_module=True)
 
   def _GetJsModuleImports(self):
     this_module_path = _GetWebUiModulePath(self.module)
