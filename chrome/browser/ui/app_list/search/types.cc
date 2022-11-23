@@ -11,7 +11,7 @@
 namespace app_list {
 
 double Scoring::FinalScore() const {
-  if (filter)
+  if (filter && !override_filter_for_test)
     return -1.0;
   return ftrl_result_score;
 }

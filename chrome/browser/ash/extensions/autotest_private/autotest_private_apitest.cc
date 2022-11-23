@@ -558,9 +558,12 @@ class AutotestPrivateSearchTest
       const std::vector<double>& scores) {
     std::vector<std::unique_ptr<ChromeSearchResult>> results;
     for (size_t i = 0; i < ids.size(); ++i) {
-      results.emplace_back(std::make_unique<app_list::TestResult>(
-          ids[i], display_types[i], categories[i], best_match_ranks[i],
-          /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]));
+      std::unique_ptr<app_list::TestResult> test_result =
+          std::make_unique<app_list::TestResult>(
+              ids[i], display_types[i], categories[i], best_match_ranks[i],
+              /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]);
+      test_result->scoring().override_filter_for_test = true;
+      results.emplace_back(std::move(test_result));
     }
     return results;
   }
@@ -575,7 +578,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(https://crbug.com/1385365): This test is extremely flaky.
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
-                       DISABLED_LauncherSearchBoxStateAPITest) {
+                       LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
   test::GetAppListClient()->ShowAppList();
   if (!GetParam()) {
