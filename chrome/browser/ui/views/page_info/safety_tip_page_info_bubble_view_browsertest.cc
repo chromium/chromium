@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
+#include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
@@ -273,8 +274,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-
-    reputation::InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
   }
 
@@ -283,6 +282,14 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    test_helper_ = std::make_unique<LookalikeTestHelper>(browser());
+    test_helper_->SetUp();
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+    test_helper_->TearDown();
   }
 
   GURL GetURL(const char* hostname) const {
@@ -432,6 +439,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
 
 // Ensure normal sites with low engagement are not blocked.
