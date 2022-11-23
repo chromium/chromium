@@ -119,7 +119,7 @@ namespace dom_distiller {
                 if (!value->is_list()) {
                   goto error;
                 }
-                for (const auto& element : value->GetListDeprecated()) {
+                for (const auto& element : value->GetList()) {
                   if (!element.is_bool()) {
                     goto error;
                   }
@@ -154,7 +154,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!(element.is_int() || element.is_double())) {
                   goto error;
                 }
@@ -165,7 +165,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!(element.is_int() || element.is_double())) {
                   goto error;
                 }
@@ -176,7 +176,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!element.is_int()) {
                   goto error;
                 }
@@ -187,7 +187,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!element.is_bool()) {
                   goto error;
                 }
@@ -198,7 +198,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!element.is_string()) {
                   goto error;
                 }
@@ -209,7 +209,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetListDeprecated()) {
+              for (const auto& element : value->GetList()) {
                 if (!dom_distiller::test_sample::proto::json::Repeated::Message::ReadFromValue(element, message->add_message_value())) {
                   goto error;
                 }
