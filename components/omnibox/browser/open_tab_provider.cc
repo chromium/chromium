@@ -20,6 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/public/browser/web_contents.h"
@@ -29,13 +30,8 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 int Score(const query_parser::QueryNodeVector& input_query_nodes,
-          const std::u16string& title) {
-  // TODO(crbug/1287313) Currently only scores title matches. Should also score,
-  //  or at least allow (without boosting the score), URL matches.
-  //  Otherwise inputs like 'newtab' or 'stackoverflow' won't match, as the
-  //  respective titles contain whitespace. And not matching URLs is
-  //  inconsistent with every (or almost every?) other provider.
-
+          const std::u16string& title,
+          const GURL& url) {
   // TODO(crbug/1287313): The bookmark provider also uses on `query_parser` and
   //  `ScoringFunctor` to compute its scores. However, it uses normalized match
   //  titles. (see `Normalize()` in
@@ -47,24 +43,44 @@ int Score(const query_parser::QueryNodeVector& input_query_nodes,
   query_parser::QueryWordVector title_words;
   query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
 
-  // Find matches in the title.
+  // Extract query words from the URL.
+  const std::u16string lower_url =
+      base::i18n::ToLower(base::UTF8ToUTF16(url.spec()));
+  query_parser::QueryWordVector url_words;
+  query_parser::QueryParser::ExtractQueryWords(lower_url, &url_words);
+
+  // Every input term must be included in either (or both) the title or URL.
   query_parser::Snippet::MatchPositions title_matches;
+  query_parser::Snippet::MatchPositions url_matches;
   if (!base::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
-        return query_node->HasMatchIn(title_words, &title_matches);
+        // Using local vars so to not short circuit adding URL matches when
+        // title matches are found.
+        const bool has_title_match =
+            query_node->HasMatchIn(title_words, &title_matches);
+        const bool has_url_match =
+            query_node->HasMatchIn(url_words, &url_matches);
+        return has_title_match || has_url_match;
       })) {
-    // All input terms must be included in the title.
     return 0;
   }
 
-  // Score the matches. `kMaxScore` is chosen based on a reasonable upper bound
-  // for title length of 100. The exact scores don't matter, but using a max
-  // score proportional the max title length squared will avoid suggestions with
-  // different float scores being rounded to the same integer score.
+  // Score the matches following a simplified variation of
+  // `BookmarkProvider::CalculateBookmarkMatchRelevance()`. `kMaxScore` is
+  // chosen based on a reasonable upper bound for title & URL length of 100. The
+  // exact scores don't matter, but using a scale proportional the max title
+  // length squared will avoid suggestions with different float scores being
+  // rounded to the same integer score.
   const int kMaxScore = 100 * 100;
-  double title_factor = for_each(title_matches.begin(), title_matches.end(),
-                                 ScoringFunctor(lower_title.length()))
-                            .ScoringFactor();
-  return title_factor / (lower_title.length() + 10) * kMaxScore;
+  const double title_factor =
+      for_each(title_matches.begin(), title_matches.end(),
+               ScoringFunctor(lower_title.length()))
+          .ScoringFactor();
+  const double url_factor = for_each(url_matches.begin(), url_matches.end(),
+                                     ScoringFunctor(lower_url.length()))
+                                .ScoringFactor();
+  const double normalized_factors =
+      std::min((title_factor + url_factor) / (lower_title.length() + 10), 1.0);
+  return normalized_factors * kMaxScore;
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -110,7 +126,8 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
     if (!url.is_valid()) {
       continue;
     }
-    int score = Score(input_query_nodes, web_contents->GetTitle());
+    int score = Score(input_query_nodes, web_contents->GetTitle(),
+                      web_contents->GetLastCommittedURL());
     if (score > 0) {
       matches_.push_back(CreateOpenTabMatch(
           adjusted_input, web_contents->GetTitle(), url, score, template_url));
