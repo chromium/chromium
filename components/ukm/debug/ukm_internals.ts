@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 interface Metric {
   name: string;
@@ -176,7 +176,7 @@ function createSourceCard(
   if (displayState) {
     metricElement.style.display = displayState;
   } else {
-    if ($('toggle_expand').textContent === 'Collapse') {
+    if (getRequiredElement('toggle_expand').textContent === 'Collapse') {
       metricElement.style.display = 'block';
     } else {
       metricElement.style.display = 'none';
@@ -253,7 +253,7 @@ function urlToSourcesMapping(sources: UkmDataSource[]):
  * Adds a button to Expand/Collapse all URLs.
  */
 function addExpandToggleButton() {
-  const toggleExpand = $('toggle_expand');
+  const toggleExpand = getRequiredElement('toggle_expand');
   toggleExpand.textContent = 'Expand';
   toggleExpand.addEventListener('click', () => {
     if (toggleExpand.textContent === 'Expand') {
@@ -274,7 +274,7 @@ function addExpandToggleButton() {
  * To get the new UKMs after hitting Clear click the refresh button.
  */
 function addClearButton() {
-  const clearButton = $('clear');
+  const clearButton = getRequiredElement('clear');
   clearButton.addEventListener('click', () => {
     // Note it won't be able to clear if UKM logs got cut during this call.
     sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
@@ -283,7 +283,7 @@ function addClearButton() {
         clearedSources.set(as64Bit(s.id), s.entries.length);
       }
     });
-    $('toggle_expand').textContent = 'Expand';
+    getRequiredElement('toggle_expand').textContent = 'Expand';
     updateUkmData();
   });
 }
@@ -370,12 +370,13 @@ function updateUkmData() {
                          '#include_cache')!.checked) {
       data.sources = [...cachedSources.values()];
     }
-    $('state').innerText = data.state ? 'ENABLED' : 'DISABLED';
-    $('clientid').innerText = '0x' + data.client_id;
-    $('sessionid').innerText = data.session_id;
-    $('is_sampling_enabled').innerText = data.is_sampling_enabled;
+    getRequiredElement('state').innerText = data.state ? 'ENABLED' : 'DISABLED';
+    getRequiredElement('clientid').innerText = '0x' + data.client_id;
+    getRequiredElement('sessionid').innerText = data.session_id;
+    getRequiredElement('is_sampling_enabled').innerText =
+        data.is_sampling_enabled;
 
-    const sourcesDiv = /** @type {!Element} */ ($('sources'));
+    const sourcesDiv = /** @type {!Element} */ (getRequiredElement('sources'));
     removeChildren(sourcesDiv);
 
     // Setup a title for the sources div.
@@ -489,17 +490,18 @@ function onLoad() {
   addExpandToggleButton();
   addClearButton();
   updateUkmData();
-  $('refresh').addEventListener('click', updateUkmData);
-  $('hide_no_metrics').addEventListener('click', updateUkmData);
-  $('hide_no_url').addEventListener('click', updateUkmData);
-  $('thread_ids').addEventListener('click', updateUkmData);
-  $('include_cache').addEventListener('click', updateUkmData);
-  $('metrics_select').addEventListener('keyup', e => {
+  getRequiredElement('refresh').addEventListener('click', updateUkmData);
+  getRequiredElement('hide_no_metrics')
+      .addEventListener('click', updateUkmData);
+  getRequiredElement('hide_no_url').addEventListener('click', updateUkmData);
+  getRequiredElement('thread_ids').addEventListener('click', updateUkmData);
+  getRequiredElement('include_cache').addEventListener('click', updateUkmData);
+  getRequiredElement('metrics_select').addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       updateUkmData();
     }
   });
-  $('url_select').addEventListener('keyup', e => {
+  getRequiredElement('url_select').addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       updateUkmData();
     }

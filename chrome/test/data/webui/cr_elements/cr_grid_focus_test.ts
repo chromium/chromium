@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 
 import {CrGridElement} from 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

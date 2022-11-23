@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {HistoryClustersInternalsBrowserProxy} from './history_clusters_internals_browser_proxy.js';
 
@@ -58,11 +58,13 @@ function onPrintKeywordBagState() {
 }
 
 function initialize() {
-  const logMessageContainer = $('log-message-container') as HTMLTableElement;
+  const logMessageContainer = $<HTMLTableElement>('log-message-container');
 
-  $('log-messages-dump').addEventListener('click', onLogMessagesDump);
-  $('visits-dump').addEventListener('click', onVisitsDumpRequested);
-  $('print-keyword-bag-state')
+  getRequiredElement('log-messages-dump')
+      .addEventListener('click', onLogMessagesDump);
+  getRequiredElement('visits-dump')
+      .addEventListener('click', onVisitsDumpRequested);
+  getRequiredElement('print-keyword-bag-state')
       .addEventListener('click', onPrintKeywordBagState);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(

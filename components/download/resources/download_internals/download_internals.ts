@@ -4,10 +4,11 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
+
 // </if>
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {DownloadInternalsBrowserProxy, DownloadInternalsBrowserProxyImpl, ServiceEntry, ServiceEntryState, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 
@@ -53,20 +54,25 @@ function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
 
 function updateEntryTables() {
   const ongoingInput = new JsEvalContext({entries: ongoingServiceEntries});
-  jstProcess(ongoingInput, $('download-service-ongoing-entries-info'));
+  jstProcess(
+      ongoingInput,
+      getRequiredElement('download-service-ongoing-entries-info'));
 
   const finishedInput = new JsEvalContext({entries: finishedServiceEntries});
-  jstProcess(finishedInput, $('download-service-finished-entries-info'));
+  jstProcess(
+      finishedInput,
+      getRequiredElement('download-service-finished-entries-info'));
 }
 
 /**
  * @param state The current status of the download service.
  */
 function onServiceStatusChanged(state: ServiceStatus) {
-  $('service-state').textContent = state.serviceState;
-  $('service-status-model').textContent = state.modelStatus;
-  $('service-status-driver').textContent = state.driverStatus;
-  $('service-status-file').textContent = state.fileMonitorStatus;
+  getRequiredElement('service-state').textContent = state.serviceState;
+  getRequiredElement('service-status-model').textContent = state.modelStatus;
+  getRequiredElement('service-status-driver').textContent = state.driverStatus;
+  getRequiredElement('service-status-file').textContent =
+      state.fileMonitorStatus;
 }
 
 /**
@@ -115,7 +121,7 @@ function onServiceDownloadFailed(entry: ServiceEntry) {
 function onServiceRequestMade(request: ServiceRequest) {
   serviceRequests.unshift(request);
   const input = new JsEvalContext({requests: serviceRequests});
-  jstProcess(input, $('download-service-request-info'));
+  jstProcess(input, getRequiredElement('download-service-request-info'));
 }
 
 function initialize() {
@@ -126,8 +132,9 @@ function initialize() {
   addWebUiListener('service-download-failed', onServiceDownloadFailed);
   addWebUiListener('service-request-made', onServiceRequestMade);
 
-  $('start-download').onclick = function() {
-    browserProxy.startDownload(($('download-url') as HTMLInputElement).value);
+  getRequiredElement('start-download').onclick = function() {
+    browserProxy.startDownload(
+        getRequiredElement<HTMLInputElement>('download-url').value);
   };
 
   // Kick off requests for the current system state.

@@ -5,7 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
@@ -191,7 +191,7 @@ class BucketElement extends HTMLElement {
 
 function onStorageKeysReady(partitions: IdbPartitionMetadata[]) {
   const template = jstGetTemplate('indexeddb-list-template');
-  $('indexeddb-list').appendChild(template);
+  getRequiredElement('indexeddb-list').appendChild(template);
   jstProcess(
       new JsEvalContext({
         partitions,

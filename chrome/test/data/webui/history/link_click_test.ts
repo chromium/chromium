@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserServiceImpl, getTrustedHTML, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -21,17 +21,17 @@ suite('listenForPrivilegedLinkClicks unit test', function() {
       <a href="about:blank"><b id="blank">Click me</b></a>
     `;
 
-    $('file').click();
+    getRequiredElement('file').click();
     let clickUrl = await testService.whenCalled('navigateToUrl');
     assertEquals('file:///path/to/file', clickUrl);
     testService.resetResolver('navigateToUrl');
 
-    $('chrome').click();
+    getRequiredElement('chrome').click();
     clickUrl = await testService.whenCalled('navigateToUrl');
     assertEquals('about:chrome', clickUrl);
     testService.resetResolver('navigateToUrl');
 
-    $('blank').click();
+    getRequiredElement('blank').click();
     clickUrl = await testService.whenCalled('navigateToUrl');
     assertEquals('about:blank', clickUrl);
   });

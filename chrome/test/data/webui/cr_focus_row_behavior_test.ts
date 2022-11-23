@@ -4,7 +4,7 @@
 
 // clang-format off
 import {FocusRowBehavior} from 'chrome://resources/ash/common/focus_row_behavior.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {html, PolymerElement, mixinBehaviors} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from './test_util.js';

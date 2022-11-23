@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 // Timer for automatic update in monitoring mode.
 let fetchDiffScheduler: number|null = null;
@@ -20,7 +20,7 @@ let inMonitoringMode: boolean = false;
  * be included.
  */
 function includeSubprocessMetrics(): boolean {
-  const checkbox = $('subprocess_checkbox') as HTMLInputElement;
+  const checkbox = getRequiredElement<HTMLInputElement>('subprocess_checkbox');
   return checkbox.checked;
 }
 
@@ -38,12 +38,13 @@ function requestHistograms() {
 
 /** Clears all loaded histograms on the webpage. */
 function clearHistograms(): void {
-  $('histograms').innerHTML = window.trustedTypes!.emptyHTML;
+  getRequiredElement('histograms').innerHTML = window.trustedTypes!.emptyHTML;
 }
 
 /** Makes the subprocess checkbox disabled, and sets a tooltip. */
 function disableSubprocessCheckbox(): void {
-  const subprocessCheckbox = $('subprocess_checkbox') as HTMLInputElement;
+  const subprocessCheckbox =
+      getRequiredElement<HTMLInputElement>('subprocess_checkbox');
   subprocessCheckbox.disabled = true;
   subprocessCheckbox.title = 'Checkbox is disabled in Monitoring Mode. ' +
       'To enable, switch to Histogram Mode first.';
@@ -51,7 +52,8 @@ function disableSubprocessCheckbox(): void {
 
 /** Makes the subprocess checkbox enabled. */
 function enableSubprocessCheckbox(): void {
-  const subprocessCheckbox = $('subprocess_checkbox') as HTMLInputElement;
+  const subprocessCheckbox =
+      getRequiredElement<HTMLInputElement>('subprocess_checkbox');
   subprocessCheckbox.disabled = false;
   subprocessCheckbox.removeAttribute('title');
 }
@@ -61,7 +63,7 @@ function enableSubprocessCheckbox(): void {
  * This will get a histogram snapshot as the base to be diffed against.
  */
 function startMonitoring() {
-  const stopButton = $('stop') as HTMLButtonElement;
+  const stopButton = getRequiredElement<HTMLButtonElement>('stop');
   stopButton.disabled = false;
   stopButton.textContent = 'Stop';
   disableSubprocessCheckbox();
@@ -108,8 +110,8 @@ function getQuery() {
  */
 function enableMonitoring() {
   inMonitoringMode = true;
-  $('accumulating_section').style.display = 'none';
-  $('monitoring_section').style.display = 'block';
+  getRequiredElement('accumulating_section').style.display = 'none';
+  getRequiredElement('monitoring_section').style.display = 'block';
   expandedEntries.clear();
   startMonitoring();
 }
@@ -123,8 +125,8 @@ function disableMonitoring() {
     clearTimeout(fetchDiffScheduler);
     fetchDiffScheduler = null;
   }
-  $('accumulating_section').style.display = 'block';
-  $('monitoring_section').style.display = 'none';
+  getRequiredElement('accumulating_section').style.display = 'block';
+  getRequiredElement('monitoring_section').style.display = 'none';
   clearHistograms();
   enableSubprocessCheckbox();
   expandedEntries.clear();
@@ -139,7 +141,7 @@ function stopMonitoring() {
     clearTimeout(fetchDiffScheduler);
     fetchDiffScheduler = null;
   }
-  const stopButton = $('stop') as HTMLButtonElement;
+  const stopButton = getRequiredElement<HTMLButtonElement>('stop');
   stopButton.disabled = true;
   stopButton.textContent = 'Stopped';
 }
@@ -219,9 +221,10 @@ function addHistograms(histograms: Histogram[]) {
     // In monitoring mode, we want to preserve the expanded/collapsed status
     // between reloads.
     setExpanded(clone, expandedEntries.has(name));
-    $('histograms').appendChild(clone);
+    getRequiredElement('histograms').appendChild(clone);
   }
-  $('histograms').dispatchEvent(new CustomEvent('histograms-updated-for-test'));
+  getRequiredElement('histograms')
+      .dispatchEvent(new CustomEvent('histograms-updated-for-test'));
 }
 
 /**
@@ -229,7 +232,7 @@ function addHistograms(histograms: Histogram[]) {
  */
 function generateHistogramsAsText() {
   // Expanded/collapsed status is reflected in the text.
-  return $('histograms').innerText;
+  return getRequiredElement('histograms').innerText;
 }
 
 /**
@@ -250,12 +253,12 @@ function downloadHistograms() {
  * Load the initial list of histograms.
  */
 document.addEventListener('DOMContentLoaded', function() {
-  $('refresh').onclick = requestHistograms;
-  $('download').onclick = downloadHistograms;
-  $('enable_monitoring').onclick = enableMonitoring;
-  $('disable_monitoring').onclick = disableMonitoring;
-  $('stop').onclick = stopMonitoring;
-  $('subprocess_checkbox').onclick = requestHistograms;
+  getRequiredElement('refresh').onclick = requestHistograms;
+  getRequiredElement('download').onclick = downloadHistograms;
+  getRequiredElement('enable_monitoring').onclick = enableMonitoring;
+  getRequiredElement('disable_monitoring').onclick = disableMonitoring;
+  getRequiredElement('stop').onclick = stopMonitoring;
+  getRequiredElement('subprocess_checkbox').onclick = requestHistograms;
 
   // Enable calling generateHistogramsAsText() from
   // histograms_internals_ui_browsertest.js for testing purposes.

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 document.addEventListener('DOMContentLoaded', function() {
   sendWithPromise('fetchClientId').then((clientId: string) => {
-    $('content').textContent = clientId;
+    getRequiredElement('content').textContent = clientId;
   });
 });

@@ -4,7 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {$} from 'chrome://resources/js/util.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {DownloadedModelInfo, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
@@ -109,7 +110,7 @@ function onLogMessagesDump() {
 
 async function onModelsPageOpen() {
   const downloadedModelsContainer =
-      $('downloaded-models-container') as HTMLTableElement;
+      getRequiredElement<HTMLTableElement>('downloaded-models-container');
   try {
     const response: {downloadedModelsInfo: DownloadedModelInfo[]} =
         await PageHandlerFactory.getRemote().requestDownloadedModelsInfo();
@@ -117,7 +118,7 @@ async function onModelsPageOpen() {
     for (const {optimizationTarget, version, filePath} of
              downloadedModelsInfo) {
       const versionStr = version.toString();
-      const existingModel = $(optimizationTarget) as HTMLTableRowElement;
+      const existingModel = $<HTMLTableRowElement>(optimizationTarget);
       if (existingModel) {
         existingModel.querySelector('.downloaded-models-version')!.innerHTML =
             versionStr;
@@ -161,12 +162,15 @@ function getProxy(): OptimizationGuideInternalsBrowserProxy {
 
 
 function initialize() {
-  const tabbox = document.querySelector('cr-tab-box') as HTMLElement;
+  const tabbox = document.querySelector('cr-tab-box');
+  assert(tabbox);
   tabbox.hidden = false;
 
-  const logMessageContainer = $('log-message-container') as HTMLTableElement;
+  const logMessageContainer =
+      getRequiredElement<HTMLTableElement>('log-message-container');
 
-  $('log-messages-dump').addEventListener('click', onLogMessagesDump);
+  getRequiredElement('log-messages-dump')
+      .addEventListener('click', onLogMessagesDump);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
       (eventTime: Time, logSource: number, sourceFile: string,

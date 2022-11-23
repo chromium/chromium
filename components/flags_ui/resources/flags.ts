@@ -15,7 +15,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isIOS} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 let lastChanged: HTMLElement|null = null;
 let lastFocused: HTMLElement|null = null;
@@ -89,7 +89,7 @@ declare global {
 function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
   const templateToProcess = jstGetTemplate('tab-content-available-template');
   const context = new JsEvalContext(experimentalFeaturesData);
-  const content = $('tab-content-available');
+  const content = getRequiredElement('tab-content-available');
 
   // Duplicate the template into the content area.
   // This prevents the misrendering of available flags when the template
@@ -103,7 +103,7 @@ function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
   // Unavailable flags are not shown on iOS.
   const unavailableTemplate = $('tab-content-unavailable');
   if (unavailableTemplate) {
-    jstProcess(context, $('tab-content-unavailable'));
+    jstProcess(context, getRequiredElement('tab-content-unavailable'));
   }
 
   showRestartToast(experimentalFeaturesData.needsRestart);
@@ -166,7 +166,7 @@ function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
     }
   }
 
-  $('experiment-reset-all').onclick = resetAllFlags;
+  getRequiredElement('experiment-reset-all').onclick = resetAllFlags;
   const crosUrlFlagsRedirectButton = $('os-link-href');
   if (crosUrlFlagsRedirectButton) {
     crosUrlFlagsRedirectButton.onclick = crosUrlFlagsRedirect;
@@ -218,8 +218,8 @@ function highlightReferencedFlag() {
 
       // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
-      if ($('tab-content-unavailable').contains(el)) {
-        selectTab($('tab-unavailable'));
+      if (getRequiredElement('tab-content-unavailable').contains(el)) {
+        selectTab(getRequiredElement('tab-unavailable'));
       }
       // </if>
       el.scrollIntoView();
@@ -246,9 +246,9 @@ function restartBrowser() {
  * @param text The text that should be announced.
  */
 function announceStatus(text: string) {
-  $('screen-reader-status-message').textContent = '';
+  getRequiredElement('screen-reader-status-message').textContent = '';
   setTimeout(function() {
-    $('screen-reader-status-message').textContent = text;
+    getRequiredElement('screen-reader-status-message').textContent = text;
   }, 100);
 }
 
@@ -270,13 +270,13 @@ function crosUrlFlagsRedirect() {
  * @param show Setting to toggle showing / hiding the toast.
  */
 function showRestartToast(show: boolean) {
-  $('needs-restart').classList.toggle('show', show);
+  getRequiredElement('needs-restart').classList.toggle('show', show);
   // There is no restart button on iOS.
   if (restartButton) {
     restartButton.setAttribute('tabindex', show ? '9' : '-1');
   }
   if (show) {
-    $('needs-restart').setAttribute('role', 'alert');
+    getRequiredElement('needs-restart').setAttribute('role', 'alert');
   }
 }
 
@@ -316,16 +316,17 @@ interface ExperimentalFeaturesData {
  */
 function returnExperimentalFeatures(
     experimentalFeaturesData: ExperimentalFeaturesData) {
-  const bodyContainer = $('body-container');
+  const bodyContainer = getRequiredElement('body-container');
   renderTemplate(experimentalFeaturesData);
 
   if (experimentalFeaturesData.showBetaChannelPromotion) {
-    $('channel-promo-beta').hidden = false;
+    getRequiredElement('channel-promo-beta').hidden = false;
   } else if (experimentalFeaturesData.showDevChannelPromotion) {
-    $('channel-promo-dev').hidden = false;
+    getRequiredElement('channel-promo-dev').hidden = false;
   }
 
-  $('promos').hidden = !experimentalFeaturesData.showBetaChannelPromotion &&
+  getRequiredElement('promos').hidden =
+      !experimentalFeaturesData.showBetaChannelPromotion &&
       !experimentalFeaturesData.showDevChannelPromotion;
 
   bodyContainer.style.visibility = 'visible';
@@ -352,7 +353,8 @@ function returnExperimentalFeatures(
 function experimentChangesUiUpdates(
     node: HTMLSelectElement&WithExtras, index: number) {
   const selected = node.options[index]!;
-  const experimentContainerEl = $(node.internal_name).firstElementChild!;
+  const experimentContainerEl =
+      getRequiredElement(node.internal_name).firstElementChild!;
   const isDefault =
       ('default' in selected.dataset && selected.dataset['default'] === '1') ||
       (!('default' in selected.dataset) && index === 0);
