@@ -24,7 +24,7 @@ import './buttons/oobe_back_button.js';
 import './buttons/oobe_text_button.js';
 import './common_styles/common_styles.m.js';
 import './common_styles/oobe_dialog_host_styles.m.js';
-import './dialogs/oobe_content_dialog.m.js';
+import './dialogs/oobe_content_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

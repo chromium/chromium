@@ -32,6 +32,7 @@ assistant_migrated_imports = [
   "chrome/browser/resources/chromeos/components/buttons/oobe_next_button.html",
   "chrome/browser/resources/chromeos/components/buttons/oobe_text_button.html",
   "chrome/browser/resources/chromeos/components/dialogs/oobe_adaptive_dialog.html",
+  "chrome/browser/resources/chromeos/components/dialogs/oobe_content_dialog.html",
   "chrome/browser/resources/chromeos/components/oobe_cr_lottie.html",
 
   # Assistant

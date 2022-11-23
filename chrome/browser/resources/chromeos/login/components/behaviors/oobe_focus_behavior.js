@@ -63,3 +63,8 @@
  * }}
  */
 OobeFocusBehavior.Proto;
+
+/** @interface */
+/* #export */ class OobeFocusBehaviorInterface {
+  focusMarkedElement(root) {}
+}

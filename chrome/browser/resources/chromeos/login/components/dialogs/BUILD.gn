@@ -9,7 +9,6 @@ import("../../oobe_auto_imports.gni")
 
 group("polymer3_elements") {
   public_deps = [
-    ":oobe_content_dialog_module",
     ":oobe_loading_dialog_module",
     ":oobe_modal_dialog_module",
   ]
@@ -19,7 +18,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":oobe_adaptive_dialog",
-    ":oobe_content_dialog.m",
+    ":oobe_content_dialog",
     ":oobe_loading_dialog.m",
     ":oobe_modal_dialog.m",
   ]
@@ -35,22 +34,22 @@ js_library("oobe_adaptive_dialog") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_content_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.m.js" ]
+js_library("oobe_content_dialog") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.js" ]
   deps = [
     "../behaviors:oobe_focus_behavior.m",
     "../behaviors:oobe_scrollable_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":oobe_content_dialog_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_loading_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_loading_dialog.m.js" ]
   deps = [
     ":oobe_adaptive_dialog",
-    ":oobe_content_dialog.m",
+    ":oobe_content_dialog",
     "..:oobe_cr_lottie",
     "../behaviors:oobe_dialog_host_behavior.m",
     "../behaviors:oobe_i18n_behavior.m",
@@ -77,14 +76,6 @@ js_library("oobe_modal_dialog.m") {
 
 #### Polymer3 auto generation
 
-polymer_modulizer("oobe_content_dialog") {
-  js_file = "oobe_content_dialog.js"
-  html_file = "oobe_content_dialog.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-}
-
 polymer_modulizer("oobe_loading_dialog") {
   js_file = "oobe_loading_dialog.js"
   html_file = "oobe_loading_dialog.html"
@@ -102,5 +93,8 @@ polymer_modulizer("oobe_modal_dialog") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "oobe_adaptive_dialog.js" ]
+  js_files = [
+    "oobe_adaptive_dialog.js",
+    "oobe_content_dialog.js",
+  ]
 }

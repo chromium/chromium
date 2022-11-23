@@ -14,7 +14,6 @@ import '../../components/gaia_header.js';
 import '../../components/gaia_input_form.js';
 import '../../components/gaia_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_content_dialog.m.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
@@ -23,6 +22,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeContentDialog} from '../../components/dialogs/oobe_content_dialog.js';
 
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
@@ -47,7 +47,7 @@ const OfflineLoginBase = mixinBehaviors(
  * @typedef {{
  *   emailInput: CrInputElement,
  *   passwordInput: CrInputElement,
- *   dialog: OobeContentDialogElement,
+ *   dialog: OobeContentDialog,
  *   forgotPasswordDlg: CrDialogElement,
  *   onlineRequiredDialog: CrDialogElement,
  * }}

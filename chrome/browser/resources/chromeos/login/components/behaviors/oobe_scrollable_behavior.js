@@ -55,3 +55,9 @@
  * }}
  */
 OobeScrollableBehavior.Proto;
+
+/** @interface */
+/* #export */ class OobeScrollableBehaviorInterface {
+  initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
+  }
+}

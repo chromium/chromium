@@ -89,7 +89,7 @@ js_library("gaia_dialog") {
     "./behaviors:oobe_i18n_behavior.m",
     "./buttons:oobe_back_button",
     "./buttons:oobe_text_button",
-    "./dialogs:oobe_content_dialog.m",
+    "./dialogs:oobe_content_dialog",
     "//chrome/browser/resources/gaia_auth_host:authenticator",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
