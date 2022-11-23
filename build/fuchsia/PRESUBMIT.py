@@ -26,7 +26,6 @@ def CommonChecks(input_api, output_api):
       J('device_target_test.py'),
       J('gcs_download_test.py'),
       J('update_images_test.py'),
-      J('update_product_bundles_test.py'),
       J('update_sdk_test.py'),
   ]
 
