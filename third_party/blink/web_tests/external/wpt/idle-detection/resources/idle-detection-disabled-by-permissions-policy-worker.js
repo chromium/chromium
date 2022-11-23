@@ -2,7 +2,7 @@
 
 importScripts('/resources/testharness.js');
 
-const header = 'Feature-Policy header {"idle-detection" : []}';
+const header = 'Permissions-Policy header idle-detection=()';
 let workerType;
 
 if (typeof postMessage === 'function') {

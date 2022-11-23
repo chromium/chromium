@@ -11,6 +11,6 @@ if (typeof postMessage === 'function') {
 promise_test(async () => {
   await new IdleDetector().start()
 },
-    `Inherited header feature policy allows ${workerType} workers.`)
+    `Inherited header permissions policy allows ${workerType} workers.`)
 
 done();
