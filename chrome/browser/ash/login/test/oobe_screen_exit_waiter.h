@@ -53,10 +53,4 @@ class OobeScreenExitWaiter : public OobeUI::Observer,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::OobeScreenExitWaiter;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREEN_EXIT_WAITER_H_

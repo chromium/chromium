@@ -22,9 +22,4 @@ extern const char kSixthUserCorpExampleTestEmail[];
 }  // namespace saml_test_users
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace chromeos {
-namespace saml_test_users = ::ash::saml_test_users;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_TEST_USERS_H_

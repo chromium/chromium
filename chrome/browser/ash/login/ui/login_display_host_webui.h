@@ -289,10 +289,4 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::LoginDisplayHostWebUI;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_WEBUI_H_

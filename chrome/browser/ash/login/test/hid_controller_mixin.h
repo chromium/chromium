@@ -64,12 +64,4 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
 }  // namespace test
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace test {
-using ::ash::test::HIDControllerMixin;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_HID_CONTROLLER_MIXIN_H_

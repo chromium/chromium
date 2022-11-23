@@ -25,10 +25,4 @@ class MockLoginDisplay : public LoginDisplay {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockLoginDisplay;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_H_

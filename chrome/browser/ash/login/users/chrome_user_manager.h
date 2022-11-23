@@ -82,9 +82,4 @@ class ChromeUserManager : public user_manager::UserManagerBase,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ChromeUserManager;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_

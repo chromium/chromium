@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 
 #include "base/callback.h"
+#include "chromeos/ash/components/login/auth/metrics_recorder.h"
 
 namespace ash {
 

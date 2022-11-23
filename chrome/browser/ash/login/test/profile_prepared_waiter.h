@@ -37,12 +37,4 @@ class ProfilePreparedWaiter : public AuthStatusConsumer {
 }  // namespace test
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace test {
-using ::ash::test::ProfilePreparedWaiter;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_PROFILE_PREPARED_WAITER_H_

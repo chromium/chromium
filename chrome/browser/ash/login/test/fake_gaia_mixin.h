@@ -121,9 +121,4 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace chromeos {
-using ::ash::FakeGaiaMixin;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_GAIA_MIXIN_H_

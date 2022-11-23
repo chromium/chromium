@@ -161,7 +161,7 @@ void EmbeddedPolicyTestServerMixin::SetPolicyFetchError(int net_error_code) {
 
 void EmbeddedPolicyTestServerMixin::SetFakeAttestationFlow() {
   std::string valid_certificate;
-  ash::attestation::GetFakeCertificatePEM(base::Days(10), &valid_certificate);
+  attestation::GetFakeCertificatePEM(base::Days(10), &valid_certificate);
 
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()

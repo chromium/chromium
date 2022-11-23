@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
 namespace test {
 
 constexpr char kTestEmail[] = "test_user@gmail.com";
@@ -181,15 +182,5 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace test {
-using ::ash::test::kTestEmail;
-using ::ash::test::kTestGaiaId;
-}  // namespace test
-using ::ash::LoginManagerMixin;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_

@@ -30,8 +30,8 @@ namespace {
 
 gfx::NativeWindow GetBrowserParentWindow() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (LoginDisplayHost::default_host())
-    return LoginDisplayHost::default_host()->GetNativeWindow();
+  if (ash::LoginDisplayHost::default_host())
+    return ash::LoginDisplayHost::default_host()->GetNativeWindow();
 #endif
   Browser* browser =
       chrome::FindTabbedBrowser(ProfileManager::GetPrimaryUserProfile(), true);

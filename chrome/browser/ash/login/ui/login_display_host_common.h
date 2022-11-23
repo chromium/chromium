@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback_list.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -25,6 +24,8 @@
 class AccountId;
 
 namespace ash {
+
+class KioskLaunchController;
 class LoginFeedback;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI

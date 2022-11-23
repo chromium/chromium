@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-// TODO(https://crbug.com/1164001): move to forward declaration when fixed.
-#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/account_id/account_id.h"
@@ -49,7 +47,9 @@ class CloudExternalDataPolicyHandler;
 }  // namespace policy
 
 namespace ash {
+
 class MultiProfileUserController;
+class SessionLengthLimiter;
 class SupervisedUserManagerImpl;
 
 // Chrome specific implementation of the UserManager.

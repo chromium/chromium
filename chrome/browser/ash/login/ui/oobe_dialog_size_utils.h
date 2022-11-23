@@ -41,15 +41,4 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::CalculateOobeDialogSize;
-using ::ash::CalculateOobeDialogSizeForPrimaryDisplay;
-using ::ash::kMaxLandscapeDialogSize;
-using ::ash::kMaxPortraitDialogSize;
-using ::ash::kMinLandscapeDialogSize;
-using ::ash::kMinPortraitDialogSize;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_

@@ -36,7 +36,7 @@ void ChoobeFlowController::Start() {
   if (is_choobe_flow_active_)
     return;
 
-  chromeos::LoginDisplayHost* host = chromeos::LoginDisplayHost::default_host();
+  LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (!host || !host->GetWizardController())
     return;
 

@@ -105,9 +105,4 @@ absl::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
 
 }  // namespace ash::default_user_image
 
-// TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace chromeos {
-namespace default_user_image = ::ash::default_user_image;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_DEFAULT_USER_IMAGE_DEFAULT_USER_IMAGES_H_

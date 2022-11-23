@@ -97,23 +97,4 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 }  // namespace test
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace test {
-using ::ash::test::EnrollmentUIMixin;
-namespace ui {
-using ::ash::test::ui::kEnrollmentStepADJoin;
-using ::ash::test::ui::kEnrollmentStepDeviceAttributes;
-using ::ash::test::ui::kEnrollmentStepError;
-using ::ash::test::ui::kEnrollmentStepSignin;
-using ::ash::test::ui::kEnrollmentStepSuccess;
-}  // namespace ui
-namespace values {
-using ::ash::test::values::kAssetId;
-using ::ash::test::values::kLocation;
-}  // namespace values
-}  // namespace test
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_UI_MIXIN_H_

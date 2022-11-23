@@ -37,10 +37,4 @@ class UserAddingScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::UserAddingScreen;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_

@@ -35,9 +35,4 @@ bool IsPublicSessionOrEphemeralLogin();
 }  // namespace chrome_user_manager_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace chrome_user_manager_util = ::ash::chrome_user_manager_util;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_UTIL_H_

@@ -36,10 +36,4 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::LocalStateMixin;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_STATE_MIXIN_H_

@@ -18,6 +18,7 @@ class WebUI;
 }  // namespace content
 
 namespace ash {
+
 class FakeUpdateEngineClient;
 class LoginOrLockScreenVisibleWaiter;
 
@@ -91,11 +92,5 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::OobeBaseTest;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_BASE_TEST_H_

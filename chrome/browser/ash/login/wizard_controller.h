@@ -73,6 +73,7 @@
 class PrefService;
 
 namespace ash {
+
 class BaseScreen;
 class DemoSetupController;
 class ErrorScreen;
@@ -573,11 +574,5 @@ class WizardController : public OobeUI::Observer {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::WizardController;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTROLLER_H_

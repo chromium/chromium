@@ -207,9 +207,4 @@ class VersionUpdater : public UpdateEngineClient::Observer,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when migration is finished.
-namespace chromeos {
-using ::ash::VersionUpdater;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_

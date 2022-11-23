@@ -74,11 +74,4 @@ class ScopedDevicePolicyUpdate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ScopedDevicePolicyUpdate;
-using ::ash::ScopedUserPolicyUpdate;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_

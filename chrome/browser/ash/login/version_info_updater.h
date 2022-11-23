@@ -19,6 +19,7 @@ class BluetoothAdapter;
 }
 
 namespace ash {
+
 class CrosSettings;
 
 // Fetches all info we want to show on OOBE/Login screens about system
@@ -106,11 +107,5 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::VersionInfoUpdater;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_INFO_UPDATER_H_

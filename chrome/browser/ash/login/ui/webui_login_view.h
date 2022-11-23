@@ -206,10 +206,4 @@ class WebUILoginView : public views::View,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::WebUILoginView;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_WEBUI_LOGIN_VIEW_H_

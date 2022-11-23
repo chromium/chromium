@@ -84,16 +84,16 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   }
 
   void LoginAffiliatedUser() {
-    const LoginManagerMixin::TestUserInfo user_info(test_account_id_);
+    const ash::LoginManagerMixin::TestUserInfo user_info(test_account_id_);
     const auto& context =
-        LoginManagerMixin::CreateDefaultUserContext(user_info);
+        ash::LoginManagerMixin::CreateDefaultUserContext(user_info);
     login_manager_mixin_.LoginAsNewRegularUser(context);
-    test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   void LoginUnaffiliatedUser() {
     login_manager_mixin_.LoginAsNewRegularUser();
-    test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   cros_healthd::mojom::TelemetryInfoPtr CreateUsbTelemetry() {
@@ -130,10 +130,10 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
       kTestUserEmail,
       signin::GetTestGaiaIdForEmail(kTestUserEmail));
 
-  UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_};
-  FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
-  LoginManagerMixin login_manager_mixin_{
-      &mixin_host_, LoginManagerMixin::UserList(), &fake_gaia_mixin_};
+  ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_};
+  ash::FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_manager_mixin_{
+      &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 

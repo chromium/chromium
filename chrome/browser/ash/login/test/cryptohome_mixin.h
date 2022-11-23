@@ -18,7 +18,7 @@ namespace ash {
 // Mixin that acts as a broker between tests and FakeUserDataAuthClient,
 // handling all interactions and transformations.
 class CryptohomeMixin : public InProcessBrowserTestMixin,
-                        public ash::FakeUserDataAuthClient::TestApi {
+                        public FakeUserDataAuthClient::TestApi {
  public:
   explicit CryptohomeMixin(InProcessBrowserTestMixinHost* host);
   CryptohomeMixin(const CryptohomeMixin&) = delete;

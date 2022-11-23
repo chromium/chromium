@@ -23,6 +23,7 @@
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
+
 class FakeSupervisedUserManager;
 
 // Fake chrome user manager with a barebones implementation. Users can be added
@@ -278,7 +279,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when then migration is finished.
 namespace chromeos {
 using ::ash::FakeChromeUserManager;
 }

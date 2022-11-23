@@ -11,8 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "components/user_manager/user_type.h"
@@ -20,6 +18,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+namespace quick_start {
+class TargetDeviceBootstrapController;
+}
 
 class MockLoginDisplayHost : public LoginDisplayHost {
  public:
@@ -113,18 +115,12 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(WizardContext*, GetWizardContextForTesting, (), (final));
   MOCK_METHOD(WizardContext*, GetWizardContext, (), (override));
   MOCK_METHOD(bool, IsWebUIStarted, (), (const final));
-  MOCK_METHOD(base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>,
+  MOCK_METHOD(base::WeakPtr<quick_start::TargetDeviceBootstrapController>,
               GetQuickStartBootstrapController,
               (),
               (final));
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockLoginDisplayHost;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_HOST_H_

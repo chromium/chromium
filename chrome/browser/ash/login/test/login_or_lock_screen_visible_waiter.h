@@ -43,10 +43,4 @@ class LoginOrLockScreenVisibleWaiter
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::LoginOrLockScreenVisibleWaiter;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_OR_LOCK_SCREEN_VISIBLE_WAITER_H_

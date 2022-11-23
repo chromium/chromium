@@ -53,7 +53,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
         version_updater_cros_ptr_(
             reinterpret_cast<VersionUpdaterCros*>(version_updater_.get())),
         fake_update_engine_client_(nullptr),
-        mock_user_manager_(new MockUserManager()),
+        mock_user_manager_(new ash::MockUserManager()),
         user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {}
 
   ~VersionUpdaterCrosTest() override {}
@@ -104,7 +104,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   VersionUpdaterCros* version_updater_cros_ptr_;
   ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 
-  MockUserManager* mock_user_manager_;  // Not owned.
+  ash::MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 };

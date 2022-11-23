@@ -43,9 +43,6 @@
 
 namespace ash {
 
-// TODO(https://crbug.com/1164001): remove after the class is migrated
-using ::chromeos::SystemSaltGetter;
-
 static constexpr char kEmail[] = "user@example.com";
 
 class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
