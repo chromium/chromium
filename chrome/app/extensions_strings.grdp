@@ -123,6 +123,9 @@
   <message name="IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION" desc="The explanatory text for adjusting which websites an extension is allowed to run on.">
     This extension can read and change your data on sites. You can control which sites the extension can access.
   </message>
+  <message name="IDS_EXTENSIONS_PERMISSIONS_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a 'Learn more' link that links to an external help article about Extension permissions.">
+    Learn more about extension permissions
+  </message>
   <!-- TODO(devlin): Unify this with IDS_SETTINGS_EDIT. -->
   <message name="IDS_EXTENSIONS_HOST_PERMISSIONS_EDIT" desc="The label of the button used to edit an extension's access to a given website.">
     Edit
