@@ -164,15 +164,7 @@ bool TransformOperation::ApproximatelyEqual(const TransformOperation& other,
       return base::IsApproximatelyEqual(perspective_m43, other.perspective_m43,
                                         tolerance);
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
-      // TODO(vollick): we could expose a tolerance on gfx::Transform, but it's
-      // complex since we need a different tolerance per component. Driving this
-      // with a single tolerance will take some care. For now, we will check
-      // exact equality where the tolerance is 0.0f, otherwise we will use the
-      // unparameterized version of gfx::Transform::ApproximatelyEqual.
-      if (tolerance == 0.0f)
-        return matrix == other.matrix;
-      else
-        return matrix.ApproximatelyEqual(other.matrix);
+      return matrix.ApproximatelyEqual(other.matrix, tolerance);
     case TransformOperation::TRANSFORM_OPERATION_IDENTITY:
       return other.matrix.IsIdentity();
   }

@@ -533,7 +533,29 @@ class GEOMETRY_SKIA_EXPORT Transform {
     return *this;
   }
 
-  bool ApproximatelyEqual(const gfx::Transform& transform) const;
+  // Checks whether `this` approximately equals `transform`.
+  // Returns true if all following conditions are met:
+  // - For (x, y) in all translation components of (this, transform):
+  //   abs(x - y) <= abs_translation_tolerance
+  // - For (x, y) in all other components of (this, transform):
+  //   abs(x - y) <= abs_other_tolerance
+  // - If rel_scale_tolerance is not zero, for (x, y) in all scale components:
+  //   abs(x - y) <= (abs(x) + abs(y)) * rel_scale_tolerance.
+  bool ApproximatelyEqual(const gfx::Transform& transform,
+                          float abs_translation_tolerance,
+                          float abs_other_tolerance,
+                          float rel_scale_tolerance) const;
+  // Checks approximate equality with one tolerance for all components.
+  bool ApproximatelyEqual(const gfx::Transform& transform,
+                          float abs_tolerance) const {
+    return ApproximatelyEqual(transform, abs_tolerance, abs_tolerance, 0.0f);
+  }
+  // Checks approximate equality with default tolerances. Note that the
+  // tolerance for translation is big to tolerate scroll components due to
+  // snapping (floating point error might round the other way).
+  bool ApproximatelyEqual(const gfx::Transform& transform) const {
+    return ApproximatelyEqual(transform, 1.0f, 0.1f, 0.0f);
+  }
 
   void EnsureFullMatrixForTesting() { EnsureFullMatrix(); }
 

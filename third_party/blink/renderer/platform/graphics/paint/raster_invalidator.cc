@@ -57,26 +57,6 @@ wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
   return kNotFound;
 }
 
-// TODO(crbug.com/1359528): Make gfx::Transform::ApproximatelyEqual() more
-// generic and remove this function.
-static bool ApproximatelyEqual(const gfx::Transform& a,
-                               const gfx::Transform& b) {
-  static constexpr double kTolerance = 1e-5f;
-  for (int i = 0; i < 16; i++) {
-    double x = a.ColMajorData(i);
-    double y = b.ColMajorData(i);
-    auto difference = std::abs(x - y);
-    // Check for absolute difference.
-    if (difference > kTolerance)
-      return false;
-    // For scale components, also check for relative difference.
-    if ((i == 0 || i == 5) &&
-        difference > (std::abs(x) + std::abs(y)) * kTolerance)
-      return false;
-  }
-  return true;
-}
-
 PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
     const PaintChunk& new_chunk,
     const PaintChunk& old_chunk,
@@ -90,9 +70,12 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // transform nodes when no raster invalidation is needed. For example, when
   // a composited layer previously not transformed now gets transformed.
   // Check for real accumulated transform change instead.
-  if (!ApproximatelyEqual(new_chunk_info.chunk_to_layer_transform,
-                          old_chunk_info.chunk_to_layer_transform))
+  static constexpr double kTolerance = 1e-5f;
+  if (!new_chunk_info.chunk_to_layer_transform.ApproximatelyEqual(
+          old_chunk_info.chunk_to_layer_transform, kTolerance, kTolerance,
+          kTolerance)) {
     return PaintInvalidationReason::kPaintProperty;
+  }
 
   // Treat the chunk property as changed if the effect node pointer is
   // different, or the effect node's value changed between the layer state and

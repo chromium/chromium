@@ -4070,6 +4070,31 @@ TEST(XFormTest, Zoom) {
   EXPECT_POINT3F_EQ(expected, zoomed.MapPoint(p));
 }
 
+TEST(XFormTest, ApproximatelyEqual) {
+  EXPECT_TRUE(Transform().ApproximatelyEqual(Transform()));
+  EXPECT_TRUE(Transform().ApproximatelyEqual(Transform(), 0));
+  EXPECT_TRUE(GetTestMatrix1().ApproximatelyEqual(GetTestMatrix1()));
+  EXPECT_TRUE(GetTestMatrix1().ApproximatelyEqual(GetTestMatrix1(), 0));
+
+  Transform t1 = Transform::MakeTranslation(0.9, -0.9);
+  Transform t2 = Transform::MakeScale(1.099, 0.901);
+  EXPECT_TRUE(t1.ApproximatelyEqual(t2));
+  EXPECT_FALSE(t1.ApproximatelyEqual(t2, 0.8f, 0.2f, 0.0f));
+  EXPECT_FALSE(t1.ApproximatelyEqual(t2, 1.0f, 0.01f, 0.0f));
+  EXPECT_FALSE(t1.ApproximatelyEqual(t2, 1.0f, 0.01f, 0.05f));
+  EXPECT_TRUE(t1.ApproximatelyEqual(t2, 1.0f, 0.2f, 1.f));
+  EXPECT_TRUE(t1.ApproximatelyEqual(t2, 1.0f, 0.2f, 0.1f));
+
+  for (int r = 0; r < 4; r++) {
+    for (int c = 0; c < 4; c++) {
+      t1 = Transform();
+      t1.set_rc(r, c, t1.rc(r, c) + 0.25f);
+      EXPECT_TRUE(t1.ApproximatelyEqual(Transform(), 0.25f));
+      EXPECT_FALSE(t1.ApproximatelyEqual(Transform(), 0.24f));
+    }
+  }
+}
+
 }  // namespace
 
 }  // namespace gfx

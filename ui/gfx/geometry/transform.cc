@@ -997,22 +997,36 @@ Point3F Transform::MapPointInternal(const Matrix44& matrix,
                  ClampFloatGeometry(p[2]));
 }
 
-bool Transform::ApproximatelyEqual(const gfx::Transform& transform) const {
-  auto approximately_equal = [](float a, float b) {
-    return std::abs(a - b) <= 0.1f;
-  };
+bool Transform::ApproximatelyEqual(const gfx::Transform& transform,
+                                   float abs_translation_tolerance,
+                                   float abs_other_tolerance,
+                                   float rel_scale_tolerance) const {
+  if (*this == transform)
+    return true;
 
-  // We may have a larger discrepancy in the scroll components due to snapping
-  // (floating point error might round the other way).
-  auto translation_approximately_equal = [](float a, float b) {
-    return std::abs(a - b) <= 1.f;
+  if (abs_translation_tolerance == 0 && abs_other_tolerance == 0)
+    return false;
+
+  auto approximately_equal = [abs_other_tolerance](float a, float b) {
+    return std::abs(a - b) <= abs_other_tolerance;
+  };
+  auto translation_approximately_equal = [abs_translation_tolerance](float a,
+                                                                     float b) {
+    return std::abs(a - b) <= abs_translation_tolerance;
+  };
+  auto scale_approximately_equal = [abs_other_tolerance, rel_scale_tolerance](
+                                       float a, float b) {
+    float diff = std::abs(a - b);
+    return diff <= abs_other_tolerance &&
+           (rel_scale_tolerance == 0 ||
+            diff <= (std::abs(a) + std::abs(b)) * rel_scale_tolerance);
   };
 
   if (LIKELY(!full_matrix_) && LIKELY(!transform.full_matrix_)) {
-    return approximately_equal(axis_2d_.scale().x(),
-                               transform.axis_2d_.scale().x()) &&
-           approximately_equal(axis_2d_.scale().y(),
-                               transform.axis_2d_.scale().y()) &&
+    return scale_approximately_equal(axis_2d_.scale().x(),
+                                     transform.axis_2d_.scale().x()) &&
+           scale_approximately_equal(axis_2d_.scale().y(),
+                                     transform.axis_2d_.scale().y()) &&
            translation_approximately_equal(
                axis_2d_.translation().x(),
                transform.axis_2d_.translation().x()) &&
@@ -1023,13 +1037,19 @@ bool Transform::ApproximatelyEqual(const gfx::Transform& transform) const {
 
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
-      auto predicate = col == 3 && row < 3 ? translation_approximately_equal
-                                           : approximately_equal;
-      if (!predicate(rc(row, col), transform.rc(row, col)))
+      float x = rc(row, col);
+      float y = transform.rc(row, col);
+      if (row < 3 && col == 3) {
+        if (!translation_approximately_equal(x, y))
+          return false;
+      } else if (row < 3 && col == row) {
+        if (!scale_approximately_equal(x, y))
+          return false;
+      } else if (!approximately_equal(x, y)) {
         return false;
+      }
     }
   }
-
   return true;
 }
 
