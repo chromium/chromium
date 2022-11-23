@@ -9,8 +9,8 @@
 
 </style>
 
-<iframe id="iframe1" src="resources/resize-corner-tracking-touch-iframe.html"
-        style="resize:both; width: 200px; height: 200px"></iframe>
+<iframe id="iframe1" src="resources/resize-corner-tracking-touch-child-iframe.html"
+  style="resize:both; width: 400px; height: 400px;"></iframe>
 
 <script type="text/javascript">
   async function touchDrag(target, offset, delta) {
@@ -58,7 +58,7 @@
   }
 
   async function setupTest(scrollTop = 50) {
-    resetStyle('iframe1', 'resize:both; width: 200px; height: 200px;');
+    resetStyle('iframe1', 'resize:both; width: 400px; height: 400px;');
 
     // Scroll the page first to test that resize works with a scrolled page.
     document.scrollingElement.scrollTop = scrollTop;
@@ -93,15 +93,35 @@
     promise_test(async () => {
       await setupTest(/* scrollTop */ 150);
 
-      const iframe = document.getElementById("iframe1");
-      const rect = iframe.getBoundingClientRect();
-      const target = iframe.contentDocument.getElementById("textarea2");
-      const oldBounds = target.getBoundingClientRect();
+      const outer_iframe = document.getElementById("iframe1");
+      const outer_rect = outer_iframe.getBoundingClientRect();
+      const inner_iframe = outer_iframe.contentDocument.getElementById("inner-iframe");
+      const inner_rect = inner_iframe.getBoundingClientRect();
+      const textarea = inner_iframe.contentDocument.getElementById("textarea2");
 
-      await touchDrag(target, {x: rect.left - 6, y: rect.top - 7},
-        {dx: 20, dy: 10});
-      assert_resize(target, oldBounds);
-    }, 'Touch drag inside the resizer area of a textarea inside an iframe ' +
+      const left_offset = outer_rect.left + inner_rect.left - 6;
+      const top_offset = outer_rect.top + inner_rect.top - 7;
+
+      const oldBounds = textarea.getBoundingClientRect();
+      await touchDrag(textarea, {x: left_offset, y: top_offset}, {dx: 20, dy: 10});
+      assert_resize(textarea, oldBounds);
+    }, 'Touch drag inside the resizer of a textarea within an iframe within another iframe ' +
     'will resize the textarea.');
+
+    promise_test(async () => {
+      await setupTest(/* scrollTop */ 150);
+
+      const outer_iframe = document.getElementById("iframe1");
+      const outer_rect = outer_iframe.getBoundingClientRect();
+      const inner_iframe = outer_iframe.contentDocument.getElementById("inner-iframe");
+
+      const left_offset = outer_rect.left - 6;
+      const top_offset = outer_rect.top - 7;
+
+      const oldBounds = inner_iframe.getBoundingClientRect();
+      await touchDrag(inner_iframe, {x: left_offset, y: top_offset}, {dx: 20, dy: 10});
+      assert_resize(inner_iframe, oldBounds);
+    }, 'Touch drag inside the resizer of an iframe within another iframe ' +
+    'will resize the inner iframe.');
   };
 </script>

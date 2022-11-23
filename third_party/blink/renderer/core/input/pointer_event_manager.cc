@@ -768,9 +768,9 @@ bool PointerEventManager::HandleResizerDrag(
       if (!layer->GetScrollableArea())
         return false;
 
-      gfx::Point p = frame_->View()->ConvertFromRootFrame(
-          gfx::ToFlooredPoint(event.PositionInWidget()));
-
+      gfx::Point p =
+          pointer_event_target.target_frame->View()->ConvertFromRootFrame(
+              gfx::ToFlooredPoint(event.PositionInWidget()));
       if (layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
               p, kResizerForTouch)) {
         resize_scrollable_area_ = layer->GetScrollableArea();

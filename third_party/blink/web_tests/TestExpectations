@@ -5893,7 +5893,6 @@ crbug.com/1311128 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.h
 
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
-crbug.com/1248581 fast/scrolling/resize-iframe-corner-tracking-touch.html [ Failure Pass ]
 crbug.com/1312036 virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 
 # These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
