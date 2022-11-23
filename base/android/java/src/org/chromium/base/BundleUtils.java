@@ -126,6 +126,7 @@ public class BundleUtils {
                 synchronized (sSplitLock) {
                     sAppInfo = pi.applicationInfo;
                 }
+                Log.i(TAG, "invalidateListOfInstalledSplits()");
             } catch (NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -354,14 +355,30 @@ public class BundleUtils {
         };
     }
 
-    public static ClassLoader registerSplitClassLoaderForInflation(String splitName) {
-        ClassLoader splitClassLoader = sInflationClassLoaders.get(splitName);
-        if (splitClassLoader == null) {
-            splitClassLoader =
-                    createIsolatedSplitContext(ContextUtils.getApplicationContext(), splitName)
-                            .getClassLoader();
-            sInflationClassLoaders.put(splitName, splitClassLoader);
+    /**
+     * Returns the ClassLoader for the given split, loading the split if it has not yet been
+     * loaded.
+     */
+    public static ClassLoader getOrCreateSplitClassLoader(String splitName) {
+        ClassLoader ret;
+        synchronized (sCachedClassLoaders) {
+            ret = sCachedClassLoaders.get(splitName);
         }
+
+        if (ret == null) {
+            // Do not hold lock since split loading can be slow.
+            createIsolatedSplitContext(ContextUtils.getApplicationContext(), splitName);
+            synchronized (sCachedClassLoaders) {
+                ret = sCachedClassLoaders.get(splitName);
+                assert ret != null;
+            }
+        }
+        return ret;
+    }
+
+    public static ClassLoader registerSplitClassLoaderForInflation(String splitName) {
+        ClassLoader splitClassLoader = getOrCreateSplitClassLoader(splitName);
+        sInflationClassLoaders.put(splitName, splitClassLoader);
         return splitClassLoader;
     }
 

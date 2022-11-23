@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -17,6 +16,7 @@ import java.util.Map;
  */
 @MainDex
 public class JNIUtils {
+    private static final String TAG = "JNIUtils";
     private static Boolean sSelectiveJniRegistrationEnabled;
     private static ClassLoader sJniClassLoader;
 
@@ -34,10 +34,16 @@ public class JNIUtils {
 
     /** Returns a ClassLoader which can load Java classes from the specified split. */
     @CalledByNative
-    public static ClassLoader getSplitClassLoader(String splitName) {
-        if (!TextUtils.isEmpty(splitName) && BundleUtils.isIsolatedSplitInstalled(splitName)) {
-            Context context = ContextUtils.getApplicationContext();
-            return BundleUtils.createIsolatedSplitContext(context, splitName).getClassLoader();
+    private static ClassLoader getSplitClassLoader(String splitName) {
+        if (!TextUtils.isEmpty(splitName)) {
+            boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
+            Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);
+            if (isInstalled) {
+                return BundleUtils.getOrCreateSplitClassLoader(splitName);
+            } else {
+                // Split was installed by PlayCore in "compat" mode, meaning that our base module's
+                // ClassLoader was patched to add the splits' dex file to it.
+            }
         }
         return getClassLoader();
     }
