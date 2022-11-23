@@ -80,10 +80,4 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::DemoExtensionsExternalLoader;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_EXTENSIONS_EXTERNAL_LOADER_H_

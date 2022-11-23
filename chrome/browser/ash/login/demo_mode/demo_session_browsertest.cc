@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
 
   // Verify that the Demo SWA has been opened
   Browser* demo_app_browser =
-      ash::FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
+      FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
   ASSERT_TRUE(demo_app_browser);
 }
 

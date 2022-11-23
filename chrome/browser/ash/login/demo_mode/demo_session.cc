@@ -66,6 +66,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
 namespace {
 
 // The splash screen should be removed either when this timeout passes or the
@@ -584,15 +585,11 @@ void DemoSession::OnSessionStateChanged() {
       }
       RestoreDefaultLocaleForNextSession();
 
-      if (ash::Shell::HasInstance() &&
+      if (Shell::HasInstance() &&
           user_manager::UserManager::Get()->GetActiveUser()) {
-        ash::Shell::Get()
-            ->keyboard_backlight_color_controller()
-            ->SetBacklightColor(
-                personalization_app::mojom::BacklightColor::kRainbow,
-                user_manager::UserManager::Get()
-                    ->GetActiveUser()
-                    ->GetAccountId());
+        Shell::Get()->keyboard_backlight_color_controller()->SetBacklightColor(
+            personalization_app::mojom::BacklightColor::kRainbow,
+            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
       }
 
       if (chromeos::PowerManagerClient::Get()) {
@@ -641,7 +638,7 @@ void LaunchDemoSystemWebApp() {
   // SystemWebAppManager won't run this callback if the profile is destroyed,
   // so we don't need to worry about there being no active user profile
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DEMO_MODE);
+  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE);
 }
 
 void DemoSession::OnDemoAppComponentLoaded() {
@@ -653,7 +650,7 @@ void DemoSession::OnDemoAppComponentLoaded() {
     return;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (auto* swa_manager = ash::SystemWebAppManager::Get(profile)) {
+  if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
     swa_manager->on_apps_synchronized().Post(
         FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
   }

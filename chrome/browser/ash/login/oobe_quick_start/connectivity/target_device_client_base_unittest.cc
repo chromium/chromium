@@ -12,6 +12,7 @@
 namespace ash::quick_start {
 
 namespace {
+
 const char kTestMessagePayloadKey[] = "bootstrapOptions";
 const char kTestMessagePayloadValue[] = "testValue";
 

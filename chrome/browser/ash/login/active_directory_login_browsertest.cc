@@ -21,6 +21,8 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
@@ -30,6 +32,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kTestActiveDirectoryUser[] = "test-user";

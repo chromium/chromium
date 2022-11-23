@@ -11,16 +11,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace ash::quick_start {
+
 namespace {
 
-using TargetDeviceBootstrapController =
-    ash::quick_start::TargetDeviceBootstrapController;
-using TargetDeviceConnectionBroker =
-    ash::quick_start::TargetDeviceConnectionBroker;
-using FakeTargetDeviceConnectionBroker =
-    ash::quick_start::FakeTargetDeviceConnectionBroker;
-using TargetDeviceConnectionBrokerFactory =
-    ash::quick_start::TargetDeviceConnectionBrokerFactory;
 using Observer = TargetDeviceBootstrapController::Observer;
 using Status = TargetDeviceBootstrapController::Status;
 using Step = TargetDeviceBootstrapController::Step;
@@ -122,8 +116,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection) {
   connection_broker()->InitiateConnection(kSourceDeviceId);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::QR_CODE_VERIFICATION);
-  using QRCodePixelData =
-      ash::quick_start::TargetDeviceBootstrapController::QRCodePixelData;
+  using QRCodePixelData = TargetDeviceBootstrapController::QRCodePixelData;
   EXPECT_TRUE(absl::holds_alternative<QRCodePixelData>(
       fake_observer_->last_status.payload));
 }
@@ -144,8 +137,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
       feature_status;
 
   connection_broker()->set_feature_support_status(
-      ash::quick_start::FakeTargetDeviceConnectionBroker::FeatureSupportStatus::
-          kUndetermined);
+      FakeTargetDeviceConnectionBroker::FeatureSupportStatus::kUndetermined);
 
   bootstrap_controller_->GetFeatureSupportStatusAsync(
       base::BindLambdaForTesting(
@@ -155,12 +147,11 @@ TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
   EXPECT_FALSE(feature_status.has_value());
 
   connection_broker()->set_feature_support_status(
-      ash::quick_start::FakeTargetDeviceConnectionBroker::FeatureSupportStatus::
-          kNotSupported);
+      FakeTargetDeviceConnectionBroker::FeatureSupportStatus::kNotSupported);
   ASSERT_TRUE(feature_status.has_value());
-  EXPECT_EQ(feature_status.value(),
-            ash::quick_start::FakeTargetDeviceConnectionBroker::
-                FeatureSupportStatus::kNotSupported);
+  EXPECT_EQ(
+      feature_status.value(),
+      FakeTargetDeviceConnectionBroker::FeatureSupportStatus::kNotSupported);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, RejectConnection) {
@@ -190,3 +181,5 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
 }
+
+}  // namespace ash::quick_start

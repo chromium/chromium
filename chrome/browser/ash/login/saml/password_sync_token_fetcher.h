@@ -100,10 +100,4 @@ class PasswordSyncTokenFetcher final {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::PasswordSyncTokenFetcher;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_FETCHER_H_

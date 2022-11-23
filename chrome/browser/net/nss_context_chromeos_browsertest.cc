@@ -195,7 +195,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
   ~NSSContextChromeOSBrowserTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::LoginManagerTest::SetUpInProcessBrowserTestFixture();
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
 
     auto device_policy_update = device_state_mixin_.RequestDevicePolicyUpdate();
     auto user_policy_update_1 = user_policy_mixin_1_.RequestPolicyUpdate();
@@ -214,7 +214,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
   AccountId affiliated_account_id_1_{AccountId::FromUserEmailGaiaId(
       kTestEmail1,
       signin::GetTestGaiaIdForEmail(kTestEmail1))};
-  chromeos::LoginManagerMixin::TestUserInfo affiliated_user_1_{
+  ash::LoginManagerMixin::TestUserInfo affiliated_user_1_{
       affiliated_account_id_1_};
   ash::UserPolicyMixin user_policy_mixin_1_{&mixin_host_,
                                             affiliated_account_id_1_};
@@ -223,7 +223,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
   AccountId affiliated_account_id_2_{AccountId::FromUserEmailGaiaId(
       kTestEmail2,
       signin::GetTestGaiaIdForEmail(kTestEmail2))};
-  chromeos::LoginManagerMixin::TestUserInfo affiliated_user_2_{
+  ash::LoginManagerMixin::TestUserInfo affiliated_user_2_{
       affiliated_account_id_2_};
   ash::UserPolicyMixin user_policy_mixin_2_{&mixin_host_,
                                             affiliated_account_id_2_};
@@ -238,7 +238,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
-  chromeos::LoginManagerMixin login_mixin_{
+  ash::LoginManagerMixin login_mixin_{
       &mixin_host_,
       /*initial_users=*/{affiliated_user_1_, affiliated_user_2_}};
 };

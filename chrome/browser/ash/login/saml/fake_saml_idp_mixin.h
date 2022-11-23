@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -20,6 +18,8 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+class FakeGaiaMixin;
 
 class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
  public:

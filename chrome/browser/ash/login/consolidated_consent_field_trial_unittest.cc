@@ -59,9 +59,9 @@ TEST_F(ConsolidatedConsentFieldTrialTest,
     EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
 
     EXPECT_TRUE(feature_list.IsFeatureOverridden(
-        ash::features::kOobeConsolidatedConsent.name));
+        features::kOobeConsolidatedConsent.name));
     EXPECT_TRUE(
-        feature_list.IsFeatureOverridden(ash::features::kPerUserMetrics.name));
+        feature_list.IsFeatureOverridden(features::kPerUserMetrics.name));
   } else {
     EXPECT_THAT(base::FieldTrialList::Find(kTrialName), ::testing::IsNull());
   }
@@ -98,9 +98,9 @@ TEST_P(ConsolidatedConsentFieldTrialExistingGroupTest,
 
     EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
     EXPECT_TRUE(feature_list.IsFeatureOverridden(
-        ash::features::kOobeConsolidatedConsent.name));
+        features::kOobeConsolidatedConsent.name));
     EXPECT_TRUE(
-        feature_list.IsFeatureOverridden(ash::features::kPerUserMetrics.name));
+        feature_list.IsFeatureOverridden(features::kPerUserMetrics.name));
 
     // TODO(jongahn): Figure out how to check feature state without
     // |feature_list| being initialized or how to initialize |feature_list|.

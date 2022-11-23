@@ -114,10 +114,4 @@ class SmartLockStateHandler
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::SmartLockStateHandler;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_STATE_HANDLER_H_

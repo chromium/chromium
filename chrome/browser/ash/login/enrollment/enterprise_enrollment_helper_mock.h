@@ -40,10 +40,4 @@ class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::EnterpriseEnrollmentHelperMock;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_MOCK_H_

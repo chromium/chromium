@@ -54,13 +54,4 @@ base::Value::Dict FilterConfiguration(const base::Value::Dict& configuration,
 }  // namespace configuration
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace configuration {
-using ::ash::configuration::ConfigurationHandlerSide;
-using ::ash::configuration::FilterConfiguration;
-}  // namespace configuration
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_

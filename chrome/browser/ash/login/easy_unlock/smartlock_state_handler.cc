@@ -20,6 +20,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
+
 namespace {
 
 proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
@@ -30,7 +31,7 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
       // case.
       // TODO(crbug.com/1233614): Remove this special case once SmartLockState
       // is routed directly to SmartLockAuthFactorModel.
-      if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
         return proximity_auth::ScreenlockBridge::
             USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED;
       }

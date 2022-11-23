@@ -150,7 +150,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   }
 
   void SetSmartLockState(const AccountId& account_id,
-                         ash::SmartLockState state) override {
+                         SmartLockState state) override {
     GTEST_FAIL();
   }
 

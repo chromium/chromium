@@ -26,6 +26,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest,
 
   SimulateNetworkConnected();
 
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
+  ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, WaitForNetworkConnection) {
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   enrollment_helper_.DisableAttributePromptUpdate();
   enrollment_helper_.SetupClearAuth();
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
+  ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 
@@ -154,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, DISABLED_EnrollmentError) {
 
   SimulateNetworkConnected();
 
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
+  ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
 
   ForceBrandedBuild();
 

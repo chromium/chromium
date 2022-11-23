@@ -36,11 +36,4 @@ class MockAutoEnrollmentCheckScreenView : public AutoEnrollmentCheckScreenView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::MockAutoEnrollmentCheckScreen;
-using ::ash::MockAutoEnrollmentCheckScreenView;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_AUTO_ENROLLMENT_CHECK_SCREEN_H_

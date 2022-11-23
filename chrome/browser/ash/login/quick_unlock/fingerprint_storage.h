@@ -137,12 +137,4 @@ class FingerprintStorage final
 }  // namespace quick_unlock
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace quick_unlock {
-using ::ash::quick_unlock::FingerprintUnlockResult;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_

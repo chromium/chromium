@@ -22,6 +22,7 @@ namespace ash {
 namespace reporting {
 
 namespace {
+
 // TODO(b/247594522): Switch to a single enum.
 UnlockType GetUnlockTypeForEvent(
     const session_manager::UnlockType unlock_type) {
@@ -48,6 +49,7 @@ UnlockType GetUnlockTypeForEvent(
   }
   return converted_unlock_type;
 }
+
 }  // namespace
 
 LockUnlockReporter::LockUnlockReporter(
@@ -80,9 +82,8 @@ std::unique_ptr<LockUnlockReporter> LockUnlockReporter::CreateForTest(
       std::move(reporter_helper), managed_session_service, clock));
 }
 
-void LockUnlockReporter::MaybeReportEvent(
-    ash::reporting::LockUnlockRecord record) {
-  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
+void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
+  if (!helper_->ReportingEnabled(kReportDeviceLoginLogout)) {
     return;
   }
   const std::string& user_email =
@@ -94,9 +95,8 @@ void LockUnlockReporter::MaybeReportEvent(
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
   record.mutable_affiliated_user()->set_user_email(user_email);
 
-  helper_->ReportEvent(
-      std::make_unique<ash::reporting::LockUnlockRecord>(std::move(record)),
-      ::reporting::Priority::SECURITY);
+  helper_->ReportEvent(std::make_unique<LockUnlockRecord>(std::move(record)),
+                       ::reporting::Priority::SECURITY);
 }
 
 void LockUnlockReporter::OnLocked() {

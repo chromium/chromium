@@ -30,10 +30,4 @@ class PasswordExpiryNotification {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::PasswordExpiryNotification;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_EXPIRY_NOTIFICATION_H_

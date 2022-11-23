@@ -39,13 +39,4 @@ extern const char kUrlParameterToAutofillSAMLUsername[];
 }  // namespace prefs
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace prefs {
-using ::ash::prefs::kLastLoginInputMethod;
-using ::ash::prefs::kSamlInSessionPasswordChangeEnabled;
-}  // namespace prefs
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_

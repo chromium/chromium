@@ -16,6 +16,7 @@
 
 namespace ash {
 namespace ad_migration_utils {
+
 namespace {
 
 constexpr char kChromadMigrationSkipOobePreservePath[] =
@@ -26,7 +27,7 @@ constexpr char kChromadMigrationSkipOobePreservePath[] =
 void CheckChromadMigrationOobeFlow(base::OnceCallback<void(bool)> callback) {
   base::FilePath preinstalled_components_dir;
 
-  if (base::PathService::Get(ash::DIR_PREINSTALLED_COMPONENTS,
+  if (base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
                              &preinstalled_components_dir)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,

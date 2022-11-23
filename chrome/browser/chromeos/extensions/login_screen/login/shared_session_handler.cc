@@ -28,6 +28,7 @@
 namespace chromeos {
 
 namespace {
+
 constexpr size_t kSessionSecretLength = 64;
 constexpr size_t kUserSaltLength = 16;
 constexpr size_t kHashKeyLength = 32;
@@ -54,6 +55,7 @@ bool IsDeviceRestrictedManagedGuestSessionEnabled() {
              &device_restricted_managed_guest_session_enabled) &&
          device_restricted_managed_guest_session_enabled;
 }
+
 }  // namespace
 
 // static
@@ -83,8 +85,8 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
   CHECK(user_secret_hash_.empty());
   CHECK(user_secret_salt_.empty());
 
-  chromeos::ExistingUserController* existing_user_controller =
-      chromeos::ExistingUserController::current_controller();
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
   if (existing_user_controller->IsSigninInProgress())
     return extensions::login_api_errors::kAnotherLoginAttemptInProgress;
 
@@ -101,7 +103,7 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
                            user->GetAccountId());
   context.SetKey(ash::Key(session_secret_));
   context.SetCanLockManagedGuestSession(true);
-  existing_user_controller->Login(context, chromeos::SigninSpecifics());
+  existing_user_controller->Login(context, ash::SigninSpecifics());
 
   return absl::nullopt;
 }

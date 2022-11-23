@@ -30,7 +30,7 @@ class MockLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   MOCK_METHOD(void, HideUserPodCustomIcon, (const AccountId& account_id));
   MOCK_METHOD(void,
               SetSmartLockState,
-              (const AccountId& account_id, ash::SmartLockState statel));
+              (const AccountId& account_id, SmartLockState statel));
   MOCK_METHOD(void,
               NotifySmartLockAuthResult,
               (const AccountId& account_id, bool successful));

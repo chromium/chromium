@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "crypto/random.h"
+
 namespace ash::quick_start {
 
 IncomingConnection::IncomingConnection(RandomSessionId session_id)

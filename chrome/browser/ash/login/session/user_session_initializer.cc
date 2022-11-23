@@ -255,7 +255,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
 
-    if (ash::features::AreGlanceablesEnabled()) {
+    if (features::AreGlanceablesEnabled()) {
       // Must be called after CalenderKeyedServiceFactory is initialized.
       ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted(profile);
     }

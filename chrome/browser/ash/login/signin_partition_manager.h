@@ -156,12 +156,4 @@ class SigninPartitionManager : public KeyedService {
 }  // namespace login
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace login {
-using ::ash::login::SigninPartitionManager;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_PARTITION_MANAGER_H_

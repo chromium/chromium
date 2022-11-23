@@ -28,6 +28,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 
 namespace ash {
+
 namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
@@ -81,7 +82,7 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   // EasyUnlockServiceSignin here.
   // The SigninProfile is a special Profile used at the login screen.
   if (ProfileHelper::IsSigninProfile(profile)) {
-    if (base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved))
+    if (base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved))
       return nullptr;
 
     if (!context->IsOffTheRecord())

@@ -820,7 +820,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 
   void LaunchSharedManagedGuestSession(const std::string& password) {
     EXPECT_CALL(*mock_existing_user_controller_,
-                Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
+                Login(_, MatchSigninSpecifics(ash::SigninSpecifics())))
         .Times(1);
 
     testing_profile_ = AddPublicAccountUser(kEmail);
@@ -860,7 +860,7 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   ash::UserContext user_context;
   EXPECT_CALL(*mock_existing_user_controller_,
-              Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
+              Login(_, MatchSigninSpecifics(ash::SigninSpecifics())))
       .WillOnce(SaveArg<0>(&user_context));
 
   RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]");

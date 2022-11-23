@@ -72,7 +72,7 @@ class LockUnlockReporterBrowserTest
 
     login_manager_mixin_.set_session_restore_enabled();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceLoginLogout, true);
+        kReportDeviceLoginLogout, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(LockUnlockReporterBrowserTest, ReportLockAndUnlockTest) {
   ASSERT_TRUE(unlock_record_data.has_unlock_event());
   ASSERT_THAT(unlock_record_data.unlock_event().success(), Eq(success));
   EXPECT_THAT(unlock_record_data.unlock_event().unlock_type(),
-              Eq(ash::reporting::UnlockType::PASSWORD));
+              Eq(UnlockType::PASSWORD));
   ASSERT_TRUE(unlock_record_data.has_affiliated_user());
   EXPECT_THAT(unlock_record_data.affiliated_user().user_email(),
               StrEq(kTestUserEmail));

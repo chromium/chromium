@@ -25,6 +25,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
+
 namespace {
 
 const char kEasyUnlockChromebookAddedNotifierId[] =
@@ -42,7 +43,7 @@ const char kSmartLockSignInRemovedNotifierId[] =
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
-    const ash::NotificationCatalogName& catalog_name,
+    const NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const ui::ImageModel& icon,
@@ -72,7 +73,7 @@ bool EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
           proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled))
     return false;
 
-  if (!base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved))
+  if (!base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved))
     return false;
 
   if (profile->GetPrefs()->GetBoolean(
@@ -89,7 +90,7 @@ void EasyUnlockNotificationController::ShowSignInRemovedNotification() {
 
   ShowNotification(CreateNotification(
       kSmartLockSignInRemovedNotifierId,
-      ash::NotificationCatalogName::kEasyUnlockSmartLockSignInRemoved,
+      NotificationCatalogName::kEasyUnlockSmartLockSignInRemoved,
       l10n_util::GetStringUTF16(
           IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
@@ -107,7 +108,7 @@ void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
 
   ShowNotification(CreateNotification(
       kEasyUnlockChromebookAddedNotifierId,
-      ash::NotificationCatalogName::kEasyUnlockChromebookAdded,
+      NotificationCatalogName::kEasyUnlockChromebookAdded,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(
@@ -132,7 +133,7 @@ void EasyUnlockNotificationController::ShowPairingChangeNotification() {
 
   ShowNotification(CreateNotification(
       kEasyUnlockPairingChangeNotifierId,
-      ash::NotificationCatalogName::kEasyUnlockPairingChange,
+      NotificationCatalogName::kEasyUnlockPairingChange,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(
@@ -159,7 +160,7 @@ void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
 
   ShowNotification(CreateNotification(
       kEasyUnlockPairingChangeAppliedNotifierId,
-      ash::NotificationCatalogName::kEasyUnlockPairingChangeApplied,
+      NotificationCatalogName::kEasyUnlockPairingChangeApplied,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGE_APPLIED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(
@@ -225,7 +226,7 @@ void EasyUnlockNotificationController::NotificationDelegate::Click(
 
   // The kSmartLockSignInRemoved flag removes the easy unlock settings page, so
   // check flag to determine which route should be launched.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved)) {
+  if (base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved)) {
     notification_controller_->LaunchMultiDeviceSettings();
   } else {
     notification_controller_->LaunchEasyUnlockSettings();

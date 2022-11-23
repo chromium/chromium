@@ -176,7 +176,7 @@ class LoginApitest : public LoginScreenApitestBase {
   }
 
   void LogInWithPassword() {
-    SessionStateWaiter waiter(session_manager::SessionState::ACTIVE);
+    ash::SessionStateWaiter waiter(session_manager::SessionState::ACTIVE);
     SetTestCustomArg(kPassword);
     SetUpLoginScreenExtensionAndRunTest(kLaunchManagedGuestSessionWithPassword);
     waiter.Wait();
@@ -187,7 +187,7 @@ class LoginApitest : public LoginScreenApitestBase {
   }
 
   // Also checks that session is locked.
-  void LockScreen() { ScreenLockerTester().Lock(); }
+  void LockScreen() { ash::ScreenLockerTester().Lock(); }
 
  protected:
   std::unique_ptr<policy::UserPolicyBuilder> user_policy_builder_;
@@ -200,7 +200,7 @@ class LoginApitest : public LoginScreenApitestBase {
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {
   SetUpDeviceLocalAccountPolicy();
-  SessionStateWaiter waiter(session_manager::SessionState::ACTIVE);
+  ash::SessionStateWaiter waiter(session_manager::SessionState::ACTIVE);
   SetUpLoginScreenExtensionAndRunTest(kLaunchManagedGuestSession);
   waiter.Wait();
 
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LockManagedGuestSession) {
 
   SetUpTestListeners();
   SetUpInSessionExtension();
-  SessionStateWaiter waiter(session_manager::SessionState::LOCKED);
+  ash::SessionStateWaiter waiter(session_manager::SessionState::LOCKED);
   RunTest(kInSessionLoginLockManagedGuestSession);
   waiter.Wait();
 }
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSession) {
   ASSERT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
 
-  SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
+  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
   SetUpTestListeners();
   LockScreen();
   locked_waiter.Wait();
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSession) {
   // since the extension itself will be disabled and stopped as a result of the
   // login.unlockManagedGuestSession() API call. Instead, verify the session
   // state here.
-  SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
+  ash::SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
   RunTest(kUnlockManagedGuestSession, /*assert_test_succeed=*/false);
   active_waiter.Wait();
   ASSERT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -315,13 +315,13 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionLockedWithApi) {
   in_session_listener.set_extension_id(kInSessionExtensionId);
 
   SetUpInSessionExtension();
-  SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
+  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
   ASSERT_TRUE(in_session_listener.WaitUntilSatisfied());
   in_session_listener.Reply(kInSessionLoginLockManagedGuestSession);
   ASSERT_TRUE(catcher.GetNextResult());
   locked_waiter.Wait();
 
-  SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
+  ash::SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
   ASSERT_TRUE(login_screen_listener.WaitUntilSatisfied());
   login_screen_listener.Reply(kUnlockManagedGuestSession);
   active_waiter.Wait();
@@ -468,14 +468,15 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
   // Use a different test server as |LoginApitest| uses the one from
   // |embedded_test_server()|.
   net::EmbeddedTestServer test_server_;
-  LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
-      LoggedInUserMixin::LogInType::kRegular,
+      ash::LoggedInUserMixin::LogInType::kRegular,
       &test_server_,
       this,
       /*should_launch_browser=*/true,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)};
+      AccountId::FromUserEmailGaiaId(
+          ash::FakeGaiaMixin::kEnterpriseUser1,
+          ash::FakeGaiaMixin::kEnterpriseUser1GaiaId)};
 };
 
 IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,

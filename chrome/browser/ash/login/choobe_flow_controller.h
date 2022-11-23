@@ -83,10 +83,4 @@ class ChoobeFlowController {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ChoobeFlowController;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_CHOOBE_FLOW_CONTROLLER_H_

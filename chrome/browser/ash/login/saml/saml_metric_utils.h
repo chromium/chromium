@@ -15,12 +15,4 @@ void RecordSAMLProvider(const std::string& provider);
 }  // namespace metrics
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace metrics {
-using ::ash::metrics::RecordSAMLProvider;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_SAML_METRIC_UTILS_H_

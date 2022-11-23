@@ -193,7 +193,7 @@ absl::optional<Key> PinStorageCryptohome::TransformPinKey(
 
 PinStorageCryptohome::PinStorageCryptohome()
     : pin_salt_storage_(std::make_unique<PinSaltStorage>()),
-      auth_performer_(ash::UserDataAuthClient::Get()) {
+      auth_performer_(UserDataAuthClient::Get()) {
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &PinStorageCryptohome::OnSystemSaltObtained, weak_factory_.GetWeakPtr()));
 }

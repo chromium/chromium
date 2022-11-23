@@ -25,29 +25,20 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chromeos/ash/components/login/auth/authenticator.h"
-#include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/eol_notification.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/u2f_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/auth/authenticator.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
@@ -61,11 +52,16 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+
 class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
 class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
+class EasyUnlockKeyManager;
 class EasyUnlockNotificationController;
+class EolNotification;
+class InputEventsBlocker;
+class U2FNotification;
 
 namespace test {
 class UserSessionManagerTestApi;
@@ -274,9 +270,8 @@ class UserSessionManager
   void AddSessionStateObserver(ash::UserSessionStateObserver* observer);
   void RemoveSessionStateObserver(ash::UserSessionStateObserver* observer);
 
-  void AddUserAuthenticatorObserver(ash::UserAuthenticatorObserver* observer);
-  void RemoveUserAuthenticatorObserver(
-      ash::UserAuthenticatorObserver* observer);
+  void AddUserAuthenticatorObserver(UserAuthenticatorObserver* observer);
+  void RemoveUserAuthenticatorObserver(UserAuthenticatorObserver* observer);
 
   void ActiveUserChanged(user_manager::User* active_user) override;
 
@@ -583,8 +578,7 @@ class UserSessionManager
   base::ObserverList<ash::UserSessionStateObserver>::Unchecked
       session_state_observer_list_;
 
-  base::ObserverList<ash::UserAuthenticatorObserver>
-      authenticator_observer_list_;
+  base::ObserverList<UserAuthenticatorObserver> authenticator_observer_list_;
 
   // Set of user_id for those users that we should restore authentication
   // session when notified about online state change.
@@ -671,14 +665,6 @@ class UserSessionManager
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::UserSessionManager;
-using ::ash::UserSessionManagerDelegate;
-using ::ash::UserSessionStateObserver;
-}  // namespace chromeos
 
 namespace base {
 

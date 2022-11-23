@@ -218,8 +218,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   void CreateConnectionBroker() {
     RandomSessionId session_id(kRandomSessionId);
     connection_broker_ =
-        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
-            session_id);
+        TargetDeviceConnectionBrokerFactory::Create(session_id);
   }
 
   void FinishFetchingBluetoothAdapter() {

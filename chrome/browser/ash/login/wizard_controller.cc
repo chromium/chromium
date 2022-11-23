@@ -227,6 +227,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 using ::content::BrowserThread;
@@ -244,12 +245,9 @@ constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
 const StaticOobeScreenId kResumableOobeScreens[] = {
-    WelcomeView::kScreenId,
-    NetworkScreenView::kScreenId,
-    UpdateView::kScreenId,
-    EulaView::kScreenId,
-    chromeos::EnrollmentScreenView::kScreenId,
-    chromeos::AutoEnrollmentCheckScreenView::kScreenId,
+    WelcomeView::kScreenId,          NetworkScreenView::kScreenId,
+    UpdateView::kScreenId,           EulaView::kScreenId,
+    EnrollmentScreenView::kScreenId, AutoEnrollmentCheckScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
@@ -303,7 +301,7 @@ struct Entry {
 // unified). We need to always use the same name for UMA stats, though.
 constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
-    {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
+    {EnrollmentScreenView::kScreenId, "enroll"},
     {WelcomeView::kScreenId, "network"},
     {TermsOfServiceScreenView::kScreenId, "tos"}};
 
@@ -1319,7 +1317,7 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
       ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
           UserContext(user_manager::USER_TYPE_GUEST,
                       user_manager::GuestAccountId()),
-          chromeos::SigninSpecifics());
+          SigninSpecifics());
       break;
     case GuestTosScreen::Result::BACK:
       if (MaybeSetToPreviousScreen())
@@ -2645,4 +2643,5 @@ void WizardController::MaybeTakeTPMOwnership() {
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }
+
 }  // namespace ash

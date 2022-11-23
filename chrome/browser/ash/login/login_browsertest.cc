@@ -60,6 +60,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
+
 namespace {
 
 const char kDomainAllowlist[] = "*@example.com";
@@ -280,7 +281,7 @@ void TestSystemTrayIsVisible() {
 IN_PROC_BROWSER_TEST_F(LoginUserTest, UserPassed) {
   Profile* profile = browser()->profile();
   std::string profile_base_name =
-      ash::BrowserContextHelper::GetUserBrowserContextDirName("hash");
+      BrowserContextHelper::GetUserBrowserContextDirName("hash");
   EXPECT_EQ(profile_base_name, profile->GetBaseName().value());
   EXPECT_FALSE(profile->IsOffTheRecord());
 

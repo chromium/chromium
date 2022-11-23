@@ -57,8 +57,8 @@ TEST_F(HidDetectionRevampFieldTrialTest,
   EXPECT_EQ(expected_pref_value, trial->GetGroupNameWithoutActivation());
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
 
-  EXPECT_TRUE(feature_list.IsFeatureOverridden(
-      ash::features::kOobeHidDetectionRevamp.name));
+  EXPECT_TRUE(
+      feature_list.IsFeatureOverridden(features::kOobeHidDetectionRevamp.name));
 }
 
 class HidDetectionRevampFieldTrialExistingGroupTest
@@ -89,9 +89,9 @@ TEST_P(HidDetectionRevampFieldTrialExistingGroupTest,
   EXPECT_EQ(group_name, trial->GetGroupNameWithoutActivation());
 
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
-  EXPECT_EQ(group_name != kDefaultGroup,
-            feature_list.IsFeatureOverridden(
-                ash::features::kOobeHidDetectionRevamp.name));
+  EXPECT_EQ(
+      group_name != kDefaultGroup,
+      feature_list.IsFeatureOverridden(features::kOobeHidDetectionRevamp.name));
 }
 
 INSTANTIATE_TEST_SUITE_P(FieldTrialUsesLocalStateGroupIfExists,

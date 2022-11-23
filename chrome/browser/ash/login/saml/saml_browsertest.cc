@@ -122,15 +122,14 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
 
 namespace em = ::enterprise_management;
 
 using ::base::test::RunOnceCallback;
-using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
-using ::testing::Return;
 using ::testing::WithArgs;
 
 const test::UIPath kPasswordInput = {"saml-confirm-password", "passwordInput"};
@@ -1321,7 +1320,7 @@ void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
 }
 
 void SAMLPolicyTest::ShowGAIALoginForm() {
-  ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   ASSERT_TRUE(content::ExecuteScript(
@@ -2164,10 +2163,10 @@ class SAMLDeviceTrustTest
 
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(
-          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
+          features::kLoginScreenDeviceTrustConnectorEnabled);
     } else {
       disabled_features.push_back(
-          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
+          features::kLoginScreenDeviceTrustConnectorEnabled);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

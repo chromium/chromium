@@ -80,10 +80,4 @@ class PasswordSyncTokenLoginChecker
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::PasswordSyncTokenLoginChecker;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_LOGIN_CHECKER_H_

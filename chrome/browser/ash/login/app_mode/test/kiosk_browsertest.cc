@@ -252,7 +252,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
 
  protected:
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{

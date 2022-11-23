@@ -15,10 +15,8 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
 
 namespace reporting {
-
 class UserEventReporterHelper;
-
-}  // namespace reporting
+}
 
 namespace ash {
 namespace reporting {
@@ -55,7 +53,7 @@ class LockUnlockReporter : public policy::ManagedSessionService::Observer {
       policy::ManagedSessionService* managed_session_service,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
-  void MaybeReportEvent(ash::reporting::LockUnlockRecord record);
+  void MaybeReportEvent(LockUnlockRecord record);
 
   raw_ptr<base::Clock> const clock_;
 

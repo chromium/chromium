@@ -84,6 +84,7 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
 namespace {
 
 using ::base::UserMetricsAction;
@@ -413,7 +414,7 @@ void ScreenLocker::Authenticate(std::unique_ptr<UserContext> user_context,
   if (user) {
     // Check to see if the user submitted a PIN and it is valid.
     if (unlock_attempt_type_ == AUTH_PIN) {
-      const ash::Key* key = user_context->GetKey();
+      const Key* key = user_context->GetKey();
       CHECK(key);
       quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
           std::move(user_context), *key, quick_unlock::Purpose::kUnlock,

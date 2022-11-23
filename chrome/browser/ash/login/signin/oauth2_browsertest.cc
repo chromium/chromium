@@ -70,6 +70,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
 namespace {
 
 using ::net::test_server::BasicHttpResponse;
@@ -258,7 +259,7 @@ class OAuth2Test : public OobeBaseTest {
     // makes OAuth2Test.MergeSession test flaky http://crbug.com/408867.
     command_line->AppendSwitch(syncer::kDisableSync);
     // Skip post login screens.
-    command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
+    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
   }
 
   void RegisterAdditionalRequestHandlers() override {

@@ -38,8 +38,8 @@ void SetFeatureState(base::FeatureList* feature_list,
 
   // Both features need to be in the same state.
   feature_list->RegisterFieldTrialOverride(
-      ash::features::kOobeConsolidatedConsent.name, feature_state, trial);
-  feature_list->RegisterFieldTrialOverride(ash::features::kPerUserMetrics.name,
+      features::kOobeConsolidatedConsent.name, feature_state, trial);
+  feature_list->RegisterFieldTrialOverride(features::kPerUserMetrics.name,
                                            feature_state, trial);
 }
 

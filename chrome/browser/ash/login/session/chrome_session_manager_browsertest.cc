@@ -42,13 +42,6 @@
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
 namespace ash {
-namespace system {
-namespace {
-// TODO(https://crbug.com/1164001): remove when moved to ash::
-using ::chromeos::system::kRlzBrandCodeKey;
-using ::chromeos::system::ScopedFakeStatisticsProvider;
-}  // namespace
-}  // namespace system
 
 namespace {
 
@@ -81,7 +74,7 @@ class UserAddingScreenWaiter : public UserAddingScreen::Observer {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
 class ChromeSessionManagerTest : public LoginManagerTest {
  public:
@@ -186,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
                        CheckPastingBehavior) {
   const auto& users = login_manager_.users();
   LoginUser(users[0].account_id);
-  auto* session_controller = ash::Shell::Get()->session_controller();
+  auto* session_controller = Shell::Get()->session_controller();
 
   // Write a text in the clipboard during active session.
   EXPECT_EQ(session_manager::SessionState::ACTIVE,

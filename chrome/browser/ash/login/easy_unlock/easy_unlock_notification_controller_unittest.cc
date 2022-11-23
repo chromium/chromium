@@ -77,7 +77,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
 
   // Check returns false when kSmartLockSignInRemoved isn't enabled.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
+  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
   pref_service->SetBoolean(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, true);
   pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
@@ -89,7 +89,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // Check returns false when kHasSeenSmartLockSignInRemovedNotification is
   // true.
   feature_list.Reset();
-  feature_list.InitAndEnableFeature(ash::features::kSmartLockSignInRemoved);
+  feature_list.InitAndEnableFeature(features::kSmartLockSignInRemoved);
   pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
                            true);
   ASSERT_FALSE(
@@ -114,8 +114,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
 
 TEST_F(EasyUnlockNotificationControllerTest,
        TestShowSignInRemovedNotification) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kSmartLockSignInRemoved);
+  base::test::ScopedFeatureList feature_list(features::kSmartLockSignInRemoved);
   const char kNotificationId[] = "easyunlock_notification_ids.sign_in_removed";
 
   notification_controller_->ShowSignInRemovedNotification();
@@ -154,7 +153,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
   // be called instead.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
+  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(0, absl::nullopt);
 
@@ -188,7 +187,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
   // be called instead.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
+  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(1, absl::nullopt);
 }
@@ -219,7 +218,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
   // be called instead.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
+  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
   // Clicking notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(0, absl::nullopt);

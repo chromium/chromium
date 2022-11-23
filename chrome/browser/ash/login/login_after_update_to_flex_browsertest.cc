@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -27,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
 namespace {
 
 const test::UIPath kEulaDialog = {"oobe-eula-md", "eulaDialog"};

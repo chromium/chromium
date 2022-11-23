@@ -67,6 +67,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace ash {
+
 namespace {
 
 // The PIN code that the test certificate provider extension is configured to
@@ -319,12 +320,10 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
         std::move(cryptohome_client));
 
     // TODO(b/239422391): Clean up after full migration to kUseAuthFactors.
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kUseAuthFactors);
-    }
+    if (GetParam())
+      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
+    else
+      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     // Don't shut down when no browser is open, since it breaks the test and
     // since it's not the real Chrome OS behavior.
     set_exit_when_last_browser_closes(false);

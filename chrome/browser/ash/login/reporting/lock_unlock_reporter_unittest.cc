@@ -48,7 +48,7 @@ class LockUnlockTestHelper {
 
   void Init() {
     chromeos::PowerManagerClient::InitializeFake();
-    ::ash::SessionManagerClient::InitializeFake();
+    SessionManagerClient::InitializeFake();
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(

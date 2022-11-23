@@ -18,6 +18,7 @@ struct DefaultSingletonTraits;
 }
 
 namespace ash {
+
 class EasyUnlockService;
 
 // Singleton factory that builds and owns all EasyUnlockService.
@@ -55,11 +56,5 @@ class EasyUnlockServiceFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::EasyUnlockServiceFactory;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_FACTORY_H_

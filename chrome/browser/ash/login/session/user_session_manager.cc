@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/eol_notification.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -180,6 +181,7 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
 
 using ::signin::ConsentLevel;
@@ -1024,12 +1026,12 @@ void UserSessionManager::RemoveSessionStateObserver(
 }
 
 void UserSessionManager::AddUserAuthenticatorObserver(
-    ash::UserAuthenticatorObserver* observer) {
+    UserAuthenticatorObserver* observer) {
   authenticator_observer_list_.AddObserver(observer);
 }
 
 void UserSessionManager::RemoveUserAuthenticatorObserver(
-    ash::UserAuthenticatorObserver* observer) {
+    UserAuthenticatorObserver* observer) {
   authenticator_observer_list_.RemoveObserver(observer);
 }
 
@@ -2261,22 +2263,21 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   // Call this before `RestartToApplyPerSessionFlagsIfNeed()` in the login
   // process.
-  ash::BrowserDataMigratorImpl::ClearMigrationStep(
-      g_browser_process->local_state());
+  BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
 
   if (RestartToApplyPerSessionFlagsIfNeed(profile, false))
     return;
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (ash::BrowserDataMigratorImpl::MaybeRestartToMigrate(
+  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
           user->GetAccountId(), user->username_hash(),
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
     return;
   }
 
-  if (ash::BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
           user->GetAccountId(), user->username_hash(),
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run backward profile migration.";
@@ -2297,7 +2298,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
         floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       // If floating workspace is enabled, it will override full restore.
       FloatingWorkspaceService* floating_workspace_service =
-          ash::FloatingWorkspaceService::GetForProfile(profile);
+          FloatingWorkspaceService::GetForProfile(profile);
       if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() &&
           floating_workspace_service) {
         floating_workspace_service->SubscribeToForeignSessionUpdates();
@@ -2354,7 +2355,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     std::move(login_host_finalized_callback).Run();
   }
 
-  ash::BootTimesRecorder::Get()->LoginDone(
+  BootTimesRecorder::Get()->LoginDone(
       user_manager::UserManager::Get()->IsCurrentUserNew());
 
   // Check to see if this profile should show EndOfLife Notification and show
@@ -2576,12 +2577,12 @@ void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
     return;
 
   if (!HatsNotificationController::ShouldShowSurveyToProfile(
-          profile, ash::kHatsOnboardingSurvey)) {
+          profile, kHatsOnboardingSurvey)) {
     return;
   }
 
   hats_notification_controller_ =
-      new HatsNotificationController(profile, ash::kHatsOnboardingSurvey);
+      new HatsNotificationController(profile, kHatsOnboardingSurvey);
 }
 
 void UserSessionManager::LoadShillProfile(const AccountId& account_id) {

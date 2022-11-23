@@ -16,6 +16,7 @@
 #include "components/version_info/version_info.h"
 
 namespace ash::hid_detection_revamp_field_trial {
+
 namespace {
 
 // Probabilities for all field trial groups add up to kTotalProbability.
@@ -40,7 +41,7 @@ void SetFeatureState(base::FeatureList* feature_list,
       group_name == kEnabledGroup ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
                                   : base::FeatureList::OVERRIDE_DISABLE_FEATURE;
   feature_list->RegisterFieldTrialOverride(
-      ash::features::kOobeHidDetectionRevamp.name, feature_state, trial);
+      features::kOobeHidDetectionRevamp.name, feature_state, trial);
 }
 
 // Creates a trial if there is no group name saved and enables the features

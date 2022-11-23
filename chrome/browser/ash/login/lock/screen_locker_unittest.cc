@@ -89,7 +89,7 @@ class ScreenLockerUnitTest : public testing::Test {
     // Initialize SessionControllerClientImpl and dependencies:
     LoginState::Initialize();
 
-    fake_user_manager_ = new ash::FakeChromeUserManager;
+    fake_user_manager_ = new FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 
@@ -192,7 +192,7 @@ class ScreenLockerUnitTest : public testing::Test {
   LoginScreenClientImpl login_screen_client_;
 
   // * SessionControllerClientImpl dependencies:
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   Profile* user_profile_ = nullptr;

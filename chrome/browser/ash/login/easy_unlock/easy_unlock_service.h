@@ -19,8 +19,6 @@
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;
@@ -44,6 +42,10 @@ class PrefRegistrySimple;
 namespace ash {
 
 enum class SmartLockState;
+
+namespace secure_channel {
+class SecureChannelClient;
+}
 
 class EasyUnlockService : public KeyedService,
                           public proximity_auth::ScreenlockBridge::Observer {
@@ -326,11 +328,5 @@ class EasyUnlockService : public KeyedService,
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::EasyUnlockService;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_H_

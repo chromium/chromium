@@ -13,9 +13,11 @@
 class Profile;
 
 namespace ash {
+
 enum class FingerprintState;
 
 namespace quick_unlock {
+
 class AuthToken;
 class FingerprintStorage;
 class PinStoragePrefs;
@@ -106,13 +108,5 @@ class QuickUnlockStorage : public KeyedService {
 
 }  // namespace quick_unlock
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace quick_unlock {
-using ::ash::quick_unlock::QuickUnlockStorage;
-}
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_STORAGE_H_

@@ -16,8 +16,10 @@
 namespace ash::quick_start {
 
 namespace {
+
 const char kChallengeBase64Url[] = "testchallenge";
 const char kTestOrigin[] = "https://google.com";
+
 }  // namespace
 
 class TargetFidoControllerTest : public testing::Test {

@@ -51,7 +51,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public content::WebContentsObserver,
                               public SessionManagerClient::Observer,
                               public CrasAudioHandler::AudioObserver,
-                              public chromeos::OobeConfiguration::Observer,
+                              public OobeConfiguration::Observer,
                               public display::DisplayObserver,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
@@ -127,7 +127,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
 
-  // chromeos::OobeConfiguration::Observer:
+  // OobeConfiguration::Observer:
   void OnOobeConfigurationChanged() override;
 
   // CrasAudioHandler::AudioObserver:

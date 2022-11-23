@@ -125,11 +125,4 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 }  // namespace login
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace login {
-using ::ash::login::NetworkStateHelper;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELPER_H_

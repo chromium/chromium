@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chromeos/login/login_state/login_state.h"
 
 namespace ash {
@@ -357,7 +358,7 @@ void EasyUnlockServiceSignin::OnScreenDidLock(
 
   EasyUnlockService::OnScreenDidLock(screen_type);
 
-  if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+  if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
     // Update initial UI is when the account picker on login screen is ready.
     ShowInitialUserPodState();
   }
@@ -412,7 +413,7 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
     return;
 
   // Update initial UI is when the account picker on login screen is ready.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp)) {
     ShowInitialSmartLockState();
   } else {
     ShowInitialUserPodState();
@@ -628,7 +629,7 @@ EasyUnlockServiceSignin::FindLoadedDataForCurrentUser() const {
 }
 
 void EasyUnlockServiceSignin::ShowInitialUserPodState() {
-  DCHECK(!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp));
+  DCHECK(!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp));
 
   if (!IsAllowed() || !IsEnabled())
     return;

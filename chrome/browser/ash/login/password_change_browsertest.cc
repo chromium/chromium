@@ -214,7 +214,7 @@ class PasswordChangeTest : public PasswordChangeTestBase,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  ash::CryptohomeMixin cryptohome_{&mixin_host_};
+  CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 

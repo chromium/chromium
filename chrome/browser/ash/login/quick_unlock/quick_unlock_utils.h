@@ -135,19 +135,4 @@ void AddFingerprintResources(content::WebUIDataSource* html_source);
 }  // namespace quick_unlock
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace quick_unlock {
-using ::ash::quick_unlock::AddFingerprintResources;
-using ::ash::quick_unlock::FingerprintLocation;
-using ::ash::quick_unlock::GetFingerprintLocation;
-using ::ash::quick_unlock::IsFingerprintEnabled;
-using ::ash::quick_unlock::IsPinDisabledByPolicy;
-using ::ash::quick_unlock::IsPinEnabled;
-using ::ash::quick_unlock::Purpose;
-using ::ash::quick_unlock::TestApi;
-}  // namespace quick_unlock
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_

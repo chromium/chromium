@@ -64,6 +64,7 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
 
 using ::content::BrowserThread;
@@ -376,7 +377,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
       cryptohome::Identification(user_manager::GuestAccountId()).id());
   if (!base::SysInfo::IsRunningOnChromeOS()) {
     otr_switches.Set(switches::kLoginProfile,
-                     ash::BrowserContextHelper::kLegacyBrowserContextDirName);
+                     BrowserContextHelper::kLegacyBrowserContextDirName);
   }
 
   // Override the home page.

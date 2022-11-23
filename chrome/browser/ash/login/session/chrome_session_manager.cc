@@ -54,6 +54,7 @@
 #include "content/public/common/content_switches.h"
 
 namespace ash {
+
 namespace {
 
 // Starts kiosk app auto launch and shows the splash screen.
@@ -72,7 +73,7 @@ void StartKioskSession() {
 // Starts the login/oobe screen.
 void StartLoginOobeSession() {
   // State will be defined once out-of-box/login branching is complete.
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
+  ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
   policy::BrowserPolicyConnectorAsh* connector =
@@ -175,7 +176,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
         user_manager->IsStubAccountId(user->GetAccountId())) {
       // Add stub user to Account Manager. (But not when running tests: this
       // allows tests to setup appropriate environment)
-      ash::InitializeAccountManager(
+      InitializeAccountManager(
           user_profile->GetPath(),
           /*initialization_callback=*/base::BindOnce(
               &UpsertStubUserToAccountManager, user_profile, user));
@@ -214,7 +215,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
 }
 
 void LaunchShimlessRma() {
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
+  if (features::IsShimlessRMAFlowEnabled()) {
     VLOG(1) << "ChromeSessionManager::LaunchShimlessRma";
   }
   session_manager::SessionManager::Get()->SetSessionState(
@@ -229,7 +230,7 @@ void LaunchShimlessRma() {
 
 // The callback invoked when RmadClient determines that RMA is required.
 void OnRmaIsRequiredResponse() {
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
+  if (features::IsShimlessRMAFlowEnabled()) {
     VLOG(1) << "ChromeSessionManager::OnRmaIsRequiredResponse";
   }
   switch (session_manager::SessionManager::Get()->session_state()) {
@@ -248,7 +249,7 @@ void OnRmaIsRequiredResponse() {
     case session_manager::SessionState::LOGIN_SECONDARY:
     case session_manager::SessionState::OOBE: {
       auto* existing_user_controller =
-          ash::ExistingUserController::current_controller();
+          ExistingUserController::current_controller();
       if (!existing_user_controller ||
           !existing_user_controller->IsSigninInProgress()) {
         if (existing_user_controller) {
@@ -258,8 +259,8 @@ void OnRmaIsRequiredResponse() {
         const base::CommandLine& browser_command_line =
             *base::CommandLine::ForCurrentProcess();
         base::CommandLine command_line(browser_command_line);
-        command_line.AppendSwitch(::ash::switches::kLaunchRma);
-        ash::RestartChrome(command_line, ash::RestartChromeReason::kUserless);
+        command_line.AppendSwitch(switches::kLaunchRma);
+        RestartChrome(command_line, RestartChromeReason::kUserless);
         break;
       }
     }
@@ -290,10 +291,10 @@ void ChromeSessionManager::Initialize(
     return;
   }
 
-  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
+  if (shimless_rma::IsShimlessRmaAllowed()) {
     // If we should be in Shimless RMA, start it and skip the rest of
     // initialization.
-    if (ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed()) {
+    if (shimless_rma::HasLaunchRmaSwitchAndIsAllowed()) {
       LaunchShimlessRma();
       return;
     }
@@ -303,7 +304,7 @@ void ChromeSessionManager::Initialize(
     RmadClient::Get()->SetRmaRequiredCallbackForSessionManager(
         base::BindOnce(&OnRmaIsRequiredResponse));
   } else {
-    if (ash::features::IsShimlessRMAFlowEnabled()) {
+    if (features::IsShimlessRMAFlowEnabled()) {
       VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
     }
   }

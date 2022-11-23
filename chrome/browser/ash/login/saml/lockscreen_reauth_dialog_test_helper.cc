@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,7 @@
 namespace ash {
 
 namespace {
+
 // Main dialog
 const test::UIPath kSamlContainer = {"main-element", "body"};
 const test::UIPath kMainVerifyButton = {"main-element",
@@ -50,6 +52,7 @@ const char kSigninFrame[] = "signin-frame";
 // Network dialog
 const test::UIPath kNetworkDialog = {"network-ui", "dialog"};
 const test::UIPath kNetworkCancelButton = {"network-ui", "cancelButton"};
+
 }  // namespace
 
 LockScreenReauthDialogTestHelper::LockScreenReauthDialogTestHelper() = default;
