@@ -7,6 +7,7 @@
 
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/zx/channel.h>
+#include <zircon/types.h>
 
 #include "base/testfidl/cpp/fidl.h"
 
@@ -20,11 +21,17 @@ class TestInterfaceImpl : public testfidl::TestInterface {
   // TestInterface implementation:
   void Add(int32_t a, int32_t b, AddCallback callback) override;
 
-  fidl::BindingSet<testfidl::TestInterface>* bindings() { return &bindings_; }
+  fidl::BindingSet<testfidl::TestInterface>& bindings() { return bindings_; }
 
  private:
   fidl::BindingSet<testfidl::TestInterface> bindings_;
 };
+
+// Exercises the `TestInterface` channel identified by `ptr`, returning
+// `ZX_OK` on success. Any error-handler for `ptr` will be removed before this
+// function returns.
+zx_status_t VerifyTestInterface(
+    fidl::InterfacePtr<testfidl::TestInterface>& ptr);
 
 }  // namespace base
 

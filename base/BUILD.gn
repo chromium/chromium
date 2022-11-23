@@ -3023,7 +3023,12 @@ if (is_fuchsia) {
     ]
     deps = [
       ":base",
+      "//testing/gtest",
+    ]
+    public_deps = [
       ":testfidl",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
   }
 
@@ -3867,8 +3872,6 @@ test("base_unittests") {
       "fuchsia/mem_buffer_util_unittest.cc",
       "fuchsia/scoped_service_binding_unittest.cc",
       "fuchsia/scoped_service_publisher_unittest.cc",
-      "fuchsia/service_directory_test_base.cc",
-      "fuchsia/service_directory_test_base.h",
       "fuchsia/service_provider_impl_unittest.cc",
       "fuchsia/system_build_info_unittest.cc",
       "fuchsia/system_product_info_unittest.cc",

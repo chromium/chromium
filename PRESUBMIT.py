@@ -760,8 +760,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        '^chromecast/cast_core/runtime/browser',
        '^ios/chrome/test/earl_grey/chrome_egtest_plugin_client\.(mm|h)',
        # Fuchsia provides C++ libraries that use std::shared_ptr<>.
-       '^base/fuchsia/filtered_service_directory\.(cc|h)',
-       '^base/fuchsia/service_directory_test_base\.h',
+       '^base/fuchsia/.*\.(cc|h)',
        '.*fuchsia.*test\.(cc|h)',
        # Needed for clang plugin tests
        '^tools/clang/plugins/tests/',

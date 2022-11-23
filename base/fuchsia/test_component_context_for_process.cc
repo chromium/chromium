@@ -64,7 +64,7 @@ TestComponentContextForProcess::TestComponentContextForProcess(
       published_services.NewRequest().TakeChannel().release());
   ZX_CHECK(status == ZX_OK, status) << "fdio_service_connect_at() to /svc";
   published_services_ =
-      std::make_unique<sys::ServiceDirectory>(std::move(published_services));
+      std::make_shared<sys::ServiceDirectory>(std::move(published_services));
 }
 
 TestComponentContextForProcess::~TestComponentContextForProcess() {

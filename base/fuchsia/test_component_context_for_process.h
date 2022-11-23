@@ -97,15 +97,15 @@ class BASE_EXPORT TestComponentContextForProcess {
 
   // Returns the directory of services that the code under test has published
   // to its outgoing service directory.
-  sys::ServiceDirectory* published_services() const {
-    return published_services_.get();
+  std::shared_ptr<sys::ServiceDirectory> published_services() const {
+    return published_services_;
   }
 
  private:
   std::unique_ptr<sys::ComponentContext> old_context_;
 
   std::unique_ptr<FilteredServiceDirectory> context_services_;
-  std::unique_ptr<sys::ServiceDirectory> published_services_;
+  std::shared_ptr<sys::ServiceDirectory> published_services_;
 };
 
 }  // namespace base
