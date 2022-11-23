@@ -156,7 +156,8 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             ApiCall.SET_INITIAL_SCALE, ApiCall.SET_NETWORK_AVAILABLE, ApiCall.SET_PICTURE_LISTENER,
             ApiCall.SET_SMART_CLIP_RESULT_HANDLER, ApiCall.SET_TEXT_CLASSIFIER,
             ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY, ApiCall.SET_WEBCHROME_CLIENT,
-            ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING})
+            ApiCall.SET_WEBVIEW_CLIENT, ApiCall.SHOW_FIND_DIALOG, ApiCall.STOP_LOADING,
+            ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD})
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
         int AUTOFILL = 1;
@@ -236,10 +237,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         int SET_WEBVIEW_CLIENT = 75;
         int SHOW_FIND_DIALOG = 76;
         int STOP_LOADING = 77;
-        int COUNT = 78;
+        int WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD = 78;
+        int COUNT = 79;
     }
 
-    private static void recordWebViewApiCall(@ApiCall int sample) {
+    public static void recordWebViewApiCall(@ApiCall int sample) {
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.ApiCall", sample, ApiCall.COUNT);
     }
 

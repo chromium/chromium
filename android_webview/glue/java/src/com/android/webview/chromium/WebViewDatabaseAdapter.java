@@ -7,6 +7,8 @@ package com.android.webview.chromium;
 import android.os.Build;
 import android.webkit.WebViewDatabase;
 
+import com.android.webview.chromium.WebViewChromium.ApiCall;
+
 import org.chromium.android_webview.AwFormDatabase;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.base.ThreadUtils;
@@ -89,10 +91,14 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             return mFactory.runOnUiThreadBlocking(new Callable<String[]>() {
                 @Override
                 public String[] call() {
+                    WebViewChromium.recordWebViewApiCall(
+                            ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD);
                     return mHttpAuthDatabase.getHttpAuthUsernamePassword(host, realm);
                 }
             });
         }
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD);
         return mHttpAuthDatabase.getHttpAuthUsernamePassword(host, realm);
     }
 
