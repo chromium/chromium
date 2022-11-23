@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -62,8 +63,10 @@ class CORE_EXPORT AttributionSrcLoader
   // navigation, for example a click on an anchor tag. Returns an Impression
   // which identifies the attributionsrc request and notifies the browser to
   // begin tracking it.
-  absl::optional<Impression> RegisterNavigation(const KURL& attribution_src,
-                                                HTMLElement* element = nullptr);
+  absl::optional<Impression> RegisterNavigation(
+      const KURL& attribution_src,
+      mojom::blink::AttributionNavigationType nav_type,
+      HTMLElement* element = nullptr);
 
   // Returns true if `url` can be used as an attributionsrc: its scheme is HTTP
   // or HTTPS, its origin is potentially trustworthy, the document's permission
@@ -92,9 +95,10 @@ class CORE_EXPORT AttributionSrcLoader
   // Represents what events are able to be registered from an attributionsrc.
   enum class SrcType { kUndetermined, kSource, kTrigger };
 
-  ResourceClient* DoRegistration(const KURL& src_url,
-                                 SrcType src_type,
-                                 bool associated_with_navigation);
+  ResourceClient* DoRegistration(
+      const KURL& src_url,
+      SrcType src_type,
+      absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
@@ -106,10 +110,11 @@ class CORE_EXPORT AttributionSrcLoader
                                absl::optional<uint64_t> request_id,
                                bool log_issues = true);
 
-  ResourceClient* CreateAndSendRequest(const KURL& src_url,
-                                       HTMLElement* element,
-                                       SrcType src_type,
-                                       bool associated_with_navigation);
+  ResourceClient* CreateAndSendRequest(
+      const KURL& src_url,
+      HTMLElement* element,
+      SrcType src_type,
+      absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;

@@ -116,7 +116,8 @@ class MockAttributionHost : public AttributionHost {
       void,
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token),
+       const blink::AttributionSrcToken& attribution_src_token,
+       blink::mojom::AttributionNavigationType),
       (override));
 
  private:
@@ -181,7 +182,8 @@ class MockDataHostManager : public AttributionDataHostManager {
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        const blink::AttributionSrcToken& attribution_src_token,
-       AttributionInputEvent input_event),
+       AttributionInputEvent input_event,
+       blink::mojom::AttributionNavigationType),
       (override));
 
   MOCK_METHOD(void,
@@ -190,13 +192,15 @@ class MockDataHostManager : public AttributionDataHostManager {
                std::string header_value,
                attribution_reporting::SuitableOrigin reporting_origin,
                const attribution_reporting::SuitableOrigin& source_origin,
-               AttributionInputEvent input_event),
+               AttributionInputEvent input_event,
+               blink::mojom::AttributionNavigationType),
               (override));
 
   MOCK_METHOD(void,
               NotifyNavigationForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
-               const attribution_reporting::SuitableOrigin& source_origin),
+               const attribution_reporting::SuitableOrigin& source_origin,
+               blink::mojom::AttributionNavigationType),
               (override));
 
   MOCK_METHOD(void,

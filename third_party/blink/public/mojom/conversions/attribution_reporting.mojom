@@ -4,6 +4,14 @@
 
 module blink.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AttributionNavigationType {
+  kAnchor = 0,
+  kWindowOpen = 1,
+  kContextMenu = 2,
+};
+
 // Indicates whether OS-level attribution is enabled.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
 enum AttributionOsSupport {

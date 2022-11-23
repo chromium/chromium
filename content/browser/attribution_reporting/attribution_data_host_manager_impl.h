@@ -59,16 +59,19 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event) override;
+      AttributionInputEvent input_event,
+      blink::mojom::AttributionNavigationType nav_type) override;
   void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
       std::string header_value,
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
-      AttributionInputEvent input_event) override;
+      AttributionInputEvent input_event,
+      blink::mojom::AttributionNavigationType nav_type) override;
   void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
-      const attribution_reporting::SuitableOrigin& source_origin) override;
+      const attribution_reporting::SuitableOrigin& source_origin,
+      blink::mojom::AttributionNavigationType nav_type) override;
   void NotifyNavigationFailure(
       const blink::AttributionSrcToken& attribution_src_token) override;
 
@@ -96,6 +99,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const blink::AttributionSrcToken& attribution_src_token,
       attribution_reporting::SuitableOrigin reporting_origin,
       std::string header_value,
+      blink::mojom::AttributionNavigationType nav_type,
       data_decoder::DataDecoder::ValueOrError result);
 
   void SetTriggerTimer(base::TimeDelta delay);

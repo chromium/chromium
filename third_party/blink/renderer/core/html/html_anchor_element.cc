@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -550,7 +551,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     if (!attribution_src_value.empty()) {
       frame_request.SetImpression(
           frame->GetAttributionSrcLoader()->RegisterNavigation(
-              GetDocument().CompleteURL(attribution_src_value), this));
+              GetDocument().CompleteURL(attribution_src_value),
+              mojom::blink::AttributionNavigationType::kAnchor, this));
     }
 
     // If the impression could not be set, or if the value was null, mark that
@@ -559,7 +561,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
         frame->GetAttributionSrcLoader()->CanRegister(
             completed_url, this,
             /*request_id=*/absl::nullopt)) {
-      frame_request.SetImpression(blink::Impression());
+      frame_request.SetImpression(blink::Impression{
+          .nav_type = mojom::blink::AttributionNavigationType::kAnchor});
     }
   }
 

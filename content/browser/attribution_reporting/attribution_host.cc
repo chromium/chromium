@@ -112,7 +112,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       !AttributionManager::FromWebContents(web_contents())) {
     return;
   }
-
   RenderFrameHostImpl* initiator_frame_host =
       navigation_handle->GetInitiatorFrameToken().has_value()
           ? RenderFrameHostImpl::FromFrameToken(
@@ -193,10 +192,11 @@ void AttributionHost::DidRedirectNavigation(
   if (!reporting_origin)
     return;
 
+  auto impression = navigation_handle->GetImpression();
   data_host_manager->NotifyNavigationRedirectRegistration(
       navigation_handle->GetImpression()->attribution_src_token,
       std::move(source_header), std::move(*reporting_origin),
-      it->second.source_origin, it->second.input_event);
+      it->second.source_origin, it->second.input_event, impression->nav_type);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -255,7 +255,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   if (SuitableOrigin::IsSuitable(destination_origin)) {
     data_host_manager->NotifyNavigationForDataHost(
-        impression.attribution_src_token, source_origin);
+        impression.attribution_src_token, source_origin, impression.nav_type);
   } else {
     data_host_manager->NotifyNavigationFailure(
         impression.attribution_src_token);
@@ -352,7 +352,8 @@ void AttributionHost::RegisterDataHost(
 
 void AttributionHost::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    const blink::AttributionSrcToken& attribution_src_token) {
+    const blink::AttributionSrcToken& attribution_src_token,
+    blink::mojom::AttributionNavigationType nav_type) {
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
@@ -369,7 +370,7 @@ void AttributionHost::RegisterNavigationDataHost(
 
   if (!data_host_manager->RegisterNavigationDataHost(
           std::move(data_host), attribution_src_token,
-          GetMostRecentNavigationInputEvent())) {
+          GetMostRecentNavigationInputEvent(), nav_type)) {
     mojo::ReportBadMessage(
         "Renderer attempted to register a data host with a duplicate "
         "AttribtionSrcToken.");

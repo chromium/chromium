@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -44,7 +45,8 @@ class AttributionDataHostManager {
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event) = 0;
+      AttributionInputEvent input_event,
+      blink::mojom::AttributionNavigationType nav_type) = 0;
 
   // Notifies the manager that an attribution enabled navigation has registered
   // a source header. May be called multiple times for the same navigation.
@@ -54,14 +56,16 @@ class AttributionDataHostManager {
       std::string header_value,
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
-      AttributionInputEvent input_event) = 0;
+      AttributionInputEvent input_event,
+      blink::mojom::AttributionNavigationType nav_type) = 0;
 
   // Notifies the manager that we have received a navigation for a given data
   // host. This may arrive before or after the attribution configuration is
   // available for a given data host.
   virtual void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
-      const attribution_reporting::SuitableOrigin& source_origin) = 0;
+      const attribution_reporting::SuitableOrigin& source_origin,
+      blink::mojom::AttributionNavigationType nav_type) = 0;
 
   // Notifies the manager that a navigation associated with a data host failed
   // and should no longer be tracked.

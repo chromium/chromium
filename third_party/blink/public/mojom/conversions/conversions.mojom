@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
+import "third_party/blink/public/mojom/conversions/attribution_reporting.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Mojo struct to represent blink::Impression native struct.
@@ -13,6 +14,7 @@ struct Impression {
   // API parameters will be used from the the `AttributionDataHost`
   // that is associated with `attribution_src_token`.
   AttributionSrcToken attribution_src_token;
+  AttributionNavigationType nav_type;
 };
 
 // Sent from renderer to browser process when a resource request matching the
@@ -31,5 +33,6 @@ interface ConversionHost {
   // `attribution_src_token` can be used to associate `data_host` with an
   // `Impression` object in the browser process.
   RegisterNavigationDataHost(pending_receiver<AttributionDataHost> data_host,
-    AttributionSrcToken attribution_src_token);
+                             AttributionSrcToken attribution_src_token,
+                             AttributionNavigationType nav_type);
 };

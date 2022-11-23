@@ -129,11 +129,12 @@ class AttributionSrcLoader::ResourceClient
     : public GarbageCollected<AttributionSrcLoader::ResourceClient>,
       public RawResourceClient {
  public:
-  // `associated_with_navigation` indicates whether the attribution data
+  // `nav_type` being non-nullopt indicates whether the attribution data
   // produced by this client will need to be associated with a navigation.
-  ResourceClient(AttributionSrcLoader* loader,
-                 SrcType type,
-                 bool associated_with_navigation)
+  ResourceClient(
+      AttributionSrcLoader* loader,
+      SrcType type,
+      absl::optional<mojom::blink::AttributionNavigationType> nav_type)
       : loader_(loader), type_(type) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
@@ -143,12 +144,13 @@ class AttributionSrcLoader::ResourceClient
     loader_->local_frame_->GetRemoteNavigationAssociatedInterfaces()
         ->GetInterface(&conversion_host);
 
-    if (associated_with_navigation) {
+    if (nav_type.has_value()) {
       // Create a new token which will be used to identify `data_host_` in the
       // browser process.
       attribution_src_token_ = AttributionSrcToken();
       conversion_host->RegisterNavigationDataHost(
-          data_host_.BindNewPipeAndPassReceiver(), *attribution_src_token_);
+          data_host_.BindNewPipeAndPassReceiver(), *attribution_src_token_,
+          *nav_type);
     } else {
       // Send the data host normally.
       conversion_host->RegisterDataHost(
@@ -234,30 +236,32 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
 
 void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
   CreateAndSendRequest(src_url, element, SrcType::kUndetermined,
-                       /*associated_with_navigation=*/false);
+                       /*nav_type=*/absl::nullopt);
 }
 
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& src_url,
+    mojom::blink::AttributionNavigationType nav_type,
     HTMLElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
   ResourceClient* client =
-      CreateAndSendRequest(src_url, element, SrcType::kSource,
-                           /*associated_with_navigation=*/true);
+      CreateAndSendRequest(src_url, element, SrcType::kSource, nav_type);
   if (!client)
     return absl::nullopt;
 
   DCHECK(client->attribution_src_token());
-  return blink::Impression{.attribution_src_token =
-                               *client->attribution_src_token()};
+  return blink::Impression{
+      .attribution_src_token = *client->attribution_src_token(),
+      .nav_type = nav_type};
 }
 
 AttributionSrcLoader::ResourceClient*
-AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
-                                           HTMLElement* element,
-                                           SrcType src_type,
-                                           bool associated_with_navigation) {
+AttributionSrcLoader::CreateAndSendRequest(
+    const KURL& src_url,
+    HTMLElement* element,
+    SrcType src_type,
+    absl::optional<mojom::blink::AttributionNavigationType> nav_type) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached())
     return nullptr;
@@ -278,20 +282,19 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
   Document* document = window->document();
 
   if (document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-                      WrapPersistentIfNeeded(this), src_url, src_type,
-                      associated_with_navigation));
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+        WrapPersistentIfNeeded(this), src_url, src_type, nav_type));
     return nullptr;
   }
 
-  return DoRegistration(src_url, src_type, associated_with_navigation);
+  return DoRegistration(src_url, src_type, nav_type);
 }
 
 AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
     const KURL& src_url,
     SrcType src_type,
-    bool associated_with_navigation) {
+    absl::optional<mojom::blink::AttributionNavigationType> nav_type) {
   if (!local_frame_->IsAttached())
     return nullptr;
 
@@ -303,6 +306,7 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   request.SetKeepalive(true);
   request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
 
+  bool associated_with_navigation = nav_type.has_value();
   const char* eligible = [src_type,
                           associated_with_navigation]() -> const char* {
     switch (src_type) {
@@ -326,8 +330,7 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kAttributionsrc;
 
-  auto* client = MakeGarbageCollected<ResourceClient>(
-      this, src_type, associated_with_navigation);
+  auto* client = MakeGarbageCollected<ResourceClient>(this, src_type, nav_type);
   ++num_resource_clients_;
 
   // TODO(https://crbug.com/1374121): If this registration is
@@ -521,7 +524,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   // for redirect chain, or not create the client at all.
 
   auto* client = MakeGarbageCollected<ResourceClient>(
-      this, src_type, /*associated_with_navigation=*/false);
+      this, src_type, /*nav_type=*/absl::nullopt);
   client->HandleResponseHeaders(std::move(*reporting_origin), source_json,
                                 trigger_json, resource->InspectorId());
   client->Finish();

@@ -255,9 +255,12 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
+              const blink::AttributionSrcToken& attribution_src_token,
+              blink::mojom::AttributionNavigationType nav_type) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
+            EXPECT_EQ(nav_type,
+                      blink::mojom::AttributionNavigationType::kAnchor);
           });
 
   GURL register_url =
@@ -272,6 +275,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Verify we received the correct token for this source.
   EXPECT_EQ(last_impression.attribution_src_token, expected_token);
+  EXPECT_EQ(last_impression.nav_type,
+            blink::mojom::AttributionNavigationType::kAnchor);
 
   // Verify the attributionsrc data was registered with the browser process.
   EXPECT_TRUE(data_host);
@@ -294,9 +299,12 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
+              const blink::AttributionSrcToken& attribution_src_token,
+              blink::mojom::AttributionNavigationType nav_type) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
+            EXPECT_EQ(nav_type,
+                      blink::mojom::AttributionNavigationType::kWindowOpen);
           });
 
   GURL register_url =
@@ -310,6 +318,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Verify we received the correct token for this source.
   EXPECT_EQ(last_impression.attribution_src_token, expected_token);
+  EXPECT_EQ(last_impression.nav_type,
+            blink::mojom::AttributionNavigationType::kWindowOpen);
 
   // Verify the attributionsrc data was registered with the browser process.
   EXPECT_TRUE(data_host);
@@ -480,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
+              const blink::AttributionSrcToken& attribution_src_token,
+              blink::mojom::AttributionNavigationType nav_type) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
           });

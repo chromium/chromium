@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 
 namespace blink {
 
@@ -20,6 +21,7 @@ struct BLINK_COMMON_EXPORT Impression {
   // Indicates the attributionsrc request associated with `this`.
   // Data parameters will be used from the attributionsrc response.
   AttributionSrcToken attribution_src_token;
+  blink::mojom::AttributionNavigationType nav_type;
 };
 
 }  // namespace blink

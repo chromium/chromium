@@ -34,6 +34,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -42,6 +43,7 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::blink::mojom::AttributionNavigationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -170,6 +172,7 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   // Input event associated with the navigation for navigation source data
   // hosts, `absl::nullopt` otherwise.
   absl::optional<AttributionInputEvent> input_event;
+  absl::optional<AttributionNavigationType> nav_type;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -193,6 +196,7 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   base::TimeTicks register_time;
   AttributionInputEvent input_event;
+  AttributionNavigationType nav_type;
 };
 
 struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
@@ -214,6 +218,7 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
 
   // Input event associated with the navigation.
   AttributionInputEvent input_event;
+  AttributionNavigationType nav_type;
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -244,12 +249,14 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token,
-    AttributionInputEvent input_event) {
+    AttributionInputEvent input_event,
+    AttributionNavigationType nav_type) {
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token,
       NavigationDataHost{.data_host = std::move(data_host),
                          .register_time = base::TimeTicks::Now(),
-                         .input_event = input_event});
+                         .input_event = input_event,
+                         .nav_type = nav_type});
   // Should only be possible with a misbehaving renderer.
   if (!inserted)
     return false;
@@ -265,7 +272,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     std::string header_value,
     SuitableOrigin reporting_origin,
     const SuitableOrigin& source_origin,
-    AttributionInputEvent input_event) {
+    AttributionInputEvent input_event,
+    AttributionNavigationType nav_type) {
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
@@ -278,7 +286,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       attribution_src_token, NavigationRedirectSourceRegistrations{
                                  .source_origin = source_origin,
                                  .register_time = base::TimeTicks::Now(),
-                                 .input_event = input_event});
+                                 .input_event = input_event,
+                                 .nav_type = nav_type});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -294,12 +303,13 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin), header_value));
+                     std::move(reporting_origin), header_value, nav_type));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
-    const SuitableOrigin& source_origin) {
+    const SuitableOrigin& source_origin,
+    AttributionNavigationType nav_type) {
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   if (it != navigation_data_host_map_.end()) {
@@ -310,7 +320,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
                       .source_type = AttributionSourceType::kNavigation,
                       .register_time = it->second.register_time,
                       .is_within_fenced_frame = false,
-                      .input_event = it->second.input_event});
+                      .input_event = it->second.input_event,
+                      .nav_type = nav_type});
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -428,6 +439,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
           data->debug_key, std::move(*aggregation_keys)),
       context.is_within_fenced_frame, data->debug_reporting);
 
+  if (context.nav_type.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Conversions.SourceRegistration.NavigationType.Background",
+        *context.nav_type);
+  }
   attribution_manager_->HandleSource(std::move(storable_source));
 }
 
@@ -677,6 +693,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const blink::AttributionSrcToken& attribution_src_token,
     SuitableOrigin reporting_origin,
     std::string header_value,
+    AttributionNavigationType nav_type,
     data_decoder::DataDecoder::ValueOrError result) {
   // TODO(johnidel): Add metrics regarding parsing failures / misconfigured
   // headers.
@@ -707,6 +724,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   }
 
   if (source.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Conversions.SourceRegistration.NavigationType.Foreground", nav_type);
     attribution_manager_->HandleSource(std::move(*source));
   } else {
     attribution_manager_->NotifyFailedSourceRegistration(

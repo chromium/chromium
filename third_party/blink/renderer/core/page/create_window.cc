@@ -31,6 +31,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -222,7 +223,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
         window_features.impression =
             dom_window->GetFrame()
                 ->GetAttributionSrcLoader()
-                ->RegisterNavigation(dom_window->CompleteURL(decoded));
+                ->RegisterNavigation(
+                    dom_window->CompleteURL(decoded),
+                    mojom::blink::AttributionNavigationType::kWindowOpen);
       }
 
       // If the impression could not be set, or if the value was empty, mark
@@ -232,7 +235,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
               url,
               /*element=*/nullptr,
               /*request_id=*/absl::nullopt)) {
-        window_features.impression = blink::Impression();
+        window_features.impression = blink::Impression{
+            .nav_type = mojom::blink::AttributionNavigationType::kWindowOpen};
       }
     }
   }

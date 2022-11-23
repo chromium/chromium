@@ -151,7 +151,8 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
 
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token) override {}
+      const blink::AttributionSrcToken& attribution_src_token,
+      blink::mojom::AttributionNavigationType type) override {}
 
   mojo::AssociatedReceiver<mojom::blink::ConversionHost> receiver_{this};
   base::OnceClosure quit_;
@@ -339,14 +340,17 @@ TEST_F(AttributionSrcLoaderTest, TooManyConcurrentRequests_NewRequestDropped) {
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   for (size_t i = 0; i < AttributionSrcLoader::kMaxConcurrentRequests; ++i) {
-    EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(url));
+    EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(
+        url, mojom::blink::AttributionNavigationType::kAnchor));
   }
 
-  EXPECT_FALSE(attribution_src_loader_->RegisterNavigation(url));
+  EXPECT_FALSE(attribution_src_loader_->RegisterNavigation(
+      url, mojom::blink::AttributionNavigationType::kAnchor));
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(url));
+  EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(
+      url, mojom::blink::AttributionNavigationType::kAnchor));
 }
 
 TEST_F(AttributionSrcLoaderTest, Referrer) {
@@ -390,7 +394,9 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(url, /*element=*/nullptr);
+  attribution_src_loader_->RegisterNavigation(
+      url, mojom::blink::AttributionNavigationType::kAnchor,
+      /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -462,7 +468,9 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(url, /*element=*/nullptr);
+  attribution_src_loader_->RegisterNavigation(
+      url, mojom::blink::AttributionNavigationType::kAnchor,
+      /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 

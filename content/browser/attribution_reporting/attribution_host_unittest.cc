@@ -52,6 +52,8 @@ using ::attribution_reporting::SuitableOrigin;
 using testing::_;
 using testing::Return;
 
+using ::blink::mojom::AttributionNavigationType;
+
 const char kConversionUrl[] = "https://b.com";
 
 class AttributionHostTest : public RenderViewHostTestHarness {
@@ -122,12 +124,13 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
 
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   blink::Impression impression;
+  impression.nav_type = AttributionNavigationType::kWindowOpen;
 
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationForDataHost(
-          impression.attribution_src_token,
-          *SuitableOrigin::Deserialize("https://secure_impression.com")));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationForDataHost(
+                  impression.attribution_src_token,
+                  *SuitableOrigin::Deserialize("https://secure_impression.com"),
+                  impression.nav_type));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -367,7 +370,7 @@ TEST_F(AttributionHostTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken());
+      blink::AttributionSrcToken(), AttributionNavigationType::kAnchor);
 
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "
@@ -389,7 +392,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken());
+      blink::AttributionSrcToken(), AttributionNavigationType::kAnchor);
 
   EXPECT_EQ(
       "Renderer attempted to register a data host with a duplicate "
