@@ -4,164 +4,167 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical">
-
-    <!-- Header section -->
-    <ImageView
-      android:layout_width="wrap_content"
-      android:layout_height="@dimen/fast_checkout_product_icon_height"
-      android:layout_gravity="center_horizontal"
-      android:importantForAccessibility="no"
-      app:srcCompat="@drawable/fre_product_logo"/>
-
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:orientation="vertical"
-      android:focusable="true">
-
-      <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.Headline"
-        android:text="@string/fast_checkout_home_sheet_title"/>
-
-      <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:text="@string/fast_checkout_home_sheet_subtitle" />
-    </LinearLayout>
-
-    <!-- Autofill Options -->
-    <LinearLayout
+    android:layout_height="wrap_content">
+  <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
-      android:layout_marginTop="16dp"
       android:orientation="vertical">
-      <!-- Selected Address  -->
+
+      <!-- Header section -->
+      <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/fast_checkout_product_icon_height"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/fre_product_logo"/>
+
       <LinearLayout
-          android:id="@+id/selected_address_profile_view"
-          android:layout_height="wrap_content"
-          android:layout_width="match_parent"
-          android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
-          android:paddingBottom="@dimen/fast_checkout_home_sheet_address_card_padding"
-          android:background="@drawable/fast_checkout_item_background_top"
-          android:orientation="horizontal">
-        <ImageView
-            android:layout_width="@dimen/fast_checkout_address_icon"
-            android:layout_height="@dimen/fast_checkout_address_icon"
-            android:background="@null"
-            android:layout_marginStart="@dimen/fast_checkout_address_icon_margin_horizontal"
-            android:layout_marginEnd="@dimen/fast_checkout_address_icon_margin_horizontal"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/gm_filled_location_on_24" />
-        <LinearLayout
-          android:layout_height="wrap_content"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:orientation="vertical">
-            <TextView
-              android:id="@+id/fast_checkout_home_sheet_profile_name"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-            <TextView
-              android:id="@+id/fast_checkout_home_sheet_profile_street"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-            <LinearLayout
-              android:id="@+id/fast_checkout_home_sheet_profile_sub_section"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top">
-              <TextView
-                android:id="@+id/fast_checkout_home_sheet_profile_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-              <TextView
-                android:id="@+id/fast_checkout_home_sheet_profile_phone_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-            </LinearLayout>
-        </LinearLayout>
-        <ImageView
-            android:id="@+id/fast_checkout_expand_icon_autofill_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
-            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_autofill_profile_description"
-            app:tint="@color/default_icon_color_secondary_tint_list"
-            app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
-      </LinearLayout>
-
-      <!-- Divider -->
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="2dp"/>
-
-      <!-- Selected Credit Card -->
-      <LinearLayout
-          android:id="@+id/selected_credit_card_view"
-          android:layout_height="wrap_content"
-          android:layout_width="match_parent"
-          android:gravity="center_vertical"
-          android:minHeight="@dimen/fast_checkout_sheet_home_screen_cc_min_height"
-          android:background="@drawable/fast_checkout_item_background_bottom">
-
-          <ImageView
-              android:id="@+id/fast_checkout_credit_card_icon"
-              android:layout_width="@dimen/fast_checkout_credit_card_icon_width"
-              android:layout_height="@dimen/fast_checkout_credit_card_icon_height"
-              android:layout_marginStart="@dimen/fast_checkout_credit_card_icon_margin_horizontal"
-              android:layout_marginEnd="@dimen/fast_checkout_credit_card_icon_margin_horizontal"
-              android:importantForAccessibility="no"
-              app:srcCompat="@drawable/mc_card" />
-
-          <TextView
-              android:id="@+id/fast_checkout_sheet_selected_credit_card_header"
-              android:layout_height="wrap_content"
-              android:layout_width="0dp"
-              android:layout_weight="1"
-              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-          <ImageView
-            android:id="@+id/fast_checkout_expand_icon_credit_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
-            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
-            android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_credit_card_description"
-            app:tint="@color/default_icon_color_secondary_tint_list"
-            app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
-      </LinearLayout>
-    </LinearLayout>
-
-    <!-- Action button -->
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/fast_checkout_button_accept"
-        style="@style/FilledButton.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"
-        android:layout_marginBottom="@dimen/fast_checkout_home_sheet_action_button_bottom_margin"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:singleLine="true"
-        android:text="@string/fast_checkout_home_sheet_accept" />
-</LinearLayout>
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        android:focusable="true">
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:textAppearance="@style/TextAppearance.Headline"
+          android:text="@string/fast_checkout_home_sheet_title"/>
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:text="@string/fast_checkout_home_sheet_subtitle" />
+      </LinearLayout>
+
+      <!-- Autofill Options -->
+      <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+        <!-- Selected Address  -->
+        <LinearLayout
+            android:id="@+id/selected_address_profile_view"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
+            android:paddingBottom="@dimen/fast_checkout_home_sheet_address_card_padding"
+            android:background="@drawable/fast_checkout_item_background_top"
+            android:orientation="horizontal">
+          <ImageView
+              android:layout_width="@dimen/fast_checkout_address_icon"
+              android:layout_height="@dimen/fast_checkout_address_icon"
+              android:background="@null"
+              android:layout_marginStart="@dimen/fast_checkout_address_icon_margin_horizontal"
+              android:layout_marginEnd="@dimen/fast_checkout_address_icon_margin_horizontal"
+              android:importantForAccessibility="no"
+              app:srcCompat="@drawable/gm_filled_location_on_24" />
+          <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+              <TextView
+                android:id="@+id/fast_checkout_home_sheet_profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+              <TextView
+                android:id="@+id/fast_checkout_home_sheet_profile_street"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+              <LinearLayout
+                android:id="@+id/fast_checkout_home_sheet_profile_sub_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top">
+                <TextView
+                  android:id="@+id/fast_checkout_home_sheet_profile_email"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                <TextView
+                  android:id="@+id/fast_checkout_home_sheet_profile_phone_number"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+              </LinearLayout>
+          </LinearLayout>
+          <ImageView
+              android:id="@+id/fast_checkout_expand_icon_autofill_profile"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
+              android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
+              android:layout_gravity="center_vertical"
+              android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_autofill_profile_description"
+              app:tint="@color/default_icon_color_secondary_tint_list"
+              app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"/>
+
+        <!-- Selected Credit Card -->
+        <LinearLayout
+            android:id="@+id/selected_credit_card_view"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/fast_checkout_sheet_home_screen_cc_min_height"
+            android:background="@drawable/fast_checkout_item_background_bottom">
+
+            <ImageView
+                android:id="@+id/fast_checkout_credit_card_icon"
+                android:layout_width="@dimen/fast_checkout_credit_card_icon_width"
+                android:layout_height="@dimen/fast_checkout_credit_card_icon_height"
+                android:layout_marginStart="@dimen/fast_checkout_credit_card_icon_margin_horizontal"
+                android:layout_marginEnd="@dimen/fast_checkout_credit_card_icon_margin_horizontal"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/mc_card" />
+
+            <TextView
+                android:id="@+id/fast_checkout_sheet_selected_credit_card_header"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            <ImageView
+              android:id="@+id/fast_checkout_expand_icon_credit_card"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
+              android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
+              android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_credit_card_description"
+              app:tint="@color/default_icon_color_secondary_tint_list"
+              app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
+        </LinearLayout>
+      </LinearLayout>
+
+      <!-- Action button -->
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/fast_checkout_button_accept"
+          style="@style/FilledButton.Flat"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"
+          android:layout_marginBottom="@dimen/fast_checkout_home_sheet_action_button_bottom_margin"
+          android:ellipsize="end"
+          android:gravity="center"
+          android:singleLine="true"
+          android:text="@string/fast_checkout_home_sheet_accept" />
+  </LinearLayout>
+</ScrollView>
