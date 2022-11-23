@@ -2694,8 +2694,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 */
 
+// TODO(crbug.com/1367886): This test is flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       AccessibilityModalDialogAndIframes) {
+                       DISABLED_AccessibilityModalDialogAndIframes) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-and-iframes.html"));
 }
 
