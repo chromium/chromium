@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -151,7 +152,7 @@ class TestPrefServiceSyncableObserver : public PrefServiceSyncableObserver {
 };
 
 syncer::SyncChange MakeRemoteChange(const std::string& name,
-                                    const base::Value& value,
+                                    base::ValueView value,
                                     SyncChange::SyncChangeType change_type,
                                     syncer::ModelType model_type) {
   std::string serialized;
@@ -171,14 +172,13 @@ syncer::SyncChange MakeRemoteChange(const std::string& name,
 
 // Creates a SyncChange for model type |PREFERENCES|.
 syncer::SyncChange MakeRemoteChange(const std::string& name,
-                                    const base::Value& value,
+                                    base::ValueView value,
                                     SyncChange::SyncChangeType type) {
   return MakeRemoteChange(name, value, type, syncer::ModelType::PREFERENCES);
 }
 
 // Creates SyncData for a remote pref change.
-SyncData CreateRemoteSyncData(const std::string& name,
-                              const base::Value& value) {
+SyncData CreateRemoteSyncData(const std::string& name, base::ValueView value) {
   std::string serialized;
   JSONStringValueSerializer json(&serialized);
   EXPECT_TRUE(json.Serialize(value));
@@ -213,7 +213,7 @@ class PrefServiceSyncableTest : public testing::Test {
   }
 
   void AddToRemoteDataList(const std::string& name,
-                           const base::Value& value,
+                           base::ValueView value,
                            syncer::SyncDataList* out) {
     out->push_back(CreateRemoteSyncData(name, value));
   }
@@ -322,7 +322,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
   syncer::SyncDataList in;
   syncer::SyncChangeList out;
   AddToRemoteDataList(kStringPrefName, base::Value(kExampleUrl1), &in);
-  base::ListValue urls_to_restore;
+  base::Value::List urls_to_restore;
   urls_to_restore.Append(kExampleUrl1);
   AddToRemoteDataList(kListPrefName, urls_to_restore, &in);
   AddToRemoteDataList(kDefaultCharsetPrefName,
@@ -336,10 +336,10 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
 
   // No associator client is registered, so lists and dictionaries should not
   // get merged (remote write wins).
-  auto expected_urls = std::make_unique<base::ListValue>();
-  expected_urls->Append(kExampleUrl1);
+  base::Value::List expected_urls;
+  expected_urls.Append(kExampleUrl1);
   EXPECT_FALSE(FindValue(kListPrefName, out));
-  EXPECT_EQ(GetPreferenceValue(kListPrefName), *expected_urls);
+  EXPECT_EQ(GetPreferenceValue(kListPrefName), expected_urls);
   EXPECT_EQ(kNonDefaultCharsetValue, prefs_.GetString(kDefaultCharsetPrefName));
 }
 
@@ -431,7 +431,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   }
 
   syncer::SyncChange MakeRemoteChange(const std::string& name,
-                                      const base::Value& value,
+                                      base::ValueView value,
                                       SyncChange::SyncChangeType type) {
     std::string serialized;
     JSONStringValueSerializer json(&serialized);
@@ -447,7 +447,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   }
 
   void AddToRemoteDataList(const std::string& name,
-                           const base::Value& value,
+                           base::ValueView value,
                            syncer::SyncDataList* out) {
     std::string serialized;
     JSONStringValueSerializer json(&serialized);
@@ -512,7 +512,7 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
     update->Append(kExampleUrl1);
   }
 
-  base::ListValue urls_to_restore;
+  base::Value::List urls_to_restore;
   urls_to_restore.Append(kExampleUrl1);
   urls_to_restore.Append(kExampleUrl2);
   syncer::SyncDataList in;
@@ -521,14 +521,14 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(in, &out);
 
-  std::unique_ptr<base::ListValue> expected_urls(new base::ListValue);
-  expected_urls->Append(kExampleUrl1);
-  expected_urls->Append(kExampleUrl2);
-  expected_urls->Append(kExampleUrl0);
+  base::Value::List expected_urls;
+  expected_urls.Append(kExampleUrl1);
+  expected_urls.Append(kExampleUrl2);
+  expected_urls.Append(kExampleUrl0);
   std::unique_ptr<base::Value> value(FindValue(kListPrefName, out));
   ASSERT_TRUE(value.get());
-  EXPECT_EQ(*value, *expected_urls) << *value;
-  EXPECT_EQ(GetPreferenceValue(kListPrefName), *expected_urls);
+  EXPECT_EQ(*value, expected_urls) << *value;
+  EXPECT_EQ(GetPreferenceValue(kListPrefName), expected_urls);
 }
 
 // List preferences have special handling at association time due to our ability
@@ -544,7 +544,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
 
   // Set a cloud version.
   syncer::SyncDataList in;
-  base::ListValue urls_to_restore;
+  base::Value::List urls_to_restore;
   urls_to_restore.Append(kExampleUrl1);
   urls_to_restore.Append(kExampleUrl2);
   AddToRemoteDataList(kListPrefName, urls_to_restore, &in);
@@ -560,15 +560,15 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   // anything.
   {
     syncer::SyncChangeList out;
-    base::ListValue user_value;
+    base::Value::List user_value;
     user_value.Append("http://chromium.org");
-    prefs_.Set(kListPrefName, user_value);
+    prefs_.SetList(kListPrefName, std::move(user_value));
     EXPECT_FALSE(FindValue(kListPrefName, out).get());
   }
 
   // An incoming sync transaction should change the user value, not the managed
   // value.
-  base::ListValue sync_value;
+  base::Value::List sync_value;
   sync_value.Append("http://crbug.com");
   syncer::SyncChangeList list;
   list.push_back(
@@ -591,18 +591,18 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
     update->Set("my_key3", "my_value3");
   }
 
-  base::DictionaryValue remote_update;
-  remote_update.Set("my_key2", std::make_unique<base::Value>("my_value2"));
+  base::Value::Dict remote_update;
+  remote_update.Set("my_key2", base::Value("my_value2"));
   syncer::SyncDataList in;
   AddToRemoteDataList(kDictPrefName, remote_update, &in);
 
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(in, &out);
 
-  base::DictionaryValue expected_dict;
-  expected_dict.Set("my_key1", std::make_unique<base::Value>("my_value1"));
-  expected_dict.Set("my_key2", std::make_unique<base::Value>("my_value2"));
-  expected_dict.Set("my_key3", std::make_unique<base::Value>("my_value3"));
+  base::Value::Dict expected_dict;
+  expected_dict.Set("my_key1", base::Value("my_value1"));
+  expected_dict.Set("my_key2", base::Value("my_value2"));
+  expected_dict.Set("my_key3", base::Value("my_value3"));
   std::unique_ptr<base::Value> value(FindValue(kDictPrefName, out));
   ASSERT_TRUE(value.get());
   EXPECT_EQ(*value, expected_dict);
@@ -889,10 +889,10 @@ TEST_F(PrefServiceSyncableTest, DeletePreference) {
 
   InitWithNoSyncData();
 
-  auto null_value = std::make_unique<base::Value>();
+  base::Value null_value;
   syncer::SyncChangeList list;
-  list.push_back(MakeRemoteChange(kStringPrefName, *null_value,
-                                  SyncChange::ACTION_DELETE));
+  list.push_back(
+      MakeRemoteChange(kStringPrefName, null_value, SyncChange::ACTION_DELETE));
   pref_sync_service_->ProcessSyncChanges(FROM_HERE, list);
   EXPECT_TRUE(pref->IsDefaultValue());
 }
@@ -967,7 +967,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
   }
 
   SyncData MakeRemoteSyncData(const std::string& name,
-                              const base::Value& value,
+                              base::ValueView value,
                               syncer::ModelType model_type) {
     std::string serialized;
     JSONStringValueSerializer json(&serialized);

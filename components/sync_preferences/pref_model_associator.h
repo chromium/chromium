@@ -144,12 +144,12 @@ class PrefModelAssociator : public syncer::SyncableService {
                             const std::string& pref_name,
                             syncer::SyncChangeList* sync_changes);
 
-  static std::unique_ptr<base::Value> MergeListValues(
-      const base::Value& from_value,
-      const base::Value& to_value);
+  static base::Value::List MergeListValues(const base::Value::List& from_value,
+                                           const base::Value::List& to_value);
 
-  static base::Value MergeDictionaryValues(const base::Value& from_value,
-                                           const base::Value& to_value);
+  static base::Value::Dict MergeDictionaryValues(
+      const base::Value::Dict& from_value,
+      const base::Value::Dict& to_value);
 
   // Extract preference value from sync specifics.
   static absl::optional<base::Value> ReadPreferenceSpecifics(
