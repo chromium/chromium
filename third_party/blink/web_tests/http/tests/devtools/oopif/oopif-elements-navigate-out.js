@@ -18,6 +18,7 @@
 
   SDK.targetManager.observeTargets({
     targetAdded: async function(target) {
+      if (!target.model(SDK.ResourceTreeModel)) return;
       target.model(SDK.ResourceTreeModel).agent.setLifecycleEventsEnabled(true);
       let loadedModels = 0;
       target.model(SDK.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
