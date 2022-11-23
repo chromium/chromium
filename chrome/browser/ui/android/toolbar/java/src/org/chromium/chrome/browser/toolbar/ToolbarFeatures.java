@@ -18,8 +18,6 @@ public final class ToolbarFeatures {
     private static final MutableFlagWithSafeDefault sSuppressionFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, false);
 
-    private static Boolean sSuppressionEnabled;
-
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
