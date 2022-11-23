@@ -138,7 +138,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(),
       message_center::NotifierId(), message_center::RichNotificationData(),
-      delegate, ash::kFilesAppIcon,
+      delegate, ash::kFolderIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -226,8 +226,7 @@ SystemNotificationManager::CreateProgressNotification(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
-      ash::kFilesAppIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      ash::kFolderIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
 std::unique_ptr<message_center::Notification>
@@ -248,8 +247,7 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
           base::BindRepeating(&SystemNotificationManager::CancelTaskId,
                               weak_ptr_factory_.GetWeakPtr(), task_id,
                               notification_id)),
-      ash::kFilesAppIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      ash::kFolderIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Add the cancel button:
   notification->set_buttons({message_center::ButtonInfo(
