@@ -35,12 +35,12 @@ class MockCrasUtil : public CrasUtil {
   MOCK_METHOD(int, CrasGetDefaultOutputBufferSize, (), (override));
 };
 
-class MockAudioManagerCras : public AudioManagerCras {
+class AudioManagerCrasUnderTest : public AudioManagerCras {
  public:
-  MockAudioManagerCras()
+  AudioManagerCrasUnderTest()
       : AudioManagerCras(std::make_unique<TestAudioThread>(),
                          &fake_audio_log_factory_) {}
-  ~MockAudioManagerCras() = default;
+  ~AudioManagerCrasUnderTest() = default;
   void SetCrasUtil(std::unique_ptr<CrasUtil> util) {
     cras_util_ = std::move(util);
   }
@@ -53,13 +53,13 @@ class MockAudioManagerCras : public AudioManagerCras {
 class AudioManagerCrasTest : public testing::Test {
  protected:
   AudioManagerCrasTest() {
-    mock_manager_.reset(new StrictMock<MockAudioManagerCras>());
+    audio_manager_.reset(new StrictMock<AudioManagerCrasUnderTest>());
     base::RunLoop().RunUntilIdle();
   }
-  ~AudioManagerCrasTest() override { mock_manager_->Shutdown(); }
+  ~AudioManagerCrasTest() override { audio_manager_->Shutdown(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<StrictMock<MockAudioManagerCras>> mock_manager_ = NULL;
+  std::unique_ptr<StrictMock<AudioManagerCrasUnderTest>> audio_manager_ = NULL;
 };
 
 TEST_F(AudioManagerCrasTest, HasAudioInputDevices) {
@@ -70,8 +70,8 @@ TEST_F(AudioManagerCrasTest, HasAudioInputDevices) {
   devices.emplace_back(dev);
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
       .WillOnce(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
-  auto ret = mock_manager_->HasAudioInputDevices();
+  audio_manager_->SetCrasUtil(std::move(util));
+  auto ret = audio_manager_->HasAudioInputDevices();
   EXPECT_EQ(ret, true);
 }
 
@@ -83,10 +83,10 @@ TEST_F(AudioManagerCrasTest, CheckDefaultNoDevice) {
       .WillOnce(testing::Return(devices));
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
       .WillOnce(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
-  mock_manager_->GetAudioInputDeviceNames(&device_names);
+  audio_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->GetAudioInputDeviceNames(&device_names);
   EXPECT_EQ(device_names.empty(), true);
-  mock_manager_->GetAudioOutputDeviceNames(&device_names);
+  audio_manager_->GetAudioOutputDeviceNames(&device_names);
   EXPECT_EQ(device_names.empty(), true);
 }
 
@@ -99,8 +99,8 @@ TEST_F(AudioManagerCrasTest, CheckDefaultDevice) {
   devices.emplace_back(dev);
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
       .WillOnce(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
-  mock_manager_->GetAudioInputDeviceNames(&device_names);
+  audio_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->GetAudioInputDeviceNames(&device_names);
   EXPECT_EQ(device_names.size(), 2u);
 }
 
@@ -115,8 +115,8 @@ TEST_F(AudioManagerCrasTest, MaxChannel) {
   EXPECT_CALL(*util, CrasGetDefaultOutputBufferSize());
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
       .WillRepeatedly(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
-  auto params = mock_manager_->GetPreferredOutputStreamParameters(
+  audio_manager_->SetCrasUtil(std::move(util));
+  auto params = audio_manager_->GetPreferredOutputStreamParameters(
       "123", AudioParameters());
   EXPECT_EQ(params.channels(), 6);
 }
@@ -215,10 +215,10 @@ TEST_F(AudioManagerCrasTest, EnumerateInputDevices) {
 
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
       .WillRepeatedly(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->SetCrasUtil(std::move(util));
 
   AudioDeviceNames device_names;
-  mock_manager_->GetAudioInputDeviceNames(&device_names);
+  audio_manager_->GetAudioInputDeviceNames(&device_names);
   CheckDeviceNames(device_names, expectation);
 }
 
@@ -233,10 +233,10 @@ TEST_F(AudioManagerCrasTest, EnumerateOutputDevices) {
 
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
       .WillRepeatedly(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->SetCrasUtil(std::move(util));
 
   AudioDeviceNames device_names;
-  mock_manager_->GetAudioOutputDeviceNames(&device_names);
+  audio_manager_->GetAudioOutputDeviceNames(&device_names);
   CheckDeviceNames(device_names, expectation);
 }
 
@@ -267,7 +267,7 @@ TEST_F(AudioManagerCrasTest, CheckOutputStreamParameters) {
       .WillRepeatedly(testing::Return(devices));
   EXPECT_CALL(*util, CrasGetDefaultOutputBufferSize())
       .WillRepeatedly(testing::Return(512));
-  mock_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->SetCrasUtil(std::move(util));
 
   AudioParameters params, golden_params;
 
@@ -275,17 +275,17 @@ TEST_F(AudioManagerCrasTest, CheckOutputStreamParameters) {
   //   kInternalSpeaker (2-channel): CHANNEL_LAYOUT_STEREO
   //   kUSB_6CH (6-channel): CHANNEL_LAYOUT_5_1
   //   HDMI (8-channel): CHANNEL_LAYOUT_7_1
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kInternalSpeaker.id), AudioParameters());
   golden_params =
       GetPreferredOutputStreamParameters(ChannelLayoutConfig::Stereo());
   EXPECT_TRUE(params.Equals(golden_params));
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kUSB_6CH.id), AudioParameters());
   golden_params = GetPreferredOutputStreamParameters(
       ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>());
   EXPECT_TRUE(params.Equals(golden_params));
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kHDMI.id), AudioParameters());
   golden_params = GetPreferredOutputStreamParameters(
       ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>());
@@ -299,18 +299,18 @@ TEST_F(AudioManagerCrasTest, CheckOutputStreamParameters) {
   const char* argv[] = {argv0, argv1, 0};
   base::CommandLine::Reset();
   EXPECT_TRUE(base::CommandLine::Init(argc, argv));
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kInternalSpeaker.id), AudioParameters());
   golden_params =
       GetPreferredOutputStreamParameters(ChannelLayoutConfig::Stereo(), 2048);
   EXPECT_TRUE(params.Equals(golden_params));
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kUSB_6CH.id), AudioParameters());
   golden_params = GetPreferredOutputStreamParameters(
       ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>(),
       2048);
   EXPECT_TRUE(params.Equals(golden_params));
-  params = mock_manager_->GetPreferredOutputStreamParameters(
+  params = audio_manager_->GetPreferredOutputStreamParameters(
       base::NumberToString(kHDMI.id), AudioParameters());
   golden_params = GetPreferredOutputStreamParameters(
       ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>(),
@@ -327,12 +327,12 @@ TEST_F(AudioManagerCrasTest, LookupDefaultInputDeviceWithProperGroupId) {
 
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
       .WillRepeatedly(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->SetCrasUtil(std::move(util));
 
-  auto default_group_id =
-      mock_manager_->GetGroupIDInput(mock_manager_->GetDefaultInputDeviceID());
+  auto default_group_id = audio_manager_->GetGroupIDInput(
+      audio_manager_->GetDefaultInputDeviceID());
   auto expected_group_id =
-      mock_manager_->GetGroupIDInput(base::NumberToString(kExternalMic.id));
+      audio_manager_->GetGroupIDInput(base::NumberToString(kExternalMic.id));
   EXPECT_EQ(default_group_id, expected_group_id);
 }
 
@@ -345,12 +345,12 @@ TEST_F(AudioManagerCrasTest, LookupDefaultOutputDeviceWithProperGroupId) {
 
   EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
       .WillRepeatedly(testing::Return(devices));
-  mock_manager_->SetCrasUtil(std::move(util));
+  audio_manager_->SetCrasUtil(std::move(util));
 
-  auto default_group_id = mock_manager_->GetGroupIDOutput(
-      mock_manager_->GetDefaultOutputDeviceID());
+  auto default_group_id = audio_manager_->GetGroupIDOutput(
+      audio_manager_->GetDefaultOutputDeviceID());
   auto expected_group_id =
-      mock_manager_->GetGroupIDOutput(base::NumberToString(kHeadphone.id));
+      audio_manager_->GetGroupIDOutput(base::NumberToString(kHeadphone.id));
   EXPECT_EQ(default_group_id, expected_group_id);
 }
 
@@ -402,7 +402,7 @@ class AudioManagerCrasTestAEC
     EXPECT_CALL(*util, CrasGetAecGroupId())
         .WillOnce(testing::Return(aec_group));
 
-    mock_manager_->SetCrasUtil(std::move(util));
+    audio_manager_->SetCrasUtil(std::move(util));
   }
 };
 
@@ -414,7 +414,7 @@ INSTANTIATE_TEST_SUITE_P(
                                          kAecTestGroupId)));
 
 TEST_P(AudioManagerCrasTestAEC, DefaultBehavior) {
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
   auto aec_supported = std::get<0>(GetParam());
 
   EXPECT_TRUE(ExperimentalAecActive(params));
@@ -431,7 +431,7 @@ TEST_P(AudioManagerCrasTestAEC, DefaultBehavior) {
 TEST_P(AudioManagerCrasTestAEC, BehaviorWithCrOSEnforceSystemAecDisallowed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kCrOSSystemAEC);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_FALSE(AecActive(params));
@@ -442,7 +442,7 @@ TEST_P(AudioManagerCrasTestAEC, BehaviorWithCrOSEnforceSystemAecDisallowed) {
 TEST_P(AudioManagerCrasTestAEC, BehaviorWithCrOSEnforceSystemAecNsAgc) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kCrOSEnforceSystemAecNsAgc);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   auto aec_supported = std::get<0>(GetParam());
 
@@ -463,7 +463,7 @@ TEST_P(AudioManagerCrasTestAEC, BehaviorWithCrOSEnforceSystemAecNsAndAecAgc) {
       {{features::kCrOSEnforceSystemAecNs, {}},
        {features::kCrOSEnforceSystemAecAgc, {}}},
       {});
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   auto aec_supported = std::get<0>(GetParam());
 
@@ -484,7 +484,7 @@ TEST_P(AudioManagerCrasTestAEC,
   feature_list.InitWithFeaturesAndParameters(
       {{features::kCrOSEnforceSystemAecNsAgc, {}}},
       {{features::kCrOSSystemAEC}});
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   auto aec_supported = std::get<0>(GetParam());
 
@@ -530,7 +530,7 @@ class AudioManagerCrasTestDSP
     EXPECT_CALL(*util, CrasGetAecSupported()).WillOnce(testing::Return(false));
     EXPECT_CALL(*util, CrasGetAecGroupId()).WillOnce(testing::Return(0));
 
-    mock_manager_->SetCrasUtil(std::move(util));
+    audio_manager_->SetCrasUtil(std::move(util));
   }
   std::vector<base::test::FeatureRef> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
@@ -548,7 +548,7 @@ INSTANTIATE_TEST_SUITE_P(AllInputParameters,
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithoutAnyEnforcedEffects) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(enabled_features_, disabled_features_);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_FALSE(DspAecAllowed(params));
   EXPECT_FALSE(DspNsAllowed(params));
@@ -559,7 +559,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAec) {
   base::test::ScopedFeatureList feature_list;
   enabled_features_.emplace_back(features::kCrOSEnforceSystemAec);
   feature_list.InitWithFeatures(enabled_features_, disabled_features_);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
@@ -573,7 +573,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNs) {
   base::test::ScopedFeatureList feature_list;
   enabled_features_.emplace_back(features::kCrOSEnforceSystemAecNs);
   feature_list.InitWithFeatures(enabled_features_, disabled_features_);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
@@ -587,7 +587,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecAgc) {
   base::test::ScopedFeatureList feature_list;
   enabled_features_.emplace_back(features::kCrOSEnforceSystemAecAgc);
   feature_list.InitWithFeatures(enabled_features_, disabled_features_);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
@@ -601,7 +601,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNsAgc) {
   base::test::ScopedFeatureList feature_list;
   enabled_features_.emplace_back(features::kCrOSEnforceSystemAecNsAgc);
   feature_list.InitWithFeatures(enabled_features_, disabled_features_);
-  AudioParameters params = mock_manager_->GetInputStreamParameters("");
+  AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
