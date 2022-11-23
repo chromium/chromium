@@ -19,11 +19,6 @@ BASE_DECLARE_FEATURE(kFastCheckout);
 // Force enables fast checkout capabilities for every domain, regardless of
 // the server response. The flag is meant for end-to-end testing purposes only.
 BASE_DECLARE_FEATURE(kForceEnableFastCheckoutCapabilities);
-
-// Enables consentless execution and disables fast checkout on any domain not
-// supporting consentless execution.
-constexpr base::FeatureParam<bool> kFastCheckoutConsentlessExecutionParam = {
-    &kFastCheckout, "consentless_execution", false};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

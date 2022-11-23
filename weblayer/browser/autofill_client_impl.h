@@ -113,9 +113,6 @@ class AutofillClientImpl
   bool IsFastCheckoutSupported() override;
   bool IsFastCheckoutTriggerForm(const autofill::FormData& form,
                                  const autofill::FormFieldData& field) override;
-  bool FastCheckoutScriptSupportsConsentlessExecution(
-      const url::Origin& origin) override;
-  bool FastCheckoutClientSupportsConsentlessExecution() override;
   bool ShowFastCheckout(
       base::WeakPtr<autofill::FastCheckoutDelegate> delegate) override;
   void HideFastCheckout() override;

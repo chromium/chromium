@@ -29,8 +29,7 @@ class FastCheckoutClient {
 
   // Starts the fast checkout run. Returns true if the run was successful.
   virtual bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-                     const GURL& url,
-                     bool script_supports_consentless_execution) = 0;
+                     const GURL& url) = 0;
 
   // Stops the fast checkout run.
   virtual void Stop() = 0;

@@ -293,15 +293,6 @@ bool TestAutofillClient::IsFastCheckoutTriggerForm(const FormData& form,
   return false;
 }
 
-bool TestAutofillClient::FastCheckoutScriptSupportsConsentlessExecution(
-    const url::Origin& origin) {
-  return false;
-}
-
-bool TestAutofillClient::FastCheckoutClientSupportsConsentlessExecution() {
-  return false;
-}
-
 bool TestAutofillClient::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
   return false;

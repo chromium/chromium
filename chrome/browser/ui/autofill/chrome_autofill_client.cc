@@ -737,19 +737,6 @@ bool ChromeAutofillClient::IsFastCheckoutSupported() {
     return false;
   }
 
-  // Require that the assistant settings flag is on for users with consent. If
-  // a user supports consentless flows, then there is no Assistant UI at any
-  // point in time and turning it off should not affect FC.
-  if (!::features::kFastCheckoutConsentlessExecutionParam.Get() &&
-      !GetPrefs()->GetBoolean(
-          autofill_assistant::prefs::kAutofillAssistantEnabled)) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because the client does not support consent-less "
-           "execution and the Autofill assistant settings flag is disabled.";
-    return false;
-  }
-
   return true;
 #else
   return false;
@@ -789,53 +776,6 @@ bool ChromeAutofillClient::IsFastCheckoutTriggerForm(
 #endif
 }
 
-bool ChromeAutofillClient::FastCheckoutScriptSupportsConsentlessExecution(
-    const url::Origin& origin) {
-#if BUILDFLAG(IS_ANDROID)
-  FastCheckoutCapabilitiesFetcher* fetcher =
-      FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
-          GetProfile());
-  if (!fetcher) {
-    return false;
-  }
-
-  bool script_supports_consentless_execution =
-      fetcher->SupportsConsentlessExecution(origin);
-
-  LOG_AF(log_manager_.get())
-      << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-      << "script for origin " << origin.Serialize()
-      << (script_supports_consentless_execution ? " supports "
-                                                : " does not support ")
-      << "consent-less execution.";
-
-  return script_supports_consentless_execution;
-#else
-  NOTREACHED();
-  return false;
-#endif
-}
-
-bool ChromeAutofillClient::FastCheckoutClientSupportsConsentlessExecution() {
-#if BUILDFLAG(IS_ANDROID)
-
-  bool client_supports_consentless_execution =
-      ::features::kFastCheckoutConsentlessExecutionParam.Get();
-
-  LOG_AF(log_manager_.get())
-      << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-      << "the client"
-      << (client_supports_consentless_execution ? " supports "
-                                                : " does not support ")
-      << "consent-less execution.";
-
-  return client_supports_consentless_execution;
-#else
-  NOTREACHED();
-  return false;
-#endif
-}
-
 bool ChromeAutofillClient::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
 #if BUILDFLAG(IS_ANDROID)
@@ -856,9 +796,7 @@ bool ChromeAutofillClient::ShowFastCheckout(
 
   const GURL& url = web_contents()->GetLastCommittedURL();
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->Start(delegate, url,
-              FastCheckoutScriptSupportsConsentlessExecution(
-                  url::Origin::Create(url)));
+      ->Start(delegate, url);
 #else
   NOTREACHED();
   return false;

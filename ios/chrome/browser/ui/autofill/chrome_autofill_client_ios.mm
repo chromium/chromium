@@ -390,15 +390,6 @@ bool ChromeAutofillClientIOS::IsFastCheckoutTriggerForm(
   return false;
 }
 
-bool ChromeAutofillClientIOS::FastCheckoutScriptSupportsConsentlessExecution(
-    const url::Origin& origin) {
-  return false;
-}
-
-bool ChromeAutofillClientIOS::FastCheckoutClientSupportsConsentlessExecution() {
-  return false;
-}
-
 bool ChromeAutofillClientIOS::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
   NOTREACHED();

@@ -203,15 +203,6 @@ bool AwAutofillClient::IsFastCheckoutTriggerForm(
   return false;
 }
 
-bool AwAutofillClient::FastCheckoutScriptSupportsConsentlessExecution(
-    const url::Origin& origin) {
-  return false;
-}
-
-bool AwAutofillClient::FastCheckoutClientSupportsConsentlessExecution() {
-  return false;
-}
-
 bool AwAutofillClient::ShowFastCheckout(
     base::WeakPtr<autofill::FastCheckoutDelegate> delegate) {
   NOTREACHED();

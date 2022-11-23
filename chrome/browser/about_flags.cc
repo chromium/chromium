@@ -3295,16 +3295,6 @@ const FeatureEntry::FeatureVariation kPasswordNotesAuthValidityVariations[] = {
      nullptr},
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// The variations of --fast-checkout.
-const FeatureEntry::FeatureParam kFastCheckoutConsentlessExecution[] = {
-    {features::kFastCheckoutConsentlessExecutionParam.name, "true"}};
-
-const FeatureEntry::FeatureVariation kFastCheckoutVariations[] = {
-    {"Consentless-only execution.", kFastCheckoutConsentlessExecution,
-     std::size(kFastCheckoutConsentlessExecution), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kGalleryAppPdfEditNotificationEditAndSign[] = {
     {"text", "Edit and Sign"}};
@@ -8238,9 +8228,7 @@ const FeatureEntry kFeatureEntries[] = {
          "TouchToFillPasswordSubmission")},
     {"fast-checkout", flag_descriptions::kFastCheckoutName,
      flag_descriptions::kFastCheckoutDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFastCheckout,
-                                    kFastCheckoutVariations,
-                                    "FastCheckoutVariations")},
+     FEATURE_VALUE_TYPE(features::kFastCheckout)},
     {"force-enable-fast-checkout-capabilities",
      flag_descriptions::kForceEnableFastCheckoutCapabilitiesName,
      flag_descriptions::kForceEnableFastCheckoutCapabilitiesDescription,

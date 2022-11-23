@@ -78,9 +78,8 @@ FastCheckoutClientImpl::~FastCheckoutClientImpl() {
 
 bool FastCheckoutClientImpl::Start(
     base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-    const GURL& url,
-    bool script_supports_consentless_execution) {
-  if (!ShouldRun(script_supports_consentless_execution)) {
+    const GURL& url) {
+  if (!ShouldRun()) {
     LOG_AF(GetAutofillLogManager()) << autofill::LoggingScope::kFastCheckout
                                     << autofill::LogMessage::kFastCheckout
                                     << "not triggered because "
@@ -104,28 +103,12 @@ bool FastCheckoutClientImpl::Start(
   return true;
 }
 
-bool FastCheckoutClientImpl::ShouldRun(
-    bool script_supports_consentless_execution) {
+bool FastCheckoutClientImpl::ShouldRun() {
   if (!base::FeatureList::IsEnabled(features::kFastCheckout)) {
     LOG_AF(GetAutofillLogManager())
         << autofill::LoggingScope::kFastCheckout
         << autofill::LogMessage::kFastCheckout
         << "not triggered because FastCheckout flag is disabled.";
-    return false;
-  }
-
-  bool client_supports_consentless_execution =
-      features::kFastCheckoutConsentlessExecutionParam.Get();
-
-  // The run requires consent (`script_supports_consentless_execution == false`)
-  // but the client is consentless.
-  if (!script_supports_consentless_execution &&
-      client_supports_consentless_execution) {
-    LOG_AF(GetAutofillLogManager())
-        << autofill::LoggingScope::kFastCheckout
-        << autofill::LogMessage::kFastCheckout
-        << "not triggered because the script requires consent but the client "
-           "is consent-less.";
     return false;
   }
 

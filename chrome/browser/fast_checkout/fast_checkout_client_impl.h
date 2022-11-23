@@ -51,8 +51,7 @@ class FastCheckoutClientImpl
 
   // FastCheckoutClient:
   bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-             const GURL& url,
-             bool script_supports_consentless_execution) override;
+             const GURL& url) override;
   void Stop() override;
   bool IsRunning() const override;
 
@@ -97,7 +96,7 @@ class FastCheckoutClientImpl
   void SetShouldSuppressKeyboard(bool suppress);
 
   // Returns true if fast checkout should run, e.g. if the feature is enabled.
-  bool ShouldRun(bool script_supports_consentless_execution);
+  bool ShouldRun();
 
   // Returns the Autofill log manager if available.
   autofill::LogManager* GetAutofillLogManager();

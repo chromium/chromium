@@ -277,24 +277,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
 };
 
-class FastCheckoutClientImplTestParametrized
-    : public FastCheckoutClientImplTest,
-      public testing::WithParamInterface<SupportsConsentlessExecution> {};
-
-const SupportsConsentlessExecution test_values[] = {
-    {/*client_supports_consentless=*/true,
-     /*script_supports_consentless=*/true,
-     /*run_consentless=*/true},
-    {/*client_supports_consentless=*/false,
-     /*script_supports_consentless=*/true,
-     /*run_consentless=*/false},
-    {/*client_supports_consentless=*/false,
-     /*script_supports_consentless=*/false,
-     /*run_consentless=*/false}};
-INSTANTIATE_TEST_SUITE_P(FastCheckoutClientImplTest,
-                         FastCheckoutClientImplTestParametrized,
-                         ::testing::ValuesIn(test_values));
-
 TEST_F(
     FastCheckoutClientImplTest,
     GetOrCreateForWebContents_ClientWasAlreadyCreated_ReturnsExistingInstance) {
@@ -320,43 +302,11 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureDisabled_NoRuns) {
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting is not successful which is also represented by the internal state.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }
 
-TEST_F(FastCheckoutClientImplTest,
-       Start_ConsentlessClientAttempsRunningScriptRequiringConsent_NoRuns) {
-  // Enable Fast Checkout feature with consentless execution.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kFastCheckout,
-      {{features::kFastCheckoutConsentlessExecutionParam.name, "true"}});
-
-  // `FastCheckoutClient` is not running initially.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  // Do not expect bottomsheet to show up.
-  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
-
-  EXPECT_CALL(*delegate(), OnFastCheckoutUIHidden).Times(0);
-
-  // Starting is not successful which is also represented by the internal state.
-  EXPECT_FALSE(fast_checkout_client()->Start(
-      delegate(), GURL(kUrl), /*script_supports_consentless_execution=*/false));
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-}
-
-TEST_P(FastCheckoutClientImplTestParametrized,
-       Start_FeatureEnabled_RunsSuccessfully) {
-  // Enable or disable the consentless execution feature flag parameter
-  // according to the test parameter. Note that the Fast Checkout feature flag
-  // is intended to be always enabled in this test case.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kFastCheckout,
-      {{features::kFastCheckoutConsentlessExecutionParam.name,
-        GetParam().client_supports_consentless ? "true" : "false"}});
-
+TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
@@ -370,15 +320,13 @@ TEST_P(FastCheckoutClientImplTestParametrized,
            UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(
-      delegate(), GURL(kUrl), GetParam().script_supports_consentless));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
   // Cannot start another run.
-  EXPECT_FALSE(fast_checkout_client()->Start(
-      delegate(), GURL(kUrl), GetParam().script_supports_consentless));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
@@ -393,7 +341,7 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -418,7 +366,7 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteProfile) {
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -441,7 +389,7 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCreditCardsOnFile) {
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -468,7 +416,7 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteorValidCreditCard) {
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -487,7 +435,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(1);
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -513,7 +461,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(1);
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -542,7 +490,7 @@ TEST_F(FastCheckoutClientImplTest,
            UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -569,7 +517,7 @@ TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   fast_checkout_client()->Stop();
 
@@ -582,7 +530,7 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   EXPECT_CALL(*delegate(), OnFastCheckoutUIHidden);
 
@@ -598,7 +546,7 @@ TEST_F(FastCheckoutClientImplTest,
 
   // Starting the run successfully starts keyboard suppression.
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // Profile selection turns off keyboard suppression again.
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(false));
@@ -613,7 +561,7 @@ TEST_F(FastCheckoutClientImplTest, RunsSuccessfullyIfDelegateIsDestroyed) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   fast_checkout_delegate_.reset();
   fast_checkout_client()->OnDismiss();

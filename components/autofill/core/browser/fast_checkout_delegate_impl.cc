@@ -52,18 +52,6 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     return false;
   }
 
-  // Do not trigger if `form.main_frame_origin` requires consent but user has
-  // consentless enabled.
-  if (!manager_->client()->FastCheckoutScriptSupportsConsentlessExecution(
-          form.main_frame_origin) &&
-      manager_->client()->FastCheckoutClientSupportsConsentlessExecution()) {
-    LOG_AF(manager_->client()->GetLogManager())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because `form.main_frame_origin` "
-           "requires consent but user has consentless enabled.";
-    return false;
-  }
-
   // UMA drop out metrics are recorded after this point only to avoid collecting
   // unnecessary metrics that would dominate the other data points.
   // Trigger only if not shown before.
