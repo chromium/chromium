@@ -4,6 +4,9 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 
+#include <string>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -28,8 +31,8 @@ namespace {
 class FakeMicrophoneMuteNotificationDelegate
     : public MicrophoneMuteNotificationDelegate {
  public:
-  absl::optional<std::u16string> GetAppAccessingMicrophone() override {
-    return absl::nullopt;
+  std::vector<std::u16string> GetAppsAccessingMicrophone() override {
+    return {};
   }
 };
 

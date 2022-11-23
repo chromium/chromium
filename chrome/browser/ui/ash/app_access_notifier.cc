@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
@@ -78,20 +79,26 @@ AppAccessNotifier::AppAccessNotifier() {
 
 AppAccessNotifier::~AppAccessNotifier() = default;
 
-absl::optional<std::u16string> AppAccessNotifier::GetAppAccessingMicrophone() {
+std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingMicrophone() {
   apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
   apps::AppCapabilityAccessCache* cap_cache =
       GetActiveUserAppCapabilityAccessCache();
-  // A reg_cache and/or cap_cache of value nullptr is possible if we have
-  // no active user, e.g. the login screen, so we test and return nullopt
-  // in that case instead of using DCHECK().
+  // A reg_cache and/or cap_cache of value nullptr is possible if we have no
+  // active user, e.g. the login screen, so we test and return  empty list in
+  // that case instead of using DCHECK().
   if (!reg_cache || !cap_cache ||
       mic_using_app_ids[active_user_account_id_].empty()) {
-    return absl::nullopt;
+    return {};
   }
 
-  return MapAppIdToShortName(mic_using_app_ids[active_user_account_id_].front(),
-                             cap_cache, reg_cache);
+  std::vector<std::u16string> app_names;
+  for (const auto& app_id : mic_using_app_ids[active_user_account_id_]) {
+    absl::optional<std::u16string> app_name =
+        MapAppIdToShortName(app_id, cap_cache, reg_cache);
+    if (app_name.has_value())
+      app_names.push_back(app_name.value());
+  }
+  return app_names;
 }
 
 void AppAccessNotifier::OnCapabilityAccessUpdate(

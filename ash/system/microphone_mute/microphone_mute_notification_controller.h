@@ -58,18 +58,20 @@ class ASH_EXPORT MicrophoneMuteNotificationController
   // mic while the mic is muted.
   std::unique_ptr<message_center::Notification>
   GenerateMicrophoneMuteNotification(
-      const absl::optional<std::u16string>& app_name,
+      const std::vector<std::u16string>& app_names,
       message_center::NotificationPriority priority);
 
   // Mic mute notification title.
   std::u16string GetNotificationTitle() const;
 
   // Mic mute notification body.
-  // If the name of the app is provided via \p app_name, it may be used in the
-  // notification body. If the name is empty, a generic text that avoids
-  // refering to the app by name will be used.
+  // If the list of names of the applications attempting to use the microphone
+  // provided via \p app_names is empty or has more that two elements, a generic
+  // text without referrring to any application name will be displayed.
+  // Otherwise, the displayed text will contain 1-2 application names depending
+  // on the availability.
   std::u16string GetNotificationMessage(
-      const absl::optional<std::u16string>& app_name) const;
+      const std::vector<std::u16string>& app_names) const;
 
   // Takes down the mic mute notification.
   void RemoveMicrophoneMuteNotification();

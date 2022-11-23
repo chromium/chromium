@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
@@ -92,14 +93,14 @@ void MicrophoneMuteNotificationController::MaybeShowNotification(
     // `MicrophoneMuteNotificationDelegate` is not created in guest mode.
     if (!microphone_mute_notification_delegate)
       return;
-    absl::optional<std::u16string> app_name =
-        microphone_mute_notification_delegate->GetAppAccessingMicrophone();
-    if (app_name.has_value() || input_stream_count_) {
+    std::vector<std::u16string> app_names =
+        microphone_mute_notification_delegate->GetAppsAccessingMicrophone();
+    if (!app_names.empty() || input_stream_count_) {
       if (recreate)
         RemoveMicrophoneMuteNotification();
 
       std::unique_ptr<message_center::Notification> notification =
-          GenerateMicrophoneMuteNotification(app_name, priority);
+          GenerateMicrophoneMuteNotification(app_names, priority);
       message_center::MessageCenter::Get()->AddNotification(
           std::move(notification));
       return;
@@ -119,7 +120,7 @@ void MicrophoneMuteNotificationController::SetAndLogMicrophoneMute(
 
 std::unique_ptr<message_center::Notification>
 MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
-    const absl::optional<std::u16string>& app_name,
+    const std::vector<std::u16string>& app_names,
     message_center::NotificationPriority priority) {
   message_center::RichNotificationData notification_data;
   notification_data.priority = priority;
@@ -148,7 +149,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          GetNotificationTitle(), GetNotificationMessage(app_name),
+          GetNotificationTitle(), GetNotificationMessage(app_names),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
@@ -159,17 +160,26 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
 }
 
 std::u16string MicrophoneMuteNotificationController::GetNotificationMessage(
-    const absl::optional<std::u16string>& app_name) const {
+    const std::vector<std::u16string>& app_names) const {
   if (mic_muted_by_mute_switch_) {
     return l10n_util::GetStringUTF16(
         IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE);
   }
-  if (app_name.value_or(u"").empty()) {
-    return l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE);
+
+  if (app_names.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+        app_names[0]);
+  } else if (app_names.size() == 2) {
+    return l10n_util::GetStringFUTF16(
+        IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+        app_names[0], app_names[1]);
   }
-  return l10n_util::GetStringFUTF16(
-      IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_APP_NAME,
-      app_name.value());
+
+  // If no application name can be determined or more than 2 applications are
+  // attempting to use the microphone, we display this message in the
+  // notification.
+  return l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE);
 }
 
 std::u16string MicrophoneMuteNotificationController::GetNotificationTitle()

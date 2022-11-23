@@ -4,10 +4,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
@@ -17,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -26,16 +29,17 @@ namespace ash {
 class FakeMicrophoneMuteNotificationDelegate
     : public MicrophoneMuteNotificationDelegate {
  public:
-  absl::optional<std::u16string> GetAppAccessingMicrophone() override {
-    return app_name_;
+  std::vector<std::u16string> GetAppsAccessingMicrophone() override {
+    return app_names_;
   }
 
-  void SetAppAccessingMicrophone(
+  void AddAppAccessingMicrophone(
       const absl::optional<std::u16string> app_name) {
-    app_name_ = app_name;
+    if (app_name.has_value())
+      app_names_.insert(app_names_.begin(), app_name.value());
   }
 
-  absl::optional<std::u16string> app_name_;
+  std::vector<std::u16string> app_names_;
 };
 
 class MicrophoneMuteNotificationControllerTest : public AshTestBase {
@@ -120,7 +124,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   }
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
-    delegate_->SetAppAccessingMicrophone(app_name);
+    delegate_->AddAppAccessingMicrophone(app_name);
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -425,6 +429,68 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
 
   EXPECT_TRUE(GetNotification());
   EXPECT_TRUE(GetPopupNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest, NotificationContents) {
+  // No notification initially.
+  EXPECT_FALSE(GetNotification());
+
+  // Mute the mic, still no notification.
+  MuteMicrophone();
+  EXPECT_FALSE(GetNotification());
+
+  // Launch an app that's not using the mic, should be no notification.
+  LaunchApp(absl::nullopt);
+  EXPECT_FALSE(GetNotification());
+
+  // Launch an app that's using the mic, but the name of the app can not be
+  // determined.
+  LaunchApp(absl::nullopt);
+  SetNumberOfActiveInputStreams(1);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE),
+            GetNotification()->title());
+  // The notification body should not contain any app name.
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
+      GetNotification()->message());
+
+  // Launch an app that's using the mic, the name of the app can be determined.
+  LaunchApp(u"app1");
+  SetNumberOfActiveInputStreams(2);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+  // The notification body should contain name of the app.
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, u"app1"),
+      GetNotification()->message());
+
+  // Launch another app that's using the mic, the name of the app can be
+  // determined.
+  LaunchApp(u"app2");
+  SetNumberOfActiveInputStreams(3);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+  // The notification body should contain the two available app names in the
+  // order of most recently launched.
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                u"app2", u"app1"),
+            GetNotification()->message());
+
+  // Launch yet another app that's using the mic, the name of the app can be
+  // determined.
+  LaunchApp(u"app3");
+  SetNumberOfActiveInputStreams(4);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+  // As more that two apps are attempting to use the microphone, we fall back to
+  // displaying the generic message in the notification.
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
+      GetNotification()->message());
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest, MetricCollection) {

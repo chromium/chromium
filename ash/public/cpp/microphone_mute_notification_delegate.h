@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_MICROPHONE_MUTE_NOTIFICATION_DELEGATE_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,13 +20,11 @@ class ASH_PUBLIC_EXPORT MicrophoneMuteNotificationDelegate {
  public:
   static MicrophoneMuteNotificationDelegate* Get();
 
-  // Returns an optional string with:
-  //
-  // No value, if no app is accessing the mic
-  // Empty value, if an app is accessing the mic but no name could be determined
-  // Non-empty value, if an app is accessing the mic and a name could be
-  // determined
-  virtual absl::optional<std::u16string> GetAppAccessingMicrophone() = 0;
+  // Returns a list of names of the applications that have attempted to use the
+  // microphone, in order of most-recently-launched. If an application is
+  // accessing the microphone but no name could be determined, the name of that
+  // application will not be in the returned list.
+  virtual std::vector<std::u16string> GetAppsAccessingMicrophone() = 0;
 
  protected:
   MicrophoneMuteNotificationDelegate();

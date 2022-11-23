@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "base/memory/weak_ptr.h"
@@ -45,7 +46,7 @@ class AppAccessNotifier
   ~AppAccessNotifier() override;
 
   // ash::MicrophoneMuteNotificationDelegate
-  absl::optional<std::u16string> GetAppAccessingMicrophone() override;
+  std::vector<std::u16string> GetAppsAccessingMicrophone() override;
 
   // apps::AppCapabilityAccessCache::Observer
   void OnCapabilityAccessUpdate(
