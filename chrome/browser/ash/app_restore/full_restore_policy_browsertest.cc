@@ -6,6 +6,8 @@
 
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
@@ -26,6 +28,7 @@ namespace ash::full_restore {
 
 class FullRestorePolicyBrowserTest
     : public policy::PolicyTest,
+      public ash::ShellObserver,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   // policy::PolicyTest:
@@ -51,11 +54,18 @@ class FullRestorePolicyBrowserTest
     provider_.UpdateChromePolicy(policies);
   }
 
-  void SetUpOnMainThread() override { PolicyTest::SetUpOnMainThread(); }
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ash::Shell::Get()->AddShellObserver(this);
+  }
 
-  void TearDownOnMainThread() override {
-    PolicyTest::TearDownOnMainThread();
+  void TearDownOnMainThread() override { PolicyTest::TearDownOnMainThread(); }
+
+  // ash::ShellObserver:
+  void OnShellDestroying() override {
+    // `wm_helper_` needs to be released before `ash::Shell`.
     wm_helper_.reset();
+    ash::Shell::Get()->RemoveShellObserver(this);
   }
 
   bool full_restore_enabled() const { return std::get<0>(GetParam()); }

@@ -16,6 +16,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(FocusChangeObserver*,
                              kFocusChangeObserverKey,
                              nullptr)
 
+FocusChangeObserver::~FocusChangeObserver() {
+  CHECK(!IsInObserverList());
+}
+
 FocusChangeObserver* GetFocusChangeObserver(Window* window) {
   return window ? window->GetProperty(kFocusChangeObserverKey) : NULL;
 }

@@ -38,8 +38,7 @@ class TestFocusClient : public client::FocusClient,
   raw_ptr<Window> root_window_;
   raw_ptr<Window> focused_window_ = nullptr;
   base::ScopedObservation<Window, WindowObserver> observation_manager_{this};
-  base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
-      focus_observers_;
+  base::ObserverList<aura::client::FocusChangeObserver> focus_observers_;
 };
 
 }  // namespace test
