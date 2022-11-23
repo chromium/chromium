@@ -2226,10 +2226,6 @@
     // stack switching features in WebAssembly.
     "expiry_milestone": 115
   },
-  {"name": "enable-expkit-apple-calendar",
-      "owners": ["erahmaoui@google.com", "djean@google.com", "bling-flags@google.com"],
-      "expiry_milestone":111
-  },
   {
     "name": "enable-expkit-calendar-text-classifier",
     "owners": [ "chrome-intelligence-core@google.com" ],
@@ -3484,17 +3480,17 @@
   {
     "name": "experience-kit-apple-calendar",
     "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "experience-kit-calendar",
     "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 111
   },
   {
     "name": "experience-kit-maps",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 112
   },
   {
     "name": "explore-sites",
