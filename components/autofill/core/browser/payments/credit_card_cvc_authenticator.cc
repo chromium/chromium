@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
@@ -39,7 +40,9 @@ void CreditCardCVCAuthenticator::Authenticate(
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
       client_, client_->GetPaymentsClient(), personal_data_manager);
 
-  if (card->record_type() == CreditCard::VIRTUAL_CARD) {
+  CreditCard::RecordType card_record_type = card->record_type();
+  autofill_metrics::LogCvcAuthAttempt(card_record_type);
+  if (card_record_type == CreditCard::VIRTUAL_CARD) {
     // `vcn_context_token` and `challenge_option` are required for
     // `FullCardRequest::GetFullVirtualCardViaCVC()`, so DCHECK that they are
     // present. The caller of Authenticate() should ensure to always set these

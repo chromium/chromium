@@ -1128,6 +1128,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CvcAuth.{CardType}.Attempt" enum="BooleanAttempted"
+    expires_after="2023-11-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a CVC authentication starts and does not emit any value
+    otherwise. Broken down into sub-histograms based on the type of the card,
+    for example virtual card or server card.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
     expires_after="2023-04-16">
   <owner>battre@chromium.org</owner>
