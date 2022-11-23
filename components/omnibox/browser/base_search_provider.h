@@ -46,17 +46,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   // Returns whether |match| is flagged as a query that should be prerendered.
   static bool ShouldPrerender(const AutocompleteMatch& match);
 
-  // Returns a simpler AutocompleteMatch suitable for persistence like in
-  // ShortcutsDatabase.  This wrapper function uses a number of default values
-  // that may or may not be appropriate for your needs.
-  // NOTE: Use with care. Most likely you want the other CreateSearchSuggestion.
-  static AutocompleteMatch CreateSearchSuggestion(
-      const std::u16string& suggestion,
-      AutocompleteMatchType::Type type,
-      bool from_keyword_provider,
-      const TemplateURL* template_url,
-      const SearchTermsData& search_terms_data);
-
   // Returns an AutocompleteMatch with the given |autocomplete_provider|
   // for the search |suggestion|, which represents a search via |template_url|.
   // If |template_url| is NULL, returns a match with an invalid destination URL.
@@ -83,8 +72,16 @@ class BaseSearchProvider : public AutocompleteProvider {
       int accepted_suggestion,
       bool append_extra_query_params_from_command_line);
 
-  // A helper function to convert result from on device providers to
-  // AutocompleteMatch instance.
+  // A helper function to return an AutocompleteMatch suitable for persistence
+  // in ShortcutsDatabase.
+  static AutocompleteMatch CreateShortcutSearchSuggestion(
+      const std::u16string& suggestion,
+      AutocompleteMatchType::Type type,
+      bool from_keyword_provider,
+      const TemplateURL* template_url,
+      const SearchTermsData& search_terms_data);
+
+  // A helper function to return an AutocompleteMatch for OnDeviceHeadProvider.
   static AutocompleteMatch CreateOnDeviceSearchSuggestion(
       AutocompleteProvider* autocomplete_provider,
       const AutocompleteInput& input,

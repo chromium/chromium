@@ -289,7 +289,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 
   if (AutocompleteMatch::IsSpecializedSearchType(match.type)) {
     DCHECK(match.search_terms_args);
-    temp = BaseSearchProvider::CreateSearchSuggestion(
+    temp = BaseSearchProvider::CreateShortcutSearchSuggestion(
         match.search_terms_args->search_terms, match_type,
         ui::PageTransitionCoreTypeIs(match.transition,
                                      ui::PAGE_TRANSITION_KEYWORD),

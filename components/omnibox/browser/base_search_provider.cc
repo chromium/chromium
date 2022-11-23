@@ -166,6 +166,101 @@ bool BaseSearchProvider::ShouldPrerender(const AutocompleteMatch& match) {
 
 // static
 AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
+    AutocompleteProvider* autocomplete_provider,
+    const AutocompleteInput& input,
+    const bool in_keyword_mode,
+    const SearchSuggestionParser::SuggestResult& suggestion,
+    const TemplateURL* template_url,
+    const SearchTermsData& search_terms_data,
+    int accepted_suggestion,
+    bool append_extra_query_params_from_command_line) {
+  AutocompleteMatch match(autocomplete_provider, suggestion.relevance(), false,
+                          suggestion.type());
+
+  if (!template_url)
+    return match;
+  match.keyword = template_url->keyword();
+  match.image_dominant_color = suggestion.image_dominant_color();
+  match.image_url = suggestion.image_url();
+  match.entity_id = suggestion.entity_id();
+  match.contents = suggestion.match_contents();
+  match.contents_class = suggestion.match_contents_class();
+  match.suggestion_group_id = suggestion.suggestion_group_id();
+  match.answer = suggestion.answer();
+  for (const int subtype : suggestion.subtypes()) {
+    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+  }
+  if (suggestion.type() == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
+    match.RecordAdditionalInfo(kACMatchPropertySuggestionText,
+                               suggestion.suggestion());
+    match.RecordAdditionalInfo(kACMatchPropertyContentsPrefix,
+                               suggestion.match_contents_prefix());
+    match.RecordAdditionalInfo(
+        kACMatchPropertyContentsStartIndex,
+        static_cast<int>(suggestion.suggestion().length() -
+                         match.contents.length()));
+  }
+
+  if (!suggestion.annotation().empty()) {
+    match.description = suggestion.annotation();
+    AutocompleteMatch::AddLastClassificationIfNecessary(
+        &match.description_class, 0, ACMatchClassification::NONE);
+  }
+
+  const std::u16string input_lower = base::i18n::ToLower(input.text());
+  // suggestion.match_contents() should have already been collapsed.
+  match.allowed_to_be_default_match =
+      (!in_keyword_mode || suggestion.from_keyword()) &&
+      (base::CollapseWhitespace(input_lower, false) ==
+       base::i18n::ToLower(suggestion.match_contents()));
+
+  if (suggestion.from_keyword())
+    match.from_keyword = true;
+
+  // We only allow inlinable navsuggestions that were received before the
+  // last keystroke because we don't want asynchronous inline autocompletions.
+  if (!input.prevent_inline_autocomplete() &&
+      !suggestion.received_after_last_keystroke() &&
+      (!in_keyword_mode || suggestion.from_keyword()) &&
+      base::StartsWith(base::i18n::ToLower(suggestion.suggestion()),
+                       input_lower, base::CompareCase::SENSITIVE)) {
+    match.inline_autocompletion =
+        suggestion.suggestion().substr(input.text().length());
+    match.allowed_to_be_default_match = true;
+  }
+
+  const TemplateURLRef& search_url = template_url->url_ref();
+  DCHECK(search_url.SupportsReplacement(search_terms_data));
+  std::u16string query(suggestion.suggestion());
+  std::u16string original_query(input.text());
+  if (suggestion.type() == AutocompleteMatchType::CALCULATOR) {
+    // Use query text, rather than the calculator answer suggestion, to search.
+    query = original_query;
+    original_query.clear();
+  }
+  match.fill_into_edit = GetFillIntoEdit(suggestion, template_url);
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
+  match.search_terms_args->original_query = original_query;
+  match.search_terms_args->accepted_suggestion = accepted_suggestion;
+  match.search_terms_args->additional_query_params =
+      suggestion.additional_query_params();
+  match.search_terms_args->append_extra_query_params_from_command_line =
+      append_extra_query_params_from_command_line;
+  // Must be set for deduplication and navigation. AutocompleteController will
+  // ultimately overwrite this with the searchbox stats before navigation.
+  match.destination_url = GURL(search_url.ReplaceSearchTerms(
+      *match.search_terms_args, search_terms_data));
+
+  // Search results don't look like URLs.
+  match.transition = suggestion.from_keyword() ? ui::PAGE_TRANSITION_KEYWORD
+                                               : ui::PAGE_TRANSITION_GENERATED;
+
+  return match;
+}
+
+// static
+AutocompleteMatch BaseSearchProvider::CreateShortcutSearchSuggestion(
     const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
     bool from_keyword,
@@ -364,102 +459,6 @@ const char BaseSearchProvider::kTrue[] = "true";
 const char BaseSearchProvider::kFalse[] = "false";
 
 BaseSearchProvider::~BaseSearchProvider() {}
-
-// static
-AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
-    AutocompleteProvider* autocomplete_provider,
-    const AutocompleteInput& input,
-    const bool in_keyword_mode,
-    const SearchSuggestionParser::SuggestResult& suggestion,
-    const TemplateURL* template_url,
-    const SearchTermsData& search_terms_data,
-    int accepted_suggestion,
-    bool append_extra_query_params_from_command_line) {
-  AutocompleteMatch match(autocomplete_provider, suggestion.relevance(), false,
-                          suggestion.type());
-
-  if (!template_url)
-    return match;
-  match.keyword = template_url->keyword();
-  match.image_dominant_color = suggestion.image_dominant_color();
-  match.image_url = suggestion.image_url();
-  match.entity_id = suggestion.entity_id();
-  match.contents = suggestion.match_contents();
-  match.contents_class = suggestion.match_contents_class();
-  match.suggestion_group_id = suggestion.suggestion_group_id();
-  match.answer = suggestion.answer();
-  for (const int subtype : suggestion.subtypes()) {
-    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
-  }
-  if (suggestion.type() == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
-    match.RecordAdditionalInfo(kACMatchPropertySuggestionText,
-                               suggestion.suggestion());
-    match.RecordAdditionalInfo(kACMatchPropertyContentsPrefix,
-                               suggestion.match_contents_prefix());
-    match.RecordAdditionalInfo(
-        kACMatchPropertyContentsStartIndex,
-        static_cast<int>(
-            suggestion.suggestion().length() - match.contents.length()));
-  }
-
-  if (!suggestion.annotation().empty()) {
-    match.description = suggestion.annotation();
-    AutocompleteMatch::AddLastClassificationIfNecessary(
-        &match.description_class, 0, ACMatchClassification::NONE);
-  }
-
-  const std::u16string input_lower = base::i18n::ToLower(input.text());
-  // suggestion.match_contents() should have already been collapsed.
-  match.allowed_to_be_default_match =
-      (!in_keyword_mode || suggestion.from_keyword()) &&
-      (base::CollapseWhitespace(input_lower, false) ==
-       base::i18n::ToLower(suggestion.match_contents()));
-
-  if (suggestion.from_keyword())
-    match.from_keyword = true;
-
-  // We only allow inlinable navsuggestions that were received before the
-  // last keystroke because we don't want asynchronous inline autocompletions.
-  if (!input.prevent_inline_autocomplete() &&
-      !suggestion.received_after_last_keystroke() &&
-      (!in_keyword_mode || suggestion.from_keyword()) &&
-      base::StartsWith(
-          base::i18n::ToLower(suggestion.suggestion()), input_lower,
-          base::CompareCase::SENSITIVE)) {
-    match.inline_autocompletion =
-        suggestion.suggestion().substr(input.text().length());
-    match.allowed_to_be_default_match = true;
-  }
-
-  const TemplateURLRef& search_url = template_url->url_ref();
-  DCHECK(search_url.SupportsReplacement(search_terms_data));
-  std::u16string query(suggestion.suggestion());
-  std::u16string original_query(input.text());
-  if (suggestion.type() == AutocompleteMatchType::CALCULATOR) {
-    // Use query text, rather than the calculator answer suggestion, to search.
-    query = original_query;
-    original_query.clear();
-  }
-  match.fill_into_edit = GetFillIntoEdit(suggestion, template_url);
-  match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
-  match.search_terms_args->original_query = original_query;
-  match.search_terms_args->accepted_suggestion = accepted_suggestion;
-  match.search_terms_args->additional_query_params =
-      suggestion.additional_query_params();
-  match.search_terms_args->append_extra_query_params_from_command_line =
-      append_extra_query_params_from_command_line;
-  // Must be set for deduplication and navigation. AutocompleteController will
-  // ultimately overwrite this with the searchbox stats before navigation.
-  match.destination_url = GURL(search_url.ReplaceSearchTerms(
-      *match.search_terms_args, search_terms_data));
-
-  // Search results don't look like URLs.
-  match.transition = suggestion.from_keyword() ? ui::PAGE_TRANSITION_KEYWORD
-                                               : ui::PAGE_TRANSITION_GENERATED;
-
-  return match;
-}
 
 // static
 std::u16string BaseSearchProvider::GetFillIntoEdit(
