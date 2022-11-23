@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/debug/debug_overlay_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
@@ -481,6 +482,8 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<HWDataCollectionScreenHandler>());
 
   AddScreenHandler(std::make_unique<ConsolidatedConsentScreenHandler>());
+
+  AddScreenHandler(std::make_unique<CryptohomeRecoverySetupScreenHandler>());
 
   AddScreenHandler(std::make_unique<GuestTosScreenHandler>());
 

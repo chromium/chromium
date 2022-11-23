@@ -1181,6 +1181,10 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
+      id: 'cryptohome-recovery-setup',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'guest-tos',
       kind: ScreenKind.NORMAL,
       handledSteps: 'loading,loaded,google-eula,cros-eula',

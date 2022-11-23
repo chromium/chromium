@@ -1635,6 +1635,8 @@ source_set("ash") {
     "login/screens/consolidated_consent_screen.h",
     "login/screens/cryptohome_recovery_screen.cc",
     "login/screens/cryptohome_recovery_screen.h",
+    "login/screens/cryptohome_recovery_setup_screen.cc",
+    "login/screens/cryptohome_recovery_setup_screen.h",
     "login/screens/demo_preferences_screen.cc",
     "login/screens/demo_preferences_screen.h",
     "login/screens/demo_setup_screen.cc",

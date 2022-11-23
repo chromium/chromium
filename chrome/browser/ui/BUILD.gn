@@ -2723,6 +2723,8 @@ static_library("ui") {
       "webui/ash/login/core_oobe_handler.h",
       "webui/ash/login/cryptohome_recovery_screen_handler.cc",
       "webui/ash/login/cryptohome_recovery_screen_handler.h",
+      "webui/ash/login/cryptohome_recovery_setup_screen_handler.cc",
+      "webui/ash/login/cryptohome_recovery_setup_screen_handler.h",
       "webui/ash/login/debug/debug_overlay_handler.cc",
       "webui/ash/login/debug/debug_overlay_handler.h",
       "webui/ash/login/demo_preferences_screen_handler.cc",

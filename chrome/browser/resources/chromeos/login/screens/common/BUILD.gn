@@ -48,6 +48,7 @@ js_type_check("closure_compile_local") {
     #":assistant_optin",
     ":autolaunch",
     ":consolidated_consent",
+    ":cryptohome_recovery_setup",
     ":device_disabled",
     ":enable_kiosk",
     ":error_message",
@@ -191,6 +192,18 @@ js_library("consolidated_consent") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
+}
+
+js_library("cryptohome_recovery_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/cryptohome_recovery_setup.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("device_disabled") {
@@ -731,6 +744,7 @@ polymer_modulizer("sync_consent") {
 html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
+    "cryptohome_recovery_setup.js",
     "app_downloading.js",
     "arc_terms_of_service.js",
     "assistant_optin.js",

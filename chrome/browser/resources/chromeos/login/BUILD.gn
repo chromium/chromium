@@ -267,6 +267,7 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "screens/common/assistant_optin.js",
     "screens/common/autolaunch.js",
     "screens/common/consolidated_consent.js",
+    "screens/common/cryptohome_recovery_setup.js",
     "screens/common/device_disabled.js",
     "screens/common/enable_kiosk.js",
     "screens/common/error_message.js",

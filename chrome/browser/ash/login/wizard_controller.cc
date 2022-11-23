@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
+#include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
@@ -135,6 +136,7 @@
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
@@ -638,6 +640,13 @@ WizardController::CreateScreens() {
   append(std::make_unique<RecoveryEligibilityScreen>(
       base::BindRepeating(&WizardController::OnRecoveryEligibilityScreenExit,
                           weak_factory_.GetWeakPtr())));
+  if (chromeos::features::IsCryptohomeRecoverySetupEnabled()) {
+    append(std::make_unique<CryptohomeRecoverySetupScreen>(
+        oobe_ui->GetView<CryptohomeRecoverySetupScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(
+            &WizardController::OnCryptohomeRecoverySetupScreenExit,
+            weak_factory_.GetWeakPtr())));
+  }
   append(std::make_unique<TermsOfServiceScreen>(
       oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnTermsOfServiceScreenExit,
@@ -1059,6 +1068,18 @@ void WizardController::ShowConsolidatedConsentScreen() {
   SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
 }
 
+void WizardController::ShowCryptohomeRecoverySetupScreen() {
+  CHECK(chromeos::features::IsCryptohomeRecoverySetupEnabled());
+  SetCurrentScreen(GetScreen(CryptohomeRecoverySetupScreenView::kScreenId));
+}
+
+void WizardController::ShowAuthenticationSetupScreen() {
+  if (chromeos::features::IsCryptohomeRecoverySetupEnabled())
+    ShowCryptohomeRecoverySetupScreen();
+  else
+    ShowFingerprintSetupScreen();
+}
+
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
     const std::string& username) {
   GetScreen<ActiveDirectoryPasswordChangeScreen>()->SetUsername(username);
@@ -1241,6 +1262,10 @@ void WizardController::OnConsolidatedConsentScreenExit(
   }
 }
 
+void WizardController::OnCryptohomeRecoverySetupScreenExit() {
+  ShowFingerprintSetupScreen();
+}
+
 void WizardController::OnOfflineLoginScreenExit(
     OfflineLoginScreen::Result result) {
   OnScreenExit(OfflineLoginView::kScreenId,
@@ -1299,7 +1324,8 @@ void WizardController::OnHWDataCollectionScreenExit(
     OnOobeFlowFinished();
     return;
   }
-  ShowFingerprintSetupScreen();
+
+  ShowAuthenticationSetupScreen();
 }
 
 void WizardController::OnSmartPrivacyProtectionScreenExit(
@@ -1786,7 +1812,8 @@ void WizardController::OnSyncConsentScreenExit(
     AdvanceToScreen(HWDataCollectionView::kScreenId);
     return;
   }
-  ShowFingerprintSetupScreen();
+
+  ShowAuthenticationSetupScreen();
 }
 
 void WizardController::OnFingerprintSetupScreenExit(
@@ -2292,6 +2319,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowGuestTosScreen();
   } else if (screen_id == ConsolidatedConsentScreenView::kScreenId) {
     ShowConsolidatedConsentScreen();
+  } else if (screen_id == CryptohomeRecoverySetupScreenView::kScreenId) {
+    ShowCryptohomeRecoverySetupScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||
