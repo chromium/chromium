@@ -136,9 +136,7 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
  public:
   static void AddVisualViewportProperties(
       const VisualViewport& visual_viewport,
-      PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
-    printer.AddNode(visual_viewport.GetOverscrollElasticityEffectNode());
-  }
+      PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {}
 
   static void AddObjectPaintProperties(
       const ObjectPaintProperties& properties,
@@ -216,10 +214,6 @@ namespace paint_property_tree_printer {
 void UpdateDebugNames(const VisualViewport& viewport) {
   if (auto* device_emulation_node = viewport.GetDeviceEmulationTransformNode())
     SetDebugName(device_emulation_node, "Device Emulation Node");
-  if (auto* overscroll_effect_node =
-          viewport.GetOverscrollElasticityEffectNode()) {
-    SetDebugName(overscroll_effect_node, "Overscroll Elasticity Effect Node");
-  }
   if (auto* overscroll_node = viewport.GetOverscrollElasticityTransformNode())
     SetDebugName(overscroll_node, "Overscroll Elasticity Node");
   SetDebugName(viewport.GetPageScaleNode(), "VisualViewport Scale Node");

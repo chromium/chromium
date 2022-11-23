@@ -1529,10 +1529,6 @@ const TransformNode* LayerTreeImpl::OverscrollElasticityTransformNode() const {
       viewport_property_ids_.overscroll_elasticity_transform);
 }
 
-ElementId LayerTreeImpl::OverscrollElasticityEffectElementId() const {
-  return viewport_property_ids_.overscroll_elasticity_effect;
-}
-
 const TransformNode* LayerTreeImpl::PageScaleTransformNode() const {
   return property_trees()->transform_tree().Node(
       viewport_property_ids_.page_scale_transform);

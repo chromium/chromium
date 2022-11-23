@@ -31,10 +31,8 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
   }
 
   static float outer_threshold(const cc::FilterOperation& operation) {
-    if (operation.type() != cc::FilterOperation::ALPHA_THRESHOLD &&
-        operation.type() != cc::FilterOperation::STRETCH) {
+    if (operation.type() != cc::FilterOperation::ALPHA_THRESHOLD)
       return 0.f;
-    }
     return operation.outer_threshold();
   }
 

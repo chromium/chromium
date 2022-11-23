@@ -3087,8 +3087,6 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   PaintArtifactCompositor::ViewportProperties viewport_properties;
   if (const auto& viewport = page->GetVisualViewport();
       GetFrame().IsMainFrame() && viewport.IsActiveViewport()) {
-    viewport_properties.overscroll_elasticity_effect =
-        viewport.GetOverscrollElasticityEffectNode();
     viewport_properties.overscroll_elasticity_transform =
         viewport.GetOverscrollElasticityTransformNode();
     viewport_properties.page_scale = viewport.GetPageScaleNode();

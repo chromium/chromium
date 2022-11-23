@@ -170,7 +170,6 @@ class CC_PAINT_EXPORT PaintOpWriter {
              const SkM44& current_ctm);
   void Write(const LightingPointPaintFilter& filter, const SkM44& current_ctm);
   void Write(const LightingSpotPaintFilter& filter, const SkM44& current_ctm);
-  void Write(const StretchPaintFilter& filter, const SkM44& current_ctm);
 
   void Write(const PaintRecord* record,
              const gfx::Rect& playback_rect,

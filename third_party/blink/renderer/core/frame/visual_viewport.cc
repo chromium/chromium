@@ -34,7 +34,6 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -72,7 +71,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -84,13 +82,6 @@ namespace {
 OverscrollType ComputeOverscrollType() {
   if (!Platform::Current()->IsElasticOverscrollEnabled())
     return OverscrollType::kNone;
-#if BUILDFLAG(IS_ANDROID)
-  if (base::GetFieldTrialParamValueByFeature(
-          ::features::kElasticOverscroll, ::features::kElasticOverscrollType) ==
-      ::features::kElasticOverscrollTypeFilter) {
-    return OverscrollType::kFilter;
-  }
-#endif
   return OverscrollType::kTransform;
 }
 
@@ -112,8 +103,6 @@ VisualViewport::VisualViewport(Page& owner)
       unique_id, CompositorElementIdNamespace::kPrimary);
   scroll_element_id_ = CompositorElementIdFromUniqueObjectId(
       unique_id, CompositorElementIdNamespace::kScroll);
-  elasticity_effect_node_id_ = CompositorElementIdFromUniqueObjectId(
-      unique_id, CompositorElementIdNamespace::kEffectFilter);
   Reset();
 }
 
@@ -125,11 +114,6 @@ VisualViewport::GetDeviceEmulationTransformNode() const {
 const TransformPaintPropertyNode*
 VisualViewport::GetOverscrollElasticityTransformNode() const {
   return overscroll_elasticity_transform_node_.get();
-}
-
-const EffectPaintPropertyNode*
-VisualViewport::GetOverscrollElasticityEffectNode() const {
-  return overscroll_elasticity_effect_node_.get();
 }
 
 const TransformPaintPropertyNode* VisualViewport::GetPageScaleNode() const {
@@ -338,28 +322,6 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
       }
     }
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (overscroll_type_ == OverscrollType::kFilter) {
-    bool needs_overscroll_effect_node = !MaximumScrollOffset().IsZero();
-    if (needs_overscroll_effect_node && !overscroll_elasticity_effect_node_) {
-      EffectPaintPropertyNode::State state;
-      state.output_clip = context.current.clip;
-      state.local_transform_space = transform_parent;
-      // The filter will be animated on the compositor in response to
-      // overscroll.
-      state.direct_compositing_reasons =
-          CompositingReason::kActiveFilterAnimation;
-      state.compositor_element_id = elasticity_effect_node_id_;
-      overscroll_elasticity_effect_node_ =
-          EffectPaintPropertyNode::Create(*effect_parent, std::move(state));
-    }
-    if (overscroll_elasticity_effect_node_) {
-      context.current_effect = effect_parent =
-          overscroll_elasticity_effect_node_.get();
-    }
-  }
-#endif
 
   if (scrollbar_layer_horizontal_) {
     EffectPaintPropertyNode::State state;

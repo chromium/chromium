@@ -68,7 +68,7 @@ class TracedValue;
 class TransformPaintPropertyNode;
 struct PaintPropertyTreeBuilderFragmentContext;
 
-enum class OverscrollType { kNone, kTransform, kFilter };
+enum class OverscrollType { kNone, kTransform };
 
 // Represents the visual viewport the user is currently seeing the page through.
 // This class corresponds to the InnerViewport on the compositor. It is a
@@ -94,7 +94,6 @@ enum class OverscrollType { kNone, kTransform, kFilter };
 //           +- scroll_translation_node_ (scroll: scroll_node_)
 // Effect tree:
 //  parent effect state
-//  +- overscroll_elasticity_effect_node_
 //  +- horizontal_scrollbar_effect_node_
 //  +- vertical_scrollbar_effect_node_
 //
@@ -273,7 +272,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   const TransformPaintPropertyNode* GetDeviceEmulationTransformNode() const;
   const TransformPaintPropertyNode* GetOverscrollElasticityTransformNode()
       const;
-  const EffectPaintPropertyNode* GetOverscrollElasticityEffectNode() const;
   const TransformPaintPropertyNode* GetPageScaleNode() const;
   const TransformPaintPropertyNode* GetScrollTranslationNode() const;
   const ScrollPaintPropertyNode* GetScrollNode() const;
@@ -367,7 +365,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<TransformPaintPropertyNode> page_scale_node_;
   scoped_refptr<TransformPaintPropertyNode> scroll_translation_node_;
   scoped_refptr<ScrollPaintPropertyNode> scroll_node_;
-  scoped_refptr<EffectPaintPropertyNode> overscroll_elasticity_effect_node_;
   scoped_refptr<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
   scoped_refptr<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
 
@@ -401,8 +398,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // For scrolling, on scroll_layer_, scroll_node_, and scroll element ids of
   // scrollbar layers.
   CompositorElementId scroll_element_id_;
-  // For overscroll elasticity.
-  CompositorElementId elasticity_effect_node_id_;
 
   bool needs_paint_property_update_;
 

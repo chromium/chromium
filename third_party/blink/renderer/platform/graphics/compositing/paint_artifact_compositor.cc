@@ -613,10 +613,6 @@ static void UpdateCompositorViewportProperties(
         property_tree_manager.EnsureCompositorTransformNode(
             *properties.overscroll_elasticity_transform);
   }
-  if (properties.overscroll_elasticity_effect) {
-    ids.overscroll_elasticity_effect =
-        properties.overscroll_elasticity_effect->GetCompositorElementId();
-  }
   if (properties.page_scale) {
     ids.page_scale_transform =
         property_tree_manager.EnsureCompositorPageScaleTransformNode(

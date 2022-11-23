@@ -334,7 +334,6 @@ class CC_EXPORT LayerTreeImpl {
         const_cast<const LayerTreeImpl*>(this)
             ->OverscrollElasticityTransformNode());
   }
-  ElementId OverscrollElasticityEffectElementId() const;
   const TransformNode* PageScaleTransformNode() const;
   TransformNode* PageScaleTransformNode() {
     return const_cast<TransformNode*>(

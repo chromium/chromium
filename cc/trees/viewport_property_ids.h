@@ -12,7 +12,6 @@ namespace cc {
 
 struct ViewportPropertyIds {
   int overscroll_elasticity_transform = kInvalidPropertyNodeId;
-  ElementId overscroll_elasticity_effect;
   int page_scale_transform = kInvalidPropertyNodeId;
   int inner_scroll = kInvalidPropertyNodeId;
   int outer_clip = kInvalidPropertyNodeId;

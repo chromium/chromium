@@ -226,12 +226,6 @@ BASE_FEATURE(kElasticOverscroll,
 );
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-const char kElasticOverscrollType[] = "type";
-const char kElasticOverscrollTypeFilter[] = "filter";
-const char kElasticOverscrollTypeTransform[] = "transform";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enables focus follow follow cursor (sloppyfocus).
 BASE_FEATURE(kFocusFollowsCursor,
              "FocusFollowsCursor",

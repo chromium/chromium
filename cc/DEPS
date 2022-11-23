@@ -38,7 +38,6 @@ include_rules = [
   "+third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h",
   "+third_party/skia/modules/skottie/include",
   "+third_party/skia/modules/skresources/include",
-  "+third_party/skia/src/effects/imagefilters/SkRuntimeImageFilter.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+ui/base",
   "+ui/events/types",

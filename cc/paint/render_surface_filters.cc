@@ -295,12 +295,6 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         }
         break;
       }
-      case FilterOperation::STRETCH: {
-        image_filter = sk_make_sp<StretchPaintFilter>(
-            op.amount(), op.outer_threshold(), size.width(), size.height(),
-            std::move(image_filter));
-        break;
-      }
     }
   }
   return image_filter;

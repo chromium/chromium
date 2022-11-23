@@ -431,18 +431,6 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kElasticOverscrollFilterType[] = {
-    {features::kElasticOverscrollType, features::kElasticOverscrollTypeFilter}};
-const FeatureEntry::FeatureParam kElasticOverscrollTransformType[] = {
-    {features::kElasticOverscrollType,
-     features::kElasticOverscrollTypeTransform}};
-
-const FeatureEntry::FeatureVariation kElasticOverscrollVariations[] = {
-    {"Pixel shader stretch", kElasticOverscrollFilterType,
-     std::size(kElasticOverscrollFilterType), nullptr},
-    {"Transform stretch", kElasticOverscrollTransformType,
-     std::size(kElasticOverscrollTransformType), nullptr}};
-
 const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseAllowlist[] = {
     {"default_policy", "use-allowlist"}};
 const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseDenylist[] = {
@@ -7122,16 +7110,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollUnificationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kScrollUnification)},
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
      flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kElasticOverscroll)},
-#elif BUILDFLAG(IS_ANDROID)
-    {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
-     flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kElasticOverscroll,
-                                    kElasticOverscrollVariations,
-                                    "ElasticOverscroll")},
 #endif
 
     {"device-posture", flag_descriptions::kDevicePostureName,

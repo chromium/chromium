@@ -298,9 +298,6 @@ class CC_PAINT_EXPORT PaintOpReader {
   void ReadLightingSpotPaintFilter(
       sk_sp<PaintFilter>* filter,
       const absl::optional<PaintFilter::CropRect>& crop_rect);
-  void ReadStretchPaintFilter(
-      sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
 
   // Returns the size of the read record, 0 if error.
   size_t Read(sk_sp<PaintRecord>* record);

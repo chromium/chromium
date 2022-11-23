@@ -858,9 +858,6 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
     case PaintFilter::Type::kLightingSpot:
       ReadLightingSpotPaintFilter(filter, crop_rect);
       break;
-    case PaintFilter::Type::kStretch:
-      ReadStretchPaintFilter(filter, crop_rect);
-      break;
   }
 }
 
@@ -1363,28 +1360,6 @@ void PaintOpReader::ReadLightingSpotPaintFilter(
       lighting_type, location, target, specular_exponent, cutoff_angle,
       SkColor4f::FromColor(light_color), surface_scale, kconstant, shininess,
       std::move(input), base::OptionalToPtr(crop_rect)));
-}
-
-void PaintOpReader::ReadStretchPaintFilter(
-    sk_sp<PaintFilter>* filter,
-    const absl::optional<PaintFilter::CropRect>& crop_rect) {
-  SkScalar stretch_x = 0.f;
-  SkScalar stretch_y = 0.f;
-  SkScalar width = 0.f;
-  SkScalar height = 0.f;
-  sk_sp<PaintFilter> input;
-
-  Read(&stretch_x);
-  Read(&stretch_y);
-  Read(&width);
-  Read(&height);
-  Read(&input);
-
-  if (!valid_)
-    return;
-  filter->reset(new StretchPaintFilter(stretch_x, stretch_y, width, height,
-                                       std::move(input),
-                                       base::OptionalToPtr(crop_rect)));
 }
 
 size_t PaintOpReader::Read(sk_sp<PaintRecord>* record) {

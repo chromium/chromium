@@ -55,9 +55,8 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
     kLightingDistant,
     kLightingPoint,
     kLightingSpot,
-    kStretch,
-    // Update the following if kStretch is not the max anymore.
-    kMaxValue = kStretch
+    // Update the following if kLightingSpot is not the max anymore.
+    kMaxValue = kLightingSpot
   };
   enum class LightingType {
     kDiffuse,
@@ -875,39 +874,6 @@ class CC_PAINT_EXPORT LightingSpotPaintFilter final : public PaintFilter {
   SkScalar surface_scale_;
   SkScalar kconstant_;
   SkScalar shininess_;
-  sk_sp<PaintFilter> input_;
-};
-
-class CC_PAINT_EXPORT StretchPaintFilter final : public PaintFilter {
- public:
-  static constexpr Type kType = Type::kStretch;
-  StretchPaintFilter(SkScalar stretch_x,
-                     SkScalar stretch_y,
-                     SkScalar width,
-                     SkScalar height,
-                     sk_sp<PaintFilter> input,
-                     const CropRect* crop_rect = nullptr);
-  ~StretchPaintFilter() override;
-
-  const sk_sp<PaintFilter>& input() const { return input_; }
-
-  SkScalar stretch_x() const { return stretch_x_; }
-  SkScalar stretch_y() const { return stretch_y_; }
-  SkScalar width() const { return width_; }
-  SkScalar height() const { return height_; }
-
-  size_t SerializedSize() const override;
-  bool operator==(const StretchPaintFilter& other) const;
-
- protected:
-  sk_sp<PaintFilter> SnapshotWithImagesInternal(
-      ImageProvider* image_provider) const override;
-
- private:
-  SkScalar stretch_x_;
-  SkScalar stretch_y_;
-  SkScalar width_;
-  SkScalar height_;
   sk_sp<PaintFilter> input_;
 };
 
