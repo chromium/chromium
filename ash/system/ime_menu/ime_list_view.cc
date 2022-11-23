@@ -237,6 +237,12 @@ void ImeListView::Update(const std::string& current_ime_id,
   property_map_.clear();
   CreateScrollableList();
 
+  // Setup the container for the IME list views.
+  container_ =
+      features::IsQsRevampEnabled()
+          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
+          : scroll_content();
+
   if (single_ime_behavior == ImeListView::SHOW_SINGLE_IME || list.size() > 1)
     AppendImeListAndProperties(current_ime_id, list, property_items);
 
@@ -259,6 +265,7 @@ void ImeListView::ResetImeListView() {
   Reset();
   keyboard_status_row_ = nullptr;
   current_ime_view_ = nullptr;
+  container_ = nullptr;
 }
 
 void ImeListView::ScrollItemToVisible(views::View* item_view) {
@@ -278,17 +285,12 @@ void ImeListView::AppendImeListAndProperties(
     const std::vector<ImeInfo>& list,
     const std::vector<ImeMenuItem>& property_list) {
   DCHECK(ime_map_.empty());
-
-  views::View* container = scroll_content();
-  if (features::IsQsRevampEnabled()) {
-    container =
-        scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
-  }
+  DCHECK(container_);
 
   for (size_t i = 0; i < list.size(); i++) {
     const bool selected = current_ime_id == list[i].id;
     views::View* ime_view =
-        container->AddChildView(std::make_unique<ImeListItemView>(
+        container_->AddChildView(std::make_unique<ImeListItemView>(
             this, list[i].short_name, list[i].name, selected,
             AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorProminent)));
@@ -301,7 +303,7 @@ void ImeListView::AppendImeListAndProperties(
     // Add the properties, if any, of the currently-selected IME.
     if (selected && !property_list.empty()) {
       // Adds a separator on the top of property items.
-      container->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+      container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
 
       const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
@@ -309,7 +311,7 @@ void ImeListView::AppendImeListAndProperties(
       // Adds the property items.
       for (const auto& property : property_list) {
         ImeListItemView* property_view =
-            container->AddChildView(std::make_unique<ImeListItemView>(
+            container_->AddChildView(std::make_unique<ImeListItemView>(
                 this, std::u16string(), property.label, property.checked,
                 icon_color));
 
@@ -319,7 +321,7 @@ void ImeListView::AppendImeListAndProperties(
       // Adds a separator on the bottom of property items if there are still
       // other IMEs under the current one.
       if (i < list.size() - 1) {
-        container->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+        container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
       }
     }
   }
@@ -330,7 +332,7 @@ void ImeListView::PrependKeyboardStatusRow() {
   keyboard_status_row_ = new KeyboardStatusRow;
   keyboard_status_row_->Init(base::BindRepeating(
       &ImeListView::KeyboardStatusTogglePressed, base::Unretained(this)));
-  scroll_content()->AddChildViewAt(keyboard_status_row_, 0);
+  container_->AddChildViewAt(keyboard_status_row_, 0);
 }
 
 void ImeListView::KeyboardStatusTogglePressed() {
