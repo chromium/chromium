@@ -318,6 +318,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Note that this may be different from getting the WebContents' primary main
   // frame. For example, if `this` is in a bfcached or prerendered page, this
   // will return the cached/prerendered page's main RenderFrameHost.
+  // See docs/frame_trees.md for more details.
   virtual RenderFrameHost* GetOutermostMainFrame() = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):

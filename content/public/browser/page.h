@@ -47,6 +47,7 @@ namespace content {
 // additional FrameTrees which will have their own associated Page. Please take
 // into consideration when assuming that Page is appropriate for storing
 // something that's common for all frames you see on a tab.
+// See docs/frame_trees.md for more details.
 
 // NOTE: Depending on the process model, the cross-origin iframes are likely to
 // be hosted in a different renderer process than the main document, so a given

@@ -310,6 +310,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Returns the primary FrameTree for this WebContents (as opposed to the
   // ones held by MPArch features like Prerender or Fenced Frame).
+  // See docs/frame_trees.md for more details.
   FrameTree& GetPrimaryFrameTree() { return primary_frame_tree_; }
 
   // Whether the initial empty page of this view has been accessed by another

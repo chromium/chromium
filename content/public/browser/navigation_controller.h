@@ -70,7 +70,7 @@ struct OpenURLParams;
 // WebContents, so there can be multiple NavigationControllers associated with
 // a WebContents. However only the primary one, and the
 // NavigationEntries/events originating from it, is exposed to //content
-// embedders.
+// embedders. See docs/frame_trees.md for more details.
 class NavigationController {
  public:
   using DeletionPredicate =

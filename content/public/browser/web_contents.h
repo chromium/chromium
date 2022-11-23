@@ -120,11 +120,10 @@ class PreloadingAttempt;
 // https://www.chromium.org/developers/design-documents/multi-process-architecture
 // .
 //
-// Each WebContents has exactly one NavigationController; each
-// NavigationController belongs to one WebContents. The NavigationController can
-// be obtained from GetController(), and is used to load URLs into the
-// WebContents, navigate it backwards/forwards, etc. See navigation_controller.h
-// for more details.
+// Each WebContents has a `NavigationController`, which can be obtained from
+// `GetController()`, and is used to load URLs into the WebContents, navigate
+// it backwards/forwards, etc.
+// See navigation_controller.h for more details.
 class WebContents : public PageNavigator,
                     public base::SupportsUserData {
  public:
@@ -368,6 +367,7 @@ class WebContents : public PageNavigator,
   // Returns the primary main frame for the currently active page. Always
   // non-null except during WebContents destruction. This WebContents may
   // have additional main frames for prerendered pages, bfcached pages, etc.
+  // See docs/frame_trees.md for more details.
   virtual RenderFrameHost* GetPrimaryMainFrame() = 0;
 
   // Returns the current page in the primary frame tree of this WebContents.
@@ -401,6 +401,7 @@ class WebContents : public PageNavigator,
   // reference to RenderFrameHost or a Page (e.g. each IPC from the renderer
   // process should be associated with a particular RenderFrameHost), it should
   // be used instead of getting the primary page from the WebContents.
+  // See docs/frame_trees.md for more details.
   virtual Page& GetPrimaryPage() = 0;
 
   // Returns the focused frame for the primary page or an inner page thereof.

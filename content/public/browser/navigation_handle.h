@@ -115,6 +115,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // additional frame trees for prerendering pages in addition to the primary
   // frame tree (holding the page currently shown to the user). The return
   // value remains constant over the navigation lifetime.
+  // See docs/frame_trees.md for more details.
   virtual bool IsInPrimaryMainFrame() const = 0;
 
   // Whether the navigation is taking place in a main frame which does not have

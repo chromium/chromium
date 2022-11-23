@@ -99,6 +99,19 @@ In the case of nested frame trees, the RenderFrameHost corresponding to the
 hosting document owns the inner FrameTree (possibly through an intermediate
 object, as is the case for content::FencedFrame).
 
+## "MPArch"
+
+"MPArch," short for Multiple Page Architecture, refers to the name of the
+project that introduced the capability of having multiple FrameTrees in a
+single WebContents.
+
+You may also see comments which describe features relying on multiple FrameTrees
+in terms of MPArch (e.g. "ignore navigations from MPArch pages"). These are in
+reference to "non-primary" frame trees as described above.
+
+See the original [design doc](https://docs.google.com/document/d/1NginQ8k0w3znuwTiJ5qjYmBKgZDekvEPC22q0I4swxQ/edit?usp=sharing)
+for further info.
+
 ## Footnotes
 
 <a name="footnote_1"></a>1: GuestViews (embedding of a WebContents inside another WebContents) are
