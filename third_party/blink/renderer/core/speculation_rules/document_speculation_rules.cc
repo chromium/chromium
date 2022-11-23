@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -151,6 +152,7 @@ DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
     : Supplement(document), host_(document.GetExecutionContext()) {}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
+  CountSpeculationRulesLoadOutcome(SpeculationRulesLoadOutcome::kSuccess);
   DCHECK(!base::Contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
   if (rule_set->has_document_rule()) {

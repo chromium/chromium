@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -644,6 +645,8 @@ void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
 
   auto parsed_header = net::structured_headers::ParseList(header_value.Utf8());
   if (!parsed_header.has_value()) {
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kUnparseableSpeculationRulesHeader);
     SendMessageToConsoleForPossiblyNullDocument(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
@@ -653,10 +656,19 @@ void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
     return;
   }
 
+  if (parsed_header->empty()) {
+    // This is valid, but unlikely to be intentional. Let's make a note of it.
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kEmptySpeculationRulesHeader);
+    return;
+  }
+
   for (auto const& parsed_item : parsed_header.value()) {
     // Only strings are valid list members.
     if (parsed_item.member.size() != 1u ||
         !parsed_item.member[0].item.is_string()) {
+      CountSpeculationRulesLoadOutcome(
+          SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem);
       SendMessageToConsoleForPossiblyNullDocument(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
@@ -669,6 +681,8 @@ void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
     const auto& url_str = String(parsed_item.member[0].item.GetString());
     KURL speculation_rule_url(document->BaseURL(), url_str);
     if (url_str.empty() || !speculation_rule_url.IsValid()) {
+      CountSpeculationRulesLoadOutcome(
+          SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem);
       SendMessageToConsoleForPossiblyNullDocument(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,

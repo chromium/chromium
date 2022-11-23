@@ -94505,6 +94505,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="65652" label="Destination root"/>
 </enum>
 
+<enum name="SpeculationRulesLoadOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unparseable Speculation-Rules response header"/>
+  <int value="2" label="Empty Speculation-Rules response header after parsing"/>
+  <int value="3" label="Invalid item in Speculation-Rules response header"/>
+  <int value="4" label="Invalid status code when fetching"/>
+  <int value="5" label="Invalid MIME type when fetching"/>
+  <int value="6" label="Empty response body when fetching"/>
+  <int value="7" label="Fetched speculation rules failed parsing"/>
+  <int value="8" label="Inline speculation rules failed parsing"/>
+</enum>
+
 <enum name="SpeculativeRenderFrameHostType">
   <int value="0" label="Does not exist"/>
   <int value="1" label="Exists, not pending commit"/>

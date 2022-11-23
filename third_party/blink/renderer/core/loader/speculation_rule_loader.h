@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_SPECULATION_RULE_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_SPECULATION_RULE_LOADER_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -37,6 +38,7 @@ class CORE_EXPORT SpeculationRuleLoader final : public ResourceFinishObserver,
   KURL base_url_;
   Member<Document> document_;
   Member<SpeculationRulesResource> resource_;
+  base::TimeTicks start_time_;
 };
 
 }  // namespace blink

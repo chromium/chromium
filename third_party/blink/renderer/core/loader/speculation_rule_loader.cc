@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/header_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/speculation_rules_resource.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 
 namespace blink {
 
@@ -25,13 +27,20 @@ void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource,
   resource_ = resource;
   resource_->AddFinishObserver(
       this, document_->GetTaskRunner(TaskType::kNetworking).get());
+  start_time_ = base::TimeTicks::Now();
   DocumentSpeculationRules::From(*document_).AddSpeculationRuleLoader(this);
 }
 
 void SpeculationRuleLoader::NotifyFinished() {
   DCHECK(resource_);
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.SpeculationRules.FetchTime",
+                             base::TimeTicks::Now() - start_time_);
+
   int response_code = resource_->GetResponse().HttpStatusCode();
   if (!network::IsSuccessfulStatus(response_code)) {
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kInvalidStatusCode);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -44,6 +53,8 @@ void SpeculationRuleLoader::NotifyFinished() {
 
   if (!EqualIgnoringASCIICase(resource_->HttpContentType(),
                               "application/speculationrules+json")) {
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kInvalidMimeType);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -55,6 +66,8 @@ void SpeculationRuleLoader::NotifyFinished() {
     return;
   }
   if (!resource_->HasData()) {
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kEmptyResponseBody);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -73,6 +86,8 @@ void SpeculationRuleLoader::NotifyFinished() {
     DocumentSpeculationRules::From(*document_).AddRuleSet(rule_set);
   }
   if (!parse_error.IsNull()) {
+    CountSpeculationRulesLoadOutcome(
+        SpeculationRulesLoadOutcome::kParseErrorFetched);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,

@@ -2761,6 +2761,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.SpeculationRules.FetchTime" units="ms"
+    expires_after="2023-05-18">
+  <owner>jbroman@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/speculation_rules/OWNERS</owner>
+  <summary>
+    The amount of time between when a fetch of speculation rules is started and
+    when it is finished. Recorded each time such a fetch occurs.
+  </summary>
+</histogram>
+
+<histogram name="Blink.SpeculationRules.LoadOutcome"
+    enum="SpeculationRulesLoadOutcome" expires_after="2023-05-18">
+  <owner>jbroman@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/speculation_rules/OWNERS</owner>
+  <summary>
+    Outcome of an attempt to load a speculation rule set. Recorded once per
+    attempt, whether triggered by a response header, by the parser or by script.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
     expires_after="2023-04-16">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

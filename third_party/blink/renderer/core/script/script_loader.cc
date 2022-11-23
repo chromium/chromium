@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -1017,6 +1018,8 @@ PendingScript* ScriptLoader::PrepareScript(
           DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
         }
         if (!parse_error.IsNull()) {
+          CountSpeculationRulesLoadOutcome(
+              SpeculationRulesLoadOutcome::kParseErrorInline);
           auto* console_message = MakeGarbageCollected<ConsoleMessage>(
               mojom::ConsoleMessageSource::kOther,
               mojom::ConsoleMessageLevel::kWarning,
