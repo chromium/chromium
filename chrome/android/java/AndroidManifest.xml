@@ -688,14 +688,6 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
 
-        <!-- Activities for app launcher. -->
-        <activity android:name="org.chromium.chrome.browser.webapps.launchpad.LaunchpadActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
-        </activity>
-
         <!--
             Activities for webapps.
             TODO(dfalcantara): Remove the aliases for the WebappActivities once we're pretty sure

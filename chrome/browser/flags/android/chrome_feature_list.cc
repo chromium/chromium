@@ -180,7 +180,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAssistantIntentPageUrl,
     &kAssistantIntentTranslateInfo,
     &kAssistantNonPersonalizedVoiceSearch,
-    &kAppLaunchpad,
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
     &kBackgroundThreadPool,
@@ -513,8 +512,6 @@ BASE_FEATURE(kAssistantIntentTranslateInfo,
 BASE_FEATURE(kAssistantNonPersonalizedVoiceSearch,
              "AssistantNonPersonalizedVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAppLaunchpad, "AppLaunchpad", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppMenuMobileSiteOption,
              "AppMenuMobileSiteOption",

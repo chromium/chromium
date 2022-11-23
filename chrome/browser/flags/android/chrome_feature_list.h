@@ -27,7 +27,6 @@ BASE_DECLARE_FEATURE(kAssistantIntentExperimentId);
 BASE_DECLARE_FEATURE(kAssistantIntentPageUrl);
 BASE_DECLARE_FEATURE(kAssistantIntentTranslateInfo);
 BASE_DECLARE_FEATURE(kAssistantNonPersonalizedVoiceSearch);
-BASE_DECLARE_FEATURE(kAppLaunchpad);
 BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
 BASE_DECLARE_FEATURE(kAppToWebAttribution);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);

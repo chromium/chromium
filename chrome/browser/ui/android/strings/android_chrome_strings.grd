@@ -4518,15 +4518,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEBAPK_NETWORK_ERROR_MESSAGE_TUNNEL_CONNECTION_FAILED" desc="The error message for ERROR_TUNNEL_CONNECTION_FAILED.">
         Establishing a tunnel via proxy server failed
       </message>
-      <message name="IDS_LAUNCHPAD_TITLE" desc="Title of WebAPKs launchpad page">
-        Apps
-      </message>
-      <message name="IDS_LAUNCHPAD_MENU_UNINSTALL" desc="Text that displays on the Launchpad app management menu that allows user to open the setting to uninstall the app. ">
-        Uninstall
-      </message>
-      <message name="IDS_LAUNCHPAD_MENU_SITE_SETTINGS" desc="Text that displays on the Launchpad app management menu that allows the user to open the site setting page.">
-        Site settings
-      </message>
 
       <!-- Keyboard shortcuts in Android N-->
       <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_TAB" desc="A text label that appears next to the keyboard shortcut to open a new tab in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">

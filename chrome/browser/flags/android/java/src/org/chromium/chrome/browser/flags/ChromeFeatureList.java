@@ -206,7 +206,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_MANUAL_FALLBACK_ANDROID = "AutofillManualFallbackAndroid";
     public static final String AUTOFILL_REFRESH_STYLE_ANDROID = "AutofillRefreshStyleAndroid";
     public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory";
-    public static final String APP_LAUNCHPAD = "AppLaunchpad";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
