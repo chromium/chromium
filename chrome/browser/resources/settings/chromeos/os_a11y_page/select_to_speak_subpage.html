@@ -29,9 +29,62 @@ found in the LICENSE file.
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
+
+  .highlight-example-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-inline-end: var(--cr-section-padding);
+  }
+
+  .example {
+    display: flex;
+    flex: 1;
+    font-size: 1em;
+    height: 60px;
+    justify-content: center;
+    line-height: 60px;
+    padding: 0 3px;
+    vertical-align: middle;
+  }
+
+  .light {
+    background-color: var(--google-grey-100);
+    border-radius: 3px 0 0 3px;
+    color: black;
+  }
+
+  .dark {
+    background-color: var(--google-grey-900);
+    border-radius: 0 3px 3px 0;
+    color: white;
+  }
+
+  .highlight {
+    height: 20px;
+    opacity: .3;
+    position: relative;
+    top: -40px;
+    width: 100%;
+    z-index: 10;
+  }
 </style>
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
+<div class="highlight-example-container sub-item">
+  <div class="example light">
+    <div>
+      <span>$i18n{selectToSpeakOptionsHighlightLight}</span>
+      <div id="lightHighlight" class="highlight"></div>
+    </div>
+  </div>
+  <div class="example dark">
+    <div>
+      <span>$i18n{selectToSpeakOptionsHighlightDark}</span>
+      <div id="darkHighlight" class="highlight"></div>
+    </div>
+  </div>
+</div>
 <div class="sub-item">
   <settings-toggle-button
       id="wordHighlightToggle"

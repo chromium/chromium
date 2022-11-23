@@ -102,6 +102,12 @@ class SettingsSelectToSpeakSubpageElement extends
     };
   }
 
+  static get observers() {
+    return [
+      'onHighlightColorChanged(prefs.settings.a11y.select_to_speak_highlight_color.value)',
+    ];
+  }
+
   private route_: Route;
 
   constructor() {
@@ -123,6 +129,11 @@ class SettingsSelectToSpeakSubpageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  private onHighlightColorChanged(color: string) {
+    this.shadowRoot!.getElementById('lightHighlight')!.style.background = color;
+    this.shadowRoot!.getElementById('darkHighlight')!.style.background = color;
   }
 }
 
