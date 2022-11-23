@@ -172,6 +172,11 @@ class CONTENT_EXPORT FrameTree {
 
     // Returns if this FrameTree represents a portal.
     virtual bool IsPortal() = 0;
+
+    // Set the `node` frame as focused in its own FrameTree as well as possibly
+    // changing the focused frame tree in the case of inner/outer FrameTrees.
+    virtual void SetFocusedFrame(FrameTreeNode* node,
+                                 SiteInstanceGroup* source) = 0;
   };
 
   // Type of FrameTree instance.

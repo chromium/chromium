@@ -679,7 +679,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::unique_ptr<WebUIImpl> CreateWebUIForRenderFrameHost(
       RenderFrameHostImpl* frame_host,
       const GURL& url) override;
-  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   void DidCallFocus() override;
   void OnFocusedElementChangedInFrame(
       RenderFrameHostImpl* frame,
@@ -1032,6 +1031,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   FrameTree* LoadingTree() override;
+  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

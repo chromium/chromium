@@ -348,11 +348,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // https://crbug.com/330264.
   virtual void EnsureOpenerProxiesExist(RenderFrameHostImpl* source_rfh) {}
 
-  // Set the |node| frame as focused in the current FrameTree as well as
-  // possibly changing focus in distinct but related inner/outer WebContents.
-  virtual void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) {
-  }
-
   // The frame called |window.focus()|.
   virtual void DidCallFocus() {}
 

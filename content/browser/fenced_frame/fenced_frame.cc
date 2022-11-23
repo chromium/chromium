@@ -142,6 +142,11 @@ FrameTree* FencedFrame::LoadingTree() {
   return web_contents_->LoadingTree();
 }
 
+void FencedFrame::SetFocusedFrame(FrameTreeNode* node,
+                                  SiteInstanceGroup* source) {
+  web_contents_->SetFocusedFrame(node, source);
+}
+
 RenderFrameProxyHost*
 FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,

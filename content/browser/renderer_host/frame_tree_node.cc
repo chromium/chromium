@@ -989,4 +989,8 @@ Navigator& FrameTreeNode::GetCurrentNavigator() {
   return navigator();
 }
 
+void FrameTreeNode::SetFocusedFrame(SiteInstanceGroup* source) {
+  frame_tree_->delegate()->SetFocusedFrame(this, source);
+}
+
 }  // namespace content

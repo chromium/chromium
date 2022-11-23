@@ -132,6 +132,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   FrameTree* LoadingTree() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   bool IsPortal() override;
+  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChangedFromController(

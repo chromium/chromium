@@ -247,6 +247,13 @@ FrameTree* PrerenderHost::LoadingTree() {
   return frame_tree_.get();
 }
 
+void PrerenderHost::SetFocusedFrame(FrameTreeNode* node,
+                                    SiteInstanceGroup* source) {
+  // `node` can only become focused when `node`'s current RenderFrameHost is
+  // active.
+  NOTREACHED();
+}
+
 int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   // A prerendered FrameTree is not "inner to" or "nested inside" another
   // FrameTree; it exists in parallel to the primary FrameTree of the current

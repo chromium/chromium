@@ -601,6 +601,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) override;
   Navigator& GetCurrentNavigator() override;
+  void SetFocusedFrame(SiteInstanceGroup* source) override;
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;

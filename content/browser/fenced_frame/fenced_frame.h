@@ -66,6 +66,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   int GetOuterDelegateFrameTreeNodeId() override;
   bool IsPortal() override;
   FrameTree* LoadingTree() override;
+  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 
   // Returns the devtools frame token of the fenced frame's inner FrameTree's
   // main frame.

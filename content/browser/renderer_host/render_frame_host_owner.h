@@ -31,6 +31,8 @@ class RenderFrameHostOwner {
       std::unique_ptr<NavigationRequest> navigation_request) = 0;
 
   virtual Navigator& GetCurrentNavigator() = 0;
+
+  virtual void SetFocusedFrame(SiteInstanceGroup* source) = 0;
 };
 
 }  // namespace content
