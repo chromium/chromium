@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -42,11 +41,16 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using ::testing::_;
 
 namespace blink {
 
 namespace {
+#if !BUILDFLAG(IS_ANDROID)
 KURL GetOpenerURL() {
   return KURL("https://example.com/");
 }
@@ -112,6 +116,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
 
   return controller.documentPictureInPictureWindow();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -679,6 +684,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
                          .PictureInPictureElement());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PictureInPictureControllerTestWithWidget,
        AutoEnterPictureInPictureDuringDocumentPiP) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
@@ -937,5 +943,6 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   EXPECT_NE(nullptr, pictureInPictureWindow1);
   EXPECT_NE(nullptr, pictureInPictureWindow2);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

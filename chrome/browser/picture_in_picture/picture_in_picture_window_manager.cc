@@ -36,6 +36,7 @@ class PictureInPictureWindowManager::VideoWebContentsObserver final
   raw_ptr<PictureInPictureWindowManager> owner_ = nullptr;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // This web contents observer is used only for document PiP.
 class PictureInPictureWindowManager::DocumentWebContentsObserver final
     : public content::WebContentsObserver {
@@ -52,6 +53,7 @@ class PictureInPictureWindowManager::DocumentWebContentsObserver final
   // Owns |this|.
   raw_ptr<PictureInPictureWindowManager> owner_ = nullptr;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 PictureInPictureWindowManager* PictureInPictureWindowManager::GetInstance() {
   return base::Singleton<PictureInPictureWindowManager>::get();
@@ -69,6 +71,7 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
   pip_window_controller_->Show();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
     content::WebContents* child_web_contents) {
@@ -92,6 +95,7 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   // pre-existing PictureInPictureWindowController's window (if any).
   EnterPictureInPictureWithController(controller);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 content::PictureInPictureResult
 PictureInPictureWindowManager::EnterVideoPictureInPicture(
@@ -159,6 +163,7 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
   pip_window_controller_ = nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // Document PiP window controller also observes the parent and child web
   // contents, so we only need to forget the controller here when user closes
@@ -167,6 +172,7 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   if (pip_window_controller_)
     pip_window_controller_ = nullptr;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 PictureInPictureWindowManager::PictureInPictureWindowManager() = default;
 

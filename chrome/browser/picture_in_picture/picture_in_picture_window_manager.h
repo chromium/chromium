@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -38,6 +39,7 @@ class PictureInPictureWindowManager {
   content::PictureInPictureResult EnterVideoPictureInPicture(
       content::WebContents*);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Shows a PIP window using the window controller for document picture in
   // picture.
   //
@@ -48,6 +50,7 @@ class PictureInPictureWindowManager {
   // it doesn't have a failure state.
   void EnterDocumentPictureInPicture(content::WebContents* parent_web_contents,
                                      content::WebContents* child_web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Shows a PIP window with an explicitly provided window controller. This is
   // used by ChromeOS ARC windows which do not have a WebContents as the source.
@@ -73,7 +76,9 @@ class PictureInPictureWindowManager {
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
+#if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Create a Picture-in-Picture window and register it in order to be closed
   // when needed.
@@ -86,14 +91,18 @@ class PictureInPictureWindowManager {
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Called when the document PiP parent web contents is being destroyed.
   void DocumentWebContentsDestroyed();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
 
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
+#endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
       nullptr;

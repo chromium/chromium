@@ -6,13 +6,16 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("document_picture_in_picture") {
   sources = [
-    "document_picture_in_picture.cc",
-    "document_picture_in_picture.h",
-    "document_picture_in_picture_event.cc",
-    "document_picture_in_picture_event.h",
     "picture_in_picture_controller_impl.cc",
     "picture_in_picture_controller_impl.h",
   ]
-
+  if (!is_android) {
+    sources += [
+      "document_picture_in_picture.cc",
+      "document_picture_in_picture.h",
+      "document_picture_in_picture_event.cc",
+      "document_picture_in_picture_event.h",
+    ]
+  }
   deps = [ "//third_party/blink/renderer/modules/picture_in_picture" ]
 }
