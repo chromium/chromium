@@ -542,7 +542,7 @@ interface CrosHealthdDiagnosticsService {
 
   // Requests that the FingerprintAlive routine is created and started on the
   // platform. This routine checks whether the fingerprint module is alive or
-  // not.
+  // not. Alive means the sensor is responsive and the firmware version is RW.
   // The availability of this routine can be determined by checking that
   // kFingerprintAlive is returned by GetAvailableRoutines.
   //
