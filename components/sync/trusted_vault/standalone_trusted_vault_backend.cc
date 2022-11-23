@@ -256,6 +256,20 @@ StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::operator=(
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
     ~PendingTrustedRecoveryMethod() = default;
 
+StandaloneTrustedVaultBackend::PendingGetIsRecoverabilityDegraded::
+    PendingGetIsRecoverabilityDegraded() = default;
+
+StandaloneTrustedVaultBackend::PendingGetIsRecoverabilityDegraded::
+    PendingGetIsRecoverabilityDegraded(PendingGetIsRecoverabilityDegraded&&) =
+        default;
+
+StandaloneTrustedVaultBackend::PendingGetIsRecoverabilityDegraded&
+StandaloneTrustedVaultBackend::PendingGetIsRecoverabilityDegraded::operator=(
+    PendingGetIsRecoverabilityDegraded&&) = default;
+
+StandaloneTrustedVaultBackend::PendingGetIsRecoverabilityDegraded::
+    ~PendingGetIsRecoverabilityDegraded() = default;
+
 // static
 TrustedVaultDownloadKeysStatusForUMA
 StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
@@ -515,11 +529,15 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
         std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
             connection_.get(), /*delegate=*/this, primary_account_.value(),
             per_user_vault->degraded_recoverability_state());
-    // The `degraded_recoverability_handler_` should start if
-    // `GetIsRecoverabilityDegraded(primary_account_)` is already called.
-    if (primary_account_ == last_recoverability_degraded_queried_account_) {
-      degraded_recoverability_handler_->Start();
+    // Should process `pending_get_is_recoverability_degraded_` if it belongs to
+    // the current primary account.
+    if (pending_get_is_recoverability_degraded_.has_value() &&
+        pending_get_is_recoverability_degraded_->account_info ==
+            primary_account_) {
+      degraded_recoverability_handler_->GetIsRecoverabilityDegraded(std::move(
+          pending_get_is_recoverability_degraded_->completion_callback));
     }
+    pending_get_is_recoverability_degraded_.reset();
   }
 
   const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
@@ -609,21 +627,16 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     base::OnceCallback<void(bool)> cb) {
   if (base::FeatureList::IsEnabled(
           kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
-    last_recoverability_degraded_queried_account_ = account_info;
     if (account_info == primary_account_) {
-      degraded_recoverability_handler_->Start();
-    }
-    sync_pb::LocalTrustedVaultPerUser* per_user_vault =
-        FindUserVault(account_info.gaia);
-    if (!per_user_vault) {
-      // If the account does not exist, then the recoverability state is
-      // unknown, false will be passed in this case.
-      std::move(cb).Run(false);
+      degraded_recoverability_handler_->GetIsRecoverabilityDegraded(
+          std::move(cb));
       return;
     }
-    std::move(cb).Run(per_user_vault->degraded_recoverability_state()
-                          .degraded_recoverability_value() ==
-                      sync_pb::DegradedRecoverabilityValue::kDegraded);
+    pending_get_is_recoverability_degraded_ =
+        PendingGetIsRecoverabilityDegraded();
+    pending_get_is_recoverability_degraded_->account_info = account_info;
+    pending_get_is_recoverability_degraded_->completion_callback =
+        std::move(cb);
     return;
   }
   ongoing_get_recoverability_request_ =

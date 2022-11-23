@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 
+#include <utility>
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -68,12 +69,15 @@ TrustedVaultDegradedRecoverabilityHandler::
   base::UmaHistogramExactLinear("Sync.TrustedVaultDegradedRecoverabilityValue",
                                 degraded_recoverability_value_,
                                 sync_pb::DegradedRecoverabilityValue_ARRAYSIZE);
-  base::Time last_refresh_time =
-      ProtoTimeToTime(degraded_recoverability_state
-                          .last_refresh_time_millis_since_unix_epoch());
-  if (base::Time::Now() > last_refresh_time) {
-    last_refresh_time_ =
-        base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
+  if (degraded_recoverability_state
+          .has_last_refresh_time_millis_since_unix_epoch()) {
+    base::Time last_refresh_time =
+        ProtoTimeToTime(degraded_recoverability_state
+                            .last_refresh_time_millis_since_unix_epoch());
+    if (base::Time::Now() > last_refresh_time) {
+      last_refresh_time_ =
+          base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
+    }
   }
 }
 
@@ -102,6 +106,19 @@ void TrustedVaultDegradedRecoverabilityHandler::RefreshImmediately() {
     return;
   }
   next_refresh_timer_.FireNow();
+}
+
+void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
+    base::OnceCallback<void(bool)> cb) {
+  if (last_refresh_time_.is_null()) {
+    pending_get_is_recoverability_degraded_callback_ = std::move(cb);
+  } else {
+    std::move(cb).Run(degraded_recoverability_value_ ==
+                      sync_pb::DegradedRecoverabilityValue::kDegraded);
+  }
+  if (!next_refresh_timer_.IsRunning()) {
+    Start();
+  }
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {
@@ -141,6 +158,12 @@ void TrustedVaultDegradedRecoverabilityHandler::
     case TrustedVaultRecoverabilityStatus::kError:
       // TODO(crbug.com/1247990): To be handled.
       break;
+  }
+  if (!pending_get_is_recoverability_degraded_callback_.is_null()) {
+    std::move(pending_get_is_recoverability_degraded_callback_)
+        .Run(degraded_recoverability_value_ ==
+             sync_pb::DegradedRecoverabilityValue::kDegraded);
+    pending_get_is_recoverability_degraded_callback_ = base::NullCallback();
   }
   if (degraded_recoverability_value_ != old_degraded_recoverability_value) {
     delegate_->OnDegradedRecoverabilityChanged();

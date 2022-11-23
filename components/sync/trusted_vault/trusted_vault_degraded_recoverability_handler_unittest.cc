@@ -107,7 +107,10 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
     scheduler_ = std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
         &connection_, &delegate_, MakeAccountInfoWithGaiaId("user"),
         sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
-    scheduler_->Start();
+
+    // Start the scheduler.
+    scheduler_->GetIsRecoverabilityDegraded(base::DoNothing());
+
     // Moving the time forward by one millisecond to make sure that the first
     // refresh had called.
     task_environment().FastForwardBy(base::Milliseconds(1));
@@ -130,18 +133,56 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
 };
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
-       ShouldRefreshOnceWhenInitialize) {
+       ShouldPendTheCallbackUntilTheFirstRefreshIsCalled) {
   testing::NiceMock<MockTrustedVaultConnection> connection;
+  ON_CALL(connection, DownloadIsRecoverabilityDegraded(
+                          Eq(MakeAccountInfoWithGaiaId("user")), _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                  callback) {
+            std::move(callback).Run(
+                TrustedVaultRecoverabilityStatus::kDegraded);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
   testing::NiceMock<MockDelegate> delegate;
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   // Passing empty LocalDegradedRecoverability state indicates that this is the
   // first initialization and new state needs to be fetched immediately.
   std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler> scheduler =
       std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
           &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
           sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
-  scheduler->Start();
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
+
+  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
+  EXPECT_CALL(completion_callback, Run(true));
+
+  scheduler->GetIsRecoverabilityDegraded(completion_callback.Get());
   task_environment().FastForwardBy(base::Milliseconds(1));
+}
+
+TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
+       ShouldInvokeTheCallbackImmediatelyWhenTheFirstRefreshIsAlreadyCalled) {
+  // Note: The first Refresh() could already be happened on a previous handler
+  // instance.
+  testing::NiceMock<MockTrustedVaultConnection> connection;
+  testing::NiceMock<MockDelegate> delegate;
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_degraded_recoverability_value(
+      sync_pb::DegradedRecoverabilityValue::kNotDegraded);
+  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
+      TimeToProtoTime(base::Time::Now() - base::Seconds(1)));
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler> scheduler =
+      std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+          &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
+          degraded_recoverability_state);
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
+
+  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded).Times(0);
+  EXPECT_CALL(completion_callback, Run(false));
+
+  scheduler->GetIsRecoverabilityDegraded(completion_callback.Get());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -266,7 +307,8 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
           &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
           degraded_recoverability_state);
-  scheduler->Start();
+  // Start the scheduler.
+  scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
   task_environment().FastForwardBy(base::Days(3) + base::Milliseconds(1));
 }
 

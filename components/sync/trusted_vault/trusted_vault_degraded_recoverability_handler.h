@@ -52,14 +52,18 @@ class TrustedVaultDegradedRecoverabilityHandler {
 
   void HintDegradedRecoverabilityChanged(
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA reason);
+  // The scheduler actually starts with the first call to
+  // GetIsRecoverabilityDegraded().
+  void GetIsRecoverabilityDegraded(base::OnceCallback<void(bool)> cb);
+
   // TODO(crbug.com/1247990): The accessibility of the following three functions
   // should be changed to be private.
   void StartLongIntervalRefreshing();
   void StartShortIntervalRefreshing();
   void RefreshImmediately();
-  void Start();
 
  private:
+  void Start();
   void Refresh();
   void OnRecoverabilityIsDegradedDownloaded(
       TrustedVaultRecoverabilityStatus status);
@@ -79,6 +83,12 @@ class TrustedVaultDegradedRecoverabilityHandler {
   base::TimeTicks last_refresh_time_;
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_get_recoverability_request_;
+
+  // If GetIsRecoverabilityDegraded(callback) gets invoked before the first
+  // recoverability request to the server, the callback gets deferred until the
+  // request is completed.
+  base::OnceCallback<void(bool)>
+      pending_get_is_recoverability_degraded_callback_;
 };
 
 }  // namespace syncer
