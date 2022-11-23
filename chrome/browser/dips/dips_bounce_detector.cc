@@ -274,21 +274,47 @@ void DIPSBounceDetector::HandleRedirect(const DIPSRedirectInfo& redirect,
   }
 
   // Record this bounce in the DIPS database.
-  delegate_->RecordBounce(redirect.url, clock_->Now(),
-                          redirect.access_type > CookieAccessType::kRead);
+  if (redirect.access_type != CookieAccessType::kUnknown) {
+    DIPSRecordedEvent bounce = redirect.access_type > CookieAccessType::kRead
+                                   ? DIPSRecordedEvent::kStatefulBounce
+                                   : DIPSRecordedEvent::kStatelessBounce;
+    delegate_->RecordEvent(bounce, redirect.url, clock_->Now());
+  }
 
   RedirectCategory category = ClassifyRedirect(redirect.access_type, level);
   UmaHistogramBounceCategory(category, delegate_->GetCookieMode(),
                              redirect.redirect_type);
 }
 
-void DIPSWebContentsObserver::RecordBounce(const GURL& url,
-                                           const base::Time& time,
-                                           bool stateful) {
-  dips_service_->storage()
-      ->AsyncCall(stateful ? &DIPSStorage::RecordStatefulBounce
-                           : &DIPSStorage::RecordStatelessBounce)
-      .WithArgs(url, time);
+void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
+                                          const GURL& url,
+                                          const base::Time& time) {
+  switch (event) {
+    case DIPSRecordedEvent::kStorage: {
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::RecordStorage)
+          .WithArgs(url, time, GetCookieMode());
+      return;
+    }
+    case DIPSRecordedEvent::kInteraction: {
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::RecordInteraction)
+          .WithArgs(url, time, GetCookieMode());
+      return;
+    }
+    case DIPSRecordedEvent::kStatelessBounce: {
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::RecordStatelessBounce)
+          .WithArgs(url, time);
+      return;
+    }
+    case DIPSRecordedEvent::kStatefulBounce: {
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::RecordStatefulBounce)
+          .WithArgs(url, time);
+      return;
+    }
+  }
 }
 
 const GURL& DIPSWebContentsObserver::GetLastCommittedURL() const {
@@ -401,6 +427,9 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
 
 void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
                                                  CookieOperation op) {
+  if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
+  }
   if (client_detection_state_ &&
       GetSiteForDIPS(url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
@@ -425,6 +454,9 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
     DIPSNavigationHandle* navigation_handle,
     const GURL& url,
     CookieOperation op) {
+  if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
+  }
   ServerBounceDetectionState* state = navigation_handle->GetServerState();
   if (state) {
     state->filter.AddAccess(url, op);
@@ -494,15 +526,26 @@ void DIPSBounceDetector::DidFinishNavigation(
     client_detection_state_->cookie_access_type = access_types.back();
   }
 }
-
+// TODO(kaklilu): Follow up on how this interacts with Fenced Frames.
 void DIPSWebContentsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
+  // Ignore iframe activations since we only care for its associated main-frame
+  // interactions on the top-level site.
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
+
   detector_.OnUserActivation();
 }
 
 void DIPSBounceDetector::OnUserActivation() {
+  GURL url = delegate_->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
+
   if (client_detection_state_.has_value())
     client_detection_state_->received_user_activation = true;
+
+  delegate_->RecordEvent(DIPSRecordedEvent::kInteraction, url, clock_->Now());
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {

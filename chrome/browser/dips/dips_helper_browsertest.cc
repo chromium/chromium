@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dips/dips_helper.h"
+#include "chrome/browser/dips/dips_bounce_detector.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
@@ -16,15 +18,19 @@
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -81,12 +87,13 @@ constexpr char kTimeToInteraction[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
 constexpr char kTimeToStorage[] =
     "Privacy.DIPS.TimeFromInteractionToStorage.Standard";
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kTimeToInteraction_OTR_Block3PC[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.OffTheRecord_Block3PC";
-
+#endif
 }  // namespace
 
-class DIPSTabHelperBrowserTest : public InProcessBrowserTest,
+class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
                                  public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
@@ -94,7 +101,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest,
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           dips::kFeature, {{"persist_database", "true"}});
     }
-    InProcessBrowserTest::SetUp();
+    PlatformBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -102,22 +109,16 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest,
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    DIPSTabHelper::SetClockForTesting(&test_clock_);
-  }
-
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    DIPSTabHelper::SetClockForTesting(nullptr);
+    DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
+        ->SetClockForTesting(&test_clock_);
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
   void BlockUntilHelperProcessesPendingRequests() {
@@ -153,6 +154,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest,
   }
 
   bool IsPersistentStorageEnabled() { return GetParam(); }
+  base::Clock* test_clock() { return &test_clock_; }
 
  private:
   base::SimpleTestClock test_clock_;
@@ -201,7 +203,14 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   base::Time frame_interaction_time = base::Time::FromDoubleT(2);
   SetDIPSTime(frame_interaction_time);
   UserActivationObserver observer_b(web_contents, iframe);
+
+  // TODO(crbug.com/1386142): Remove the ExecJs workaround once
+  // SimulateMouseClickOrTapElementWithId is able to activate iframes on Android
+#if !BUILDFLAG(IS_ANDROID)
   content::SimulateMouseClickOrTapElementWithId(web_contents, kIframeId);
+#else
+  ASSERT_TRUE(content::ExecJs(iframe, "// empty script to activate iframe"));
+#endif
   observer_b.Wait();
 
   // User interaction on the top-level is updated by interacting with b.test
@@ -224,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
   SetDIPSTime(time);
   // Navigate to a.test.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // Wait until we can click.
 
@@ -265,7 +274,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   // cookie, the cookie needs to be SameSite=None and Secure.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(https_server.Start());
 
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
@@ -275,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   // The top-level page is on a.test, containing an iframe pointing at b.test.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url_a));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_a, 1);
   ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId, url_b));
 
   content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
@@ -309,7 +319,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
 
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(GetActiveWebContents(),
+                                                      url, 1);
 
   // One instance of site storage is recorded.
   absl::optional<StateValue> state_1 = GetDIPSState(url);
@@ -321,7 +332,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
 
   SetDIPSTime(time + base::Seconds(10));
   // Navigate to the URL again to rewrite the cookie.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(GetActiveWebContents(),
+                                                      url, 1);
 
   // A second, different, instance of site storage is recorded for the same
   // site.
@@ -343,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
 
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   // Wait until we can click.
   content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
   BlockUntilHelperProcessesPendingRequests();
@@ -365,16 +377,20 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_StorageThenClick_Incognito) {
+// TODO(crbug.com/1380410): Enable this test on Android once the logic to
+// create an Incognito browser without regard to platform is public.
+#if !BUILDFLAG(IS_ANDROID)
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
   Browser* browser = CreateIncognitoBrowser();
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-
+  DIPSWebContentsObserver::FromWebContents(web_contents)
+      ->SetClockForTesting(test_clock());
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   // Wait until we can click.
   content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
   BlockUntilHelperProcessesPendingRequests();
@@ -396,6 +412,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   histograms.ExpectTotalCount(kTimeToStorage, 0);
   histograms.ExpectUniqueTimeSample(kTimeToInteraction_OTR_Block3PC,
                                     base::Seconds(10), 1);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
@@ -403,8 +420,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html"),
+      1);
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // wait until we can click.
   SetDIPSTime(time);
@@ -438,12 +456,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   BlockUntilHelperProcessesPendingRequests();
 
   // Navigate to the URL, setting the cookie again.
   SetDIPSTime(time + base::Seconds(3));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   // Wait until we can click.
   content::WaitForHitTestData(frame);
@@ -482,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // Wait until we can click.
 
@@ -529,6 +547,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(7), 1);
 }
 
+// TODO(crbug.com/654704): Android does not support PRE_ tests.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PRE_PrepopulateTest) {
   // Simulate the user typing the URL to visit the page, which will record site
   // engagement.
@@ -586,3 +606,4 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   absl::optional<StateValue> state_final = GetDIPSState(GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
