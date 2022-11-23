@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
@@ -142,6 +144,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       AddItemWithStringId(TabStripModel::CommandUnfollowSite,
                           IDS_TAB_CXMENU_UNFOLLOW_SITE);
     }
+  }
+  if (UserNotesController::IsUserNotesSupported(tab_strip->profile())) {
+    AddItemWithStringId(TabStripModel::CommandAddNote,
+                        IDS_CONTENT_CONTEXT_ADD_A_NOTE);
   }
   if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip->GetWebContentsAt(index))) {

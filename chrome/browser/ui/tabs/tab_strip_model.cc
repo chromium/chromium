@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/url_constants.h"
@@ -1297,6 +1298,11 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandSendTabToSelf:
       return true;
 
+    case CommandAddNote: {
+      DCHECK(UserNotesController::IsUserNotesSupported(profile()));
+      return GetIndicesForCommand(context_index).size() == 1;
+    }
+
     case CommandAddToReadLater:
       return true;
 
@@ -1460,6 +1466,13 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
             UserMetricsAction("SoundContentSetting.UnmuteBy.TabStrip"));
       }
       SetSitesMuted(GetIndicesForCommand(context_index), mute);
+      break;
+    }
+
+    case CommandAddNote: {
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      DCHECK(indices.size() == 1);
+      UserNotesController::SwitchTabsAndAddNote(this, indices.front());
       break;
     }
 

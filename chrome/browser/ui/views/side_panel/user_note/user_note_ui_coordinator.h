@@ -25,6 +25,7 @@ class UserNoteInstance;
 class SidePanelRegistry;
 class UserNoteView;
 class BrowserView;
+class TabStripModel;
 
 namespace user_notes {
 class UserNoteInstance;
