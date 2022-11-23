@@ -142,9 +142,6 @@ BreakIterator::~BreakIterator() {
       case BREAK_NEWLINE:
         line_break_cache.Pointer()->Return(iter);
         break;
-      default:
-        NOTREACHED() << "invalid break_type_";
-        break;
     }
   }
 }
@@ -175,9 +172,6 @@ bool BreakIterator::Init() {
                      << parse_error.line << ", offset " << parse_error.offset;
       }
       break;
-    default:
-      NOTREACHED() << "invalid break_type_";
-      return false;
   }
 
   if (U_FAILURE(status) || iter_ == nullptr) {
@@ -227,9 +221,6 @@ bool BreakIterator::Advance() {
         return false;
       }
       return true;
-    default:
-      NOTREACHED() << "invalid break_type_";
-      return false;
   }
 }
 

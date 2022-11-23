@@ -101,8 +101,6 @@ bool ConvertFromUTF16(UConverter* converter,
       ucnv_setFromUCallBack(converter, UCNV_FROM_U_CALLBACK_SKIP, nullptr,
                             nullptr, nullptr, &status);
       break;
-    default:
-      NOTREACHED();
   }
 
   // ucnv_fromUChars returns size not including terminating null
@@ -133,8 +131,6 @@ void SetUpErrorHandlerForToUChars(OnStringConversionError::Type on_error,
       ucnv_setToUCallBack(converter, ToUnicodeCallbackSubstitute, nullptr,
                           nullptr, nullptr, status);
       break;
-    default:
-      NOTREACHED();
   }
 }
 

@@ -35,9 +35,6 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PROT_READ | PROT_EXEC;
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
-    default:
-      PA_NOTREACHED();
-      [[fallthrough]];
     case PageAccessibilityConfiguration::kInaccessible:
       return PROT_NONE;
   }

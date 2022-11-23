@@ -47,8 +47,6 @@ std::string TestResultPart::TypeAsString() const {
       return "fatal_failure";
     case kSkip:
       return "skip";
-    default:
-      NOTREACHED();
   }
   return "unknown";
 }

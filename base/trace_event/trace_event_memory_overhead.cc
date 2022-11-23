@@ -126,9 +126,6 @@ void TraceEventMemoryOverhead::AddValue(const Value& value) {
       for (const auto& v : value.GetList())
         AddValue(v);
       break;
-
-    default:
-      NOTREACHED();
   }
 }
 

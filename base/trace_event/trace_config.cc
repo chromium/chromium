@@ -262,8 +262,6 @@ std::string TraceConfig::TraceRecordModeToStr(TraceRecordMode record_mode) {
       return kRecordAsMuchAsPossible;
     case ECHO_TO_CONSOLE:
       return kTraceToConsole;
-    default:
-      NOTREACHED();
   }
   return kRecordUntilFull;
 }
@@ -716,8 +714,6 @@ std::string TraceConfig::ToTraceOptionsString() const {
     case ECHO_TO_CONSOLE:
       ret = kTraceToConsole;
       break;
-    default:
-      NOTREACHED();
   }
   if (enable_systrace_) {
     ret += ",";

@@ -100,9 +100,6 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
         return {};
       }
       break;
-    default:
-      DLOG(ERROR) << "Invalid permission mode: " << static_cast<int>(mode);
-      return {};
   }
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
