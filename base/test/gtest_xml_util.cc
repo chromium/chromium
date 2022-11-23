@@ -34,6 +34,17 @@ struct Property {
   std::string value;
 };
 
+struct Tag {
+  // The name of the test case.
+  std::string name;
+  // The name of the classname of the test.
+  std::string classname;
+  // The name of the tag.
+  std::string tag_name;
+  // The value of the tag.
+  std::string tag_value;
+};
+
 bool ProcessGTestOutput(const base::FilePath& output_file,
                         std::vector<TestResult>* results,
                         bool* crashed) {
@@ -59,6 +70,8 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
   std::vector<Link> links;
 
   std::vector<Property> properties;
+
+  std::vector<Tag> tags;
 
   while (xml_reader.Read()) {
     xml_reader.SkipToElement();
@@ -166,7 +179,13 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
           for (const Property& property : properties) {
             result.AddProperty(property.name, property.value);
           }
-          links.clear();
+          properties.clear();
+          for (const Tag& tag : tags) {
+            if (tag.name == test_name && tag.classname == test_case_name) {
+              result.AddTag(tag.tag_name, tag.tag_value);
+            }
+          }
+          tags.clear();
           results->push_back(result);
         } else if (node_name == "link" && !xml_reader.IsClosingElement()) {
           Link link;
@@ -180,6 +199,19 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
             return false;
           links.push_back(link);
         } else if (node_name == "link" && xml_reader.IsClosingElement()) {
+          // Deliberately empty.
+        } else if (node_name == "tag" && !xml_reader.IsClosingElement()) {
+          Tag tag;
+          if (!xml_reader.NodeAttribute("name", &tag.name))
+            return false;
+          if (!xml_reader.NodeAttribute("classname", &tag.classname))
+            return false;
+          if (!xml_reader.NodeAttribute("tag_name", &tag.tag_name))
+            return false;
+          if (!xml_reader.ReadElementContent(&tag.tag_value))
+            return false;
+          tags.push_back(tag);
+        } else if (node_name == "tag" && xml_reader.IsClosingElement()) {
           // Deliberately empty.
         } else if (node_name == "properties" &&
                    !xml_reader.IsClosingElement()) {

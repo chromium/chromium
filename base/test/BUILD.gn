@@ -52,6 +52,8 @@ static_library("test_support") {
     "gmock_move_support.h",
     "gtest_links.cc",
     "gtest_links.h",
+    "gtest_tags.cc",
+    "gtest_tags.h",
     "gtest_util.cc",
     "gtest_util.h",
     "gtest_xml_unittest_result_printer.cc",

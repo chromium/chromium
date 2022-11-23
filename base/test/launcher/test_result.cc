@@ -105,6 +105,10 @@ void TestResult::AddLink(const std::string& name, const std::string& url) {
   DCHECK(inserted) << name << " is already used as a link name. Ignoring...";
 }
 
+void TestResult::AddTag(const std::string& name, const std::string& value) {
+  tags.insert({name, value});
+}
+
 void TestResult::AddProperty(const std::string& name,
                              const std::string& value) {
   auto [it, inserted] = properties.insert({name, value});

@@ -83,6 +83,10 @@ struct TestResult {
   // See more in gtest_links.h.
   void AddLink(const std::string& name, const std::string& url);
 
+  // Add tag in the xml output.
+  // See more in gtest_tags.h.
+  void AddTag(const std::string& name, const std::string& value);
+
   // Add property in the xml output.
   void AddProperty(const std::string& name, const std::string& value);
 
@@ -129,6 +133,9 @@ struct TestResult {
 
   // The key is property name.
   std::map<std::string, std::string> properties;
+
+  // The key is tag name.
+  std::map<std::string, std::string> tags;
 };
 
 }  // namespace base

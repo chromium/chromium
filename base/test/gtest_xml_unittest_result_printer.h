@@ -33,6 +33,11 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   // explanation and usage.
   void AddLink(const std::string& name, const std::string& url);
 
+  // Add tag in the gtest xml output.
+  // Please see AddTagToTestResult in gtest_tags.h for detailed
+  // explanation and usage.
+  void AddTag(const std::string& name, const std::string& value);
+
   // Must be called before adding as a listener. Returns true on success.
   [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 

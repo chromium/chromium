@@ -49,6 +49,23 @@ TEST(XmlUnitTestResultPrinterTest, EscapedLinkInXmlFile) {
       << expected_content << " not found in " << content;
 }
 
+TEST(XmlUnitTestResultPrinterTest, TagInXmlFile) {
+  XmlUnitTestResultPrinter::Get()->AddTag("tag_name", "tag_value");
+  std::string file_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTestLauncherOutput);
+  std::string content;
+  ASSERT_TRUE(
+      base::ReadFileToString(FilePath::FromUTF8Unsafe(file_path), &content));
+  std::string expected_content =
+      base::StrCat({"<tag name=\"TagInXmlFile\" "
+                    "classname=\"XmlUnitTestResultPrinterTest\" "
+                    "tag_name=\"tag_name\">",
+                    "tag_value", "</tag>"});
+  EXPECT_TRUE(content.find(expected_content) != std::string::npos)
+      << expected_content << " not found in " << content;
+}
+
 class XmlUnitTestResultPrinterTimestampTest : public ::testing::Test {
  public:
   static void TearDownTestSuite() {
