@@ -170,7 +170,7 @@ void SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground() {
 // static
 bool SelectFileDialogLinuxPortal::IsPortalAvailable() {
   if (!GetAvailabilityTestCompletionFlag()->IsSet())
-    LOG(WARNING) << "Portal availiability checked before test was complete";
+    LOG(WARNING) << "Portal availability checked before test was complete";
 
   return is_portal_available_;
 }
