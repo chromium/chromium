@@ -47,6 +47,11 @@ class MODULES_EXPORT DocumentPictureInPicture
   static const char kSupplementName[];
 
   void Trace(Visitor*) const override;
+
+ protected:
+  // EventTarget implementation.
+  void AddedEventListener(const AtomicString& event_type,
+                          RegisteredEventListener&) override;
 };
 
 }  // namespace blink

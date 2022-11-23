@@ -41379,7 +41379,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4150" label="PrivateNetworkAccessWithinWorker"/>
   <int value="4151" label="ClientHintsUAWoW64"/>
   <int value="4152" label="FetchSetCookieInRequestGuardedHeaders"/>
-  <int value="4153" label="V8Window_RequestPictureInPictureWindow_Method"/>
+  <int value="4153"
+      label="OBSOLETE_V8Window_RequestPictureInPictureWindow_Method"/>
   <int value="4154" label="V8UDPSocket_LocalPort_AttributeGetter"/>
   <int value="4155" label="V8UDPSocket_Readable_AttributeGetter"/>
   <int value="4156" label="V8UDPSocket_RemoteAddress_AttributeGetter"/>
@@ -41634,6 +41635,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4394" label="SpeculationRulesHeader"/>
   <int value="4395" label="SpeculationRulesDocumentRules"/>
   <int value="4396" label="FederatedCredentialManagementIframe"/>
+  <int value="4397" label="V8DocumentPictureInPicture_RequestWindow_Method"/>
+  <int value="4398" label="V8DocumentPictureInPicture_Window_AttributeGetter"/>
+  <int value="4399"
+      label="V8DocumentPictureInPictureEvent_Window_AttributeGetter"/>
+  <int value="4400" label="DocumentPictureInPictureEnterEvent"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

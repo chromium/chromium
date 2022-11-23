@@ -3473,7 +3473,7 @@ enum WebFeature {
   kPrivateNetworkAccessWithinWorker = 4150,
   kClientHintsUAWoW64 = 4151,
   kFetchSetCookieInRequestGuardedHeaders = 4152,
-  kV8Window_RequestPictureInPictureWindow_Method = 4153,
+  kOBSOLETE_V8Window_RequestPictureInPictureWindow_Method = 4153,
   kV8UDPSocket_LocalPort_AttributeGetter = 4154,
   kV8UDPSocket_Readable_AttributeGetter = 4155,
   kV8UDPSocket_RemoteAddress_AttributeGetter = 4156,
@@ -3735,6 +3735,10 @@ enum WebFeature {
   kSpeculationRulesHeader = 4394,
   kSpeculationRulesDocumentRules = 4395,
   kFederatedCredentialManagementIframe = 4396,
+  kV8DocumentPictureInPicture_RequestWindow_Method = 4397,
+  kV8DocumentPictureInPicture_Window_AttributeGetter = 4398,
+  kV8DocumentPictureInPictureEvent_Window_AttributeGetter = 4399,
+  kDocumentPictureInPictureEnterEvent = 4400,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

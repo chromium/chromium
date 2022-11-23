@@ -10,5 +10,5 @@
 ]
 interface DocumentPictureInPictureEvent : Event {
   constructor(DOMString type, DocumentPictureInPictureEventInit eventInitDict);
-  [SameObject] readonly attribute Window window;
+  [Measure, SameObject] readonly attribute Window window;
 };

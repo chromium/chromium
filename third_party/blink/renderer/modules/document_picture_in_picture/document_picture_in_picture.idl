@@ -9,7 +9,7 @@
     RuntimeEnabled=DocumentPictureInPictureAPI
 ]
 interface DocumentPictureInPicture : EventTarget {
-  [CallWith=ScriptState, RaisesException, NewObject] Promise<Window> requestWindow(optional DocumentPictureInPictureOptions options = {});
-  [CallWith=ScriptState] readonly attribute Window window;
+  [CallWith=ScriptState, Measure, RaisesException, NewObject] Promise<Window> requestWindow(optional DocumentPictureInPictureOptions options = {});
+  [CallWith=ScriptState, Measure] readonly attribute Window window;
   attribute EventHandler onenter;
 };

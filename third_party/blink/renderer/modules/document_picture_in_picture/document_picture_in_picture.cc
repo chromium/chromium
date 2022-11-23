@@ -92,4 +92,14 @@ void DocumentPictureInPicture::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
+void DocumentPictureInPicture::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  if (event_type == event_type_names::kEnter) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kDocumentPictureInPictureEnterEvent);
+  }
+  EventTarget::AddedEventListener(event_type, registered_listener);
+}
+
 }  // namespace blink
