@@ -429,7 +429,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/settings/MainSettingsFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/settings/SettingsActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/shape_detection/ShapeDetectionTest.java",
-  "javatests/src/org/chromium/chrome/browser/share/LensUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/share/ShareButtonControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/share/ShareDelegateImplIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/share/ShareDelegateImplTest.java",
