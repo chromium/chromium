@@ -31,7 +31,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
@@ -205,7 +204,8 @@ class PasswordCheckMediator
 
             // If a check was just completed, record some metrics.
             if (oldStatus == PasswordCheckUIStatus.RUNNING) {
-                recordMetricsOnCheckCompletion();
+                PasswordCheckMetricsRecorder.recordCompromisedCredentialsCountAfterCheck(
+                        compromisedCredentialCount);
             }
         }
         header.set(CHECK_TIMESTAMP, checkTimestamp);
@@ -214,22 +214,6 @@ class PasswordCheckMediator
         if (items.size() == 0) {
             items.add(new ListItem(PasswordCheckProperties.ItemType.HEADER, header));
         }
-    }
-
-    private void recordMetricsOnCheckCompletion() {
-        int countTotal = 0;
-        int countWithAutoChange = 0;
-        // Note: items[0] is the header, so skip that one.
-        ListModel<ListItem> items = mModel.get(ITEMS);
-        for (int i = 1; i < items.size(); i++) {
-            countTotal++;
-            CompromisedCredential credential = items.get(i).model.get(COMPROMISED_CREDENTIAL);
-            if (credential.hasAutoChangeButton()) {
-                countWithAutoChange++;
-            }
-        }
-        PasswordCheckMetricsRecorder.recordCompromisedCredentialsCountAfterCheck(
-                countTotal, countWithAutoChange);
     }
 
     @Override
@@ -315,40 +299,12 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordButtonClick(CompromisedCredential credential) {
-        PasswordCheckMetricsRecorder.recordUiUserAction(credential.hasAutoChangeButton()
-                        ? PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY
-                        : PasswordCheckUserAction.CHANGE_PASSWORD);
+        PasswordCheckMetricsRecorder.recordUiUserAction(PasswordCheckUserAction.CHANGE_PASSWORD);
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.OPENED_SITE, credential);
         mCctIsOpened = true;
         mDelegate.onManualPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
-    }
-
-    @Override
-    public void onChangePasswordWithScriptButtonClick(CompromisedCredential credential) {
-        if (!mReauthenticatorBridge.canUseAuthentication()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL)) {
-            startAutomatedPasswordChange(credential);
-            return;
-        }
-
-        mReauthenticatorBridge.reauthenticate(reauthSucceeded -> {
-            if (reauthSucceeded) {
-                startAutomatedPasswordChange(credential);
-            }
-        }, true);
-    }
-
-    private void startAutomatedPasswordChange(CompromisedCredential credential) {
-        assert credential.hasAutoChangeButton();
-        PasswordCheckMetricsRecorder.recordUiUserAction(
-                PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);
-        PasswordCheckMetricsRecorder.recordCheckResolutionAction(
-                PasswordCheckResolutionAction.STARTED_SCRIPT, credential);
-        mCctIsOpened = true;
-        mDelegate.onAutomatedPasswordChangeStarted(credential);
-        mChangePasswordDelegate.launchCctWithScript(credential);
     }
 
     private void updateStatusHeaderWhenCredentialsChange() {
@@ -413,10 +369,8 @@ class PasswordCheckMediator
         mIconHelper.getLargeIcon(credential, (faviconOrFallback) -> {
             credentialModel.set(FAVICON_OR_FALLBACK, faviconOrFallback);
         });
-        return new ListItem(credential.hasAutoChangeButton()
-                        ? PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT
-                        : PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL,
-                credentialModel);
+        return new ListItem(
+                PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL, credentialModel);
     }
 
     private void sortCredentials(List<CompromisedCredential> credentials) {

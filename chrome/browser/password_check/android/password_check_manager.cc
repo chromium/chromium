@@ -297,14 +297,6 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   }
 
   ui_credential.display_username = GetDisplayUsername(credential.username);
-  ui_credential.has_startable_script =
-      !credential.username.empty() && ShouldFetchPasswordScripts() &&
-      password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(credential_facet.url.DeprecatedGetOriginAsURL()));
-  ui_credential.has_auto_change_button =
-      ui_credential.has_startable_script &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChangeInSettings);
 
   credential_facets.push_back(std::move(credential_facet));
   ui_credential.facets = std::move(credential_facets);

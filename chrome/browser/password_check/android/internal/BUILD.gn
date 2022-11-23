@@ -135,7 +135,6 @@ android_resources("java_resources") {
     "java/res/drawable-night/password_check_positive.xml",
     "java/res/drawable/password_check_positive.xml",
     "java/res/layout/password_check_compromised_credential_item.xml",
-    "java/res/layout/password_check_compromised_credential_with_script_item.xml",
     "java/res/layout/password_check_header_item.xml",
     "java/res/layout/password_check_view_credential_dialog.xml",
     "java/res/values/dimens.xml",

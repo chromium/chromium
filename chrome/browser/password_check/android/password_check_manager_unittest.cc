@@ -171,9 +171,7 @@ auto ExpectCompromisedCredentialForUI(
     const GURL& url,
     const absl::optional<std::string>& package_name,
     const absl::optional<std::string>& change_password_url,
-    InsecureType insecure_type,
-    bool has_startable_script,
-    bool has_auto_change_button) {
+    InsecureType insecure_type) {
   auto package_name_field_matcher =
       package_name.has_value()
           ? Field(&CompromisedCredentialForUI::package_name,
@@ -194,11 +192,7 @@ auto ExpectCompromisedCredentialForUI(
       Property(&CompromisedCredentialForUI::IsLeaked,
                insecure_type == InsecureType::kLeaked),
       Property(&CompromisedCredentialForUI::IsPhished,
-               insecure_type == InsecureType::kPhished),
-      Field(&CompromisedCredentialForUI::has_startable_script,
-            has_startable_script),
-      Field(&CompromisedCredentialForUI::has_auto_change_button,
-            has_auto_change_button));
+               insecure_type == InsecureType::kPhished));
 }
 
 }  // namespace
@@ -356,9 +350,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureType::kLeaked,
-                  /*has_startable_script=*/false,
-                  /*has_auto_change_button=*/false)));
+                  InsecureType::kLeaked)));
 }
 
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
@@ -387,18 +379,15 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   store().AddLogin(MakeSavedAndroidPassword(kExampleOrg, kUsername2));
 
   EXPECT_THAT(manager().GetCompromisedCredentialsCount(), 2);
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
-              UnorderedElementsAre(
-                  ExpectCompromisedCredentialForUI(
-                      kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
-                      "com.example.app", absl::nullopt, InsecureType::kLeaked,
-                      /*has_startable_script=*/false,
-                      /*has_auto_change_button=*/false),
-                  ExpectCompromisedCredentialForUI(
-                      kUsername2, u"Example App", GURL(kExampleCom),
-                      "com.example.app", absl::nullopt, InsecureType::kLeaked,
-                      /*has_startable_script=*/false,
-                      /*has_auto_change_button=*/false)));
+  EXPECT_THAT(
+      manager().GetCompromisedCredentials(),
+      UnorderedElementsAre(
+          ExpectCompromisedCredentialForUI(
+              kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
+              "com.example.app", absl::nullopt, InsecureType::kLeaked),
+          ExpectCompromisedCredentialForUI(
+              kUsername2, u"Example App", GURL(kExampleCom), "com.example.app",
+              absl::nullopt, InsecureType::kLeaked)));
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
@@ -456,151 +445,7 @@ TEST_F(PasswordCheckManagerTest,
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureType::kLeaked,
-                  /*has_startable_script=*/false,
-                  /*has_auto_change_button=*/false)));
-}
-
-TEST_F(PasswordCheckManagerTest,
-       CorrectlyCreatesUIStructWithPasswordScriptsSyncOn) {
-  InitializeManager();
-  // Enable password sync
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-  feature_list().InitWithFeatures(
-      {password_manager::features::kPasswordDomainCapabilitiesFetching,
-       password_manager::features::kPasswordChangeInSettings},
-      {});
-  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
-
-  manager().RefreshScripts();
-
-  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
-              ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
-                  "https://example.com/.well-known/change-password",
-                  InsecureType::kLeaked,
-                  /*has_startable_script=*/true,
-                  /*has_auto_change_button=*/true)));
-}
-
-TEST_F(PasswordCheckManagerTest,
-       CorrectlyCreatesUIStructWithPasswordScriptsEmptyUsername) {
-  InitializeManager();
-  // Enable password sync
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-  feature_list().InitWithFeatures(
-      {password_manager::features::kPasswordDomainCapabilitiesFetching,
-       password_manager::features::kPasswordChangeInSettings},
-      {});
-
-  PasswordForm form = MakeSavedPassword(kExampleCom, u"");
-  AddIssueToForm(&form);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
-
-  manager().RefreshScripts();
-
-  // Particular script availability is not requested as a script cannot be
-  // started with an empty username.
-  EXPECT_CALL(fetcher(), IsScriptAvailable).Times(0);
-  EXPECT_THAT(
-      manager().GetCompromisedCredentials(),
-      ElementsAre(ExpectCompromisedCredentialForUI(
-          u"No username", u"example.com", GURL(kExampleCom), absl::nullopt,
-          "https://example.com/.well-known/change-password",
-          InsecureType::kLeaked,
-          /*has_startable_script=*/false,
-          /*has_auto_change_button=*/false)));
-}
-
-TEST_F(PasswordCheckManagerTest,
-       CorrectlyCreatesUIStructWithScriptsFetchingButAutomaticChangeOff) {
-  InitializeManager();
-  // Enable password sync
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-  feature_list().InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kPasswordDomainCapabilitiesFetching},
-      /*disabled_features=*/{
-          password_manager::features::kPasswordChangeInSettings});
-
-  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
-
-  manager().RefreshScripts();
-
-  // A script is available but an auto change button is not shown because
-  // |kPasswordChangeInSettings| is disabled.
-  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
-              ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
-                  "https://example.com/.well-known/change-password",
-                  InsecureType::kLeaked,
-                  /*has_startable_script=*/true,
-                  /*has_auto_change_button=*/false)));
-}
-
-TEST_F(PasswordCheckManagerTest,
-       CorrectlyCreatesUIStructWithScriptsFetchingButNoAvailableScript) {
-  InitializeManager();
-  // Enable password sync
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-  feature_list().InitWithFeatures(
-      {password_manager::features::kPasswordDomainCapabilitiesFetching,
-       password_manager::features::kPasswordChangeInSettings},
-      {});
-
-  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
-
-  manager().RefreshScripts();
-
-  // A script is not available and therefore no auto change button is shown.
-  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(false));
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
-              ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
-                  "https://example.com/.well-known/change-password",
-                  InsecureType::kLeaked,
-                  /*has_startable_script=*/false,
-                  /*has_auto_change_button=*/false)));
+                  InsecureType::kLeaked)));
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {

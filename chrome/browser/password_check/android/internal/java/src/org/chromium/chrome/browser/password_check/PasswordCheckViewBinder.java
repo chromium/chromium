@@ -111,10 +111,6 @@ class PasswordCheckViewBinder {
                 return new PasswordCheckViewHolder(parent,
                         R.layout.password_check_compromised_credential_item,
                         PasswordCheckViewBinder::bindCredentialView);
-            case ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT:
-                return new PasswordCheckViewHolder(parent,
-                        R.layout.password_check_compromised_credential_with_script_item,
-                        PasswordCheckViewBinder::bindCredentialView);
         }
         assert false : "Cannot create view for ItemType: " + itemType;
         return null;
@@ -165,13 +161,6 @@ class PasswordCheckViewBinder {
             });
             setTintListForCompoundDrawables(button.getCompoundDrawablesRelative(),
                     view.getContext(), R.color.default_text_color_on_accent1_list);
-            if (credential.hasAutoChangeButton()) {
-                ButtonCompat button_with_script =
-                        view.findViewById(R.id.credential_change_button_with_script);
-                button_with_script.setOnClickListener(unusedView -> {
-                    model.get(CREDENTIAL_HANDLER).onChangePasswordWithScriptButtonClick(credential);
-                });
-            }
         } else if (propertyKey == CREDENTIAL_HANDLER) {
             assert model.get(CREDENTIAL_HANDLER) != null;
             // Is read-only and must therefore be bound initially, so no action required.
@@ -180,9 +169,7 @@ class PasswordCheckViewBinder {
             button.setVisibility(model.get(HAS_MANUAL_CHANGE_BUTTON) ? View.VISIBLE : View.GONE);
             TextView changeHint = view.findViewById(R.id.credential_change_hint);
             changeHint.setVisibility(
-                    model.get(HAS_MANUAL_CHANGE_BUTTON) || credential.hasAutoChangeButton()
-                            ? View.GONE
-                            : View.VISIBLE);
+                    model.get(HAS_MANUAL_CHANGE_BUTTON) ? View.GONE : View.VISIBLE);
         } else if (propertyKey == FAVICON_OR_FALLBACK) {
             ImageView imageView = view.findViewById(R.id.credential_favicon);
             PasswordCheckIconHelper.FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);

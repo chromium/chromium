@@ -24,31 +24,16 @@ public final class PasswordCheckMetricsRecorder {
                 userAction, PasswordCheckUserAction.COUNT);
     }
 
-    public static void recordCompromisedCredentialsCountAfterCheck(
-            int countTotal, int countWithAutoChange) {
+    public static void recordCompromisedCredentialsCountAfterCheck(int count) {
         RecordHistogram.recordCount1000Histogram(
-                "PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid",
-                countTotal);
-        RecordHistogram.recordCount1000Histogram("PasswordManager.BulkCheck."
-                        + "CompromisedCredentialsCountWithAutoChangeAfterCheckAndroid",
-                countWithAutoChange);
+                "PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid", count);
     }
 
     public static void recordCheckResolutionAction(
             @PasswordCheckResolutionAction int action, CompromisedCredential credential) {
-        if (credential.hasStartableScript()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "PasswordManager.AutomaticChange.ForSitesWithScripts", action,
-                    PasswordCheckResolutionAction.COUNT);
-        }
-        if (credential.hasAutoChangeButton()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "PasswordManager.AutomaticChange.AcceptanceWithAutoButton", action,
-                    PasswordCheckResolutionAction.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton", action,
-                    PasswordCheckResolutionAction.COUNT);
-        }
+        // TODO(crbug.com/1386065): Update histogram name.
+        RecordHistogram.recordEnumeratedHistogram(
+                "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton", action,
+                PasswordCheckResolutionAction.COUNT);
     }
 }

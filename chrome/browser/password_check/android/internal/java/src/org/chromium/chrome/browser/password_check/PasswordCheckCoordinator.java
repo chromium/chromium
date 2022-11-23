@@ -64,13 +64,6 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
          * @param credential A {@link CompromisedCredential} to be changed.
          */
         void onChangePasswordButtonClick(CompromisedCredential credential);
-
-        /**
-         * Starts a script to change a {@link CompromisedCredential}. Can be called only if {@link
-         * CompromisedCredential#hasScript()}.
-         * @param credential A {@link CompromisedCredential} to be change with a script.
-         */
-        void onChangePasswordWithScriptButtonClick(CompromisedCredential credential);
     }
 
     PasswordCheckCoordinator(PasswordCheckFragmentView fragmentView,

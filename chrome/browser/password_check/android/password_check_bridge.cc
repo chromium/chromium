@@ -123,8 +123,7 @@ void PasswordCheckBridge::GetCompromisedCredentials(
         base::android::ConvertUTF8ToJavaString(env, credential.package_name),
         credential.GetLastLeakedOrPhishedTime().ToJavaTime(),
         credential.last_used_time.ToJavaTime(), IsOnlyLeaked(credential),
-        IsOnlyPhished(credential), credential.has_startable_script,
-        credential.has_auto_change_button);
+        IsOnlyPhished(credential));
   }
 }
 

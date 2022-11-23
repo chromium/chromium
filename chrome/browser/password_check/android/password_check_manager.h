@@ -58,8 +58,6 @@ class PasswordCheckManager
     std::u16string display_origin;
     std::string package_name;
     std::string change_password_url;
-    bool has_startable_script = false;
-    bool has_auto_change_button = false;
   };
 
   // `observer` must outlive `this`.
