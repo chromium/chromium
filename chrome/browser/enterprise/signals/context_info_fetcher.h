@@ -51,6 +51,7 @@ struct ContextInfo {
   absl::optional<bool> third_party_blocking_enabled;
   SettingValue os_firewall;
   std::vector<std::string> system_dns_servers;
+  absl::optional<std::string> enterprise_profile_id;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()

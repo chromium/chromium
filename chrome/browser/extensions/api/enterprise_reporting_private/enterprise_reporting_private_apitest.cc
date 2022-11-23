@@ -456,19 +456,26 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  static constexpr char kFakeDeviceID[] = "fake_device_id";
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->serial_number = kFakeDeviceID;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
   constexpr char kChromeCleanupEnabledType[] = "boolean";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "18";
+  constexpr char kCount[] = "19";
 #else
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "17";
+  constexpr char kCount[] = "18";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else
   constexpr char kChromeCleanupEnabledType[] = "undefined";
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "16";
+  constexpr char kCount[] = "17";
 #endif  // BUILDFLAG(IS_WIN)
 
   constexpr char kTest[] = R"(
@@ -499,6 +506,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
       chrome.test.assertEq(typeof info.osFirewall, 'string');
       chrome.test.assertTrue(info.systemDnsServers instanceof Array);
+      chrome.test.assertEq(typeof info.enterpriseProfileId, 'string');
 
       chrome.test.notifyPass();
     });)";
