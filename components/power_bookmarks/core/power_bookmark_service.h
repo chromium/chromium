@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_SERVICE_H_
 #define COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_SERVICE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -27,6 +28,7 @@ class Power;
 class PowerOverview;
 class PowerBookmarkDataProvider;
 class PowerBookmarkBackend;
+struct SearchParams;
 
 using PowersCallback =
     base::OnceCallback<void(std::vector<std::unique_ptr<Power>> powers)>;
@@ -68,6 +70,10 @@ class PowerBookmarkService : public KeyedService,
   // given `callback`.
   void GetPowerOverviewsForType(const PowerType& power_type,
                                 PowerOverviewsCallback callback);
+
+  // Returns a vector of Powers matching the given `search_params`. The results
+  // are ordered by the url they're associated with.
+  void Search(const SearchParams& search_params, PowersCallback callback);
 
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Success of the operation is returned through the given

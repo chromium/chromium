@@ -8,12 +8,10 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/guid.h"
 #include "base/i18n/string_search.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

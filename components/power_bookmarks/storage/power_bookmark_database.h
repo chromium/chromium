@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_DATABASE_H_
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_DATABASE_H_
 
-#include "base/files/file_path.h"
+#include <memory>
+#include <vector>
+
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace power_bookmarks {
+
+struct SearchParams;
 
 // Interface for the database layer of the Power Bookmark database.
 class PowerBookmarkDatabase {
@@ -34,6 +37,10 @@ class PowerBookmarkDatabase {
   // Returns a vector of PowerOverviews for the given `power_type`.
   virtual std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
       const PowerType& power_type) = 0;
+
+  // Returns a vector of Powers for the given `search_params`.
+  virtual std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
+      const SearchParams& search_params) = 0;
 
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Returns whether the operation was successful.

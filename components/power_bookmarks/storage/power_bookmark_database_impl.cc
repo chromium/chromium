@@ -5,8 +5,10 @@
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
 #include "base/files/file_util.h"
-#include "base/json/values_util.h"
 #include "base/notreached.h"
+#include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
+#include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -61,6 +63,28 @@ bool CheckIfPowerWithIdExists(sql::Database* db, const base::GUID& guid) {
   size_t count = count_statement.ColumnInt(0);
   DCHECK(count == 0 || count == 1);
   return count > 0;
+}
+
+bool MatchesSearchParams(const PowerBookmarkSpecifics& specifics,
+                         const SearchParams& search_params) {
+  if (search_params.query.empty())
+    return true;
+  std::string pattern = base::StrCat({"*", search_params.query, "*"});
+  if (base::MatchPattern(specifics.url(), pattern))
+    return true;
+
+  // A note can be matched by its contents.
+  switch (specifics.power_type()) {
+    case PowerType::POWER_TYPE_NOTE:
+      if (base::MatchPattern(
+              specifics.power_specifics().note_specifics().plain_text(),
+              pattern))
+        return true;
+      break;
+    default:
+      break;
+  }
+  return false;
 }
 
 }  // namespace
@@ -212,7 +236,7 @@ std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetPowersForURL(
 
   static constexpr char kGetPowersForURLSql[] =
       // clang-format off
-      "SELECT blobs.id, blobs.specifics, saves.url as url "
+      "SELECT blobs.id, blobs.specifics, saves.url "
           "FROM blobs JOIN saves ON blobs.id=saves.id "
           "WHERE (url=?) AND (power_type=? OR ?=?)";
   // clang-format on
@@ -276,6 +300,41 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForType(
   }
 
   return power_overviews;
+}
+
+std::vector<std::unique_ptr<Power>>
+PowerBookmarkDatabaseImpl::GetPowersForSearchParams(
+    const SearchParams& search_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1382855): Optimize this query to avoid SCAN TABLE.
+  static constexpr char kGetPowersForSearchParamsSql[] =
+      // clang-format off
+      "SELECT blobs.id, blobs.specifics "
+          "FROM blobs JOIN saves ON blobs.id=saves.id "
+          "ORDER BY url ASC";
+  // clang-format on
+  DCHECK(db_.IsSQLValid(kGetPowersForSearchParamsSql));
+
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetPowersForSearchParamsSql));
+
+  std::vector<std::unique_ptr<Power>> search_results;
+  while (statement.Step()) {
+    DCHECK_EQ(2, statement.ColumnCount());
+
+    absl::optional<PowerBookmarkSpecifics> specifics = DeserializeOrDelete(
+        statement.ColumnString(1),
+        base::GUID::ParseLowercase(statement.ColumnString(0)));
+    if (!specifics.has_value())
+      continue;
+    if (!MatchesSearchParams(specifics.value(), search_params))
+      continue;
+
+    search_results.emplace_back(CreatePowerFromSpecifics(specifics.value()));
+  }
+
+  return search_results;
 }
 
 bool PowerBookmarkDatabaseImpl::CreatePower(std::unique_ptr<Power> power) {

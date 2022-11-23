@@ -4,6 +4,7 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
+#include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
@@ -53,6 +54,12 @@ std::vector<std::unique_ptr<PowerOverview>>
 PowerBookmarkBackend::GetPowerOverviewsForType(const PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetPowerOverviewsForType(power_type);
+}
+
+std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::Search(
+    const SearchParams& search_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetPowersForSearchParams(search_params);
 }
 
 bool PowerBookmarkBackend::CreatePower(std::unique_ptr<Power> power) {

@@ -34,5 +34,6 @@ source_set("unit_tests") {
     "//sql",
     "//sql:test_support",
     "//testing/gtest",
+    "//url",
   ]
 }

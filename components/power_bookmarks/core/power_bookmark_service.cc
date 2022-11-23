@@ -12,6 +12,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
@@ -55,6 +56,13 @@ void PowerBookmarkService::GetPowerOverviewsForType(
     PowerOverviewsCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::GetPowerOverviewsForType)
       .WithArgs(power_type)
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::Search(const SearchParams& search_params,
+                                  PowersCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::Search)
+      .WithArgs(search_params)
       .Then(std::move(callback));
 }
 

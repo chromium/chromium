@@ -11,9 +11,10 @@
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "sql/database.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace power_bookmarks {
+
+struct SearchParams;
 
 constexpr base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PowerBookmarks.db");
@@ -36,6 +37,8 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
       const PowerType& power_type) override;
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
       const PowerType& power_type) override;
+  std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
+      const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
   bool UpdatePower(std::unique_ptr<Power> power) override;
   bool DeletePower(const base::GUID& guid) override;

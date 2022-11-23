@@ -48,6 +48,7 @@ static_library("powers") {
     "powers/power.h",
     "powers/power_overview.cc",
     "powers/power_overview.h",
+    "powers/search_params.h",
   ]
 
   public_deps = [ ":proto" ]

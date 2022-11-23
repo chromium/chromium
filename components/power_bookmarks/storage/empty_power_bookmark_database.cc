@@ -4,8 +4,9 @@
 
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 
+#include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace power_bookmarks {
 
@@ -31,6 +32,12 @@ std::vector<std::unique_ptr<PowerOverview>>
 EmptyPowerBookmarkDatabase::GetPowerOverviewsForType(
     const PowerType& power_type) {
   return std::vector<std::unique_ptr<PowerOverview>>();
+}
+
+std::vector<std::unique_ptr<Power>>
+EmptyPowerBookmarkDatabase::GetPowersForSearchParams(
+    const SearchParams& search_params) {
+  return std::vector<std::unique_ptr<Power>>();
 }
 
 bool EmptyPowerBookmarkDatabase::CreatePower(std::unique_ptr<Power> power) {

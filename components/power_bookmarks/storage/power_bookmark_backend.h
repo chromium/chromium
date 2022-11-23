@@ -13,6 +13,8 @@
 
 namespace power_bookmarks {
 
+struct SearchParams;
+
 // Class responsible for marshalling calls from the browser thread which the
 // service is called from and the background thread which the database is
 // run on. Calls to this class should be posted on the background task_runner.
@@ -39,6 +41,9 @@ class PowerBookmarkBackend {
   // Returns a vector of PowerOverviews for the given `power_type`.
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
       const PowerType& power_type);
+
+  // Returns a vector of Powers matching the given `search_params`.
+  std::vector<std::unique_ptr<Power>> Search(const SearchParams& search_params);
 
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Returns whether the operation was successful.
