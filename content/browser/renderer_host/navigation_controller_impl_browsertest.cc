@@ -18834,8 +18834,10 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
 
  public:
   DidCommitNavigationCanceller(WebContents* web_contents,
+                               const GURL& url_to_cancel,
                                CallbackScriptRunner callback)
-      : DidCommitNavigationInterceptor(web_contents) {
+      : DidCommitNavigationInterceptor(web_contents),
+        url_to_cancel_(url_to_cancel) {
     callback_ = std::move(callback);
   }
 
@@ -18845,12 +18847,16 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    std::move(callback_).Run();
-    return false;
+    if (navigation_request->GetURL() == url_to_cancel_) {
+      std::move(callback_).Run();
+      return false;
+    }
+    return true;
   }
 
  private:
   CallbackScriptRunner callback_;
+  GURL url_to_cancel_;
 };
 
 }  //  namespace
@@ -18877,7 +18883,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                               ->child_at(0);
 
   DidCommitNavigationCanceller canceller(
-      shell()->web_contents(), base::BindLambdaForTesting([iframe]() {
+      shell()->web_contents(), main_frame_url_2,
+      base::BindLambdaForTesting([iframe]() {
         EXPECT_TRUE(
             ExecJs(iframe, "parent.location.href = 'chrome-guest://1234';"));
       }));
@@ -21941,6 +21948,240 @@ IN_PROC_BROWSER_TEST_P(
     navigation_manager.WaitForNavigationFinished();
     EXPECT_FALSE(navigation_manager.was_committed());
   }
+}
+
+// Test that starting a new navigation will cancel a previous navigation that
+// had started earlier if one of the navigations uses a speculative
+// RenderFrameHost and the other one does not.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       StartNewNavigationWithExistingNavigation_RequestStart) {
+  if (ShouldCreateNewHostForAllFrames()) {
+    // This test expects cross-site main frame navigations to change
+    // RenderFrameHosts, and same-site main frame navigations to reuse the
+    // current RenderFrameHosts.
+    return;
+  }
+  // Ensure same-site navigation won't change RenderFrameHosts due to BFCache.
+  DisableBackForwardCacheForTesting(
+      contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_a3(embedded_test_server()->GetURL("a.com", "/title3.html"));
+  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  // 1) Navigate to A1.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+
+  // 2) Start a same-RFH navigation to A2, but don't commit it yet.
+  TestNavigationManager a2_navigation(shell()->web_contents(), url_a2);
+  shell()->LoadURL(url_a2);
+  EXPECT_TRUE(a2_navigation.WaitForRequestStart());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(root->navigation_request(), a2_navigation.GetNavigationHandle());
+
+  // 3) Start a cross-RFH navigation to B1, which will cancel the navigation to
+  // A2.
+  TestNavigationManager b1_navigation(shell()->web_contents(), url_b1);
+  shell()->LoadURL(url_b1);
+  EXPECT_TRUE(b1_navigation.WaitForRequestStart());
+  EXPECT_EQ(url_b1, b1_navigation.GetNavigationHandle()->GetURL());
+  EXPECT_EQ(root->navigation_request(), b1_navigation.GetNavigationHandle());
+
+  // Assert that the navigation to A2 gets cancelled.
+  a2_navigation.WaitForNavigationFinished();
+  EXPECT_FALSE(a2_navigation.was_committed());
+
+  // 4) Start another same-RFH navigation to A3, which will cancel the
+  // previous cross-RFH navigation to B1.
+  TestNavigationManager a3_navigation(shell()->web_contents(), url_a3);
+  shell()->LoadURL(url_a3);
+  EXPECT_TRUE(a3_navigation.WaitForRequestStart());
+  EXPECT_EQ(url_a3, a3_navigation.GetNavigationHandle()->GetURL());
+  EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
+
+  // Assert that the navigation to B1 gets cancelled.
+  b1_navigation.WaitForNavigationFinished();
+  EXPECT_FALSE(b1_navigation.was_committed());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    StartNewNavigationWithExistingNavigation_RequestStart_History) {
+  if (ShouldCreateNewHostForAllFrames()) {
+    // This test expects cross-site main frame navigations to change
+    // RenderFrameHosts, and same-site main frame navigations to reuse the
+    // current RenderFrameHosts.
+    return;
+  }
+  // Ensure same-site navigation won't change RenderFrameHosts due to BFCache.
+  DisableBackForwardCacheForTesting(
+      contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // 1) Navigate to A1, then B1, then B2.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  NavigationEntryImpl* entry_a1 = controller.GetLastCommittedEntry();
+  SiteInstance* site_instance_a1 =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(site_instance_a1, entry_a1->site_instance());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b1));
+  NavigationEntryImpl* entry_b1 = controller.GetLastCommittedEntry();
+  SiteInstance* site_instance_b1 =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(site_instance_b1, entry_b1->site_instance());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b2));
+  NavigationEntryImpl* entry_b2 = controller.GetLastCommittedEntry();
+  SiteInstance* site_instance_b2 =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(site_instance_b2, entry_b2->site_instance());
+
+  // 2) Go back to trigger a same-RFH history navigation to B1, but don't commit
+  // it yet.
+  TestNavigationManager b1_navigation(shell()->web_contents(), url_b1);
+  controller.GoBack();
+  EXPECT_TRUE(b1_navigation.WaitForRequestStart());
+  EXPECT_EQ(root->navigation_request(), b1_navigation.GetNavigationHandle());
+
+  // 3) Go back again to trigger a cross-RFH navigation to A1, which will cancel
+  // the navigation to B1.
+  TestNavigationManager a1_navigation(shell()->web_contents(), url_a1);
+  controller.GoBack();
+  EXPECT_TRUE(a1_navigation.WaitForRequestStart());
+  EXPECT_EQ(url_a1, a1_navigation.GetNavigationHandle()->GetURL());
+  EXPECT_EQ(root->navigation_request(), a1_navigation.GetNavigationHandle());
+
+  // Assert that the navigation to B1 gets cancelled.
+  b1_navigation.WaitForNavigationFinished();
+  EXPECT_FALSE(b1_navigation.was_committed());
+
+  // Assert that the navigation to A1 succesfully commits.
+  a1_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(a1_navigation.was_successful());
+  // Assert that the correct NavigationEntry is used, and no entry gets
+  // corrupted.
+  EXPECT_EQ(entry_a1, controller.GetLastCommittedEntry());
+  EXPECT_EQ(site_instance_a1, entry_a1->site_instance());
+  EXPECT_EQ(site_instance_b1, entry_b1->site_instance());
+  EXPECT_EQ(site_instance_b2, entry_b2->site_instance());
+}
+
+namespace {
+// Starts a navigation to `new_navigation_url` when the navigation mamnaged by
+// `prev_navigation_manager` gets to the ReadyToCommit stage.
+void StartNavigationOnReadyToCommit(
+    Shell* shell,
+    TestNavigationManager& prev_navigation_manager,
+    GURL& new_navigation_url) {
+  base::RunLoop run_loop;
+  static_cast<NavigationRequest*>(prev_navigation_manager.GetNavigationHandle())
+      ->set_ready_to_commit_callback_for_testing(run_loop.QuitClosure());
+  prev_navigation_manager.ResumeNavigation();
+  run_loop.Run();
+  shell->LoadURL(new_navigation_url);
+}
+}  // namespace
+
+// Same as StartNewNavigationWithExistingNavigation_RequestStart but start the
+// new navigation when the previous navigation is at the "ReadyToCommit" stage,
+// after the NavigationRequest's ownership had moved to the committing
+// RenderFrameHost. The behavior is a bit different as the cancellation behavior
+// differs depending on which navigation starts or commits first.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       StartNewNavigationWithExistingNavigation_ReadyToCommit) {
+  if (ShouldCreateNewHostForAllFrames()) {
+    // This test expects cross-site main frame navigations to change
+    // RenderFrameHosts, and same-site main frame navigations to reuse the
+    // current RenderFrameHosts.
+    return;
+  }
+  // Ensure same-site navigation won't change RenderFrameHosts due to BFCache.
+  DisableBackForwardCacheForTesting(
+      contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_a3(embedded_test_server()->GetURL("a.com", "/title3.html"));
+  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  // 1) Navigate to A1.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+
+  // 2) Start a same-RFH navigation to A2, but don't commit it yet.
+  TestNavigationManager a2_navigation(shell()->web_contents(), url_a2);
+  shell()->LoadURL(url_a2);
+  EXPECT_TRUE(a2_navigation.WaitForResponse());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(root->navigation_request(), a2_navigation.GetNavigationHandle());
+
+  // 3) Start a cross-RFH navigation to B1 after A2 gets to "pending commit"
+  // stage, which will not cancel the navigation to A2 as A2's NavigationRequest
+  // had moved.
+  TestNavigationManager b1_navigation(shell()->web_contents(), url_b1);
+  StartNavigationOnReadyToCommit(shell(), a2_navigation, url_b1);
+  EXPECT_TRUE(b1_navigation.WaitForRequestStart());
+  EXPECT_EQ(url_b1, b1_navigation.GetNavigationHandle()->GetURL());
+  EXPECT_EQ(root->navigation_request(), b1_navigation.GetNavigationHandle());
+
+  // Assert that the navigation to A2 didn't get cancelled, and finish
+  // committing A2. This shouldn't cancel the navigation to B1.
+  a2_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(a2_navigation.was_successful());
+
+  // A2's navigation commit didn't cancel B1's navigation.
+  EXPECT_TRUE(b1_navigation.GetNavigationHandle());
+
+  // 4) Start a same-RFH navigation to A3 after B1 gets to "pending commit"
+  // stage, which will cancel the previous cross-RFH navigation to B1, because
+  // when a same-RFH navigation starts it will delete the speculative RFH.
+  // TODO(https://crbug.com/1220337): Ensure that pending-commit navigations
+  // won't get deleted.
+  TestNavigationManager a3_navigation(shell()->web_contents(), url_a3);
+  EXPECT_TRUE(b1_navigation.WaitForResponse());
+  StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
+  EXPECT_TRUE(a3_navigation.WaitForResponse());
+  EXPECT_EQ(url_a3, a3_navigation.GetNavigationHandle()->GetURL());
+  EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
+
+  // Assert that the navigation to B1 gets cancelled.
+  b1_navigation.WaitForNavigationFinished();
+  EXPECT_FALSE(b1_navigation.was_committed());
+
+  // 5) Start a cross-RFH navigation to B2 after A3 gets to "pending commit"
+  // stage, which will cancel the previous same-RFH navigation to A3 when B2
+  // commits first, because when the previous RFH gets unloaded it will
+  // cancel all ongoing navigations in the pending deletion RFH.
+  TestNavigationManager b2_navigation(shell()->web_contents(), url_b2);
+  // Ignore A3's commit so that B2's navigation can start and finish committing
+  // before A3 finishes committing.
+  DidCommitNavigationCanceller ignore_a3_commit(
+      shell()->web_contents(), url_a3,
+      base::BindLambdaForTesting([&]() { shell()->LoadURL(url_b2); }));
+  // Continue the A3 navigation, but its commit will be dropped.
+  a3_navigation.ResumeNavigation();
+  // The navigation to B2 will start, but won't cancel A3's navigation just yet.
+  EXPECT_TRUE(b2_navigation.WaitForResponse());
+  EXPECT_TRUE(a3_navigation.GetNavigationHandle());
+
+  // The navigation to B2 finished committing, and cancels A3's navigation.
+  b2_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(b2_navigation.was_successful());
+  // Assert A3's navigation finished but didn't get committed.
+  a3_navigation.WaitForNavigationFinished();
+  EXPECT_FALSE(a3_navigation.was_committed());
 }
 
 INSTANTIATE_TEST_SUITE_P(

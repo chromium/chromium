@@ -628,7 +628,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     bool clear_proxies_on_commit) {
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
-    // renderer process completed a navigation.
+    // RenderFrameHost completed a navigation.
     // TODO(danakj): Make this a CHECK and stop handling it. Then make it a
     // DCHECK when we're sure.
     DCHECK_EQ(render_frame_host_.get(), render_frame_host);
@@ -637,10 +637,21 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
   }
 
   if (render_frame_host == speculative_render_frame_host_.get()) {
-    // A cross-process navigation completed, so show the new renderer. If a
-    // same-process navigation is also ongoing, it will be canceled when the
-    // speculative RenderFrameHost replaces the current one in the commit call
-    // below.
+    // A cross-RenderFrameHost navigation completed, so show the new renderer.
+    // If there are same-RenderFrameHost navigations that are ongoing, they will
+    // be canceled by the call to ResetNavigationRequest() below (if not
+    // pending-commit) or when the speculative RenderFrameHost replaces the
+    // current one during the CommitPending() call.
+    // TODO(https://crbug.com/1220337): Ensure that pending-commit navigations
+    // won't get deleted, which will be guaranteed when we only allow one
+    // cross-document navigation per FrameTreeNode to be pending commit at any
+    // given moment. Also, don't cancel non-pending-commit navigation requests
+    // too, so that navigations that are queued to wait for pending commit
+    // navigations won't end up just getting canceled after the pending commit
+    // navigation got to this point. Currently we need to cancel these
+    // navigations still, because the navigations can't handle a change from
+    // being a "same-RFH" navigation to a "speculative-RFH" navigation yet
+    // (outside of redirects).
     CommitPending(std::move(speculative_render_frame_host_),
                   std::move(stored_page_to_restore_), clear_proxies_on_commit);
     frame_tree_node_->ResetNavigationRequest(
@@ -648,25 +659,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     return;
   }
 
-  // A same-process navigation committed. A cross-process navigation may also
-  // be ongoing.
-
-  // A navigation in the original process has taken place, while a
-  // cross-process navigation is ongoing.  This should cancel the ongoing
-  // cross-process navigation if the commit is cross-document and has a user
-  // gesture (since the user might have clicked on a new link while waiting for
-  // a slow navigation), but it should not cancel it for same-document
-  // navigations (which might happen as bookkeeping) or when there is no user
-  // gesture (which might abusively try to prevent the user from leaving).
-  // See https://crbug.com/825677 and https://crbug.com/75195 for examples.
-  if (speculative_render_frame_host_ && !is_same_document_navigation &&
-      was_caused_by_user_gesture) {
-    frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCommittedNavigation);
-    // TODO(https://crbug.com/1220337): Don't discard the speculative
-    // RenderFrameHost if it's pending commit.
-    DiscardSpeculativeRFH(NavigationDiscardReason::kCommittedNavigation);
-  }
+  // A same-RenderFrameHost navigation committed.
 
   if (render_frame_host_->is_local_root() && render_frame_host_->GetView()) {
     // RenderFrames are created with a hidden RenderWidgetHost. When
