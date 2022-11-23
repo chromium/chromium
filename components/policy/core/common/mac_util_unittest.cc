@@ -15,7 +15,10 @@
 
 namespace policy {
 
-TEST(PolicyMacUtilTest, PropertyToValue) {
+// Test checks that base::Value converted to CFPropertyList with
+// ValueToProperty() is successfully restored from the property with
+// PropertyToValue().
+TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
   base::DictionaryValue root;
 
   // base::Value::Type::NONE
@@ -49,9 +52,14 @@ TEST(PolicyMacUtilTest, PropertyToValue) {
   // base::Value::Type::DICTIONARY
   root.Set("emptyd",
            std::make_unique<base::Value>(base::Value::Type::DICTIONARY));
+
+  // Key with dots.
+  root.SetIntKey("key.with.dots", 789);
+
   // Very meta.
   root.SetKey("dict", root.Clone());
 
+  // base::Value -> property list -> base::Value.
   base::ScopedCFTypeRef<CFPropertyListRef> property(ValueToProperty(root));
   ASSERT_TRUE(property);
   std::unique_ptr<base::Value> value = PropertyToValue(property);
