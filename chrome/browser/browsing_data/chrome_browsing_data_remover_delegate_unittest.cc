@@ -3018,13 +3018,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
   }
 }
 
-// TODO(crbug.com/1245736): Flakes too often on Android bots.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_RemoveDIPSEventsByType DISABLED_RemoveDIPSEventsByType
-#else
-#define MAYBE_RemoveDIPSEventsByType RemoveDIPSEventsByType
-#endif
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, MAYBE_RemoveDIPSEventsByType) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
   RemoveDIPSEventsTester tester(GetProfile());
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
