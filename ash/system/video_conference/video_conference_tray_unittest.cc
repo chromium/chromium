@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
@@ -16,7 +15,6 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/controls/image_view.h"
@@ -39,10 +37,21 @@ class VideoConferenceTrayTest : public AshTestBase {
   VideoConferenceTrayTest& operator=(const VideoConferenceTrayTest&) = delete;
   ~VideoConferenceTrayTest() override = default;
 
+  // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
 
     AshTestBase::SetUp();
+
+    // Instantiates a fake controller (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // ash unit tests).
+    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    AshTestBase::TearDown();
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -54,13 +63,11 @@ class VideoConferenceTrayTest : public AshTestBase {
     return video_conference_tray()->expand_indicator_;
   }
 
-  FakeVideoConferenceTrayController* controller() {
-    return static_cast<FakeVideoConferenceTrayController*>(
-        Shell::Get()->video_conference_tray_controller());
-  }
+  FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<FakeVideoConferenceTrayController> controller_;
 };
 
 TEST_F(VideoConferenceTrayTest, ClickTrayButton) {

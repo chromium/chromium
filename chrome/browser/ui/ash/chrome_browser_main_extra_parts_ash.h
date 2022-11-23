@@ -15,6 +15,7 @@ namespace ash {
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class NightLightClient;
+class VideoConferenceTrayController;
 }  // namespace ash
 
 namespace game_mode {
@@ -117,6 +118,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<game_mode::GameModeController> game_mode_controller_;
   std::unique_ptr<ash::NetworkPortalNotificationController>
       network_portal_notification_controller_;
+  std::unique_ptr<ash::VideoConferenceTrayController>
+      video_conference_tray_controller_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

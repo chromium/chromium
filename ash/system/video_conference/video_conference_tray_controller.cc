@@ -14,20 +14,29 @@
 
 namespace ash {
 
+namespace {
+VideoConferenceTrayController* g_controller_instance = nullptr;
+}  // namespace
+
 VideoConferenceTrayController::VideoConferenceTrayController() {
+  DCHECK(!g_controller_instance);
+  g_controller_instance = this;
+
   media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
       this);
 }
 
 VideoConferenceTrayController::~VideoConferenceTrayController() {
+  DCHECK_EQ(this, g_controller_instance);
+  g_controller_instance = nullptr;
+
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
 }
 
-void VideoConferenceTrayController::SetCameraSoftwareMuted(bool mute_camera) {
-  media::CameraHalDispatcherImpl::GetInstance()->SetCameraSWPrivacySwitchState(
-      mute_camera ? cros::mojom::CameraPrivacySwitchState::ON
-                  : cros::mojom::CameraPrivacySwitchState::OFF);
+// static
+VideoConferenceTrayController* VideoConferenceTrayController::Get() {
+  return g_controller_instance;
 }
 
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(

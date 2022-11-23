@@ -26,8 +26,11 @@ class ASH_EXPORT VideoConferenceTrayController
 
   ~VideoConferenceTrayController() override;
 
+  // Returns the singleton instance.
+  static VideoConferenceTrayController* Get();
+
   // Set the state for camera software mute. Virtual for testing/mocking.
-  virtual void SetCameraSoftwareMuted(bool mute_camera);
+  virtual void SetCameraSoftwareMuted(bool mute_camera) = 0;
 
   // media::CameraPrivacySwitchObserver:
   void OnCameraSWPrivacySwitchStateChanged(

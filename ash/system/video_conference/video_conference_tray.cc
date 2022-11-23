@@ -6,12 +6,9 @@
 
 #include <string>
 
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
@@ -25,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
@@ -186,7 +182,7 @@ void VideoConferenceTray::UpdateExpandIndicator() {
 }
 
 void VideoConferenceTray::OnCameraButtonClicked(const ui::Event& event) {
-  Shell::Get()->video_conference_tray_controller()->SetCameraSoftwareMuted(
+  VideoConferenceTrayController::Get()->SetCameraSoftwareMuted(
       /*mute_camera=*/!camera_icon_->toggled());
 }
 
