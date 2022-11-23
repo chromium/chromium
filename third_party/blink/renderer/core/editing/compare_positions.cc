@@ -272,7 +272,7 @@ class Comparator {
     //             A
     //      `<a>...<c2>...<b>...B...</b>...</c2>...</a>`
     if (const Node* node_c2 =
-            FindChildnInAncestors(*container_b, *container_a)) {
+            FindChildInAncestors(*container_b, *container_a)) {
       return CompareNodesInSameParent(
           offset_a.Get(), Traversal::PreviousSibling(*node_c2), kAIsBeforeB);
     }
@@ -286,7 +286,7 @@ class Comparator {
     //             B
     //      `<b>...<c3>...<a>...A...</a>...</b>`
     if (const Node* node_c3 =
-            FindChildnInAncestors(*container_a, *container_b)) {
+            FindChildInAncestors(*container_a, *container_b)) {
       return -CompareNodesInSameParent(
           offset_b.Get(), Traversal::PreviousSibling(*node_c3), kAIsBeforeB);
     }
@@ -302,11 +302,11 @@ class Comparator {
     }
 
     const Node* const child_a =
-        FindChildnInAncestors(*container_a, *common_ancestor);
+        FindChildInAncestors(*container_a, *common_ancestor);
     const Node* const adjusted_child_a =
         child_a ? child_a : Traversal::LastChild(*common_ancestor);
     const Node* const child_b =
-        FindChildnInAncestors(*container_b, *common_ancestor);
+        FindChildInAncestors(*container_b, *common_ancestor);
     const Node* const adjusted_child_b =
         child_b ? child_b : Traversal::LastChild(*common_ancestor);
     return CompareNodesInSameParent(adjusted_child_a, adjusted_child_b);
@@ -426,8 +426,8 @@ class Comparator {
   // Returns the child node in `parent` if `parent` is one of inclusive
   // ancestors of `node`, otherwise `nullptr`.
   // See https://dom.spec.whatwg.org/#boundary-points
-  static const Node* FindChildnInAncestors(const Node& node,
-                                           const Node& parent) {
+  static const Node* FindChildInAncestors(const Node& node,
+                                          const Node& parent) {
     DCHECK_NE(node, parent);
     for (const Node& child : Traversal::InclusiveAncestorsOf(node)) {
       if (Traversal::Parent(child) == parent)
