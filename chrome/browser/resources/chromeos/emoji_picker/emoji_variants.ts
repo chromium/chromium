@@ -9,16 +9,13 @@ import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Emoji} from './types.js';
 
 const SKIN_TONE_MEDIUM = '🏽';  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
-const FAMILY = '👪';           // U+1F46A FAMILY
+const FAMILY = '👪';               // U+1F46A FAMILY
 
 /**
  * Determines if the given list of variants has any variant which contains
  * the given codepoint.
- * @param {!Array<!Emoji>} variants
- * @param {!string} codepoint
- * @return {boolean}
  */
-function hasVariation(variants, codepoint) {
+function hasVariation(variants: Emoji[], codepoint: string): boolean {
   return variants.findIndex(x => x.string.includes(codepoint)) !== -1;
 }
 
@@ -27,12 +24,8 @@ function hasVariation(variants, codepoint) {
  * Partitions source array into array of arrays, where each subarray's
  * length is determined by the corresponding value of subarrayLengths.
  * A negative length indicates skip that many items.
- * @param {!Array<T>} array source array.
- * @param {!Array<number>} subarrayLengths lengths to partition.
- * @return {!Array<!Array<T>>} partitioned array.
- * @template T array item type.
  */
-function partitionArray(array, subarrayLengths) {
+function partitionArray<T>(array: T[], subarrayLengths: number[]): T[][] {
   const subarrays = [];
   let used = 0;
   for (const len of subarrayLengths) {
@@ -46,9 +39,15 @@ function partitionArray(array, subarrayLengths) {
   return subarrays;
 }
 
+export interface EmojiVariants {
+  $: {
+    fakeFocusTarget: HTMLElement,
+  };
+}
+
 export class EmojiVariants extends PolymerElement {
   static get is() {
-    return 'emoji-variants';
+    return 'emoji-variants' as const;
   }
 
   static get template() {
@@ -57,36 +56,32 @@ export class EmojiVariants extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<Emoji>} */
       variants: {type: Array, readonly: true},
-      /** @private {!Array<!Array<Emoji>>} */
       variantRows: {type: Array},
-      /** @private {?string} */
       baseEmoji: {type: Array},
-      /** @private {boolean} */
       showSkinTones: {type: Boolean},
-      /** @private {boolean} */
       showBaseEmoji: {type: Boolean},
-      /** @private {!string} */
       tooltip: {type: String},
     };
   }
+  variants: Emoji[];
+  private variantRows: Emoji[][];
+  private baseEmoji: string;
+  private showSkinTones: boolean;
+  private showBaseEmoji: boolean;
+  private tooltip: string;
 
-  constructor() {
-    super();
-  }
-
-  ready() {
+  override ready() {
     super.ready();
 
     // family picker is basic 5x5 grid.
     const isFamily =
-        this.variants.length === 26 && this.variants[0].string === FAMILY;
+        this.variants.length === 26 && this.variants[0]?.string === FAMILY;
     // two people is 5x5 grid with 5 skin tones per person.
     const isTwoPeople = this.variants.length === 26 &&
         hasVariation(this.variants, SKIN_TONE_MEDIUM);
     this.showBaseEmoji = isFamily || isTwoPeople;
-    this.baseEmoji = this.variants[0].string;
+    this.baseEmoji = this.variants[0]?.string ?? '';
     this.showSkinTones = isTwoPeople;
 
     // if we are showing a base emoji separately, omit it from the main grid.
@@ -95,15 +90,14 @@ export class EmojiVariants extends PolymerElement {
     const rowLengths = this.computeVariantRowLengths(gridEmoji);
     this.variantRows = partitionArray(gridEmoji, rowLengths);
 
-    this.addEventListener(
-        'keydown', (ev) => this.onKeyDown(/** @type {!KeyboardEvent} */ (ev)));
+    this.addEventListener('keydown', (ev) => this.onKeyDown(ev));
   }
 
-  connectedCallback() {
-    beforeNextRender(this, () => this.$['fake-focus-target'].focus());
+  override connectedCallback() {
+    beforeNextRender(this, () => this.$.fakeFocusTarget.focus());
   }
 
-  computeVariantRowLengths(variants) {
+  private computeVariantRowLengths(variants: Emoji[]): number[] {
     if (!variants.length) {
       return [];
     }
@@ -122,10 +116,7 @@ export class EmojiVariants extends PolymerElement {
     return [];
   }
 
-  /**
-   * @param {!KeyboardEvent} ev
-   */
-  onKeyDown(ev) {
+  private onKeyDown(ev: KeyboardEvent): void {
     if (ev.key !== 'Escape') {
       return;
     }
@@ -140,5 +131,12 @@ export class EmojiVariants extends PolymerElement {
     }));
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiVariants.is]: EmojiVariants;
+  }
+}
+
 
 customElements.define(EmojiVariants.is, EmojiVariants);

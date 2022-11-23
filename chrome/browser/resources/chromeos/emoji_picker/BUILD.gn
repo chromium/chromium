@@ -9,13 +9,13 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 web_component_files = [
-  "emoji_button.js",
+  "emoji_button.ts",
   "emoji_category_button.ts",
   "emoji_group.ts",
   "emoji_group_button.ts",
   "emoji_picker.js",
-  "emoji_search.js",
-  "emoji_variants.js",
+  "emoji_search.ts",
+  "emoji_variants.ts",
   "text_group_button.js",
 ]
 
@@ -61,6 +61,11 @@ copy("copy_mojo") {
 copy("copy_fuse") {
   sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
   outputs = [ "$preprocessed_folder/fuse.js" ]
+}
+
+copy("copy_fuse_dts") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$preprocessed_folder/fuse.d.ts" ]
 }
 
 grit("resources") {
@@ -203,6 +208,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = web_component_files + non_component_js_files + html_wrapper_files +
              mojo_js_files + [ "fuse.js" ]
+  definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
@@ -210,6 +216,7 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_checked_in_ts_js_files",
     ":copy_fuse",
+    ":copy_fuse_dts",
     ":copy_mojo",
     ":html_wrapper_files",
     "//ash/webui/common/resources:generate_definitions",

@@ -13,7 +13,7 @@ import {CategoryEnum, Emoji} from './types.js';
 
 export class EmojiButton extends PolymerElement {
   static get is() {
-    return 'emoji-button';
+    return 'emoji-button' as const;
   }
 
   static get template() {
@@ -22,23 +22,14 @@ export class EmojiButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
       emoji: {type: String, readonly: true},
-      /** @type {?Array<Emoji>} */
       variants: {type: Array, readonly: true},
-      /** @type {!boolean} */
       variantsVisible: {type: Boolean, value: false},
-      /** @type {!Boolean} */
       variant: {type: Boolean, value: false, readonly: true},
-      /** @type {!boolean} */
       disabled: {type: Boolean, value: false, readonly: true},
-      /** @type {!string} */
       base: {type: String},
-      /** @type {?Array<Emoji>} */
       allVariants: {type: Array, readonly: true},
-      /** @type {!string} */
       tooltip: {type: String, readonly: true},
-      /** @type {string} */
       category: {
         type: String,
         value: CategoryEnum.EMOJI,
@@ -46,20 +37,18 @@ export class EmojiButton extends PolymerElement {
       },
     };
   }
+  emoji: string;
+  variants?: Emoji[];
+  private variantsVisible: boolean;
+  private variant: boolean;
+  private disabled: boolean;
+  private base?: string;
+  private allVariants?: Emoji[];
+  private tooltip?: string;
+  private category: string;
 
-  constructor() {
-    super();
-  }
 
-  getButton() {
-    return this.$['emoji-button'];
-  }
-
-  focusButton(options) {
-    this.$['emoji-button'].focus(options);
-  }
-
-  onClick(ev) {
+  private onClick(): void {
     if (this.disabled) {
       return;
     }
@@ -73,7 +62,7 @@ export class EmojiButton extends PolymerElement {
     }));
   }
 
-  onContextMenu(ev) {
+  private onContextMenu(ev: Event): void {
     ev.preventDefault();
 
     if (this.disabled) {
@@ -89,19 +78,20 @@ export class EmojiButton extends PolymerElement {
     // Polymer.
     beforeNextRender(this, () => {
       const variants = this.variantsVisible ?
-          this.shadowRoot.querySelector('emoji-variants') :
+          // ShadowRoot is guaranteed to exist so ! is safe
+          this.shadowRoot!.querySelector('emoji-variants') :
           null;
 
-      this.dispatchEvent(
-          createCustomEvent(EMOJI_VARIANTS_SHOWN,
-            {owner: this, variants: variants, baseEmoji: this.emoji}));
+      this.dispatchEvent(createCustomEvent(
+          EMOJI_VARIANTS_SHOWN,
+          {owner: this, variants: variants, baseEmoji: this.emoji}));
     });
   }
 
   /**
    * Hides emoji variants if any is visible.
    */
-   hideEmojiVariants() {
+  hideEmojiVariants(): void {
     /**
      * TODO(b/233130994): Remove the function as part of the component removal.
      * The function is only added to help merging emoji-button into
@@ -110,19 +100,27 @@ export class EmojiButton extends PolymerElement {
     this.variantsVisible = false;
   }
 
-  _className(variants) {
-    return variants && variants.length > 0 ? 'has-variants' : '';
+  private calculateClassName(): string {
+    return (this.variants && this.variants.length > 0) ? 'has-variants' : '';
   }
 
-  _label(tooltip, emoji, variants) {
+  private getLabel(): string {
     // TODO(crbug/1227852): Just use emoji as the tooltip once ChromeVox can
     // announce them properly.
     const emojiLabel =
-        navigator.languages.some(lang => lang.startsWith('en')) > 0 ? tooltip :
-                                                                      emoji;
-    return variants && variants.length ? emojiLabel + ' with variants.' :
-                                         emojiLabel;
+        (navigator.languages.some(lang => lang.startsWith('en')) &&
+         this.tooltip) ?
+        this.tooltip :
+        this.emoji;
+    return this.variants?.length ? emojiLabel + ' with variants.' : emojiLabel;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiButton.is]: EmojiButton;
+  }
+}
+
 
 customElements.define(EmojiButton.is, EmojiButton);

@@ -96,7 +96,7 @@
     transform: translate(-50%, -50%);
   }
 
-  #search-shadow {
+  #searchShadow {
     background-color: var(--cros-bg-color);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
@@ -108,7 +108,7 @@
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
   }
 
-  :host([v2-enabled]) #search-shadow {
+  :host([v2-enabled]) #searchShadow {
     box-shadow: var(--cr-elevation-2);
     display: flex;
     margin-bottom: 7px;
@@ -153,7 +153,7 @@
   }
 </style>
 
-<div id="search-shadow">
+<div id="searchShadow">
   <cr-search-field id="search" label="Search Emojis" autofocus="true">
   </cr-search-field>
   <template is="dom-if" if="[[v2Enabled]]">
