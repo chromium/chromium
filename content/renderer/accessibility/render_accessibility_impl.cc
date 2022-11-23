@@ -177,6 +177,7 @@ void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
   DCHECK(!document.IsNull());
   ax_context_ = std::make_unique<WebAXContext>(document, accessibility_mode_);
+  ScheduleSendPendingAccessibilityEvents();
 }
 
 void RenderAccessibilityImpl::DidCommitProvisionalLoad(
