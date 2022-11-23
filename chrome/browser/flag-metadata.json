@@ -1599,7 +1599,7 @@
   {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-accessibility-os-settings-visibility",
@@ -1694,7 +1694,7 @@
   {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-auto-disable-accessibility-v2",
@@ -6523,7 +6523,7 @@
   {
     "name": "text-based-audio-descriptions",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "text-in-shelf",
