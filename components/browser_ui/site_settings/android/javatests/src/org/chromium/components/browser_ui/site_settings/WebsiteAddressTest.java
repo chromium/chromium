@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -112,5 +115,17 @@ public class WebsiteAddressTest {
                 // Note: hash codes could still be the same.
             }
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testConvertHostToOrigin() {
+        WebsiteAddress first = WebsiteAddress.create("developer.android.com");
+        WebsiteAddress second = WebsiteAddress.create("http://developer.android.com");
+        Assert.assertThat(first, not(equalTo(second)));
+
+        WebsiteAddress converted = WebsiteAddress.create(first.getOrigin());
+        Assert.assertEquals(converted, second);
     }
 }
