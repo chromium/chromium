@@ -23,7 +23,7 @@
     if (message.startsWith('backend')) {
       continue;
     }
-    message = message.replace(/"id":\d+,/, '"id":<number>,');
+    message = message.replace(/"id":\d+,/, '"id":<number>,').replace(/"sessionId":"[0-9A-F]+"/, '"sessionId":<string>');
     TestRunner.addResult(message);
   }
   TestRunner.completeTest();
