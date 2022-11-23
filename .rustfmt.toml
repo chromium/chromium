@@ -19,5 +19,5 @@ use_small_heuristics = "Max"
 
 # Third party code is formatted upstream.
 ignore = [
-  "third_party/rust",
+  "third_party/rust/**/crate",
 ]
