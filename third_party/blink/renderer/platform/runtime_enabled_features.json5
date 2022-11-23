@@ -1284,6 +1284,7 @@
     },
     {
       name: "FirstPartySets",
+      status: "experimental",
     },
     {
       name: "FirstRectForRangeVertical",
@@ -2611,7 +2612,8 @@
     {
       // Enabled when blink::features::kStorageAccessAPI is enabled.
       name: "StorageAccessAPI",
-      status: "test",
+      status: "experimental",
+      implied_by: ["FirstPartySets"],
     },
     {
       name: "StorageAccessAPIForOriginExtension",
