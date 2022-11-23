@@ -56,14 +56,16 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
               base::BindOnce(
                   &PrintJobConfirmationDialogDelegate::OnDialogAccepted,
                   base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_ALLOW))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_ALLOW)))
           .AddCancelButton(
               base::BindOnce(
                   &PrintJobConfirmationDialogDelegate::OnDialogClosed,
                   base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_DENY))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_DENY)))
           .AddParagraph(
               ui::DialogModelLabel(
                   l10n_util::GetStringFUTF16(

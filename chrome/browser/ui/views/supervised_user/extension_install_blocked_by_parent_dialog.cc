@@ -67,7 +67,9 @@ void ShowExtensionInstallBlockedByParentDialog(
               chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon)))
           .AddParagraph(
               ui::DialogModelLabel(GetBodyText(action, extension_type)))
-          .AddOkButton(base::DoNothing(), l10n_util::GetStringUTF16(IDS_OK))
+          .AddOkButton(base::DoNothing(),
+                       ui::DialogModelButton::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_OK)))
           .SetDialogDestroyingCallback(std::move(done_callback))
           .Build();
 

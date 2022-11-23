@@ -26,7 +26,7 @@ TEST_F(DialogModelButtonTest, UsesParamsUniqueId) {
   // are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(), std::u16string(),
+          .AddOkButton(base::OnceClosure(),
                        DialogModelButton::Params().SetId(kUniqueId))
           .Build());
   EXPECT_EQ(kUniqueId, host->GetId(TestDialogModelHost::ButtonId::kOk));
@@ -40,10 +40,9 @@ TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {
   // are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(), std::u16string(),
-                       DialogModelButton::Params()
-                           .AddAccelerator(accelerator_1)
-                           .AddAccelerator(accelerator_2))
+          .AddOkButton(base::OnceClosure(), DialogModelButton::Params()
+                                                .AddAccelerator(accelerator_1)
+                                                .AddAccelerator(accelerator_2))
           .Build());
   EXPECT_THAT(host->GetAccelerators(TestDialogModelHost::ButtonId::kOk),
               testing::UnorderedElementsAre(accelerator_1, accelerator_2));
@@ -61,7 +60,7 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
                             last_event =
                                 std::make_unique<KeyEvent>(*event.AsKeyEvent());
                           }),
-                          std::u16string())
+                          DialogModelButton::Params().SetLabel(u"button"))
           .Build());
 
   KeyEvent first_event(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
@@ -86,18 +85,17 @@ class DialogModelDialogButtonTest : public testing::Test {
         [](bool* callback_called) { *callback_called = true; },
         &callback_called);
 
-    // Label to verify the second parameter.
-    std::u16string label = u"my cool button";
-
     // The presence of an accelerator in |params| will be used to verify that
     // |params| are forwarded correctly to the DialogModelButton constructor.
     DialogModelButton::Params params;
-    Accelerator accelerator(VKEY_Z, EF_SHIFT_DOWN | EF_CONTROL_DOWN);
+    const Accelerator accelerator(VKEY_Z, EF_SHIFT_DOWN | EF_CONTROL_DOWN);
+    const std::u16string label = u"my cool button";
     params.AddAccelerator(accelerator);
+    params.SetLabel(label);
 
     switch (button_id) {
       case TestDialogModelHost::ButtonId::kCancel:
-        builder.AddCancelButton(std::move(callback), label, params);
+        builder.AddCancelButton(std::move(callback), params);
         break;
       case TestDialogModelHost::ButtonId::kExtra:
         // Wrap the callback into a repeating callback that'll only be called
@@ -108,10 +106,10 @@ class DialogModelDialogButtonTest : public testing::Test {
                   std::move(*callback).Run();
                 },
                 &callback),
-            label, params);
+            params);
         break;
       case TestDialogModelHost::ButtonId::kOk:
-        builder.AddOkButton(std::move(callback), label, params);
+        builder.AddOkButton(std::move(callback), params);
         break;
     }
     auto host = std::make_unique<TestDialogModelHost>(builder.Build());

@@ -220,13 +220,16 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     ~Params();
 
     Params& SetId(ElementIdentifier id);
+    Params& SetLabel(std::u16string label);
 
     Params& AddAccelerator(Accelerator accelerator);
 
    private:
+    friend class DialogModel;
     friend class DialogModelButton;
 
     ElementIdentifier id_;
+    std::u16string label_;
     base::flat_set<Accelerator> accelerators_;
   };
 
@@ -235,7 +238,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
   DialogModelButton(base::PassKey<DialogModel> pass_key,
                     DialogModel* model,
                     base::RepeatingCallback<void(const Event&)> callback,
-                    std::u16string label,
                     const Params& params);
   DialogModelButton(const DialogModelButton&) = delete;
   DialogModelButton& operator=(const DialogModelButton&) = delete;

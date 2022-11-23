@@ -356,7 +356,8 @@ void ShowWebAppDetailedInstallDialog(
               base::BindOnce(
                   &web_app::WebAppDetailedInstallDialogDelegate::OnAccept,
                   base::Unretained(delegate_ptr)),
-              l10n_util::GetStringUTF16(IDS_INSTALL))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(IDS_INSTALL)))
           .AddCancelButton(base::BindOnce(
               &web_app::WebAppDetailedInstallDialogDelegate::OnCancel,
               base::Unretained(delegate_ptr)))

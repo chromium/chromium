@@ -33,7 +33,6 @@ std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
 
 DialogModel::Builder& DialogModel::Builder::AddOkButton(
     base::OnceClosure callback,
-    std::u16string label,
     const DialogModelButton::Params& params) {
   DCHECK(!model_->accept_action_callback_);
   model_->accept_action_callback_ = std::move(callback);
@@ -41,15 +40,13 @@ DialogModel::Builder& DialogModel::Builder::AddOkButton(
   // DialogModelHost should be using OnDialogAccepted() instead.
   model_->ok_button_.emplace(
       model_->GetPassKey(), model_.get(),
-      base::BindRepeating([](const Event&) { NOTREACHED(); }), std::move(label),
-      params);
+      base::BindRepeating([](const Event&) { NOTREACHED(); }), params);
 
   return *this;
 }
 
 DialogModel::Builder& DialogModel::Builder::AddCancelButton(
     base::OnceClosure callback,
-    std::u16string label,
     const DialogModelButton::Params& params) {
   DCHECK(!model_->cancel_action_callback_);
   model_->cancel_action_callback_ = std::move(callback);
@@ -57,20 +54,20 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
   // DialogModelHost should be using OnDialogCanceled() instead.
   model_->cancel_button_.emplace(
       model_->GetPassKey(), model_.get(),
-      base::BindRepeating([](const Event&) { NOTREACHED(); }), std::move(label),
-      params);
+      base::BindRepeating([](const Event&) { NOTREACHED(); }), params);
 
   return *this;
 }
 
 DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
-    std::u16string label,
     const DialogModelButton::Params& params) {
   DCHECK(!model_->extra_button_);
   DCHECK(!model_->extra_link_);
+  // Extra buttons are required to have labels.
+  DCHECK(!params.label_.empty());
   model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
-                                std::move(callback), std::move(label), params);
+                                std::move(callback), params);
   return *this;
 }
 

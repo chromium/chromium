@@ -46,7 +46,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       .SetDialogDestroyingCallback(
           base::BindOnce(&HighEfficiencyBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
-      .AddOkButton(base::DoNothing(), l10n_util::GetStringUTF16(IDS_OK));
+      .AddOkButton(base::DoNothing(), ui::DialogModelButton::Params().SetLabel(
+                                          l10n_util::GetStringUTF16(IDS_OK)));
 
   TabDiscardTabHelper* const tab_helper = TabDiscardTabHelper::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents());

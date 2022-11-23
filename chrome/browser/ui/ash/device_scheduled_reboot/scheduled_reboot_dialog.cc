@@ -43,8 +43,10 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
           .SetTitle(BuildTitle())
           .AddOkButton(base::OnceClosure())
-          .AddCancelButton(std::move(reboot_callback),
-                           l10n_util::GetStringUTF16(IDS_POLICY_REBOOT_BUTTON))
+          .AddCancelButton(
+              std::move(reboot_callback),
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(IDS_POLICY_REBOOT_BUTTON)))
           .AddParagraph(
               ui::DialogModelLabel(
                   l10n_util::GetStringFUTF16(

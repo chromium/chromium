@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view_class_properties.h"
 
@@ -40,11 +41,15 @@ views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
               ui::DialogModelLabel(IDS_BATTERY_SAVER_BUBBLE_DESCRIPTION)
                   .set_is_secondary()
                   .set_allow_character_break())
-          .AddOkButton(base::DoNothing(), l10n_util::GetStringUTF16(IDS_OK))
+          .AddOkButton(base::DoNothing(),
+                       ui::DialogModelButton::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_OK)))
           .AddCancelButton(
               base::BindOnce(&BatterySaverBubbleDelegate::OnSessionOffClicked,
                              base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_SESSION_TURN_OFF))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_BATTERY_SAVER_SESSION_TURN_OFF)))
           .Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(

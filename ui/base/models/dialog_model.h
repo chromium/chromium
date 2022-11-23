@@ -202,20 +202,17 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // sync with other APIs?
     Builder& AddOkButton(
         base::OnceClosure callback,
-        std::u16string label = std::u16string(),
         const DialogModelButton::Params& params = DialogModelButton::Params());
     Builder& AddCancelButton(
         base::OnceClosure callback,
-        std::u16string label = std::u16string(),
         const DialogModelButton::Params& params = DialogModelButton::Params());
 
     // Use of the extra button in new dialogs are discouraged. If this is deemed
     // necessary please double-check with UX before adding any new dialogs with
-    // them.
+    // them. A button label is required to be set in `params`.
     Builder& AddExtraButton(
         base::RepeatingCallback<void(const Event&)> callback,
-        std::u16string label,
-        const DialogModelButton::Params& params = DialogModelButton::Params());
+        const DialogModelButton::Params& params);
 
     // Adds an extra link to the dialog.
     Builder& AddExtraLink(DialogModelLabel::TextReplacement link);

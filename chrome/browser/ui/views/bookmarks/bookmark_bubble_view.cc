@@ -203,18 +203,21 @@ void BookmarkBubbleView::ShowBubble(
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
                                   base::Unretained(bubble_delegate)),
-                   l10n_util::GetStringUTF16(IDS_DONE))
+                   ui::DialogModelButton::Params().SetLabel(
+                       l10n_util::GetStringUTF16(IDS_DONE)))
       .AddCancelButton(
           base::BindOnce(&BookmarkBubbleDelegate::RemoveBookmark,
                          base::Unretained(bubble_delegate)),
-          l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK),
-          ui::DialogModelButton::Params().AddAccelerator(
-              ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
-      .AddExtraButton(base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
-                                          base::Unretained(bubble_delegate)),
-                      l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS),
-                      ui::DialogModelButton::Params().AddAccelerator(
-                          ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
+          ui::DialogModelButton::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK))
+              .AddAccelerator(ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
+      .AddExtraButton(
+          base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
+                              base::Unretained(bubble_delegate)),
+          ui::DialogModelButton::Params()
+              .SetLabel(l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS))
+              .AddAccelerator(ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
       .AddTextfield(
           kBookmarkName,
           l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),

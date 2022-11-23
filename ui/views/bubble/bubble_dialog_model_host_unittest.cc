@@ -91,15 +91,16 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
   menu_item_params.SetIsEnabled(false);
   ui::DialogModelButton::Params ok_button_params;
   ok_button_params.SetId(kOkButtonId);
+  ok_button_params.SetLabel(kOkButtonText);
   ui::DialogModelButton::Params extra_button_params;
   extra_button_params.SetId(kExtraButtonId);
+  extra_button_params.SetLabel(kExtraButtonText);
   auto host = std::make_unique<BubbleDialogModelHost>(
       ui::DialogModel::Builder()
           .AddMenuItem(ui::ImageModel(), kMenuItemText, base::DoNothing(),
                        menu_item_params)
-          .AddOkButton(base::DoNothing(), kOkButtonText, ok_button_params)
-          .AddExtraButton(base::DoNothing(), kExtraButtonText,
-                          extra_button_params)
+          .AddOkButton(base::DoNothing(), ok_button_params)
+          .AddExtraButton(base::DoNothing(), extra_button_params)
           .Build(),
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
 

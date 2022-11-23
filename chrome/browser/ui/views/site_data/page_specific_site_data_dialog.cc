@@ -571,7 +571,8 @@ views::Widget* ShowPageSpecificSiteDataDialog(
           base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
                                   OnDialogExplicitlyClosed,
                               base::Unretained(delegate)),
-          l10n_util::GetStringUTF16(IDS_DONE))
+          ui::DialogModelButton::Params().SetLabel(
+              l10n_util::GetStringUTF16(IDS_DONE)))
       .SetCloseActionCallback(base::BindOnce(
           &PageSpecificSiteDataDialogModelDelegate::OnDialogExplicitlyClosed,
           base::Unretained(delegate)));

@@ -48,11 +48,12 @@ CreateFileSystemAccessRestrictedDirectoryDialog(
               ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT
               : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT,
           ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name)))
-      .AddOkButton(std::move(accept_callback),
-                   l10n_util::GetStringUTF16(
-                       handle_type == HandleType::kDirectory
-                           ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON
-                           : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON))
+      .AddOkButton(
+          std::move(accept_callback),
+          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+              handle_type == HandleType::kDirectory
+                  ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON
+                  : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON)))
       .AddCancelButton(std::move(cancel_callbacks.first))
       .SetCloseActionCallback(std::move(cancel_callbacks.second));
   return dialog_builder.Build();

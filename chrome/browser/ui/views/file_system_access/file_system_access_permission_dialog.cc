@@ -125,9 +125,9 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
            ui::DialogModelLabel::CreateEmphasizedText(
                file_system_access_ui_helper::GetPathForDisplay(request.path))}))
       .AddOkButton(std::move(accept_callback),
-                   l10n_util::GetStringUTF16(GetButtonLabel(request)))
+                   ui::DialogModelButton::Params().SetLabel(
+                       l10n_util::GetStringUTF16(GetButtonLabel(request))))
       .AddCancelButton(std::move(cancel_callbacks.first),
-                       /*label=*/std::u16string(),
                        ui::DialogModelButton::Params().SetId(kCancelButtonId))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
       .SetInitiallyFocusedField(kCancelButtonId);

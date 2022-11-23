@@ -191,6 +191,14 @@ DialogModelButton::Params& DialogModelButton::Params::SetId(
   return *this;
 }
 
+DialogModelButton::Params& DialogModelButton::Params::SetLabel(
+    std::u16string label) {
+  DCHECK(label_.empty());
+  DCHECK(!label.empty());
+  label_ = label;
+  return *this;
+}
+
 DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
     Accelerator accelerator) {
   accelerators_.insert(std::move(accelerator));
@@ -201,14 +209,13 @@ DialogModelButton::DialogModelButton(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     base::RepeatingCallback<void(const Event&)> callback,
-    std::u16string label,
     const DialogModelButton::Params& params)
     : DialogModelField(pass_key,
                        model,
                        kButton,
                        params.id_,
                        params.accelerators_),
-      label_(std::move(label)),
+      label_(std::move(params.label_)),
       callback_(std::move(callback)) {
   DCHECK(callback_);
 }

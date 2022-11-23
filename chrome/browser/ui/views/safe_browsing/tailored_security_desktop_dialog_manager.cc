@@ -130,8 +130,9 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
           .AddCancelButton(
               base::BindOnce(&EnabledDialogModelDelegate::OnDialogRejected,
                              base::Unretained(model_delegate_ptr), browser),
-              l10n_util::GetStringUTF16(
-                  IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
           .Build();
 
   // `window` should always be non-null unless this is called before
@@ -165,13 +166,15 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
           .AddOkButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogAccepted,
                              base::Unretained(model_delegate_ptr)),
-              l10n_util::GetStringUTF16(
-                  IDS_TAILORED_SECURITY_DISABLED_DIALOG_ACCEPT_BUTTON))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_TAILORED_SECURITY_DISABLED_DIALOG_ACCEPT_BUTTON)))
           .AddCancelButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogRejected,
                              base::Unretained(model_delegate_ptr), browser),
-              l10n_util::GetStringUTF16(
-                  IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
           .Build();
 
   // `window` should always be non-null unless this is called before

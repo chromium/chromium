@@ -118,8 +118,9 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
               base::BindRepeating(
                   &PrivacySandboxNoticeBubbleModelDelegate::OnOkButtonPressed,
                   base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(
-                  IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON))
+              ui::DialogModelButton::Params().SetLabel(
+                  l10n_util::GetStringUTF16(
+                      IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON)))
           .AddExtraLink(ui::DialogModelLabel::CreateLink(
               IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK,
               base::BindRepeating(&PrivacySandboxNoticeBubbleModelDelegate::

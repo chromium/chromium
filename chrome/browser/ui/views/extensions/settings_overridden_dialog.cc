@@ -82,13 +82,13 @@ void ShowSettingsOverriddenDialog(
       .AddOkButton(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogAccepted,
                          base::Unretained(dialog_delegate)),
-          l10n_util::GetStringUTF16(
-              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK))
+          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK)))
       .AddCancelButton(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogCancelled,
                          base::Unretained(dialog_delegate)),
-          l10n_util::GetStringUTF16(
-              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT))
+          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT)))
       .SetCloseActionCallback(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogClosed,
                          base::Unretained(dialog_delegate)))
