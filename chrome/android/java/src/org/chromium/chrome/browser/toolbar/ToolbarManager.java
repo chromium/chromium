@@ -843,25 +843,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
 
             @Override
-            public void onDidStartNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigation) {
-                // Update URL as soon as it becomes available when it's a new tab.
-                // But we want to update only when it's a new tab. So we check whether the current
-                // navigation entry is initial, meaning whether it has the same target URL as the
-                // initial URL of the tab.
-                if (tab.getWebContents() != null
-                        && tab.getWebContents().getNavigationController() != null
-                        && tab.getWebContents().getNavigationController().isInitialNavigation()) {
-                    mLocationBarModel.notifyUrlChanged();
-                }
-            }
-
-            @Override
-            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onDidFinishNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigation) {
                 if (navigation.hasCommitted() && !navigation.isSameDocument()) {
