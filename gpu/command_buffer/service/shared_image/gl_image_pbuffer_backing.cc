@@ -265,31 +265,10 @@ std::unique_ptr<SkiaImageRepresentation> GLImagePbufferBacking::ProduceSkia(
       cached_promise_texture_, tracker);
 }
 
-MemoryGLImageRepresentation::MemoryGLImageRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    scoped_refptr<gl::GLImageMemory> image_memory)
-    : MemoryImageRepresentation(manager, backing, tracker),
-      image_memory_(std::move(image_memory)) {}
-
-MemoryGLImageRepresentation::~MemoryGLImageRepresentation() = default;
-
-SkPixmap MemoryGLImageRepresentation::BeginReadAccess() {
-  return SkPixmap(backing()->AsSkImageInfo(), image_memory_->memory(),
-                  image_memory_->stride());
-}
-
 std::unique_ptr<MemoryImageRepresentation> GLImagePbufferBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  gl::GLImageMemory* image_memory =
-      gl::GLImageMemory::FromGLImage(image_.get());
-  if (!image_memory)
-    return nullptr;
-
-  return std::make_unique<MemoryGLImageRepresentation>(
-      manager, this, tracker, base::WrapRefCounted(image_memory));
+  return nullptr;
 }
 
 void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {

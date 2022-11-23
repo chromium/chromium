@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image_memory.h"
 
 namespace gpu {
 
@@ -31,21 +30,6 @@ class OverlayGLImageRepresentation : public OverlayImageRepresentation {
   gl::GLImage* GetGLImage() override;
 
   scoped_refptr<gl::GLImage> gl_image_;
-};
-
-class MemoryGLImageRepresentation : public MemoryImageRepresentation {
- public:
-  MemoryGLImageRepresentation(SharedImageManager* manager,
-                              SharedImageBacking* backing,
-                              MemoryTypeTracker* tracker,
-                              scoped_refptr<gl::GLImageMemory> image_memory);
-  ~MemoryGLImageRepresentation() override;
-
- protected:
-  SkPixmap BeginReadAccess() override;
-
- private:
-  scoped_refptr<gl::GLImageMemory> image_memory_;
 };
 
 // Implementation of SharedImageBacking that takes in a caller-created GL
