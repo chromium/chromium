@@ -39,9 +39,6 @@ class FastCheckoutCapabilitiesFetcher : public KeyedService {
   virtual bool IsTriggerFormSupported(
       const url::Origin& origin,
       autofill::FormSignature form_signature) = 0;
-
-  // Checks whether consentless execution is supported on `origin`.
-  virtual bool SupportsConsentlessExecution(const url::Origin& origin) = 0;
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_H_

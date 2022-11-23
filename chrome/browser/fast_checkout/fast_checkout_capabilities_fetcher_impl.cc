@@ -6,43 +6,16 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/time/time.h"
+
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/autofill_assistant/browser/public/autofill_assistant.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "net/http/http_status_code.h"
-#include "url/gurl.h"
+
 #include "url/origin.h"
 
-using autofill_assistant::AutofillAssistant;
-using CapabilitiesInfo =
-    autofill_assistant::AutofillAssistant::CapabilitiesInfo;
-using BundleCapabilitiesInformation =
-    autofill_assistant::AutofillAssistant::BundleCapabilitiesInformation;
-
-namespace {
-
-constexpr uint32_t kFastCheckoutHashPrefixSize = 10u;
-constexpr char kFastCheckoutIntent[] = "CHROME_FAST_CHECKOUT";
-constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
-    "Autofill.FastCheckout.CapabilitiesFetcher."
-    "CacheStateForIsTriggerFormSupported";
-constexpr char kUmaKeyHttpCode[] =
-    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode";
-constexpr char kUmaKeyResponseTime[] =
-    "Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime";
-
-}  // namespace
-
-FastCheckoutCapabilitiesFetcherImpl::FastCheckoutCapabilitiesFetcherImpl(
-    std::unique_ptr<AutofillAssistant> autofill_assistant)
-    : autofill_assistant_(std::move(autofill_assistant)) {}
+FastCheckoutCapabilitiesFetcherImpl::FastCheckoutCapabilitiesFetcherImpl() =
+    default;
 
 FastCheckoutCapabilitiesFetcherImpl::~FastCheckoutCapabilitiesFetcherImpl() =
     default;
@@ -50,31 +23,8 @@ FastCheckoutCapabilitiesFetcherImpl::~FastCheckoutCapabilitiesFetcherImpl() =
 void FastCheckoutCapabilitiesFetcherImpl::FetchAvailability(
     const url::Origin& origin,
     Callback callback) {
-  // If `origin` is already cached, no request needs to be made.
-  if (cache_.ContainsOrigin(origin)) {
-    std::move(callback).Run(/*success=*/true);
-    return;
-  }
-
-  // Check whether there is an ongoing request. If so, queue up the callback
-  // and return.
-  if (RequestMap::iterator it = ongoing_requests_.find(origin);
-      it != ongoing_requests_.end()) {
-    it->second.emplace_back(std::move(callback));
-    return;
-  }
-
-  // Create a new request.
-  uint64_t hash_prefix =
-      AutofillAssistant::GetHashPrefix(kFastCheckoutHashPrefixSize, origin);
-  ongoing_requests_[origin].emplace_back(std::move(callback));
-  // Since `this` owns `autofill_assistant_` and `autofill_assistant_`,
-  // callbacks are only executed while `this` is alive.
-  autofill_assistant_->GetCapabilitiesByHashPrefix(
-      kFastCheckoutHashPrefixSize, {hash_prefix}, kFastCheckoutIntent,
-      base::BindOnce(&FastCheckoutCapabilitiesFetcherImpl::
-                         OnGetCapabilitiesInformationReceived,
-                     base::Unretained(this), origin, base::TimeTicks::Now()));
+  NOTIMPLEMENTED();
+  std::move(callback).Run(false);
 }
 
 bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
@@ -84,84 +34,7 @@ bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
           features::kForceEnableFastCheckoutCapabilities)) {
     return true;
   }
-  if (cache_.ContainsTriggerForm(origin, form_signature)) {
-    base::UmaHistogramEnumeration(
-        kUmaKeyCacheStateIsTriggerFormSupported,
-        CacheStateForIsTriggerFormSupported::kEntryAvailableAndFormSupported);
-    return true;
-  }
 
-  // Analyze why the result is `false` to record the correct metric.
-  if (cache_.ContainsOrigin(origin)) {
-    base::UmaHistogramEnumeration(kUmaKeyCacheStateIsTriggerFormSupported,
-                                  CacheStateForIsTriggerFormSupported::
-                                      kEntryAvailableAndFormNotSupported);
-  } else {
-    base::UmaHistogramEnumeration(
-        kUmaKeyCacheStateIsTriggerFormSupported,
-        ongoing_requests_.contains(origin)
-            ? CacheStateForIsTriggerFormSupported::kFetchOngoing
-            : CacheStateForIsTriggerFormSupported::kNeverFetched);
-  }
+  NOTIMPLEMENTED();
   return false;
-}
-
-void FastCheckoutCapabilitiesFetcherImpl::OnGetCapabilitiesInformationReceived(
-    const url::Origin& origin,
-    base::TimeTicks start_time,
-    int http_status,
-    const std::vector<CapabilitiesInfo>& capabilities) {
-  RequestMap::iterator request = ongoing_requests_.find(origin);
-  if (request == ongoing_requests_.end()) {
-    // There should always be exactly one ongoing request per origin.
-    NOTREACHED();
-    return;
-  }
-
-  base::UmaHistogramSparse(kUmaKeyHttpCode, http_status);
-  base::UmaHistogramMediumTimes(kUmaKeyResponseTime,
-                                base::TimeTicks::Now() - start_time);
-
-  // Short-hand for executing all callbacks.
-  auto inform_callers = [request](bool outcome) {
-    for (Callback& callback : request->second) {
-      std::move(callback).Run(outcome);
-    }
-  };
-
-  // If the request was unsuccessful, inform the callers, but do not update
-  // the cache.
-  if (http_status != net::HTTP_OK) {
-    inform_callers(false);
-    ongoing_requests_.erase(request);
-    return;
-  }
-
-  std::vector<CapabilitiesInfo>::const_iterator request_capabilities =
-      base::ranges::find(capabilities, origin,
-                         [](const CapabilitiesInfo& info) {
-                           return url::Origin::Create(GURL(info.url));
-                         });
-
-  if (request_capabilities != capabilities.end() &&
-      request_capabilities->bundle_capabilities_information.has_value()) {
-    BundleCapabilitiesInformation bundle_capabilities_information =
-        request_capabilities->bundle_capabilities_information.value();
-    cache_.AddToCache(
-        origin,
-        FastCheckoutCapabilitiesResult(
-            bundle_capabilities_information.trigger_form_signatures,
-            bundle_capabilities_information.supports_consentless_execution));
-  } else {
-    // If no form signatures are supported, save that into the cache, too.
-    cache_.AddToCache(origin, FastCheckoutCapabilitiesResult());
-  }
-
-  inform_callers(true);
-  ongoing_requests_.erase(request);
-}
-
-bool FastCheckoutCapabilitiesFetcherImpl::SupportsConsentlessExecution(
-    const url::Origin& origin) {
-  return cache_.SupportsConsentlessExecution(origin);
 }

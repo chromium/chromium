@@ -42,6 +42,7 @@ void FastCheckoutTabHelper::DidStartNavigation(
     // http/https and there is no risk associated with origin opaqueness.
     fetcher->FetchAvailability(url::Origin::Create(navigation_handle->GetURL()),
                                base::DoNothing());
+    return;
   }
 }
 

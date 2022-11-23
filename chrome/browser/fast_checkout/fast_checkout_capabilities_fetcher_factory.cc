@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.h"
-#include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -39,9 +37,5 @@ FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
 
 KeyedService* FastCheckoutCapabilitiesFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  return new FastCheckoutCapabilitiesFetcherImpl(
-      autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
-          browser_context,
-          std::make_unique<autofill_assistant::CommonDependenciesChrome>(
-              browser_context)));
+  return new FastCheckoutCapabilitiesFetcherImpl();
 }
