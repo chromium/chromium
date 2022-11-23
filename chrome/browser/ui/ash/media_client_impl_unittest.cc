@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -19,11 +21,15 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+#include "ui/message_center/message_center.h"
 
 // Gmock matchers and actions that are used below.
 using ::testing::AnyOf;
@@ -81,6 +87,57 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
 
  private:
   absl::optional<ui::Accelerator> last_media_key_;
+};
+
+class FakeNotificationDisplayService : public NotificationDisplayService {
+ public:
+  void Display(
+      NotificationHandler::Type notification_type,
+      const message_center::Notification& notification,
+      std::unique_ptr<NotificationCommon::Metadata> metadata) override {
+    show_called_times_++;
+    active_notifications_.insert_or_assign(notification.id(), notification);
+  }
+
+  void Close(NotificationHandler::Type notification_type,
+             const std::string& notification_id) override {
+    active_notifications_.erase(notification_id);
+  }
+
+  void GetDisplayed(DisplayedNotificationsCallback callback) override {}
+
+  void AddObserver(NotificationDisplayService::Observer* observer) override {}
+  void RemoveObserver(NotificationDisplayService::Observer* observer) override {
+  }
+
+  bool HasNotificationMessageContaining(const std::string& app_name) const {
+    const std::u16string app_name_u16 = base::UTF8ToUTF16(app_name);
+    for (const auto& [notification_id, notification] : active_notifications_) {
+      if (notification.message().find(app_name_u16) != std::u16string::npos)
+        return true;
+    }
+    return false;
+  }
+
+  size_t NumberOfActiveNotifications() const {
+    return active_notifications_.size();
+  }
+
+  size_t show_called_times() const { return show_called_times_; }
+
+  std::vector<const message_center::Notification*> GetActiveNotifications()
+      const {
+    std::vector<const message_center::Notification*> keys;
+    for (const auto& notification_iter : active_notifications_) {
+      keys.push_back(&notification_iter.second);
+    }
+
+    return keys;
+  }
+
+ private:
+  std::map<std::string, message_center::Notification> active_notifications_;
+  size_t show_called_times_ = 0;
 };
 
 }  // namespace
@@ -216,6 +273,62 @@ class MediaClientAppUsingCameraTest : public testing::Test {
   apps::AppCapabilityAccessCache capability_access_cache_;
 };
 
+class MediaClientAppUsingCameraInBrowserEnvironmentTest
+    : public MediaClientAppUsingCameraTest {
+ public:
+  MediaClientAppUsingCameraInBrowserEnvironmentTest() {
+    user_manager_.Initialize();
+  }
+
+  ~MediaClientAppUsingCameraInBrowserEnvironmentTest() override {
+    user_manager_.Shutdown();
+    user_manager_.Destroy();
+  }
+
+  void LaunchAppUpdateActiveClientCount(const char* id,
+                                        const char* name,
+                                        absl::optional<bool> use_camera,
+                                        int active_client_count) {
+    media_client_.active_camera_client_count_ = active_client_count;
+    LaunchApp(id, name, use_camera);
+  }
+
+  void ShowCameraOffNotification() {
+    media_client_.ShowCameraOffNotification("a device");
+  }
+
+  void OnCapabilityAccessUpdate(
+      const apps::CapabilityAccessUpdate& capability_update) {
+    media_client_.OnCapabilityAccessUpdate(capability_update);
+  }
+
+  apps::CapabilityAccessUpdate MakeCapabilityAccessUpdate(
+      const apps::CapabilityAccess* capability) const {
+    return apps::CapabilityAccessUpdate(capability, nullptr, account_id_);
+  }
+
+  FakeNotificationDisplayService* SetSystemNotificationService() const {
+    std::unique_ptr<FakeNotificationDisplayService>
+        fake_notification_display_service =
+            std::make_unique<FakeNotificationDisplayService>();
+    FakeNotificationDisplayService* fake_notification_display_service_ptr =
+        fake_notification_display_service.get();
+    SystemNotificationHelper::GetInstance()->SetSystemServiceForTesting(
+        std::move(fake_notification_display_service));
+
+    return fake_notification_display_service_ptr;
+  }
+
+ protected:
+  // Has to be the first member as others are CHECKing the environment in their
+  // constructors.
+  content::BrowserTaskEnvironment task_environment_;
+
+  MediaClientImpl media_client_;
+  SystemNotificationHelper system_notification_helper_;
+  user_manager::FakeUserManager user_manager_;
+};
+
 TEST_F(MediaClientTest, HandleMediaAccelerators) {
   const struct {
     ui::Accelerator accelerator;
@@ -288,7 +401,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
 TEST_F(MediaClientAppUsingCameraTest, NoAppsLaunched) {
   // Should return an empty string.
-  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
       &capability_access_cache_, &registry_cache_);
   EXPECT_TRUE(app_name.empty());
 }
@@ -297,7 +410,7 @@ TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
   LaunchApp("id_rose", "name_rose", /*use_camera=*/false);
 
   // Should return an empty string.
-  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
       &capability_access_cache_, &registry_cache_);
   EXPECT_TRUE(app_name.empty());
 }
@@ -306,10 +419,9 @@ TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
   LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
 
   // Should return the name of our app.
-  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
       &capability_access_cache_, &registry_cache_);
-  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
-  EXPECT_STREQ(app_name_utf8.c_str(), "name_rose");
+  EXPECT_STREQ(app_name.c_str(), "name_rose");
 }
 
 TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
@@ -322,8 +434,123 @@ TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
   // GetNameOfAppAccessingCamera) returns a set, we have no guarantee of
   // which app will be found first.  So we verify that the app name is one of
   // our camera-users.
-  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
       &capability_access_cache_, &registry_cache_);
-  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
-  EXPECT_THAT(app_name_utf8, AnyOf("name_rose", "name_mars", "name_zara"));
+  EXPECT_THAT(app_name, AnyOf("name_rose", "name_mars", "name_zara"));
+}
+
+TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
+       OnCapabilityAccessUpdate) {
+  const FakeNotificationDisplayService* notification_display_service =
+      SetSystemNotificationService();
+  const char* app1_id = "app1";
+  const char* app2_id = "app2";
+  const char* app1_name = "App name";
+  const char* app2_name = "Other app";
+  const apps::CapabilityAccessPtr capability_access =
+      MakeCapabilityAccess(app1_id, false);
+  const apps::CapabilityAccessUpdate capability_access_update =
+      MakeCapabilityAccessUpdate(capability_access.get());
+
+  user_manager_.AddUser(account_id_);
+  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
+
+  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
+
+  // No apps are active.
+  OnCapabilityAccessUpdate(capability_access_update);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+
+  // Launch an app. The notification shouldn't be active yet.
+  LaunchAppUpdateActiveClientCount(app1_id, app1_name, true, 1);
+  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
+  // As there is no state change of camera usage by the app the notification
+  // shouldn't be shown either.
+  OnCapabilityAccessUpdate(capability_access_update);
+  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
+
+  // Showing the camera notification, e.g. because the privacy switch was
+  // toggled.
+  ShowCameraOffNotification();
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app1_name));
+  EXPECT_EQ(notification_display_service->show_called_times(), 1u);
+
+  // Start a second app that's also using the camera.
+  LaunchApp(app2_id, app2_name, true);
+  // Since there is no eager update required it's fine to show the notification
+  // with the previous app name.
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app1_name));
+  EXPECT_EQ(notification_display_service->show_called_times(), 1u);
+
+  // Launching an App with `use_camera=false` is like minimizing/closing the
+  // app for the purpose of this test.
+  LaunchApp(app1_id, app1_name, false);
+  // As the state change of the first application hasn't propagated to the
+  // observer yet the outdated notification should still be around.
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app1_name));
+
+  OnCapabilityAccessUpdate(capability_access_update);
+
+  // After the observer reacted to the change the notification with the updated
+  // app name should be visible.
+  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
+  EXPECT_FALSE(notification_display_service->HasNotificationMessageContaining(
+      app1_name));
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app2_name));
+  ASSERT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_EQ(notification_display_service->GetActiveNotifications()
+                .front()
+                ->priority(),
+            message_center::NotificationPriority::LOW_PRIORITY);
+
+  // Again no eager updating of the notification when launching, stopping and
+  // notifying the observer while the previously active app is still using the
+  // camera.
+  const char* app3_id = "app3";
+  const char* app3_name = "Ignored";
+  const apps::CapabilityAccessPtr ignored_capability_access =
+      MakeCapabilityAccess(app3_id, false);
+  const apps::CapabilityAccessUpdate ignored_capability_access_update =
+      MakeCapabilityAccessUpdate(ignored_capability_access.get());
+
+  LaunchApp(app3_id, app3_name, true);
+  LaunchApp(app3_id, app3_name, false);
+  OnCapabilityAccessUpdate(ignored_capability_access_update);
+  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_FALSE(notification_display_service->HasNotificationMessageContaining(
+      app3_name));
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app2_name));
+
+  // App that's missing from the app registry cache.
+  const char* app4_id = "app4";
+  const apps::CapabilityAccessPtr missing_capability_access =
+      MakeCapabilityAccess(app4_id, false);
+  const apps::CapabilityAccessUpdate missing_capability_access_update =
+      MakeCapabilityAccessUpdate(missing_capability_access.get());
+
+  OnCapabilityAccessUpdate(missing_capability_access_update);
+  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
+      app2_name));
+
+  // In case the capability access is dropped for the last client before the
+  // active client callback from the remote finishes we also want to hide the
+  // notification and prevent blinking.
+  const apps::CapabilityAccessPtr app2_capability_access =
+      MakeCapabilityAccess(app2_id, false);
+  const apps::CapabilityAccessUpdate app2_capability_access_update =
+      MakeCapabilityAccessUpdate(app2_capability_access.get());
+
+  LaunchAppUpdateActiveClientCount(app2_id, app2_name, false, 0);
+  OnCapabilityAccessUpdate(app2_capability_access_update);
+  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }

@@ -11,10 +11,10 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -61,6 +61,7 @@
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 using ash::MediaCaptureState;
 
@@ -205,22 +206,46 @@ MediaCaptureState GetMediaCaptureStateOfAllWebContents(
   return media_state;
 }
 
+const user_manager::User* GetActiveUser() {
+  if (user_manager::UserManager::IsInitialized()) {
+    return user_manager::UserManager::Get()->GetActiveUser();
+  }
+
+  return nullptr;
+}
+
+apps::AppRegistryCache* GetAppRegistryCache(
+    const user_manager::User* active_user) {
+  if (active_user) {
+    return apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+        active_user->GetAccountId());
+  }
+
+  return nullptr;
+}
+
+apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
+    const user_manager::User* active_user) {
+  if (active_user) {
+    return apps::AppCapabilityAccessCacheWrapper::Get()
+        .GetAppCapabilityAccessCache(active_user->GetAccountId());
+  }
+
+  return nullptr;
+}
+
 // Relieves GetNameOfAppAccessingCamera() of the responsibility for gathering up
 // the AppRegistryCache and AppCapabilityAccessCache objects, which drastically
 // simplifies the unit tests of that function.
-std::u16string GetNameOfAppAccessingCameraInternal() {
-  auto* manager = user_manager::UserManager::Get();
-  const user_manager::User* active_user = manager->GetActiveUser();
+std::string GetNameOfAppAccessingCameraInternal() {
+  const user_manager::User* active_user = GetActiveUser();
   if (!active_user)
-    return std::u16string();
+    return std::string();
 
-  auto account_id = active_user->GetAccountId();
-  apps::AppRegistryCache* reg_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  apps::AppRegistryCache* reg_cache = GetAppRegistryCache(active_user);
   DCHECK(reg_cache);
   apps::AppCapabilityAccessCache* cap_cache =
-      apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
-          account_id);
+      GetAppCapabilityAccessCache(active_user);
   DCHECK(cap_cache);
   return MediaClientImpl::GetNameOfAppAccessingCamera(cap_cache, reg_cache);
 }
@@ -236,6 +261,14 @@ std::string GetDeviceName(
   return std::string();
 }
 
+// Small helper to make sure that `kCameraPrivacySwitchOnNotificationIdPrefix`
+// combined with `device_name` always produce the same identifier.
+std::string PrivacySwitchOnNotificationIdForDevice(
+    const std::string& device_name) {
+  return base::StrCat(
+      {kCameraPrivacySwitchOnNotificationIdPrefix, device_name});
+}
+
 }  // namespace
 
 MediaClientImpl::MediaClientImpl() {
@@ -243,6 +276,12 @@ MediaClientImpl::MediaClientImpl() {
   BrowserList::AddObserver(this);
 
   ash::VmCameraMicManager::Get()->AddObserver(this);
+
+  // These checks are needed for testing, where Shell and/or the
+  // SessionController may not exist.
+  if (ash::SessionController::Get()) {
+    ash::SessionController::Get()->AddObserver(this);
+  }
 
   // Camera service does not behave in non ChromeOS environment (e.g. testing,
   // linux chromeos).
@@ -274,6 +313,11 @@ MediaClientImpl::~MediaClientImpl() {
   BrowserList::RemoveObserver(this);
 
   ash::VmCameraMicManager::Get()->RemoveObserver(this);
+
+  if (ash::SessionController::Get()) {
+    ash::SessionController::Get()->RemoveObserver(this);
+  }
+
   if (base::SysInfo::IsRunningOnChromeOS() &&
       base::FeatureList::IsEnabled(
           chromeos::features::kCameraPrivacySwitchNotifications) &&
@@ -418,6 +462,67 @@ void MediaClientImpl::OnActiveClientChange(
                      weak_ptr_factory_.GetWeakPtr(), active_device_ids));
 }
 
+void MediaClientImpl::OnCapabilityAccessUpdate(
+    const apps::CapabilityAccessUpdate& capability_update) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Updating the map eagerly is not necessary. We just want to make sure that
+  // the app name in the notification is one of the apps being used, not
+  // necessarily the most recent one.
+  if (capability_update.Camera().value_or(true) || last_device_for_app_.empty())
+    return;
+
+  apps::AppRegistryCache* registry_cache = GetAppRegistryCache(GetActiveUser());
+
+  // This can happen during testing.
+  if (!registry_cache)
+    return;
+
+  std::string app_name;
+  registry_cache->ForOneApp(capability_update.AppId(),
+                            [&app_name](const apps::AppUpdate& app_update) {
+                              app_name = app_update.ShortName();
+                            });
+
+  if (app_name.empty())
+    return;
+
+  if (!last_device_for_app_.contains(app_name))
+    return;
+
+  const std::string device_name = last_device_for_app_.at(app_name);
+
+  // Remove the current app_name from the map. It will be repopulated in
+  // `ShowCameraOffNotification`.
+  last_device_for_app_.erase(app_name);
+
+  // Make sure we don't show the notification depending on the order of the
+  // observers being called and introduce a blinking effect when the last
+  // application stops using the camera.
+  if (active_camera_client_count_ > 0) {
+    ShowCameraOffNotification(device_name, /*resurface=*/false);
+  } else {
+    SystemNotificationHelper::GetInstance()->Close(
+        PrivacySwitchOnNotificationIdForDevice(device_name));
+  }
+}
+
+void MediaClientImpl::OnAppCapabilityAccessCacheWillBeDestroyed(
+    apps::AppCapabilityAccessCache* cache) {
+  Observe(nullptr);
+}
+
+void MediaClientImpl::OnActiveUserSessionChanged(const AccountId& account_id) {
+  apps::AppCapabilityAccessCache* capability_cache =
+      apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
+          account_id);
+
+  // This can happen when testing.
+  if (!capability_cache)
+    return;
+
+  Observe(capability_cache);
+}
+
 void MediaClientImpl::EnableCustomMediaKeyHandler(
     content::BrowserContext* context,
     ui::MediaKeysListener::Delegate* delegate) {
@@ -505,50 +610,56 @@ void MediaClientImpl::HandleMediaAction(ui::KeyboardCode keycode) {
   }
 }
 
-std::u16string MediaClientImpl::GetNameOfAppAccessingCamera(
+std::string MediaClientImpl::GetNameOfAppAccessingCamera(
     apps::AppCapabilityAccessCache* capability_cache,
     apps::AppRegistryCache* registry_cache) {
   DCHECK(capability_cache);
   DCHECK(registry_cache);
-
   for (const std::string& app : capability_cache->GetAppsAccessingCamera()) {
-    std::u16string name;
+    std::string name;
     registry_cache->ForOneApp(app, [&name](const apps::AppUpdate& update) {
-      name = base::UTF8ToUTF16(update.ShortName());
+      name = update.ShortName();
     });
     if (!name.empty())
       return name;
   }
 
-  return std::u16string();
+  return std::string();
 }
 
-void MediaClientImpl::ShowCameraOffNotification(
-    const std::string& device_name) {
+void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
+                                                const bool resurface) {
   base::UmaHistogramEnumeration(
       kCameraPrivacySwitchEventsHistogramName,
       CameraPrivacySwitchEvent::kSwitchOnNotificationShown);
 
   camera_switch_notification_shown_timestamp_ = base::TimeTicks::Now();
 
-  std::u16string app_name = GetNameOfAppAccessingCameraInternal();
-  std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
-  std::u16string message =
-      app_name.empty()
-          ? l10n_util::GetStringFUTF16(
-                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE,
-                device_name_u16)
-          : l10n_util::GetStringFUTF16(
-                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,
-                app_name, device_name_u16);
+  const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
+  std::u16string message;
+  if (const std::string app_name = GetNameOfAppAccessingCameraInternal();
+      !app_name.empty()) {
+    message = l10n_util::GetStringFUTF16(
+        IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,
+        base::UTF8ToUTF16(app_name), device_name_u16);
+
+    last_device_for_app_.insert_or_assign(app_name, device_name);
+  } else {
+    message = l10n_util::GetStringFUTF16(
+        IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE, device_name_u16);
+  }
 
   const std::string notification_id =
-      base::StrCat({kCameraPrivacySwitchOnNotificationIdPrefix, device_name});
-
-  SystemNotificationHelper::GetInstance()->Close(notification_id);
+      PrivacySwitchOnNotificationIdForDevice(device_name);
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.remove_on_click = true;
+  if (resurface) {
+    SystemNotificationHelper::GetInstance()->Close(notification_id);
+  } else {
+    rich_notification_data.priority =
+        message_center::NotificationPriority::LOW_PRIORITY;
+  }
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
@@ -655,8 +766,8 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
   }
 
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-    SystemNotificationHelper::GetInstance()->Close(base::StrCat(
-        {kCameraPrivacySwitchOnNotificationIdPrefix, device_name}));
+    SystemNotificationHelper::GetInstance()->Close(
+        PrivacySwitchOnNotificationIdForDevice(device_name));
   }
 }
 
@@ -678,9 +789,8 @@ void MediaClientImpl::OnGetSourceInfosByActiveClientChanged(
       } else if (active_camera_client_count_ == 0) {
         // Clear the notification for this device as no client is trying to use
         // this camera anymore.
-        const std::string notification_id = base::StrCat(
-            {kCameraPrivacySwitchOnNotificationIdPrefix, device_name});
-        SystemNotificationHelper::GetInstance()->Close(notification_id);
+        SystemNotificationHelper::GetInstance()->Close(
+            PrivacySwitchOnNotificationIdForDevice(device_name));
       }
     }
   }
