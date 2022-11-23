@@ -763,7 +763,10 @@ NSInteger kFeedSymbolPointSize = 17;
 - (void)onSegmentSelected:(UISegmentedControl*)segmentedControl {
   switch (segmentedControl.selectedSegmentIndex) {
     case static_cast<NSInteger>(FeedTypeDiscover): {
-      [self.feedMetricsRecorder recordFeedSelected:FeedTypeDiscover];
+      [self.feedMetricsRecorder
+                recordFeedSelected:FeedTypeDiscover
+          fromPreviousFeedPosition:[self.feedControlDelegate
+                                           lastVisibleFeedCardIndex]];
       [self.feedControlDelegate handleFeedSelected:FeedTypeDiscover];
       [UIView animateWithDuration:kSegmentAnimationDuration
                        animations:^{
@@ -772,7 +775,10 @@ NSInteger kFeedSymbolPointSize = 17;
       break;
     }
     case static_cast<NSInteger>(FeedTypeFollowing): {
-      [self.feedMetricsRecorder recordFeedSelected:FeedTypeFollowing];
+      [self.feedMetricsRecorder
+                recordFeedSelected:FeedTypeFollowing
+          fromPreviousFeedPosition:[self.feedControlDelegate
+                                           lastVisibleFeedCardIndex]];
       [self.feedControlDelegate handleFeedSelected:FeedTypeFollowing];
       // Only show sorting button for Following feed.
       [UIView animateWithDuration:kSegmentAnimationDuration

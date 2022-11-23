@@ -54,6 +54,19 @@
   }
 }
 
+#pragma mark - Public
+
+- (NSUInteger)lastVisibleFeedCardIndex {
+  DCHECK(self.contentCollectionView);
+  NSArray<NSIndexPath*>* visibleCardIndices =
+      [self.contentCollectionView indexPathsForVisibleItems];
+  NSInteger lastVisibleIndex;
+  for (NSIndexPath* cardIndex in visibleCardIndices) {
+    lastVisibleIndex = MAX(lastVisibleIndex, cardIndex.item);
+  }
+  return lastVisibleIndex;
+}
+
 #pragma mark - Private
 
 // If the feed is visible, we configure the feed's collection view and view

@@ -268,6 +268,13 @@ extern const char kActionOnNTP[];
 // Histogram for an action taken on the start surface.
 extern const char kActionOnStartSurface[];
 
+// Histogram name for last visible card when switching from Discover to
+// Following feed.
+extern const char kDiscoverIndexWhenSwitchingFeed[];
+// Histogram name for last visible card when switching from Following to
+// Discover feed.
+extern const char kFollowingIndexWhenSwitchingFeed[];
+
 #pragma mark - User Actions
 
 // User action names for the device orientation having changed.

@@ -30,6 +30,9 @@
 // for certain circumstances like restricted accounts.
 - (BOOL)isFollowingFeedAvailable;
 
+// Returns the index of the last visible feed card.
+- (NSUInteger)lastVisibleFeedCardIndex;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_

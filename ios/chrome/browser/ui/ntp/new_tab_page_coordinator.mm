@@ -915,6 +915,10 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
          self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
+- (NSUInteger)lastVisibleFeedCardIndex {
+  return [self.feedWrapperViewController lastVisibleFeedCardIndex];
+}
+
 #pragma mark - FeedDelegate
 
 - (void)contentSuggestionsWasUpdated {
@@ -1442,6 +1446,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
            followingSegmentDotVisible:followingSegmentDotVisible];
     _feedHeaderViewController.feedControlDelegate = self;
     _feedHeaderViewController.ntpDelegate = self;
+    _feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
     [_feedHeaderViewController.menuButton
                addTarget:self
                   action:@selector(openFeedMenu)

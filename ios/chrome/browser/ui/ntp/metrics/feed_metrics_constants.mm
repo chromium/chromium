@@ -78,6 +78,10 @@ const char kFollowCountWhenEngaged[] =
 const char kActionOnNTP[] = "IOS.ContentSuggestions.ActionOnNTP";
 const char kActionOnStartSurface[] =
     "IOS.ContentSuggestions.ActionOnStartSurface";
+const char kDiscoverIndexWhenSwitchingFeed[] =
+    "ContentSuggestions.Feed.CardIndexOnSwitch";
+const char kFollowingIndexWhenSwitchingFeed[] =
+    "ContentSuggestions.Feed.WebFeed.CardIndexOnSwitch";
 
 #pragma mark - User Actions
 
