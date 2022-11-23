@@ -22,9 +22,11 @@ class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
 class MLGemmOptions;
+class MLGraph;
 class MLPool2dOptions;
 class MLOperand;
 class MLOperandDescriptor;
+class ScriptPromiseResolver;
 
 typedef HeapVector<std::pair<String, Member<MLOperand>>> MLNamedOperands;
 
@@ -111,8 +113,29 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 
   ScriptPromise buildAsync(ScriptState* script_state,
-                           const MLNamedOperands& outputs,
+                           const MLNamedOperands& named_outputs,
                            ExceptionState& exception_state);
+
+  // TODO(ningxin.hu@intel.com): Once the web-platform-tests are updated, add
+  // MLGraphBuilder.buildSync() into ml_graph_builder.idl for dedicated worker
+  // as WebNN spec: https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-buildsync
+  MLGraph* buildSync(const MLNamedOperands& named_outputs,
+                     ExceptionState& exception_state);
+
+  // The test cases can override the graph building behavior by implementing
+  // this class and setting its instance by SetBackendForTesting().
+  class BackendForTesting {
+   public:
+    virtual void BuildGraphAsyncImpl(MLContext* context,
+                                     const MLNamedOperands& named_outputs,
+                                     ScriptPromiseResolver* resolver) = 0;
+
+    virtual MLGraph* BuildGraphSyncImpl(MLContext* context,
+                                        const MLNamedOperands& named_outputs,
+                                        ExceptionState& exception_state) = 0;
+  };
+
+  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
   Member<MLContext> ml_context_;

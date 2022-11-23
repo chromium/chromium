@@ -29,6 +29,8 @@ namespace blink {
 
 namespace {
 
+MLGraphBuilder::BackendForTesting* g_backend_for_testing = nullptr;
+
 bool IsFloatingPointType(V8MLOperandType::Enum operand_type) {
   switch (operand_type) {
     case V8MLOperandType::Enum::kFloat32:
@@ -1101,6 +1103,12 @@ ScriptPromise MLGraphBuilder::buildAsync(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
+  if (g_backend_for_testing) {
+    g_backend_for_testing->BuildGraphAsyncImpl(ml_context_, named_outputs,
+                                               resolver);
+    return promise;
+  }
+
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
   if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
       ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
@@ -1112,6 +1120,32 @@ ScriptPromise MLGraphBuilder::buildAsync(ScriptState* script_state,
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Not implemented"));
   return promise;
+}
+
+MLGraph* MLGraphBuilder::buildSync(const MLNamedOperands& named_outputs,
+                                   ExceptionState& exception_state) {
+  if (g_backend_for_testing) {
+    return g_backend_for_testing->BuildGraphSyncImpl(ml_context_, named_outputs,
+                                                     exception_state);
+  }
+
+#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
+  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
+      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+    return MLGraphXnnpack::ValidateAndBuildSync(ml_context_, named_outputs,
+                                                exception_state);
+  }
+#endif
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+  return nullptr;
+}
+
+// static
+void MLGraphBuilder::SetBackendForTesting(
+    MLGraphBuilder::BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
 }
 
 }  // namespace blink

@@ -149,6 +149,15 @@ void MLGraphXnnpack::ValidateAndBuildAsync(MLContext* context,
   graph->BuildAsync(named_outputs, resolver);
 }
 
+// static
+MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
+    MLContext* context,
+    const MLNamedOperands& named_outputs,
+    ExceptionState& exception_state) {
+  return MakeGarbageCollected<MLGraphXnnpack>(context)->BuildSync(
+      named_outputs, exception_state);
+}
+
 MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {}
 
 MLGraphXnnpack::~MLGraphXnnpack() = default;
@@ -273,6 +282,24 @@ void MLGraphXnnpack::OnBuildFinished(
     return;
   }
   resolver->Resolve(this);
+}
+
+MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
+                                       ExceptionState& exception_state) {
+  DCHECK(!xnn_context_);
+  String error_message;
+  xnn_context_ = SharedXnnpackContext::GetInstance(error_message);
+  if (!xnn_context_) {
+    exception_state.ThrowDOMException(
+        XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message);
+    return nullptr;
+  }
+
+  // TODO(ningxin.hu@intel.com): Sort the operators in topological order. Define
+  // the XNNPACK subgraph Nodes for the sorted operators and subgraph Values for
+  // their input and output operands.
+
+  return this;
 }
 
 void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,

@@ -5,14 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -74,6 +78,30 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* a,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
+
+enum ExecutionMode { kAsync, kSync };
+
+std::string ExecutionModeParamToString(
+    const ::testing::TestParamInfo<ExecutionMode>& execution_mode);
+
+class MLGraphTestBase : public ::testing::Test,
+                        public ::testing::WithParamInterface<ExecutionMode> {
+ protected:
+  // BuildResult is returned by Build() method. Only one member of BuildResult
+  // is valid. If the graph building is successful, graph points to the MLGraph
+  // and exception is a nullptr. Otherwise, exception points to the DOMException
+  // and graph is a nullptr.
+  struct BuildResult {
+    Persistent<MLGraph> graph;
+    Persistent<DOMException> exception;
+  };
+
+  // Helper method for testing both BuildAsyncImpl() and BuildSyncImpl() with
+  // the same named operands and expected results.
+  BuildResult BuildGraph(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
+                         const MLNamedOperands& named_operands);
+};
 
 }  // namespace blink
 

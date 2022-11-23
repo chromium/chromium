@@ -28,8 +28,15 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver);
 
+  // Create and build a MLGraphXnnpack object synchronously in the caller's
+  // thread. Return this concrete object if the underlying XNNPACK subgraph
+  // builds successfully.
+  static MLGraph* ValidateAndBuildSync(MLContext* context,
+                                       const MLNamedOperands& named_outputs,
+                                       ExceptionState& exception_state);
+
   // The constructor shouldn't be called directly. The callers should use
-  // ValidateAndBuildAsync() method instead.
+  // ValidateAndBuildAsync() or ValidateAndBuildSync() method instead.
   explicit MLGraphXnnpack(MLContext* context);
 
   ~MLGraphXnnpack() override;
@@ -61,6 +68,13 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   void OnBuildFinished(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                        xnn_status status,
                        String error_message = String());
+
+  // Build the XNNPACK Subgraph synchronously in the caller's thread. If the
+  // XNNPACK Subgraph builds successfully, it should return this MLGraphXnnpack
+  // object. Otherwise, it returns a nullptr and throw a DOMException
+  // accordingly.
+  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+                         ExceptionState& exception_state) override;
 
   // Post the XNNPACK Runtime invocation to a background thread.
   void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,

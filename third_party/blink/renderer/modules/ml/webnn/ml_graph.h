@@ -70,11 +70,10 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   explicit MLGraph(MLContext* context);
 
   // BuildAsync() should be called right after constructing a concrete
-  // MLGraph object. FakeMLGraphBackend::ValidateAndBuildAsync() in
-  // ml_graph_builder_test.cc gives an example. BuildAsync() validates the named
-  // outputs and initializes the input and output resources info. If there are
-  // no errors, it calls BuildAsyncImpl() implemented by an MLGraph backend that
-  // builds the platform specific graph.
+  // MLGraph object. BuildAsync() validates the named outputs and initializes
+  // the input and output resources info. If there are no errors, it calls
+  // BuildAsyncImpl() implemented by an MLGraph backend that builds the platform
+  // specific graph.
   void BuildAsync(const MLNamedOperands& named_outputs,
                   ScriptPromiseResolver* resolver);
 
@@ -86,6 +85,21 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // rejected with a DOMException accordingly.
   virtual void BuildAsyncImpl(const MLNamedOperands& outputs,
                               ScriptPromiseResolver* resolver) = 0;
+
+  // BuildSync() has the similar function as BuildAsync() and should also be
+  // called right after constructing a concrete MLGraph object. The difference
+  // is if there are no validation errors, it calls BuildSyncImpl() implemented
+  // by an MLGraph backend that builds the platform specific graph in the
+  // caller's thread synchronously.
+  MLGraph* BuildSync(const MLNamedOperands& named_outputs,
+                     ExceptionState& exception_state);
+
+  // An MLGraph backend should implement this method to build and compile a
+  // platform specific graph synchronously in the caller's thread. Once the
+  // platform graph is compiled, it should return a concrete MLGraph object.
+  // Otherwise, it should return a nullptr and throw a DOMException accordingly.
+  virtual MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+                                 ExceptionState& exception_state) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph asynchronously. The actual graph execution work

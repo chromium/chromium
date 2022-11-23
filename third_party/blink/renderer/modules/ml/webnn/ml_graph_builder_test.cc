@@ -9,7 +9,6 @@
 #include <numeric>
 
 #include "base/numerics/checked_math.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -2033,6 +2032,14 @@ class FakeMLGraphBackend final : public MLGraph {
     graph->BuildAsync(named_outputs, resolver);
   }
 
+  // Create and build a FakeMLGraphBackend object synchronously.
+  static MLGraph* ValidateAndBuildSync(MLContext* context,
+                                       const MLNamedOperands& named_outputs,
+                                       ExceptionState& exception_state) {
+    return MakeGarbageCollected<FakeMLGraphBackend>(context)->BuildSync(
+        named_outputs, exception_state);
+  }
+
   // The constructor shouldn't be called directly. The callers should use
   // ValidateAndBuildAsync() method instead.
   explicit FakeMLGraphBackend(MLContext* context) : MLGraph(context) {}
@@ -2040,15 +2047,22 @@ class FakeMLGraphBackend final : public MLGraph {
   ~FakeMLGraphBackend() override = default;
 
  private:
-  // Simpliy resolve the promise with this FakeMLGraphBackend object for testing
-  // the input and output resources info.
+  // Resolve the promise with this FakeMLGraphBackend object for testing the
+  // input and output resources info.
   void BuildAsyncImpl(const MLNamedOperands& named_outputs,
                       ScriptPromiseResolver* resolver) override {
     resolver->Resolve(this);
   }
 
-  // Simpliy resolve the promise for testing the validation of inputs and
-  // outputs in MLGraph::ComputeAsync().
+  // Return this FakeMLGraphBackend object for testing the input and output
+  // resources info.
+  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+                         ExceptionState& exception_state) override {
+    return this;
+  }
+
+  // Resolve the promise for testing the validation of inputs and outputs in
+  // MLGraph::ComputeAsync().
   void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver) override {
@@ -2062,21 +2076,103 @@ FakeMLGraphBackend* ToFakeMLGraphBackend(V8TestingScope* scope,
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
 }
 
-TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
+MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
+  return NativeValueTraits<MLGraph>::NativeValue(
+      scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
+}
+
+std::string ExecutionModeParamToString(
+    const ::testing::TestParamInfo<ExecutionMode>& execution_mode) {
+  switch (execution_mode.param) {
+    case ExecutionMode::kAsync:
+      return "Async";
+    case ExecutionMode::kSync:
+      return "Sync";
+  }
+}
+
+MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLNamedOperands& named_operands) {
+  switch (GetParam()) {
+    case ExecutionMode::kAsync: {
+      ScriptPromiseTester tester(
+          scope.GetScriptState(),
+          builder->buildAsync(scope.GetScriptState(), named_operands,
+                              scope.GetExceptionState()));
+      tester.WaitUntilSettled();
+      if (tester.IsFulfilled()) {
+        return BuildResult{.graph = ToMLGraph(&scope, tester.Value()),
+                           .exception = nullptr};
+      } else {
+        return BuildResult{.graph = nullptr,
+                           .exception = V8DOMException::ToImplWithTypeCheck(
+                               scope.GetIsolate(), tester.Value().V8Value())};
+      }
+    }
+    case ExecutionMode::kSync: {
+      auto* graph =
+          builder->buildSync(named_operands, scope.GetExceptionState());
+      if (graph) {
+        return BuildResult{.graph = static_cast<MLGraph*>(graph),
+                           .exception = nullptr};
+      } else {
+        return BuildResult{
+            .graph = nullptr,
+            .exception = MakeGarbageCollected<DOMException>(
+                scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                scope.GetExceptionState().Message())};
+      }
+    }
+    default:
+      NOTREACHED();
+  }
+}
+
+namespace {
+
+// Helper class to create the FakeMLGraphBackend that is intended to test
+// the GraphBuilder validation steps.
+class FakeMLGraphBuilderBackend : public MLGraphBuilder::BackendForTesting {
+ public:
+  void BuildGraphAsyncImpl(MLContext* context,
+                           const MLNamedOperands& named_outputs,
+                           ScriptPromiseResolver* resolver) override {
+    FakeMLGraphBackend::ValidateAndBuildAsync(context, named_outputs, resolver);
+  }
+
+  MLGraph* BuildGraphSyncImpl(MLContext* context,
+                              const MLNamedOperands& named_outputs,
+                              ExceptionState& exception_state) override {
+    return FakeMLGraphBackend::ValidateAndBuildSync(context, named_outputs,
+                                                    exception_state);
+  }
+};
+
+}  // namespace
+
+// Helper class to test FakeMLGraphBackend.
+class FakeMLGraphTest : public MLGraphTestBase {
+ public:
+  void SetUp() override {
+    // Ensure MLGraphBuilder builds a FakeMLGraphBackend.
+    MLGraphBuilder::SetBackendForTesting(&backend_for_testing);
+  }
+
+  void TearDown() override { MLGraphBuilder::SetBackendForTesting(nullptr); }
+
+ private:
+  FakeMLGraphBuilderBackend backend_for_testing;
+};
+
+TEST_P(FakeMLGraphTest, BuildTest) {
   V8TestingScope scope;
   auto* builder = CreateMLGraphBuilder(scope);
-  auto* script_state = scope.GetScriptState();
   {
     // Test throwing exception if the named outputs is empty.
     MLNamedOperands named_outputs;
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
-                                              named_outputs, resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto [graph, exception] = BuildGraph(scope, builder, named_outputs);
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -2087,14 +2183,7 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
     // Test throwing exception if the named output is an input operand.
     auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
                              V8MLOperandType::Enum::kFloat32);
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
-                                              {{"output", input}}, resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto [graph, exception] = BuildGraph(scope, builder, {{"output", input}});
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -2105,14 +2194,8 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
     // Test throwing exception if the named output is a constant operand.
     auto* constant = BuildConstant(scope, builder, {3, 4, 5},
                                    V8MLOperandType::Enum::kFloat32);
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
-                                              {{"output", constant}}, resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto [graph, exception] =
+        BuildGraph(scope, builder, {{"output", constant}});
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -2126,15 +2209,8 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
                              V8MLOperandType::Enum::kFloat32);
     auto* constant = BuildConstant(scope, builder, {3, 4, 5},
                                    V8MLOperandType::Enum::kFloat32);
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(
-        builder->GetContext(), {{"output1", input}, {"output2", constant}},
-        resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto [graph, exception] =
+        BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -2150,14 +2226,7 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
     auto* c = builder->add(a, b, scope.GetExceptionState());
     ASSERT_NE(c, nullptr);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(), {{"c", c}},
-                                              resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -2172,13 +2241,7 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
                          V8MLOperandType::Enum::kFloat32);
     auto* c = BuildGemm(scope, builder, a, b);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(), {{"c", c}},
-                                              resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsFulfilled());
-    auto* graph = ToFakeMLGraphBackend(&scope, tester.Value());
+    auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
     EXPECT_NE(graph, nullptr);
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
@@ -2205,13 +2268,7 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
     auto* output = builder->relu(add, scope.GetExceptionState());
     ASSERT_NE(output, nullptr);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromiseTester tester(script_state, resolver->Promise());
-    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
-                                              {{"output", output}}, resolver);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsFulfilled());
-    auto* graph = ToFakeMLGraphBackend(&scope, tester.Value());
+    auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
     EXPECT_NE(graph, nullptr);
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
@@ -2223,6 +2280,12 @@ TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
     EXPECT_EQ(outputs.at("output").byte_length, output->ByteLength());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FakeMLGraphTest,
+                         ::testing::Values(ExecutionMode::kAsync,
+                                           ExecutionMode::kSync),
+                         ExecutionModeParamToString);
 
 // Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
 struct ArrayBufferViewInfo {
