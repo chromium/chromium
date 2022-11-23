@@ -55,20 +55,28 @@ void BruschettaTerminalProvider::EnsureRunning(
   startup_status->printer()->PrintStage(
       1,
       l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM));
-  BruschettaService::GetForProfile(profile_)
-      ->GetLauncher(guest_id_.vm_name)
-      ->EnsureRunning(base::BindOnce(
-          [](base::OnceCallback<void(bool, std::string)> callback,
-             BruschettaResult result) {
-            bool success = (result == BruschettaResult::kSuccess);
-            std::move(callback).Run(
-                success,
-                success ? ""
-                        : base::StringPrintf(
-                              "Error starting bruschetta for terminal: %d (%s)",
-                              result, BruschettaResultString(result)));
-          },
-          std::move(callback)));
+  auto launcher = BruschettaService::GetForProfile(profile_)->GetLauncher(
+      guest_id_.vm_name);
+
+  if (launcher) {
+    launcher->EnsureRunning(base::BindOnce(
+        [](base::OnceCallback<void(bool, std::string)> callback,
+           BruschettaResult result) {
+          bool success = (result == BruschettaResult::kSuccess);
+          std::move(callback).Run(
+              success,
+              success ? ""
+                      : base::StringPrintf(
+                            "Error starting bruschetta for terminal: %d (%s)",
+                            result, BruschettaResultString(result)));
+        },
+        std::move(callback)));
+  } else {
+    std::move(callback).Run(
+        false,
+        base::StringPrintf("Bruschetta VM %s unknown or disabled by policy",
+                           guest_id_.vm_name.c_str()));
+  }
 }
 
 }  // namespace bruschetta

@@ -8,7 +8,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -27,13 +29,13 @@ class BruschettaService : public KeyedService {
   // Helper method to get the service instance for the given profile.
   static BruschettaService* GetForProfile(Profile* profile);
 
-  // Register an existing bruschetta instance with the GuestOS service.
-  void Register(const guest_os::GuestId& guest_id);
+  // Register an existing bruschetta instance with the terminal app.
+  void RegisterWithTerminal(guest_os::GuestId guest_id);
 
   // Register a new bruschetta instance in prefs. `config_id` controls which
   // enterprise policy manages this instance.
   void RegisterInPrefs(const guest_os::GuestId& guest_id,
-                       std::string config_id);
+                       const std::string& config_id);
 
   // Returns a handle to the launcher for the vm specified by `vm_name`. Will
   // return a null pointer if the name isn't recognised.
@@ -43,7 +45,28 @@ class BruschettaService : public KeyedService {
                              std::unique_ptr<BruschettaLauncher> launcher);
 
  private:
-  base::flat_map<std::string, std::unique_ptr<BruschettaLauncher>> launchers_;
+  struct VmRegistration {
+    std::unique_ptr<BruschettaLauncher> launcher;
+    guest_os::GuestOsMountProviderRegistry::Id mount_id;
+    // We don't track the terminal registration because that should remain in
+    // place even if the VM is blocked from launching.
+
+    VmRegistration(std::unique_ptr<BruschettaLauncher>,
+                   guest_os::GuestOsMountProviderRegistry::Id);
+    VmRegistration(VmRegistration&&);
+    VmRegistration& operator=(VmRegistration&&);
+    VmRegistration(const VmRegistration&) = delete;
+    VmRegistration& operator=(const VmRegistration&) = delete;
+    ~VmRegistration();
+  };
+
+  void OnPolicyChanged();
+  void AllowLaunch(guest_os::GuestId guest_id);
+  void BlockLaunch(guest_os::GuestId guest_id);
+
+  base::flat_map<std::string, VmRegistration> runnable_vms_;
+
+  PrefChangeRegistrar pref_observer_;
 
   Profile* const profile_;
 };

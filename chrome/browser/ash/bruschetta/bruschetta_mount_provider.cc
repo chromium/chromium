@@ -47,9 +47,13 @@ BruschettaMountProvider::CreateFileWatcher(base::FilePath mount_path,
 void BruschettaMountProvider::Prepare(PrepareCallback callback) {
   auto* service = BruschettaService::GetForProfile(profile_);
   auto launcher = service->GetLauncher(guest_id_.vm_name);
-  launcher->EnsureRunning(base::BindOnce(&BruschettaMountProvider::OnRunning,
-                                         weak_ptr_factory_.GetWeakPtr(),
-                                         std::move(callback)));
+  if (launcher) {
+    launcher->EnsureRunning(base::BindOnce(&BruschettaMountProvider::OnRunning,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           std::move(callback)));
+  } else {
+    std::move(callback).Run(false, {}, {}, {});
+  }
 }
 
 void BruschettaMountProvider::OnRunning(PrepareCallback callback,
