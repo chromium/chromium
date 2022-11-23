@@ -54,8 +54,4 @@ public class Coordinates {
     public int getContentHeightPixInt() {
         return mRenderCoordinates.getContentHeightPixInt();
     }
-
-    public float getContentOffsetYPix() {
-        return mRenderCoordinates.getContentOffsetYPix();
-    }
 }

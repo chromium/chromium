@@ -660,7 +660,6 @@ class Browser : public TabStripModelObserver,
   int GetTopControlsHeight() override;
   bool DoBrowserControlsShrinkRendererSize(
       content::WebContents* contents) override;
-  int GetVirtualKeyboardHeight(content::WebContents* contents) override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   bool CanOverscrollContent() override;
   bool ShouldPreserveAbortedURLs(content::WebContents* source) override;

@@ -228,15 +228,6 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
-    @Override
-    public void insertVisualStateCallback(Callback<Boolean> callback) {
-        if (mNativeRenderFrameHostAndroid == 0) {
-            callback.onResult(false);
-        }
-        RenderFrameHostImplJni.get().insertVisualStateCallback(
-                mNativeRenderFrameHostAndroid, callback);
-    }
-
     @NativeMethods
     interface Natives {
         GURL getLastCommittedURL(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
@@ -267,7 +258,5 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);
         int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        void insertVisualStateCallback(
-                long nativeRenderFrameHostAndroid, Callback<Boolean> callback);
     }
 }

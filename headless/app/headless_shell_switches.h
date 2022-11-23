@@ -20,6 +20,7 @@ HEADLESS_EXPORT extern const char kDiskCacheDir[];
 HEADLESS_EXPORT extern const char kDumpDom[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];
 HEADLESS_EXPORT extern const char kEnableCrashReporter[];
+HEADLESS_EXPORT extern const char kHideScrollbars[];
 HEADLESS_EXPORT extern const char kPasswordStore[];
 HEADLESS_EXPORT extern const char kPrintToPDF[];
 HEADLESS_EXPORT extern const char kPrintToPDFNoHeader[];
