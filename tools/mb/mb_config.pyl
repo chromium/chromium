@@ -1027,12 +1027,12 @@
 
     'tryserver.chromium.angle': {
       'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild_reclient',
-      'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia',
+      'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia_reclient',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
-      'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
+      'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86_reclient',
     },
 
     'tryserver.chromium.chromiumos': {
@@ -1287,10 +1287,10 @@
       'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'linux-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
       'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
-      'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
-      'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
-      'win-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86',
-      'win-swangle-try-x64': 'angle_deqp_release_trybot',
+      'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting_reclient',
+      'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
+      'win-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86_reclient',
+      'win-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-try-x86': 'angle_deqp_release_trybot_x86_reclient',
     },
 
@@ -1773,12 +1773,8 @@
       'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'x86',
     ],
 
-    'angle_deqp_release_trybot': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on',
-    ],
-
-    'angle_deqp_release_trybot_fuchsia': [
-      'angle_deqp_tests', 'shared_release_trybot', 'fuchsia',
+    'angle_deqp_release_trybot_fuchsia_reclient': [
+      'angle_deqp_tests', 'shared_release_trybot_reclient', 'fuchsia',
     ],
 
     'angle_deqp_release_trybot_ios': [
@@ -1787,10 +1783,6 @@
 
     'angle_deqp_release_trybot_reclient': [
       'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient',
-    ],
-
-    'angle_deqp_release_trybot_x86': [
-      'angle_deqp_tests', 'shared_release_trybot', 'x86',
     ],
 
     'angle_deqp_release_trybot_x86_reclient': [
@@ -2889,12 +2881,16 @@
       'no_goma', 'no_reclient',
     ],
 
-    'gpu_tests_release_trybot_x86': [
-      'gpu_tests', 'release_trybot', 'x86',
+    'gpu_tests_release_trybot_x86_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'x86',
     ],
 
     'gpu_tests_release_trybot_x86_resource_allowlisting': [
       'gpu_tests', 'release_trybot', 'x86', 'resource_allowlisting',
+    ],
+
+    'gpu_tests_release_trybot_x86_resource_allowlisting_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'x86', 'resource_allowlisting',
     ],
 
     'gpu_tests_wayland_release_bot_reclient': [
@@ -4655,20 +4651,12 @@
       'mixins': ['shared', 'release', 'goma'],
     },
 
-    'shared_release_bot_dcheck_always_on': {
-      'mixins': ['shared_release_bot', 'minimal_symbols', 'dcheck_always_on'],
-    },
-
     'shared_release_bot_dcheck_always_on_reclient': {
       'mixins': ['shared_release_bot_reclient', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'shared_release_bot_reclient': {
       'mixins': ['shared', 'release', 'reclient']
-    },
-
-    'shared_release_trybot': {
-      'mixins': ['shared_release_bot', 'no_symbols', 'dcheck_always_on'],
     },
 
     'shared_release_trybot_reclient': {
