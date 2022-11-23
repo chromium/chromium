@@ -1,0 +1,39 @@
+Tests the data of EventTiming trace events
+Recording started
+Tracing complete
+Got EventTiming begin event for keydown event with phase b:
+Object: {
+	args: {
+		data: {
+			cancelable: boolean
+			duration: number
+			frame: string
+			interactionId: number
+			nodeId: number
+			processingEnd: number
+			processingStart: number
+			timeStamp: number
+			type: string
+		}
+	}
+	cat: string
+	id: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got EventTiming end event for keydown event with phase e:
+Object: {
+	args: {
+	}
+	cat: string
+	id: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+

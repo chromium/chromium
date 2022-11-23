@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+        let interactionCallback = () => ({});
+
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.name === 'keydown') {
+              interactionCallback();
+            }
+          }
+        });
+        observer.observe({type: 'event', buffered: true, durationThreshold: 16});
+
+        window.__interactionPromise = new Promise((resolve) => interactionCallback = resolve)
+
+        const blockMainThread = (event) => {
+          // Block the main thread to trigger a PerformanceEventTiming
+          // entry, which is only dispatched if the event's duration
+          // exceeds the threshold set at the `observe` call.
+          // See https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEventTiming
+          const threshold = 100;
+          const init = performance.now();
+          while ((performance.now() - init) < threshold);
+        }
+
+        function injectInputEventListener() {
+            const input = document.querySelector('input');
+            input.addEventListener('keydown', blockMainThread);
+        }
+    </script>
+  </head>
+  <body>
+    <input autofocus>
+  </body>
+</html>
