@@ -120,7 +120,7 @@ class ReusingTextShaper final {
 
     const Vector<const ShapeResult*> reusable_shape_results =
         CollectReusableShapeResults(start_offset, end_offset,
-                                    start_item.Direction());
+                                    font.PrimaryFont(), start_item.Direction());
     if (reusable_shape_results.empty())
       return Reshape(start_item, font, start_offset, end_offset);
 
@@ -165,6 +165,7 @@ class ReusingTextShaper final {
   Vector<const ShapeResult*> CollectReusableShapeResults(
       unsigned start_offset,
       unsigned end_offset,
+      const SimpleFontData* primary_font,
       TextDirection direction) {
     DCHECK_LT(start_offset, end_offset);
     Vector<const ShapeResult*> shape_results;
@@ -180,11 +181,14 @@ class ReusingTextShaper final {
         break;
       if (item->EndOffset() < start_offset)
         continue;
-      if (!item->TextShapeResult() || item->Direction() != direction)
+      const ShapeResult* const shape_result = item->TextShapeResult();
+      if (!shape_result || item->Direction() != direction)
         continue;
-      if (item->TextShapeResult()->IsAppliedSpacing())
+      if (shape_result->PrimaryFont() != primary_font)
         continue;
-      shape_results.push_back(item->TextShapeResult());
+      if (shape_result->IsAppliedSpacing())
+        continue;
+      shape_results.push_back(shape_result);
     }
     return shape_results;
   }

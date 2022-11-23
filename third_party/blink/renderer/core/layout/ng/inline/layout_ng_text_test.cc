@@ -16,8 +16,11 @@ namespace blink {
 
 class LayoutNGTextTest : public NGLayoutTest {
  protected:
+  static constexpr unsigned kIncludeSnappedWidth = 1;
+
   std::string GetItemsAsString(const LayoutText& layout_text,
-                               int num_glyphs = 0) {
+                               int num_glyphs = 0,
+                               unsigned flags = 0) {
     if (layout_text.NeedsCollectInlines())
       return "LayoutText has NeedsCollectInlines";
     if (!layout_text.HasValidInlineItems())
@@ -48,6 +51,8 @@ class LayoutNGTextTest : public NGLayoutTest {
         if (num_glyphs)
           stream << " #glyphs=" << num_glyphs;
 #endif
+        if (flags & kIncludeSnappedWidth)
+          stream << " width=" << shape_result->SnappedWidth();
       }
       stream << "}" << std::endl;
     }
@@ -323,6 +328,20 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetInserBeforetSpace) {
 
   EXPECT_EQ("*{'ab XYZ cd', ShapeResult=0+9}\n",
             GetItemsAsString(*text.GetLayoutObject()));
+}
+
+// https://crbug.com/1391668
+TEST_F(LayoutNGTextTest, SetTextWithOffsetInsertSameCharacters) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; } b { font-size: 50px; }");
+  SetBodyInnerHTML(u"<p><b id=target>a</b>aa</p>");
+  Text& text = To<Text>(*GetElementById("target")->firstChild());
+  text.insertData(0, "aa", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(
+      "*{'aaa', ShapeResult=0+3 width=\"150\"}\n"
+      "{'aa', ShapeResult=3+2 width=\"20\"}\n",
+      GetItemsAsString(*text.GetLayoutObject(), 0, kIncludeSnappedWidth));
 }
 
 TEST_F(LayoutNGTextTest, SetTextWithOffsetNoRelocation) {

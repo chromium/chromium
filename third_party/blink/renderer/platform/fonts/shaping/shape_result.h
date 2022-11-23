@@ -169,6 +169,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   unsigned NumCharacters() const { return num_characters_; }
   unsigned NumGlyphs() const { return num_glyphs_; }
+  const SimpleFontData* PrimaryFont() const { return primary_font_.get(); }
 
   // TODO(eae): Remove start_x and return value once ShapeResultBuffer has been
   // removed.
