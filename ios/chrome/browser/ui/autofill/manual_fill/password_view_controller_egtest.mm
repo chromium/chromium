@@ -109,6 +109,15 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordUISplit);
+
+  return config;
+}
+
 // Tests that the passwords view controller appears on screen.
 - (void)testPasswordsViewControllerIsPresented {
   // Bring up the keyboard.
@@ -224,9 +233,11 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
   std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
-  NSString* title = l10n_util::GetNSStringF(
-      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION, origin);
-  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
+
+  [[EarlGrey selectElementWithMatcher:grey_text(message)]
       assertWithMatcher:grey_notNil()];
 
   // Acknowledge concerns using other passwords on a website.

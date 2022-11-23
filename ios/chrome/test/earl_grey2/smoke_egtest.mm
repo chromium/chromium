@@ -6,8 +6,11 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -58,22 +61,38 @@
 
 // Tests that helpers from chrome_actions.h are available for use in tests.
 - (void)testToggleSettingsSwitch {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordUISplit);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
 
+  // Open password settings.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsToolbarSettingsButtonId)]
+      performAction:grey_tap()];
+
   // Toggle the passwords switch off and on.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSavePasswordSwitchTableViewId)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPasswordSettingsSavePasswordSwitchTableViewId)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSavePasswordSwitchTableViewId)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPasswordSettingsSavePasswordSwitchTableViewId)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Close the settings menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::SettingsDoneButton(),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  // Close Password Manager.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 }

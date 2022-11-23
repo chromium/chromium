@@ -11,6 +11,7 @@ include_rules = [
   "+components/language",
   "+components/metrics",
   "+components/network_time",
+  "+components/password_manager/core/common",
   "+components/prefs",
   "+components/signin/public/base",
   "+components/sync",

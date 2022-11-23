@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/history/core/common/pref_names.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -33,8 +34,10 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -157,6 +160,9 @@ NSString* const kDomain2 = @"domain2.com";
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(safe_browsing::kEnhancedProtection);
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordUISplit);
+
   return config;
 }
 
@@ -224,13 +230,19 @@ NSString* const kDomain2 = @"domain2.com";
       [ChromeEarlGrey
           userBooleanPref:password_manager::prefs::kCredentialsEnableService],
       @"Preference was unexpectedly true");
-  // Open settings menu and tap password settings.
+  // Open settings menu and tap password manager.
   [self openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
 
-  VerifyManagedSettingItem(kSavePasswordManagedTableViewId,
-                           kPasswordsTableViewId);
+  // Open password settings.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsToolbarSettingsButtonId)]
+      performAction:grey_tap()];
+
+  VerifyManagedSettingItem(
+      kPasswordSettingsManagedSavePasswordSwitchTableViewId,
+      kPasswordsSettingsTableViewId);
 }
 
 // Tests for the AutofillAddressEnabled policy Settings UI.
