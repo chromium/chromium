@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
-#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"

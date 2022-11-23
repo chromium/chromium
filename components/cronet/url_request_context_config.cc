@@ -34,7 +34,6 @@
 #include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/quic/set_quic_flag.h"
-#include "net/reporting/reporting_policy.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_key_logger_impl.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"

@@ -45,8 +45,6 @@
 #endif  // ! BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
-#include <sys/syscall.h>
-
 #define SYS_read __NR_read
 #endif
 
