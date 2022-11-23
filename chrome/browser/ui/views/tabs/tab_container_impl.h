@@ -74,6 +74,9 @@ class TabContainerImpl : public TabContainer,
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData* old_visuals,
       const tab_groups::TabGroupVisualData* new_visuals) override;
+  void ToggleTabGroup(const tab_groups::TabGroupId& group,
+                      bool is_collapsing,
+                      ToggleTabGroupCollapsedStateOrigin origin) override;
   void OnGroupClosed(const tab_groups::TabGroupId& group) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
   void NotifyTabGroupEditorBubbleOpened() override;

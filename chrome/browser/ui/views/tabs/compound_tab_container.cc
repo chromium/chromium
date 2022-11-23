@@ -358,6 +358,13 @@ void CompoundTabContainer::OnGroupVisualsChanged(
                                                  new_visuals);
 }
 
+void CompoundTabContainer::ToggleTabGroup(
+    const tab_groups::TabGroupId& group,
+    bool is_collapsing,
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  unpinned_tab_container_->ToggleTabGroup(group, is_collapsing, origin);
+}
+
 void CompoundTabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
   unpinned_tab_container_->OnGroupClosed(group);
 }

@@ -75,6 +75,9 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData* old_visuals,
       const tab_groups::TabGroupVisualData* new_visuals) = 0;
+  virtual void ToggleTabGroup(const tab_groups::TabGroupId& group,
+                              bool is_collapsing,
+                              ToggleTabGroupCollapsedStateOrigin origin) = 0;
   virtual void OnGroupClosed(const tab_groups::TabGroupId& group) = 0;
   virtual void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) = 0;
   virtual void NotifyTabGroupEditorBubbleOpened() = 0;

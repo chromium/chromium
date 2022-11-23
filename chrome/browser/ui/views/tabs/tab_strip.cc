@@ -1135,31 +1135,7 @@ void TabStrip::OnGroupVisualsChanged(
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                               bool is_collapsing,
                               ToggleTabGroupCollapsedStateOrigin origin) {
-  if (is_collapsing && GetWidget()) {
-    if (origin != ToggleTabGroupCollapsedStateOrigin::kMouse &&
-        origin != ToggleTabGroupCollapsedStateOrigin::kGesture) {
-      return;
-    }
-
-    const int current_group_width =
-        tab_container_->GetGroupViews(group)->GetBounds().width();
-    // A collapsed group only has the width of its header, which is slightly
-    // smaller for collapsed groups compared to expanded groups.
-    const int collapsed_group_width = tab_container_->GetGroupViews(group)
-                                          ->header()
-                                          ->GetCollapsedHeaderWidth();
-    const CloseTabSource source =
-        origin == ToggleTabGroupCollapsedStateOrigin::kMouse
-            ? CloseTabSource::CLOSE_TAB_FROM_MOUSE
-            : CloseTabSource::CLOSE_TAB_FROM_TOUCH;
-
-    tab_container_->EnterTabClosingMode(
-        tab_container_->GetIdealBounds(GetModelCount() - 1).right() -
-            current_group_width + collapsed_group_width,
-        source);
-  } else {
-    tab_container_->ExitTabClosingMode();
-  }
+  tab_container_->ToggleTabGroup(group, is_collapsing, origin);
 }
 
 void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {

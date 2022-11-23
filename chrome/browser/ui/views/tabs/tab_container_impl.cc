@@ -496,6 +496,35 @@ void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
   OrderTabSlotView(group_views_[group]->header());
 }
 
+void TabContainerImpl::ToggleTabGroup(
+    const tab_groups::TabGroupId& group,
+    bool is_collapsing,
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  if (is_collapsing && GetWidget()) {
+    if (origin != ToggleTabGroupCollapsedStateOrigin::kMouse &&
+        origin != ToggleTabGroupCollapsedStateOrigin::kGesture) {
+      return;
+    }
+
+    const int current_group_width = GetGroupViews(group)->GetBounds().width();
+    // A collapsed group only has the width of its header, which is slightly
+    // smaller for collapsed groups compared to expanded groups.
+    const int collapsed_group_width =
+        GetGroupViews(group)->header()->GetCollapsedHeaderWidth();
+    const CloseTabSource source =
+        origin == ToggleTabGroupCollapsedStateOrigin::kMouse
+            ? CloseTabSource::CLOSE_TAB_FROM_MOUSE
+            : CloseTabSource::CLOSE_TAB_FROM_TOUCH;
+
+    EnterTabClosingMode(
+        tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() -
+            current_group_width + collapsed_group_width,
+        source);
+  } else {
+    ExitTabClosingMode();
+  }
+}
+
 void TabContainerImpl::OnGroupClosed(const tab_groups::TabGroupId& group) {
   bounds_animator_.StopAnimatingView(group_views_.at(group).get()->header());
   layout_helper_->RemoveGroupHeader(group);
