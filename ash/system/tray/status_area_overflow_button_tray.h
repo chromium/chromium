@@ -5,12 +5,15 @@
 #ifndef ASH_SYSTEM_TRAY_STATUS_AREA_OVERFLOW_BUTTON_TRAY_H_
 #define ASH_SYSTEM_TRAY_STATUS_AREA_OVERFLOW_BUTTON_TRAY_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
@@ -21,19 +24,24 @@ namespace gfx {
 class SlideAnimation;
 }  // namespace gfx
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
+class Shelf;
 
 // The collapse/expand tray button in tablet mode, which is shown when the
 // status area contains more buttons than the maximum width. Tapping on this
 // button will show/hide the overflown tray buttons.
 class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
  public:
-  explicit StatusAreaOverflowButtonTray(Shelf* shelf);
+  METADATA_HEADER(StatusAreaOverflowButtonTray);
 
+  explicit StatusAreaOverflowButtonTray(Shelf* shelf);
   StatusAreaOverflowButtonTray(const StatusAreaOverflowButtonTray&) = delete;
   StatusAreaOverflowButtonTray& operator=(const StatusAreaOverflowButtonTray&) =
       delete;
-
   ~StatusAreaOverflowButtonTray() override;
 
   enum State { CLICK_TO_EXPAND = 0, CLICK_TO_COLLAPSE };
@@ -44,10 +52,11 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void Initialize() override;
-  bool PerformAction(const ui::Event& event) override;
   void SetVisiblePreferred(bool visible_preferred) override;
   void UpdateAfterStatusAreaCollapseChange() override;
-  const char* GetClassName() const override;
+
+  // Callback called when this button is pressed.
+  void OnButtonPressed(const ui::Event& event);
 
   // Resets the state back to be collapsed (i.e. CLICK_TO_EXPAND).
   void ResetStateToCollapsed();
@@ -76,6 +85,7 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
 
   State state_ = CLICK_TO_EXPAND;
 
+  // Owned by the views hierarchy.
   IconView* const icon_;
 };
 
