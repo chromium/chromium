@@ -31,31 +31,27 @@ MockPostProcessor::MockPostProcessor(MockPostProcessorFactory* factory,
   }
 
   // Parse |filter_description_list| for parameters.
-  for (const base::Value& elem : filter_description_list->GetListDeprecated()) {
+  for (const base::Value& elem : filter_description_list->GetList()) {
     CHECK(elem.is_dict());
-    const base::Value* processor_val =
-        elem.FindKeyOfType("processor", base::Value::Type::STRING);
-    CHECK(processor_val);
-    std::string solib = processor_val->GetString();
+    const std::string* solib = elem.GetDict().FindString("processor");
+    CHECK(solib);
 
-    if (solib == "delay.so") {
-      const base::Value* processor_config_dict =
-          elem.FindKeyOfType("config", base::Value::Type::DICTIONARY);
+    if (*solib == "delay.so") {
+      const base::Value::Dict* processor_config_dict =
+          elem.GetDict().FindDict("config");
       CHECK(processor_config_dict);
-      const base::Value* delay_val = processor_config_dict->FindKeyOfType(
-          "delay", base::Value::Type::INTEGER);
-      CHECK(delay_val);
-      rendering_delay_frames_ += delay_val->GetInt();
-      const base::Value* ringing_val = processor_config_dict->FindKeyOfType(
-          "ringing", base::Value::Type::BOOLEAN);
-      if (ringing_val) {
-        ringing_ = ringing_val->GetBool();
+      absl::optional<int> delay = processor_config_dict->FindInt("delay");
+      CHECK(delay.has_value());
+      rendering_delay_frames_ += *delay;
+      absl::optional<bool> ringing = processor_config_dict->FindBool("ringing");
+      if (ringing.has_value()) {
+        ringing_ = *ringing;
       }
 
-      const base::Value* output_ch_val = processor_config_dict->FindKeyOfType(
-          "output_channels", base::Value::Type::INTEGER);
-      if (output_ch_val) {
-        num_output_channels_ = output_ch_val->GetInt();
+      absl::optional<int> output_ch =
+          processor_config_dict->FindInt("output_channels");
+      if (output_ch.has_value()) {
+        num_output_channels_ = *output_ch;
       }
     }
   }

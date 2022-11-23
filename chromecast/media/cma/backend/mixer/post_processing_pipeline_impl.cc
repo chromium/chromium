@@ -57,15 +57,17 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
   }
 
   LOG(INFO) << "Create pipeline for " << channels << " input channels";
-  for (const base::Value& processor_description_dict :
-       filter_description_list->GetListDeprecated()) {
-    DCHECK(processor_description_dict.is_dict());
+  for (const base::Value& processor_description_value :
+       filter_description_list->GetList()) {
+    DCHECK(processor_description_value.is_dict());
+    const base::Value::Dict& processor_description_dict =
+        processor_description_value.GetDict();
 
     std::string processor_name;
-    const base::Value* name_val = processor_description_dict.FindKeyOfType(
-        kJsonKeyName, base::Value::Type::STRING);
+    const std::string* name_val =
+        processor_description_dict.FindString(kJsonKeyName);
     if (name_val) {
-      processor_name = name_val->GetString();
+      processor_name = *name_val;
     }
 
     if (!processor_name.empty()) {
@@ -81,23 +83,22 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     std::string library_path;
 
     // Keys for AudioPostProcessor2:
-    const base::Value* library_val = processor_description_dict.FindKeyOfType(
-        kJsonKeyLib, base::Value::Type::STRING);
+    const std::string* library_val =
+        processor_description_dict.FindString(kJsonKeyLib);
     if (library_val) {
-      library_path = library_val->GetString();
+      library_path = *library_val;
     } else {
       // Keys for AudioPostProcessor
       // TODO(bshaya): Remove when AudioPostProcessor support is removed.
-      library_val = processor_description_dict.FindKeyOfType(
-          kJsonKeyProcessor, base::Value::Type::STRING);
+      library_val = processor_description_dict.FindString(kJsonKeyProcessor);
       DCHECK(library_val) << "Post processor description is missing key "
                           << kJsonKeyLib;
-      library_path = library_val->GetString();
+      library_path = *library_val;
     }
 
     std::string processor_config_string;
     const base::Value* processor_config_val =
-        processor_description_dict.FindKey(kJsonKeyConfig);
+        processor_description_dict.Find(kJsonKeyConfig);
     if (processor_config_val) {
       DCHECK(processor_config_val->is_dict() ||
              processor_config_val->is_string());
