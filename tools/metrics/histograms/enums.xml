@@ -43702,7 +43702,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Deepsleep"/>
   <int value="2" label="FingerDown"/>
   <int value="3" label="FingerUp"/>
-  <int value="4" label="Capture"/>
+  <int value="4" label="CaptureVendorFormat">
+    This is the same as the default Capture mode with no capture type.
+
+    ec::FpMode::Mode::kCapture == ec::FpMode::Mode::kCaptureVendorFormat
+  </int>
   <int value="5" label="EnrollSession"/>
   <int value="6" label="EnrollSessionFingerUp"/>
   <int value="7" label="EnrollSessionEnrollImage"/>
@@ -43716,6 +43720,11 @@ Called by update_permissions_policy_enum.py.-->
 
     ec::FpMode::Mode::kModeInvalid
   </int>
+  <int value="14" label="CaptureSimpleImage"/>
+  <int value="15" label="CapturePattern0"/>
+  <int value="16" label="CapturePattern1"/>
+  <int value="17" label="CaptureQualityTest"/>
+  <int value="18" label="CaptureResetTest"/>
 </enum>
 
 <enum name="FingerprintSetupScreenUserAction">
