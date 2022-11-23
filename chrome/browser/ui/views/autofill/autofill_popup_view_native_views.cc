@@ -1793,6 +1793,16 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
     return false;
   }
 
+  // The pip surface is given the most preference while rendering. So, the
+  // autofill popup should not be shown when the picture in picture window
+  // hides the autofill form behind it.
+  // For more details on how this can happen, see crbug.com/1358647.
+  if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
+    controller_->Hide(
+        PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+    return false;
+  }
+
   SetSize(preferred_size);
 
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());

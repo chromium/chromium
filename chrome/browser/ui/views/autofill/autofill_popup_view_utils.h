@@ -136,6 +136,13 @@ views::BubbleBorder::Arrow GetOptimalPopupPlacement(
 bool BoundsOverlapWithOpenPermissionsPrompt(const gfx::Rect& screen_bounds,
                                             content::WebContents* web_contents);
 
+// Returns whether there is picture-in-picture window with bounds that overlap
+// `screen_bounds`. Assuming:
+// 1. the pip window is shown in the active tab.
+// 2. this function is called from the frame of the contents that show the
+// autofill popup.
+bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds);
+
 // Returns whether a popup may vertically exceed the bounds of |web_contents|.
 // This is permitted for extension popups. Here we only enforce that the
 // autofill popup is at least attached to the extension popup (or overlaps the

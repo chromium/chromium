@@ -437,6 +437,13 @@ void AutofillPopupControllerImpl::SetSelectedLine(
   if (selected_line_ == selected_line)
     return;
 
+  // Prevent the race condition, when the view is supposed to be hidden but the
+  // line is selected via the popup and thus there is a call to
+  // `SetSelectedLine`. See crbug.com/1358647 for details on how this can
+  // happen.
+  if (!view_)
+    return;
+
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
     if (!CanAccept(suggestions_[*selected_line].frontend_id))

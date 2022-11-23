@@ -132,6 +132,12 @@ content::WebContents* PictureInPictureWindowManager::GetChildWebContents()
   return pip_window_controller_->GetChildWebContents();
 }
 
+absl::optional<gfx::Rect>
+PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
+  return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
+                                : absl::nullopt;
+}
+
 void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
   video_web_contents_observer_ =
