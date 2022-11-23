@@ -6912,7 +6912,7 @@ crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Fai
 # Sheriff 2022-11-23
 crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/critical-origin-trial.https.php [ Pass Failure ]
 crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/window-origin-trial.https.php [ Pass Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure ]
-crbug.com/1393056 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Pass Failure ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Pass Failure ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Pass Failure ]
+crbug.com/1393056 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Pass Timeout ]
