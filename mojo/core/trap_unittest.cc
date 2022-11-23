@@ -1000,12 +1000,6 @@ TEST_F(TrapTest, ActivateSameTriggerFromEventHandler) {
 }
 
 TEST_F(TrapTest, ImplicitRemoveOtherTriggerWithinEventHandler) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details which are not "
-                 << "relevant when MojoIpcz is enabled; namely that trap event "
-                 << "handlers must be mutually exclusive.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1070,12 +1064,6 @@ TEST_F(TrapTest, ImplicitRemoveOtherTriggerWithinEventHandler) {
 }
 
 TEST_F(TrapTest, ExplicitRemoveOtherTriggerWithinEventHandler) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details which are not "
-                 << "relevant when MojoIpcz is enabled; namely that trap event "
-                 << "handlers must be mutually exclusive.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1141,9 +1129,10 @@ TEST_F(TrapTest, ExplicitRemoveOtherTriggerWithinEventHandler) {
 
 TEST_F(TrapTest, NestedCancellation) {
   if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details which are not "
-                 << "relevant when MojoIpcz is enabled; namely that trap event "
-                 << "handlers must be mutually exclusive.";
+    GTEST_SKIP() << "This test expects trap handlers to be reentrant in some "
+                 << "edge cases, which is an unsafe artifact of pre-ipcz Mojo "
+                 << "that is unsupported by MojoIpcz. This case should not be "
+                 << "relevant to any current production usage.";
   }
 
   MojoHandle a, b;
@@ -1385,12 +1374,6 @@ TEST_F(TrapTest, CloseTrapAfterImplicitTriggerRemoval) {
 }
 
 TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details which are not "
-                 << "relevant when MojoIpcz is enabled; namely that trap event "
-                 << "handlers must be mutually exclusive.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1457,9 +1440,9 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
 
 TEST_F(TrapTest, TriggersRemoveEachOtherWithinEventHandlers) {
   if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Separate traps under MojoIpcz may re-enter each other's "
-                 << "event handlers, causing this test to deadlock. This test "
-                 << "case is of no practical interest in production.";
+    GTEST_SKIP() << "This test deadlocks with MojoIpcz, because it expects "
+                 << "trap handlers to be re-entrant in some edge cases. Not "
+                 << "relevant to any current production usage.";
   }
 
   MojoHandle a, b;
@@ -1723,6 +1706,45 @@ TEST_F(TrapTest, TriggerOnUnsatisfiedSignals) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(t));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+}
+
+TEST_F(TrapTest, TriggerDuringDestruction) {
+  // Regression test for races between trap event firing and trap destruction.
+  // See https://crbug.com/1385643.
+  MojoHandle a, b;
+  CreateMessagePipe(&a, &b);
+
+  auto drain_a = [&](const MojoTrapEvent& event) {
+    MojoMessageHandle m;
+    while (MojoReadMessage(a, nullptr, &m) == MOJO_RESULT_OK) {
+      MojoDestroyMessage(m);
+    }
+  };
+
+  constexpr size_t kNumIterations = 1000;
+  for (size_t i = 0; i < kNumIterations; ++i) {
+    MojoHandle t;
+    TriggerHelper helper;
+    EXPECT_EQ(MOJO_RESULT_OK, helper.CreateTrap(&t));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              MojoAddTrigger(t, a, MOJO_HANDLE_SIGNAL_READABLE,
+                             MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                             helper.CreateContext(drain_a), nullptr));
+
+    drain_a(MojoTrapEvent{});
+    EXPECT_EQ(MOJO_RESULT_OK, MojoArmTrap(t, nullptr, nullptr, nullptr));
+
+    ThreadedRunner writer(
+        base::BindLambdaForTesting([&] { WriteMessage(b, "ping!"); }));
+    ThreadedRunner closer(base::BindLambdaForTesting([&] { MojoClose(t); }));
+    closer.Start();
+    writer.Start();
+    writer.Join();
+    closer.Join();
+  }
+
+  MojoClose(a);
+  MojoClose(b);
 }
 
 base::RepeatingClosure g_do_random_thing_callback;

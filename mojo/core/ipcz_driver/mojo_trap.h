@@ -11,10 +11,13 @@
 #include "base/containers/span.h"
 #include "base/containers/stack_container.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/platform_thread_ref.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -66,13 +69,24 @@ class MojoTrap : public Object<MojoTrap> {
   // is stored in `event`.
   IpczResult ArmTrigger(Trigger& trigger, MojoTrapEvent& event);
 
-  void MaybeEnqueueTriggerRemoval(Trigger& trigger)
+  void DispatchOrQueueTriggerRemoval(Trigger& trigger)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void MaybeFlushMojoEvents() LOCKS_EXCLUDED(lock_);
+  void DispatchOrQueueEvent(Trigger& trigger, const MojoTrapEvent& event)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DispatchEvent(const MojoTrapEvent& event)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const MojoTrapEventHandler handler_;
 
   base::Lock lock_;
+
+  // Condition variable used to wait for any other thread to finish dispatching
+  // events so that another thread may dipatch its own.
+  base::ConditionVariable dispatching_condition_ GUARDED_BY(lock_){&lock_};
+
+  // A ref identifying the thread which is currently dispatching an event for
+  // this trap, if any.
+  absl::optional<base::PlatformThreadRef> dispatching_thread_ GUARDED_BY(lock_);
 
   using TriggerMap = base::flat_map<uintptr_t, scoped_refptr<Trigger>>;
   TriggerMap triggers_ GUARDED_BY(lock_);
@@ -85,21 +99,21 @@ class MojoTrap : public Object<MojoTrap> {
   // be reset any time a trigger is inserted or removed.
   TriggerMap::iterator next_trigger_ GUARDED_BY(lock_) = triggers_.end();
 
-  // A Mojo Trap must ensure that all its event dispatches are mutually
-  // exclusive. This vector accumulates all dispatches in one place, from which
-  // they can be flushed by one thread at a time. An inlined vector is used to
-  // avoid new heap allocation in the most common cases.
-  //
-  // NOTE: Outside of MaybeFlushMojoEvents(), elements may ONLY be appended to
-  // this vector. MaybeFlushMojoEvents() expects all added events to be retained
-  // in the vector until it has had a chance to flush all of them, at which
-  // point it will clear the vector itself.
-  base::StackVector<MojoTrapEvent, 4> pending_mojo_events_ GUARDED_BY(lock_);
-
-  // Indicates whether a thread is already flushing events out of
-  // `pending_mojo_events_` to ensure that the events remain ordered and
-  // mutually exclusive.
-  bool is_flushing_mojo_events_ GUARDED_BY(lock_) = false;
+  // A Mojo trap must ensure that all its event dispatches are mutually
+  // exclusive. While one thread is dispatching an event, other threads must
+  // wait to acquire `dispatching_condition_` before dispatching anything; but
+  // if the in-progress dispatch itself elicits new events on the trap, those
+  // events are accumulated here and flushed (FIFO) after the in-progress
+  // dispatch is done.
+  struct PendingEvent {
+    PendingEvent();
+    PendingEvent(scoped_refptr<Trigger> trigger, const MojoTrapEvent& event);
+    PendingEvent(PendingEvent&&);
+    ~PendingEvent();
+    scoped_refptr<Trigger> trigger;
+    MojoTrapEvent event;
+  };
+  base::StackVector<PendingEvent, 4> pending_mojo_events_ GUARDED_BY(lock_);
 
   bool armed_ GUARDED_BY(lock_) = false;
 };

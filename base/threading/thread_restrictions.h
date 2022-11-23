@@ -301,6 +301,9 @@ class CoreLibraryInitializer;
 class SyncCallRestrictions;
 namespace core {
 class ScopedIPCSupport;
+namespace ipcz_driver {
+class MojoTrap;
+}
 }
 }  // namespace mojo
 namespace printing {
@@ -789,6 +792,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class media::AudioOutputDevice;
   friend class media::PaintCanvasVideoRenderer;
   friend class mojo::SyncCallRestrictions;
+  friend class mojo::core::ipcz_driver::MojoTrap;
   friend class net::NetworkConfigWatcherMacThread;
   friend class ui::DrmThreadProxy;
   friend class viz::HostGpuMemoryBufferManager;
