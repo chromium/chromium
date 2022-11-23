@@ -56,7 +56,6 @@ template("remoting_android_client_java_tmpl") {
       "TrackpadInputStrategy.java",
       "TwoPointsEventParameter.java",
       "WebViewActivity.java",
-      "accountswitcher/AccountManagerCompat.java",
       "accountswitcher/AccountSwitcher.java",
       "accountswitcher/AccountSwitcherBase.java",
       "accountswitcher/AccountSwitcherBasic.java",

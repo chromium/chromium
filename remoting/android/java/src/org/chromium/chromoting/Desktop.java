@@ -180,7 +180,6 @@ public class Desktop
         mInputMode = getInitialInputModeValue();
         mResizeToClientEnabled = getStoredResizeToClientEnabled();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             attachSystemUiResizeListener();
 
             // Suspend the ActionBar timer when the user interacts with the options menu.
@@ -194,9 +193,6 @@ public class Desktop
                     }
                 }
             });
-        } else {
-            mRemoteHostDesktop.setFitsSystemWindows(true);
-        }
     }
 
     @Override
@@ -212,16 +208,11 @@ public class Desktop
         super.onResume();
         mActivityLifecycleListener.onActivityResumed(this);
         mClient.enableVideoChannel(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // We want to call the change handler with an initial value as
-            // onMultiWindowModeChanged won't be called if the state hasn't changed, such as
-            // when the user resizes in split-screen, and we want to ensure we have a default
-            // value set (even though it may change soon after).
-            onMultiWindowModeChanged(isInMultiWindowMode());
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setUpAutoHideToolbar();
-            syncActionBarToSystemUiState();
-        }
+        // We want to call the change handler with an initial value as
+        // onMultiWindowModeChanged won't be called if the state hasn't changed, such as
+        // when the user resizes in split-screen, and we want to ensure we have a default
+        // value set (even though it may change soon after).
+        onMultiWindowModeChanged(isInMultiWindowMode());
     }
 
     @Override
@@ -277,33 +268,31 @@ public class Desktop
 
         mActivityLifecycleListener.onActivityCreatedOptionsMenu(this, menu);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // We don't need to show a hide ActionBar button if immersive fullscreen is
-            // supported.
-            menu.findItem(R.id.actionbar_hide).setVisible(false);
+        // We don't need to show a hide ActionBar button if immersive fullscreen is
+        // supported.
+        menu.findItem(R.id.actionbar_hide).setVisible(false);
 
-            // Although the MenuItems are being created here, they do not have any backing Views
-            // yet as those are created just after this method exits.  We post an async task to
-            // the UI thread here so that we can attach our interaction listeners shortly after
-            // the views have been created.
-            final Menu menuFinal = menu;
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    // Attach a listener to the toolbar itself then attach one to each menu item
-                    // which has a backing view object.
-                    attachToolbarInteractionListenerToView(mToolbar);
-                    int items = menuFinal.size();
-                    for (int i = 0; i < items; i++) {
-                        int itemId = menuFinal.getItem(i).getItemId();
-                        View menuItemView = findViewById(itemId);
-                        if (menuItemView != null) {
-                            attachToolbarInteractionListenerToView(menuItemView);
-                        }
+        // Although the MenuItems are being created here, they do not have any backing Views
+        // yet as those are created just after this method exits.  We post an async task to
+        // the UI thread here so that we can attach our interaction listeners shortly after
+        // the views have been created.
+        final Menu menuFinal = menu;
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                // Attach a listener to the toolbar itself then attach one to each menu item
+                // which has a backing view object.
+                attachToolbarInteractionListenerToView(mToolbar);
+                int items = menuFinal.size();
+                for (int i = 0; i < items; i++) {
+                    int itemId = menuFinal.getItem(i).getItemId();
+                    View menuItemView = findViewById(itemId);
+                    if (menuItemView != null) {
+                        attachToolbarInteractionListenerToView(menuItemView);
                     }
                 }
-            });
-        }
+            }
+        });
 
         ChromotingUtil.tintMenuIcons(this, menu);
 
@@ -507,23 +496,14 @@ public class Desktop
     @SuppressLint("InlinedApi")
     private static int getFullscreenFlags() {
         // LOW_PROFILE gives the status and navigation bars a "lights-out" appearance.
-        // FULLSCREEN hides the status bar on supported devices (4.1 and above).
-        int flags = View.SYSTEM_UI_FLAG_LOW_PROFILE;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            flags |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        }
-        return flags;
+        // FULLSCREEN hides the status bar.
+        return View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN;
     }
 
     @SuppressLint("InlinedApi")
     private static int getLayoutFlags() {
-        int flags = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            flags |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-            flags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-            flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        }
-        return flags;
+        return View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
     }
 
     /**
@@ -599,13 +579,9 @@ public class Desktop
         // HIDE_NAVIGATION hides the navigation bar. However, if the user touches the screen,
         // the event is not seen by the application and instead the navigation bar is re-shown.
         // IMMERSIVE fixes this problem and allows the user to interact with the app while
-        // keeping the navigation controls hidden. This flag was introduced in 4.4, later than
-        // HIDE_NAVIGATION, and so a runtime check is needed before setting either of these
-        // flags.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            flags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            flags |= View.SYSTEM_UI_FLAG_IMMERSIVE;
-        }
+        // keeping the navigation controls hidden.
+        flags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        flags |= View.SYSTEM_UI_FLAG_IMMERSIVE;
         flags |= getLayoutFlags();
 
         getWindow().getDecorView().setSystemUiVisibility(flags);

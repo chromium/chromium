@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.ContextMenu;
@@ -625,11 +624,9 @@ public class Chromoting extends AppCompatActivity
 
     @Override
     public void onAccountSelected(String accountName) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            String logInAnnouncement =
-                    getString(R.string.log_in_account_accessibility_description, accountName);
-            mAccountSwitcher.getView().announceForAccessibility(logInAnnouncement);
-        }
+        String logInAnnouncement =
+                getString(R.string.log_in_account_accessibility_description, accountName);
+        mAccountSwitcher.getView().announceForAccessibility(logInAnnouncement);
         mAccount = accountName;
         JniOAuthTokenGetter.setAccount(accountName);
         mNotificationPresenter.presentIfNecessary(accountName);
