@@ -20,7 +20,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/immediate_crash.h"
 
 #include <algorithm>
 #include <atomic>
@@ -206,9 +205,7 @@ struct ThreadLocalStorage {
 
     if (UNLIKELY(slot == nullptr)) {
       slot = FindAndAllocateFreeSlot(root_.load(std::memory_order_relaxed));
-      if (!tls_system.SetThreadSpecificData(slot)) {
-        IMMEDIATE_CRASH();
-      }
+      CHECK(tls_system.SetThreadSpecificData(slot));
 
       // Reset the content to wipe out any previous data.
       slot->item = {};
@@ -308,11 +305,7 @@ struct ThreadLocalStorage {
     // SingleSlot and reset the is_used flag.
     auto* const slot = static_cast<SingleSlot*>(data);
 
-#if DCHECK_IS_ON()
-    if (!(slot && slot->is_used.test_and_set())) {
-      IMMEDIATE_CRASH();
-    }
-#endif
+    DCHECK(slot && slot->is_used.test_and_set());
 
     slot->is_used.clear(std::memory_order_relaxed);
   }
@@ -332,9 +325,7 @@ struct ThreadLocalStorage {
     void* const uninitialized_memory =
         dereference(allocator_).AllocateMemory(sizeof(Chunk));
 
-    if (uninitialized_memory == nullptr) {
-      IMMEDIATE_CRASH();
-    }
+    CHECK(uninitialized_memory);
 
     return new (uninitialized_memory) Chunk{};
   }
@@ -342,10 +333,8 @@ struct ThreadLocalStorage {
   void FreeAndDeallocateChunkForTesting(Chunk* chunk_to_erase) {
     chunk_to_erase->~Chunk();
 
-    if (!dereference(allocator_)
-             .FreeMemoryForTesting(chunk_to_erase, sizeof(Chunk))) {
-      IMMEDIATE_CRASH();
-    }
+    CHECK(dereference(allocator_)
+              .FreeMemoryForTesting(chunk_to_erase, sizeof(Chunk)));
   }
 
   // Find a free slot in the passed chunk, reserve it and return it to the

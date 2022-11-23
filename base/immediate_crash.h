@@ -149,9 +149,4 @@ namespace base {
 
 }  // namespace base
 
-// TODO(pbos): Migrate callers to base::ImmediateCrash(). This should be done
-// within a week or two so if you see this at or after November 2022 please ping
-// me.
-#define IMMEDIATE_CRASH() base::ImmediateCrash()
-
 #endif  // BASE_IMMEDIATE_CRASH_H_

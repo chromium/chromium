@@ -427,14 +427,14 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
 // is lower. Furthermore, since the Fuchsia implementation uses threads, it is
 // not possible to rely on an implementation of CHECK that calls abort(), which
 // takes down the whole process, preventing the thread exception handler from
-// handling the exception. DO_CHECK here falls back on IMMEDIATE_CRASH() in
+// handling the exception. DO_CHECK here falls back on base::ImmediateCrash() in
 // non-official builds, to catch regressions earlier in the CQ.
 #if !CHECK_WILL_STREAM()
 #define DO_CHECK CHECK
 #else
-#define DO_CHECK(cond) \
-  if (!(cond)) {       \
-    IMMEDIATE_CRASH(); \
+#define DO_CHECK(cond)      \
+  if (!(cond)) {            \
+    base::ImmediateCrash(); \
   }
 #endif
 
@@ -600,9 +600,10 @@ void CheckCrashTestSighandler(int, siginfo_t* info, void* context_ptr) {
 #if !CHECK_WILL_STREAM()
 #define DO_CHECK CHECK
 #else
-#define DO_CHECK(cond) \
-  if (!(cond))         \
-  IMMEDIATE_CRASH()
+#define DO_CHECK(cond)      \
+  if (!(cond)) {            \
+    base::ImmediateCrash(); \
+  }
 #endif
 
 void CrashChildMain(int death_location) {
