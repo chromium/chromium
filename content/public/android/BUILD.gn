@@ -644,6 +644,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
     "junit/src/org/chromium/content/browser/webcontents/WebContentsImplTest.java",
+    "junit/src/org/chromium/content/browser/webcontents/WebContentsObserverProxyTest.java",
     "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
   ]
 
