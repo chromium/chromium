@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_audio_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_boot_performance_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_bus_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_cpu_sampler_handler.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
@@ -45,55 +46,6 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
   }
 
   NOTREACHED();
-}
-
-void HandleBootPerformanceResult(
-    OptionalMetricCallback callback,
-    CrosHealthdMetricSampler::MetricType metric_type,
-    cros_healthd::TelemetryInfoPtr result) {
-  const std::string kShutdownReasonNotApplicable = "N/A";
-  absl::optional<MetricData> metric_data;
-
-  const auto& boot_performance_result = result->boot_performance_result;
-  if (!boot_performance_result.is_null()) {
-    switch (boot_performance_result->which()) {
-      case cros_healthd::BootPerformanceResult::Tag::kError: {
-        DVLOG(1) << "cros_healthd: Error getting Boot Performance info: "
-                 << boot_performance_result->get_error()->msg;
-        break;
-      }
-
-      case cros_healthd::BootPerformanceResult::Tag::kBootPerformanceInfo: {
-        const auto& boot_performance_info =
-            boot_performance_result->get_boot_performance_info();
-        if (boot_performance_info.is_null()) {
-          DVLOG(1) << "Null BootPerformanceInfo from cros_healthd";
-          break;
-        }
-
-        metric_data = absl::make_optional<MetricData>();
-        auto* const boot_info_out = metric_data->mutable_telemetry_data()
-                                        ->mutable_boot_performance_telemetry();
-        // Gather boot performance info.
-        boot_info_out->set_boot_up_seconds(
-            (int64_t)boot_performance_info->boot_up_seconds);
-        boot_info_out->set_boot_up_timestamp_seconds(
-            (int64_t)boot_performance_info->boot_up_timestamp);
-        if (boot_performance_info->shutdown_reason !=
-            kShutdownReasonNotApplicable) {
-          boot_info_out->set_shutdown_seconds(
-              (int64_t)boot_performance_info->shutdown_seconds);
-          boot_info_out->set_shutdown_timestamp_seconds(
-              (int64_t)boot_performance_info->shutdown_timestamp);
-        }
-        boot_info_out->set_shutdown_reason(
-            boot_performance_info->shutdown_reason);
-        break;
-      }
-    }
-  }
-
-  std::move(callback).Run(metric_data);
 }
 
 void HandleMemoryResult(OptionalMetricCallback callback,
@@ -381,8 +333,9 @@ void OnHealthdInfoReceived(OptionalMetricCallback callback,
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kBootPerformance: {
-      HandleBootPerformanceResult(std::move(callback), metric_type,
-                                  std::move(result));
+      CrosHealthdBootPerformanceSamplerHandler handler =
+          CrosHealthdBootPerformanceSamplerHandler();
+      handler.HandleResult(std::move(result), std::move(callback));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kInput: {
