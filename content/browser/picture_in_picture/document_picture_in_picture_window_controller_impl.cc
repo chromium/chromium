@@ -130,6 +130,13 @@ void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   Close(/*should_pause_video=*/true);
 }
 
+absl::optional<gfx::Rect>
+DocumentPictureInPictureWindowControllerImpl::GetWindowBounds() {
+  if (!child_contents_)
+    return absl::nullopt;
+  return child_contents_->GetContainerBounds();
+}
+
 void DocumentPictureInPictureWindowControllerImpl::PrimaryPageChanged(Page&) {
   Close(/*should_pause_video=*/true);
 }

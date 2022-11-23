@@ -107,6 +107,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
+  MOCK_METHOD0(GetWindowBounds, absl::optional<gfx::Rect>());
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =

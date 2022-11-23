@@ -446,6 +446,13 @@ const gfx::Rect& VideoPictureInPictureWindowControllerImpl::GetSourceBounds()
   return source_bounds_;
 }
 
+absl::optional<gfx::Rect>
+VideoPictureInPictureWindowControllerImpl::GetWindowBounds() {
+  if (!window_)
+    return absl::nullopt;
+  return window_->GetBounds();
+}
+
 void VideoPictureInPictureWindowControllerImpl::
     UpdatePlayPauseButtonVisibility() {
   if (!window_)
