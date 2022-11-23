@@ -22,6 +22,7 @@
 </style>
 <div id="main">
     <cr-input id="input" readonly="[[readonly_]]"
+      aria-label="[[computeInputAriaLabel_(item, command)]]"
       placeholder="[[computePlaceholder_(readonly_)]]"
       invalid="[[getIsInvalid_(error_)]]"
       error-message="[[getErrorString_(error_,
@@ -29,7 +30,8 @@
           '$i18nPolymer{shortcutTooManyModifiers}',
           '$i18nPolymer{shortcutNeedCharacter}')]]"
       value="[[computeText_(shortcut)]]">
-    <cr-icon-button id="edit" aria-label="$i18nPolymer{editShortcut}"
+    <cr-icon-button id="edit"
+        aria-label="[[computeEditButtonAriaLabel_(item, command)]]"
         slot="suffix" class="icon-edit no-overlap"
         on-click="onEditClick_"></cr-icon-button>
   </cr-input>

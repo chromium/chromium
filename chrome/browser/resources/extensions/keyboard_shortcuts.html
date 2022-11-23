@@ -78,12 +78,13 @@
           <div class="command-entry" command="[[command]]">
             <span class="command-name">[[command.description]]</span>
             <extensions-shortcut-input delegate="[[delegate]]"
-                item="[[item.id]]" shortcut="[[command.keybinding]]"
-                command-name="[[command.name]]">
+                item="[[item]]" shortcut="[[command.keybinding]]"
+                command="[[command]]">
             </extensions-shortcut-input>
             <!-- Binding "value" to triggerScopeChange_ to trigger update
                 only after CommandScope_ becomes available. -->
             <select class="md-select" on-change="onScopeChanged_"
+                aria-label="[[computeScopeAriaLabel_(item, command)]]"
                 disabled$="[[computeScopeDisabled_(command)]]"
                 value="[[
                     triggerScopeChange_(command.scope, CommandScope_)]]">

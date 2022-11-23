@@ -49,16 +49,8 @@ export class ExtensionsShortcutInputElement extends
   static get properties() {
     return {
       delegate: Object,
-
-      item: {
-        type: String,
-        value: '',
-      },
-
-      commandName: {
-        type: String,
-        value: '',
-      },
+      item: Object,
+      command: Object,
 
       shortcut: {
         type: String,
@@ -75,7 +67,6 @@ export class ExtensionsShortcutInputElement extends
         value: ShortcutError.NO_ERROR,
       },
 
-
       readonly_: {
         type: Boolean,
         value: true,
@@ -90,8 +81,8 @@ export class ExtensionsShortcutInputElement extends
   }
 
   delegate: KeyboardShortcutDelegate;
-  item: string;
-  commandName: string;
+  item: chrome.developerPrivate.ExtensionInfo;
+  command: chrome.developerPrivate.Command;
   shortcut: string;
   private capturing_: boolean;
   private error_: ShortcutError;
@@ -249,7 +240,17 @@ export class ExtensionsShortcutInputElement extends
   private commitPending_() {
     this.shortcut = this.pendingShortcut_;
     this.delegate.updateExtensionCommandKeybinding(
-        this.item, this.commandName, this.shortcut);
+        this.item.id, this.command.name, this.shortcut);
+  }
+
+  private computeInputAriaLabel_(): string {
+    return this.i18n(
+        'editShortcutInputLabel', this.command.description, this.item.name);
+  }
+
+  private computeEditButtonAriaLabel_(): string {
+    return this.i18n(
+        'editShortcutButtonLabel', this.command.description, this.item.name);
   }
 
   private computePlaceholder_(): string {

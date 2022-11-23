@@ -16,6 +16,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestService} from './test_service.js';
+import {createExtensionInfo} from './test_util.js';
 
 const extension_shortcut_input_tests = {
   suiteName: 'ExtensionShortcutInputTest',
@@ -35,8 +36,15 @@ suite(extension_shortcut_input_tests.suiteName, function() {
     input = document.createElement('extensions-shortcut-input');
     testService = new TestService();
     input.delegate = testService;
-    input.commandName = 'Command';
-    input.item = 'itemid';
+    input.command = {
+      description: 'Command description',
+      keybinding: 'Ctrl+W',
+      name: 'Command',
+      isActive: true,
+      scope: chrome.developerPrivate.CommandScope.CHROME,
+      isExtensionAction: true,
+    };
+    input.item = createExtensionInfo({id: 'itemid'});
     document.body.appendChild(input);
     flush();
   });
