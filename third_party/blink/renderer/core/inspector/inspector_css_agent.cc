@@ -2909,9 +2909,13 @@ Response InspectorCSSAgent::takeCoverageDelta(
       // If the rule comes from an @import'ed file, the `rule_style_sheet` is
       // different from `style_sheet`.
       InspectorStyleSheet* rule_style_sheet = it->value;
-      if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
-              rule_style_sheet->BuildObjectForRuleUsage(css_style_rule, true)) {
-        (*result)->emplace_back(std::move(rule_usage_object));
+      CSSRule* rule = css_style_rule;
+      while (rule) {
+        if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
+                rule_style_sheet->BuildObjectForRuleUsage(rule, true)) {
+          (*result)->emplace_back(std::move(rule_usage_object));
+        }
+        rule = rule->parentRule();
       }
     }
   }
