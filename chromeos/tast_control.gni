@@ -240,14 +240,6 @@ tast_disabled_tests_from_chrome_all = [
   "dlp.DataLeakPreventionRulesListScreenshot.ash_allowed",
   "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 
-  # https://crbug.com/1364721
-  "inputs.InputMethodShelfInputs",
-  "inputs.InputMethodShelfInputs.lacros",
-  "inputs.VirtualKeyboardHandwriting.docked",
-  "inputs.VirtualKeyboardHandwriting.floating",
-  "inputs.VirtualKeyboardLoginScreen.clamshell",
-  "inputs.VirtualKeyboardLoginScreen.tablet",
-
   # https://crbug.com/1365284
   "crostini.RestartApp.clamshell_stable",
 
