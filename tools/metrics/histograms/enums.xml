@@ -61580,6 +61580,7 @@ from previous Chrome versions.
   <int value="616141486" label="PasswordNotesWithBackup:disabled"/>
   <int value="616609955" label="ActionableContentSettings:enabled"/>
   <int value="616660621" label="ImeInputLogicFst:disabled"/>
+  <int value="616717743" label="UIEnableSharedImageCacheForGpu:disabled"/>
   <int value="617762656" label="FirstScrollLatencyMeasurement:enabled"/>
   <int value="618407424" label="OmniboxRetainSuggestionsWithHeaders:enabled"/>
   <int value="618426510" label="WaylandScreenCoordinatesEnabled:disabled"/>
@@ -62214,6 +62215,7 @@ from previous Chrome versions.
   <int value="989740984" label="BorealisStorageBallooning:enabled"/>
   <int value="990380525"
       label="AutofillRationalizeStreetAddressAndAddressLine:enabled"/>
+  <int value="990640684" label="UIEnableSharedImageCacheForGpu:enabled"/>
   <int value="991192182" label="InfobarScrollOptimization:enabled"/>
   <int value="991462028"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>

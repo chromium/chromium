@@ -1729,6 +1729,9 @@ extern const char kUnsafeWebGPUDescription[];
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 
+extern const char kUIEnableSharedImageCacheForGpuName[];
+extern const char kUIEnableSharedImageCacheForGpuDescription[];
+
 extern const char kUseNAT64ForIPv4LiteralName[];
 extern const char kUseNAT64ForIPv4LiteralDescription[];
 

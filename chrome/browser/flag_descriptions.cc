@@ -3036,6 +3036,11 @@ const char kUnsafeWebGPUDescription[] =
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 
+const char kUIEnableSharedImageCacheForGpuName[] = "Shared GPUImageDecodeCache";
+const char kUIEnableSharedImageCacheForGpuDescription[] =
+    "Enables shared GPUImageDecodeCache for UI if gpu rasterization is "
+    "enabled.";
+
 const char kUseNAT64ForIPv4LiteralName[] =
     "Use NAT64 translation for IPv4 literals";
 const char kUseNAT64ForIPv4LiteralDescription[] =

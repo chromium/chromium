@@ -6648,6 +6648,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ui-enable-shared-image-cache-for-gpu",
+    "owners": [ "rjkroege", "khushalsagar", "msisov@igalia.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "ui-slow-animations",
     "owners": [ "oshima", "sammiequon", "afakhry" ],
     // This flag is used for in-the-field debugging of animation issues on
