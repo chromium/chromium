@@ -920,7 +920,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
           &BrowserAutofillManager::DeterminePossibleFieldTypesForUpload,
           copied_profiles, copied_credit_cards, last_unlocked_credit_card_cvc_,
           app_locale_, raw_form),
-      base::BindOnce(&BrowserAutofillManager::UploadFormDataAsyncCallback,
+      base::BindOnce(&BrowserAutofillManager::UploadFormData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
                      initial_interaction_timestamp_,
                      AutofillTickClock::NowTicks(), observed_submission));
@@ -1824,32 +1824,9 @@ void BrowserAutofillManager::OnSuggestionsReturned(
                                             autoselect_first_suggestion);
 }
 
-void BrowserAutofillManager::UploadFormData(const FormStructure& submitted_form,
-                                            bool observed_submission) {
-  if (!download_manager())
-    return;
-
-  // Check if the form is among the forms that were recently auto-filled.
-  bool was_autofilled = base::Contains(autofilled_form_signatures_,
-                                       submitted_form.FormSignatureAsStr());
-
-  ServerFieldTypeSet non_empty_types;
-  personal_data_->GetNonEmptyTypes(&non_empty_types);
-  // As CVC is not stored, treat it separately.
-  if (!last_unlocked_credit_card_cvc_.empty() ||
-      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
-    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-  }
-
-  download_manager()->StartUploadRequest(
-      submitted_form, was_autofilled, non_empty_types,
-      /*login_form_signature=*/std::string(), observed_submission,
-      client()->GetPrefs());
-}
-
 // We explicitly pass in all the time stamps of interest, as the cached ones
 // might get reset before this method executes.
-void BrowserAutofillManager::UploadFormDataAsyncCallback(
+void BrowserAutofillManager::UploadFormData(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -1871,8 +1848,29 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
         observed_submission, form_interaction_counts);
   }
-  if (submitted_form->ShouldBeUploaded())
-    UploadFormData(*submitted_form, observed_submission);
+
+  if (!submitted_form->ShouldBeUploaded())
+    return;
+
+  if (!download_manager())
+    return;
+
+  // Check if the form is among the forms that were recently auto-filled.
+  bool was_autofilled = base::Contains(autofilled_form_signatures_,
+                                       submitted_form->FormSignatureAsStr());
+
+  ServerFieldTypeSet non_empty_types;
+  personal_data_->GetNonEmptyTypes(&non_empty_types);
+  // As CVC is not stored, treat it separately.
+  if (!last_unlocked_credit_card_cvc_.empty() ||
+      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
+    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+  }
+
+  download_manager()->StartUploadRequest(
+      *submitted_form, was_autofilled, non_empty_types,
+      /*login_form_signature=*/std::string(), observed_submission,
+      client()->GetPrefs());
 }
 
 const gfx::Image& BrowserAutofillManager::GetCardImage(

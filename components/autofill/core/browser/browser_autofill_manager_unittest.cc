@@ -8650,7 +8650,6 @@ TEST_F(BrowserAutofillManagerTest, ImportDataWhenValueDetected) {
   FormsSeen({form});
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes({{UPI_VPA}});
   browser_autofill_manager_->SetExpectedObservedSubmission(true);
-  browser_autofill_manager_->SetCallParentUploadFormData(true);
   form.submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
@@ -8685,7 +8684,6 @@ TEST_F(BrowserAutofillManagerTest, DontImportUpiIdWhenIncognito) {
   FormsSeen({form});
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes({{UPI_VPA}});
   browser_autofill_manager_->SetExpectedObservedSubmission(true);
-  browser_autofill_manager_->SetCallParentUploadFormData(true);
   form.submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 

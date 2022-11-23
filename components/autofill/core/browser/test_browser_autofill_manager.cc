@@ -121,40 +121,12 @@ bool TestBrowserAutofillManager::IsAutofillCreditCardEnabled() const {
 }
 
 void TestBrowserAutofillManager::UploadFormData(
-    const FormStructure& submitted_form,
-    bool observed_submission) {
-  submitted_form_signature_ = submitted_form.FormSignatureAsStr();
-
-  if (call_parent_upload_form_data_)
-    BrowserAutofillManager::UploadFormData(submitted_form, observed_submission);
-}
-
-const gfx::Image& TestBrowserAutofillManager::GetCardImage(
-    const CreditCard& credit_card) const {
-  return card_image_;
-}
-
-void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
-  TriggerRefillForTest(form);
-}
-
-bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
-    bool observed_submission) {
-  run_loop_ = std::make_unique<base::RunLoop>();
-  if (BrowserAutofillManager::MaybeStartVoteUploadProcess(
-          std::move(form_structure), observed_submission)) {
-    run_loop_->Run();
-    return true;
-  }
-  return false;
-}
-
-void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
     bool observed_submission) {
+  submitted_form_signature_ = submitted_form->FormSignatureAsStr();
+
   run_loop_->Quit();
 
   if (expected_observed_submission_ != absl::nullopt)
@@ -179,9 +151,30 @@ void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
     }
   }
 
-  BrowserAutofillManager::UploadFormDataAsyncCallback(
-      std::move(submitted_form), interaction_time, submission_time,
-      observed_submission);
+  BrowserAutofillManager::UploadFormData(std::move(submitted_form),
+                                         interaction_time, submission_time,
+                                         observed_submission);
+}
+
+const gfx::Image& TestBrowserAutofillManager::GetCardImage(
+    const CreditCard& credit_card) const {
+  return card_image_;
+}
+
+void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
+  TriggerRefillForTest(form);
+}
+
+bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
+    std::unique_ptr<FormStructure> form_structure,
+    bool observed_submission) {
+  run_loop_ = std::make_unique<base::RunLoop>();
+  if (BrowserAutofillManager::MaybeStartVoteUploadProcess(
+          std::move(form_structure), observed_submission)) {
+    run_loop_->Run();
+    return true;
+  }
+  return false;
 }
 
 int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
@@ -274,10 +267,6 @@ void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
 
 void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
   expected_observed_submission_ = expected;
-}
-
-void TestBrowserAutofillManager::SetCallParentUploadFormData(bool value) {
-  call_parent_upload_form_data_ = value;
 }
 
 int TestBrowserAutofillManager::MakeFrontendId(

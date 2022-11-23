@@ -69,16 +69,13 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
-  void UploadFormData(const FormStructure& submitted_form,
+  void UploadFormData(std::unique_ptr<FormStructure> submitted_form,
+                      base::TimeTicks interaction_time,
+                      base::TimeTicks submission_time,
                       bool observed_submission) override;
   const gfx::Image& GetCardImage(const CreditCard& credit_card) const override;
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
-      bool observed_submission) override;
-  void UploadFormDataAsyncCallback(
-      std::unique_ptr<FormStructure> submitted_form,
-      base::TimeTicks interaction_time,
-      base::TimeTicks submission_time,
       bool observed_submission) override;
   // Immediately triggers the refill.
   void ScheduleRefill(const FormData& form) override;
@@ -133,8 +130,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   void SetExpectedObservedSubmission(bool expected);
 
-  void SetCallParentUploadFormData(bool value);
-
   struct MakeFrontendIdParams {
     std::string credit_card_id;
     std::string profile_id;
@@ -148,7 +143,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
-  bool call_parent_upload_form_data_ = false;
   absl::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(32, 20);
 
