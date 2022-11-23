@@ -34,7 +34,6 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
-  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _webStateList = browser->GetWebStateList();
@@ -59,7 +58,6 @@
 #pragma mark - SafeBrowsingTabHelperDelegate
 
 - (void)openSafeBrowsingSettings {
-  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler showSafeBrowsingSettings];
@@ -71,7 +69,6 @@
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
-  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
@@ -79,7 +76,6 @@
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
-  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
   DCHECK(newWebState);
   SafeBrowsingTabHelper::FromWebState(newWebState)->SetDelegate(self);
 }

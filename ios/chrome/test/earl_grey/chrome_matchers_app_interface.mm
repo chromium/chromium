@@ -664,14 +664,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuPrivacyButton {
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    return [ChromeMatchersAppInterface
-        buttonWithAccessibilityLabelID:(IDS_IOS_SETTINGS_PRIVACY_TITLE)];
-  }
-
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          (IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY)];
+      buttonWithAccessibilityLabelID:(IDS_IOS_SETTINGS_PRIVACY_TITLE)];
 }
 
 + (id<GREYMatcher>)settingsMenuPriceNotificationsButton {

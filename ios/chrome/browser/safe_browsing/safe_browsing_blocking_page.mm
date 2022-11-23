@@ -70,7 +70,7 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
       /*should_open_links_in_new_tab=*/false,
       /*always_show_back_to_safety=*/true,
-      base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection),
+      /*is_enhanced_protection_message_enabled=*/true,
       /*is_safe_browsing_managed=*/false, "cpn_safe_browsing");
 }
 }  // namespace
@@ -200,10 +200,8 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
 
 void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     OpenEnhancedProtectionSettings() {
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    if (web_state()) {
-      SafeBrowsingTabHelper::FromWebState(web_state())
-          ->OpenSafeBrowsingSettings();
-    }
+  if (web_state()) {
+    SafeBrowsingTabHelper::FromWebState(web_state())
+        ->OpenSafeBrowsingSettings();
   }
 }

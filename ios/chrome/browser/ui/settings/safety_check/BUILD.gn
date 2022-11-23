@@ -81,7 +81,6 @@ source_set("safety_check") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
-    "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/ui/settings/password",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/utils",

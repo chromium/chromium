@@ -1069,11 +1069,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (TableViewItem*)privacyDetailItem {
   NSString* title = nil;
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
-  } else {
-    title = l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
-  }
+  title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
 
   if (UseSymbols()) {
     return [self detailItemWithType:SettingsItemTypePrivacy

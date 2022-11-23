@@ -495,13 +495,13 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     [self.handler showManagedInfoFrom:buttonView];
     return;
   }
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+
     if (itemType == SafeBrowsingItemType) {
       // Directly open Safe Browsing settings instead of showing a popover.
       [self.handler showSafeBrowsingPreferencePage];
       return;
     }
-  }
+
   if (itemType == UpdateItemType &&
       self.updateCheckRowState == UpdateCheckRowStateManaged) {
     [self.handler showManagedInfoFrom:buttonView];
@@ -533,18 +533,11 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
   switch (type) {
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
-    case SafeBrowsingItemType: {
-      DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
-      NSString* message = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO);
-      GURL safeBrowsingURL(
-          base::SysNSStringToUTF8(kSafeBrowsingSafetyCheckStringURL));
-      return [self attributedStringWithText:message link:safeBrowsingURL];
-    }
     case UpdateItemType:
       return [self updateCheckErrorInfoString];
     case CheckStartItemType:
     case HeaderItem:
+    case SafeBrowsingItemType:
     case TimestampFooterItem:
       return nil;
   }
@@ -1222,20 +1215,15 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       self.safeBrowsingCheckItem.trailingImage = safeIconImage;
       self.safeBrowsingCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kGreenColor];
-      if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-        self.safeBrowsingCheckItem.detailText =
-            [self safeBrowsingCheckItemDetailText];
-        if (base::FeatureList::IsEnabled(
-                safe_browsing::kEnhancedProtectionPhase2IOS)) {
-          if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
-              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
-            self.safeBrowsingCheckItem.accessoryType =
-                UITableViewCellAccessoryDisclosureIndicator;
-          }
+      self.safeBrowsingCheckItem.detailText =
+          [self safeBrowsingCheckItemDetailText];
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kEnhancedProtectionPhase2IOS)) {
+        if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
+            safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
+          self.safeBrowsingCheckItem.accessoryType =
+              UITableViewCellAccessoryDisclosureIndicator;
         }
-      } else {
-        self.safeBrowsingCheckItem.detailText = GetNSString(
-            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC);
       }
       break;
     }

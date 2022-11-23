@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -44,7 +43,6 @@
 #endif
 
 @interface SafetyCheckCoordinator () <
-    GoogleServicesSettingsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
@@ -63,11 +61,6 @@
 
 // Dispatcher which can handle changing passwords on sites.
 @property(nonatomic, strong) id<ApplicationCommands> handler;
-
-// Coordinator for the Google Services screen (SafeBrowsing toggle location
-// when Enhanced Safe Browsing is not available).
-@property(nonatomic, strong)
-    GoogleServicesSettingsCoordinator* googleServicesSettingsCoordinator;
 
 // Coordinator for the Privacy and Security screen (SafeBrowsing toggle
 // location).
@@ -131,22 +124,12 @@
 }
 
 - (void)stop {
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    // If the Safe Browsing Settings page was accessed through the Safe
-    // Browsing row of the safety check, we need to explicity stop the
-    // privacySafeBrowsingCoordinator before closing the settings window.
-    [self.privacySafeBrowsingCoordinator stop];
-    self.privacySafeBrowsingCoordinator.delegate = nil;
-    self.privacySafeBrowsingCoordinator = nil;
-
-  } else {
-    // If the Google Services Settings page was accessed through the Safe
-    // Browsing row of the safety check, we need to explicity stop the
-    // googleServicesSettingsCoordinator before closing the settings window.
-    [self.googleServicesSettingsCoordinator stop];
-    self.googleServicesSettingsCoordinator.delegate = nil;
-    self.googleServicesSettingsCoordinator = nil;
-  }
+  // If the Safe Browsing Settings page was accessed through the Safe
+  // Browsing row of the safety check, we need to explicity stop the
+  // privacySafeBrowsingCoordinator before closing the settings window.
+  [self.privacySafeBrowsingCoordinator stop];
+  self.privacySafeBrowsingCoordinator.delegate = nil;
+  self.privacySafeBrowsingCoordinator = nil;
 }
 
 #pragma mark - SafetyCheckTableViewControllerPresentationDelegate
@@ -226,27 +209,16 @@
 }
 
 - (void)showSafeBrowsingPreferencePage {
-  DCHECK(!self.googleServicesSettingsCoordinator);
   DCHECK(!self.privacySafeBrowsingCoordinator);
   base::RecordAction(
       base::UserMetricsAction("Settings.SafetyCheck.ManageSafeBrowsing"));
   base::UmaHistogramEnumeration("Settings.SafetyCheck.Interactions",
                                 SafetyCheckInteractions::kSafeBrowsingManage);
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    self.privacySafeBrowsingCoordinator =
-        [[PrivacySafeBrowsingCoordinator alloc]
-            initWithBaseNavigationController:self.baseNavigationController
-                                     browser:self.browser];
-    self.privacySafeBrowsingCoordinator.delegate = self;
-    [self.privacySafeBrowsingCoordinator start];
-  } else {
-    self.googleServicesSettingsCoordinator =
-        [[GoogleServicesSettingsCoordinator alloc]
-            initWithBaseNavigationController:self.baseNavigationController
-                                     browser:self.browser];
-    self.googleServicesSettingsCoordinator.delegate = self;
-    [self.googleServicesSettingsCoordinator start];
-  }
+  self.privacySafeBrowsingCoordinator = [[PrivacySafeBrowsingCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.privacySafeBrowsingCoordinator.delegate = self;
+  [self.privacySafeBrowsingCoordinator start];
 }
 
 - (void)showManagedInfoFrom:(UIButton*)buttonView {
@@ -283,17 +255,6 @@
 - (BOOL)willHandlePasswordDeletion:
     (const password_manager::CredentialUIEntry&)credential {
   return NO;
-}
-
-#pragma mark - GoogleServicesSettingsCoordinatorDelegate
-
-- (void)googleServicesSettingsCoordinatorDidRemove:
-    (GoogleServicesSettingsCoordinator*)coordinator {
-  DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
-  DCHECK_EQ(_googleServicesSettingsCoordinator, coordinator);
-  [self.googleServicesSettingsCoordinator stop];
-  self.googleServicesSettingsCoordinator.delegate = nil;
-  self.googleServicesSettingsCoordinator = nil;
 }
 
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate

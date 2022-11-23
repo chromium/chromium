@@ -146,12 +146,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _browser = browser;
     _reauthModule = reauthModule;
     _browserState = browser->GetBrowserState();
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-      self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
-    } else {
-      self.title =
-          l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
-    }
+    self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
 
     PrefService* prefService = _browserState->GetPrefs();
 
@@ -209,9 +204,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
@@ -231,18 +224,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierPrivacyContent];
 
   // Privacy Safe Browsing item.
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    [model addItem:[self safeBrowsingDetailItem]
-        toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:base::FeatureList::IsEnabled(
-                                     kIOS3PIntentsInIncognito)
-                                     ? SectionIdentifierIncognitoInterstitial
-                                     : SectionIdentifierIncognitoAuth];
-  } else {
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:SectionIdentifierPrivacyContent];
-  }
+  [model addItem:[self safeBrowsingDetailItem]
+      toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
+  [model setFooter:[self showPrivacyFooterItem]
+      forSectionWithIdentifier:base::FeatureList::IsEnabled(
+                                   kIOS3PIntentsInIncognito)
+                                   ? SectionIdentifierIncognitoInterstitial
+                                   : SectionIdentifierIncognitoAuth];
 
   // Web Services item.
   [model addItem:[self handoffDetailItem]
@@ -525,14 +513,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     return;
   }
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     DCHECK(_safeBrowsingDetailItem);
     if (preferenceName == prefs::kSafeBrowsingEnabled ||
         preferenceName == prefs::kSafeBrowsingEnhanced) {
       _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
       [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
     }
-  }
 }
 
 #pragma mark - BooleanObserver

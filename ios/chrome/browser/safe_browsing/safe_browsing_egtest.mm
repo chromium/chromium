@@ -113,7 +113,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(safe_browsing::kEnhancedProtection);
   return config;
 }
 

@@ -159,7 +159,6 @@ NSString* const kDomain2 = @"domain2.com";
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(safe_browsing::kEnhancedProtection);
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
 

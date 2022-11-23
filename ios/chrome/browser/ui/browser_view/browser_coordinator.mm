@@ -953,12 +953,10 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser];
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    [self.safeBrowsingCoordinator start];
-  }
+  self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.safeBrowsingCoordinator start];
 
   self.textFragmentsCoordinator = [[TextFragmentsCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1058,12 +1056,8 @@ enum class ToolbarKind {
   [self.sadTabCoordinator disconnect];
   self.sadTabCoordinator = nil;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    [self.safeBrowsingCoordinator stop];
-    self.safeBrowsingCoordinator = nil;
-  } else {
-    DCHECK(!self.safeBrowsingCoordinator);
-  }
+  [self.safeBrowsingCoordinator stop];
+  self.safeBrowsingCoordinator = nil;
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
