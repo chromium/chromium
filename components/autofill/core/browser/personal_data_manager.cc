@@ -1308,7 +1308,7 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
   if (!IsAutofillProfileEnabled())
     return std::vector<AutofillProfile*>{};
 
-  // TODO(crbug.com/1348294): Deduplicate `kAccount` profiles.
+  // Suggest `kAccount` and `kLocalOrSyncable` profiles.
   std::vector<AutofillProfile*> profiles = GetProfiles();
 
   // Rank the suggestions by ranking score.
@@ -1353,6 +1353,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
           field_is_autofilled, sorted_profiles, &matched_profiles);
 
   // Don't show two suggestions if one is a subset of the other.
+  // Duplicates across sources are resolved in favour of `kAccount` profiles.
   std::vector<AutofillProfile*> unique_matched_profiles;
   std::vector<Suggestion> unique_suggestions =
       suggestion_selection::GetUniqueSuggestions(

@@ -174,9 +174,16 @@ std::vector<Suggestion> GetUniqueSuggestions(
       }
 
       // Check if profile B is also a subset of profile A. If so, the
-      // profiles are identical. Include the first one but not the second.
-      if (i < j && profile_b->IsSubsetOfForFieldSet(comparator, *profile_a,
-                                                    app_locale, types)) {
+      // profiles are identical and only one should be included.
+      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
+      // profiles have the same source, prefer the earlier one (since the
+      // profiles are pre-sorted by their relevants).
+      const bool prefer_a_over_b =
+          profile_a->source() == profile_b->source()
+              ? i < j
+              : profile_a->source() == AutofillProfile::Source::kAccount;
+      if (prefer_a_over_b && profile_b->IsSubsetOfForFieldSet(
+                                 comparator, *profile_a, app_locale, types)) {
         continue;
       }
 
@@ -185,7 +192,7 @@ std::vector<Suggestion> GetUniqueSuggestions(
       break;
     }
     if (include) {
-      unique_matched_profiles->push_back(matched_profiles[i]);
+      unique_matched_profiles->push_back(profile_a);
       unique_suggestions.push_back(suggestions[i]);
     }
   }

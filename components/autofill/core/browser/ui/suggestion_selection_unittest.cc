@@ -289,6 +289,28 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_EmptyMatchingProfiles) {
   ASSERT_EQ(0U, unique_suggestions.size());
 }
 
+// Tests that `kAccount` profiles are preferred over `kLocalOrSyncable` profile
+// in case of a duplicate.
+TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_kAccount) {
+  // Create two profiles that only differ by their source.
+  const auto account_profile = CreateProfileUniquePtr("FirstName");
+  account_profile->set_source_for_testing(AutofillProfile::Source::kAccount);
+  const auto local_profile = CreateProfileUniquePtr("FirstName");
+  local_profile->set_source_for_testing(
+      AutofillProfile::Source::kLocalOrSyncable);
+  // Place `account_profile` behind `local_profile`.
+  std::vector<AutofillProfile*> profiles = {local_profile.get(),
+                                            account_profile.get()};
+
+  std::vector<AutofillProfile*> unique_matched_profiles;
+  GetUniqueSuggestions({}, comparator_, app_locale_, profiles,
+                       CreateSuggestions(profiles, NAME_FIRST),
+                       &unique_matched_profiles);
+  // Usually, duplicates are resolved in favour of the earlier profile. Expect
+  // that this is not the case when profiles of different sources are involved.
+  EXPECT_THAT(unique_matched_profiles, ElementsAre(account_profile.get()));
+}
+
 TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   const char kAddressesSuppressedHistogramName[] =
       "Autofill.AddressesSuppressedForDisuse";
