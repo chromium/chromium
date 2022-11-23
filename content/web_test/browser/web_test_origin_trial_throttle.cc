@@ -54,8 +54,10 @@ void WebTestOriginTrialThrottle::SetHeaderForRequest() {
   }
   std::string header_value = base::JoinString(
       base::span<std::string>(trials.begin(), trials.end()), ", ");
-  navigation_handle()->SetRequestHeader(kWebTestOriginTrialHeaderName,
-                                        header_value);
+  if (!header_value.empty()) {
+    navigation_handle()->SetRequestHeader(kWebTestOriginTrialHeaderName,
+                                          header_value);
+  }
 }
 
 const char* WebTestOriginTrialThrottle::GetNameForLogging() {

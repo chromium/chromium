@@ -88,7 +88,7 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<MockReduceAcceptLanguageControllerDelegate>
       reduce_accept_language_controller_delegate_;
   base::raw_ptr<OriginTrialsControllerDelegate>
-      origin_trials_controller_delegate_;
+      origin_trials_controller_delegate_ = nullptr;
   bool is_off_the_record_ = false;
 };
 

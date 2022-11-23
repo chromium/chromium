@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS TestPrimaryPageHasNoTrial
-PASS PersistentInChild
-Harness: the test ran to completion.
-
