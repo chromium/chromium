@@ -226042,6 +226042,156 @@
         ],
         {}
        ]
+      ],
+      "textarea-appearance-native-horizontal.optional.html": [
+       "79c54d5063dbe9aec30795b9d2a102c83eec902a",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-appearance-native-vlr.optional.html": [
+       "3ce811fd69286750b835d1e69e39b1c60c2edb12",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-appearance-native-vrl.optional.html": [
+       "c5f8b4c3112addea3dc346e416136e328951a2cc",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-appearance-none-horizontal.optional.html": [
+       "be4dde195ead643bb38c616d7461463cfeadd55d",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-appearance-none-vlr.optional.html": [
+       "d5992962e883416049480f6973cc8693c6c24997",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-appearance-none-vrl.optional.html": [
+       "cbaddc3a0d140b855caa3efe7ea0e035b7cca3a0",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "height-width-inline-non-replaced-vlr-003.xht": [
@@ -260164,8 +260314,12 @@
      "8195095f4bc779a9854430e1f5acb9ea5bde8c72",
      []
     ],
-    "battery-allowed-by-feature-policy.https.sub.html.headers": [
-     "03b98040cc4d2e5cd352584b69ffd09ca1cb308c",
+    "battery-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub-expected.txt": [
+     "50daf927119b54b82091ae68c5f17a200e753ee9",
+     []
+    ],
+    "battery-allowed-by-permissions-policy.https.sub.html.headers": [
+     "989fdc3df8290abf2af65c67106e009e205c25eb",
      []
     ],
     "battery-default-feature-policy.https.sub-expected.txt": [
@@ -260176,16 +260330,24 @@
      "f450813bc38e4e1e7ed88c9563e2f0cbbeee7ade",
      []
     ],
+    "battery-default-permissions-policy.https.sub-expected.txt": [
+     "b7c8ccfb3b0c9c9fca1832c1fc9b9cc06cd4417a",
+     []
+    ],
     "battery-disabled-by-feature-policy.https.sub-expected.txt": [
      "8cf8e32cc55110598c75ddc1f8a355907c6782e5",
      []
     ],
-    "battery-disabled-by-feature-policy.https.sub.html.headers": [
-     "09a5ae84a123aac7591b20f78ffeea1cbd279a7c",
-     []
-    ],
     "battery-disabled-by-feature-policy.https.sub.html.ini": [
      "6f6c5ba4ceca46e3ae99c49e519d53063b041b45",
+     []
+    ],
+    "battery-disabled-by-permissions-policy.https.sub-expected.txt": [
+     "8a9a240e900397dd9f1ef666c1e461b49e36ca1b",
+     []
+    ],
+    "battery-disabled-by-permissions-policy.https.sub.html.headers": [
+     "9ff0bc6190a43f41e60f53e40e18c649662f8f2a",
      []
     ],
     "battery-disallowed-in-cross-origin-iframe.https.sub-expected.txt": [
@@ -316767,6 +316929,28 @@
       "efb9f9ffd43a66532c410d46cc8a4b7adac96b72",
       []
      ],
+     "forms": {
+      "manual": {
+       "support": {
+        "form-controls-slr.png": [
+         "ac9b2a307255fcf7b7b70dbfe0c5a358e6642ff9",
+         []
+        ],
+        "form-controls-srl.png": [
+         "da9d401f917269f152a78f85b5a25229269eaee6",
+         []
+        ],
+        "form-controls-vlr.png": [
+         "ebe4df21f63a4cb1cbfb022cfe8be43b65d974c6",
+         []
+        ],
+        "vertical-form.png": [
+         "53a3af92cd650450b04b9d4f43b28e35ee95dc53",
+         []
+        ]
+       }
+      }
+     },
      "horizontal-rule-vlr-003-ref.xht": [
       "24130d157837083bf97eeff3420f58693f1daf27",
       []
@@ -318238,18 +318422,6 @@
        "4e67786f13b9dae59f366745452c6904b13a4f4f",
        []
       ],
-      "form-controls-slr.png": [
-       "ac9b2a307255fcf7b7b70dbfe0c5a358e6642ff9",
-       []
-      ],
-      "form-controls-srl.png": [
-       "da9d401f917269f152a78f85b5a25229269eaee6",
-       []
-      ],
-      "form-controls-vlr.png": [
-       "ebe4df21f63a4cb1cbfb022cfe8be43b65d974c6",
-       []
-      ],
       "left-bottom-200x300.png": [
        "6e30eba507a77ee266a7632ca657978fca15e707",
        []
@@ -318556,10 +318728,6 @@
       ],
       "text-orientation.js": [
        "fb6eb7d60de09c8c7bc55c06369b1ad76d80e8e7",
-       []
-      ],
-      "vertical-form.png": [
-       "53a3af92cd650450b04b9d4f43b28e35ee95dc53",
        []
       ],
       "width-test.css": [
@@ -327945,10 +328113,6 @@
      ],
      "feature-policy-autoplay.html": [
       "79f8eefb9d619c3f54524fd53649cf03d66713b3",
-      []
-     ],
-     "feature-policy-battery.html": [
-      "dff4b3290d66c4c804267ecfe2fb9717a6449cff",
       []
      ],
      "feature-policy-clipboard-read.html": [
@@ -360098,7 +360262,7 @@
       []
      ],
      "permissions-policy-battery.html": [
-      "dff4b3290d66c4c804267ecfe2fb9717a6449cff",
+      "643d6a4ef5e3e9b4994a57e236fa5eae7ffc6581",
       []
      ],
      "permissions-policy-bluetooth.html": [
@@ -364073,7 +364237,7 @@
      []
     ],
     "hidden_document-expected.txt": [
-     "46575e6b01a54d370f99753cb7db2a1bb8ae70cf",
+     "f8824993112643a648d5459b40076f193e4e5f6f",
      []
     ],
     "lock-basic-expected.txt": [
@@ -364291,10 +364455,6 @@
      ],
      "animation-with-root-scroller-ref.html": [
       "58435be6312cb06f936117c631679663c4ed2b07",
-      []
-     ],
-     "idlharness.window-expected.txt": [
-      "e7f55fdffaf78d35856709317a1ec3c41d9f2ea4",
       []
      ],
      "idlharness.window.js.ini": [
@@ -378489,11 +378649,11 @@
      ]
     },
     "usb-allowed-by-feature-policy.https.sub.html.headers": [
-     "5c7eac0d6231a48836700cb837578e485eff3167",
+     "022b027812ab3ea7e7b730d99f11f4229aa8fb2f",
      []
     ],
     "usb-disabled-by-feature-policy.https.sub.html.headers": [
-     "4fd1e269362c43d282ca8e3c5c35a5d648f0666b",
+     "ff22d62f104a3cf8cf4a659498f682dc1e83d34d",
      []
     ],
     "usb.https.window.js.ini": [
@@ -398710,22 +398870,22 @@
     ]
    },
    "battery-status": {
-    "battery-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html": [
-     "47a9cbac0fc4da3ec56e63896d62fa51feb512c6",
+    "battery-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
+     "f65f3629df8ef9670b6a12148b1a0a303e0b74f0",
      [
       null,
       {}
      ]
     ],
-    "battery-allowed-by-feature-policy-attribute.https.sub.html": [
-     "96bca54ec8e087ba98961c303e7f96c955963450",
+    "battery-allowed-by-permissions-policy-attribute.https.sub.html": [
+     "fc4a7bad8134e63e198de6fa0021fd91bd0a97db",
      [
       null,
       {}
      ]
     ],
-    "battery-allowed-by-feature-policy.https.sub.html": [
-     "5849af5750148f9af220e9781827fd3b10b32de1",
+    "battery-allowed-by-permissions-policy.https.sub.html": [
+     "8cbf39997b9c5ff2e2df8acc3bf8bd52055404d9",
      [
       null,
       {}
@@ -398738,15 +398898,15 @@
       {}
      ]
     ],
-    "battery-default-feature-policy.https.sub.html": [
-     "5486a453e4e99c26e50b6de99a27a48c78f896de",
+    "battery-default-permissions-policy.https.sub.html": [
+     "7485250dae8052bc915e7b8bf3447ac7e70fcc8e",
      [
       null,
       {}
      ]
     ],
-    "battery-disabled-by-feature-policy.https.sub.html": [
-     "9e6d685ff4288ad91ae851424a48cdeffd9d27ba",
+    "battery-disabled-by-permissions-policy.https.sub.html": [
+     "4afdee8a0cbeb18d2df203d87efcda12c5c29944",
      [
       null,
       {}
@@ -444966,6 +445126,13 @@
      "forms": {
       "progress-appearance-native-computed-style.optional.html": [
        "6bb48bf19845968f1fcf945c8c9f349630ed4d04",
+       [
+        null,
+        {}
+       ]
+      ],
+      "textarea-rows-cols-sizing.html": [
+       "8cd9c27d36cba2f6c7a1863c3d1c95d1c3b97320",
        [
         null,
         {}
@@ -574747,7 +574914,7 @@
      ]
     ],
     "hidden_document.html": [
-     "6097cc9d28d2baae076e4b9949b2bf11b9e25e02",
+     "4d018a882a114aa6a29db60c2403e78734cdd034",
      [
       null,
       {
@@ -575143,7 +575310,7 @@
       ]
      ],
      "scroll-timeline-document-scroller-quirks.html": [
-      "26f88255fae3bd7e93d57087e55ae3a816804ebc",
+      "1a9e6a2b3aa5b72eae8ad740a4c15a5f66c6fbd8",
       [
        null,
        {}
@@ -575550,6 +575717,13 @@
      ],
      "view-timeline-delay.html": [
       "1377dc339c3da8a21fc83d27e0be11a7dceb0817",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-timeline-get-current-time-range-name.html": [
+      "8f385e7b6ebaa208582bc3bec068cc1beb791fd8",
       [
        null,
        {}
@@ -611485,7 +611659,7 @@
      ]
     ],
     "hardware-capability-stats.https.html": [
-     "eb56344e5947a7eae63162a185c0bae3821e14be",
+     "1cd3a370c377c92b4cf1f73ec6789358877555b6",
      [
       null,
       {

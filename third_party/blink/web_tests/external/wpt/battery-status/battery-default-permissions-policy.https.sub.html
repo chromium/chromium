@@ -2,18 +2,18 @@
 <body>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=/feature-policy/resources/featurepolicy.js></script>
+<script src=/permissions-policy/resources/permissions-policy.js></script>
 <script>
 'use strict';
 
-const same_origin_src = '/feature-policy/resources/feature-policy-battery.html';
+const same_origin_src = '/permissions-policy/resources/permissions-policy-battery.html';
 const cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
   same_origin_src;
-const header = 'Feature-Policy header {"battery" : ["*"]}';
+const header = 'Default "battery" permissions policy';
 
 promise_test(
     async () => await navigator.getBattery(),
-   `${header} allows the top-level document.`);
+    `${header} allows the top-level document.`);
 
 async_test(t => {
   test_feature_availability('navigator.getBattery()', t, same_origin_src,
@@ -22,7 +22,7 @@ async_test(t => {
 
 async_test(t => {
   test_feature_availability('navigator.getBattery()', t, cross_origin_src,
-      expect_feature_available_default);
-}, `${header} allows cross-origin iframes.`);
+      expect_feature_unavailable_default);
+}, `${header} disallows cross-origin iframes.`);
 </script>
 </body>

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS textarea[style="writing-mode: horizontal-tb"] rows attribute changes the size correctly
+PASS textarea[style="writing-mode: horizontal-tb"] cols attribute changes the size correctly
+FAIL textarea[style="writing-mode: vertical-lr"] rows attribute changes the size correctly assert_equals: height shouldn't change when changing rows expected 36 but got 156
+FAIL textarea[style="writing-mode: vertical-lr"] cols attribute changes the size correctly assert_equals: width shouldn't change when changing cols expected 181 but got 341
+FAIL textarea[style="writing-mode: vertical-rl"] rows attribute changes the size correctly assert_equals: height shouldn't change when changing rows expected 36 but got 156
+FAIL textarea[style="writing-mode: vertical-rl"] cols attribute changes the size correctly assert_equals: width shouldn't change when changing cols expected 181 but got 341
+Harness: the test ran to completion.
+

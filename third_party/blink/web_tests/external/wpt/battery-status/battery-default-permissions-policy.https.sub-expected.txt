@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Default "battery" permissions policy allows the top-level document.
+PASS Default "battery" permissions policy allows same-origin iframes.
+FAIL Default "battery" permissions policy disallows cross-origin iframes. assert_false: navigator.getBattery() expected false got true
+Harness: the test ran to completion.
+
