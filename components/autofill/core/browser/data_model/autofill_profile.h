@@ -265,6 +265,9 @@ class AutofillProfile : public AutofillDataModel {
   }
 
   Source source() const { return source_; }
+  void set_source_for_testing(AutofillProfile::Source source) {
+    source_ = source;
+  }
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.

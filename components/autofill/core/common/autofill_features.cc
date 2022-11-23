@@ -28,6 +28,13 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites,
              "AutofillGivePrecedenceToNumericQuantitites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if `kAccount` profiles are loaded from AutofillTable and
+// consequently suggested for filling.
+// TODO(crbug.com/1348294): Remove once launched.
+BASE_FEATURE(kAutofillAccountProfilesUnionView,
+             "AutofillAccountProfilesUnionView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for

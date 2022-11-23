@@ -100,8 +100,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   int number_of_unchanged_profiles = 0;
 
+  // TODO(crbug.com/1348294): Consider `kAccount` profiles to detect duplicates.
   const std::vector<AutofillProfile*> existing_profiles =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->GetProfilesFromSource(
+          AutofillProfile::Source::kLocalOrSyncable);
 
   // If we have reason to believe that the country was complemented incorrectly,
   // remove it.

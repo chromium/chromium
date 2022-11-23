@@ -63,6 +63,10 @@ namespace autofill {
 
 namespace {
 
+using testing::ElementsAre;
+using testing::Pointee;
+using testing::UnorderedElementsAre;
+
 const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char16_t kPrimaryAccountEmail16[] = u"syncuser@example.com";
 const std::string kAddressEntryIcon = "accountIcon";
@@ -545,6 +549,82 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   profiles.push_back(&profile0);
   profiles.push_back(&profile1);
   ExpectSameElements(profiles, personal_data_->GetProfiles());
+}
+
+// Tests that profiles with source `kAccount` and `kLocalOrSyncable` are loaded,
+// and accessible via `GetProfiles()` and `GetProfilesFromSource()`.
+// If duplicates exist across sources, they should be considered distinct.
+TEST_F(PersonalDataManagerTest, GetProfiles) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
+
+  AutofillProfile kAccountProfile = test::GetFullProfile();
+  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile kAccountProfile2 = test::GetFullProfile2();
+  kAccountProfile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile kLocalProfile = test::GetFullProfile();
+
+  AddProfileToPersonalDataManager(kAccountProfile);
+  AddProfileToPersonalDataManager(kAccountProfile2);
+  AddProfileToPersonalDataManager(kLocalProfile);
+  ResetPersonalDataManager(USER_MODE_NORMAL);
+
+  EXPECT_THAT(
+      personal_data_->GetProfiles(),
+      UnorderedElementsAre(Pointee(kAccountProfile), Pointee(kAccountProfile2),
+                           Pointee(kLocalProfile)));
+  EXPECT_THAT(
+      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
+      UnorderedElementsAre(Pointee(kAccountProfile),
+                           Pointee(kAccountProfile2)));
+  EXPECT_THAT(personal_data_->GetProfilesFromSource(
+                  AutofillProfile::Source::kLocalOrSyncable),
+              ElementsAre(Pointee(kLocalProfile)));
+}
+
+// Tests that `SetProfiles()` overwrites profiles with the correct source.
+TEST_F(PersonalDataManagerTest, SetProfiles) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
+
+  AutofillProfile kAccountProfile = test::GetFullProfile();
+  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile kLocalProfile = test::GetFullProfile();
+
+  // Set `kAccount` profiles only.
+  std::vector<AutofillProfile> profiles = {kAccountProfile};
+  personal_data_->SetProfiles(&profiles);
+  WaitForOnPersonalDataChanged();
+  EXPECT_THAT(
+      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
+      ElementsAre(Pointee(kAccountProfile)));
+  EXPECT_TRUE(
+      personal_data_
+          ->GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable)
+          .empty());
+
+  // Set `kLocalOrSyncable` profiles only. This clear the existing `kAccount`
+  // profiles
+  profiles = {kLocalProfile};
+  personal_data_->SetProfiles(&profiles);
+  WaitForOnPersonalDataChanged();
+  EXPECT_TRUE(
+      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount)
+          .empty());
+  EXPECT_THAT(personal_data_->GetProfilesFromSource(
+                  AutofillProfile::Source::kLocalOrSyncable),
+              ElementsAre(Pointee(kLocalProfile)));
+
+  // Set profiles of both sources.
+  profiles = {kAccountProfile, kLocalProfile};
+  personal_data_->SetProfiles(&profiles);
+  WaitForOnPersonalDataChanged();
+  EXPECT_THAT(
+      personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
+      ElementsAre(Pointee(kAccountProfile)));
+  EXPECT_THAT(personal_data_->GetProfilesFromSource(
+                  AutofillProfile::Source::kLocalOrSyncable),
+              ElementsAre(Pointee(kLocalProfile)));
 }
 
 // Adding, updating, removing operations without waiting in between.

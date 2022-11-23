@@ -168,7 +168,9 @@ void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
     return;
   }
 
-  for (const AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
+  for (const AutofillProfile* profile :
+       personal_data_manager_->GetProfilesFromSource(
+           AutofillProfile::Source::kLocalOrSyncable)) {
     const ServerFieldTypeSet inaccessible_fields =
         profile->FindInaccessibleProfileValues();
     if (!inaccessible_fields.empty()) {
@@ -196,7 +198,8 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   }
 
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->GetProfilesFromSource(
+          AutofillProfile::Source::kLocalOrSyncable);
 
   // No need to de-duplicate if there are less than two profiles.
   if (profiles.size() < 2) {
@@ -382,7 +385,8 @@ void PersonalDataManagerCleaner::UpdateCardsBillingAddressReference(
 
 bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->GetProfilesFromSource(
+          AutofillProfile::Source::kLocalOrSyncable);
 
   // Early exit when there are no profiles.
   if (profiles.empty()) {
@@ -422,7 +426,9 @@ bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
 }
 
 void PersonalDataManagerCleaner::ClearProfileNonSettingsOrigins() {
-  for (AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
+  // `kAccount` profiles don't store an origin.
+  for (AutofillProfile* profile : personal_data_manager_->GetProfilesFromSource(
+           AutofillProfile::Source::kLocalOrSyncable)) {
     if (profile->origin() != kSettingsOrigin && !profile->origin().empty()) {
       profile->set_origin(std::string());
       personal_data_manager_->UpdateProfileInDB(*profile, /*enforced=*/true);

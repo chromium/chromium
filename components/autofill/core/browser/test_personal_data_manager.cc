@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -65,7 +66,7 @@ void TestPersonalDataManager::AddProfile(const AutofillProfile& profile) {
   std::unique_ptr<AutofillProfile> profile_ptr =
       std::make_unique<AutofillProfile>(profile);
   profile_ptr->FinalizeAfterImport();
-  web_profiles_.push_back(std::move(profile_ptr));
+  GetProfileStorage(profile.source()).push_back(std::move(profile_ptr));
   NotifyPersonalDataObserver();
 }
 
@@ -86,8 +87,10 @@ void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
 
   AutofillProfile* profile = GetProfileByGUID(guid);
   if (profile) {
-    web_profiles_.erase(base::ranges::find(
-        web_profiles_, profile, &std::unique_ptr<AutofillProfile>::get));
+    std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+        GetProfileStorage(profile->source());
+    profiles.erase(base::ranges::find(profiles, profile,
+                                      &std::unique_ptr<AutofillProfile>::get));
   }
 }
 
@@ -146,23 +149,44 @@ void TestPersonalDataManager::SetProfiles(
     AddProfile(profile);
 }
 
+bool TestPersonalDataManager::SetProfilesFromSource(
+    base::span<const AutofillProfile> new_profiles,
+    AutofillProfile::Source source) {
+  GetProfileStorage(source).clear();
+  for (const AutofillProfile& profile : new_profiles)
+    AddProfile(profile);
+  return true;
+}
+
 void TestPersonalDataManager::LoadProfiles() {
   // Overridden to avoid a trip to the database. This should be a no-op except
   // for the side-effect of logging the profile count.
-  pending_profiles_query_ = 123;
-  pending_server_profiles_query_ = 124;
+  pending_local_profiles_query_ = 123;
+  pending_account_profiles_query_ = 124;
+  pending_server_profiles_query_ = 125;
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     web_profiles_.swap(profiles);
-    std::unique_ptr<WDTypedResult> result = std::make_unique<
+    auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_profiles_query_, std::move(result));
+    OnWebDataServiceRequestDone(pending_local_profiles_query_,
+                                std::move(result));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView)) {
+    std::vector<std::unique_ptr<AutofillProfile>> profiles;
+    account_profiles_.swap(profiles);
+    auto result = std::make_unique<
+        WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
+        AUTOFILL_PROFILES_RESULT, std::move(profiles));
+    OnWebDataServiceRequestDone(pending_account_profiles_query_,
+                                std::move(result));
   }
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     server_profiles_.swap(profiles);
-    std::unique_ptr<WDTypedResult> result = std::make_unique<
+    auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
     OnWebDataServiceRequestDone(pending_server_profiles_query_,
@@ -262,7 +286,7 @@ std::string TestPersonalDataManager::CountryCodeForCurrentTimezone() const {
 }
 
 void TestPersonalDataManager::ClearAllLocalData() {
-  web_profiles_.clear();
+  ClearProfiles();
   local_credit_cards_.clear();
 }
 
@@ -303,6 +327,7 @@ TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
 
 void TestPersonalDataManager::ClearProfiles() {
   web_profiles_.clear();
+  account_profiles_.clear();
 }
 
 void TestPersonalDataManager::ClearCreditCards() {

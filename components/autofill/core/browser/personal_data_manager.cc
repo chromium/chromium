@@ -340,7 +340,7 @@ void PersonalDataManager::Init(
 }
 
 PersonalDataManager::~PersonalDataManager() {
-  CancelPendingLocalQuery(&pending_profiles_query_);
+  CancelPendingLocalQuery(&pending_local_profiles_query_);
   CancelPendingLocalQuery(&pending_creditcards_query_);
   CancelPendingLocalQuery(&pending_upi_ids_query_);
   CancelPendingServerQueries();
@@ -428,16 +428,19 @@ void PersonalDataManager::OnURLsDeleted(
 void PersonalDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
-  DCHECK(pending_profiles_query_ || pending_server_profiles_query_ ||
-         pending_creditcards_query_ || pending_server_creditcards_query_ ||
+  DCHECK(pending_local_profiles_query_ || pending_account_profiles_query_ ||
+         pending_server_profiles_query_ || pending_creditcards_query_ ||
+         pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_ibans_query_ || pending_customer_data_query_ ||
          pending_upi_ids_query_ || pending_offer_data_query_);
 
   if (!result) {
     // Error from the web database.
-    if (h == pending_profiles_query_)
-      pending_profiles_query_ = 0;
+    if (h == pending_local_profiles_query_)
+      pending_local_profiles_query_ = 0;
+    else if (h == pending_account_profiles_query_)
+      pending_account_profiles_query_ = 0;
     else if (h == pending_server_profiles_query_)
       pending_server_profiles_query_ = 0;
     else if (h == pending_creditcards_query_)
@@ -457,9 +460,13 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   } else {
     switch (result->GetType()) {
       case AUTOFILL_PROFILES_RESULT:
-        if (h == pending_profiles_query_) {
-          ReceiveLoadedDbValues(h, result.get(), &pending_profiles_query_,
+        if (h == pending_local_profiles_query_) {
+          ReceiveLoadedDbValues(h, result.get(), &pending_local_profiles_query_,
                                 &web_profiles_);
+        } else if (h == pending_account_profiles_query_) {
+          ReceiveLoadedDbValues(h, result.get(),
+                                &pending_account_profiles_query_,
+                                &account_profiles_);
         } else {
           DCHECK_EQ(h, pending_server_profiles_query_)
               << "received profiles from invalid request.";
@@ -738,15 +745,18 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 
   // The profile is a duplicate of an existing profile if it has a distinct GUID
   // but the same content.
-  auto duplicate_profile_iter = base::ranges::find_if(
-      web_profiles_, [&profile](const auto& other_profile) {
+  // Duplicates can exist across profile sources.
+  const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+      GetProfileStorage(profile.source());
+  auto duplicate_profile_iter =
+      base::ranges::find_if(profiles, [&profile](const auto& other_profile) {
         return profile.guid() != other_profile->guid() &&
                other_profile->Compare(profile) == 0;
       });
 
   // Remove the profile if it is a duplicate of another already existing
   // profile.
-  if (duplicate_profile_iter != web_profiles_.end()) {
+  if (duplicate_profile_iter != profiles.end()) {
     // Keep the more recently used version of the profile.
     if (profile.use_date() > duplicate_profile_iter->get()->use_date()) {
       UpdateProfileInDB(profile);
@@ -762,6 +772,7 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 
 AutofillProfile* PersonalDataManager::GetProfileByGUID(
     const std::string& guid) {
+  // GUIDs are unique among profile sources.
   return GetProfileFromProfilesByGUID(guid, GetProfiles());
 }
 
@@ -1015,6 +1026,10 @@ void PersonalDataManager::ClearAllLocalData() {
   database_helper_->GetLocalDatabase()->ClearAllLocalData();
   local_credit_cards_.clear();
   web_profiles_.clear();
+  // Even though `account_profiles_` are not "local", the local/server
+  // distinction in the PersonalDataManager only exists for historical reasons
+  // and all AutofillProfiles fall in the local category.
+  account_profiles_.clear();
 }
 
 void PersonalDataManager::AddServerCreditCardForTest(
@@ -1130,9 +1145,22 @@ bool PersonalDataManager::IsDataLoaded() const {
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfiles() const {
+  std::vector<AutofillProfile*> a =
+      GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable);
+  std::vector<AutofillProfile*> b =
+      GetProfilesFromSource(AutofillProfile::Source::kAccount);
+  a.reserve(a.size() + b.size());
+  base::ranges::move(b, std::back_inserter(a));
+  return a;
+}
+
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
+    AutofillProfile::Source profile_source) const {
+  const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+      GetProfileStorage(profile_source);
   std::vector<AutofillProfile*> result;
-  result.reserve(web_profiles_.size());
-  for (const auto& profile : web_profiles_)
+  result.reserve(profiles.size());
+  for (const auto& profile : profiles)
     result.push_back(profile.get());
   return result;
 }
@@ -1280,6 +1308,7 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
   if (!IsAutofillProfileEnabled())
     return std::vector<AutofillProfile*>{};
 
+  // TODO(crbug.com/1348294): Deduplicate `kAccount` profiles.
   std::vector<AutofillProfile*> profiles = GetProfiles();
 
   // Rank the suggestions by ranking score.
@@ -1511,6 +1540,17 @@ void PersonalDataManager::FetchImagesForURLs(
                                    weak_factory_.GetMutableWeakPtr()));
 }
 
+const std::vector<std::unique_ptr<AutofillProfile>>&
+PersonalDataManager::GetProfileStorage(AutofillProfile::Source source) const {
+  switch (source) {
+    case AutofillProfile::Source::kLocalOrSyncable:
+      return web_profiles_;
+    case AutofillProfile::Source::kAccount:
+      return account_profiles_;
+  }
+  NOTREACHED();
+}
+
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   if (default_country_code_.empty())
@@ -1572,44 +1612,67 @@ void PersonalDataManager::DedupeCreditCardToSuggest(
   }
 }
 
-void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
-  if (is_off_the_record_) {
-    // TODO(crbug.com/997629): Remove after investigation is over.
-    DLOG(WARNING) << "Cannot SetProfiles because off-the-record";
+void PersonalDataManager::SetProfiles(
+    std::vector<AutofillProfile>* new_profiles) {
+  if (is_off_the_record_ || !database_helper_->GetLocalDatabase())
     return;
-  }
-  if (!database_helper_->GetLocalDatabase()) {
-    // TODO(crbug.com/997629): Remove after investigation is over.
-    DLOG(WARNING) << "Cannot SetProfiles because no local DB";
-    return;
-  }
 
   ClearOnGoingProfileChanges();
+
+  const auto split_point = base::ranges::partition(
+      *new_profiles, [](const AutofillProfile& profile) {
+        return profile.source() == AutofillProfile::Source::kLocalOrSyncable;
+      });
+  bool change_happened =
+      SetProfilesFromSource({new_profiles->begin(), split_point},
+                            AutofillProfile::Source::kLocalOrSyncable);
+  change_happened |= SetProfilesFromSource({split_point, new_profiles->end()},
+                                           AutofillProfile::Source::kAccount);
+
+  if (!change_happened) {
+    // When a change happens (add, update, remove), we would consequently call
+    // `NotifyPersonalDataChanged()` which notifies the tests to stop waiting.
+    // Otherwise, we need to stop them by calling the function directly.
+    NotifyPersonalDataObserver();
+  }
+}
+
+bool PersonalDataManager::SetProfilesFromSource(
+    base::span<const AutofillProfile> new_profiles,
+    AutofillProfile::Source source) {
+  DCHECK(
+      base::ranges::all_of(new_profiles, [&](const AutofillProfile& profile) {
+        return profile.source() == source;
+      }));
 
   // Means that a profile was added, removed or updated.
   bool change_happened = false;
 
+  std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+      GetProfileStorage(source);
+
   // Any profiles that are not in the new profile list should be removed from
   // the web database
-  for (const auto& it : web_profiles_) {
-    if (!FindByGUID(*profiles, it->guid())) {
+  for (const auto& it : profiles) {
+    if (!FindByGUID(new_profiles, it->guid())) {
       RemoveProfileFromDB(it->guid());
       change_happened = true;
     }
   }
 
   // Update the web database with the new and existing profiles.
-  for (const AutofillProfile& it : *profiles) {
+  for (const AutofillProfile& it : new_profiles) {
     const auto* existing_profile = GetProfileByGUID(it.guid());
-    // In SetProfiles, exceptionally, profiles are directly added/updated on the
-    // web_profiles_ before they are ready to be added or get updated in the
-    // database. Enforce the changes to make sure the database is also updated.
+    // In `SetProfilesFromSource()`, exceptionally, profiles are directly added/
+    // updated on the `profiles` before they are ready to be added or get
+    // updated in the database. Enforce the changes to make sure the database is
+    // also updated.
     if (existing_profile) {
       if (!existing_profile->EqualsForUpdatePurposes(it)) {
         UpdateProfileInDB(it, /*enforced=*/true);
         change_happened = true;
       }
-    } else if (!FindByContents(web_profiles_, it)) {
+    } else if (!FindByContents(profiles, it)) {
       AddProfileToDB(it, /*enforced=*/true);
       change_happened = true;
     }
@@ -1617,16 +1680,12 @@ void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
 
   if (change_happened) {
     // Copy in the new profiles.
-    web_profiles_.clear();
-    for (const AutofillProfile& it : *profiles) {
-      web_profiles_.push_back(std::make_unique<AutofillProfile>(it));
+    profiles.clear();
+    for (const AutofillProfile& it : new_profiles) {
+      profiles.push_back(std::make_unique<AutofillProfile>(it));
     }
-  } else {
-    // When a change happens (add, update, remove), we would consequently call
-    // the NotifyPersonalDataChanged which notifies the tests to stop waiting.
-    // Otherwise, we need to stop them by calling the function directly.
-    NotifyPersonalDataObserver();
   }
+  return change_happened;
 }
 
 bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
@@ -1749,12 +1808,19 @@ void PersonalDataManager::LoadProfiles() {
     return;
   }
 
-  CancelPendingLocalQuery(&pending_profiles_query_);
+  CancelPendingLocalQuery(&pending_local_profiles_query_);
+  CancelPendingLocalQuery(&pending_account_profiles_query_);
   CancelPendingServerQuery(&pending_server_profiles_query_);
 
-  pending_profiles_query_ =
+  pending_local_profiles_query_ =
       database_helper_->GetLocalDatabase()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, this);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView)) {
+    pending_account_profiles_query_ =
+        database_helper_->GetLocalDatabase()->GetAutofillProfiles(
+            AutofillProfile::Source::kAccount, this);
+  }
   if (database_helper_->GetServerDatabase()) {
     pending_server_profiles_query_ =
         database_helper_->GetServerDatabase()->GetServerProfiles(this);
@@ -1868,7 +1934,11 @@ std::string PersonalDataManager::SaveImportedProfile(
   if (is_off_the_record_)
     return std::string();
 
+  DCHECK_EQ(imported_profile.source(),
+            AutofillProfile::Source::kLocalOrSyncable);
   std::vector<AutofillProfile> profiles;
+  // TODO(crbug.com/1348294): Merge into `account_profiles_` once `kAccount`
+  // imports are supported.
   std::string guid = AutofillProfileComparator::MergeProfile(
       imported_profile, web_profiles_, app_locale_, &profiles);
   SetProfiles(&profiles);
@@ -1946,7 +2016,11 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
 
     // Determine the number of disused and country-less profiles
     const base::Time now = AutofillClock::Now();
-    for (const std::unique_ptr<AutofillProfile>& profile : web_profiles_) {
+    // TODO(crbug.com/1348294): Create a separate metric for `kAccount`
+    // profiles.
+    const std::vector<AutofillProfile*> local_profiles =
+        GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable);
+    for (const AutofillProfile* profile : local_profiles) {
       const base::TimeDelta time_since_last_use = now - profile->use_date();
       AutofillMetrics::LogStoredProfileDaysSinceLastUse(
           time_since_last_use.InDays());
@@ -1957,7 +2031,7 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
     }
 
     AutofillMetrics::LogStoredProfileCountStatistics(
-        web_profiles_.size(), num_disused_profiles,
+        local_profiles.size(), num_disused_profiles,
         num_profiles_without_country);
 
     // Only log this info once per chrome user profile load.
@@ -2120,25 +2194,27 @@ void PersonalDataManager::OnAutofillProfileChanged(
     return;
   }
 
+  std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+      GetProfileStorage(profile.source());
   const auto* existing_profile = GetProfileByGUID(guid);
   const bool profile_exists = (existing_profile != nullptr);
   switch (change_type) {
     case AutofillProfileChange::ADD:
-      if (!profile_exists && !FindByContents(web_profiles_, profile)) {
-        web_profiles_.push_back(std::make_unique<AutofillProfile>(profile));
+      if (!profile_exists && !FindByContents(profiles, profile)) {
+        profiles.push_back(std::make_unique<AutofillProfile>(profile));
       }
       break;
     case AutofillProfileChange::UPDATE:
       if (profile_exists &&
           (change.enforced() ||
            !existing_profile->EqualsForUpdatePurposes(profile))) {
-        web_profiles_.erase(FindElementByGUID(web_profiles_, guid));
-        web_profiles_.push_back(std::make_unique<AutofillProfile>(profile));
+        profiles.erase(FindElementByGUID(profiles, guid));
+        profiles.push_back(std::make_unique<AutofillProfile>(profile));
       }
       break;
     case AutofillProfileChange::REMOVE:
       if (profile_exists) {
-        web_profiles_.erase(FindElementByGUID(web_profiles_, guid));
+        profiles.erase(FindElementByGUID(profiles, guid));
       }
       break;
     default:
@@ -2213,8 +2289,10 @@ void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
   }
 
   if (!ProfileChangesAreOngoing(profile.guid())) {
-    if (!enforced && (FindByGUID(web_profiles_, profile.guid()) ||
-                      FindByContents(web_profiles_, profile))) {
+    const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+        GetProfileStorage(profile.source());
+    if (!enforced && (FindByGUID(profiles, profile.guid()) ||
+                      FindByContents(profiles, profile))) {
       NotifyPersonalDataObserver();
       return;
     }
@@ -2247,19 +2325,23 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
 }
 
 void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
-  auto profile_it = FindElementByGUID(web_profiles_, guid);
-  bool profile_exists = profile_it != web_profiles_.end();
-  if (!profile_exists && !ProfileChangesAreOngoing(guid)) {
+  // Find the profile to remove. Since `ongoing_profile_changes_` returns a
+  // `const AutofillProfile*`, this logic is in a separate lambda.
+  const AutofillProfile* profile = [&]() -> const AutofillProfile* {
+    if (AutofillProfile* profile = GetProfileByGUID(guid))
+      return profile;
+    if (ProfileChangesAreOngoing(guid))
+      return ongoing_profile_changes_[guid].back().profile();
+    return nullptr;
+  }();
+  if (!profile) {
     NotifyPersonalDataObserver();
     return;
   }
-  const AutofillProfile* profile =
-      profile_exists ? profile_it->get()
-                     : ongoing_profile_changes_[guid].back().profile();
   AutofillProfileDeepChange change(AutofillProfileChange::REMOVE, *profile);
   if (!ProfileChangesAreOngoing(guid)) {
     database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
-        guid, AutofillProfile::Source::kLocalOrSyncable);
+        guid, profile->source());
     change.set_is_ongoing_on_background();
   }
   ongoing_profile_changes_[guid].push_back(std::move(change));
@@ -2286,14 +2368,16 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       return;
     }
     database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
-        guid, AutofillProfile::Source::kLocalOrSyncable);
+        guid, existing_profile->source());
     change.set_is_ongoing_on_background();
     return;
   }
 
   if (change_type == AutofillProfileChange::ADD) {
+    const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
+        GetProfileStorage(profile.source());
     if (!change.enforced() &&
-        (profile_exists || FindByContents(web_profiles_, profile))) {
+        (profile_exists || FindByContents(profiles, profile))) {
       OnProfileChangeDone(guid);
       return;
     }
@@ -2342,7 +2426,9 @@ void PersonalDataManager::ClearOnGoingProfileChanges() {
 }
 
 bool PersonalDataManager::HasPendingQueries() {
-  return pending_profiles_query_ != 0 || pending_creditcards_query_ != 0 ||
+  return pending_local_profiles_query_ != 0 ||
+         pending_account_profiles_query_ != 0 ||
+         pending_creditcards_query_ != 0 ||
          pending_server_profiles_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||

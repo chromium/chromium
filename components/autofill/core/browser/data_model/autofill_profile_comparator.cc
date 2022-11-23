@@ -845,7 +845,10 @@ std::string AutofillProfileComparator::MergeProfile(
   // one preserves the validity of credit card's billing address reference.
   AutofillProfileComparator comparator(app_locale);
   for (auto& existing_profile : existing_profile_copies) {
+    // Since duplicates across sources can exist, we need to make sure that we
+    // don't merge `new_profile` into a profile of a different source.
     if (!matching_profile_found &&
+        new_profile.source() == existing_profile.source() &&
         comparator.AreMergeable(new_profile, existing_profile) &&
         existing_profile.SaveAdditionalInfo(new_profile, app_locale)) {
       // Unverified profiles should always be updated with the newer data,

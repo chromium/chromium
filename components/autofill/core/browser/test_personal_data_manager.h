@@ -21,7 +21,8 @@
 
 namespace autofill {
 
-// A simplistic PersonalDataManager used for testing.
+// A simplistic PersonalDataManager used for testing. It doesn't load profiles
+// from AutofillTable or update them there.
 class TestPersonalDataManager : public PersonalDataManager {
  public:
   TestPersonalDataManager();
@@ -57,6 +58,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   void AddFullServerCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   void SetProfiles(std::vector<AutofillProfile>* profiles) override;
+  bool SetProfilesFromSource(base::span<const AutofillProfile> new_profiles,
+                             AutofillProfile::Source source) override;
   void LoadProfiles() override;
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
@@ -79,7 +82,7 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Unique to TestPersonalDataManager:
 
-  // Clears |web_profiles_|.
+  // Clears `web_profiles_` and `account_profiles_`.
   void ClearProfiles();
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
