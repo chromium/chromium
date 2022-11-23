@@ -3583,7 +3583,8 @@ Vector<String> Internals::getCSSPropertyLonghands() const {
   Vector<String> result;
   for (CSSPropertyID property : CSSPropertyIDList()) {
     const CSSProperty& property_class = CSSProperty::Get(property);
-    if (property_class.IsLonghand()) {
+    if (property_class.IsWebExposed(document_->GetExecutionContext()) &&
+        property_class.IsLonghand()) {
       result.push_back(property_class.GetPropertyNameString());
     }
   }
@@ -3594,7 +3595,8 @@ Vector<String> Internals::getCSSPropertyShorthands() const {
   Vector<String> result;
   for (CSSPropertyID property : CSSPropertyIDList()) {
     const CSSProperty& property_class = CSSProperty::Get(property);
-    if (property_class.IsShorthand()) {
+    if (property_class.IsWebExposed(document_->GetExecutionContext()) &&
+        property_class.IsShorthand()) {
       result.push_back(property_class.GetPropertyNameString());
     }
   }
@@ -3605,8 +3607,11 @@ Vector<String> Internals::getCSSPropertyAliases() const {
   Vector<String> result;
   for (CSSPropertyID alias : kCSSPropertyAliasList) {
     DCHECK(IsPropertyAlias(alias));
-    result.push_back(CSSUnresolvedProperty::GetAliasProperty(alias)
-                         ->GetPropertyNameString());
+    const CSSUnresolvedProperty* property_class =
+        CSSUnresolvedProperty::GetAliasProperty(alias);
+    if (property_class->IsWebExposed(document_->GetExecutionContext())) {
+      result.push_back(property_class->GetPropertyNameString());
+    }
   }
   return result;
 }

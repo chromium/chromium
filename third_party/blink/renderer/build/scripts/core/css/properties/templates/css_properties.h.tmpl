@@ -76,6 +76,11 @@ class {{class_name}} final : public {{property.superclass}} {
   {% if not property.known_exposed %}
   CSSExposure Exposure(const ExecutionContext*) const override;
   {% endif %}
+  {% if property.alternative %}
+  CSSPropertyID GetAlternative() const override {
+    return CSSPropertyID::{{property.alternative.enum_key}};
+  }
+  {% endif %}
   {% if not is_alias %}
   {% if not property.affected_by_all %}
   bool IsAffectedByAll() const override { return false; }

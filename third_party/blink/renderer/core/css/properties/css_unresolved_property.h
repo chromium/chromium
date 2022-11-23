@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_UNRESOLVED_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_UNRESOLVED_PROPERTY_H_
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/css_exposure.h"
@@ -52,6 +53,10 @@ class CORE_EXPORT CSSUnresolvedProperty {
   WTF::String GetPropertyNameString() const {
     // We share the StringImpl with the AtomicStrings.
     return GetPropertyNameAtomicString().GetString();
+  }
+  // See documentation near "alternative_of" in css_properties.json5.
+  virtual CSSPropertyID GetAlternative() const {
+    return CSSPropertyID::kInvalid;
   }
 
  protected:

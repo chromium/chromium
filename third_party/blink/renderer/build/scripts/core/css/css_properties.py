@@ -76,8 +76,6 @@ def validate_property(prop, props_by_name):
     assert not prop.valid_for_formatted_text_run or prop.is_longhand, \
         'Only longhands can be valid_for_formatted_text_run [%s]' % name
     if prop.alias_for:
-        assert not prop.runtime_flag, \
-            'Runtime flags are not supported for aliases [%s]' % name
         assert not prop.is_internal, \
             'Internal aliases not supported [%s]' % name
     assert not prop.mutable or prop.field_template == 'monotonic_flag',\
@@ -159,7 +157,10 @@ class PropertyBase(object):
     @property
     def known_exposed(self):
         """True if the property is unconditionally web-exposed."""
-        return not self.is_internal and not self.runtime_flag
+        return not self.is_internal \
+            and not self.runtime_flag \
+            and not self.alternative
+
 
 def generate_property_field(default):
     # Must use 'default_factory' rather than 'default' for list/dict.
@@ -187,6 +188,7 @@ def generate_property_class(parameters):
         'custom_copy': False,
         'mutable': False,
         'name': None,
+        'alternative': None,
         'visited_property': None,
     }
 
@@ -324,6 +326,14 @@ class CSSProperties(object):
         self.expand_aliases()
         self._properties_including_aliases = self._longhands + \
             self._shorthands + self._aliases
+        self._properties_with_alternatives = list(
+            filter(lambda p: p.alternative,
+                   self._properties_including_aliases))
+
+    def get_property(self, name):
+        assert name in self._properties_by_name, \
+            'No property with that name [%s]' % name
+        return self._properties_by_name[name]
 
     def set_derived_visited_attributes(self, property_):
         if not property_.visited_property_for:
@@ -347,6 +357,16 @@ class CSSProperties(object):
         property_.surrogate_for = self._properties_by_name[
             property_.surrogate_for]
 
+    def set_derived_alternative_attributes(self, property_):
+        if not property_.alternative_of:
+            return
+        main_property = self.get_property(property_.alternative_of)
+        # Upgrade 'alternative_of' to a property reference.
+        property_.alternative_of = main_property
+        assert not main_property.alternative, \
+            'A property may not have multiple alternatives'
+        main_property.alternative = property_
+
     def expand_aliases(self):
         for i, alias in enumerate(self._aliases):
             aliased_property = self._properties_by_id[id_for_css_property(
@@ -355,6 +375,8 @@ class CSSProperties(object):
             updated_alias = copy.deepcopy(aliased_property)
             updated_alias.name = alias.name
             updated_alias.alias_for = alias.alias_for
+            updated_alias.alternative_of = alias.alternative_of
+            updated_alias.alternative = alias.alternative
             updated_alias.aliased_property = aliased_property.name.to_upper_camel_case(
             )
             updated_alias.property_id = id_for_css_property_alias(alias.name)
@@ -366,6 +388,18 @@ class CSSProperties(object):
             updated_alias.namespace_group = \
                 'Shorthand' if aliased_property.longhands else 'Longhand'
             self._aliases[i] = updated_alias
+
+        # The above loop produces an "updated" alias for each (incoming) alias.
+        # The alternative_of/alternative references must be updated to point to
+        # the respective "updated" aliases.
+        updated_aliases_by_name = {a.name: a for a in self._aliases}
+        for alias in self._aliases:
+            if alias.alternative_of:
+                alias.alternative_of = updated_aliases_by_name[
+                    alias.alternative_of.name]
+            if alias.alternative:
+                alias.alternative = updated_aliases_by_name[
+                    alias.alternative.name]
 
     def set_derived_attributes(self, property_):
         """Set new attributes on 'property_', based on existing attribute values
@@ -497,6 +531,7 @@ class CSSProperties(object):
 
         self.set_derived_visited_attributes(property_)
         self.set_derived_surrogate_attributes(property_)
+        self.set_derived_alternative_attributes(property_)
 
     @property
     def default_parameters(self):
@@ -563,6 +598,22 @@ class CSSProperties(object):
     @property
     def properties_including_aliases(self):
         return self._properties_including_aliases
+
+    @property
+    def properties_with_alternatives(self):
+        """Properties that have another property referencing it with 'alternative_of'."""
+        return self._properties_with_alternatives
+
+    @property
+    def gperf_properties(self):
+        """The CSS properties that should be passed to gperf.
+
+        This excludes properties with 'alternative_of' set, because such properties
+        have the same web-facing name as the main property.
+        """
+        non_alternative = lambda p: not p.alternative_of
+        return list(filter(non_alternative,
+                           self._properties_including_aliases))
 
     @property
     def first_property_id(self):

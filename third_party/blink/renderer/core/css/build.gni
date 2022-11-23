@@ -712,6 +712,7 @@ blink_core_tests_css = [
   "css_paint_value_test.cc",
   "css_primitive_value_test.cc",
   "css_property_name_test.cc",
+  "css_property_names_test.cc",
   "css_property_value_set_test.cc",
   "css_ratio_value_test.cc",
   "css_revert_layer_value_test.cc",

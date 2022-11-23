@@ -2256,6 +2256,7 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll() {
 bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kAnimation:
+    case CSSPropertyID::kAlternativeAnimation:
     case CSSPropertyID::kAnimationDelay:
     case CSSPropertyID::kAnimationDelayEnd:
     case CSSPropertyID::kAnimationDelayStart:

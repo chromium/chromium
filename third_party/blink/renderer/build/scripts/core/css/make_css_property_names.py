@@ -78,14 +78,17 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
                 property_names.append(name)
                 current_offset += len(name) + 1
 
+        # This is the input to gperf.
         css_name_and_enum_pairs = [
             (property_.name.original,
-             'static_cast<int>(CSSPropertyID::' + property_.enum_key + ')')
-            for property_ in self._css_properties.properties_including_aliases
+             f'static_cast<int>(CSSPropertyID::{property_.enum_key})')
+            for property_ in self._css_properties.gperf_properties
         ]
 
-        property_keys = [
-            property_.enum_key
+        # Variants use the same use-counter as the corresponding main property.
+        css_sample_id_pairs = [
+            (property_.enum_key, (property_.alternative_of
+                                  or property_).enum_key)
             for property_ in self._css_properties.properties_including_aliases
         ]
 
@@ -98,8 +101,10 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             'CSSPropertyNames',
             'file_basename':
             self.file_basename,
-            'property_keys':
-            property_keys,
+            'properties_with_alternatives':
+            self._css_properties.properties_with_alternatives,
+            'css_sample_id_pairs':
+            css_sample_id_pairs,
             'property_names':
             property_names,
             'property_offsets':

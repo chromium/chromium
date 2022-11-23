@@ -15,6 +15,29 @@
     alias_for: {
     },
 
+    // - alternative_of: "other-property"
+    //
+    // Makes the the property an "alternative" of another property.
+    // An alternative property has a separate CSSProperty class which (based on
+    // runtime flags) is used internally in place of the main CSSProperty class.
+    // This makes it possible to e.g. switch a property definition from a
+    // longhand to a shorthand at runtime.
+    //
+    // When parsing text (e.g. "animation") into a CSSPropertyID, the
+    // alternative will be chosen if it is enabled. Otherwise, the main
+    // property will be chosen.
+    //
+    // A main property may only have a single alternative property. It is
+    // however possible to have an alternative of an alternative, in which case
+    // the chain is followed. In other words, we choose the "innermost"
+    // alternative that's enabled.
+    //
+    // Note that an alternative property ignores any runtime_flag on the main
+    // property.
+    alternative_of: {
+      valid_type: "str",
+    },
+
     // - longhands: ["property", "other-property"]
     // The property is a shorthand for several other properties.
     longhands: {
@@ -6462,11 +6485,26 @@
       longhands: [
         "animation-duration", "animation-timing-function", "animation-delay",
         "animation-iteration-count", "animation-direction",
+        "animation-fill-mode", "animation-play-state", "animation-name"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_keyframe: false,
+    },
+    {
+      // Variant of the "animation" shorthand which includes new longhands from
+      // Scroll-Linked Animations.
+      // https://drafts.csswg.org/scroll-animations-1/
+      name: "-alternative-animation",
+      alternative_of: "animation",
+      longhands: [
+        "animation-duration", "animation-timing-function", "animation-delay",
+        "animation-iteration-count", "animation-direction",
         "animation-fill-mode", "animation-play-state", "animation-name",
         "animation-timeline"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
+      runtime_flag: 'CSSScrollTimeline',
     },
     {
       name: "background",
@@ -7557,6 +7595,18 @@
     {
       name: "-webkit-animation",
       alias_for: "animation",
+    },
+    {
+      // Since "animation" has an alternative property, "-webkit-animation"
+      // also needs to have an alternative property that is an alias of
+      // animation's alternative property. Unfortunately we can't just resolve
+      // -webkit-animation directly to animation's alternative, because we have
+      // to remember the -webkit-ness of the property to enable legacy parsing
+      // behavior. (See CSSParserLocalContext::UseAliasParsing).
+      name: "-webkit-alternative-animation",
+      alias_for: "-alternative-animation",
+      alternative_of: "-webkit-animation",
+      runtime_flag: "CSSScrollTimeline",
     },
     {
       name: "-webkit-animation-delay",

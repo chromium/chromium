@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include <cstring>
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -201,6 +204,83 @@ TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
   EXPECT_FALSE(property.IsWebExposed());
   EXPECT_FALSE(property.IsUAExposed());
   EXPECT_EQ(CSSExposure::kNone, property.Exposure());
+}
+
+TEST_F(CSSPropertyTest, AlternativePropertyData) {
+  for (CSSPropertyID property_id : CSSPropertyIDList()) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    if (CSSPropertyID alternative_id = property.GetAlternative();
+        alternative_id != CSSPropertyID::kInvalid) {
+      SCOPED_TRACE(property.GetPropertyName());
+
+      const CSSProperty& alternative = CSSProperty::Get(alternative_id);
+
+      // The web-facing names of a alternative must be equal to that of the main
+      // property.
+      EXPECT_EQ(property.GetPropertyNameAtomicString(),
+                alternative.GetPropertyNameAtomicString());
+      EXPECT_EQ(property.GetPropertyNameString(),
+                alternative.GetPropertyNameString());
+      EXPECT_EQ(std::strcmp(property.GetPropertyName(),
+                            alternative.GetPropertyName()),
+                0);
+      EXPECT_EQ(std::strcmp(property.GetJSPropertyName(),
+                            alternative.GetJSPropertyName()),
+                0);
+
+      // Alternative properties should should also use the same CSSSampleId.
+      EXPECT_EQ(GetCSSSampleId(property_id), GetCSSSampleId(alternative_id));
+    }
+  }
+}
+
+TEST_F(CSSPropertyTest, AlternativePropertyExposure) {
+  for (CSSPropertyID property_id : CSSPropertyIDList()) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    if (CSSPropertyID alternative_id = property.GetAlternative();
+        alternative_id != CSSPropertyID::kInvalid) {
+      SCOPED_TRACE(property.GetPropertyName());
+
+      const CSSProperty& alternative = CSSProperty::Get(alternative_id);
+
+      bool property_exposed = property.Exposure() != CSSExposure::kNone;
+      bool alternative_exposed = alternative.Exposure() != CSSExposure::kNone;
+
+      // If the alternative is exposed, the main property can not be exposed.
+      EXPECT_TRUE(alternative_exposed ? !property_exposed : true);
+    }
+  }
+}
+
+TEST_F(CSSPropertyTest, AlternativePropertySingle) {
+  CSSBitset seen_properties;
+
+  for (CSSPropertyID property_id : CSSPropertyIDList()) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    if (property.GetAlternative() != CSSPropertyID::kInvalid) {
+      SCOPED_TRACE(property.GetPropertyName());
+
+      // A alternative is only pointed to from a single property.
+      ASSERT_FALSE(seen_properties.Has(property_id));
+      seen_properties.Set(property_id);
+    }
+  }
+}
+
+TEST_F(CSSPropertyTest, AlternativePropertyCycle) {
+  for (CSSPropertyID property_id : CSSPropertyIDList()) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    SCOPED_TRACE(property.GetPropertyName());
+
+    // Verify that alternative properties aren't cyclic.
+    CSSBitset seen_properties;
+    for (CSSPropertyID current_id = property_id;
+         current_id != CSSPropertyID::kInvalid;
+         current_id = CSSProperty::Get(current_id).GetAlternative()) {
+      ASSERT_FALSE(seen_properties.Has(current_id));
+      seen_properties.Set(current_id);
+    }
+  }
 }
 
 }  // namespace blink

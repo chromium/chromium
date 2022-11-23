@@ -74,15 +74,12 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
   }
 }
 
-}  // namespace
-
-bool Animation::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const StylePropertyShorthand shorthand = animationShorthand();
+bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
+                             bool important,
+                             CSSParserTokenRange& range,
+                             const CSSParserContext& context,
+                             const CSSParserLocalContext& local_context,
+                             HeapVector<CSSPropertyValue, 64>& properties) {
   const unsigned longhand_count = shorthand.length();
 
   HeapVector<Member<CSSValueList>, css_parsing_utils::kMaxNumAnimationLonghands>
@@ -102,11 +99,9 @@ bool Animation::ParseShorthand(
   return range.AtEnd();
 }
 
-const CSSValue* Animation::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  const CSSAnimationData* animation_data = style.Animations();
+const CSSValue* CSSValueFromComputedAnimation(
+    const StylePropertyShorthand& shorthand,
+    const CSSAnimationData* animation_data) {
   if (animation_data) {
     CSSValueList* animations_list = CSSValueList::CreateCommaSeparated();
     for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
@@ -132,7 +127,9 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
       // https://drafts.csswg.org/cssom/#serializing-css-values
       if (CSSAnimationData::InitialTimeline() !=
           animation_data->GetTimeline(i)) {
-        DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+        DCHECK_EQ(shorthand.length(), 9u);
+        DCHECK_EQ(shorthand.properties()[8]->PropertyID(),
+                  CSSPropertyID::kAnimationTimeline);
         list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
             animation_data->GetTimeline(i)));
       }
@@ -148,8 +145,8 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
       CSSAnimationData::InitialDuration()));
   list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
       CSSAnimationData::InitialTimingFunction()));
-  list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
-      CSSAnimationData::InitialDelay()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
+      CSSAnimationData::InitialDelayStart()));
   list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
       CSSAnimationData::InitialIterationCount()));
   list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
@@ -159,6 +156,44 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
   list->Append(*ComputedStyleUtils::ValueForAnimationPlayState(
       CSSAnimationData::InitialPlayState()));
   return list;
+}
+
+}  // namespace
+
+bool Animation::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseAnimationShorthand(animationShorthand(), important, range,
+                                 context, local_context, properties);
+}
+
+const CSSValue* Animation::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSValueFromComputedAnimation(animationShorthand(),
+                                       style.Animations());
+}
+
+bool AlternativeAnimation::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseAnimationShorthand(alternativeAnimationShorthand(), important,
+                                 range, context, local_context, properties);
+}
+
+const CSSValue* AlternativeAnimation::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSValueFromComputedAnimation(alternativeAnimationShorthand(),
+                                       style.Animations());
 }
 
 bool Background::ParseShorthand(

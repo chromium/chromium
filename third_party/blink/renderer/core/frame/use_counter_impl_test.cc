@@ -76,6 +76,33 @@ class UseCounterImplTest : public testing::Test {
     return CSSProperty::Get(property).IsInternal();
   }
 
+  // Returns all alternative properties. In other words, a set of of all
+  // properties marked with 'alternative_of' in css_properties.json5.
+  //
+  // This is useful for checking whether or not a given CSSPropertyID is an
+  // an alternative property.
+  HashSet<CSSPropertyID> GetAlternatives() const {
+    HashSet<CSSPropertyID> alternatives;
+
+    for (CSSPropertyID property : CSSPropertyIDList()) {
+      if (CSSPropertyID alternative_id =
+              CSSUnresolvedProperty::Get(property).GetAlternative();
+          alternative_id != CSSPropertyID::kInvalid) {
+        alternatives.insert(alternative_id);
+      }
+    }
+
+    for (CSSPropertyID property : kCSSPropertyAliasList) {
+      if (CSSPropertyID alternative_id =
+              CSSUnresolvedProperty::Get(property).GetAlternative();
+          alternative_id != CSSPropertyID::kInvalid) {
+        alternatives.insert(alternative_id);
+      }
+    }
+
+    return alternatives;
+  }
+
  protected:
   LocalFrame* GetFrame() { return &dummy_->GetFrame(); }
   void SetIsViewSource() { dummy_->GetDocument().SetIsViewSource(true); }
@@ -478,14 +505,26 @@ TEST_F(UseCounterImplTest, CSSSelectorHostContextInSnapshotProfile) {
 TEST_F(UseCounterImplTest, UniqueCSSSampleIds) {
   HashSet<int> ids;
 
+  HashSet<CSSPropertyID> alternatives = GetAlternatives();
+
   for (CSSPropertyID property : CSSPropertyIDList()) {
     if (IsInternal(property))
       continue;
+    if (alternatives.Contains(property)) {
+      // Alternative properties should use the same CSSSampleId as the
+      // corresponding main property.
+      continue;
+    }
     EXPECT_FALSE(ids.Contains(ToSampleId(property)));
     ids.insert(ToSampleId(property));
   }
 
   for (CSSPropertyID property : kCSSPropertyAliasList) {
+    if (alternatives.Contains(property)) {
+      // Alternative properties should use the same CSSSampleId as the
+      // corresponding main property.
+      continue;
+    }
     EXPECT_FALSE(ids.Contains(ToSampleId(property)));
     ids.insert(ToSampleId(property));
   }
