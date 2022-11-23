@@ -248,6 +248,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runFingerprintAliveRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runFingerprintAliveRoutine(),
+            'Error: API chrome.os.diagnostics.runFingerprintAliveRoutine ' +
+                'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runGatewayCanBePingedRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runGatewayCanBePingedRoutine(),
@@ -378,6 +386,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
         crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
         crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
+        crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -410,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "gateway_can_be_pinged",
               "smartctl_check",
               "sensitive_sensor",
-              "nvme_self_test"
+              "nvme_self_test",
+              "fingerprint_alive"
             ]
           }, response);
         chrome.test.succeed();
@@ -1126,6 +1136,46 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runDiskReadRoutine() {
         const response =
           await chrome.os.diagnostics.runDnsResolverPresentRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunFingerprintAliveRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunFingerprintAliveRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runFingerprintAliveRoutine() {
+        const response =
+          await chrome.os.diagnostics.runFingerprintAliveRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

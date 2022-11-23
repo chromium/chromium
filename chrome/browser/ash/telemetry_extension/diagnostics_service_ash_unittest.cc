@@ -60,29 +60,29 @@ class DiagnosticsServiceAshTest : public testing::Test {
 
 TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
   // Configure FakeCrosHealthd.
-  {
-    cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
-        cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck,
-        cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
-    });
-  }
+  cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
+      cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive,
+  });
 
   base::test::TestFuture<
       const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>&>
@@ -112,7 +112,9 @@ TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
           crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength,
           crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged,
           crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
-          crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor));
+          crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
+          crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
+          crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive));
 }
 
 TEST_F(DiagnosticsServiceAshTest, GetRoutineUpdateSuccess) {
@@ -302,6 +304,20 @@ TEST_F(DiagnosticsServiceAshTest, RunDnsResolverPresentRoutineSuccess) {
   const auto& result = future.Get();
   ValidateResponse(
       result, cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent);
+}
+
+TEST_F(DiagnosticsServiceAshTest, RunFingerprintAliveRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunFingerprintAliveRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(
+      result, cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive);
 }
 
 TEST_F(DiagnosticsServiceAshTest, RunFloatingPointAccuracyRoutineSuccess) {

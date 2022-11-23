@@ -16,7 +16,7 @@ module crosapi.mojom;
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next ID: 22
+// Next ID: 23
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -344,11 +344,23 @@ interface DiagnosticsService {
   //                routine.
   RunSensitiveSensorRoutine@21()
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the FingerprintAlive routine is created and started on the
+  // platform. This routine checks whether the fingerprint module is alive or
+  // not. Alive means the sensor is responsive and the firmware version is RW.
+  // The availability of this routine can be determined by checking that
+  // kFingerprintAlive is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunFingerprintAliveRoutine@22()
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next ID: 21
+// Next ID: 22
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -372,6 +384,7 @@ enum DiagnosticsRoutineEnum {
   kGatewayCanBePinged = 18,
   kDnsResolverPresent = 19,
   kSensitiveSensor = 20,
+  kFingerprintAlive = 21,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

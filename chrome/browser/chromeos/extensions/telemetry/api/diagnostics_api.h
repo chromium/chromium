@@ -327,6 +327,25 @@ class OsDiagnosticsRunDnsResolverPresentRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunFingerprintAliveRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runFingerprintAliveRoutine",
+                             OS_DIAGNOSTICS_RUNFINGERPRINTALIVEROUTINE)
+
+  OsDiagnosticsRunFingerprintAliveRoutineFunction();
+  OsDiagnosticsRunFingerprintAliveRoutineFunction(
+      const OsDiagnosticsRunFingerprintAliveRoutineFunction&) = delete;
+  OsDiagnosticsRunFingerprintAliveRoutineFunction& operator=(
+      const OsDiagnosticsRunFingerprintAliveRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunFingerprintAliveRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunGatewayCanBePingedRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

@@ -139,6 +139,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kFingerprintAlive, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_FINGERPRINT_ALIVE);
+  }
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {

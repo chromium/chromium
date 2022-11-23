@@ -70,6 +70,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kSignalStrength);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kSensitiveSensor),
             crosapi::DiagnosticsRoutineEnum::kSensitiveSensor);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kFingerprintAlive),
+            crosapi::DiagnosticsRoutineEnum::kFingerprintAlive);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

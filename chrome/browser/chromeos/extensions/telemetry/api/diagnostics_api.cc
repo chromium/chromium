@@ -415,6 +415,20 @@ void OsDiagnosticsRunGatewayCanBePingedRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunGatewayCanBePingedRoutine(std::move(cb));
 }
 
+// OsDiagnosticsRunFingerprintAliveRoutineFunction -----------------------------
+
+OsDiagnosticsRunFingerprintAliveRoutineFunction::
+    OsDiagnosticsRunFingerprintAliveRoutineFunction() = default;
+OsDiagnosticsRunFingerprintAliveRoutineFunction::
+    ~OsDiagnosticsRunFingerprintAliveRoutineFunction() = default;
+
+void OsDiagnosticsRunFingerprintAliveRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunFingerprintAliveRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunLanConnectivityRoutineFunction ------------------------------
 
 OsDiagnosticsRunLanConnectivityRoutineFunction::

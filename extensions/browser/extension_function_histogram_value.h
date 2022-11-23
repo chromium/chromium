@@ -1798,6 +1798,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_STARTFRAMECOUNTING = 1735,
   AUTOTESTPRIVATE_STOPFRAMECOUNTING = 1736,
   FEEDBACKPRIVATE_OPENFEEDBACK = 1737,
+  OS_DIAGNOSTICS_RUNFINGERPRINTALIVEROUTINE = 1738,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

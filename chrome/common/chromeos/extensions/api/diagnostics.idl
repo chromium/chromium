@@ -28,7 +28,8 @@ namespace os.diagnostics {
     dns_resolver_present,
     gateway_can_be_pinged,
     sensitive_sensor,
-    nvme_self_test
+    nvme_self_test,
+    fingerprint_alive
   };
 
   enum RoutineStatus {
@@ -179,6 +180,8 @@ namespace os.diagnostics {
     [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runFingerprintAliveRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
 

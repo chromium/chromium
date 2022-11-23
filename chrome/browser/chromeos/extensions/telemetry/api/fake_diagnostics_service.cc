@@ -215,6 +215,17 @@ void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
+void FakeDiagnosticsService::RunFingerprintAliveRoutine(
+    RunFingerprintAliveRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
+}
+
 void FakeDiagnosticsService::RunGatewayCanBePingedRoutine(
     RunGatewayCanBePingedRoutineCallback callback) {
   actual_passed_parameters_.clear();

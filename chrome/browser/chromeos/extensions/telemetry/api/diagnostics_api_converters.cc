@@ -99,6 +99,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kNvmeSelfTest:
       *out = RoutineType::ROUTINE_TYPE_NVME_SELF_TEST;
       return true;
+    case MojoRoutineType::kFingerprintAlive:
+      *out = RoutineType::ROUTINE_TYPE_FINGERPRINT_ALIVE;
+      return true;
     default:
       return false;
   }

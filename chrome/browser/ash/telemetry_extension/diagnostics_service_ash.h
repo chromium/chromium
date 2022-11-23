@@ -83,6 +83,8 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       RunDnsResolutionRoutineCallback callback) override;
   void RunDnsResolverPresentRoutine(
       RunDnsResolverPresentRoutineCallback callback) override;
+  void RunFingerprintAliveRoutine(
+      RunFingerprintAliveRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(
       uint32_t length_seconds,
       RunFloatingPointAccuracyRoutineCallback callback) override;

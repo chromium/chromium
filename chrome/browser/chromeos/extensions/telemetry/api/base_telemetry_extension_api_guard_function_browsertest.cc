@@ -296,6 +296,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runFingerprintAliveRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runFingerprintAliveRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runFingerprintAliveRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runGatewayCanBePingedRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runGatewayCanBePingedRoutine(),

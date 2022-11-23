@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -114,6 +113,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor:
       return crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive;
     default:
       return absl::nullopt;
   }
