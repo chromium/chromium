@@ -22,7 +22,7 @@
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
-#include "components/cast_receiver/renderer/public/url_rewrite_rules_provider.h"
+#include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -85,7 +85,9 @@ constexpr base::TimeDelta kAudioRendererStartingCapacityEncrypted =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 CastContentRendererClient::CastContentRendererClient()
-    : supported_profiles_(
+    : cast_receiver_mixins_(cast_receiver::ContentRendererClientMixins::Create(
+          base::BindRepeating(&IsCorsExemptHeader))),
+      supported_profiles_(
           std::make_unique<media::SupportedCodecProfileLevelsMemo>()),
       activity_url_filter_manager_(
           std::make_unique<CastActivityUrlFilterManager>()) {
@@ -138,6 +140,8 @@ void CastContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   DCHECK(render_frame);
 
+  cast_receiver_mixins_->RenderFrameCreated(*render_frame);
+
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   if (render_frame->IsMainFrame()) {
     main_frame_feature_manager_on_associated_interface_ =
@@ -145,11 +149,6 @@ void CastContentRendererClient::RenderFrameCreated(
   } else {
     new FeatureManagerOnAssociatedInterface(render_frame);
   }
-  new media_control::MediaPlaybackOptions(render_frame);
-
-  // Add script injection support to the RenderFrame, used by Cast platform
-  // APIs. The injector's lifetime is bound to the RenderFrame's lifetime.
-  new on_load_script_injector::OnLoadScriptInjector(render_frame);
 
   if (!app_media_capabilities_observer_receiver_.is_bound()) {
     mojo::Remote<mojom::ApplicationMediaCapabilities> app_media_capabilities;
@@ -160,16 +159,6 @@ void CastContentRendererClient::RenderFrameCreated(
   }
 
   activity_url_filter_manager_->OnRenderFrameCreated(render_frame);
-
-  // |base::Unretained| is safe here since the callback is triggered before the
-  // destruction of UrlRewriteRulesProvider by which point
-  // CastContentRendererClient should be alive.
-  url_rewrite_rules_providers_.emplace(
-      render_frame->GetRoutingID(),
-      std::make_unique<cast_receiver::UrlRewriteRulesProvider>(
-          render_frame,
-          base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
-                         base::Unretained(this))));
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
@@ -290,7 +279,8 @@ bool CastContentRendererClient::DeferMediaLoad(
     content::RenderFrame* render_frame,
     bool render_frame_has_played_media_before,
     base::OnceClosure closure) {
-  return RunWhenInForeground(render_frame, std::move(closure));
+  return cast_receiver_mixins_->DeferMediaLoad(*render_frame,
+                                               std::move(closure));
 }
 
 std::unique_ptr<::media::Demuxer>
@@ -305,15 +295,6 @@ CastContentRendererClient::OverrideDemuxerForUrl(
         ::media::remoting::ReceiverController::GetInstance(), task_runner);
   }
   return nullptr;
-}
-
-bool CastContentRendererClient::RunWhenInForeground(
-    content::RenderFrame* render_frame,
-    base::OnceClosure closure) {
-  auto* playback_options =
-      media_control::MediaPlaybackOptions::Get(render_frame);
-  DCHECK(playback_options);
-  return playback_options->RunWhenInForeground(std::move(closure));
 }
 
 bool CastContentRendererClient::IsIdleMediaSuspendEnabled() {
@@ -343,9 +324,10 @@ CastContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
-  return std::make_unique<CastURLLoaderThrottleProvider>(
-      type, activity_url_filter_manager(), this,
-      base::BindRepeating(&IsCorsExemptHeader));
+  auto throttle_provider = std::make_unique<CastURLLoaderThrottleProvider>(
+      type, activity_url_filter_manager());
+  return cast_receiver_mixins_->ExtendURLLoaderThrottleProvider(
+      std::move(throttle_provider));
 }
 
 absl::optional<::media::AudioRendererAlgorithmParameters>
@@ -365,28 +347,6 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
 #else
   return absl::nullopt;
 #endif
-}
-
-scoped_refptr<url_rewrite::UrlRequestRewriteRules>
-CastContentRendererClient::GetUrlRequestRewriteRules(
-    int render_frame_id) const {
-  auto it = url_rewrite_rules_providers_.find(render_frame_id);
-  if (it == url_rewrite_rules_providers_.end()) {
-    LOG(WARNING)
-        << "Can't find the URL rewrite rules provider for render frame: "
-        << render_frame_id;
-    return nullptr;
-  }
-  return it->second->GetCachedRules();
-}
-
-void CastContentRendererClient::OnRenderFrameRemoved(int render_frame_id) {
-  size_t result = url_rewrite_rules_providers_.erase(render_frame_id);
-  if (result != 1U) {
-    LOG(WARNING)
-        << "Can't find the URL rewrite rules provider for render frame: "
-        << render_frame_id;
-  }
 }
 
 }  // namespace shell

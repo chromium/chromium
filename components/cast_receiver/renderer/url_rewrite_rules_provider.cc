@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_receiver/renderer/public/url_rewrite_rules_provider.h"
+#include "components/cast_receiver/renderer/url_rewrite_rules_provider.h"
 
 #include "base/bind.h"
 #include "content/public/renderer/render_frame.h"

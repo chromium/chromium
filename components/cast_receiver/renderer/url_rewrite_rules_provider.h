@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_
-#define COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_
+#ifndef COMPONENTS_CAST_RECEIVER_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
+#define COMPONENTS_CAST_RECEIVER_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
 
 #include "base/callback.h"
 #include "components/url_rewrite/renderer/url_request_rules_receiver.h"
@@ -45,4 +45,4 @@ class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
 
 }  // namespace cast_receiver
 
-#endif  // COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_
+#endif  // COMPONENTS_CAST_RECEIVER_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
