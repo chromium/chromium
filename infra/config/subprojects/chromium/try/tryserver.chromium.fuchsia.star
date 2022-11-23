@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.fuchsia",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 16,
+    compilator_cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -78,7 +78,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    # TODO(crbug.com/1298110): Set to 16 once compilator bots are moved
+    # TODO (gatong): Remove once we've migrated to n2s
     cores = "8|16",
     # TODO(crbug.com/1298110): Set to True once compilator bots are moved
     ssd = None,
@@ -162,7 +162,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-x64-cast-receiver-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    cores = 16,
+    cores = "8|16",
     ssd = True,
     main_list_view = "try",
     goma_backend = None,

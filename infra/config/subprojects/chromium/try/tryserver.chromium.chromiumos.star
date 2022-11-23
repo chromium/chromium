@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.chromiumos",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 32,
+    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -70,7 +70,8 @@ try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
-    cores = 16,
+    # TODO (gatong): Change to cores = 8 once we've migrated to n2s
+    cores = "8|16",
     goma_backend = None,
 )
 
@@ -247,6 +248,8 @@ try_.compilator_builder(
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
     goma_backend = None,
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "16|32",
 )
 
 try_.orchestrator_builder(
@@ -269,6 +272,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-reclient-compilator",
     builderless = True,
+    cores = 32,
 )
 
 try_.builder(
@@ -300,6 +304,7 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     goma_backend = None,
+    cores = 32,
 )
 
 try_.builder(

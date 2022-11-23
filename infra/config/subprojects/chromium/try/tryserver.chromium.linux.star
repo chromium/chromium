@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.linux",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 16,
+    compilator_cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -226,6 +226,8 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "8|16",
 )
 
 try_.orchestrator_builder(
@@ -271,7 +273,8 @@ try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    cores = 16,
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "8|16",
     ssd = True,
 )
 
@@ -400,6 +403,8 @@ try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "8|16",
 )
 
 try_.builder(
@@ -579,6 +584,8 @@ try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "8|16",
 )
 
 try_.builder(

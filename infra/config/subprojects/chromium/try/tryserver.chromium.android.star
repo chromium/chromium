@@ -13,7 +13,7 @@ load("//project.star", "settings")
 try_.defaults.set(
     builder_group = "tryserver.chromium.android",
     cores = 8,
-    compilator_cores = 32,
+    compilator_cores = 16,
     orchestrator_cores = 4,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
@@ -80,6 +80,8 @@ try_.compilator_builder(
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "16|32",
 )
 
 try_.builder(
@@ -125,6 +127,8 @@ try_.compilator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "16|32",
 )
 
 try_.builder(
@@ -146,9 +150,8 @@ try_.builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
-    # landed
-    cores = 16,
+    # TODO (gatong): Change to cores = 8 once we've migrated to n2s
+    cores = "8|16",
     executable = "recipe:binary_size_trybot",
     goma_backend = None,
     main_list_view = "try",
@@ -468,6 +471,8 @@ try_.compilator_builder(
     check_for_flakiness = True,
     goma_backend = None,
     main_list_view = "try",
+    # TODO (gatong): Remove once we've migrated to n2s
+    cores = "16|32",
 )
 
 try_.builder(
