@@ -36621,17 +36621,6 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Regular User"/>
 </enum>
 
-<enum name="FastCheckoutCacheStateForIsTriggerFormSupported">
-  <summary>
-    Classifies the cache state of the FastCheckout capabilities fetcher at the
-    time of checking whether a form signature on a domain is supported.
-  </summary>
-  <int value="0" label="Cache not available and request ongoing"/>
-  <int value="1" label="Cache available and form signature not supported"/>
-  <int value="2" label="Cache available and form signature supported"/>
-  <int value="3" label="Cache not available and no request made"/>
-</enum>
-
 <enum name="FastCheckoutRunOutcome">
   <summary>Defines possible outcomes of a Fast Checkout run.</summary>
   <int value="0"

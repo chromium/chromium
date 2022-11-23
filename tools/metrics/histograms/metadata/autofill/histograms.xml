@@ -1337,40 +1337,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.FastCheckout.CapabilitiesFetcher.CacheStateForIsTriggerFormSupported"
-    enum="FastCheckoutCacheStateForIsTriggerFormSupported"
-    expires_after="2023-08-15">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    The state of the cache of the Fast Checkout capabilities fetcher at the
-    point of checking whether a given form signature on an origin is supported.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-08-15">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    HTTP response code of fetching a list of available fast checkout scripts.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime"
-    units="ms" expires_after="2023-08-15">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Response time for fetching FastCheckout capabilities for a single domain.
-    The time is recorded for both successful and failed fetches.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.FastCheckout.RunOutcome"
     enum="FastCheckoutRunOutcome" expires_after="2023-04-06">
   <owner>bwolfgang@google.com</owner>
