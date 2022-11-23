@@ -43,6 +43,7 @@ BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);
 BASE_DECLARE_FEATURE(kCCTNewDownloadTab);
 BASE_DECLARE_FEATURE(kCCTPackageNameRecording);
 BASE_DECLARE_FEATURE(kCCTPostMessageAPI);
+BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignals);
 BASE_DECLARE_FEATURE(kCCTRedirectPreconnect);
 BASE_DECLARE_FEATURE(kCCTRemoveRemoteViewIds);

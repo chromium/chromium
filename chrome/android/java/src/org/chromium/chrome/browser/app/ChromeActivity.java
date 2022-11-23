@@ -1000,12 +1000,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return getActivityTab() == null || !getActivityTab().isLoading();
     }
 
+    /**
+     * Allows derived activities to avoid showing the tab when the Activity is shown.
+     */
+    protected boolean shouldShowTabOnActivityShown() {
+        return true;
+    }
+
     private void onActivityShown() {
         maybeRemoveWindowBackground();
 
         Tab tab = getActivityTab();
         if (tab != null) {
-            if (tab.isHidden()) {
+            if (tab.isHidden() && shouldShowTabOnActivityShown()) {
                 tab.show(
                         TabSelectionType.FROM_USER, LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW);
             } else {

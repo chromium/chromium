@@ -382,6 +382,22 @@ public class RedirectHandlerTest {
         Assert.assertTrue(handler.isNavigationChainExpired());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"IntentHandling"})
+    public void testCctPrefetch() {
+        RedirectHandler handler = RedirectHandler.create();
+        handler.setIsPrefetchLoadForIntent(true);
+        handler.updateNewUrlLoading(
+                TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false, false);
+        Assert.assertTrue(handler.getInitialNavigationState().isFromIntent);
+        handler.clear();
+
+        handler.updateNewUrlLoading(
+                TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false, false);
+        Assert.assertFalse(handler.getInitialNavigationState().isFromIntent);
+    }
+
     private static class TestPackageManager extends MockPackageManager {
         @Override
         public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {

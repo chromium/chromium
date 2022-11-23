@@ -20,6 +20,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -28,6 +29,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -126,6 +128,8 @@ public class HiddenTabHolder {
             loadParams.setReferrer(new Referrer(referrer, ReferrerPolicy.DEFAULT));
         }
 
+        loadParams.setTransitionType(PageTransition.LINK | PageTransition.FROM_API);
+        RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
         mSpeculation = new SpeculationParams(session, url, tab, referrer);
         mSpeculation.tab.loadUrl(loadParams);
     }

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        window.location = 'intent://test/#Intent;scheme=externalappscheme;end';
+      }
+    });
+  </script>
+</head>
+<body>
+  Redirect on show.
+</body>
+</html>
