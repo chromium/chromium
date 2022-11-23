@@ -673,6 +673,18 @@
         'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_reclient',
       },
+      'Comparison Linux (reclient vs reclient remote links)(large)': {
+        'build1': 'gpu_tests_release_bot_reclient',
+        'build2': 'gpu_tests_release_bot_remote_links_large_reclient',
+      },
+      'Comparison Linux (reclient vs reclient remote links)(medium)': {
+        'build1': 'gpu_tests_release_bot_reclient',
+        'build2': 'gpu_tests_release_bot_remote_links_medium_reclient',
+      },
+      'Comparison Linux (reclient vs reclient remote links)(small)': {
+        'build1': 'gpu_tests_release_bot_reclient',
+        'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
+      },
       'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient staging untrusted': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
@@ -2768,8 +2780,20 @@
       'gpu_tests', 'release_bot_reclient',
     ],
 
+    'gpu_tests_release_bot_remote_links_large_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_large',
+    ],
+
+    'gpu_tests_release_bot_remote_links_medium_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_medium',
+    ],
+
     'gpu_tests_release_bot_remote_links_reclient': [
       'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links',
+    ],
+
+    'gpu_tests_release_bot_remote_links_small_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_small',
     ],
 
     'gpu_tests_release_bot_x86_minimal_symbols': [
@@ -4760,6 +4784,18 @@
 
     'use_remoteexec_links': {
       'gn_args': 'use_remoteexec_links=true',
+    },
+
+    'use_remoteexec_links_large': {
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_large.cfg"',
+    },
+
+    'use_remoteexec_links_medium': {
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_medium.cfg"',
+    },
+
+    'use_remoteexec_links_small': {
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_small.cfg"',
     },
 
     'v8_enable_debugging_features': {
