@@ -1751,6 +1751,13 @@ component("base") {
       ]
     }
 
+    if (current_cpu == "arm64") {
+      sources += [
+        "profiler/frame_pointer_unwinder.cc",
+        "profiler/frame_pointer_unwinder.h",
+      ]
+    }
+
     if (current_cpu != "arm" && current_cpu != "arm64") {
       # The reached code profiler is only supported on Android arm arch.
       sources -= [ "android/reached_code_profiler.cc" ]
@@ -3639,6 +3646,9 @@ test("base_unittests") {
         "profiler/chrome_unwinder_android_unittest.cc",
         "profiler/chrome_unwinder_android_v2_unittest.cc",
       ]
+    }
+    if (current_cpu == "arm64") {
+      sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
     }
     if (!exclude_unwind_tables &&
         (current_cpu == "arm" || current_cpu == "arm64")) {
