@@ -82,22 +82,23 @@ struct TestHttpRequest : TestHttpHeaders {
 
 struct TestHttpResponse : TestHttpHeaders {
   explicit TestHttpResponse(
-      int32_t response_code = net::HTTP_OK,
+      int32_t http_status_input = net::HTTP_OK,
       int32_t net_error_code_input = 0,
       std::string response_body = "",
       std::vector<std::string> response_header_keys = {},
       std::vector<std::string> response_header_values = {})
       : TestHttpHeaders(response_header_keys, response_header_values),
-        code(response_code),
+        http_status(http_status_input),
         net_error_code(net_error_code_input),
         body(response_body) {}
 
-  int32_t code;
+  int32_t http_status;
   int32_t net_error_code;
   std::string body;
 
   bool operator==(const TestHttpResponse& other) const {
-    return TestHttpHeaders::operator==(other) && code == other.code &&
+    return TestHttpHeaders::operator==(other) &&
+           http_status == other.http_status &&
            net_error_code == other.net_error_code && !body.compare(other.body);
   }
 
@@ -106,7 +107,7 @@ struct TestHttpResponse : TestHttpHeaders {
 };
 
 std::ostream& operator<<(std::ostream& os, const TestHttpResponse& response) {
-  os << "response_code=[" << base::NumberToString(response.code) << "] "
+  os << "http_status=[" << base::NumberToString(response.http_status) << "] "
      << "net_error_code=[" << base::NumberToString(response.net_error_code)
      << "] "
      << "body=[" << response.body << "] "
@@ -119,7 +120,7 @@ class MockResponseDoneCallback {
  public:
   MockResponseDoneCallback() = default;
 
-  void Done(int32_t response_code,
+  void Done(int32_t http_status,
             int32_t net_error_code,
             std::vector<uint8_t>&& response_bytes,
             std::vector<std::string>&& input_response_header_keys,
@@ -127,7 +128,7 @@ class MockResponseDoneCallback {
     EXPECT_FALSE(has_run);
     has_run = true;
     response = TestHttpResponse(
-        response_code, net_error_code,
+        http_status, net_error_code,
         std::string(response_bytes.begin(), response_bytes.end()),
         std::move(input_response_header_keys),
         std::move(input_response_header_values));
@@ -175,10 +176,10 @@ class HttpClientTest : public testing::Test {
           network::URLLoaderCompletionStatus(),
       ResponseProduceFlags flag = ResponseProduceFlags::kResponseDefault) {
     auto head = network::mojom::URLResponseHead::New();
-    if (response.code >= 0) {
+    if (response.http_status >= 0) {
       head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-      head->headers->ReplaceStatusLine("HTTP/1.1 " +
-                                       base::NumberToString(response.code));
+      head->headers->ReplaceStatusLine(
+          "HTTP/1.1 " + base::NumberToString(response.http_status));
 
       for (size_t i = 0; i < response.header_keys.size(); ++i) {
         head->headers->SetHeader(response.header_keys[i],
@@ -291,7 +292,7 @@ TEST_F(HttpClientTest, TestSendDifferentRequestMethod) {
 
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_TRUE(done_callback.has_run);
-    EXPECT_EQ(done_callback.response.code, net::HTTP_OK);
+    EXPECT_EQ(done_callback.response.http_status, net::HTTP_OK);
 
     test_url_loader_factory()->ClearResponses();
   }
@@ -359,19 +360,17 @@ TEST_F(HttpClientTest, TestHttpError) {
        net::HTTP_NOT_FOUND, net::HTTP_INTERNAL_SERVER_ERROR,
        net::HTTP_BAD_GATEWAY, net::HTTP_SERVICE_UNAVAILABLE});
 
-  for (const auto& code : error_codes) {
+  for (const auto& http_status : error_codes) {
     MockResponseDoneCallback done_callback;
     SendRequestAndRespond(
         TestHttpRequest("http://foobar.com/survey"),
-        TestHttpResponse(code, 0, "error_response_data",
+        TestHttpResponse(http_status, 0, "error_response_data",
                          /*response_header_keys*/ {"Foo", "Bar"},
                          /*response_header_values*/ {"foo_value", "bar_value"}),
         network::URLLoaderCompletionStatus(), &done_callback);
 
-    // The expected response should have the code override by network error, and
-    // empty response body, and the same headers.
     TestHttpResponse expected_response =
-        TestHttpResponse(code, net::ERR_HTTP_RESPONSE_CODE_FAILURE, "",
+        TestHttpResponse(http_status, net::ERR_HTTP_RESPONSE_CODE_FAILURE, "",
                          /*response_header_keys*/ {"Foo", "Bar"},
                          /*response_header_values*/ {"foo_value", "bar_value"});
 
@@ -382,8 +381,7 @@ TEST_F(HttpClientTest, TestHttpError) {
   }
 }
 
-// TODO(crbug.com/1378159): Fix and re-enable this test.
-TEST_F(HttpClientTest, DISABLED_TestNetworkError) {
+TEST_F(HttpClientTest, TestNetworkError) {
   std::vector<int32_t> error_codes(
       {net::ERR_CERT_COMMON_NAME_INVALID, net::ERR_CERT_DATE_INVALID,
        net::ERR_CERT_WEAK_KEY, net::ERR_NAME_RESOLUTION_FAILED});
@@ -398,11 +396,11 @@ TEST_F(HttpClientTest, DISABLED_TestNetworkError) {
         network::URLLoaderCompletionStatus(code), &done_callback);
 
     // The expected response should have the code override by network error, and
-    // empty response body, and the same headers.
+    // empty response body, and empty headers.
     TestHttpResponse expected_response =
         TestHttpResponse(0, code, "",
-                         /*response_header_keys*/ {"Foo", "Bar"},
-                         /*response_header_values*/ {"foo_value", "bar_value"});
+                         /*response_header_keys*/ {},
+                         /*response_header_values*/ {});
 
     EXPECT_TRUE(done_callback.has_run);
     EXPECT_EQ(done_callback.response, expected_response);
