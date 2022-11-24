@@ -24,21 +24,17 @@ IdleService::IdleService(Profile* profile)
   DCHECK_EQ(profile_->GetOriginalProfile(), profile_);
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kIdleProfileCloseTimeout,
-      base::BindRepeating(&IdleService::OnIdleProfileCloseTimeoutPrefChanged,
+      prefs::kIdleTimeout,
+      base::BindRepeating(&IdleService::OnIdleTimeoutPrefChanged,
                           base::Unretained(this)));
-  OnIdleProfileCloseTimeoutPrefChanged();
+  OnIdleTimeoutPrefChanged();
 }
 
 IdleService::~IdleService() = default;
 
-void IdleService::OnIdleProfileCloseTimeoutPrefChanged() {
-  int minutes =
-      profile_->GetPrefs()->GetInteger(prefs::kIdleProfileCloseTimeout);
+void IdleService::OnIdleTimeoutPrefChanged() {
+  int minutes = profile_->GetPrefs()->GetInteger(prefs::kIdleTimeout);
   if (minutes > 0) {
-    // TODO(crbug.com/1316551): Validate the policy value (e.g. clamp to a
-    // minimum) in a PolicyHandler, instead of here.
-    minutes = std::max(5, minutes);
     // `is_idle_` will auto-update in 1 second, no need to set it here.
     idle_threshold_ = base::Minutes(minutes);
     if (!polling_service_observation_.IsObserving()) {

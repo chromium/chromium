@@ -20472,7 +20472,7 @@
       }
     ]
   },
-  "IdleProfileCloseTimeout": {
+  "IdleTimeout": {
     "os": [
       "win",
       "linux",
@@ -20482,11 +20482,43 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "IdleProfileCloseTimeout": 5
+          "IdleTimeout": 10,
+          "IdleTimeoutActions": []
         },
         "prefs": {
-          "idle_profile_close_timeout": {
+          "idle_timeout": {
+            "value": 10
+          }
+        }
+      },
+      {
+        "policies": {
+          "IdleTimeout": 1,
+          "IdleTimeoutActions": []
+        },
+        "prefs": {
+          "idle_timeout": {
             "value": 5
+          }
+        }
+      }
+    ]
+  },
+  "IdleTimeoutActions": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleTimeout": 10,
+          "IdleTimeoutActions": ["close_browsers", "show_profile_picker"]
+        },
+        "prefs": {
+          "idle_timeout_actions": {
+            "value": [0, 1]
           }
         }
       }

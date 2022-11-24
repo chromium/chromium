@@ -4,7 +4,13 @@
 
 #include "chrome/browser/enterprise/idle/action_runner.h"
 
+#include <iterator>
+
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_idle {
 
@@ -21,9 +27,12 @@ void ActionRunner::Run() {
 }
 
 ActionRunner::ActionQueue ActionRunner::GetActions() {
-  // TODO(crbug.com/1326685): Un-hardcode this, and use a pref tied to a policy.
-  std::vector<ActionType> actions = {ActionType::kCloseBrowsers,
-                                     ActionType::kShowProfilePicker};
+  std::vector<ActionType> actions;
+  base::ranges::transform(
+      profile_->GetPrefs()->GetList(prefs::kIdleTimeoutActions),
+      std::back_inserter(actions), [](const base::Value& action) {
+        return static_cast<ActionType>(action.GetInt());
+      });
   return action_factory_->Build(actions);
 }
 

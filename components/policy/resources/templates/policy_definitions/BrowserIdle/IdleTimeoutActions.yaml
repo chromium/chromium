@@ -1,0 +1,42 @@
+caption: Actions to run when the computer is idle
+desc: |-
+  List of actions to run when the timeout from the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is reached.
+
+        If the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is unset, this policy has no effect.
+
+        When the timeout from the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is reached, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> runs the actions configured in this policy.
+
+        If this policy is empty or left unset, the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy has no effect.
+
+        Supported actions are:
+
+        '<ph name="CLOSE_BROWSERS_ACTION">close_browsers</ph>': close all browser windows and PWAs for this profile.
+
+        '<ph name="SHOW_PROFILE_PICKER_ACTION">show_profile_picker</ph>': show the Profile Picker window.
+example_value:
+- close_browsers
+- show_profile_picker
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+owners:
+- nicolaso@chromium.org
+- cbe-magic@google.com
+items:
+- caption: Close Browsers
+  name: close_browsers
+  value: close_browsers
+- caption: Show Profile Picker
+  name: show_profile_picker
+  value: show_profile_picker
+schema:
+  items:
+    enum:
+    - close_browsers
+    - show_profile_picker
+    type: string
+  type: array
+tags: []
+type: string-enum-list

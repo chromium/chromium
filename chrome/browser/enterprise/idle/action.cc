@@ -30,8 +30,7 @@ class CloseBrowsersAction : public Action {
   CloseBrowsersAction() : Action(ActionType::kCloseBrowsers) {}
 
   void Run(Profile* profile, Continuation continuation) override {
-    int minutes =
-        profile->GetPrefs()->GetInteger(prefs::kIdleProfileCloseTimeout);
+    int minutes = profile->GetPrefs()->GetInteger(prefs::kIdleTimeout);
     continuation_ = std::move(continuation);
     subscription_ = BrowserCloser::GetInstance()->ShowDialogAndCloseBrowsers(
         profile, base::Minutes(minutes),
@@ -62,6 +61,12 @@ class ShowProfilePickerAction : public Action {
 };
 
 }  // namespace
+
+const ActionTypeMapEntry kActionTypeMap[] = {
+    {"close_browsers", ActionType::kCloseBrowsers},
+    {"show_profile_picker", ActionType::kShowProfilePicker},
+};
+const size_t kActionTypeMapSize = std::size(kActionTypeMap);
 
 Action::Action(ActionType action_type) : action_type_(action_type) {}
 

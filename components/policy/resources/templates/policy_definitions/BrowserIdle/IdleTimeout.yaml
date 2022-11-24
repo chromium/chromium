@@ -1,0 +1,26 @@
+caption: Delay before running idle actions
+default: 0
+desc: |-
+  Triggers an action when the computer is idle.
+
+        If this policy is set, it specifies the length of time without user input (in minutes) before <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> runs actions configured via the <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME">IdleTimeoutActions</ph> policy.
+
+        If this policy is not set, no action will be ran.
+
+        The minimum threshold is 5 minutes.
+
+        "User input" is defined by Operating System APIs, and includes things like moving the mouse or typing on the keyboard.
+example_value: 30
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+owners:
+- nicolaso@chromium.org
+- cbe-magic@google.com
+schema:
+  minimum: 5
+  type: integer
+tags: []
+type: int

@@ -8,26 +8,30 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "base/timer/mock_timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/idle/browser_closer.h"
-#include "chrome/browser/enterprise/idle/idle_service.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,8 +39,6 @@
 #include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/test/idle_test_utils.h"
-#include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 using base::TestMockTimeTaskRunner;
 using testing::Return;
@@ -90,26 +92,67 @@ class IdleServiceTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     polling_service().SetTaskRunnerForTest(task_runner_);
-    auto time_provider = std::make_unique<MockIdleTimeProvider>();
-    time_provider_ = time_provider.get();
+
+    auto time_provider =
+        std::make_unique<testing::NiceMock<MockIdleTimeProvider>>();
+    idle_time_provider_ = time_provider.get();
     scoped_idle_provider_ =
         std::make_unique<ui::test::ScopedIdleProviderForTest>(
             std::move(time_provider));
-    ON_CALL(provider(), CheckIdleStateIsLocked()).WillByDefault(Return(false));
+    ON_CALL(idle_time_provider(), CheckIdleStateIsLocked())
+        .WillByDefault(Return(false));
+
+    for (auto& provider : policy_providers_)
+      policy::PushProfilePolicyConnectorProviderForTesting(&provider);
+
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
   }
 
   void TearDownOnMainThread() override {
-    std::vector<Profile*> profiles =
-        g_browser_process->profile_manager()->GetLoadedProfiles();
-    for (Profile* profile : profiles) {
-      profile->GetPrefs()->ClearPref("idle_profile_close_timeout");
-    }
+    policy::PolicyMap policies;
+    for (auto& provider : policy_providers_)
+      provider.UpdateChromePolicy(policies);
     ASSERT_FALSE(polling_service().IsPollingForTest());
     polling_service().SetTaskRunnerForTest(
         base::SingleThreadTaskRunner::GetCurrentDefault());
+
+    // If there are no active browsers, BrowserProcessImpl::Unpin() runs too
+    // early and interrupts test teardown. `keep_alive_` solves this problem.
+    if (chrome::GetTotalBrowserCount() > 0) {
+      // It's safe to release this keepalive here, because browser windows are
+      // already doing the same thing.
+      keep_alive_.reset();
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  MockIdleTimeProvider& provider() { return *time_provider_; }
+  void TearDownInProcessBrowserTestFixture() override { keep_alive_.reset(); }
+
+  void SetIdleTimeoutPolicies(
+      policy::MockConfigurationPolicyProvider& policy_provider,
+      int idle_timeout,
+      const std::vector<std::string>& idle_timeout_actions = {
+          "close_browsers", "show_profile_picker"}) {
+    base::Value::List actions_list;
+    for (const std::string& action : idle_timeout_actions)
+      actions_list.Append(action);
+
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kIdleTimeout, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(idle_timeout), nullptr);
+    policies.Set(policy::key::kIdleTimeoutActions,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(std::move(actions_list)), nullptr);
+    policy_provider.UpdateChromePolicy(policies);
+  }
+
+  policy::MockConfigurationPolicyProvider& policy_provider(size_t index) {
+    return policy_providers_[index];
+  }
+  MockIdleTimeProvider& idle_time_provider() { return *idle_time_provider_; }
   ui::IdlePollingService& polling_service() {
     return *ui::IdlePollingService::GetInstance();
   }
@@ -125,34 +168,37 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<MockIdleTimeProvider> time_provider_ = nullptr;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider>
+      policy_providers_[2];
+  raw_ptr<MockIdleTimeProvider> idle_time_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest> scoped_idle_provider_;
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
-  // Set the IdleProfileCloseTimeout policy to 1 minute, which should round up
+  // Set the IdleTimeout policy to 1 minute, which should round up
   // to 5 minutes (the minimum).
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(298)));
   Profile* profile = browser()->profile();
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 1);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 299s, does nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 300s, threshold is reached. This should show the dialog.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(15)));
   BrowserCloseWaiter waiter({browser()});
   task_runner()->FastForwardBy(base::Seconds(30));
@@ -162,21 +208,21 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
-  // Set the IdleProfileCloseTimeout policy to 1 minute, which should round up
+  // Set the IdleTimeout policy to 1 minute, which should round up
   // to 5 minutes (the minimum).
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(298)));
   Profile* profile = browser()->profile();
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 1);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 300s, threshold is reached. The user dismisses the dialog though, so we do
   // nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
   task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(301)));
   BrowserCloser::GetInstance()->DismissDialogForTesting();
   task_runner()->FastForwardBy(base::Seconds(30));
@@ -185,27 +231,27 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
-  // Set the IdleProfileCloseTimeout policy to 10 minutes.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  // Set the IdleTimeout policy to 10 minutes.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(599)));
   Profile* profile = browser()->profile();
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 10);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/10);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 599s, does nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(599)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 600s, threshold is reached. Close browsers, then show the Profile Picker.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(600)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(301)));
   BrowserCloseWaiter waiter({browser()});
   task_runner()->FastForwardBy(base::Seconds(30));
@@ -221,12 +267,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
 #define MAYBE_MultiProfile MultiProfile
 #endif
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
-  // `profile` has the IdleProfileCloseTimeout policy set to 5 minutes.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  // `profile` has the IdleTimeout policy set to 5 minutes.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   Profile* profile = browser()->profile();
   Browser* browser2 = CreateBrowser(profile);
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 5);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/5);
 
   // `profile2` has the policy set to 5 minutes, so it will close at the same
   // time as `profile`.
@@ -236,11 +282,11 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
     profile2 = g_browser_process->profile_manager()->GetProfile(
         g_browser_process->profile_manager()->user_data_dir().AppendASCII(
             "Profile 2"));
+    SetIdleTimeoutPolicies(policy_provider(1), /*idle_timeout=*/5);
   }
   Browser* browser3 = CreateBrowser(profile2);
-  profile2->GetPrefs()->SetInteger("idle_profile_close_timeout", 5);
 
-  // `profile3` doesn't have the IdleProfileCloseTimeout policy set, so it will
+  // `profile3` doesn't have the IdleTimeout policy set, so it will
   // never close.
   Profile* profile3;
   {
@@ -256,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_EQ(1, GetBrowserCount(profile3));
 
   // 299s, does nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(2, GetBrowserCount(profile));
@@ -264,11 +310,11 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_EQ(1, GetBrowserCount(profile3));
 
   // 300s, threshold is reached. Close browsers, then show the Profile Picker.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
   task_runner()->FastForwardBy(base::Seconds(1));
 
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(315)));
   BrowserCloseWaiter waiter({browser(), browser2, browser3});
   task_runner()->FastForwardBy(base::Seconds(30));
@@ -280,12 +326,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
-  // `profile` has the IdleProfileCloseTimeout policy set to 5 minutes.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  // `profile` has the IdleTimeout policy set to 5 minutes.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   Profile* profile = browser()->profile();
   Browser* browser2 = CreateBrowser(profile);
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 1);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   // `profile2` has the policy set to 6 minutes, so it will close one minute
   // *after* `profile`.
@@ -295,15 +341,15 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
     profile2 = g_browser_process->profile_manager()->GetProfile(
         g_browser_process->profile_manager()->user_data_dir().AppendASCII(
             "Profile 2"));
+    SetIdleTimeoutPolicies(policy_provider(1), /*idle_timeout=*/6);
   }
   Browser* browser3 = CreateBrowser(profile2);
-  profile2->GetPrefs()->SetInteger("idle_profile_close_timeout", 6);
 
   EXPECT_EQ(2, GetBrowserCount(profile));
   EXPECT_EQ(1, GetBrowserCount(profile2));
 
   // 299s, does nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(2, GetBrowserCount(profile));
@@ -311,10 +357,10 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
 
   // 300s, threshold is reached for `profile`. Close its browsers, then show the
   // Profile Picker.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
   task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(315)));
   {
     BrowserCloseWaiter waiter({browser(), browser2});
@@ -326,10 +372,10 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // 360s, threshold is reached for `profile2`. Close its browsers.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(360)));
   task_runner()->FastForwardBy(base::Seconds(1));
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(375)));
   {
     BrowserCloseWaiter waiter({browser3});
@@ -342,33 +388,125 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MultiProfileWithDifferentThresholds) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
-  // Set the IdleProfileCloseTimeout policy to 1 minute, which should round up
+  // Set the IdleTimeout policy to 1 minute, which should round up
   // to 5 minutes (the minimum).
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(298)));
   Profile* profile = browser()->profile();
-  profile->GetPrefs()->SetInteger("idle_profile_close_timeout", 1);
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 299s, does nothing.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
 
   // 300s, threshold is reached. Close browsers, then show the Profile
   // Picker.
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(300)));
   task_runner()->FastForwardBy(base::Seconds(1));
   BrowserCloser::GetInstance()->DismissDialogForTesting();
 
-  EXPECT_CALL(provider(), CalculateIdleTime())
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(315)));
   task_runner()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
+  // Set the IdleTimeout policy to 1 minute, which should round up
+  // to 5 minutes (the minimum).
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(298)));
+  Profile* profile = browser()->profile();
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
+                         /*idle_timeout_actions=*/{});
+
+  base::Value::List actions;
+  profile->GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  // 300s, threshold is reached. This should show the dialog.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(300)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  task_runner()->FastForwardBy(base::Seconds(30));
+
+  // Nothing happened: no browsers closed, no Profile Picker.
+  EXPECT_EQ(1, GetBrowserCount(profile));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
+  // Set the IdleTimeout policy to 1 minute, which should round up
+  // to 5 minutes (the minimum).
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(298)));
+  Profile* profile = browser()->profile();
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
+                         /*idle_timeout_actions=*/{"close_browsers"});
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
+  profile->GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  // 300s, threshold is reached. This should show the dialog.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(300)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  BrowserCloseWaiter waiter({browser()});
+  task_runner()->FastForwardBy(base::Seconds(30));
+  waiter.Wait();
+  EXPECT_EQ(0, GetBrowserCount(profile));
+
+  // Profile Picker didn't show.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+// TODO(crbug.com/1326685): Figure out why this test fails during teardown.
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
+  // Set the IdleTimeout policy to 1 minute, which should round up
+  // to 5 minutes (the minimum).
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(298)));
+  Profile* profile = browser()->profile();
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
+                         /*idle_timeout_actions=*/{"show_profile_picker"});
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kShowProfilePicker));
+  profile->GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  // 300s, threshold is reached. This should show the dialog.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(300)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(1, GetBrowserCount(profile));
+
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  task_runner()->FastForwardBy(base::Seconds(30));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Browsers are still open.
+  EXPECT_EQ(1, GetBrowserCount(profile));
 }
 
 }  // namespace enterprise_idle

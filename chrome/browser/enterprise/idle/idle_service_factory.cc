@@ -37,7 +37,8 @@ KeyedService* IdleServiceFactory::BuildServiceInstanceFor(
 void IdleServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // TODO(crbug.com/1316551): Use TimeDeltaPref instead.
-  registry->RegisterIntegerPref(prefs::kIdleProfileCloseTimeout, 0);
+  registry->RegisterIntegerPref(prefs::kIdleTimeout, 0);
+  registry->RegisterListPref(prefs::kIdleTimeoutActions);
 }
 
 bool IdleServiceFactory::ServiceIsCreatedWithBrowserContext() const {

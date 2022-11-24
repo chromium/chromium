@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/no_destructor.h"
 
 class Profile;
 
@@ -25,6 +24,15 @@ enum class ActionType {
   kCloseBrowsers = 0,
   kShowProfilePicker = 1,
 };
+
+// A mapping of names to enums, for the ConfigurationPolicyHandler to make
+// conversions.
+struct ActionTypeMapEntry {
+  const char* name;
+  ActionType action_type;
+};
+extern const ActionTypeMapEntry kActionTypeMap[];
+extern const size_t kActionTypeMapSize;
 
 // An action that should Run() when a given event happens. See *Actions
 // policies, e.g. IdleTimeoutActions.

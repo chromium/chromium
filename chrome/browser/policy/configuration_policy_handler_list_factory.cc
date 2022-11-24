@@ -195,6 +195,7 @@
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/idle/action.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -1495,9 +1496,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kImportDialogAutofillFormData,
     base::Value::Type::BOOLEAN },
 
-  { key::kIdleProfileCloseTimeout,
-    prefs::kIdleProfileCloseTimeout,
-    base::Value::Type::INTEGER },
   { key::kRestrictSigninToPattern,
     prefs::kGoogleServicesUsernamePattern,
     base::Value::Type::STRING },
@@ -1802,6 +1800,22 @@ void GetExtensionAllowedTypesMap(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void GetIdleTimeoutActionsMap(
+    std::vector<std::unique_ptr<StringMappingListPolicyHandler::MappingEntry>>*
+        result) {
+  // Mapping from IdleTimeoutActions action names to ActionType.
+  for (size_t i = 0; i < enterprise_idle::kActionTypeMapSize; i++) {
+    const enterprise_idle::ActionTypeMapEntry& entry =
+        enterprise_idle::kActionTypeMap[i];
+    result->push_back(
+        std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
+            entry.name, std::make_unique<base::Value>(
+                            static_cast<int>(entry.action_type))));
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 // Future policies are not supported on Stable and Beta by default.
 bool AreFuturePoliciesSupported() {
   // Enable future policies for branded browser tests.
@@ -1990,6 +2004,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kIdleTimeout, prefs::kIdleTimeout, 5, INT_MAX, /*clamp=*/true));
+  handlers->AddHandler(std::make_unique<StringMappingListPolicyHandler>(
+      key::kIdleTimeoutActions, prefs::kIdleTimeoutActions,
+      base::BindRepeating(&GetIdleTimeoutActionsMap)));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   handlers->AddHandler(std::make_unique<RestoreOnStartupPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(

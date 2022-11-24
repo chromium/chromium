@@ -22,7 +22,7 @@ class Profile;
 
 namespace enterprise_idle {
 
-// Manages the state of a profile for the IdleProfileCloseTimeout enterprise
+// Manages the state of a profile for the IdleTimeout enterprise
 // policy. Keeps track of the policy's value, and listens for idle events.
 // Closes the profile's window when it becomes idle, and shows the profile
 // picker.
@@ -41,9 +41,9 @@ class IdleService : public KeyedService,
       const ui::IdlePollingService::State& polled_state) override;
 
  private:
-  // Called when the IdleProfileCloseTimeout policy changes, via the
+  // Called when the IdleTimeout policy changes, via the
   // "idle_profile_close_timeout" pref it's mapped to.
-  void OnIdleProfileCloseTimeoutPrefChanged();
+  void OnIdleTimeoutPrefChanged();
 
   // Runs when the BrowserCloser finishes. Depending on the result, shows the
   // Profile Picker.

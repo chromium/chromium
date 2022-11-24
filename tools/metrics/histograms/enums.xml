@@ -32444,7 +32444,7 @@ Called by update_document_policy_enum.py.-->
   <int value="991" label="OnFileTransferEnterpriseConnector"/>
   <int value="992" label="ChromeRootStoreEnabled"/>
   <int value="993" label="WebSQLNonSecureContextEnabled"/>
-  <int value="994" label="IdleProfileCloseTimeout"/>
+  <int value="994" label="IdleTimeout"/>
   <int value="995" label="NewWindowsInKioskAllowed"/>
   <int value="996" label="EncryptedClientHelloEnabled"/>
   <int value="997" label="DeviceAutofillSAMLUsername"/>
@@ -32488,6 +32488,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1033" label="BruschettaVMConfiguration"/>
   <int value="1034" label="DnsOverHttpsSalt"/>
   <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
+  <int value="1036" label="IdleTimeoutActions"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -80266,6 +80267,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="41" label="ScreenCaptureSettings"/>
   <int value="42" label="WindowPlacementSettings"/>
   <int value="43" label="LocalFontsSettings"/>
+  <int value="44" label="BrowserIdle"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

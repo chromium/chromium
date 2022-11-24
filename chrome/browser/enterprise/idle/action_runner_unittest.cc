@@ -7,7 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/enterprise/idle/action.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,11 +71,15 @@ TEST(IdleActionRunnerTest, RunsActionsInSequence) {
   FakeActionFactory action_factory;
   ActionRunner runner(&profile, &action_factory);
 
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
+  actions.Append(static_cast<int>(ActionType::kShowProfilePicker));
+  profile.GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
   auto close_browsers =
       std::make_unique<MockAction>(ActionType::kCloseBrowsers);
   auto show_profile_picker =
       std::make_unique<MockAction>(ActionType::kShowProfilePicker);
-
   testing::InSequence in_sequence;
   EXPECT_CALL(*close_browsers, Run(&profile, _))
       .WillOnce(RunContinuation(true));
@@ -87,6 +93,37 @@ TEST(IdleActionRunnerTest, RunsActionsInSequence) {
   runner.Run();
 }
 
+// Tests that the order of actions in the pref doesn't matter. They still run
+// by order of priority.
+TEST(IdleActionRunnerTest, PrefOrderDoesNotMatter) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  FakeActionFactory action_factory;
+  ActionRunner runner(&profile, &action_factory);
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
+  actions.Append(static_cast<int>(ActionType::kShowProfilePicker));
+  profile.GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  auto close_browsers =
+      std::make_unique<MockAction>(ActionType::kCloseBrowsers);
+  auto show_profile_picker =
+      std::make_unique<MockAction>(ActionType::kShowProfilePicker);
+  testing::InSequence in_sequence;
+  EXPECT_CALL(*close_browsers, Run(&profile, _))
+      .WillOnce(RunContinuation(true));
+  EXPECT_CALL(*show_profile_picker, Run(&profile, _))
+      .WillOnce(RunContinuation(true));
+
+  action_factory.Associate(ActionType::kCloseBrowsers,
+                           std::move(close_browsers));
+  action_factory.Associate(ActionType::kShowProfilePicker,
+                           std::move(show_profile_picker));
+
+  runner.Run();
+}
+
 // Tests that when a higher-priority action fails, the lower-priority actions
 // don't run.
 TEST(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
@@ -94,6 +131,11 @@ TEST(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
   TestingProfile profile;
   FakeActionFactory action_factory;
   ActionRunner runner(&profile, &action_factory);
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
+  actions.Append(static_cast<int>(ActionType::kShowProfilePicker));
+  profile.GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
 
   auto close_browsers =
       std::make_unique<MockAction>(ActionType::kCloseBrowsers);
@@ -105,6 +147,85 @@ TEST(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
   EXPECT_CALL(*close_browsers, Run(&profile, _))
       .WillOnce(RunContinuation(false));
   EXPECT_CALL(*show_profile_picker, Run(_, _)).Times(0);
+
+  action_factory.Associate(ActionType::kCloseBrowsers,
+                           std::move(close_browsers));
+  action_factory.Associate(ActionType::kShowProfilePicker,
+                           std::move(show_profile_picker));
+  runner.Run();
+}
+
+// Tests that it does nothing when the "IdleTimeoutActions" pref is empty.
+TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  FakeActionFactory action_factory;
+  ActionRunner runner(&profile, &action_factory);
+
+  // "IdleTimeoutActions" is deliberately unset.
+  auto close_browsers =
+      std::make_unique<MockAction>(ActionType::kCloseBrowsers);
+  auto show_profile_picker =
+      std::make_unique<MockAction>(ActionType::kShowProfilePicker);
+
+  EXPECT_CALL(*close_browsers, Run(_, _)).Times(0);
+  EXPECT_CALL(*show_profile_picker, Run(_, _)).Times(0);
+
+  action_factory.Associate(ActionType::kCloseBrowsers,
+                           std::move(close_browsers));
+  action_factory.Associate(ActionType::kShowProfilePicker,
+                           std::move(show_profile_picker));
+  runner.Run();
+}
+
+// Tests that ActionRunner only runs the actions configured via the
+// "IdleTimeoutActions" pref.
+TEST(IdleActionRunnerTest, JustCloseBrowsers) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  FakeActionFactory action_factory;
+  ActionRunner runner(&profile, &action_factory);
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
+  profile.GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  auto close_browsers =
+      std::make_unique<MockAction>(ActionType::kCloseBrowsers);
+  auto show_profile_picker =
+      std::make_unique<MockAction>(ActionType::kShowProfilePicker);
+
+  EXPECT_CALL(*close_browsers, Run(&profile, _))
+      .WillOnce(RunContinuation(true));
+  EXPECT_CALL(*show_profile_picker, Run(_, _)).Times(0);
+
+  action_factory.Associate(ActionType::kCloseBrowsers,
+                           std::move(close_browsers));
+  action_factory.Associate(ActionType::kShowProfilePicker,
+                           std::move(show_profile_picker));
+  runner.Run();
+}
+
+// Tests that ActionRunner only runs the actions configured via the
+// "IdleTimeoutActions" pref.
+TEST(IdleActionRunnerTest, JustShowProfilePicker) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  FakeActionFactory action_factory;
+  ActionRunner runner(&profile, &action_factory);
+
+  base::Value::List actions;
+  actions.Append(static_cast<int>(ActionType::kShowProfilePicker));
+  profile.GetPrefs()->SetList(prefs::kIdleTimeoutActions, std::move(actions));
+
+  auto close_browsers =
+      std::make_unique<MockAction>(ActionType::kCloseBrowsers);
+  auto show_profile_picker =
+      std::make_unique<MockAction>(ActionType::kShowProfilePicker);
+
+  EXPECT_CALL(*close_browsers, Run(_, _)).Times(0);
+  EXPECT_CALL(*show_profile_picker, Run(&profile, _))
+      .WillOnce(RunContinuation(true));
 
   action_factory.Associate(ActionType::kCloseBrowsers,
                            std::move(close_browsers));

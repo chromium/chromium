@@ -992,7 +992,7 @@ policies:
   991: OnFileTransferEnterpriseConnector
   992: ChromeRootStoreEnabled
   993: WebSQLNonSecureContextEnabled
-  994: IdleProfileCloseTimeout
+  994: IdleTimeout
   995: NewWindowsInKioskAllowed
   996: EncryptedClientHelloEnabled
   997: DeviceAutofillSAMLUsername
@@ -1034,6 +1034,7 @@ policies:
   1033: BruschettaVMConfiguration
   1034: DnsOverHttpsSalt
   1035: DnsOverHttpsTemplatesWithIdentifiers
+  1036: IdleTimeoutActions
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1078,3 +1079,4 @@ atomic_groups:
   41: ScreenCaptureSettings
   42: WindowPlacementSettings
   43: LocalFontsSettings
+  44: BrowserIdle
