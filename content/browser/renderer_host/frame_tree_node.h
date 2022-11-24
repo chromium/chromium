@@ -319,9 +319,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // Resets the navigation request owned by `this` (which shouldn't have reached
   // the "pending commit" stage yet) and any state created by it, including the
-  // speculative RenderFrameHost. Note that this does not affect navigations
-  // that have reached the  "pending commit" stage, which are owned by their
-  // corresponding RenderFrameHosts instead.
+  // speculative RenderFrameHost (if there are no other navigations associated
+  // with it). Note that this does not affect navigations that have reached the
+  // "pending commit" stage, which are owned by their corresponding
+  // RenderFrameHosts instead.
   void ResetNavigationRequest(NavigationDiscardReason reason);
 
   // Similar to `ResetNavigationRequest()`, but keeps the state created by the

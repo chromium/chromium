@@ -575,10 +575,6 @@ void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
   // The RenderFrameHostManager should clean up any speculative RenderFrameHost
   // it created for the navigation. Also register that the load stopped.
   DidStopLoading();
-  // TODO(https://crbug.com/1220337): This might accidentally delete an
-  // unrelated speculative RenderFrameHost that is pending commit. Check if the
-  // speculative RenderFrameHost is really associated with the deleted
-  // NavigationRequest first before deleting.
   render_manager_.DiscardSpeculativeRFHIfUnused(reason);
 }
 

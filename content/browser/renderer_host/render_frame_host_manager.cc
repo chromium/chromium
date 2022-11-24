@@ -1640,13 +1640,12 @@ void RenderFrameHostManager::CleanupIfSpeculativeForRenderProcessGone(
       frame_tree_node_->navigation_request()->set_net_error(net::ERR_ABORTED);
       frame_tree_node_->ResetNavigationRequest(
           NavigationDiscardReason::kRenderProcessGone);
-    } else {
-      // If we are far enough into the navigation that
-      // TransferNavigationRequestOwnership has already been called then the
-      // FrameTreeNode no longer owns the NavigationRequest and we need to clean
-      // up the speculative RenderFrameHost.
-      DiscardSpeculativeRFH(NavigationDiscardReason::kRenderProcessGone);
     }
+    // It's possible that we are far enough into the navigation that
+    // TransferNavigationRequestOwnership has already been called then the
+    // FrameTreeNode no longer owns the NavigationRequest and we need to clean
+    // up the speculative RenderFrameHost.
+    DiscardSpeculativeRFH(NavigationDiscardReason::kRenderProcessGone);
   }
 }
 

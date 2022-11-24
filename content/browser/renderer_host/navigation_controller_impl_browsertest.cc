@@ -22184,6 +22184,64 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FALSE(a3_navigation.was_committed());
 }
 
+// Tests that calling FrameTreeNode::ResetNavigationRequest() cancels the
+// navigation owned by the FrameTreeNode but won't reset a speculative RFH that
+// has a pending commit navigation, even if it was used by the deleted
+// navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ResetNavigationRequestWontDeletePendingCommitRFH) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  // Load `main_url`.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImplWrapper rfh_a(current_main_frame_host());
+
+  // Start the cross-site navigation to `url_b1`. Then, start a cross-site
+  // navigation to `url_b2` after the `url_b1` navigation is in the
+  // "pending commit" stage, so that both navigations can exist at the same
+  // time (the previous NavigationRequest had already been moved to the
+  //"pending commit" speculative RFH, and they both use the same speculative
+  // RFH).
+  TestNavigationManager b1_nav(shell()->web_contents(), url_b1);
+  TestNavigationManager b2_nav(shell()->web_contents(), url_b2);
+  // Start the navigation to `url_b1` then drop its DidCommit message from the
+  // renderer, so that it will stay in the "pending commit" stage for the rest
+  // of the test. Then, start a navigation to `url_b2`.
+  DidCommitNavigationCanceller ignore_b1_commit(
+      shell()->web_contents(), url_b1,
+      base::BindLambdaForTesting([&]() { shell()->LoadURL(url_b2); }));
+  shell()->LoadURL(url_b1);
+  // Assert tht the `url_b1` navigation had started.
+  EXPECT_TRUE(b1_nav.WaitForResponse());
+  EXPECT_EQ(b1_nav.GetNavigationHandle(), root->navigation_request());
+
+  b1_nav.ResumeNavigation();
+  // Assert that the `url_b2` navigation had started, and didn't cancel the
+  // `url_b1` navigation.
+  EXPECT_TRUE(b2_nav.WaitForRequestStart());
+  EXPECT_EQ(b2_nav.GetNavigationHandle(), root->navigation_request());
+  EXPECT_TRUE(b1_nav.GetNavigationHandle());
+
+  // Cancel the navigation to `url_b2` by calling ResetNavigationRequest().
+  // This shouldn't cancel the navigation to `url_b1`.
+  root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+  b2_nav.WaitForNavigationFinished();
+  EXPECT_FALSE(b2_nav.was_committed());
+  EXPECT_FALSE(b2_nav.GetNavigationHandle());
+
+  // Assert that the `url_b1` navigation and the speculative RenderFrameHost is
+  // still around. Note that we can't wait for the navigation to finish here
+  // because we've dropped the DidCommit message for this navigation.
+  EXPECT_TRUE(b1_nav.GetNavigationHandle());
+  EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+  EXPECT_EQ(b1_nav.GetNavigationHandle()->GetRenderFrameHost(),
+            root->render_manager()->speculative_frame_host());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
