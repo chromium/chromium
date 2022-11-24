@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // This file is the Mojo version of the media::VideoEncodeAccelerator interface
 // and describes the communication between a Client and a remote "service"
@@ -62,6 +63,31 @@ interface VideoEncodeAcceleratorProvider {
   // Get a VideoEncodeAccelerator supported profiles.
   GetVideoEncodeAcceleratorSupportedProfiles()
       => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
+};
+
+// This interface allows the browser process to broker
+// VideoEncodeAcceleratorProvider connection requests on behalf of a renderer.
+// The browser creates the mojo pipe and gives the receiver to a utility
+// process. The expected usage is as follows:
+//
+// 1) The browser process receives a request from a renderer process to bind a
+//    pending_receiver<VideoEncodeAcceleratorProvider>.
+//
+// 2) To satisfy that request, the browser process first starts a utility
+//    process that hosts a VideoEncodeAcceleratorProviderFactory if it hasn't
+//    already done so -- note that each renderer process should get its own
+//    corresponding utility process.
+//
+// 3) The browser process calls CreateVideoEncodeAcceleratorProvider() passing
+//    the pending_receiver<VideoEncodeAcceleratorProvider> received from the
+//    renderer process.
+[EnableIf=is_linux_or_chromeos,
+ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoEncoding]
+interface VideoEncodeAcceleratorProviderFactory {
+  // Creates a VideoEncodeAcceleratorProvider and should be called by the
+  // browser process.
+  CreateVideoEncodeAcceleratorProvider(
+        pending_receiver<VideoEncodeAcceleratorProvider> receiver);
 };
 
 // This defines a mojo transport format used in the

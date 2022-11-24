@@ -104,6 +104,9 @@ mojom("mojom") {
   }
 
   enabled_features = []
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "is_linux_or_chromeos" ]
+  }
 
   # Help select ServiceSandbox for media_service.mojom.
   if (mojo_media_host == "browser") {

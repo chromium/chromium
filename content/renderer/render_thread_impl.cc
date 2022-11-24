@@ -1091,8 +1091,18 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
   mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
       vea_provider;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoEncoding)) {
+    BindHostReceiver(vea_provider.InitWithNewPipeAndPassReceiver());
+  } else {
+    gpu_->CreateVideoEncodeAcceleratorProvider(
+        vea_provider.InitWithNewPipeAndPassReceiver());
+  }
+#else
   gpu_->CreateVideoEncodeAcceleratorProvider(
       vea_provider.InitWithNewPipeAndPassReceiver());
+#endif
 
   gpu_factories_.push_back(GpuVideoAcceleratorFactoriesImpl::Create(
       std::move(gpu_channel_host),

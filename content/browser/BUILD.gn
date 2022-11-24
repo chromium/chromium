@@ -2321,6 +2321,8 @@ source_set("browser") {
       "font_service.cc",
       "font_service.h",
       "media/stable_video_decoder_factory.cc",
+      "media/video_encode_accelerator_provider_launcher.cc",
+      "media/video_encode_accelerator_provider_launcher.h",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
       "sandbox_host_linux.cc",
