@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/root_window_settings.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -42,7 +41,6 @@ class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
     for (size_t i = 0; i < number_of_screens; ++i) {
       auto window_delegate = std::make_unique<aura::test::TestWindowDelegate>();
       auto screen = std::make_unique<aura::Window>(window_delegate.get());
-      ash::InitRootWindowSettings(screen.get());
       screen->Init(ui::LayerType::LAYER_NOT_DRAWN);
       screens.push_back(screen.get());
       screens_.emplace_back(std::move(screen));
@@ -77,7 +75,7 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
           }));
   run_loop.Run();
   EXPECT_EQ(0u, actual_stream_devices_set->stream_devices.size());
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::NO_HARDWARE, actual_result);
 }
 
 TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {

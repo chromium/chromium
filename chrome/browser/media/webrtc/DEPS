@@ -7,7 +7,7 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_screen_enumerator\.cc": [
-    "+ash/root_window_settings.h",
+    "+ui/display/screen.h",
     "+ash/shell.h",
   ],
   "desktop_capture_access_handler\.cc": [
@@ -24,7 +24,6 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
   ".*_unittest\.cc": [
-    "+ash/root_window_settings.h",
     "+ash/test/ash_test_base.h",
   ]
 }

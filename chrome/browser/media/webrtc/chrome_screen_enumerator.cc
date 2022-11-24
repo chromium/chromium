@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "ash/root_window_settings.h"
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "build/chromeos_buildflags.h"
@@ -16,6 +15,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -33,6 +33,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreensAsh(
       (root_windows_for_testing_) ? std::move(*root_windows_for_testing_)
                                   : ash::Shell::GetAllRootWindows();
 
+  display::Screen* screen = display::Screen::GetScreen();
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       blink::mojom::StreamDevicesSet::New();
   for (aura::Window* window : root_windows) {
@@ -45,7 +46,8 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreensAsh(
     blink::MediaStreamDevice device(
         stream_type, /*id=*/media_id.ToString(),
         /*name=*/"Screen",
-        /*display_id=*/ash::GetRootWindowSettings(window)->display_id);
+        /*display_id=*/
+        screen->GetDisplayNearestWindow(window).id());
     device.display_media_info = media::mojom::DisplayMediaInformation::New(
         /*display_surface=*/media::mojom::DisplayCaptureSurfaceType::MONITOR,
         /*logical_surface=*/true,
@@ -86,7 +88,9 @@ void ChromeScreenEnumerator::EnumerateScreens(
              blink::mojom::StreamDevicesSetPtr stream_devices_set) {
             std::move(screens_callback)
                 .Run(*stream_devices_set,
-                     blink::mojom::MediaStreamRequestResult::OK);
+                     stream_devices_set->stream_devices.size() > 0
+                         ? blink::mojom::MediaStreamRequestResult::OK
+                         : blink::mojom::MediaStreamRequestResult::NO_HARDWARE);
           },
           std::move(screens_callback)));
 #else
