@@ -20,6 +20,8 @@ namespace password_manager {
 using metrics_util::LogPasswordSettingsReauthResult;
 using metrics_util::ReauthResult;
 
+PasswordAccessAuthenticator::PasswordAccessAuthenticator() = default;
+
 PasswordAccessAuthenticator::PasswordAccessAuthenticator(
     ReauthCallback os_reauth_call,
     TimeoutCallback timeout_call)
@@ -27,6 +29,12 @@ PasswordAccessAuthenticator::PasswordAccessAuthenticator(
       timeout_call_(std::move(timeout_call)) {}
 
 PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
+
+void PasswordAccessAuthenticator::Init(ReauthCallback os_reauth_call,
+                                       TimeoutCallback timeout_call) {
+  os_reauth_call_ = std::move(os_reauth_call);
+  timeout_call_ = std::move(timeout_call);
+}
 
 // TODO(crbug.com/327331): Trigger Re-Auth after closing and opening the
 // settings tab.
