@@ -36974,6 +36974,12 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Failed"/>
 </enum>
 
+<enum name="FcmTokenRevocation">
+  <int value="0" label="Reset grace period"/>
+  <int value="1" label="Revoke permission"/>
+  <int value="2" label="Grace period is not over"/>
+</enum>
+
 <enum name="FeatureModuleAvailabilityStatus">
   <int value="0" label="Requested">
     Feature module has been requested but is not installed yet.
