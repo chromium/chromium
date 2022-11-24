@@ -92,7 +92,7 @@ CreateContentBrowserURLLoaderThrottles(
   }
 
   auto throttle = MaybeCreateIdentityUrlLoaderThrottle(
-      base::BindRepeating(SetIdpSigninStatus, browser_context));
+      base::BindRepeating(webid::SetIdpSigninStatus, browser_context));
   if (throttle)
     throttles.push_back(std::move(throttle));
 

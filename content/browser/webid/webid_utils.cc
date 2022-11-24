@@ -10,19 +10,7 @@
 #include "content/public/common/web_identity.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
-namespace content {
-
-bool IsSameOriginWithAncestors(RenderFrameHost* host,
-                               const url::Origin& origin) {
-  RenderFrameHost* parent = host->GetParentOrOuterDocument();
-  while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
-      return false;
-    }
-    parent = parent->GetParent();
-  }
-  return true;
-}
+namespace content::webid {
 
 void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
@@ -36,4 +24,4 @@ void SetIdpSigninStatus(content::BrowserContext* context,
       origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
 
-}  // namespace content
+}  // namespace content::webid

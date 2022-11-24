@@ -14,21 +14,15 @@ enum class IdpSigninStatus;
 
 namespace content {
 class BrowserContext;
-class RenderFrameHost;
 enum class IdpSigninStatus;
 
-// Determines whether |host| is same-origin with all of its ancestors in the
-// frame tree. Returns false if not.
-// |origin| is provided because it is not considered safe to use
-// host->GetLastCommittedOrigin() at some times, so
-// DocumentService::origin() should be used to obtain the frame's origin.
-bool IsSameOriginWithAncestors(RenderFrameHost* host,
-                               const url::Origin& origin);
+namespace webid {
 
 void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 
+}  // namespace webid
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
