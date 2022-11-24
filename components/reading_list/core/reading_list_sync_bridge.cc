@@ -148,14 +148,13 @@ void ReadingListSyncBridge::OnDatabaseLoad(
     loaded_entries.emplace(url, std::move(*entry));
   }
 
-  delegate_->StoreLoaded(std::move(loaded_entries));
-
-  store_->ReadAllMetadata(
-      base::BindOnce(&ReadingListSyncBridge::OnReadAllMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
+  store_->ReadAllMetadata(base::BindOnce(
+      &ReadingListSyncBridge::OnReadAllMetadata, weak_ptr_factory_.GetWeakPtr(),
+      std::move(loaded_entries)));
 }
 
 void ReadingListSyncBridge::OnReadAllMetadata(
+    ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -164,6 +163,8 @@ void ReadingListSyncBridge::OnReadAllMetadata(
   } else {
     change_processor()->ModelReadyToSync(std::move(metadata_batch));
   }
+
+  delegate_->StoreLoaded(std::move(loaded_entries));
 }
 
 void ReadingListSyncBridge::OnDatabaseSave(

@@ -160,8 +160,10 @@ class ReadingListSyncBridge : public ReadingListModelStorage,
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
   void OnDatabaseSave(const absl::optional<syncer::ModelError>& error);
-  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
-                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnReadAllMetadata(
+      ReadingListSyncBridgeDelegate::ReadingListEntries loaded_entries,
+      const absl::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
