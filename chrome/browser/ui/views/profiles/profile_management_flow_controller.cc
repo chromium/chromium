@@ -85,10 +85,18 @@ void ProfileManagementFlowController::ExitFlow() {
   std::move(clear_host_callback_.value()).Run();
 }
 
+bool ProfileManagementFlowController::PreFinishWithBrowser() {
+  return false;
+}
+
 void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
     Profile* profile,
     PostHostClearedCallback post_host_cleared_callback) {
   DCHECK(clear_host_callback_.value());  // The host shouldn't be cleared yet.
+
+  // TODO(crbug.com/1383969): Handle the return value and don't open a browser
+  // if it is already going to be opened.
+  PreFinishWithBrowser();
 
   base::OnceCallback<void(Profile*)> post_browser_open_callback =
       base::IgnoreArgs<Profile*>(std::move(clear_host_callback_.value()));

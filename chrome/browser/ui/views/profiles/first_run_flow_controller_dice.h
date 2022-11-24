@@ -33,6 +33,10 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowController {
       ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
   ~FirstRunFlowControllerDice() override;
 
+ protected:
+  // ProfileManagementFlowController:
+  bool PreFinishWithBrowser() override;
+
  private:
   void HandleIntroSigninChoice(bool sign_in);
 

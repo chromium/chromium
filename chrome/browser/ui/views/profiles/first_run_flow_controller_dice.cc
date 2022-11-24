@@ -156,16 +156,23 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
                       /*enable_animations=*/true));
 }
 
-FirstRunFlowControllerDice::~FirstRunFlowControllerDice() = default;
+FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
+  if (first_run_exited_callback_) {
+    std::move(first_run_exited_callback_)
+        .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
+  }
+}
+
+bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
+  DCHECK(first_run_exited_callback_);
+  std::move(first_run_exited_callback_)
+      .Run(ProfilePicker::FirstRunExitStatus::kCompleted);
+  return true;
+}
 
 void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
   if (!sign_in) {
-    std::move(first_run_exited_callback_)
-        .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
-             base::BindOnce(
-                 &FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
-                 weak_ptr_factory_.GetWeakPtr(), profile_,
-                 PostHostClearedCallback()));
+    FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
     return;
   }
 

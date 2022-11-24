@@ -85,12 +85,9 @@ void SetFirstRunFinished() {
 // they were trying to do before they stopped to show the FRE. If the FRE's
 // `status` is not `ProfilePicker::FirstRunExitStatus::kCompleted`, that
 // `original_intent_callback` will be called with `proceed` set to false,
-// otherwise it will be called with true. `post_first_run_callback` will be
-// executed for completed flows, to perform tasks that the FRE requires after
-// the interrupted task is resumed.
+// otherwise it will be called with true.
 void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
-                         ProfilePicker::FirstRunExitStatus status,
-                         base::OnceClosure post_first_run_callback) {
+                         ProfilePicker::FirstRunExitStatus status) {
   if (status != ProfilePicker::FirstRunExitStatus::kQuitEarly) {
     // The user got to the last step, we can mark the FRE as finished, whether
     // we eventually proceed with the original intent or not.
@@ -101,11 +98,6 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
   LOG_IF(ERROR, !proceed) << "Not proceeding FirstRun: "
                           << static_cast<int>(status);
   std::move(original_intent_callback).Run(proceed);
-
-  if (proceed) {
-    DCHECK(post_first_run_callback);
-    std::move(post_first_run_callback).Run();
-  }
 }
 
 }  // namespace

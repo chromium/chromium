@@ -26,8 +26,11 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
 
   ~FirstRunFlowControllerLacros() override;
 
+ protected:
+  // ProfileManagementFlowController:
+  bool PreFinishWithBrowser() override;
+
  private:
-  void ExitFlowAndRun(Profile* profile, PostHostClearedCallback callback);
   void MarkSyncConfirmationSeen();
 
   // Captures the operation that the user expected to run at the time we chose

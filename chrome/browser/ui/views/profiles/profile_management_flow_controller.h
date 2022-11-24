@@ -105,6 +105,14 @@ class ProfileManagementFlowController {
   void FinishFlowAndRunInBrowser(Profile* profile,
                                  PostHostClearedCallback callback);
 
+  // Will be called at the beginning of `FinishFlowAndRunInBrowser`.
+  //
+  // Subclasses should override it if they want to perform some additional
+  // operations when the flow is closing. If they are going to open a browser
+  // themselves, they should return `true`. The default implementation does
+  // nothing and returns `false`.
+  virtual bool PreFinishWithBrowser();
+
   Step current_step() const { return current_step_; }
 
   Step initial_step() const { return initial_step_; }

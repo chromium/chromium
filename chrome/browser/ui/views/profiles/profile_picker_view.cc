@@ -372,7 +372,7 @@ void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
   params_.NotifyAccountSelected(std::string());
   params_.NotifyFirstRunExited(
       ProfilePicker::FirstRunExitStatus::kQuitEarly,
-      ProfilePicker::FirstRunExitSource::kReusingWindow, base::OnceClosure());
+      ProfilePicker::FirstRunExitSource::kReusingWindow);
 #endif
 
   params_ = std::move(params);

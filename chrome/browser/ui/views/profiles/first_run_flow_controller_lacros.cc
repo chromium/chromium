@@ -143,7 +143,7 @@ FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
                      // the `this` will own and outlive.
                      base::Unretained(this));
   auto finish_flow_callback = FinishFlowCallback(
-      base::BindOnce(&FirstRunFlowControllerLacros::ExitFlowAndRun,
+      base::BindOnce(&FirstRunFlowControllerLacros::FinishFlowAndRunInBrowser,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
                      base::Unretained(this),
@@ -169,34 +169,17 @@ FirstRunFlowControllerLacros::~FirstRunFlowControllerLacros() {
         .Run(sync_confirmation_seen_
                  ? ProfilePicker::FirstRunExitStatus::kQuitAtEnd
                  : ProfilePicker::FirstRunExitStatus::kQuitEarly,
-             ProfilePicker::FirstRunExitSource::kControllerDestructor,
-             // Since the flow is exited already, we don't have anything to
-             // close or finish setting up, and the callback won't be executed
-             // anyway.
-             /*maybe_callback=*/base::OnceClosure());
+             ProfilePicker::FirstRunExitSource::kControllerDestructor);
+    // Since the flow is exited already, we don't have anything to close or
+    // finish setting up.
   }
 }
 
-void FirstRunFlowControllerLacros::ExitFlowAndRun(
-    Profile* profile,
-    PostHostClearedCallback callback) {
-  // We don't call `FinishFlowAndRunInBrowser()` directly, as
-  // `first_run_exited_callback_` should make a browser window available when
-  // it runs. If there is no browser, then we will create it as a fallback.
-  // TODO(crbug.com/1383969): Races with Ash to open a window. Find another way.
-  auto finish_flow_callback =
-      base::BindOnce(&FirstRunFlowControllerLacros::FinishFlowAndRunInBrowser,
-                     // Unretained ok: the flow will be closed when we run
-                     // `finish_flow_callback`, so `this` will still be alive.
-                     base::Unretained(this),
-                     // Unretained ok: the flow keeps the profile alive and
-                     // `first_run_exited_callback_` will open a browser for it.
-                     base::Unretained(profile), std::move(callback));
-
+bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
-           ProfilePicker::FirstRunExitSource::kFlowFinished,
-           std::move(finish_flow_callback));
+           ProfilePicker::FirstRunExitSource::kFlowFinished);
+  return true;
 }
 
 void FirstRunFlowControllerLacros::MarkSyncConfirmationSeen() {

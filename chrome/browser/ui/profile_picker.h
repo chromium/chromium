@@ -39,8 +39,7 @@ class ProfilePicker {
     kQuitEarly = 2,
   };
   using FirstRunExitedCallback =
-      base::OnceCallback<void(FirstRunExitStatus status,
-                              base::OnceClosure callback)>;
+      base::OnceCallback<void(FirstRunExitStatus status)>;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Added for bug investigation purposes.
@@ -53,8 +52,7 @@ class ProfilePicker {
   };
   using DebugFirstRunExitedCallback =
       base::OnceCallback<void(FirstRunExitStatus status,
-                              FirstRunExitSource source,
-                              base::OnceClosure callback)>;
+                              FirstRunExitSource source)>;
 #endif
 
   // Only work when passed as the argument 'on_select_profile_target_url' to
@@ -150,23 +148,22 @@ class ProfilePicker {
     // expect it to be the main profile path.
     // `first_run_exited_callback` is called when the first run experience is
     // exited, with a `FirstRunExitStatus` indicating how the user responded to
-    // it, and an optional callback that must be run if the user has proceeded
-    // to the browser after the FRE.
+    // it.
     static Params ForFirstRun(const base::FilePath& profile_path,
                               FirstRunExitedCallback first_run_exited_callback);
 
-    // Calls `first_run_exited_callback_`, forwarding `exit_status` and
-    // `maybe_callback`. See `ForFirstRun()` for more
-    // details.
+    // Calls `first_run_exited_callback_`, forwarding `exit_status`.See
+    // `ForFirstRun()` for more details.
     //
     // If this method is not called by the time this `Param` is destroyed, an
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
-    void NotifyFirstRunExited(FirstRunExitStatus exit_status,
+    void NotifyFirstRunExited(FirstRunExitStatus exit_status
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-                              FirstRunExitSource exit_source,
+                              ,
+                              FirstRunExitSource exit_source
 #endif
-                              base::OnceClosure maybe_callback);
+    );
 
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused

@@ -50,8 +50,7 @@ ProfilePicker::Params::~Params() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NotifyAccountSelected(std::string());
   NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly,
-                       FirstRunExitSource::kParamDestructor,
-                       base::OnceClosure());
+                       FirstRunExitSource::kParamDestructor);
 #endif
 }
 
@@ -114,12 +113,12 @@ ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
   return params;
 }
 
-void ProfilePicker::Params::NotifyFirstRunExited(
-    FirstRunExitStatus exit_status,
+void ProfilePicker::Params::NotifyFirstRunExited(FirstRunExitStatus exit_status
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    FirstRunExitSource exit_source,
+                                                 ,
+                                                 FirstRunExitSource exit_source
 #endif
-    base::OnceClosure maybe_callback) {
+) {
   if (!first_run_exited_callback_)
     return;
 
@@ -129,8 +128,7 @@ void ProfilePicker::Params::NotifyFirstRunExited(
              << " from source=" << static_cast<int>(exit_source);
 #endif
 
-  std::move(first_run_exited_callback_)
-      .Run(exit_status, std::move(maybe_callback));
+  std::move(first_run_exited_callback_).Run(exit_status);
 }
 
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {

@@ -214,8 +214,8 @@ TEST_F(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
 }
 
 TEST_F(ProfilePickerParamsTest, ForFirstRun_Exit) {
-  testing::StrictMock<base::MockOnceCallback<void(
-      ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
+  testing::StrictMock<
+      base::MockOnceCallback<void(ProfilePicker::FirstRunExitStatus)>>
       callback;
   {
     ProfilePicker::Params params = ProfilePicker::Params::ForFirstRun(
@@ -223,25 +223,23 @@ TEST_F(ProfilePickerParamsTest, ForFirstRun_Exit) {
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
     // The callback is called at destruction.
-    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kQuitEarly,
-                              ::testing::_));
+    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kQuitEarly));
   }
 }
 
 TEST_F(ProfilePickerParamsTest, ForFirstRun_Notify) {
-  testing::StrictMock<base::MockOnceCallback<void(
-      ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
+  testing::StrictMock<
+      base::MockOnceCallback<void(ProfilePicker::FirstRunExitStatus)>>
       callback;
   {
     ProfilePicker::Params params = ProfilePicker::Params::ForFirstRun(
         ProfileManager::GetPrimaryUserProfilePath(), callback.Get());
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
-    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kCompleted,
-                              ::testing::_));
+    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kCompleted));
     params.NotifyFirstRunExited(
         ProfilePicker::FirstRunExitStatus::kCompleted,
-        ProfilePicker::FirstRunExitSource::kFlowFinished, base::DoNothing());
+        ProfilePicker::FirstRunExitSource::kFlowFinished);
   }
 }
 #endif
