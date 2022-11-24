@@ -118,7 +118,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   blink::mojom::PagehideDispatch pagehide_dispatch_ =
       blink::mojom::PagehideDispatch::kNotDispatched;
 
-  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
+  const raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 
   // This is the per-page state computed based on web contents / tab lifecycle
   // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
