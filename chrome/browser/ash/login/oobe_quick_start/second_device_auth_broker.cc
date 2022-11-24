@@ -12,11 +12,15 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
+#include "components/account_id/account_id.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
@@ -105,7 +109,7 @@ std::string GetChallengeBytesFromParsedResponse(
 }
 
 void RunChallengeBytesCallback(
-    SecondDeviceAuthBroker::GetChallengeBytesCallback challenge_callback,
+    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
     const std::string& challenge_bytes) {
   if (challenge_bytes.empty()) {
     std::move(challenge_callback)
@@ -119,7 +123,7 @@ void RunChallengeBytesCallback(
 }
 
 void HandleGetChallengeBytesErrorResponse(
-    SecondDeviceAuthBroker::GetChallengeBytesCallback challenge_callback,
+    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
     std::unique_ptr<EndpointResponse> response) {
   LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
              << response->http_status_code;
@@ -160,19 +164,50 @@ void HandleGetChallengeBytesErrorResponse(
   }
 }
 
+void RunAttestationCertificateCallback(
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback,
+    attestation::AttestationStatus status,
+    const std::string& pem_certificate_chain) {
+  switch (status) {
+    case attestation::ATTESTATION_SUCCESS:
+      if (pem_certificate_chain.empty()) {
+        LOG(ERROR) << "Got an empty certificate chain with a success response "
+                      "from attestation server";
+        std::move(callback).Run(base::unexpected(
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+        return;
+      }
+      std::move(callback).Run(base::ok(pem_certificate_chain));
+      return;
+    case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
+      // TODO(b/259021973): Is it safe to consider
+      // `ATTESTATION_UNSPECIFIED_FAILURE` transient? Check its side effects.
+      std::move(callback).Run(base::unexpected(
+          SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
+      return;
+    case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+      std::move(callback).Run(base::unexpected(
+          SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+      return;
+  }
+}
+
 }  // namespace
 
 SecondDeviceAuthBroker::SecondDeviceAuthBroker(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<attestation::AttestationFlow> attestation_flow)
     : url_loader_factory_(std::move(url_loader_factory)),
+      attestation_(std::move(attestation_flow)),
       weak_ptr_factory_(this) {
   DCHECK(url_loader_factory_);
+  DCHECK(attestation_);
 }
 
 SecondDeviceAuthBroker::~SecondDeviceAuthBroker() = default;
 
 void SecondDeviceAuthBroker::GetChallengeBytes(
-    GetChallengeBytesCallback challenge_callback) {
+    ChallengeBytesCallback challenge_callback) {
   DCHECK(!endpoint_fetcher_)
       << "This class can handle only one request at a time";
 
@@ -196,7 +231,7 @@ void SecondDeviceAuthBroker::GetChallengeBytes(
 }
 
 void SecondDeviceAuthBroker::OnChallengeBytesFetched(
-    GetChallengeBytesCallback challenge_callback,
+    ChallengeBytesCallback challenge_callback,
     std::unique_ptr<EndpointResponse> response) {
   DCHECK(endpoint_fetcher_)
       << "Received an unexpected callback for challenge bytes";
@@ -214,6 +249,28 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
       base::BindOnce(&GetChallengeBytesFromParsedResponse)
           .Then(base::BindOnce(&RunChallengeBytesCallback,
                                std::move(challenge_callback))));
+}
+
+void SecondDeviceAuthBroker::FetchAttestationCertificate(
+    const std::string& fido_credential_id,
+    AttestationCertificateCallback certificate_callback) {
+  // TODO(b/259021973): Figure out if we can use ECC keys where they are
+  // available.
+  ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
+  profile_specific_data.set_id(base::GenerateGUID());
+  profile_specific_data.set_content_binding(fido_credential_id);
+  attestation_->GetCertificate(
+      /*certificate_profile=*/attestation::AttestationCertificateProfile::
+          PROFILE_DEVICE_SETUP_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
+      /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/std::string(),
+      /*profile_specific_data=*/
+      absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
+          profile_specific_data)),
+      /*callback=*/
+      base::BindOnce(&RunAttestationCertificateCallback,
+                     std::move(certificate_callback)));
 }
 
 }  //  namespace ash::quick_start
