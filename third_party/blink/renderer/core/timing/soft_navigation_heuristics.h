@@ -87,10 +87,13 @@ class SoftNavigationEventScope {
     heuristics->UserInitiatedClick(script_state);
   }
   ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
+  // TODO(yoav): Remove this method, as it's not doing anything useful.
+  void SetResult(DispatchEventResult result) { result_ = result; }
 
  private:
   Persistent<SoftNavigationHeuristics> heuristics_;
   Persistent<ScriptState> script_state_;
+  DispatchEventResult result_;
 };
 
 }  // namespace blink
