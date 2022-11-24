@@ -52,6 +52,12 @@ class Vp8Decoder : public VideoDecoder {
                                       MmapedBuffer* buffer,
                                       std::set<uint32_t> queued_buffer_indexes);
 
+  // Manages buffers holding reference frames and return buffer indexes
+  // |reusable_buffer_slots| that can be reused in CAPTURE queue.
+  void UpdateReusableReferenceBufferSlots(Vp8FrameHeader const& frame_hdr,
+                                          size_t const curr_ref_frame_index,
+                                          std::set<int>& reusable_buffer_slots);
+
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;
 
