@@ -247,12 +247,12 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   display: block;
 }
 
-html:not(.col-resize) #directory-tree .tree-item:not([disabled])
+html:not(.col-resize) #directory-tree .tree-item:not([disabled]) >
     .tree-row:not([active]):not([selected]):hover > .file-row {
   background-color: var(--cros-ripple-color);
 }
 
-html.pointer-active #directory-tree .tree-item:not([disabled])
+html.pointer-active #directory-tree .tree-item:not([disabled]) >
     .tree-row:not([active]):not([selected]) > .file-row:active {
   background-color: var(--cros-ripple-color);
 }
