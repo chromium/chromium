@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed.sort_ui;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -59,7 +62,14 @@ public class FeedOptionsView extends LinearLayout {
 
     /** Expands this view to full height. */
     private void expand() {
-        if (this.getParent() == null) return;
+        // If the view's parent is not shown, we want to set this view as VISIBLE without the
+        // animation, and reset the height if it was previously set by collapse() animation.
+        if (getParent() == null || !(((View) getParent()).isShown())) {
+            setVisibility(VISIBLE);
+            setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+            return;
+        }
+
         // Width is match_parent and height is wrap_content.
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(
                 ((ViewGroup) getParent()).getWidth(), View.MeasureSpec.EXACTLY);
@@ -97,7 +107,13 @@ public class FeedOptionsView extends LinearLayout {
 
     /** Collapses this view to 0 height and then marks it GONE. */
     private void collapse() {
-        if (this.getParent() == null) return;
+        // If the view's parent is not shown, we want to set this view as GONE without the
+        // animation.
+        if (getParent() == null || !(((View) getParent()).isShown())) {
+            setVisibility(GONE);
+            return;
+        }
+
         int initialHeight = getMeasuredHeight();
 
         Animation animation = new Animation() {
