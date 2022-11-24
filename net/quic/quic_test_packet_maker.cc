@@ -1668,7 +1668,6 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
     spdy::SpdyPriority priority,
     quic::QuicStreamId stream_id) {
   quic::PriorityUpdateFrame priority_update;
-  priority_update.prioritized_element_type = quic::REQUEST_STREAM;
   priority_update.prioritized_element_id = stream_id;
   priority_update.priority_field_value =
       base::StrCat({"u=", base::NumberToString(priority)});

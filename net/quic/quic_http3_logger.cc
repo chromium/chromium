@@ -35,10 +35,6 @@ base::Value NetLogSettingsParams(const quic::SettingsFrame& frame) {
 
 base::Value NetLogPriorityUpdateParams(const quic::PriorityUpdateFrame& frame) {
   base::Value::Dict dict;
-  dict.Set("type", frame.prioritized_element_type ==
-                           quic::PrioritizedElementType::REQUEST_STREAM
-                       ? "request_stream"
-                       : "push_stream");
   dict.Set("prioritized_element_id",
            NetLogNumberValue(frame.prioritized_element_id));
   dict.Set("priority_field_value", frame.priority_field_value);
