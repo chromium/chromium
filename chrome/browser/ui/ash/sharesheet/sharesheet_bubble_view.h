@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -56,6 +57,14 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble(views::Widget::ClosedReason reason);
+
+  // --- Added for debugging purposes. Remove after bug fixed.
+
+  ASH_EXPORT void PerformLoggingAndChecks(gfx::NativeWindow native_window);
+  ASH_EXPORT void SetUpDialog();
+  ASH_EXPORT void SetUpParentWindow(gfx::NativeWindow native_window);
+
+  // --- End of functions added for debugging.
 
  private:
   class SharesheetParentWidgetObserver;

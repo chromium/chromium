@@ -128,6 +128,10 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
       std::move(action_cleanup_callback));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
+  if (!native_window) {
+    std::move(delivered_callback).Run(SharesheetResult::kErrorWindowClosed);
+    return;
+  }
   auto* sharesheet_service_delegator = GetOrCreateDelegator(native_window);
   sharesheet_service_delegator->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),

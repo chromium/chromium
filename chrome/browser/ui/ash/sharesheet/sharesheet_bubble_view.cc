@@ -159,23 +159,12 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
     : delegator_(delegator) {
-  CHECK(native_window);
-  CHECK(delegator);
-  SetID(SHARESHEET_BUBBLE_VIEW_ID);
-  // We set the dialog role because views::BubbleDialogDelegate defaults this to
-  // an alert dialog. This would make screen readers announce all of this dialog
-  // which is undesirable.
-  SetAccessibleRole(ax::mojom::Role::kDialog);
-  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
-  set_parent_window(native_window);
-  views::Widget* const widget =
-      views::Widget::GetWidgetForNativeWindow(native_window);
-  CHECK(widget);
-  parent_view_ = widget->GetRootView();
-  CHECK(this);
-  parent_widget_observer_ =
-      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  PerformLoggingAndChecks(native_window);
+
+  SetUpDialog();
+
+  SetUpParentWindow(native_window);
+
   CreateBubble();
 }
 
@@ -473,6 +462,48 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
 void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
   CloseWidgetWithAnimateFadeOut(reason);
 }
+
+// --- Added for debugging purposes. Remove after bug fixed.
+
+void SharesheetBubbleView::PerformLoggingAndChecks(
+    gfx::NativeWindow native_window) {
+  if (!native_window) {
+    LOG(ERROR) << "Native_window value is null";
+  }
+  CHECK(native_window);
+  if (!delegator_) {
+    LOG(ERROR) << "Delegator value is null";
+  }
+  CHECK(delegator_);
+}
+
+void SharesheetBubbleView::SetUpDialog() {
+  SetID(SHARESHEET_BUBBLE_VIEW_ID);
+  // We set the dialog role because views::BubbleDialogDelegate defaults this to
+  // an alert dialog. This would make screen readers announce all of this dialog
+  // which is undesirable.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+}
+
+void SharesheetBubbleView::SetUpParentWindow(gfx::NativeWindow native_window) {
+  set_parent_window(native_window);
+  views::Widget* const widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  if (!widget) {
+    LOG(ERROR) << "Widget value is null";
+  }
+  if (!widget->GetRootView()) {
+    LOG(ERROR) << "Widget RootView value is null";
+  }
+  CHECK(widget);
+  parent_view_ = widget->GetRootView();
+  parent_widget_observer_ =
+      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
+}
+
+// --- End of functions added for debugging.
 
 bool SharesheetBubbleView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
