@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,13 +17,11 @@ import tempfile
 import zipfile
 
 import archive
+import dex_deobfuscate
 import models
 import path_util
 import zip_util
 
-_PROGUARD_CLASS_MAPPING_RE = re.compile(r'(?P<original_name>[^ ]+)'
-                                        r' -> '
-                                        r'(?P<obfuscated_name>[^:]+):')
 _SYMBOL_FULL_NAME_RE = re.compile(r'(.*?)#(.*?)\((.*?)\):? ?(.*)')
 _R8_OUTPUT_RE = re.compile(r"'([^']+)'")
 _R8_PARAM_RE = re.compile(r'\(.*?\)')
@@ -120,25 +119,14 @@ def _ParseDisassembly(disassembly):
   return classes
 
 
-def _CreateClassDeobfuscationMap(obfuscated_mapping):
-  mapping = {}
-  for line in obfuscated_mapping:
-    # We are on a class name so add it to the class mapping.
-    if not line.startswith(' '):
-      match = _PROGUARD_CLASS_MAPPING_RE.search(line)
-      if match:
-        mapping[match.group('obfuscated_name')] = match.group('original_name')
-  return mapping
-
-
-def _ChangeObfusactedNames(disassembly, obfuscated_map):
+def _ChangeObfusactedNames(disassembly, class_deobfuscate_map):
   for _, value in disassembly.items():
     for method in value.methods:
-      method.return_type = obfuscated_map.get(method.return_type,
-                                              method.return_type)
+      method.return_type = class_deobfuscate_map.get(method.return_type,
+                                                     method.return_type)
       if method.param_types:
         for idx, param in enumerate(method.param_types):
-          method.param_types[idx] = obfuscated_map.get(param, param)
+          method.param_types[idx] = class_deobfuscate_map.get(param, param)
   return disassembly
 
 
@@ -160,7 +148,7 @@ def _ComputeDisassemblyForSymbol(deobfuscated_disassembly, symbol_full_name):
 
 
 def _CaptureDisassemblyForSymbol(symbol, apk_to_disassembly, path_resolver,
-                                 deobfuscation_map):
+                                 dex_deobfuscator_cache):
   logging.debug('Attempting to capture disassembly for symbol %s',
                 symbol.full_name)
   container = symbol.container
@@ -185,20 +173,13 @@ def _CaptureDisassemblyForSymbol(symbol, apk_to_disassembly, path_resolver,
     elif apk_file_path.endswith('.apk'):
       logging.info('Creating disassmebly for APK: %s', apk_file_name)
       r8_output = _DisassembleApk(proguard_mapping_file_path, apk_file_path)
-    obfuscated_to_deobfuscated_class_names = deobfuscation_map.get(
-        proguard_mapping_file_path)
     if r8_output is None:
       return None
-    if obfuscated_to_deobfuscated_class_names is None:
-      logging.debug('Parsing mapping file %s', proguard_mapping_file_path)
-      with open(proguard_mapping_file_path, 'r') as fh:
-        obfuscated_to_deobfuscated_class_names = _CreateClassDeobfuscationMap(
-            fh)
-      deobfuscation_map[
-          proguard_mapping_file_path] = obfuscated_to_deobfuscated_class_names
+    class_deobfuscation_map = (
+        dex_deobfuscator_cache.GetForMappingFile(proguard_mapping_file_path))
     logging.debug('Changing obfuscated names...')
-    disassembly = _ChangeObfusactedNames(
-        _ParseDisassembly(r8_output), obfuscated_to_deobfuscated_class_names)
+    disassembly = _ChangeObfusactedNames(_ParseDisassembly(r8_output),
+                                         class_deobfuscation_map)
     apk_to_disassembly[cache_key] = disassembly
   return _ComputeDisassemblyForSymbol(disassembly, symbol.full_name)
 
@@ -223,19 +204,20 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
   after = None
   before_apk_to_disassembly = {}
   after_apk_to_disassembly = {}
-  deobfuscation_map = {}
+  dex_deobfuscator_cache = dex_deobfuscate.CachedDexDeobfuscators()
   for symbol in top_changed_symbols:
     logging.debug('Symbols to go: %d', counter)
     after = _CaptureDisassemblyForSymbol(symbol.after_symbol,
                                          after_apk_to_disassembly,
-                                         after_path_resolver, deobfuscation_map)
+                                         after_path_resolver,
+                                         dex_deobfuscator_cache)
     if after is None:
       continue
     if symbol.before_symbol:
       before = _CaptureDisassemblyForSymbol(symbol.before_symbol,
                                             before_apk_to_disassembly,
                                             before_path_resolver,
-                                            deobfuscation_map)
+                                            dex_deobfuscator_cache)
     else:
       before = None
     logging.info('Adding disassembly for: %s', symbol.full_name)
@@ -296,12 +278,15 @@ def main():
   if not matched_symbols:
     print(f'Symbol {symbol_full_name} not found')
     return
+
+  dex_deobfuscator_cache = dex_deobfuscate.CachedDexDeobfuscators()
   for i, sym in enumerate(matched_symbols):
     if i > 0:
       print('-' * 80)
     sym.container.metadata[
         models.METADATA_PROGUARD_MAPPING_FILENAME] = mapping_file_name
-    bytecode = _CaptureDisassemblyForSymbol(sym, {}, path_resolver, {})
+    bytecode = _CaptureDisassemblyForSymbol(sym, {}, path_resolver,
+                                            dex_deobfuscator_cache)
     for line in bytecode:
       print(line, end='')
   return
