@@ -50,35 +50,25 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
         },
       },
 
-      sites_: {
-        type: Array,
-        observer: 'onSitesChanged_',
-      },
-
       headerString_: String,
-
-      buttonAriaLabel_: String,
     };
   }
 
   private iconStatus_: SafetyCheckIconStatus;
   private headerString_: string;
-  private buttonAriaLabel_: string;
-  private sites_: NotificationPermission[] = [];
   private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register for review notification permission list updates.
     this.addWebUIListener(
         'notification-permission-review-list-maybe-changed',
-        (sites: NotificationPermission[]) =>
-            this.onReviewNotificationPermissionListChanged_(sites));
+        (sites: NotificationPermission[]) => this.onSitesChanged_(sites));
 
-    this.sites_ =
-        await this.siteSettingsBrowserProxy_.getNotificationPermissionReview();
+    this.siteSettingsBrowserProxy_.getNotificationPermissionReview().then(
+        this.onSitesChanged_.bind(this));
   }
 
   private onButtonClick_() {
@@ -87,20 +77,10 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
         /* removeSearch= */ true);
   }
 
-  private async onReviewNotificationPermissionListChanged_(
-      sites: NotificationPermission[]) {
-    this.sites_ = sites;
-  }
-
-  private async onSitesChanged_() {
+  private async onSitesChanged_(sites: NotificationPermission[]) {
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewHeaderLabel',
-            this.sites_.length);
-    this.buttonAriaLabel_ =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewPrimaryLabel',
-            this.sites_!.length);
+            'safetyCheckNotificationPermissionReviewHeaderLabel', sites.length);
   }
 }
 

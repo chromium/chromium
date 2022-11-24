@@ -29,6 +29,7 @@
   }
 
   .header-group-wrapper {
+    flex: 1;
     margin-inline-start: 15px;
   }
 
@@ -113,12 +114,12 @@
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div id="review-header" class="header-with-icon">
     <iron-icon role="img" icon="settings:notifications-none"></iron-icon>
-    <cr-expand-button id="expandButton" class="header-group-wrapper" no-hover
-        expanded="{{notificationPermissionReviewListExpanded_}}">
+    <div class="header-group-wrapper">
       <h2>[[headerString_]]</h2>
-      <div class="secondary">
-        $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
-      </div>
+      <div class="secondary">[[subtitleString_]]</div>
+    </div>
+    <cr-expand-button id="expandButton" no-hover
+        expanded="{{notificationPermissionReviewListExpanded_}}">
     </cr-expand-button>
   </div>
   <iron-collapse class="notification-permissions-list"
@@ -168,7 +169,7 @@
 </template>
 <cr-toast id="undoToast" duration="5000">
   <div id="undoNotification">[[toastText_]]</div>
-  <cr-button aria-label="$i18n{safetyCheckNotificationPermissionReviewUndo}" 
+  <cr-button aria-label="$i18n{safetyCheckNotificationPermissionReviewUndo}"
       on-click="onUndoButtonClick_">
     $i18n{safetyCheckNotificationPermissionReviewUndo}
   </cr-button>

@@ -102,6 +102,9 @@ export class SettingsReviewNotificationPermissionsElement extends
       /* The string for the primary header label. */
       headerString_: String,
 
+      /* The string for the subtitle. */
+      subtitleString_: String,
+
       /**
        * The text that will be shown in the toast element upon clicking one of
        * the actions.
@@ -113,18 +116,19 @@ export class SettingsReviewNotificationPermissionsElement extends
   private sites_: NotificationPermission[];
   private notificationPermissionReviewListExpanded_: boolean;
   private shouldShowCompletionInfo_: boolean;
-  private browserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private lastOrigins_: string[] = [];
   private lastUserAction_: Actions|null;
   private headerString_: string;
+  private subtitleString_: string;
   private sitesLoaded_: boolean = false;
   private modelUpdateDelayMsForTesting_: number|null = null;
   private toastText_: string|null;
+  private eventTracker_: EventTracker = new EventTracker();
+  private shouldRefocusExpandButton_: boolean = false;
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private shouldRefocusExpandButton_: boolean = false;
-  private eventTracker_: EventTracker = new EventTracker();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -426,6 +430,10 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewPrimaryLabel',
+            this.sites_.length);
+    this.subtitleString_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewSecondaryLabel',
             this.sites_.length);
     /**
      * Focus on the expand button after the undo button is clicked and sites are

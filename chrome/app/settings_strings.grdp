@@ -2044,11 +2044,16 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the site settings notification page. The number represents the number of notification permissions to be reviewed.">
     {NUM_SITES, plural,
-     =1 {Review 1 site that recently sent a lot of notifications}
-     other {Review {NUM_SITES} sites that recently sent a lot of notifications}}
+     =1 {Review 1 site that sent a lot of notifications}
+     other {Review {NUM_SITES} sites that sent a lot of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSIONS_REVIEW_BUTTON_ARIA_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is used for the ARIA label of the button of the module in the site settings notification page.">
+    Review notification permissions
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the description of the module in site settings notification page.">
-    These sites sent a lot of notifications recently. You can stop them from sending future notifications.
+    {NUM_SITES, plural,
+     =1 {This site sent a lot of notifications recently. You can stop it from sending future notifications.}
+     other {These sites sent a lot of notifications recently. You can stop them from sending future notifications.}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_IGNORED_TOAST_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to indicate for which site the user has explicitly allowed permissions.">
     Notifications allowed for <ph name="SITE">$1<ex>www.example.com</ex></ph>
@@ -2236,7 +2241,7 @@
   <message name="IDS_SETTINGS_PERMISSIONS" desc="Name of the settings page which allows users to manage permissions and site content settings">
     Permissions and content settings
   </message>
-  <message name="IDS_SETTINGS_PERMISSIONS_DESCRIPTION" desc="Description of the controls available on the permisisons and site content settings page">
+  <message name="IDS_SETTINGS_PERMISSIONS_DESCRIPTION" desc="Description of the controls available on the permissions and site content settings page">
     Controls what information sites can use and show (location, camera, pop-ups, and more)
   </message>
   <message name="IDS_SETTINGS_SECURITY" desc="Name of the settings page which allows

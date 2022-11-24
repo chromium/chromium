@@ -137,8 +137,7 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
       iconStatus: SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS,
       label: 'Review <b>2 sites</b> that recently sent a lot of notifications',
       buttonLabel: 'Review',
-      buttonAriaLabel:
-          'Review 2 sites that recently sent a lot of notifications',
+      buttonAriaLabel: 'Review notification permissions',
     });
 
     // User clicks review button.
@@ -174,8 +173,7 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
       iconStatus: SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS,
       label: 'Review <b>1 site</b> that recently sent a lot of notifications',
       buttonLabel: 'Review',
-      buttonAriaLabel:
-          'Review 1 site that recently sent a lot of notifications',
+      buttonAriaLabel: 'Review notification permissions',
     });
 
     // User clicks review button.
