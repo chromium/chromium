@@ -27,6 +27,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/skia_helper.h"
 #include "components/viz/common/viz_utils.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -41,6 +42,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkShader.h"
+#include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/effects/SkShaderMaskFilter.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -481,6 +483,8 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
     current_canvas_->restore();
 }
 
+DBG_FLAG_FBOOL("software.toggle.capture", software_toggle_capture)
+
 void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   // |resource_provider_| can be NULL in resourceless software draws, which
   // should never produce tile quads in the first place.
@@ -505,6 +509,27 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   current_canvas_->drawImageRect(
       lock.sk_image(), uv_rect, gfx::RectFToSkRect(visible_quad_vertex_rect),
       sampling, &current_paint_, SkCanvas::kStrict_SrcRectConstraint);
+
+  if (software_toggle_capture()) {
+    SkPixmap pixmap;
+    if (lock.sk_image()->peekPixels(&pixmap)) {
+      int buff_id = 0;
+      auto& transform = quad->shared_quad_state->quad_to_target_transform;
+      auto display_rect = gfx::RectF(quad->visible_rect);
+      display_rect = transform.MapRect(display_rect);
+      visible_tex_coord_rect.Scale(1.0f / pixmap.width(),
+                                   1.0f / pixmap.height());
+      DBG_DRAW_RECT_BUFF_UV("software.tile.buffer", display_rect, &buff_id,
+                            visible_tex_coord_rect);
+      VizDebugger::BufferInfo buffer_info;
+      buffer_info.bitmap.setInfo(
+          SkImageInfo::Make(pixmap.width(), pixmap.height(),
+                            kBGRA_8888_SkColorType, kPremul_SkAlphaType));
+      buffer_info.bitmap.allocPixels();
+      buffer_info.bitmap.writePixels(pixmap);
+      DBG_COMPLETE_BUFFERS(buff_id, buffer_info);
+    }
+  }
 }
 
 void SoftwareRenderer::DrawRenderPassQuad(

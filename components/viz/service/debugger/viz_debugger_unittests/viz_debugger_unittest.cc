@@ -14,6 +14,8 @@
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_internal.h"
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_unittest_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -222,17 +224,14 @@ TEST_F(VisualDebuggerTest, SingleBufferSync) {
   static const int kNumFrames = 1;
   GetInternal()->ForceEnabled();
   VizDebuggerInternal::BufferInfo buffer_info;
-  buffer_info.width = 4;
-  buffer_info.height = 4;
-  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
-  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
-    // Random numbers between 0-255 for RGBA values
-    uint8_t temp1 = 123;
-    uint8_t temp2 = 140;
-    uint8_t temp3 = 203;
-    uint8_t temp4 = 255;
-    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
-  }
+  const int kBufferWidth = 4;
+  const int kBufferHeight = 8;
+  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
+                                               kBGRA_8888_SkColorType,
+                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.allocPixels();
+  const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
+  buffer_info.bitmap.eraseColor(kFillColor);
   VizDebuggerInternal::Buffer buffer;
   buffer.id = 0;
   buffer.buffer_info = buffer_info;
@@ -265,19 +264,14 @@ TEST_F(VisualDebuggerTest, SingleBufferSync) {
 
     EXPECT_EQ(draw_rect_calls_cache_[0].buff_id, 0);
 
-    EXPECT_EQ(buffers_[0].buffer_info.width, buffer.buffer_info.width);
-    EXPECT_EQ(buffers_[0].buffer_info.height, buffer.buffer_info.height);
-    for (int j = 0;
-         j < buffers_[0].buffer_info.width * buffers_[0].buffer_info.height;
-         j++) {
-      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_r),
-                static_cast<int>(buffer.buffer_info.buffer[j].color_r));
-      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_g),
-                static_cast<int>(buffer.buffer_info.buffer[j].color_g));
-      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_b),
-                static_cast<int>(buffer.buffer_info.buffer[j].color_b));
-      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_a),
-                static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+    auto& pixmap = buffers_[0].buffer_info.bitmap.pixmap();
+    EXPECT_EQ(pixmap.info().width(), kBufferWidth);
+    EXPECT_EQ(pixmap.info().height(), kBufferHeight);
+    for (int j = 0; j < pixmap.height(); j++) {
+      for (int i = 0; i < pixmap.width(); i++) {
+        auto color = *pixmap.addr32(i, j);
+        EXPECT_EQ(kFillColor, color);
+      }
     }
   }
 }
@@ -290,17 +284,14 @@ TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
   GetInternal()->ForceEnabled();
   GetInternal()->Reset();
   VizDebuggerInternal::BufferInfo buffer_info;
-  buffer_info.width = 4;
-  buffer_info.height = 4;
-  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
-  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
-    // Random numbers between 0-255 for RGBA values
-    uint8_t temp1 = 123;
-    uint8_t temp2 = 140;
-    uint8_t temp3 = 203;
-    uint8_t temp4 = 255;
-    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
-  }
+  const int kBufferWidth = 4;
+  const int kBufferHeight = 8;
+  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
+                                               kBGRA_8888_SkColorType,
+                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.allocPixels();
+  const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
+  buffer_info.bitmap.eraseColor(kFillColor);
   VizDebuggerInternal::Buffer buffer;
   buffer.id = 0;
   buffer.buffer_info = buffer_info;
@@ -332,23 +323,13 @@ TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
       // After the first frame there are no new sources in the loop.
       EXPECT_EQ(sources_cache_.size(), 0u);
     }
-
-    for (int i = 0; i < kNumSubmission; i++) {
-      EXPECT_EQ(draw_rect_calls_cache_[i].buff_id, i);
-
-      EXPECT_EQ(buffers_[i].buffer_info.width, buffer.buffer_info.width);
-      EXPECT_EQ(buffers_[i].buffer_info.height, buffer.buffer_info.height);
-      for (int j = 0;
-           j < buffers_[i].buffer_info.width * buffers_[i].buffer_info.height;
-           j++) {
-        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_r),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_r));
-        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_g),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_g));
-        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_b),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_b));
-        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_a),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+    auto& pixmap = buffers_[0].buffer_info.bitmap.pixmap();
+    EXPECT_EQ(pixmap.info().width(), kBufferWidth);
+    EXPECT_EQ(pixmap.info().height(), kBufferHeight);
+    for (int j = 0; j < pixmap.height(); j++) {
+      for (int i = 0; i < pixmap.width(); i++) {
+        auto color = *pixmap.addr32(i, j);
+        EXPECT_EQ(kFillColor, color);
       }
     }
   }
@@ -362,17 +343,14 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
   GetInternal()->ForceEnabled();
   GetInternal()->Reset();
   VizDebuggerInternal::BufferInfo buffer_info;
-  buffer_info.width = 4;
-  buffer_info.height = 4;
-  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
-  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
-    // Random numbers between 0-255 for RGBA values
-    uint8_t temp1 = 123;
-    uint8_t temp2 = 140;
-    uint8_t temp3 = 203;
-    uint8_t temp4 = 255;
-    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
-  }
+  const int kBufferWidth = 4;
+  const int kBufferHeight = 8;
+  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
+                                               kBGRA_8888_SkColorType,
+                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.allocPixels();
+  const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
+  buffer_info.bitmap.eraseColor(kFillColor);
   VizDebuggerInternal::Buffer buffer;
   buffer.id = 0;
   buffer.buffer_info = buffer_info;
@@ -409,19 +387,14 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
       EXPECT_EQ(sources_cache_.size(), 0u);
       EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
       EXPECT_EQ(draw_rect_calls_cache_[0].buff_id, 1);
-      EXPECT_EQ(buffers_[0].buffer_info.width, buffer.buffer_info.width);
-      EXPECT_EQ(buffers_[0].buffer_info.height, buffer.buffer_info.height);
-      for (int j = 0;
-           j < buffers_[0].buffer_info.width * buffers_[0].buffer_info.height;
-           j++) {
-        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_r),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_r));
-        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_g),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_g));
-        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_b),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_b));
-        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_a),
-                  static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+      auto& pixmap = buffers_[0].buffer_info.bitmap.pixmap();
+      EXPECT_EQ(pixmap.info().width(), kBufferWidth);
+      EXPECT_EQ(pixmap.info().height(), kBufferHeight);
+      for (int j = 0; j < pixmap.height(); j++) {
+        for (int i = 0; i < pixmap.width(); i++) {
+          auto color = *pixmap.addr32(i, j);
+          EXPECT_EQ(kFillColor, color);
+        }
       }
     }
   }
@@ -434,40 +407,36 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
   static const int kNumFrames = 2;
   GetInternal()->ForceEnabled();
   GetInternal()->Reset();
-  VizDebuggerInternal::BufferInfo buffer_info;
-  buffer_info.width = 4;
-  buffer_info.height = 4;
-  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
-  VizDebuggerInternal::Buffer buffer;
-  buffer.id = 0;
+
+  const int kBufferWidth = 4;
+  const int kBufferHeight = 8;
+
+  std::map<int, SkColor> test_buffers_color;
   for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
     SetFilter({TestFilter({""})});
 
     static const int kNumSubmission = 8;
-    static std::vector<VizDebuggerInternal::Buffer> previous_textures;
-    static std::vector<VizDebuggerInternal::Buffer> test_buffers;
-    for (auto&& each : previous_textures) {
-      for (int i = 0; i < buffer_info.width * buffer_info.height; i++) {
-        // Random numbers between 0-255 for RGBA values
-        uint8_t temp1 = (each.id + 15) * 11231;
-        uint8_t temp2 = (each.id + 24) * 32461231;
-        uint8_t temp3 = (each.id + 523) * 72321231;
-        uint8_t temp4 = (each.id + 52) * 321231;
-        buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
-      }
-      buffer.id = each.id;
-      buffer.buffer_info = buffer_info;
-      test_buffers.emplace(test_buffers.begin(), buffer);
-      DBG_COMPLETE_BUFFERS(buffer.id, buffer.buffer_info);
+
+    for (auto&& each : test_buffers_color) {
+      VizDebuggerInternal::BufferInfo buffer_info;
+      buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
+                                                   kBGRA_8888_SkColorType,
+                                                   kUnpremul_SkAlphaType));
+      buffer_info.bitmap.allocPixels();
+      buffer_info.bitmap.eraseColor(each.second);
+      DBG_COMPLETE_BUFFERS(each.first, buffer_info);
     }
-    previous_textures.resize(kNumSubmission);
-    previous_textures.clear();
+
     for (int i = 0; i < kNumSubmission; i++) {
       int id = i;
-      buffer.id = id;
       DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
-      buffer.buffer_info = buffer_info;
-      previous_textures.emplace(previous_textures.end() - i, buffer);
+      // Random numbers between 0-255 for BGRA values
+      uint8_t temp1 = (id + 15) * 11231;
+      uint8_t temp2 = (id + 24) * 32461231;
+      uint8_t temp3 = (id + 523) * 72321231;
+      uint8_t temp4 = (id + 52) * 321231;
+      const auto kFillColor = SkColorSetARGB(temp1, temp2, temp3, temp4);
+      test_buffers_color[id] = kFillColor;
     }
 
     GetFrameData(true);
@@ -490,25 +459,15 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
       EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
       for (int i = 0; i < kNumSubmission; i++) {
         EXPECT_EQ(draw_rect_calls_cache_[i].buff_id, i + 8);
-        EXPECT_EQ(buffers_[i].buffer_info.width,
-                  test_buffers[i].buffer_info.width);
-        EXPECT_EQ(buffers_[i].buffer_info.height,
-                  test_buffers[i].buffer_info.height);
-        for (int j = 0;
-             j < buffers_[i].buffer_info.width * buffers_[i].buffer_info.height;
-             j++) {
-          EXPECT_EQ(
-              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_r),
-              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_r));
-          EXPECT_EQ(
-              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_g),
-              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_g));
-          EXPECT_EQ(
-              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_b),
-              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_b));
-          EXPECT_EQ(
-              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_a),
-              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_a));
+        auto& pixmap = buffers_[i].buffer_info.bitmap.pixmap();
+
+        EXPECT_EQ(pixmap.info().width(), kBufferWidth);
+        EXPECT_EQ(pixmap.info().height(), kBufferHeight);
+        for (int jj = 0; jj < pixmap.height(); jj++) {
+          for (int ii = 0; ii < pixmap.width(); ii++) {
+            auto color = *pixmap.addr32(ii, jj);
+            EXPECT_EQ(test_buffers_color[buffers_[i].id], color);
+          }
         }
       }
     }

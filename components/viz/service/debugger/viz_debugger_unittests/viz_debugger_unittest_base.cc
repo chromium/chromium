@@ -213,15 +213,16 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       base::Value* buffer_info = buffer_dict->FindKey("buffer");
       EXPECT_TRUE(buffer_info->is_list());
       VizDebuggerInternal::BufferInfo buff;
-      buff.width = width;
-      buff.height = height;
-      buff.buffer.resize(width * height);
+      buff.bitmap.setInfo(SkImageInfo::Make(
+          width, height, kBGRA_8888_SkColorType, kUnpremul_SkAlphaType));
+      buff.bitmap.allocPixels();
       for (size_t i = 0; i < buffer_info->GetList().size() / 4; i++) {
         uint8_t temp1 = buffer_info->GetList()[i * 4].GetInt();
         uint8_t temp2 = buffer_info->GetList()[i * 4 + 1].GetInt();
         uint8_t temp3 = buffer_info->GetList()[i * 4 + 2].GetInt();
         uint8_t temp4 = buffer_info->GetList()[i * 4 + 3].GetInt();
-        buff.buffer[i] = {temp1, temp2, temp3, temp4};
+        *buff.bitmap.getAddr32(i % width, i / width) =
+            SkColorSetARGB(temp4, temp1, temp2, temp3);
       }
       int id;
       base::StringToInt(itr->first, &id);

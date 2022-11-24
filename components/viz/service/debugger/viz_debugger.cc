@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/viz/service/debugger/viz_debugger.h"
+#include "third_party/skia/include/core/SkSwizzle.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -172,20 +173,28 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   global_dict.Set("drawcalls", std::move(draw_calls));
 
   base::Value::Dict buff_map;
+
   for (auto&& each : buffers_) {
     base::Value::Dict dict;
-    dict.Set("width", each.buffer_info.width);
-    dict.Set("height", each.buffer_info.height);
+    auto& pixmap = each.buffer_info.bitmap.pixmap();
+    dict.Set("width", pixmap.width());
+    dict.Set("height", pixmap.height());
     base::Value::List lst;
-    for (auto& buffer : each.buffer_info.buffer) {
-      lst.Append(buffer.color_r);
-      lst.Append(buffer.color_g);
-      lst.Append(buffer.color_b);
-      lst.Append(buffer.color_a);
+
+    for (int j = 0; j < pixmap.height(); j++) {
+      for (int i = 0; i < pixmap.width(); i++) {
+        auto color = *pixmap.addr32(i, j);
+        lst.Append(static_cast<int>(SkColorGetR(color)));
+        lst.Append(static_cast<int>(SkColorGetG(color)));
+        lst.Append(static_cast<int>(SkColorGetB(color)));
+        lst.Append(static_cast<int>(SkColorGetA(color)));
+      }
     }
+
     dict.Set("buffer", std::move(lst));
     buff_map.Set(base::NumberToString(each.id), std::move(dict));
   }
+
   global_dict.Set("buff_map", std::move(buff_map));
 
   base::Value::List logs;
@@ -535,5 +544,10 @@ void VizDebugger::AddLogMessage(std::string log,
 }
 
 }  // namespace viz
-
-#endif  // VIZ_DEBUGGER_IS_ON()
+#else  // !VIZ_DEBUGGER_IS_ON()
+namespace viz {
+VizDebugger::BufferInfo::BufferInfo() = default;
+VizDebugger::BufferInfo::~BufferInfo() = default;
+VizDebugger::BufferInfo::BufferInfo(const BufferInfo& a) = default;
+}  // namespace viz
+#endif

@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -84,9 +85,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     BufferInfo();
     ~BufferInfo();
     BufferInfo(const BufferInfo& a);
-    int width;
-    int height;
-    std::vector<DrawOption> buffer;
+    SkBitmap bitmap;
   };
 
   struct Buffer {
@@ -390,6 +389,15 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     static VizDebugger g_debugger;
     return &g_debugger;
   }
+
+  // These structures are part of public API and must be included.
+  struct VIZ_SERVICE_EXPORT BufferInfo {
+    BufferInfo();
+    ~BufferInfo();
+    BufferInfo(const BufferInfo& a);
+    SkBitmap bitmap;
+  };
+
   inline void CompleteFrame(uint64_t counter,
                             const gfx::Size& window_pix,
                             base::TimeTicks time_ticks) {}
@@ -398,6 +406,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   VizDebugger(const VizDebugger&) = delete;
   VizDebugger& operator=(const VizDebugger&) = delete;
 };
+
 }  // namespace viz
 
 #define DBG_OPT_RED 0
