@@ -83,7 +83,13 @@ export class SearchController {
    */
   clear(opt_event) {
     this.directoryModel_.clearLastSearchQuery();
-    this.searchContainer_.clear();
+    // If the call to clear was caused by the startup code we do not clear
+    // the search container. This is to prevent the search container from
+    // hiding launch parameter search query. We detect the app start up
+    // condition by checking that the previous directory entry was not set.
+    if (opt_event && opt_event.previousDirEntry !== null) {
+      this.searchContainer_.clear();
+    }
     // Only update visibility if |clear| is called from "directory-changed"
     // event.
     if (opt_event) {

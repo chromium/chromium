@@ -114,9 +114,7 @@ export class SearchContainer extends EventTarget {
 
     this.optionsContainer_ = optionsContainer;
     this.store_ = getStore();
-    if (util.isSearchV2Enabled()) {
-      this.store_.subscribe(this);
-    }
+    this.store_.subscribe(this);
 
     this.setupEventHandlers();
   }
@@ -135,8 +133,8 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
-   * Clears the current search query. If the query changed as a result, it posts
-   * a query changed event.
+   * Clears the current search query. If the query was not already empty, it
+   * closes the search box.
    */
   clear() {
     const value = this.inputElement_.value;
@@ -145,7 +143,6 @@ export class SearchContainer extends EventTarget {
       this.postQueryChangedEvent();
       requestAnimationFrame(() => {
         this.closeSearch();
-        this.searchButton_.focus();
       });
     }
   }
@@ -156,7 +153,7 @@ export class SearchContainer extends EventTarget {
    */
   setQuery(query: string) {
     this.inputElement_.value = query;
-    this.inputElement_.focus();
+    this.openSearch();
   }
 
   /**
@@ -215,10 +212,18 @@ export class SearchContainer extends EventTarget {
       // Bail out early if the search part of the state has not changed.
       return;
     }
+    // Cache the last received search state for future comparisons.
     this.searchState_ = search;
-    if (search && search.status) {
+    if (!search) {
+      return;
+    }
+    const query = search.query;
+    if (query !== undefined && query !== this.getQuery()) {
+      this.setQuery(query);
+    }
+    if (util.isSearchV2Enabled()) {
       const status = search.status;
-      if (status === PropStatus.STARTED && search.query) {
+      if (status === PropStatus.STARTED && query) {
         this.showOptions_();
       } else if (status === SearchStatus.INACTIVE) {
         this.hideOptions_();
@@ -362,6 +367,7 @@ export class SearchContainer extends EventTarget {
     });
     this.clearButton_.addEventListener('click', () => {
       this.clear();
+      this.searchButton_.focus();
     });
     // Hide the search if the user clicks outside it and there is no search
     // query entered.
@@ -402,6 +408,7 @@ export class SearchContainer extends EventTarget {
       }, {once: true, passive: true, capture: true});
       this.searchWrapper_.classList.add('has-cursor', 'has-text');
       this.searchBox_.classList.add('has-cursor', 'has-text');
+      this.searchButton_.tabIndex = -1;
     }
   }
 
@@ -427,6 +434,7 @@ export class SearchContainer extends EventTarget {
       }, {once: true, passive: true, capture: true});
       this.searchWrapper_.classList.remove('has-cursor', 'has-text');
       this.searchBox_.classList.remove('has-cursor', 'has-text');
+      this.searchButton_.tabIndex = 0;
     }
   }
 

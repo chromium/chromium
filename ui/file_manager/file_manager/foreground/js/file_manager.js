@@ -26,6 +26,8 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {ForegroundWindow} from '../../externs/foreground_window.js';
+import {PropStatus} from '../../externs/ts/state.js';
+import {searchAction} from '../../state/actions.js';
 import {getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
@@ -1371,7 +1373,8 @@ export class FileManager extends EventTarget {
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       metrics.startInterval('Load.ProcessInitialSearchQuery');
-      this.searchController_.setSearchQuery(searchQuery);
+      getStore().dispatch(
+          searchAction({query: searchQuery, status: PropStatus.STARTED}));
       // Show a spinner, as the crossover search function call could be slow.
       const hideSpinnerCallback = this.spinnerController_.show();
       const queryMatchedDirEntry =
