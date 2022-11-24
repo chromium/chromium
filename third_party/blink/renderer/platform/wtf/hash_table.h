@@ -1285,6 +1285,9 @@ struct HashTableBucketInitializer<false> {
   }
 };
 
+// Specialization when the hash traits for a type indicate that the
+// representation of an empty object is all zeros (independent of whether or not
+// the object's type is considered to be trivially copyable).
 template <>
 struct HashTableBucketInitializer<true> {
   STATIC_ONLY(HashTableBucketInitializer);
@@ -1294,6 +1297,8 @@ struct HashTableBucketInitializer<true> {
     // makes it possible to use this with types that don't support copying.
     // The memset to 0 looks like a slow operation but is optimized by the
     // compilers.
+    //
+    // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
     memset(&bucket, 0, sizeof(bucket));
   }
 
@@ -1304,6 +1309,7 @@ struct HashTableBucketInitializer<true> {
     // The memset to 0 looks like a slow operation but is optimized by the
     // compilers.
     if (!Allocator::kIsGarbageCollected) {
+      // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
       memset(&bucket, 0, sizeof(bucket));
       return;
     }
@@ -1805,6 +1811,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
     if (IsEmptyOrDeletedBucket(table_[i])) {
       DCHECK_NE(&table_[i], entry);
       if (Traits::kEmptyValueIsZero) {
+        // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
         memset(&temporary_table[i], 0, sizeof(ValueType));
       } else {
         InitializeBucket(temporary_table[i]);
