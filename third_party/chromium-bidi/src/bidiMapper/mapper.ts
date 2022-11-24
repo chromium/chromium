@@ -106,7 +106,7 @@ function _createCdpConnection() {
     }
   }
 
-  return new CdpConnection(new WindowCdpTransport());
+  return new CdpConnection(new WindowCdpTransport(), log(LogType.cdp));
 }
 
 function _createBidiServer() {
