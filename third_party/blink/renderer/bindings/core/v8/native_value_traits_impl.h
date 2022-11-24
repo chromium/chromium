@@ -54,16 +54,50 @@ CORE_EXPORT void NativeValueTraitsInterfaceNotOfType(
     int argument_index,
     ExceptionState& exception_state);
 
+// Class created for IDLAny types. Converts to either ScriptValue or
+// v8::Local<v8::Value>.
+class CORE_EXPORT NativeValueTraitsAnyAdapter {
+  STACK_ALLOCATED();
+
+ public:
+  NativeValueTraitsAnyAdapter() = default;
+  NativeValueTraitsAnyAdapter(const NativeValueTraitsAnyAdapter&) = delete;
+  NativeValueTraitsAnyAdapter(NativeValueTraitsAnyAdapter&&) = default;
+  explicit NativeValueTraitsAnyAdapter(v8::Isolate* isolate,
+                                       v8::Local<v8::Value> value)
+      : isolate_(isolate), v8_value_(value) {}
+
+  NativeValueTraitsAnyAdapter& operator=(const NativeValueTraitsAnyAdapter&) =
+      delete;
+  NativeValueTraitsAnyAdapter& operator=(NativeValueTraitsAnyAdapter&&) =
+      default;
+  NativeValueTraitsAnyAdapter& operator=(const ScriptValue& value) {
+    isolate_ = value.GetIsolate();
+    v8_value_ = value.V8Value();
+    return *this;
+  }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator v8::Local<v8::Value>() const { return v8_value_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator ScriptValue() const { return ScriptValue(isolate_, v8_value_); }
+
+ private:
+  v8::Isolate* isolate_ = nullptr;
+  v8::Local<v8::Value> v8_value_;
+};
+
 }  // namespace bindings
 
 // any
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLAny>
     : public NativeValueTraitsBase<IDLAny> {
-  static ScriptValue NativeValue(v8::Isolate* isolate,
-                                 v8::Local<v8::Value> value,
-                                 ExceptionState& exception_state) {
-    return ScriptValue(isolate, value);
+  static bindings::NativeValueTraitsAnyAdapter NativeValue(
+      v8::Isolate* isolate,
+      v8::Local<v8::Value> value,
+      ExceptionState& exception_state) {
+    return bindings::NativeValueTraitsAnyAdapter(isolate, value);
   }
 };
 

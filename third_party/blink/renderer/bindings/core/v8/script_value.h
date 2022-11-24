@@ -44,6 +44,8 @@ namespace blink {
 
 class ScriptState;
 
+// ScriptValue is used when an idl specifies the type as 'any'. ScriptValue
+// stores the v8 value using WorldSafeV8Reference.
 class CORE_EXPORT ScriptValue final {
   DISALLOW_NEW();
 

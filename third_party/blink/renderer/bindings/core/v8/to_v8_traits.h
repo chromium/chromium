@@ -60,6 +60,12 @@ struct ToV8Traits<IDLAny> {
       return v8::Undefined(script_state->GetIsolate());
     return value;
   }
+
+  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const v8::MaybeLocal<v8::Value>& value) {
+    return value;
+  }
 };
 
 // Boolean
