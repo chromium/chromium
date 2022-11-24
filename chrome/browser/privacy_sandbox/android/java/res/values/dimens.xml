@@ -21,4 +21,9 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_notice_row_logo_width">60dp</dimen>
   <dimen name="privacy_sandbox_notice_row_logo_height">61dp</dimen>
   <dimen name="privacy_sandbox_interests_illustration_height">185dp</dimen>
+  <dimen name="custom_preference_category_paddingVertical">8dp</dimen>
+  <dimen name="custom_preference_category_title_marginBottom">8dp</dimen>
+  <dimen name="custom_image_preference_paddingVertical">24dp</dimen>
+  <dimen name="custom_image_preference_icon_size">24dp</dimen>
+  <dimen name="custom_image_preference_icon_marginBottom">16dp</dimen>
 </resources>

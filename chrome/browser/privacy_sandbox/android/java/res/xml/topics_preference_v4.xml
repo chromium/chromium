@@ -4,7 +4,46 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(http://b/254412636): Create page layout. -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="topics_toggle"
+        android:title="@string/settings_topics_page_toggle_label"
+        android:summary="@string/settings_topics_page_toggle_sub_label"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="current_topics"
+        android:layout="@layout/category_with_summary_preference"
+        android:title="@string/settings_topics_page_current_topics_heading"
+        android:summary="@string/settings_topics_page_current_topics_description"
+        app:isPreferenceVisible="false"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="topics_disabled"
+        android:layout="@layout/centered_image_preference"
+        android:summary="@string/settings_topics_page_current_topics_description_disabled"
+        android:icon="@drawable/ic_motion_photos_off_24dp"
+        app:isPreferenceVisible="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="topics_empty"
+        android:layout="@layout/centered_image_preference"
+        android:summary="@string/settings_topics_page_current_topics_description_empty"
+        android:icon="@drawable/ic_hourglass_empty_24dp"
+        app:isPreferenceVisible="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="blocked_topics"
+        android:title="@string/settings_topics_page_blocked_topics_heading"
+        app:allowDividerBelow="false"/>
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="topics_page_footer"
+        android:summary="@string/settings_topics_page_footer"
+        app:isPreferenceVisible="false"
+        app:allowDividerBelow="false" />
 
 </PreferenceScreen>
