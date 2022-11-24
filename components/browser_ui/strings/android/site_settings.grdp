@@ -387,10 +387,31 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOWED" desc="Summary text explaining that sites are allowed to use cookies and that it is the recommended setting.">
     Allow sites to save and read cookie data (recommended)
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SITE_DATA_PAGE_ALLOW_RADIO_LABEL" desc="Summary text explaining that sites are allowed to use cookies." translateable="false">
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_DESCRIPTION" desc="" translateable="false">
+    Sed finibus augue vel risus pellentesque, id auctor enim congue. Donec tincidunt pulvinar orci, et mattis dolor egestas ut. Nam ultrices mauris tortor, et maximus arcu iaculis vitae.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_TOGGLE_SUB_LABEL_ALLOW" desc="" translateable="false">
     Sites can save data on your device
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SITE_DATA_PAGE_BLOCK_RADIO_LABEL" desc="Summary text explaining that sites are blocked from using cookies and that it is not a recommended setting." translateable="false">
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_TOGGLE_SUB_LABEL_BLOCK" desc="" translateable="false">
+    Don't allow sites to save data on your device (not recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_TITLE" desc="" translateable="false">
+    Duis non nisi sed lectus viverra venenatis?
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_DESCRIPTION" desc="" translateable="false">
+    Suspendisse vitae malesuada purus, ut molestie eros. Fusce malesuada ullamcorper sem a blandit.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CONFIRM_BUTTON" desc="" translateable="false">
+    Turn off
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON" desc="" translateable="false">
+    Cancel
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_ADD_ALLOW_EXCEPTION_DESCRIPTION" desc="Summary text explaining that sites are allowed to use cookies." translateable="false">
+    Sites can save data on your device
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_ADD_BLOCK_EXCEPTION_DESCRIPTION" desc="Summary text explaining that sites are blocked from using cookies and that it is not a recommended setting." translateable="false">
     Don't allow sites to save data on your device (not recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_ALLOW" desc="The description for the allow Cookies for website dialog.">

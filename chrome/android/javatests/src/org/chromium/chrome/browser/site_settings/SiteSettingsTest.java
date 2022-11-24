@@ -169,6 +169,8 @@ public class SiteSettingsTest {
 
     private static final String[] NULL_ARRAY = new String[0];
     private static final String[] BINARY_TOGGLE = new String[] {"binary_toggle"};
+    private static final String[] BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT =
+            new String[] {"info_text", "binary_toggle", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION =
             new String[] {"binary_toggle", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_OS_WARNING_EXTRA =
@@ -1352,8 +1354,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOnlyExpectedPreferencesSiteData() {
-        testExpectedPreferences(SiteSettingsCategory.Type.SITE_DATA, BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE_WITH_EXCEPTION);
+        testExpectedPreferences(SiteSettingsCategory.Type.SITE_DATA,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
     }
 
     @Test
