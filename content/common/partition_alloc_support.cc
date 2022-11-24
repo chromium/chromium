@@ -9,6 +9,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -387,6 +388,16 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         ->EnableLargeEmptySlotSpanRing();
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if BUILDFLAG(IS_WIN)
+  // Browser process only, since this is the one we want to prevent from
+  // crashing the most (as it takes down all the tabs).
+  if (base::FeatureList::IsEnabled(
+          base::features::kPageAllocatorRetryOnCommitFailure) &&
+      process_type.empty()) {
+    partition_alloc::SetRetryOnCommitFailure(true);
+  }
+#endif
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(

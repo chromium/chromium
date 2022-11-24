@@ -10,8 +10,10 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace partition_alloc::internal {
@@ -30,6 +32,66 @@ DiscardVirtualMemoryFunction s_discard_virtual_memory =
 // |VirtualAlloc| will fail if allocation at the hint address is blocked.
 constexpr bool kHintIsAdvisory = false;
 std::atomic<int32_t> s_allocPageErrorCode{ERROR_SUCCESS};
+
+bool IsOutOfMemory(DWORD error) {
+  // From
+  // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+  switch (error) {
+    // Page file is being extended.
+    case ERROR_COMMITMENT_MINIMUM:
+      // Page file is too small.
+    case ERROR_COMMITMENT_LIMIT:
+#if defined(PA_HAS_64_BITS_POINTERS)
+    // Not enough memory resources are available to process this command.
+    //
+    // It is not entirely clear whether this error pertains to out of address
+    // space errors, or the kernel being out of memory. Only include it for 64
+    // bit architectures, since address space issues are unlikely there.
+    case ERROR_NOT_ENOUGH_MEMORY:
+#endif
+    case ERROR_PAGEFILE_QUOTA:
+      // Insufficient quota to complete the requested service.
+      return true;
+    default:
+      return false;
+  }
+}
+
+void* VirtualAllocWithRetry(void* address,
+                            size_t size,
+                            DWORD type_flags,
+                            DWORD access_flags) {
+  void* ret = nullptr;
+  // Failure to commit memory can be temporary, in at least two cases:
+  // - The page file is getting extended.
+  // - Another process terminates (most likely because of OOM)
+  //
+  // Wait and retry, since the alternative is crashing. Note that if we
+  // selectively apply this... hum... beautiful hack to some process types only,
+  // "some process crashing" may very well be one of ours, which may be
+  // desirable (e.g. some processes like the browser are more important than
+  // others).
+  //
+  // This approach has been shown to be effective for Firefox, see
+  // crbug.com/1392738 for context. Constants below are accordingly taken from
+  // Firefox as well.
+  constexpr int kMaxTries = 10;
+  constexpr int kDelayMs = 50;
+
+  bool should_retry = GetRetryOnCommitFailure() && (type_flags & MEM_COMMIT) &&
+                      (access_flags != PAGE_NOACCESS);
+  for (int tries = 0; tries < kMaxTries; tries++) {
+    ret = VirtualAlloc(address, size, type_flags, access_flags);
+    // Only retry for commit failures. If this is an address space problem
+    // (e.g. caller asked for an address which is not available), this is
+    // unlikely to be resolved by waiting.
+    if (ret || !should_retry || !IsOutOfMemory(GetLastError()))
+      break;
+
+    Sleep(kDelayMs);
+  }
+  return ret;
+}
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
   switch (accessibility.permissions) {
@@ -62,8 +124,8 @@ uintptr_t SystemAllocPagesInternal(
                             PageAccessibilityConfiguration::kInaccessible)
                                ? (MEM_RESERVE | MEM_COMMIT)
                                : MEM_RESERVE;
-  void* ret = VirtualAlloc(reinterpret_cast<void*>(hint), length, type_flags,
-                           access_flag);
+  void* ret = VirtualAllocWithRetry(reinterpret_cast<void*>(hint), length,
+                                    type_flags, access_flag);
   if (ret == nullptr) {
     s_allocPageErrorCode = GetLastError();
   }
@@ -95,8 +157,11 @@ bool TrySetSystemPagesAccessInternal(
   if (accessibility.permissions ==
       PageAccessibilityConfiguration::kInaccessible)
     return VirtualFree(ptr, length, MEM_DECOMMIT) != 0;
-  return nullptr !=
-         VirtualAlloc(ptr, length, MEM_COMMIT, GetAccessFlags(accessibility));
+  // Call the retry path even though this function can fail, because callers of
+  // this are likely to crash the process when this function fails, and we don't
+  // want that for transient failures.
+  return nullptr != VirtualAllocWithRetry(ptr, length, MEM_COMMIT,
+                                          GetAccessFlags(accessibility));
 }
 
 void SetSystemPagesAccessInternal(
@@ -112,7 +177,8 @@ void SetSystemPagesAccessInternal(
       PA_CHECK(static_cast<uint32_t>(ERROR_SUCCESS) == GetLastError());
     }
   } else {
-    if (!VirtualAlloc(ptr, length, MEM_COMMIT, GetAccessFlags(accessibility))) {
+    if (!VirtualAllocWithRetry(ptr, length, MEM_COMMIT,
+                               GetAccessFlags(accessibility))) {
       int32_t error = GetLastError();
       if (error == ERROR_COMMITMENT_LIMIT)
         OOM_CRASH(length);
@@ -195,7 +261,7 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   // DiscardVirtualMemory is buggy in Win10 SP0, so fall back to MEM_RESET on
   // failure.
   if (ret) {
-    PA_CHECK(VirtualAlloc(ptr, length, MEM_RESET, PAGE_READWRITE));
+    PA_CHECK(VirtualAllocWithRetry(ptr, length, MEM_RESET, PAGE_READWRITE));
   }
 }
 

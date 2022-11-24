@@ -192,5 +192,12 @@ BASE_FEATURE(kPartitionAllocSortActiveSlotSpans,
              "PartitionAllocSortActiveSlotSpans",
              FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Whether to retry allocations when commit fails.
+BASE_FEATURE(kPageAllocatorRetryOnCommitFailure,
+             "PageAllocatorRetryOnCommitFailure",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
 }  // namespace base

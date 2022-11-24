@@ -390,4 +390,18 @@ size_t GetTotalMappedSize() {
   return g_total_mapped_address_space;
 }
 
+#if BUILDFLAG(IS_WIN)
+namespace {
+bool g_retry_on_commit_failure = false;
+}
+
+void SetRetryOnCommitFailure(bool retry_on_commit_failure) {
+  g_retry_on_commit_failure = retry_on_commit_failure;
+}
+
+bool GetRetryOnCommitFailure() {
+  return g_retry_on_commit_failure;
+}
+#endif
+
 }  // namespace partition_alloc
