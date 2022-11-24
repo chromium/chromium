@@ -124,7 +124,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     else {
       document_rule_predicate =
           DocumentRulePredicate::Parse(input->GetJSONObject("where"), base_url,
-                                       IGNORE_EXCEPTION_FOR_TESTING);
+                                       context, IGNORE_EXCEPTION_FOR_TESTING);
     }
     if (!document_rule_predicate)
       return nullptr;

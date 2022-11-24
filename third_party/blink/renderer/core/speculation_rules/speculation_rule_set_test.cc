@@ -4,19 +4,14 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
-#include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -41,7 +36,7 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -1028,15 +1023,19 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
   DocumentRulePredicate* CreatePredicate(
       String where_text,
       KURL base_url = KURL("https://example.com/")) {
+    // clang-format off
     auto* rule_set =
-        SpeculationRuleSet::Parse(String::Format(R"({
-        "prefetch": [{
-          "source": "document",
-          "where": {%s}
-        }]
-      })",
-                                                 where_text.Latin1().c_str()),
-                                  base_url, execution_context());
+        SpeculationRuleSet::Parse(
+          String::Format(
+            R"({
+              "prefetch": [{
+                "source": "document",
+                "where": {%s}
+              }]
+            })",
+            where_text.Latin1().c_str()), base_url, execution_context()
+        );
+    // clang-format on
     DCHECK(!rule_set->prefetch_rules().empty()) << "Invalid predicate.";
     return rule_set->prefetch_rules()[0]->predicate();
   }
@@ -1158,6 +1157,49 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURL) {
   EXPECT_THAT(with_base_specified, Href({URLPattern("http://bar.com/hello")}));
 }
 
+// Testing on http://bar.com requesting a ruleset from http://foo.com.
+TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
+  static_cast<NullExecutionContext*>(execution_context())
+      ->SetURL(KURL{"http://bar.com"});
+
+  auto* with_relative_to = CreatePredicate(
+      R"(
+        "href_matches": "/hello",
+        "relative_to": "document"
+      )",
+      KURL("http://foo.com"));
+  EXPECT_THAT(with_relative_to, Href({URLPattern("http://bar.com/hello")}));
+
+  auto* relative_to_no_effect = CreatePredicate(
+      R"(
+        "href_matches": {"pathname": "/hello", "baseURL": "http://buz.com"},
+        "relative_to": "document"
+      )",
+      KURL("http://foo.com"));
+  EXPECT_THAT(relative_to_no_effect,
+              Href({URLPattern("http://buz.com/hello")}));
+
+  auto* nested_relative_to = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {
+            "or": [
+              {"href_matches": {"pathname": "/hello"},
+               "relative_to": "document"},
+              {"not": {"href_matches": "/world"}}
+            ]
+          }
+        }]
+      })",
+      KURL("http://foo.com/"), execution_context());
+
+  EXPECT_THAT(nested_relative_to->prefetch_rules(),
+              ElementsAre(MatchesPredicate(
+                  Or({Href({URLPattern("http://bar.com/hello")}),
+                      Neg(Href({URLPattern("http://foo.com/world")}))}))));
+}
+
 TEST_F(DocumentRulesTest, DropInvalidRules) {
   auto* rule_set = SpeculationRuleSet::Parse(
       R"({"prefetch": [)"
@@ -1214,6 +1256,26 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
       // pattern object has invalid value.
       R"({"source": "document",
           "where": {"href_matches": {"protocol": "::"}}},)"
+
+      // Invalid key pairs.
+      R"({
+          "source": "document",
+          "where": {"href_matches": "/hello.html",
+                    "invalid_key": "invalid_val"}
+        },)"
+
+      // Bad value of "relative_to".
+      R"({
+          "source": "document",
+          "where": {"href_matches": "/hello.html",
+                    "relative_to": "not_document"}
+        },)"
+
+      // Currently the spec does not allow three keys.
+      R"({"source": "document",
+          "where":{"href_matches": "/hello.html",
+                   "relative_to": "document",
+                   "world-cup": "2022"}},)"
 
       // valid document rule.
       R"({"source": "document",

@@ -4,11 +4,10 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -253,35 +252,45 @@ URLPattern* ParseRawPattern(JSONValue* raw_pattern,
   }
   return nullptr;
 }
+
+String GetPredicateType(JSONObject* input) {
+  String predicate_type;
+  constexpr const char* kValidTypes[] = {"and", "or", "not", "href_matches",
+                                         "selector_matches"};
+  for (String type : kValidTypes) {
+    if (input->Get(type)) {
+      // If we'd already found one, then this is ambiguous.
+      if (!predicate_type.IsNull())
+        return String();
+
+      // Otherwise, this is the predicate type.
+      predicate_type = std::move(type);
+    }
+  }
+  return predicate_type;
+}
 }  // namespace
 
 // static
 DocumentRulePredicate* DocumentRulePredicate::Parse(
     JSONObject* input,
-    const KURL& base_url,
+    const KURL& ruleset_base_url,
+    const ExecutionContext* execution_context,
     ExceptionState& exception_state) {
   // If input is not a map, then return null.
   if (!input)
     return nullptr;
 
-  // If input does not contain exactly one of "and", "or", "not", "href_matches"
-  // and "selector_matches", then return null.
-  const char* const kKnownKeys[] = {"and", "or", "not", "href_matches",
-                                    "selector_matches"};
-  // Note: The spec currently makes an allowance for a predicate to have
-  // multiple keys, but currently none of the defined predicates can be paired
-  // with other keys, so we just assume that there can only be one key and it is
-  // the predicate type.
-  if (input->size() != 1)
+  // If we can't get a valid predicate type, return null.
+  String predicate_type = GetPredicateType(input);
+  if (predicate_type.IsNull())
     return nullptr;
-  if (!base::Contains(kKnownKeys, input->at(0).first))
-    return nullptr;
-
-  // Otherwise, let predicateType be that key.
-  const String& predicate_type = input->at(0).first;
 
   // If predicateType is "and" or "or"
   if (predicate_type == "and" || predicate_type == "or") {
+    // "and" and "or" cannot be paired with any other keys.
+    if (input->size() != 1)
+      return nullptr;
     // Let rawClauses be the input[predicateType].
     blink::JSONArray* raw_clauses = input->GetArray(predicate_type);
 
@@ -297,8 +306,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       JSONObject* raw_clause = JSONObject::Cast(raw_clauses->at(i));
       // Let clause be the result of parsing a document rule predicate given
       // rawClause and baseURL.
-      DocumentRulePredicate* clause =
-          Parse(raw_clause, base_url, exception_state);
+      DocumentRulePredicate* clause = Parse(raw_clause, ruleset_base_url,
+                                            execution_context, exception_state);
       // If clause is null, then return null.
       if (!clause)
         return nullptr;
@@ -318,13 +327,16 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "not"
   if (predicate_type == "not") {
+    // "not" cannot be paired with any other keys.
+    if (input->size() != 1)
+      return nullptr;
     // Let rawClause be the input[predicateType].
     JSONObject* raw_clause = input->GetJSONObject(predicate_type);
 
     // Let clause be the result of parsing a document rule predicate given
     // rawClause and baseURL.
     DocumentRulePredicate* clause =
-        Parse(raw_clause, base_url, exception_state);
+        Parse(raw_clause, ruleset_base_url, execution_context, exception_state);
 
     // If clause is null, then return null.
     if (!clause)
@@ -336,6 +348,32 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "href_matches"
   if (predicate_type == "href_matches") {
+    // TODO(crbug/1371522): Add the explainer to
+    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#document-rules
+
+    // For now, use the ruleset's base url as the base url for prefetch rules.
+    KURL base_url = ruleset_base_url;
+
+    for (wtf_size_t i = 0; i < input->size(); ++i) {
+      const String key = input->at(i).first;
+      if (key == "href_matches") {
+        // This is always expected.
+      } else if (key == "relative_to") {
+        // If "relative_to" is present, its value must be "document".
+        String relative_to;
+        if (!input->GetString("relative_to", &relative_to) ||
+            relative_to != "document") {
+          return nullptr;
+        }
+        // If "relative_to" is present and its value is "document", use the
+        // document's base url as the base url for prefetch rules.
+        base_url = execution_context->BaseURL();
+      } else {
+        // Otherwise, this is an unrecognized key. The predicate is invalid.
+        return nullptr;
+      }
+    }
+
     // Let rawPatterns be input["href_matches"].
     Vector<JSONValue*> raw_patterns;
     JSONArray* href_matches = input->GetArray("href_matches");
@@ -368,7 +406,7 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
   }
 
   // If predicateType is "selector_matches"
-  if (predicate_type == "selector_matches") {
+  if (predicate_type == "selector_matches" && input->size() == 1) {
     // TODO(crbug.com/1371522): Implement this.
     NOTIMPLEMENTED();
   }

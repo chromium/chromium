@@ -14,6 +14,7 @@
 namespace blink {
 
 class HTMLAnchorElement;
+class ExecutionContext;
 class ExceptionState;
 class JSONObject;
 class KURL;
@@ -26,7 +27,8 @@ class CORE_EXPORT DocumentRulePredicate
   virtual ~DocumentRulePredicate() = default;
 
   static DocumentRulePredicate* Parse(JSONObject* input,
-                                      const KURL& base_url,
+                                      const KURL& ruleset_base_url,
+                                      const ExecutionContext* context,
                                       ExceptionState& exception_state);
   // Creates a predicate that matches with any link (i.e. Matches() below will
   // always returns true).
