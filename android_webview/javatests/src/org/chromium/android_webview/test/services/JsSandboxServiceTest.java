@@ -728,4 +728,72 @@ public class JsSandboxServiceTest {
             Assert.assertEquals(stableExpected, result);
         }
     }
+
+    @Test
+    @MediumTest
+    public void testAsyncPromiseCallbacks() throws Throwable {
+        // Unlike testPromiseReturn and testPromiseEvaluationThrow, this test is guaranteed to
+        // exercise promises in an asynchronous way, rather than in ways which cause a promise to
+        // resolve or reject immediately within the v8::Script::Run call.
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                // Set up a promise that we can resolve
+                final String goodPromiseCode = ""
+                        + "let ext_resolve;"
+                        + "new Promise((resolve, reject) => {"
+                        + " ext_resolve = resolve;"
+                        + "})";
+                ListenableFuture<String> goodPromiseFuture =
+                        jsIsolate.evaluateJavaScriptAsync(goodPromiseCode);
+
+                // Set up a promise that we can reject
+                final String badPromiseCode = ""
+                        + "let ext_reject;"
+                        + "new Promise((resolve, reject) => {"
+                        + " ext_reject = reject;"
+                        + "})";
+                ListenableFuture<String> badPromiseFuture =
+                        jsIsolate.evaluateJavaScriptAsync(badPromiseCode);
+
+                // This acts as a barrier to ensure promise code finishes (to the extent of
+                // returning the promises) before we ask to evaluate the trigger code - else the
+                // potentially async `ext_resolve = resolve` (or `ext_reject = reject`) code might
+                // not have been run or queued yet.
+                jsIsolate.evaluateJavaScriptAsync("''").get(5, TimeUnit.SECONDS);
+
+                // Trigger the resolve and rejection from another evaluation to ensure the promises
+                // are truly asynchronous.
+                final String triggerCode = ""
+                        + "ext_resolve('I should succeed!');"
+                        + "ext_reject(new Error('I should fail!'));"
+                        + "'DONE'";
+                ListenableFuture<String> triggerFuture =
+                        jsIsolate.evaluateJavaScriptAsync(triggerCode);
+                String triggerResult = triggerFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("DONE", triggerResult);
+
+                // Check resolve
+                String goodPromiseResult = goodPromiseFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("I should succeed!", goodPromiseResult);
+
+                // Check reject
+                try {
+                    String badPromiseResult = badPromiseFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof EvaluationFailedException)) {
+                        throw e;
+                    }
+                    Assert.assertTrue(e.getCause().getMessage().contains("I should fail!"));
+                }
+            }
+        }
+    }
 }

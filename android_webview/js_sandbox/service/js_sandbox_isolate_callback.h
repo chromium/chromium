@@ -8,10 +8,13 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace android_webview {
 
-class JsSandboxIsolateCallback final {
+class JsSandboxIsolateCallback final
+    : public base::RefCounted<JsSandboxIsolateCallback> {
  public:
   enum class ErrorType {
     kJsEvaluationError = 0,
@@ -22,7 +25,6 @@ class JsSandboxIsolateCallback final {
       base::android::ScopedJavaGlobalRef<jobject>&& callback);
   JsSandboxIsolateCallback(const JsSandboxIsolateCallback&) = delete;
   JsSandboxIsolateCallback& operator=(const JsSandboxIsolateCallback&) = delete;
-  ~JsSandboxIsolateCallback();
 
   void ReportResult(const std::string& result);
   void ReportJsEvaluationError(const std::string& error);
@@ -35,8 +37,15 @@ class JsSandboxIsolateCallback final {
                                       uint64_t heap_usage);
 
  private:
+  friend class base::RefCounted<JsSandboxIsolateCallback>;
+  ~JsSandboxIsolateCallback();
+
   void ReportError(ErrorType error_type, const std::string& error);
 
+  base::android::ScopedJavaGlobalRef<jobject> UseCallback();
+
+  // Access this via UseCallback() to ensure the callback isn't used multiple
+  // times. This value with be reset (null) when it is used.
   base::android::ScopedJavaGlobalRef<jobject> callback_;
 };
 

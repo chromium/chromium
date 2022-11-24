@@ -63,8 +63,8 @@ class JsSandboxIsolate {
   void InitializeIsolateOnThread();
   void EvaluateJavascriptOnThread(
       const std::string code,
-      std::unique_ptr<JsSandboxIsolateCallback> callback);
-  void PromiseRejectCallback(std::unique_ptr<JsSandboxIsolateCallback> callback,
+      scoped_refptr<JsSandboxIsolateCallback> callback);
+  void PromiseRejectCallback(scoped_refptr<JsSandboxIsolateCallback> callback,
                              gin::Arguments* args);
 
   void TerminateAndDestroy();
@@ -73,7 +73,7 @@ class JsSandboxIsolate {
   void CreateCancelableTaskTracker();
   void PostEvaluationToIsolateThread(
       const std::string code,
-      std::unique_ptr<JsSandboxIsolateCallback> callback);
+      scoped_refptr<JsSandboxIsolateCallback> callback);
   void ConvertPromiseToArrayBufferInThreadPool(base::ScopedFD fd,
                                                ssize_t length,
                                                std::string name);

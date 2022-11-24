@@ -20,6 +20,7 @@
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -172,8 +173,8 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
     const base::android::JavaParamRef<jstring>& jcode,
     const base::android::JavaParamRef<jobject>& j_callback) {
   std::string code = ConvertJavaStringToUTF8(env, jcode);
-  std::unique_ptr<JsSandboxIsolateCallback> callback =
-      std::make_unique<JsSandboxIsolateCallback>(
+  scoped_refptr<JsSandboxIsolateCallback> callback =
+      base::MakeRefCounted<JsSandboxIsolateCallback>(
           base::android::ScopedJavaGlobalRef(j_callback));
   control_task_runner_->PostTask(
       FROM_HERE,
@@ -209,7 +210,7 @@ jboolean JsSandboxIsolate::ProvideNamedData(
 // Called from control sequence.
 void JsSandboxIsolate::PostEvaluationToIsolateThread(
     const std::string code,
-    std::unique_ptr<JsSandboxIsolateCallback> callback) {
+    scoped_refptr<JsSandboxIsolateCallback> callback) {
   cancelable_task_tracker_->PostTask(
       isolate_task_runner_.get(), FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
@@ -364,7 +365,7 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
 // Called from isolate thread.
 void JsSandboxIsolate::EvaluateJavascriptOnThread(
     const std::string code,
-    std::unique_ptr<JsSandboxIsolateCallback> callback) {
+    scoped_refptr<JsSandboxIsolateCallback> callback) {
   base::AutoReset<JsSandboxIsolateCallback*> callback_autoreset(
       &current_callback_, callback.get());
 
@@ -385,7 +386,7 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   }
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script)) {
-    std::move(callback)->ReportJsEvaluationError(compile_error);
+    callback->ReportJsEvaluationError(compile_error);
     return;
   }
 
@@ -408,35 +409,34 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
       // directly.
       if (promise->State() == v8::Promise::PromiseState::kFulfilled) {
         std::string result = gin::V8ToString(v8_isolate, promise->Result());
-        std::move(callback)->ReportResult(result);
+        callback->ReportResult(result);
         return;
       }
       if (promise->State() == v8::Promise::PromiseState::kRejected) {
         v8::Local<v8::Message> message = v8::Exception::CreateMessage(
             isolate_holder_->isolate(), promise->Result());
         std::string error_message = GetStackTrace(message, v8_isolate);
-        std::move(callback)->ReportJsEvaluationError(error_message);
+        callback->ReportJsEvaluationError(error_message);
         return;
       }
       v8::Local<v8::Function> fulfill_fun =
           gin::CreateFunctionTemplate(
               v8_isolate,
               base::BindRepeating(
-                  [](std::unique_ptr<JsSandboxIsolateCallback> callback,
+                  [](scoped_refptr<JsSandboxIsolateCallback> callback,
                      gin::Arguments* args) {
                     std::string output;
                     args->GetNext(&output);
-                    std::move(callback)->ReportResult(output);
+                    callback->ReportResult(output);
                   },
-                  base::Passed(std::move(callback))))
+                  callback))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
       v8::Local<v8::Function> reject_fun =
           gin::CreateFunctionTemplate(
               v8_isolate,
               base::BindRepeating(&JsSandboxIsolate::PromiseRejectCallback,
-                                  base::Unretained(this),
-                                  base::Passed(std::move(callback))))
+                                  base::Unretained(this), callback))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
 
@@ -444,15 +444,15 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
           .ToLocalChecked();
     } else {
       std::string result = gin::V8ToString(v8_isolate, value);
-      std::move(callback)->ReportResult(result);
+      callback->ReportResult(result);
     }
   } else {
-    std::move(callback)->ReportJsEvaluationError(run_error);
+    callback->ReportJsEvaluationError(run_error);
   }
 }
 
 void JsSandboxIsolate::PromiseRejectCallback(
-    std::unique_ptr<JsSandboxIsolateCallback> callback,
+    scoped_refptr<JsSandboxIsolateCallback> callback,
     gin::Arguments* args) {
   v8::Local<v8::Value> value;
   args->GetNext(&value);
@@ -460,7 +460,7 @@ void JsSandboxIsolate::PromiseRejectCallback(
       v8::Exception::CreateMessage(isolate_holder_->isolate(), value);
   std::string error_message =
       GetStackTrace(message, isolate_holder_->isolate());
-  std::move(callback)->ReportJsEvaluationError(error_message);
+  callback->ReportJsEvaluationError(error_message);
 }
 
 // Called from isolate thread.

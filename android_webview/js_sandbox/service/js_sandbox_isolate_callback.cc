@@ -16,7 +16,9 @@ namespace android_webview {
 
 JsSandboxIsolateCallback::JsSandboxIsolateCallback(
     base::android::ScopedJavaGlobalRef<jobject>&& callback)
-    : callback_(std::move(callback)) {}
+    : callback_(std::move(callback)) {
+  CHECK(callback_) << "JsSandboxIsolateCallback java object is null";
+}
 
 JsSandboxIsolateCallback::~JsSandboxIsolateCallback() = default;
 
@@ -24,7 +26,8 @@ void JsSandboxIsolateCallback::ReportResult(const std::string& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_string_result =
       base::android::ConvertUTF8ToJavaString(env, result);
-  Java_JsSandboxIsolateCallback_onResult(env, callback_, java_string_result);
+  Java_JsSandboxIsolateCallback_onResult(env, UseCallback(),
+                                         java_string_result);
 }
 
 void JsSandboxIsolateCallback::ReportJsEvaluationError(
@@ -52,7 +55,14 @@ void JsSandboxIsolateCallback::ReportError(const ErrorType error_type,
   base::android::ScopedJavaLocalRef<jstring> java_string_error =
       base::android::ConvertUTF8ToJavaString(env, error);
   Java_JsSandboxIsolateCallback_onError(
-      env, callback_, static_cast<jint>(error_type), java_string_error);
+      env, UseCallback(), static_cast<jint>(error_type), java_string_error);
+}
+
+base::android::ScopedJavaGlobalRef<jobject>
+JsSandboxIsolateCallback::UseCallback() {
+  CHECK(callback_) << "Double use of isolate callback";
+  // Move resets callback_ to null
+  return std::move(callback_);
 }
 
 }  // namespace android_webview
