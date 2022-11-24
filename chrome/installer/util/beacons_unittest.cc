@@ -12,6 +12,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -248,6 +249,14 @@ INSTANTIATE_TEST_SUITE_P(
     DefaultBrowserBeaconTest,
     testing::Combine(testing::Values(install_static::CANARY_INDEX),
                      testing::Values("user")));
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+// Chrome for Testing is only at user level.
+INSTANTIATE_TEST_SUITE_P(
+    ChromeForTesting,
+    DefaultBrowserBeaconTest,
+    testing::Combine(
+        testing::Values(install_static::GOOGLE_CHROME_FOR_TESTING_INDEX),
+        testing::Values("user")));
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Chromium supports user and system levels.
 INSTANTIATE_TEST_SUITE_P(

@@ -33,7 +33,7 @@ const InstallConstants kInstallModes[] = {
             L"",  // Empty install_suffix for the primary install mode.
         .logo_suffix = L"",  // No logo suffix for the primary install mode.
         .app_guid =
-            L"",  // Empty app_guid since no integraion with Google Update.
+            L"",  // Empty app_guid since no integration with Google Update.
         .base_app_name = L"Chromium",      // A distinct base_app_name.
         .base_app_id = L"Chromium",        // A distinct base_app_id.
         .prog_id_prefix = L"ChromiumHTM",  // ProgID prefix.

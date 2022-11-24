@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/test_reg_util_win.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_details.h"
@@ -429,6 +430,26 @@ constexpr TestData kTestData[] = {
         L"",                           // Expect stable channel.
         true,                          // Expect extended stable channel.
         L"extended",                   // Expect the channel override.
+    },
+};
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+constexpr TestData kTestData[] = {
+    // User-level test cases.
+    {
+        L"setup.exe",  // User-level, primary mode.
+        L"",           // New install.
+        install_static::GOOGLE_CHROME_FOR_TESTING_INDEX,  // Expect primary
+                                                          // mode.
+        false,                                            // Expect user-level.
+        L"",  // Expect empty channel.
+    },
+    {
+        L"setup.exe",    // User-level, primary mode.
+        L"--uninstall",  // Updating an existing install.
+        install_static::GOOGLE_CHROME_FOR_TESTING_INDEX,  // Expect primary
+                                                          // mode.
+        false,                                            // Expect user-level.
+        L"",  // Expect empty channel.
     },
 };
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)

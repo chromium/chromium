@@ -28,6 +28,7 @@ if (is_win) {
     public_deps = [
       ":buildflags",
       "//build:branding_buildflags",
+      "//chrome/browser/chrome_for_testing:buildflags",
       "//chrome/chrome_elf:nt_registry",
     ]
 
@@ -57,6 +58,11 @@ if (is_win) {
       sources += [
         "google_chrome_install_modes.cc",
         "google_chrome_install_modes.h",
+      ]
+    } else if (is_chrome_for_testing_branded) {
+      sources += [
+        "google_chrome_for_testing_install_modes.cc",
+        "google_chrome_for_testing_install_modes.h",
       ]
     } else {
       sources += [

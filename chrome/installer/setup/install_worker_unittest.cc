@@ -15,6 +15,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -271,6 +272,8 @@ class InstallWorkerTest : public testing::Test {
 // Tests
 //------------------------------------------------------------------------------
 
+// Chrome for Testing does not support system-level installations.
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
   const bool system_level = true;
   NiceMock<MockWorkItemList> work_item_list;
@@ -318,6 +321,7 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
 
   AddInstallWorkItems(install_params, &work_item_list);
 }
+#endif
 
 // Tests for installer::AddUpdateBrandCodeWorkItem().
 //------------------------------------------------------------------------------
@@ -519,7 +523,7 @@ TEST_F(ChromeWerDllRegistryTest, AddOldWerHelperRegistrationCleanupItems) {
           value_name == path_with_another_dll.value()) {
         continue;
       }
-      FAIL() << "Invalid registry value encountered: " << value_name;;
+      FAIL() << "Invalid registry value encountered: " << value_name;
     }
   }
 }

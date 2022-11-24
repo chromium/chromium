@@ -14,6 +14,7 @@
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_constants.h"
@@ -183,6 +184,16 @@ constexpr TestData kTestData[] = {
         CANARY_INDEX,
         false,
         L"canary",
+    },
+};
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+constexpr TestData kTestData[] = {
+    {
+        L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome for "
+        L"Testing\\Application\\chrome.exe",
+        GOOGLE_CHROME_FOR_TESTING_INDEX,
+        false,
+        L"",
     },
 };
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)

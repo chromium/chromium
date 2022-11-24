@@ -12,6 +12,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_details.h"
@@ -741,6 +742,13 @@ INSTANTIATE_TEST_SUITE_P(Canary,
                          InstallStaticUtilTest,
                          testing::Combine(testing::Values(CANARY_INDEX),
                                           testing::Values("user")));
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+// Chrome for Testing is only at user level.
+INSTANTIATE_TEST_SUITE_P(
+    ChromeForTesting,
+    InstallStaticUtilTest,
+    testing::Combine(testing::Values(GOOGLE_CHROME_FOR_TESTING_INDEX),
+                     testing::Values("user")));
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Chromium supports user and system levels.
 INSTANTIATE_TEST_SUITE_P(Chromium,

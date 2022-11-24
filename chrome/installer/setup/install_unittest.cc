@@ -24,6 +24,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -197,6 +198,13 @@ INSTANTIATE_TEST_SUITE_P(
     CreateVisualElementsManifestTest,
     testing::Combine(testing::Values(install_static::CANARY_INDEX),
                      testing::Values(kExpectedCanaryManifest)));
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+INSTANTIATE_TEST_SUITE_P(
+    ChromeForTesting,
+    CreateVisualElementsManifestTest,
+    testing::Combine(
+        testing::Values(install_static::GOOGLE_CHROME_FOR_TESTING_INDEX),
+        testing::Values(kExpectedPrimaryManifest)));
 #else
 INSTANTIATE_TEST_SUITE_P(
     Chromium,
