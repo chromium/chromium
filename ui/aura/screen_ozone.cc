@@ -10,6 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/display.h"
+#include "ui/display/tablet_state.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_screen.h"
 
@@ -151,6 +152,11 @@ base::Value::List ScreenOzone::GetGpuExtraInfo(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 display::TabletState ScreenOzone::GetTabletState() const {
   return platform_screen_->GetTabletState();
+}
+
+void ScreenOzone::OverrideTabletStateForTesting(
+    display::TabletState tablet_state) {
+  platform_screen_->OnTabletStateChanged(tablet_state);
 }
 #endif
 

@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_BASE_TABLET_STATE_H_
 
 #include "base/component_export.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
 
@@ -33,6 +34,17 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Enables/disables tablet mode on client side. Not thet this does not modify
+  // server side tablet state.
+  //
+  // DO NOT use this for integration tests such as browser tests. Use this only
+  // on unit-testing.
+  // Use TestController crosapi EnterTabletMode/ExitTabletMode if Ash server is
+  // available since the test may depend on server side behavior.
+  void EnableTabletModeForTesting(bool enable);
+#endif
 
  private:
   display::ScopedDisplayObserver display_observer_{this};

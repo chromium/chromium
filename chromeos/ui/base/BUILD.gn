@@ -42,6 +42,10 @@ component("base") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
 }
 
 source_set("unit_tests") {

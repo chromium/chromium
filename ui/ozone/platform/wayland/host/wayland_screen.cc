@@ -274,16 +274,6 @@ uint32_t WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
   return 0;
 }
 
-void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  tablet_state_ = tablet_state;
-#endif
-
-  auto* observer_list = display_list_.observers();
-  for (auto& observer : *observer_list)
-    observer.OnDisplayTabletStateChanged(tablet_state);
-}
-
 base::WeakPtr<WaylandScreen> WaylandScreen::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -509,6 +499,16 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
                                  base::JoinString(protocols, " ")));
   StorePlatformNameIntoListOfValues(values, "wayland");
   return values;
+}
+
+void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  tablet_state_ = tablet_state;
+#endif
+
+  auto* observer_list = display_list_.observers();
+  for (auto& observer : *observer_list)
+    observer.OnDisplayTabletStateChanged(tablet_state);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

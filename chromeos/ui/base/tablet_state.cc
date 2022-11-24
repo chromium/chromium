@@ -5,10 +5,10 @@
 #include "chromeos/ui/base/tablet_state.h"
 
 #include "base/check_op.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/display/screen.h"
 #endif
@@ -60,5 +60,17 @@ void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
   ui::TouchUiController::Get()->OnTabletModeToggled(InTabletMode());
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TabletState::EnableTabletModeForTesting(bool enable) {
+  // Do not use this method in case where crosapi is enabled since it implies
+  // Ash server is available.
+  DCHECK(chromeos::BrowserParamsProxy::Get()
+             ->DisableCrosapiForTesting());                     // IN-TEST
+  display::Screen::GetScreen()->OverrideTabletStateForTesting(  // IN-TEST
+      enable ? display::TabletState::kInTabletMode
+             : display::TabletState::kInClamshellMode);
+}
+#endif
 
 }  // namespace chromeos

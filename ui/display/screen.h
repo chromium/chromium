@@ -201,6 +201,14 @@ class DISPLAY_EXPORT Screen {
   virtual TabletState GetTabletState() const;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Overrides tablet state stored in screen and notifies observers only on
+  // Lacros side.
+  // Not that this method may make tablet state out-of-sync with Ash side.
+  virtual void OverrideTabletStateForTesting(
+      display::TabletState tablet_state) {}
+#endif
+
  protected:
   void set_shutdown(bool shutdown) { shutdown_ = shutdown; }
   int64_t display_id_for_new_windows() const {

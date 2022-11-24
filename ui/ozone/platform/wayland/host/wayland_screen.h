@@ -48,8 +48,6 @@ class WaylandScreen : public PlatformScreen {
 
   uint32_t GetOutputIdForDisplayId(int64_t display_id);
 
-  void OnTabletStateChanged(display::TabletState tablet_state);
-
   base::WeakPtr<WaylandScreen> GetWeakPtr();
 
   // PlatformScreen overrides:
@@ -75,6 +73,7 @@ class WaylandScreen : public PlatformScreen {
   void RemoveObserver(display::DisplayObserver* observer) override;
   base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
+  void OnTabletStateChanged(display::TabletState tablet_state) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   display::TabletState GetTabletState() const override;
 #endif

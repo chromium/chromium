@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // Currently only used by Linux.
   virtual void SetDeviceScaleFactor(float scale);
 
+  // Called when tablet state is changed.
+  virtual void OnTabletStateChanged(display::TabletState tablet_state) {}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns tablet state. If a platform does not support this, returns
   // display::TabletState::kInClamshellMode.
