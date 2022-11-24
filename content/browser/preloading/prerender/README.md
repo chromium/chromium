@@ -1,6 +1,5 @@
-This directory contains the experimental Prerender2 implementation
-(https://crbug.com/1126305). This feature is now behind the
-`blink::features::kPrerender2` flag.
+This directory contains the Prerender2 implementation
+(https://crbug.com/1126305).
 
 If you're interested in relevant code changes, join the
 prerendering-reviews@chromium.org group.

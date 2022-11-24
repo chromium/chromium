@@ -3765,8 +3765,7 @@ class PrerenderLowMemoryBrowserTest : public PrerenderBrowserTest {
     std::string memory_threshold =
         base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2, {}},
-         {blink::features::kPrerender2MemoryControls,
+        {{blink::features::kPrerender2MemoryControls,
           {{blink::features::kPrerender2MemoryThresholdParamName,
             memory_threshold}}}},
         {});
@@ -4635,8 +4634,7 @@ class PrerenderHostRegistryInBackgroundTest : public PrerenderBrowserTest {
  public:
   PrerenderHostRegistryInBackgroundTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2,
-         // Enable to run prerenderings in the background.
+        {// Enable to run prerenderings in the background.
          blink::features::kPrerender2InBackground},
         // Disable the memory requirement of Prerender2 so the test can run on
         // any bot.
@@ -4725,8 +4723,7 @@ class SequentialPrerenderInBackgroundBrowserTest
  public:
   SequentialPrerenderInBackgroundBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2,
-         // Enable to run prerenderings in the background.
+        {// Enable to run prerenderings in the background.
          blink::features::kPrerender2InBackground},
         // Disable the memory requirement of Prerender2 so the test can run on
         // any bot.
@@ -6073,11 +6070,8 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
 class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderSameSiteCrossOriginBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2, {{}}},
-         {blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender,
-          {{}}}},
-        {/* disabled_features */});
+    feature_list_.InitAndEnableFeature(
+        blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender);
   }
 
   void SetUp() override {
@@ -8126,10 +8120,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 class PrerenderPreloaderHoldbackBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2, {{}}},
-         {features::kPrerender2Holdback, {{}}}},
-        {/* disabled_features */});
+    feature_list_.InitAndEnableFeature(features::kPrerender2Holdback);
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
 
