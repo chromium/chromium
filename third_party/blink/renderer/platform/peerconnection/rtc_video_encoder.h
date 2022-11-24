@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
@@ -26,6 +27,7 @@ class SequencedTaskRunner;
 
 namespace media {
 class GpuVideoAcceleratorFactories;
+struct VideoEncoderInfo;
 }  // namespace media
 
 namespace blink {
@@ -72,6 +74,10 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   class Impl;
   friend class RTCVideoEncoder::Impl;
 
+  void UpdateEncoderInfo(
+      media::VideoEncoderInfo encoder_info,
+      std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);
+
   const media::VideoCodecProfile profile_;
 
   const bool is_constrained_h264_;
@@ -82,6 +88,15 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   // Task runner that the video accelerator runs on.
   const scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;
 
+  // TODO(b/258782303): Remove this lock if |encoder_info_| is called on
+  // webrtc sequence.
+  mutable base::Lock lock_;
+  // Default values are set in RTCVideoEncoder constructor. Some of its
+  // variables are updated in UpdateEncoderInfo() in webrtc encoder thread.
+  // There is a minor data race that GetEncoderInfo() can be called in a
+  // different thread from webrtc encoder thread.
+  webrtc::VideoEncoder::EncoderInfo encoder_info_ GUARDED_BY(lock_);
+
   // The sequence on which the webrtc::VideoEncoder functions are executed.
   SEQUENCE_CHECKER(webrtc_sequence_checker_);
 
@@ -90,6 +105,10 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // This weak pointer is bound to |gpu_task_runner_|.
   base::WeakPtr<Impl> weak_impl_;
+
+  // |weak_this_| is bound to |webrtc_sequence_checker_|.
+  base::WeakPtr<RTCVideoEncoder> weak_this_;
+  base::WeakPtrFactory<RTCVideoEncoder> weak_this_factory_{this};
 };
 
 }  // namespace blink

@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -243,35 +242,6 @@ static_assert(static_cast<int>(RTCVideoEncoderShutdownReason::kMaxValue) ==
                   media::VideoEncodeAccelerator::kErrorMax + 1,
               "RTCVideoEncoderShutdownReason should follow "
               "VideoEncodeAccelerator::Error (+1 for the success case)");
-
-webrtc::VideoEncoder::EncoderInfo CopyToWebrtcEncoderInfo(
-    const media::VideoEncoderInfo& enc_info) {
-  webrtc::VideoEncoder::EncoderInfo info;
-  info.implementation_name = enc_info.implementation_name;
-  info.supports_native_handle = enc_info.supports_native_handle;
-  info.has_trusted_rate_controller = enc_info.has_trusted_rate_controller;
-  info.is_hardware_accelerated = enc_info.is_hardware_accelerated;
-  info.supports_simulcast = enc_info.supports_simulcast;
-  info.is_qp_trusted = enc_info.reports_average_qp;
-  static_assert(
-      webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
-      "webrtc::kMaxSpatiallayers is less than "
-      "media::VideoEncoderInfo::kMaxSpatialLayers");
-  for (size_t i = 0; i < std::size(enc_info.fps_allocation); ++i) {
-    if (enc_info.fps_allocation[i].empty())
-      continue;
-    info.fps_allocation[i] =
-        absl::InlinedVector<uint8_t, webrtc::kMaxTemporalStreams>(
-            enc_info.fps_allocation[i].begin(),
-            enc_info.fps_allocation[i].end());
-  }
-  for (const auto& limit : enc_info.resolution_bitrate_limits) {
-    info.resolution_bitrate_limits.emplace_back(
-        limit.frame_size.GetArea(), limit.min_start_bitrate_bps,
-        limit.min_bitrate_bps, limit.max_bitrate_bps);
-  }
-  return info;
-}
 
 media::VideoEncodeAccelerator::Config::InterLayerPredMode
 CopyFromWebRtcInterLayerPredMode(
@@ -500,9 +470,13 @@ BASE_FEATURE(kWebRtcScreenshareSwEncoding,
 // operations (presently the media thread).
 class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
  public:
+  using UpdateEncoderInfoCallback = base::RepeatingCallback<void(
+      media::VideoEncoderInfo,
+      std::vector<webrtc::VideoFrameBuffer::Type>)>;
   Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
        webrtc::VideoCodecType video_codec_type,
        webrtc::VideoContentType video_content_type,
+       UpdateEncoderInfoCallback update_encoder_info_callback,
        base::WeakPtr<Impl>& weak_this_for_client);
 
   ~Impl() override;
@@ -524,8 +498,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       media::VideoEncodeAccelerator::Config::InterLayerPredMode
           inter_layer_pred,
       SignaledValue init_event);
-
-  webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const;
 
   // Enqueue a frame from WebRTC for encoding.
   // RTCVideoEncoder expects to be able to call this function synchronously from
@@ -672,6 +644,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                       webrtc::kMaxPreferredPixelFormats>
       preferred_pixel_formats_;
 
+  UpdateEncoderInfoCallback update_encoder_info_callback_;
+
   // The reslutions of active spatial layer, only used when |Vp9Metadata| is
   // contained in |BitstreamBufferMetadata|. it will be updated when key frame
   // is produced.
@@ -687,52 +661,25 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   int32_t status_ GUARDED_BY_CONTEXT(sequence_checker_){
       WEBRTC_VIDEO_CODEC_UNINITIALIZED};
 
-  // Protect |encoder_info_|. |encoder_info_| is read or written on
-  // |gpu_task_runner_| in Impl. It can be read in RTCVideoEncoder on other
-  // threads.
-  mutable base::Lock lock_;
-
-  webrtc::VideoEncoder::EncoderInfo encoder_info_ GUARDED_BY(lock_);
-
   // They are bound to |gpu_task_runner_|, which is sequence checked by
   // |sequence_checker|.
   base::WeakPtr<Impl> weak_this_;
   base::WeakPtrFactory<Impl> weak_this_factory_{this};
 };
 
-RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
-                            webrtc::VideoCodecType video_codec_type,
-                            webrtc::VideoContentType video_content_type,
-                            base::WeakPtr<Impl>& weak_this_for_client)
+RTCVideoEncoder::Impl::Impl(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    webrtc::VideoCodecType video_codec_type,
+    webrtc::VideoContentType video_content_type,
+    UpdateEncoderInfoCallback update_encoder_info_callback,
+    base::WeakPtr<Impl>& weak_this_for_client)
     : gpu_factories_(gpu_factories),
       video_codec_type_(video_codec_type),
-      video_content_type_(video_content_type) {
+      video_content_type_(video_content_type),
+      update_encoder_info_callback_(std::move(update_encoder_info_callback)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  // The default values of EncoderInfo.
-  // TODO(crbug.com/1228804): These settings should be set at the time
-  // RTCVideoEncoder is constructed instead of done here.
-  encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
-#if BUILDFLAG(IS_ANDROID)
-  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702.
-  encoder_info_.requested_resolution_alignment = 16;
-  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
-#else
-  encoder_info_.requested_resolution_alignment = 1;
-  encoder_info_.apply_alignment_to_all_simulcast_layers = false;
-#endif
-  encoder_info_.supports_native_handle = true;
-  encoder_info_.implementation_name = "ExternalEncoder";
-  encoder_info_.has_trusted_rate_controller = false;
-  encoder_info_.is_hardware_accelerated = true;
-  encoder_info_.is_qp_trusted = true;
-  encoder_info_.fps_allocation[0] = {
-      webrtc::VideoEncoder::EncoderInfo::kMaxFramerateFraction};
-  DCHECK(encoder_info_.resolution_bitrate_limits.empty());
-  encoder_info_.supports_simulcast = false;
   preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kI420};
-  encoder_info_.preferred_pixel_formats = preferred_pixel_formats_;
-
   weak_this_ = weak_this_factory_.GetWeakPtr();
   weak_this_for_client = weak_this_;
 }
@@ -811,8 +758,6 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     use_native_input_ = true;
 
     preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kNV12};
-    base::AutoLock lock(lock_);
-    encoder_info_.preferred_pixel_formats = preferred_pixel_formats_;
   }
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, profile,
@@ -839,16 +784,12 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   // be signaled.
 }
 
-webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::Impl::GetEncoderInfo()
-    const {
-  base::AutoLock lock(lock_);
-  return encoder_info_;
-}
-
 void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
     const media::VideoEncoderInfo& info) {
-  base::AutoLock lock(lock_);
-  encoder_info_ = CopyToWebrtcEncoderInfo(info);
+  update_encoder_info_callback_.Run(
+      info,
+      std::vector<webrtc::VideoFrameBuffer::Type>(
+          preferred_pixel_formats_.begin(), preferred_pixel_formats_.end()));
 }
 
 void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
@@ -1600,11 +1541,39 @@ RTCVideoEncoder::RTCVideoEncoder(
       gpu_task_runner_(gpu_factories->GetTaskRunner()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(1) << "RTCVideoEncoder(): profile=" << GetProfileName(profile);
+
+  // The default values of EncoderInfo.
+  encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
+#if BUILDFLAG(IS_ANDROID)
+  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702.
+  encoder_info_.requested_resolution_alignment = 16;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
+#else
+  encoder_info_.requested_resolution_alignment = 1;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = false;
+#endif
+  encoder_info_.supports_native_handle = true;
+  encoder_info_.implementation_name = "ExternalEncoder";
+  encoder_info_.has_trusted_rate_controller = false;
+  encoder_info_.is_hardware_accelerated = true;
+  encoder_info_.is_qp_trusted = true;
+  encoder_info_.fps_allocation[0] = {
+      webrtc::VideoEncoder::EncoderInfo::kMaxFramerateFraction};
+  DCHECK(encoder_info_.resolution_bitrate_limits.empty());
+  encoder_info_.supports_simulcast = false;
+  encoder_info_.preferred_pixel_formats = {
+      webrtc::VideoFrameBuffer::Type::kI420};
+
+  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 RTCVideoEncoder::~RTCVideoEncoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
+
+  // |weak_this_| must be invalidated on |webrtc_sequence_checker_|.
+  weak_this_factory_.InvalidateWeakPtrs();
+
   Release();
   DCHECK(!impl_);
 }
@@ -1632,12 +1601,15 @@ int32_t RTCVideoEncoder::InitEncode(
   if (impl_)
     Release();
 
+  Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
+      media::BindToCurrentLoop(
+          base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo, weak_this_));
   impl_ = std::make_unique<Impl>(
       gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),
       (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing)
           ? webrtc::VideoContentType::SCREENSHARE
           : webrtc::VideoContentType::UNSPECIFIED,
-      weak_impl_);
+      update_encoder_info_callback, weak_impl_);
 
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
@@ -1758,18 +1730,43 @@ void RTCVideoEncoder::SetRates(
 }
 
 webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
-  webrtc::VideoEncoder::EncoderInfo info;
-#if BUILDFLAG(IS_ANDROID)
-  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702. We
-  // normally override this in |impl_|, but sometimes this method is called
-  // before |impl_| is created, so we need to override it here too.
-  info.requested_resolution_alignment = 16;
-  info.apply_alignment_to_all_simulcast_layers = true;
-#endif
+  base::AutoLock auto_lock(lock_);
+  return encoder_info_;
+}
 
-  if (impl_)
-    info = impl_->GetEncoderInfo();
-  return info;
+void RTCVideoEncoder::UpdateEncoderInfo(
+    media::VideoEncoderInfo media_enc_info,
+    std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  base::AutoLock auto_lock(lock_);
+
+  encoder_info_.implementation_name = media_enc_info.implementation_name;
+  encoder_info_.supports_native_handle = media_enc_info.supports_native_handle;
+  encoder_info_.has_trusted_rate_controller =
+      media_enc_info.has_trusted_rate_controller;
+  encoder_info_.is_hardware_accelerated =
+      media_enc_info.is_hardware_accelerated;
+  encoder_info_.supports_simulcast = media_enc_info.supports_simulcast;
+  encoder_info_.is_qp_trusted = media_enc_info.reports_average_qp;
+  static_assert(
+      webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
+      "webrtc::kMaxSpatiallayers is less than "
+      "media::VideoEncoderInfo::kMaxSpatialLayers");
+  for (size_t i = 0; i < std::size(media_enc_info.fps_allocation); ++i) {
+    if (media_enc_info.fps_allocation[i].empty())
+      continue;
+    encoder_info_.fps_allocation[i] =
+        absl::InlinedVector<uint8_t, webrtc::kMaxTemporalStreams>(
+            media_enc_info.fps_allocation[i].begin(),
+            media_enc_info.fps_allocation[i].end());
+  }
+  for (const auto& limit : media_enc_info.resolution_bitrate_limits) {
+    encoder_info_.resolution_bitrate_limits.emplace_back(
+        limit.frame_size.GetArea(), limit.min_start_bitrate_bps,
+        limit.min_bitrate_bps, limit.max_bitrate_bps);
+  }
+  encoder_info_.preferred_pixel_formats.assign(preferred_pixel_formats.begin(),
+                                               preferred_pixel_formats.end());
 }
 
 // static
