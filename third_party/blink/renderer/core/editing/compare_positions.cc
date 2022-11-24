@@ -429,9 +429,11 @@ class Comparator {
   static const Node* FindChildInAncestors(const Node& node,
                                           const Node& parent) {
     DCHECK_NE(node, parent);
-    for (const Node& child : Traversal::InclusiveAncestorsOf(node)) {
-      if (Traversal::Parent(child) == parent)
-        return &child;
+    const Node* candidate = &node;
+    for (const Node& child : Traversal::AncestorsOf(node)) {
+      if (child == parent)
+        return candidate;
+      candidate = &child;
     }
     return nullptr;
   }
