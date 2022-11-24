@@ -7,7 +7,7 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

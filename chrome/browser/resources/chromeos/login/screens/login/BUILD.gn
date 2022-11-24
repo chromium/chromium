@@ -50,7 +50,7 @@ js_library("cryptohome_recovery") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -64,7 +64,7 @@ js_library("encryption_migration") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -78,7 +78,7 @@ js_library("gaia_password_changed") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
@@ -91,7 +91,7 @@ js_library("lacros_data_migration") {
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -102,7 +102,7 @@ js_library("lacros_data_backward_migration") {
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }

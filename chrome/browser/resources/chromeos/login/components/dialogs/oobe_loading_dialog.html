@@ -4,54 +4,34 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-
-<link rel="import" href="../behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../oobe_cr_lottie.html">
-<link rel="import" href="../behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../buttons/oobe_text_button.html">
-<link rel="import" href="../common_styles/common_styles.html">
-<link rel="import" href="../common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../dialogs/oobe_content_dialog.html">
-
-<dom-module id="oobe-loading-dialog">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      #spinner {
-        max-height: 286px;
-        max-width: 286px;
-      }
-    </style>
-    <oobe-adaptive-dialog id="dialog" role="dialog">
-      <slot slot="icon" name="icon"></slot>
-      <h1 slot="title">
-        <slot name="title" aria-label="[[getAriaLabel(locale, titleLabelKey, titleKey)]]">
-          <template is="dom-if" if="[[titleKey]]">
-            [[i18nDynamic(locale, titleKey)]]
-          </template>
-        </slot>
-      </h1>
-      <template is="dom-if" if="[[subtitleKey]]">
-        <div slot="subtitle">[[i18nDynamic(locale, subtitleKey)]]</div>
+<style include="oobe-dialog-host-styles">
+  #spinner {
+    max-height: 286px;
+    max-width: 286px;
+  }
+</style>
+<oobe-adaptive-dialog id="dialog" role="dialog">
+  <slot slot="icon" name="icon"></slot>
+  <h1 slot="title">
+    <slot name="title" aria-label="[[getAriaLabel(locale, titleLabelKey, titleKey)]]">
+      <template is="dom-if" if="[[titleKey]]">
+        [[i18nDynamic(locale, titleKey)]]
       </template>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <oobe-cr-lottie id="spinner" animation-url="spinner.json">
-        </oobe-cr-lottie>
-      </div>
-      <!-- Cancel button -->
-      <div slot="bottom-buttons" hidden="[[!canCancel]]"
-          class="flex layout horizontal">
-        <oobe-text-button id="cancelButton" on-click="cancel"
-            text-key="cancelButton">
-        </oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
+    </slot>
+  </h1>
+  <template is="dom-if" if="[[subtitleKey]]">
+    <div slot="subtitle">[[i18nDynamic(locale, subtitleKey)]]</div>
   </template>
-  <script src="oobe_loading_dialog.js"></script>
-</dom-module>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <oobe-cr-lottie id="spinner" animation-url="spinner.json">
+    </oobe-cr-lottie>
+  </div>
+  <!-- Cancel button -->
+  <div slot="bottom-buttons" hidden="[[!canCancel]]"
+      class="flex layout horizontal">
+    <oobe-text-button id="cancelButton" on-click="cancel"
+        text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+

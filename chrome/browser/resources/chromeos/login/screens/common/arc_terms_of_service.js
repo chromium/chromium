@@ -15,7 +15,7 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
