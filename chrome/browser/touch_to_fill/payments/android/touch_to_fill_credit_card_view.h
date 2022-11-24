@@ -20,7 +20,8 @@ class TouchToFillCreditCardView {
 
   virtual bool Show(
       TouchToFillCreditCardViewController* controller,
-      base::span<const autofill::CreditCard* const> cards_to_suggest) = 0;
+      base::span<const autofill::CreditCard* const> cards_to_suggest,
+      bool should_show_scan_credit_card) = 0;
   virtual void Hide() = 0;
 };
 

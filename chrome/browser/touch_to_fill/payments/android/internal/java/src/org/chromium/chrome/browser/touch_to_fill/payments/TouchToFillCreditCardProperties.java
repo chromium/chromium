@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /**
  * Properties defined here reflect the visible state of the TouchToFillCreditCard component.
@@ -16,6 +17,11 @@ class TouchToFillCreditCardProperties {
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SCAN_CREDIT_CARD =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
+    static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
+            new ReadableObjectPropertyKey<>("scan_credit_card_callback");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {
+            VISIBLE, DISMISS_HANDLER, SHOULD_SHOW_SCAN_CREDIT_CARD, SCAN_CREDIT_CARD_CALLBACK};
 }

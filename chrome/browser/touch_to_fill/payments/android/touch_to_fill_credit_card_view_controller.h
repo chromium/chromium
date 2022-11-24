@@ -15,6 +15,7 @@ class TouchToFillCreditCardViewController {
   virtual ~TouchToFillCreditCardViewController() = default;
 
   virtual void OnDismissed(JNIEnv* env) = 0;
+  virtual void ScanCreditCard(JNIEnv* env) = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };
 

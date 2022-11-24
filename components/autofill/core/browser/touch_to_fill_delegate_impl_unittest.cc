@@ -44,6 +44,10 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
+  MOCK_METHOD(void,
+              ScanCreditCard,
+              (CreditCardScanCallback callback),
+              (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
@@ -83,6 +87,14 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(PopupType,
               GetPopupType,
               (const FormData& form, const FormFieldData& field),
+              (override));
+  MOCK_METHOD(void,
+              FillCreditCardFormImpl,
+              (const FormData& form,
+               const FormFieldData& field,
+               const CreditCard& credit_card,
+               const std::u16string& cvc,
+               int query_id),
               (override));
 };
 
@@ -359,6 +371,16 @@ TEST_F(TouchToFillDelegateImplUnitTest, PassTheCreditCardsToTheClient) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   browser_autofill_manager_.reset();
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, ScanCreditCardIsCalled) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  EXPECT_CALL(autofill_client_, ScanCreditCard);
+  touch_to_fill_delegate_->ScanCreditCard();
+
+  CreditCard credit_card = autofill::test::GetCreditCard();
+  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardFormImpl);
+  touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
 }
 
 }  // namespace autofill

@@ -21,6 +21,11 @@ public interface TouchToFillCreditCardComponent {
          * Called whenever the sheet is dismissed (by user or native).
          */
         void onDismissed();
+
+        /**
+         * Called when user requests to scan a new credit card.
+         */
+        void scanCreditCard();
     }
 
     /**
@@ -34,7 +39,7 @@ public interface TouchToFillCreditCardComponent {
     /**
      * Displays a new bottom sheet.
      */
-    void showSheet();
+    void showSheet(boolean shouldShowScanCreditCard);
 
     /**
      * Hides the bottom sheet if shown.

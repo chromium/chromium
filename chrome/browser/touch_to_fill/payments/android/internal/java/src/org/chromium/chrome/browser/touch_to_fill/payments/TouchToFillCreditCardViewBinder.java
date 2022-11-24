@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -26,6 +28,10 @@ class TouchToFillCreditCardViewBinder {
             PropertyModel model, TouchToFillCreditCardView view, PropertyKey propertyKey) {
         if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else if (propertyKey == SHOULD_SHOW_SCAN_CREDIT_CARD) {
+            view.setScanCreditCardButton(model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
+        } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
+            view.setScanCreditCardCallback(model.get(SCAN_CREDIT_CARD_CALLBACK));
         } else if (propertyKey == VISIBLE) {
             boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
             if (!visibilityChangeSuccessful && model.get(VISIBLE)) {

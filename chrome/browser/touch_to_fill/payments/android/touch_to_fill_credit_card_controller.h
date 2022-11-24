@@ -43,13 +43,16 @@ class TouchToFillCreditCardController
   // Hides the surface if it is currently shown.
   void Hide();
 
+  // TouchToFillCreditCardViewController:
+  // Called whenever the surface gets hidden (regardless of the cause).
+  void OnDismissed(JNIEnv* env) override;
+  // Calls credit card scanner
+  void ScanCreditCard(JNIEnv* env) override;
+
  private:
   // Called after the surface gets shown or hidden.
   void SetShouldSuppressKeyboard(bool suppress);
 
-  // TouchToFillCreditCardViewController:
-  // Called whenever the surface gets hidden (regardless of the cause).
-  void OnDismissed(JNIEnv* env) override;
   // Gets or creates the Java counterpart.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 

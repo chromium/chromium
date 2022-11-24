@@ -29,6 +29,7 @@ class TouchToFillCreditCardView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
     private Callback<Integer> mDismissHandler;
+    private Runnable mScanCreditCardHandler;
     // TODO(): show gpay logo if there is at least one card coming from GPay,
     // if there are only local cards show chrome logo
     private boolean mOnlyLocalCards;
@@ -69,6 +70,17 @@ class TouchToFillCreditCardView implements BottomSheetContent {
                 ContextUtils.getApplicationContext().getTheme()));
     }
 
+    void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
+        View scanCreditCard = mContentView.findViewById(R.id.scan_new_card);
+        if (shouldShowScanCreditCard) {
+            scanCreditCard.setVisibility(View.VISIBLE);
+            scanCreditCard.setOnClickListener(unused -> mScanCreditCardHandler.run());
+        } else {
+            scanCreditCard.setVisibility(View.GONE);
+            scanCreditCard.setOnClickListener(null);
+        }
+    }
+
     /**
      * Sets a new listener that reacts to a dismisal event.
      *
@@ -76,6 +88,10 @@ class TouchToFillCreditCardView implements BottomSheetContent {
      */
     void setDismissHandler(Callback<Integer> dismissHandler) {
         mDismissHandler = dismissHandler;
+    }
+
+    void setScanCreditCardCallback(Runnable callback) {
+        mScanCreditCardHandler = callback;
     }
 
     /**

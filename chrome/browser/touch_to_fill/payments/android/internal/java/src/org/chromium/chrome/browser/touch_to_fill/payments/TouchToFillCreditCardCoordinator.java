@@ -18,23 +18,28 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardComponent {
     private final TouchToFillCreditCardMediator mMediator = new TouchToFillCreditCardMediator();
+    private PropertyModel mTouchToFillCreditCardModel;
 
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
             TouchToFillCreditCardComponent.Delegate delegate) {
-        PropertyModel model = new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
-                                      .with(TouchToFillCreditCardProperties.VISIBLE, false)
-                                      .with(TouchToFillCreditCardProperties.DISMISS_HANDLER,
-                                              mMediator::onDismissed)
-                                      .build();
+        mTouchToFillCreditCardModel =
+                new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
+                        .with(TouchToFillCreditCardProperties.VISIBLE, false)
+                        .with(TouchToFillCreditCardProperties.DISMISS_HANDLER,
+                                mMediator::onDismissed)
+                        .with(TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK,
+                                mMediator::scanCreditCard)
+                        .build();
 
-        mMediator.initialize(delegate, model);
-        setUpModelChangeProcessors(model, new TouchToFillCreditCardView(context, sheetController));
+        mMediator.initialize(delegate, mTouchToFillCreditCardModel);
+        setUpModelChangeProcessors(mTouchToFillCreditCardModel,
+                new TouchToFillCreditCardView(context, sheetController));
     }
 
     @Override
-    public void showSheet() {
-        mMediator.showSheet();
+    public void showSheet(boolean shouldShowScanCreditCard) {
+        mMediator.showSheet(shouldShowScanCreditCard);
     }
 
     @Override
@@ -51,5 +56,10 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     static void setUpModelChangeProcessors(PropertyModel model, TouchToFillCreditCardView view) {
         PropertyModelChangeProcessor.create(
                 model, view, TouchToFillCreditCardViewBinder::bindTouchToFillCreditCardView);
+    }
+
+    @VisibleForTesting
+    PropertyModel getTouchToFillCreditCardPropertyModelForTesting() {
+        return mTouchToFillCreditCardModel;
     }
 }

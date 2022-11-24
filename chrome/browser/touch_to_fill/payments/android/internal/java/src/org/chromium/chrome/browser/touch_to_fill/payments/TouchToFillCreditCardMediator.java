@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,8 +25,9 @@ class TouchToFillCreditCardMediator {
         mModel = model;
     }
 
-    void showSheet() {
+    void showSheet(boolean shouldShowScanCreditCard) {
         mModel.set(VISIBLE, true);
+        mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
     }
 
     void hideSheet() {
@@ -36,5 +38,9 @@ class TouchToFillCreditCardMediator {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
         mDelegate.onDismissed();
+    }
+
+    public void scanCreditCard() {
+        mDelegate.scanCreditCard();
     }
 }

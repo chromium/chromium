@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/data_model/credit_card.h"
+
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
 
@@ -14,10 +16,14 @@ class AutofillDriver;
 // data to show and will be notified of events by the controller.
 class TouchToFillDelegate {
  public:
+  virtual ~TouchToFillDelegate() = default;
+
   // TODO(crbug.com/1247698): Define the API.
   virtual AutofillDriver* GetDriver() = 0;
 
-  virtual ~TouchToFillDelegate() = default;
+  virtual bool ShouldShowScanCreditCard() = 0;
+  virtual void ScanCreditCard() = 0;
+  virtual void OnCreditCardScanned(const CreditCard& card) = 0;
 };
 
 }  // namespace autofill
