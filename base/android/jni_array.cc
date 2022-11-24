@@ -4,29 +4,12 @@
 
 #include "base/android/jni_array.h"
 
-#include <ostream>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace base {
-namespace android {
-namespace {
-
-// As |GetArrayLength| makes no guarantees about the returned value (e.g., it
-// may be -1 if |array| is not a valid Java array), provide a safe wrapper
-// that always returns a valid, non-negative size.
-template <typename JavaArrayType>
-size_t SafeGetArrayLength(JNIEnv* env, const JavaRef<JavaArrayType>& jarray) {
-  DCHECK(jarray);
-  jsize length = env->GetArrayLength(jarray.obj());
-  DCHECK_GE(length, 0) << "Invalid array length: " << length;
-  return static_cast<size_t>(std::max(0, length));
-}
-
-}  // namespace
+namespace base::android {
 
 ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
                                                const uint8_t* bytes,
@@ -374,6 +357,19 @@ void JavaByteArrayToByteVector(JNIEnv* env,
   AppendJavaByteArrayToByteVector(env, byte_array, out);
 }
 
+size_t JavaByteArrayToByteSpan(JNIEnv* env,
+                               const JavaRef<jbyteArray>& byte_array,
+                               base::span<uint8_t> dest) {
+  CHECK(byte_array);
+  size_t len = SafeGetArrayLength(env, byte_array);
+  size_t span_len = dest.size_bytes();
+  CHECK_GE(span_len, len) << "Target span is too small, java array size: "
+                          << len << ", span size: " << span_len;
+  env->GetByteArrayRegion(byte_array.obj(), 0, static_cast<jsize>(len),
+                          reinterpret_cast<int8_t*>(dest.data()));
+  return len;
+}
+
 void JavaByteArrayToString(JNIEnv* env,
                            const JavaRef<jbyteArray>& byte_array,
                            std::string* out) {
@@ -540,5 +536,4 @@ void JavaArrayOfIntArrayToIntVector(JNIEnv* env,
   }
 }
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android

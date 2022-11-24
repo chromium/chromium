@@ -8,14 +8,28 @@
 #include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 
-namespace base {
-namespace android {
+namespace base::android {
+
+// As |GetArrayLength| makes no guarantees about the returned value (e.g., it
+// may be -1 if |array| is not a valid Java array), provide a safe wrapper
+// that always returns a valid, non-negative size.
+// Returns the length of Java array.
+template <typename JavaArrayType>
+BASE_EXPORT size_t SafeGetArrayLength(JNIEnv* env,
+                                      const JavaRef<JavaArrayType>& jarray) {
+  DCHECK(jarray);
+  jsize length = env->GetArrayLength(jarray.obj());
+  DCHECK_GE(length, 0) << "Invalid array length: " << length;
+  return static_cast<size_t>(std::max(0, length));
+}
 
 // Returns a new Java byte array converted from the given bytes array.
 BASE_EXPORT ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
@@ -141,6 +155,14 @@ BASE_EXPORT void JavaByteArrayToByteVector(
     const JavaRef<jbyteArray>& byte_array,
     std::vector<uint8_t>* out);
 
+// Copy the contents of java |byte_array| into |dest|. The span must be larger
+// than or equal to the array.
+// Returns the number of bytes copied.
+BASE_EXPORT size_t
+JavaByteArrayToByteSpan(JNIEnv* env,
+                        const JavaRef<jbyteArray>& byte_array,
+                        base::span<uint8_t> dest);
+
 // Replaces the content of |out| with the Java bytes in |byte_array|. No UTF-8
 // conversion is performed.
 BASE_EXPORT void JavaByteArrayToString(JNIEnv* env,
@@ -220,7 +242,6 @@ BASE_EXPORT void JavaArrayOfIntArrayToIntVector(
     const JavaRef<jobjectArray>& array,
     std::vector<std::vector<int>>* out);
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android
 
 #endif  // BASE_ANDROID_JNI_ARRAY_H_

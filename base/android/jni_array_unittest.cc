@@ -13,12 +13,26 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace android {
+namespace base::android {
+
+TEST(JniArray, GetLength) {
+  const uint8_t bytes[] = {0, 1, 2, 3};
+  const size_t len = std::size(bytes);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> j_bytes = ToJavaByteArray(env, bytes, len);
+  ASSERT_TRUE(j_bytes);
+  ASSERT_EQ(4U, SafeGetArrayLength(env, j_bytes));
+
+  ScopedJavaLocalRef<jbyteArray> j_empty_bytes =
+      ToJavaByteArray(env, base::span<uint8_t>());
+  ASSERT_TRUE(j_empty_bytes);
+  ASSERT_EQ(0U, SafeGetArrayLength(env, j_empty_bytes));
+}
 
 TEST(JniArray, BasicConversions) {
   const uint8_t kBytes[] = {0, 1, 2, 3};
@@ -41,6 +55,10 @@ TEST(JniArray, BasicConversions) {
   std::vector<uint8_t> expected_vec(kBytes, kBytes + kLen);
   EXPECT_EQ(expected_vec, vectorFromBytes);
   EXPECT_EQ(expected_vec, vectorFromVector);
+
+  std::vector<uint8_t> vector_for_span_test(expected_vec.size());
+  JavaByteArrayToByteSpan(env, bytes, base::make_span(vector_for_span_test));
+  EXPECT_EQ(expected_vec, vector_for_span_test);
 
   AppendJavaByteArrayToByteVector(env, bytes, &vectorFromBytes);
   EXPECT_EQ(8U, vectorFromBytes.size());
@@ -605,5 +623,4 @@ TEST(JniArray, ToJavaArrayOfObjectGlobalRef) {
                          env, static_cast<jstring>(env->GetObjectArrayElement(
                                   j_array.obj(), 2)))));
 }
-}  // namespace android
-}  // namespace base
+}  // namespace base::android

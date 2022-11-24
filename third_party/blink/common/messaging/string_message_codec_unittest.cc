@@ -4,6 +4,10 @@
 
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
+#include <string>
+
+#include "base/containers/span.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -61,7 +65,8 @@ WebMessagePayload DecodeWithV8(const TransferableMessage& message) {
       array_buffer_contents.resize(js_array_buffer->ByteLength());
       memcpy(array_buffer_contents.data(), js_array_buffer->Data(),
              js_array_buffer->ByteLength());
-      result = array_buffer_contents;
+      result = WebMessageArrayBufferPayload::CreateForTesting(
+          std::move(array_buffer_contents));
     }
   }
   isolate->Dispose();
@@ -89,31 +94,39 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
     v8::ValueSerializer serializer(isolate);
     serializer.WriteHeader();
 
-    if (const auto* str = absl::get_if<std::u16string>(&message)) {
-      v8::Local<v8::String> message_as_value =
-          v8::String::NewFromTwoByte(
-              isolate, reinterpret_cast<const uint16_t*>(str->data()),
-              v8::NewStringType::kNormal, str->size())
-              .ToLocalChecked();
-      EXPECT_TRUE(serializer.WriteValue(context, message_as_value).ToChecked());
-    } else if (const auto* array_buffer =
-                   absl::get_if<std::vector<uint8_t>>(&message)) {
-      v8::Local<v8::ArrayBuffer> message_as_array_buffer =
-          v8::ArrayBuffer::New(isolate, array_buffer->size());
-      memcpy(message_as_array_buffer->GetBackingStore()->Data(),
-             array_buffer->data(), array_buffer->size());
-      if (transferable) {
-        serializer.TransferArrayBuffer(0, message_as_array_buffer);
-      }
-      EXPECT_TRUE(
-          serializer.WriteValue(context, message_as_array_buffer).ToChecked());
-
-      mojo_base::BigBuffer big_buffer(*array_buffer);
-      transferable_message.array_buffer_contents_array.push_back(
-          mojom::SerializedArrayBufferContents::New(std::move(big_buffer)));
-    } else {
-      NOTREACHED();
-    }
+    absl::visit(
+        base::Overloaded{
+            [&](const std::u16string& str) {
+              v8::Local<v8::String> message_as_value =
+                  v8::String::NewFromTwoByte(
+                      isolate, reinterpret_cast<const uint16_t*>(str.data()),
+                      v8::NewStringType::kNormal, str.size())
+                      .ToLocalChecked();
+              EXPECT_TRUE(
+                  serializer.WriteValue(context, message_as_value).ToChecked());
+            },
+            [&](const std::unique_ptr<WebMessageArrayBufferPayload>&
+                    array_buffer) {
+              // Create a new JS ArrayBuffer, then transfer into serializer.
+              v8::Local<v8::ArrayBuffer> message_as_array_buffer =
+                  v8::ArrayBuffer::New(isolate, array_buffer->GetLength());
+              array_buffer->CopyInto(base::make_span(
+                  reinterpret_cast<uint8_t*>(message_as_array_buffer->Data()),
+                  message_as_array_buffer->ByteLength()));
+              if (transferable) {
+                serializer.TransferArrayBuffer(0, message_as_array_buffer);
+                // Copy data into a new array_buffer_contents_array slot.
+                mojo_base::BigBuffer big_buffer(array_buffer->GetLength());
+                array_buffer->CopyInto(big_buffer);
+                transferable_message.array_buffer_contents_array.push_back(
+                    mojom::SerializedArrayBufferContents::New(
+                        std::move(big_buffer)));
+              }
+              EXPECT_TRUE(
+                  serializer.WriteValue(context, message_as_array_buffer)
+                      .ToChecked());
+            }},
+        message);
 
     std::pair<uint8_t*, size_t> buffer = serializer.Release();
     result = std::vector<uint8_t>(buffer.first, buffer.first + buffer.second);
@@ -140,11 +153,22 @@ void CheckVectorEQ(const absl::optional<WebMessagePayload>& optional_payload,
                    const std::vector<uint8_t>& buffer) {
   EXPECT_TRUE(optional_payload);
   auto& payload = optional_payload.value();
-  EXPECT_TRUE(absl::holds_alternative<std::vector<uint8_t>>(payload));
-  const auto& vec = absl::get<std::vector<uint8_t>>(payload);
-  EXPECT_EQ(buffer.size(), vec.size());
-  for (size_t i = 0; i < buffer.size(); ++i)
-    EXPECT_EQ(buffer[i], vec[i]);
+  EXPECT_TRUE(
+      absl::holds_alternative<std::unique_ptr<WebMessageArrayBufferPayload>>(
+          payload));
+  auto& array_buffer =
+      absl::get<std::unique_ptr<WebMessageArrayBufferPayload>>(payload);
+  EXPECT_EQ(buffer.size(), array_buffer->GetLength());
+
+  auto span = array_buffer->GetAsSpanIfPossible();
+  if (span) {
+    // GetAsSpan is supported, check it is the same as the original buffer.
+    EXPECT_EQ(std::vector<uint8_t>(span->begin(), span->end()), buffer);
+  }
+
+  std::vector<uint8_t> temp(array_buffer->GetLength());
+  array_buffer->CopyInto(base::make_span(temp));
+  EXPECT_EQ(temp, buffer);
 }
 
 TEST(StringMessageCodecTest, SelfTest_ASCII) {
@@ -177,8 +201,8 @@ TEST(StringMessageCodecTest, SelfTest_TwoByteLongEnoughToForcePadding) {
 
 TEST(StringMessageCodecTest, SelfTest_ArrayBuffer) {
   std::vector<uint8_t> message(200, 0xFF);
-  CheckVectorEQ(DecodeToWebMessagePayload(
-                    EncodeWebMessagePayload(WebMessagePayload(message))),
+  CheckVectorEQ(DecodeToWebMessagePayload(EncodeWebMessagePayload(
+                    WebMessageArrayBufferPayload::CreateForTesting(message))),
                 message);
 }
 
@@ -212,9 +236,9 @@ TEST(StringMessageCodecTest, SelfToV8Test_TwoByteLongEnoughToForcePadding) {
 
 TEST(StringMessageCodecTest, SelfToV8Test_ArrayBuffer) {
   std::vector<uint8_t> message(200, 0xFF);
-  CheckVectorEQ(
-      DecodeWithV8(EncodeWebMessagePayload(WebMessagePayload(message))),
-      message);
+  CheckVectorEQ(DecodeWithV8(EncodeWebMessagePayload(
+                    WebMessageArrayBufferPayload::CreateForTesting(message))),
+                message);
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_ASCII) {
@@ -239,13 +263,17 @@ TEST(StringMessageCodecTest, V8ToSelfTest_TwoByteLongEnoughToForcePadding) {
 
 TEST(StringMessageCodecTest, V8ToSelfTest_ArrayBuffer) {
   std::vector<uint8_t> message(200, 0xFF);
-  CheckVectorEQ(DecodeToWebMessagePayload(EncodeWithV8(message)), message);
+  CheckVectorEQ(DecodeToWebMessagePayload(EncodeWithV8(
+                    WebMessageArrayBufferPayload::CreateForTesting(message))),
+                message);
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_ArrayBuffer_transferrable) {
   std::vector<uint8_t> message(200, 0xFF);
-  CheckVectorEQ(DecodeToWebMessagePayload(EncodeWithV8(message, true)),
-                message);
+  CheckVectorEQ(
+      DecodeToWebMessagePayload(EncodeWithV8(
+          WebMessageArrayBufferPayload::CreateForTesting(message), true)),
+      message);
 }
 
 TransferableMessage TransferableMessageFromRawData(std::vector<uint8_t> data) {

@@ -10,12 +10,46 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "content/public/android/content_jni_headers/MessagePayloadJni_jni.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+
+namespace {
+
+// An ArrayBufferPayload impl for Browser (Java) to JavaScript message, the
+// ArrayBuffer payload data is stored in a Java byte array.
+class JavaArrayBuffer : public blink::WebMessageArrayBufferPayload {
+ public:
+  explicit JavaArrayBuffer(const base::android::JavaRef<jbyteArray>& array)
+      : length_(base::android::SafeGetArrayLength(
+            base::android::AttachCurrentThread(),
+            array)),
+        array_(array) {}
+
+  size_t GetLength() const override { return length_; }
+
+  // Due to JNI limitation, Java ByteArray cannot be converted into base::span
+  // trivially.
+  absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+      const override {
+    return absl::nullopt;
+  }
+
+  void CopyInto(base::span<uint8_t> dest) const override {
+    base::android::JavaByteArrayToByteSpan(base::android::AttachCurrentThread(),
+                                           array_, dest);
+  }
+
+ private:
+  size_t length_;
+  base::android::ScopedJavaGlobalRef<jbyteArray> array_;
+};
+}  // namespace
 
 namespace content::android {
 
@@ -28,12 +62,26 @@ base::android::ScopedJavaLocalRef<jobject> ConvertWebMessagePayloadToJava(
             return Java_MessagePayloadJni_createFromString(
                 env, base::android::ConvertUTF16ToJavaString(env, str));
           },
-          [env](const std::vector<uint8_t>& array_buffer) {
-            return Java_MessagePayloadJni_createFromArrayBuffer(
-                env, base::android::ToJavaByteArray(env, array_buffer.data(),
-                                                    array_buffer.size()));
-          },
-      },
+          [env](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
+                    array_buffer) {
+            // Data is from renderer process, copy it first before use.
+            base::android::ScopedJavaLocalRef<jbyteArray> j_byte_array;
+
+            auto span_optional = array_buffer->GetAsSpanIfPossible();
+            if (span_optional) {
+              j_byte_array =
+                  base::android::ToJavaByteArray(env, span_optional.value());
+            } else {
+              // The ArrayBufferPayload impl does not support |GetArrayBuffer|.
+              // Fallback to allocate a temporary buffer and copy the data.
+              std::vector<uint8_t> data(array_buffer->GetLength());
+              array_buffer->CopyInto(data);
+              j_byte_array = base::android::ToJavaByteArray(env, data);
+            }
+
+            return Java_MessagePayloadJni_createFromArrayBuffer(env,
+                                                                j_byte_array);
+          }},
       payload);
 }
 
@@ -51,9 +99,7 @@ blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
     case MessagePayloadType::kArrayBuffer: {
       auto byte_array =
           Java_MessagePayloadJni_getAsArrayBuffer(env, java_message);
-      std::vector<uint8_t> vector;
-      base::android::JavaByteArrayToByteVector(env, byte_array, &vector);
-      return vector;
+      return std::make_unique<JavaArrayBuffer>(byte_array);
     }
     case MessagePayloadType::kInvalid:
       break;

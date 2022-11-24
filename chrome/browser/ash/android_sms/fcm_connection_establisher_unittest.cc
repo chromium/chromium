@@ -31,12 +31,9 @@ class FcmConnectionEstablisherTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~FcmConnectionEstablisherTest() override = default;
 
-  void VerifyTransferrableMessage(
-      const char* expected,
-      const content::FakeServiceWorkerContext::
-          StartServiceWorkerAndDispatchMessageArgs& call_args) {
-    auto payload = blink::DecodeToWebMessagePayload(
-        std::get<blink::TransferableMessage>(call_args));
+  void VerifyTransferrableMessage(const char* expected,
+                                  blink::TransferableMessage message) {
+    auto payload = blink::DecodeToWebMessagePayload(std::move(message));
     EXPECT_EQ(base::UTF8ToUTF16(expected),
               absl::get<std::u16string>(payload.value()));
   }
@@ -66,7 +63,8 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
   ASSERT_EQ(1u, message_dispatch_calls.size());
   EXPECT_EQ(GetAndroidMessagesURL(), std::get<GURL>(message_dispatch_calls[0]));
   VerifyTransferrableMessage(FcmConnectionEstablisher::kStartFcmMessage,
-                             message_dispatch_calls[0]);
+                             std::move(std::get<blink::TransferableMessage>(
+                                 message_dispatch_calls[0])));
 
   // Return success to result callback and verify that no retries are attempted
   // and success histogram is recorded.
@@ -92,7 +90,8 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, message_dispatch_calls.size());
   VerifyTransferrableMessage(FcmConnectionEstablisher::kStartFcmMessage,
-                             message_dispatch_calls[1]);
+                             std::move(std::get<blink::TransferableMessage>(
+                                 message_dispatch_calls[1])));
 
   // Verify that if the first request fails then it's retried
   std::move(std::get<content::ServiceWorkerContext::ResultCallback>(
@@ -107,7 +106,8 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
   mock_retry_timer_ptr->Fire();
   ASSERT_EQ(3u, message_dispatch_calls.size());
   VerifyTransferrableMessage(FcmConnectionEstablisher::kStartFcmMessage,
-                             message_dispatch_calls[2]);
+                             std::move(std::get<blink::TransferableMessage>(
+                                 message_dispatch_calls[2])));
 
   // Verify that if the first request succeeds then the next message is
   // dispatched
@@ -117,7 +117,8 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
   ASSERT_EQ(4u, message_dispatch_calls.size());
   EXPECT_FALSE(mock_retry_timer_ptr->IsRunning());
   VerifyTransferrableMessage(FcmConnectionEstablisher::kResumeFcmMessage,
-                             message_dispatch_calls[3]);
+                             std::move(std::get<blink::TransferableMessage>(
+                                 message_dispatch_calls[3])));
 
   // Complete second request and verify that no more retries are scheduled.
   std::move(std::get<content::ServiceWorkerContext::ResultCallback>(
@@ -176,7 +177,8 @@ TEST_F(FcmConnectionEstablisherTest, TestTearDownConnection) {
   ASSERT_EQ(1u, message_dispatch_calls.size());
   EXPECT_EQ(GetAndroidMessagesURL(), std::get<GURL>(message_dispatch_calls[0]));
   VerifyTransferrableMessage(FcmConnectionEstablisher::kStopFcmMessage,
-                             message_dispatch_calls[0]);
+                             std::move(std::get<blink::TransferableMessage>(
+                                 message_dispatch_calls[0])));
 }
 
 }  // namespace android_sms
