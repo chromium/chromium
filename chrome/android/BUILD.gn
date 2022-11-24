@@ -2842,7 +2842,6 @@ if (current_toolchain == default_toolchain) {
                                "static_library_provider",
                                "target_type",
                                "use_chromium_linker",
-                               "use_modern_linker",
                                "use_trichrome_library",
                                "version_code",
                                "version_name",

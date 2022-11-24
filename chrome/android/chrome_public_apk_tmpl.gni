@@ -153,7 +153,8 @@ template("chrome_public_common_apk_or_module_tmpl") {
     }
 
     if (!defined(use_chromium_linker)) {
-      use_chromium_linker = chromium_linker_supported
+      # The Chromium Linker depends on ASharedMemory_create() introduced in O.
+      use_chromium_linker = chromium_linker_supported && _is_trichrome
     }
 
     if (_is_trichrome) {
@@ -520,8 +521,8 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         _pak_prefix = "trichrome_chrome"
       }
 
+      # The Chromium Linker depends on ASharedMemory_create() introduced in O.
       use_chromium_linker = is_trichrome && chromium_linker_supported
-      use_modern_linker = use_chromium_linker
 
       if (build_hwasan_splits && android_64bit_target_cpu &&
           invoker.is_64_bit_browser) {
@@ -624,7 +625,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       "shared_libraries",
       "uncompress_shared_libraries",
       "use_chromium_linker",
-      "use_modern_linker",
       "webview_product_config_java_package",
     ]
     forward_variables_from(invoker, "*", _override_args)

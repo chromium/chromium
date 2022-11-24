@@ -59,19 +59,15 @@ import javax.annotation.concurrent.GuardedBy;
  * - The native shared library must be loaded with Linker.loadLibrary(), instead of
  *   System.loadLibrary(). The two functions should behave the same (at a high level).
  *
- * - Before loading the library, setApkFilePath() must be called when loading from the APK.
- *
  * - Early on, before the attempt to load the library, the linker needs to be initialized either as
  *   a producer or a consumer of the RELRO region by invoking ensureInitialized(). Since various
  *   Chromium projects have vastly different initialization paths, for convenience the
  *   initialization runs implicitly as part of loading the library. In this case the behaviour is of
  *   a producer.
  *
- * - When running as a RELRO consumer, the loadLibrary() may block until the RELRO section Bundle
- *   is received. This is done by calling takeSharedRelrosFromBundle() from another thread.
- *
  * - After loading the native library as a RELRO producer, the putSharedRelrosToBundle() becomes
- *   available to then send the Bundle to Linkers in other processes.
+ *   available to then send the Bundle to Linkers in other processes, consumed
+ *   by takeSharedRelrosFromBundle().
  */
 abstract class Linker {
     private static final String TAG = "Linker";
@@ -111,9 +107,6 @@ abstract class Linker {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean mRelroProducer = true;
 
-    @GuardedBy("mLock")
-    private boolean mLinkerWasWaitingSynchronously;
-
     // Keeps stats about searching the WebView memory reservation. After each _successful_ library
     // load a UMA histogram is recorded using this data.
     @GuardedBy("mLock")
@@ -131,11 +124,9 @@ abstract class Linker {
      *
      * - RELRO is not shared.
      *
-     * - ModernLinker: RELRO is shared: the producer process loads the library, consumers load the
+     * - RELRO is shared: the producer process loads the library, consumers load the
      *   native library without waiting, they use the RELRO bundle later when it arrives, or
      *   immediately if it arrived before load
-     *
-     * - LegacyLinker: loads the native library then waits synchronously for RELRO bundle
      *
      * Once the library has been loaded, in the producer process the state is DONE_PROVIDE_RELRO,
      * and in consumer processes it is DONE.
@@ -227,10 +218,10 @@ abstract class Linker {
     /**
      * Initializes the Linker. This is the first method to be called on the instance.
      *
-     * Linker and its subclasses abstract away from knowing process types and what the role of each
-     * process is. The LibraryLoader and the layers above tell the singleton linker whether it needs
-     * to produce the RELRO region, consume it, whether to use the address hint or to synthesize
-     * according to a strategy.
+     * The Linker abstracts away from knowing process types and what the role of each process is.
+     * The LibraryLoader and the layers above tell the singleton linker whether it needs to produce
+     * the RELRO region, consume it, whether to use the address hint or to synthesize according to a
+     * strategy.
      *
      * In many cases finding the library load address is on the critical path, and needs to be
      * transferred to other processes as soon as possible. For this purpose initialization is
@@ -256,20 +247,6 @@ abstract class Linker {
      *     there), hence sometimes the address range may not be available.
      *
      * RESERVE_RANDOM: Finds a free random address range and reserves it.
-     *
-     * With the LegacyLinker this method releases the memory reservation (or does not attempt to do
-     * it). This is because the LegacyLinker reserves a region using:
-     *
-     *     mmap(address_hint, flags_without_MAP_FIXED )
-     *
-     * This behavior is harmlessly racy: in case something else grabs the address range before the
-     * library loading starts, the dynamic linking will load at a different address and fall back to
-     * *not* sharing RELRO. The chances of this happening in a fresh process are low.
-     *
-     * Unmapping and then mapping the region again is likely unnecessary. Ideally both Linkers
-     * should start by reserving the memory region early in process lifetime, then load the library
-     * with mmap(nullptr, ... MAP_FIXED) on top of it. Unfortunately the crazylinker feature to load
-     * on top of a reserved memory region is not well tested and looks buggy.
      *
      * @param asRelroProducer whether the Linker instance will need to produce the shared memory
      *                        region as part of work in {@link Linker#loadLibrary(String)}.
@@ -300,15 +277,13 @@ abstract class Linker {
         }
     }
 
-    // Initializes the |mLocalLibInfo| and reserves the address range chosen (only when
-    // keepMemoryReservationUntilLoad() returns true).
+    // Initializes the |mLocalLibInfo| and reserves the address range chosen.
     @GuardedBy("mLock")
     private void chooseAndReserveMemoryRange(
             boolean asRelroProducer, @PreferAddress int preference, long addressHint) {
         mLocalLibInfo = new LibInfo();
         mRelroProducer = asRelroProducer;
         loadLinkerJniLibraryLocked();
-        boolean keepReservation = keepMemoryReservationUntilLoad();
         switch (preference) {
             case PreferAddress.FIND_RESERVED:
                 UptimeMillisTimer timer = new UptimeMillisTimer();
@@ -334,13 +309,13 @@ abstract class Linker {
             case PreferAddress.RESERVE_HINT:
                 mLocalLibInfo.mLoadAddress = addressHint;
                 if (addressHint != 0) {
-                    if (!keepReservation) return;
                     getLinkerJni().reserveMemoryForLibrary(mLocalLibInfo);
                     if (mLocalLibInfo.mLoadAddress != 0) return;
                 }
                 // Intentional fallthrough.
             case PreferAddress.RESERVE_RANDOM:
-                getLinkerJni().findMemoryRegionAtRandomAddress(mLocalLibInfo, keepReservation);
+                // TODO(pasko): Avoid passing the last argument because it is always |true|.
+                getLinkerJni().findMemoryRegionAtRandomAddress(mLocalLibInfo, true);
         }
     }
 
@@ -388,37 +363,17 @@ abstract class Linker {
     }
 
     /**
-     * Tells whether the Linker expects the 'reserved' memory region
-     * [mLocalLibInfo.{mLoadAddress,mLoadSize}] to be actually reserved with mmap(PROT_NONE). Not
-     * expecting the actual reservation will make the LegacyLinker try to grab it again.
-     */
-    protected abstract boolean keepMemoryReservationUntilLoad();
-
-    /** Tell the linker about the APK path, if the library is loaded from the APK. */
-    void setApkFilePath(String path) {}
-
-    /**
-     * Tells whether atomic replacement of RELRO after library load should be performed. It is only
-     * supported by the ModernLinker. The latter should give up with RELRO on the retry that uses
-     * the RelroSharingMode.NO_SHARING.  This method should be called after loading the library.
+     * Tells whether atomic replacement of RELRO after library load should be performed. The linker
+     * should give up with RELRO on the retry that uses the RelroSharingMode.NO_SHARING. This method
+     * should be called after loading the library.
      */
     @GuardedBy("mLock")
     private boolean shouldAtomicallyReplaceRelroAfterLoad() {
-        // This is a demonstration of the unfortunate tight coupling between the Linker, and the
-        // implementation details in loadLibraryImplLocked() for each of the two subclasses.
-        // Decoupling it would be nontrivial given the reuse of |mLock| in the subclasses.
-        // Improvements of this kind will soon become unnecessary because the LegacyLinker will go
-        // away with the deprecation of the LegacyLinker in Android M.
-        if (mLinkerWasWaitingSynchronously) {
-            // The LegacyLinker was blocked waiting for |mRemoteLibInfo| to arrive, used it and
-            // nullified immediately.
-            return false;
-        }
         if (mRemoteLibInfo != null && mState == State.DONE) {
-            // Only the ModernLinker can end up in the State.DONE while mRemoteLibInfo is not
-            // nullified yet. With an invalid load address it is impossible to locate the RELRO
-            // region in the current process. This could happen when the library loaded successfully
-            // only after the fallback to no sharing.
+            // In the State.DONE while mRemoteLibInfo is not nullified yet. With an invalid load
+            // address it is impossible to locate the RELRO region in the current process. This
+            // could happen when the library loaded successfully only after the fallback to no
+            // sharing.
             //
             // TODO(pasko): There is no need to check for |mLoadAddress| here because in the worst
             // case the zero address will be ignored on the native side of the
@@ -441,26 +396,20 @@ abstract class Linker {
     private void attemptLoadLibraryLocked(String library, @RelroSharingMode int relroMode) {
         if (DEBUG) Log.i(TAG, "attemptLoadLibraryLocked: %s", library);
         assert !library.equals(LINKER_JNI_LIBRARY);
-        try {
-            loadLibraryImplLocked(library, relroMode);
-            if (DEBUG) {
-                Log.i(TAG, "Attempt to replace RELRO: waswaiting=%b, remotenonnull=%b, state=%d",
-                        mLinkerWasWaitingSynchronously, mRemoteLibInfo != null, mState);
-            }
-            if (shouldAtomicallyReplaceRelroAfterLoad()) {
-                atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
-            }
-        } finally {
-            // Reset the state to serve the retry in loadLibrary().
-            mLinkerWasWaitingSynchronously = false;
+        loadLibraryImplLocked(library, relroMode);
+        if (DEBUG) {
+            Log.i(TAG, "Attempt to replace RELRO: remotenonnull=%b, state=%d",
+                    mRemoteLibInfo != null, mState);
+        }
+        if (shouldAtomicallyReplaceRelroAfterLoad()) {
+            atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
         }
     }
 
     /**
      * Loads the native shared library.
      *
-     * The library must not be the Chromium linker library. The LegacyLinker only allows loading one
-     * library per file, including zip/APK files.
+     * The library must not be the Chromium linker library.
      *
      * @param library The library name to load.
      */
@@ -538,10 +487,7 @@ abstract class Linker {
             }
             mRemoteLibInfo = newRemote;
             if (mState == State.DONE) {
-                atomicReplaceRelroLocked(false /* relroAvailableImmediately */);
-            } else if (mState != State.DONE_PROVIDE_RELRO) {
-                // Wake up blocked callers of waitForSharedRelrosLocked().
-                mLock.notifyAll();
+                atomicReplaceRelroLocked(/* relroAvailableImmediately= */ false);
             }
         }
     }
@@ -562,19 +508,13 @@ abstract class Linker {
 
     /**
      * Linker-specific entry point for library loading. Loads the library into the address range
-     * provided by mLocalLibInfo. The ModernLinker assumes that the range is reserved with
-     * mmap(2), the LegacyLinker will attempt to reserve it.
+     * provided by mLocalLibInfo. Assumes that the range is reserved with mmap(2).
      *
      * If the library is within a zip file, it must be uncompressed and page aligned in this file.
      *
-     * This method may block by calling {@link #waitForSharedRelrosLocked()}. This would
-     * synchronously wait until {@link #takeSharedRelrosFromBundle(Bundle)} is called on another
-     * thread. Used only in LegacyLinker,
-     *
-     * If blocking is avoided in a subclass (for performance reasons) then
-     * {@link #atomicReplaceRelroLocked(boolean)} must be implemented to *atomically* replace the
-     * RELRO region. Atomicity is required because the library code can be running concurrently on
-     * another thread. Used only in ModernLinker.
+     * The {@link #atomicReplaceRelroLocked(boolean)} must be implemented to *atomically* replace
+     * the RELRO region. Atomicity is required because the library code can be running concurrently
+     * on another thread.
      *
      * @param libraryName The name of the library to load.
      * @param relroMode Tells whether to use RELRO sharing and whether to produce or consume the
@@ -624,29 +564,6 @@ abstract class Linker {
     protected final void ensureInitializedImplicitlyAsLastResort() {
         ensureInitialized(
                 /* asRelroProducer= */ true, PreferAddress.RESERVE_RANDOM, /* addressHint= */ 0);
-    }
-
-    // Used by the LegacyLinker to wait for shared RELROs. Returns once takeSharedRelrosFromBundle()
-    // has been called to supply a valid shared RELROs bundle.
-    @GuardedBy("mLock")
-    protected final void waitForSharedRelrosLocked() {
-        if (DEBUG) Log.i(TAG, "waitForSharedRelros() called");
-        mLinkerWasWaitingSynchronously = true;
-
-        // Most likely the relocations already have been provided at this point. If not, wait until
-        // takeSharedRelrosFromBundle() notifies about RELROs arrival.
-        UptimeMillisTimer timer = DEBUG ? new UptimeMillisTimer() : null;
-        while (mRemoteLibInfo == null) {
-            try {
-                mLock.wait();
-            } catch (InterruptedException e) {
-                // Continue waiting even if just interrupted.
-            }
-        }
-
-        if (DEBUG) {
-            Log.i(TAG, "Time to wait for shared RELRO: %d ms", timer.getElapsedMillis());
-        }
     }
 
     /**
@@ -765,16 +682,13 @@ abstract class Linker {
          * Reserves a memory region (=mapping) of sufficient size to hold the loaded library before
          * the real size is known. The mmap(2) being used here provides built in randomization.
          *
-         * On failure |libInfo.mLoadAddress| should be set to 0. Observing it a subclass can:
-         * 1. Fail early and let LibraryLoader fall back to loading using the system linker
-         *    (ModernLinker)
-         * 2. Try again (LegacyLinker)
+         * On failure |libInfo.mLoadAddress| should be set to 0 and the LibraryLoader will fall back
+         * to loading using the system linker.
          *
          * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On failure sets
          *                the |libInfo.mLoadAddress| to 0.
-         * @param keepReserved should normally be |true|. Setting |keepReserved=false| is intended
-         *                     for the legacy behavior within the LegacyLinker. This way the address
-         *                     range is freed up (unmapped) immediately after being reserved.
+         * @param keepReserved is always |true| with ModernLinker.
+         *                     TODO(pasko): Eliminate this parameter.
          */
         void findMemoryRegionAtRandomAddress(@NonNull LibInfo libInfo, boolean keepReserved);
 

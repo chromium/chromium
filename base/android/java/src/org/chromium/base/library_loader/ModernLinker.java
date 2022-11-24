@@ -19,12 +19,7 @@ import java.io.InputStreamReader;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Provides a concrete implementation of the Chromium Linker.
- *
- * This Linker implementation uses the Android M and later system linker to map Chrome and call
- * |JNI_OnLoad()|.
- *
- * For more on the operations performed by the Linker, see {@link Linker}.
+ * Provides a concrete implementation of the Chromium Linker, see {@link Linker}.
  */
 @JniIgnoreNatives
 class ModernLinker extends Linker {
@@ -41,11 +36,6 @@ class ModernLinker extends Linker {
     private static final String SELF_CGROUP_FILE_NAME = "/proc/self/cgroup";
 
     ModernLinker() {}
-
-    @Override
-    protected boolean keepMemoryReservationUntilLoad() {
-        return true;
-    }
 
     private static String extractBlkioCgroupFromLine(String line) {
         // The contents of /proc/self/cgroup for a background app looks like this:

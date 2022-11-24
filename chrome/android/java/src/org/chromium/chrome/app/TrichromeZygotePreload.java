@@ -11,16 +11,16 @@ import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.content_public.app.ZygotePreload;
 
 /**
- * The {@link ZygotePreload} allowing to use the ModernLinker when running Trichrome.
+ * The {@link ZygotePreload} allowing to use the Chromium Linker when running Trichrome.
  */
 public class TrichromeZygotePreload extends ZygotePreload {
     @Override
     public void doPreload(ApplicationInfo appInfo) {
-        // The ModernLinker is only needed when the App Zygote intends to create the RELRO region.
-        boolean useModernLinker = ProductConfig.USE_MODERN_LINKER
+        // The Chromium Linker is only needed when the App Zygote intends to create the RELRO
+        // region.
+        boolean useChromiumLinker = ProductConfig.USE_CHROMIUM_LINKER
                 && !LibraryLoader.mainProcessIntendsToProvideRelroFd();
-        LibraryLoader.getInstance().setLinkerImplementation(
-                /* useChromiumLinker= */ useModernLinker, /* useModernLinker= */ useModernLinker);
+        LibraryLoader.getInstance().setLinkerImplementation(useChromiumLinker);
         doPreloadCommon(appInfo);
     }
 }

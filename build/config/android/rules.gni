@@ -843,9 +843,6 @@ if (enable_java_templates && is_android) {
             invoker.load_library_from_apk) {
           args += [ "--load-library-from-apk" ]
         }
-        if (defined(invoker.use_modern_linker) && invoker.use_modern_linker) {
-          args += [ "--use-modern-linker" ]
-        }
       }
     }
   }
@@ -1562,7 +1559,6 @@ if (enable_java_templates && is_android) {
       write_native_libraries_java(_native_libraries_target_name) {
         enable_chromium_linker = false
         load_library_from_apk = false
-        use_modern_linker = false
         use_final_fields = true
         if (defined(_shared_library_list_file)) {
           native_libraries_list_file = _shared_library_list_file
@@ -2305,14 +2301,12 @@ if (enable_java_templates && is_android) {
   #   is_bundle_module: Whether or not this target is part of a bundle build.
   #   java_package: Java package for the generated class.
   #   use_chromium_linker:
-  #   use_modern_linker:
   template("generate_product_config_srcjar") {
     java_cpp_template(target_name) {
       defines = []
       _use_final =
           defined(invoker.build_config) ||
-          defined(invoker.use_chromium_linker) ||
-          defined(invoker.use_modern_linker) || defined(invoker.is_bundle)
+          defined(invoker.use_chromium_linker) || defined(invoker.is_bundle)
       if (_use_final) {
         defines += [ "USE_FINAL" ]
       }
@@ -2322,12 +2316,9 @@ if (enable_java_templates && is_android) {
 
       _use_chromium_linker =
           defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-      _use_modern_linker =
-          defined(invoker.use_modern_linker) && invoker.use_modern_linker
       _is_bundle = defined(invoker.is_bundle_module) && invoker.is_bundle_module
       defines += [
         "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker",
-        "USE_MODERN_LINKER_VALUE=$_use_modern_linker",
         "IS_BUNDLE_VALUE=$_is_bundle",
       ]
       if (defined(invoker.build_config)) {
@@ -2551,17 +2542,10 @@ if (enable_java_templates && is_android) {
 
     _use_chromium_linker =
         defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-    _use_modern_linker =
-        defined(invoker.use_modern_linker) && invoker.use_modern_linker
     _load_library_from_apk =
         defined(invoker.load_library_from_apk) && invoker.load_library_from_apk
 
-    not_needed([
-                 "_use_chromium_linker",
-                 "_use_modern_linker",
-               ])
-    assert(!_load_library_from_apk || _use_chromium_linker,
-           "load_library_from_apk requires use_chromium_linker")
+    not_needed([ "_use_chromium_linker" ])
 
     # Make sure that uncompress_shared_libraries is set to true if
     # load_library_from_apk is true.
@@ -2966,7 +2950,6 @@ if (enable_java_templates && is_android) {
         }
         enable_chromium_linker = _use_chromium_linker
         load_library_from_apk = _load_library_from_apk
-        use_modern_linker = _use_modern_linker
         use_final_fields = true
       }
       _srcjar_deps += [ ":${_template_name}__native_libraries" ]
@@ -3021,7 +3004,6 @@ if (enable_java_templates && is_android) {
           build_config = _build_config
           java_package = _package
           use_chromium_linker = _use_chromium_linker
-          use_modern_linker = _use_modern_linker
           deps = [ ":$_build_config_target" ]
         }
         _srcjar_deps += [ ":$_locale_target_name" ]
@@ -3589,7 +3571,6 @@ if (enable_java_templates && is_android) {
                                "generate_native_libraries_java",
                                "include_size_info",
                                "input_jars_paths",
-                               "use_modern_linker",
                                "jacoco_never_instrument",
                                "javac_args",
                                "jni_sources_exclusions",
@@ -3770,7 +3751,6 @@ if (enable_java_templates && is_android) {
                                "uncompress_shared_libraries",
                                "library_always_compress",
                                "use_chromium_linker",
-                               "use_modern_linker",
                                "uses_split",
                                "version_code",
                                "version_name",
