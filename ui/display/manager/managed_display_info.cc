@@ -134,7 +134,7 @@ bool ManagedDisplayMode::operator==(const ManagedDisplayMode& other) const {
 
 gfx::Size ManagedDisplayMode::GetSizeInDIP() const {
   gfx::SizeF size_dip(size_);
-  size_dip.Scale(1.0f / device_scale_factor_);
+  size_dip.InvScale(device_scale_factor_);
   return gfx::ToFlooredSize(size_dip);
 }
 

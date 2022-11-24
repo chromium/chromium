@@ -333,7 +333,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
       // |rounded_pixel_offset_| is stored in physical pixel space. Convert it
       // into DIP space before returning.
       gfx::Vector2dF subpixel_offset(rounded_pixel_offset_);
-      subpixel_offset.Scale(1.f / device_scale_factor_);
+      subpixel_offset.InvScale(device_scale_factor_);
       return subpixel_offset;
     }
 

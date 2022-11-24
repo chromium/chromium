@@ -266,7 +266,7 @@ void Display::SetScaleAndBounds(float device_scale_factor,
   SetScale(device_scale_factor);
 
   gfx::RectF f(bounds_in_pixel);
-  f.Scale(1.f / device_scale_factor_);
+  f.InvScale(device_scale_factor_);
   bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
   size_in_pixels_ = bounds_in_pixel.size();
   UpdateWorkAreaFromInsets(insets);

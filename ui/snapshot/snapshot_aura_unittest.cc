@@ -276,7 +276,7 @@ TEST_F(SnapshotAuraTest, UIScale) {
 
   // Snapshot always captures the physical pixels.
   gfx::SizeF snapshot_size(test_bounds.size());
-  snapshot_size.Scale(1 / kUIScale);
+  snapshot_size.InvScale(kUIScale);
 
   gfx::Image snapshot = GrabSnapshotForTestWindow();
   EXPECT_EQ(gfx::ToRoundedSize(snapshot_size).ToString(),
@@ -324,7 +324,7 @@ TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 
   // Snapshot always captures the physical pixels.
   gfx::SizeF snapshot_size(test_bounds.size());
-  snapshot_size.Scale(1 / kUIScale);
+  snapshot_size.InvScale(kUIScale);
 
   gfx::Image snapshot = GrabSnapshotForTestWindow();
   EXPECT_EQ(gfx::ToRoundedSize(snapshot_size).ToString(),

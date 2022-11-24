@@ -687,8 +687,8 @@ void WaylandSurface::ApplyPendingState() {
 
     if (!pending_state_.crop.IsEmpty()) {
       damage_uv.Offset(-pending_state_.crop.OffsetFromOrigin());
-      damage_uv.Scale(1.0f / pending_state_.crop.width(),
-                      1.0f / pending_state_.crop.height());
+      damage_uv.InvScale(pending_state_.crop.width(),
+                         pending_state_.crop.height());
     }
     damage_uv.Intersect(gfx::RectF(1, 1));
 

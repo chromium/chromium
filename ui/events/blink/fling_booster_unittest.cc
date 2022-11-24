@@ -81,7 +81,7 @@ class FlingBoosterTest : public testing::Test {
   Vector2dF DeltaFromVelocity(Vector2dF velocity, base::TimeDelta delta) {
     float delta_seconds = static_cast<float>(delta.InSecondsF());
     Vector2dF out = velocity;
-    out.Scale(1.f / delta_seconds);
+    out.InvScale(delta_seconds);
     return out;
   }
 

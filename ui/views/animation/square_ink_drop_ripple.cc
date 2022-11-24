@@ -441,7 +441,7 @@ void SquareInkDropRipple::CalculateRectTransforms(
                                           desired_size.width() / 2.0f));
     ripple_bounds.Scale(dsf);
     ripple_bounds = gfx::RectF(gfx::ToEnclosingRect(ripple_bounds));
-    ripple_bounds.Scale(1.0f / dsf);
+    ripple_bounds.InvScale(dsf);
     size = ripple_bounds.size();
   }
 

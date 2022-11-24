@@ -29,7 +29,7 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
   gfx::Vector2dF aligned_offset_in_dip = origin.OffsetFromOrigin();
   aligned_offset_in_dip.set_x(std::round(aligned_offset_in_dip.x()));
   aligned_offset_in_dip.set_y(std::round(aligned_offset_in_dip.y()));
-  aligned_offset_in_dip.Scale(1.f / device_scale_factor);
+  aligned_offset_in_dip.InvScale(device_scale_factor);
 
   // Compute the subpixel offset correction and apply it to the transform.
   gfx::Transform subpixel_correction;

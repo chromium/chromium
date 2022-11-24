@@ -149,7 +149,7 @@ class Layer::SubpixelPositionOffsetCache {
 
     gfx::Vector2dF offset =
         snapped_offset_from_parent - scaled_offset_from_parent;
-    offset.Scale(1.f / device_scale_factor);
+    offset.InvScale(device_scale_factor);
 
     // Store key and value information for the cache.
     offset_ = offset;

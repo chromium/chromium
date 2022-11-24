@@ -438,7 +438,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   gfx::Point entered_point{800, 600};
   {
     gfx::PointF expected_position(entered_point);
-    expected_position.Scale(1.0f / kTripleScale);
+    expected_position.InvScale(kTripleScale);
 
     EXPECT_CALL(*drop_handler_,
                 MockDragMotion(PointFNear(expected_position), _, _));
@@ -476,7 +476,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   gfx::Point center_point{400, 300};
   {
     gfx::PointF expected_position(center_point);
-    expected_position.Scale(1.0f / kTripleScale);
+    expected_position.InvScale(kTripleScale);
 
     EXPECT_CALL(*drop_handler_,
                 MockDragMotion(PointFNear(expected_position), _, _))
