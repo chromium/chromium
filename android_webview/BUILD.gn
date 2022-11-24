@@ -206,9 +206,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   trichrome_webview_tmpl("trichrome_webview_apk") {
     apk_name = "TrichromeWebView"
     uncompress_dex = true
-    if (!is_java_debug) {
-      static_library_synchronized_proguard = trichrome_synchronized_proguard
-    }
     if (android_64bit_target_cpu) {
       is_64_bit_browser = false
       include_64_bit_webview = true
@@ -224,9 +221,6 @@ if (android_64bit_target_cpu) {
   trichrome_webview_tmpl("trichrome_webview_64_apk") {
     apk_name = "TrichromeWebView64"
     uncompress_dex = true
-    if (!is_java_debug) {
-      static_library_synchronized_proguard = trichrome_synchronized_proguard
-    }
     is_64_bit_browser = true
     include_32_bit_webview = false
     android_manifest = trichrome_webview_64_android_manifest
