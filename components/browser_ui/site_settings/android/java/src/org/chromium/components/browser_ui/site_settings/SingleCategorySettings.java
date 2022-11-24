@@ -1061,8 +1061,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         Preference infoText = screen.findPreference(INFO_TEXT_KEY);
         if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             infoText.setSummary(R.string.website_settings_cookie_info);
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
-            infoText.setSummary(R.string.website_settings_site_data_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else {
