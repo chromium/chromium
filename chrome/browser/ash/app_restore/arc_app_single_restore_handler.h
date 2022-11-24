@@ -47,6 +47,7 @@ class ArcAppSingleRestoreHandler
   void OnAppStatesUpdate(const std::string& app_id,
                          bool ready,
                          bool need_fixup) override;
+  void OnGhostWindowHandlerDestroy() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,

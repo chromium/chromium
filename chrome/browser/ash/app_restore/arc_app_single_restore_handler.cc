@@ -177,6 +177,10 @@ void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id,
     SendAppLaunchRequestToARC();
 }
 
+void ArcAppSingleRestoreHandler::OnGhostWindowHandlerDestroy() {
+  observation_.Reset();
+}
+
 void ArcAppSingleRestoreHandler::SendAppLaunchRequestToARC() {
   if (!app_id_.has_value())
     return;

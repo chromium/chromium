@@ -46,7 +46,8 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   };
 
  public:
-  // This class is used to notify observers that AppInstance is connected.
+  // This class is used to notify observers that App and ghost window handler
+  // states change.
   class Observer : public base::CheckedObserver {
    public:
     // Observer for app instance connection ready.
@@ -59,6 +60,9 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
     virtual void OnAppStatesUpdate(const std::string& app_id,
                                    bool ready,
                                    bool need_fixup) {}
+
+    // Observer for ghost window handler destroy.
+    virtual void OnGhostWindowHandlerDestroy() {}
 
    protected:
     ~Observer() override = default;
