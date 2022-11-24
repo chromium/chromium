@@ -34,13 +34,13 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
 base::StringPiece FormTypeToStringPiece(FormType form_type) {
   switch (form_type) {
     case FormType::kAddressForm:
-      return "AddressForm";
+      return "Address";
     case FormType::kCreditCardForm:
-      return "CreditCardForm";
+      return "CreditCard";
     case FormType::kPasswordForm:
-      return "PasswordForm";
+      return "Password";
     case FormType::kUnknownFormType:
-      return "UnknownFormType";
+      return "Unknown";
   }
 
   NOTREACHED();
