@@ -758,6 +758,27 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   chromeos::LacrosInitializeDBus();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set Lacros's default paths.
+  //
+  // NOTE: When launching Lacros at login screen, this is the first access
+  // to post-login parameters. In other words, this is as far as Lacros
+  // initialization will go at login screen. The browser process will block
+  // here.
+  //
+  // IMPORTANT NOTE: If your code requires access to post-login parameters
+  // (which are only known after login), please place them *after* this call.
+  chrome::SetLacrosDefaultPathsFromInitParams(
+      chromeos::BrowserParamsProxy::Get()->DefaultPaths().get());
+
+  // NOTE: When launching Lacros at login screen, after this point,
+  // the user should have logged in. The cryptohome is now accessible.
+
+  // Redirect logs from system directory to cryptohome.
+  if (chromeos::IsLaunchedWithPostLoginParams())
+    RedirectLacrosLogging();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // The DBus initialization above is needed for FeatureList creation here;
   // features are needed for Mojo initialization; and Mojo initialization is
   // needed for LacrosService initialization below.
@@ -769,21 +790,6 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   content::InitializeMojoCore();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Set Lacros's default paths.
-  // NOTE: When launching Lacros at login screen, this is the first access
-  // to post-login parameters. In other words, this is as far as Lacros
-  // initialization will go at login screen.
-  // The browser process will block here.
-  chrome::SetLacrosDefaultPathsFromInitParams(
-      chromeos::BrowserParamsProxy::Get()->DefaultPaths().get());
-
-  // NOTE: When launching Lacros at login screen, after this point,
-  // the user should have logged in. The cryptohome is now accessible.
-
-  // Redirect logs from system directory to cryptohome.
-  if (chromeos::IsLaunchedWithPostLoginParams())
-    RedirectLacrosLogging();
-
   // LacrosService instance needs the sequence of the main thread,
   // and needs to be created earlier than incoming Mojo invitation handling.
   // This also needs ThreadPool sequences to post some tasks internally.
