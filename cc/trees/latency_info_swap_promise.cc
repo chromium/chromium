@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -26,7 +27,8 @@ void LatencyInfoSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
 void LatencyInfoSwapPromise::DidSwap() {}
 
 SwapPromise::DidNotSwapAction LatencyInfoSwapPromise::DidNotSwap(
-    DidNotSwapReason reason) {
+    DidNotSwapReason reason,
+    base::TimeTicks ts) {
   latency_.Terminate();
   // TODO(miletus): Turn this back on once per-event LatencyInfo tracking
   // is enabled in GPU side.

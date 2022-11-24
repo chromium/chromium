@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -39,8 +40,8 @@ class TopControlsSwapPromise : public cc::SwapPromise {
     metadata->top_controls_visible_height.emplace(height_);
   }
   void DidSwap() override {}
-  cc::SwapPromise::DidNotSwapAction DidNotSwap(
-      DidNotSwapReason reason) override {
+  cc::SwapPromise::DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                                               base::TimeTicks) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
   int64_t GetTraceId() const override { return 0; }

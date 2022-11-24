@@ -6042,7 +6042,8 @@ class TestSwapPromise : public SwapPromise {
 
   void DidSwap() override {}
 
-  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                              base::TimeTicks ts) override {
     base::AutoLock lock(result_->lock);
     EXPECT_FALSE(result_->did_swap_called);
     EXPECT_FALSE(result_->did_not_swap_called);

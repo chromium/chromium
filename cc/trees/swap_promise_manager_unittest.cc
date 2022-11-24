@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "cc/test/mock_latency_info_swap_promise_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,8 @@ class MockSwapPromise : public SwapPromise {
   void DidActivate() override {}
   void WillSwap(viz::CompositorFrameMetadata* metadata) override {}
   void DidSwap() override {}
-  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                              base::TimeTicks ts) override {
     return DidNotSwapAction::BREAK_PROMISE;
   }
   MOCK_METHOD0(OnCommit, void());

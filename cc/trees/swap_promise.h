@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 
@@ -66,7 +67,8 @@ class CC_EXPORT SwapPromise {
 
   // Return `DidNotSwapAction::KEEP_ACTIVE` if this promise should remain active
   // (should not be broken by the owner).
-  virtual DidNotSwapAction DidNotSwap(DidNotSwapReason reason) = 0;
+  virtual DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                                      base::TimeTicks timestamp) = 0;
 
   // This is called when the main thread starts a (blocking) commit
   virtual void OnCommit() {}

@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/swap_promise.h"
 
@@ -32,8 +33,8 @@ class QueueReportTimeSwapPromise : public cc::SwapPromise {
 
   void WillSwap(viz::CompositorFrameMetadata* metadata) override;
   void DidSwap() override;
-  cc::SwapPromise::DidNotSwapAction DidNotSwap(
-      DidNotSwapReason reason) override;
+  cc::SwapPromise::DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                                               base::TimeTicks now) override;
   void DidActivate() override;
   int64_t GetTraceId() const override { return 0; }
 

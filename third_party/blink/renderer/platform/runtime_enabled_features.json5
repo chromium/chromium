@@ -1145,6 +1145,9 @@
       name: "ExperimentalWebSnapshots",
     },
     {
+      name: "ExposeRenderTimeNonTaoDelayedImage",
+    },
+    {
       name: "ExtendedTextMetrics",
       status: "experimental",
     },

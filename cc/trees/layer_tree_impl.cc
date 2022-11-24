@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -2032,8 +2033,9 @@ void LayerTreeImpl::QueuePinnedSwapPromise(
 
 void LayerTreeImpl::PassSwapPromises(
     std::vector<std::unique_ptr<SwapPromise>> new_swap_promises) {
+  base::TimeTicks timestamp = base::TimeTicks::Now();
   for (auto& swap_promise : swap_promise_list_) {
-    if (swap_promise->DidNotSwap(SwapPromise::SWAP_FAILS) ==
+    if (swap_promise->DidNotSwap(SwapPromise::SWAP_FAILS, timestamp) ==
         SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {
       // |swap_promise| must remain active, so place it in |new_swap_promises|
       // in order to keep it alive and active.
@@ -2068,10 +2070,11 @@ void LayerTreeImpl::ClearSwapPromises() {
 }
 
 void LayerTreeImpl::BreakSwapPromises(SwapPromise::DidNotSwapReason reason) {
+  base::TimeTicks invocation_timestamp = base::TimeTicks::Now();
   {
     std::vector<std::unique_ptr<SwapPromise>> persistent_swap_promises;
     for (auto& swap_promise : swap_promise_list_) {
-      if (swap_promise->DidNotSwap(reason) ==
+      if (swap_promise->DidNotSwap(reason, invocation_timestamp) ==
           SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {
         persistent_swap_promises.push_back(std::move(swap_promise));
       }
@@ -2083,7 +2086,7 @@ void LayerTreeImpl::BreakSwapPromises(SwapPromise::DidNotSwapReason reason) {
   {
     std::vector<std::unique_ptr<SwapPromise>> persistent_swap_promises;
     for (auto& swap_promise : pinned_swap_promise_list_) {
-      if (swap_promise->DidNotSwap(reason) ==
+      if (swap_promise->DidNotSwap(reason, invocation_timestamp) ==
           SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {
         persistent_swap_promises.push_back(std::move(swap_promise));
       }

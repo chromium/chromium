@@ -1174,6 +1174,22 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "expose-lcp-render-time",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/performance-timeline/cross-origin-non-tao-image.sub.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=ExposeRenderTimeNonTaoDelayedImage"
+    ],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "object-param-url",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/embedded-content/the-object-element/object-param-url.html"],

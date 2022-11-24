@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/logging.h"
+#include "base/time/time.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/swap_promise.h"
 
@@ -55,8 +57,10 @@ void SwapPromiseManager::BreakSwapPromises(
     SwapPromise::DidNotSwapReason reason) {
   std::vector<std::unique_ptr<SwapPromise>> keep_active_swap_promises;
   keep_active_swap_promises.reserve(swap_promise_list_.size());
+
+  base::TimeTicks timestamp = base::TimeTicks::Now();
   for (auto& swap_promise : swap_promise_list_) {
-    if (swap_promise->DidNotSwap(reason) ==
+    if (swap_promise->DidNotSwap(reason, timestamp) ==
         SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {
       keep_active_swap_promises.push_back(std::move(swap_promise));
     }

@@ -34,6 +34,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -630,9 +631,10 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
     if (pending_tree_) {
       pending_tree_->AppendSwapPromises(std::move(swap_promises));
     } else {
+      base::TimeTicks timestamp = base::TimeTicks::Now();
       for (const auto& swap_promise : swap_promises) {
         SwapPromise::DidNotSwapAction action =
-            swap_promise->DidNotSwap(SwapPromise::COMMIT_NO_UPDATE);
+            swap_promise->DidNotSwap(SwapPromise::COMMIT_NO_UPDATE, timestamp);
         DCHECK_EQ(action, SwapPromise::DidNotSwapAction::BREAK_PROMISE);
       }
     }

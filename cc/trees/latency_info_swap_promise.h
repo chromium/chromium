@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/time/time.h"
 #include "cc/trees/swap_promise.h"
 #include "ui/latency/latency_info.h"
 
@@ -27,7 +28,8 @@ class CC_EXPORT LatencyInfoSwapPromise : public SwapPromise {
   void DidActivate() override {}
   void WillSwap(viz::CompositorFrameMetadata* metadata) override;
   void DidSwap() override;
-  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override;
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                              base::TimeTicks ts) override;
   void OnCommit() override;
 
   int64_t GetTraceId() const override;

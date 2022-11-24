@@ -920,7 +920,8 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
       *state_ = State::kResolved;
     }
 
-    DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+    DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                                base::TimeTicks ts) override {
       DCHECK_EQ(State::kPending, *state_);
       *state_ = State::kBroken;
       return DidNotSwapAction::BREAK_PROMISE;

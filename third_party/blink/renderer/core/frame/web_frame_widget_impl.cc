@@ -3000,7 +3000,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
                             std::move(promise_callbacks_), frame_token_));
   }
 
-  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
+                              base::TimeTicks timestamp) override {
     if (base::FeatureList::IsEnabled(
             features::kReportFCPOnlyOnSuccessfulCommit)) {
       if (reason != DidNotSwapReason::SWAP_FAILS &&
@@ -3027,8 +3028,7 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 
     if (!promise_callbacks_on_failure.IsEmpty()) {
       ReportSwapAndPresentationFailureOnTaskRunner(
-          task_runner_, std::move(promise_callbacks_on_failure),
-          base::TimeTicks::Now());
+          task_runner_, std::move(promise_callbacks_on_failure), timestamp);
     }
     return action;
   }

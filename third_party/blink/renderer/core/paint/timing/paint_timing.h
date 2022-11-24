@@ -156,6 +156,10 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_meaningful_paint_candidate_;
   }
 
+  base::TimeTicks FirstContentfulPaintPresentation() const {
+    return first_contentful_paint_presentation_;
+  }
+
   FirstMeaningfulPaintDetector& GetFirstMeaningfulPaintDetector() {
     return *fmp_detector_;
   }
