@@ -3759,9 +3759,6 @@ class NavigationPageLoadMetricsBrowserTest
     // is re-enabled, it should be updated to use a different mechanism.
     PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Flaky. See https://crbug.com/1224780.
@@ -3837,9 +3834,7 @@ class PrerenderPageLoadMetricsBrowserTest : public PageLoadMetricsBrowserTest {
   PrerenderPageLoadMetricsBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsBrowserTest::web_contents,
-            base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-  }
+            base::Unretained(this))) {}
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
@@ -3848,7 +3843,6 @@ class PrerenderPageLoadMetricsBrowserTest : public PageLoadMetricsBrowserTest {
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {

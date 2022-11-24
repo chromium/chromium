@@ -411,10 +411,9 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesSameDocument) {
 class WebAppIconDownloaderPrerenderTest : public WebAppIconDownloaderTest {
  public:
   WebAppIconDownloaderPrerenderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
+    scoped_feature_list_.InitAndDisableFeature(
         // This feature is to run test on any bot.
-        {blink::features::kPrerender2MemoryControls});
+        blink::features::kPrerender2MemoryControls);
   }
 
  private:

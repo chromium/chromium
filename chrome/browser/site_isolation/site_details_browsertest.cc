@@ -819,9 +819,7 @@ class PrerenderSiteDetailsBrowserTest : public InProcessBrowserTest {
   PrerenderSiteDetailsBrowserTest()
       : prerender_helper_(
             base::BindRepeating(&PrerenderSiteDetailsBrowserTest::web_contents,
-                                base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-  }
+                                base::Unretained(this))) {}
   ~PrerenderSiteDetailsBrowserTest() override = default;
 
   PrerenderSiteDetailsBrowserTest(const PrerenderSiteDetailsBrowserTest&) =
@@ -842,9 +840,6 @@ class PrerenderSiteDetailsBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
   content::test::PrerenderTestHelper prerender_helper_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderSiteDetailsBrowserTest,
