@@ -762,8 +762,22 @@ void PaintLayerScrollableArea::ScrollbarVisibilityChanged() {
 }
 
 void PaintLayerScrollableArea::ScrollbarFrameRectChanged() {
+  // TODO(crbug.com/1020913): This should be called only from layout once the
+  // bug is fixed.
+
   // Size of non-overlay scrollbar affects overflow clip rect. size of overlay
   // scrollbar effects hit testing rect excluding overlay scrollbars.
+  if (GetDocument()->Lifecycle().GetState() == DocumentLifecycle::kInPrePaint) {
+    // In pre-paint we avoid marking the ancestor chain as this might cause
+    // problems, see https://crbug.com/1377634. Note that we do not have
+    // automated test case for this, so if you when modifying this code, please
+    // verify that the test cases on the bug do not crash.
+    GetLayoutBox()
+        ->GetMutableForPainting()
+        .SetOnlyThisNeedsPaintPropertyUpdate();
+    return;
+  }
+
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 }
 
