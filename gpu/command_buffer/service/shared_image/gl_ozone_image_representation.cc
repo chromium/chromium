@@ -59,8 +59,11 @@ bool GLOzoneImageRepresentationShared::BeginAccess(
     bool& need_end_fence) {
   bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing->BeginAccess(readonly, OzoneImageBacking::AccessStream::kGL,
-                             &fences, need_end_fence);
+  if (!ozone_backing->BeginAccess(readonly,
+                                  OzoneImageBacking::AccessStream::kGL, &fences,
+                                  need_end_fence)) {
+    return false;
+  }
 
   // ChromeOS VMs don't support gpu fences, so there is no good way to
   // synchronize with GL.
