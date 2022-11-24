@@ -11147,6 +11147,29 @@
             ]
         }
     ],
+    "UIEnableSharedImageCacheForGpu": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UIEnableSharedImageCacheForGpu"
+                    ]
+                }
+            ]
+        }
+    ],
     "UMA-NonUniformity-Trial-1-Percent": [
         {
             "platforms": [
