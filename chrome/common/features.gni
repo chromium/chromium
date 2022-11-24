@@ -72,6 +72,10 @@ declare_args() {
   # Enables the webui certificate viewer dialog.
   enable_webui_certificate_viewer = toolkit_views
 
+  # Compile time flag for bound session Credentials.
+  # Warning: This must not be enabled in official builds.
+  enable_bound_session_credentials = false
+
   # optimize_webui was moved to ui/base/ui_features.gni
 }
 

@@ -6975,6 +6975,13 @@ static_library("browser") {
     }
   }
 
+  if (enable_bound_session_credentials) {
+    sources += [
+      "signin/bound_session_credentials/bound_session_cookie_fetcher.cc",
+      "signin/bound_session_credentials/bound_session_cookie_fetcher.h",
+    ]
+  }
+
   if (enable_media_remoting) {
     sources += [
       "media/cast_remoting_connector.cc",

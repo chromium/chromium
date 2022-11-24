@@ -6392,6 +6392,10 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_bound_session_credentials) {
+    sources += [ "../browser/signin/bound_session_credentials/bound_session_cookie_fetcher_unittest.cc" ]
+  }
+
   if (enable_offline_pages) {
     sources += [
       "../browser/offline_pages/background_loader_offliner_unittest.cc",
