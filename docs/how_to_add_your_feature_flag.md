@@ -60,7 +60,7 @@ When you add a flag, you can consider to use that.
 ## Step 2: Adding the feature flag to the chrome://flags UI.
 
 *** promo
-Googlers: Read also [Chrome Feature Flag in chrome://flags](http/go/finch-feature-api#chrome-feature-flag-in-chromeflags).
+Googlers: Read also [Chrome Feature Flag in chrome://flags](http://go/finch-feature-api#chrome-feature-flag-in-chromeflags).
 ***
 
 *** promo
