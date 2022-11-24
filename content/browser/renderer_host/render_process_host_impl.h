@@ -627,6 +627,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindPushMessaging(
       mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Binds |receiver| to the FuchsiaMediaCodecProvider instance owned by the
+  // render process host, and is used by workers via BrowserInterfaceBroker.
+  void BindMediaCodecProvider(
+      mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider> receiver)
+      override;
+#endif
+
   // Binds |receiver| to a OneShotBackgroundSyncService instance owned by the
   // StoragePartition associated with the render process host, and is used by
   // frames and service workers via BrowserInterfaceBroker.
@@ -836,10 +844,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #if BUILDFLAG(ENABLE_PLUGINS)
   void BindPluginRegistry(
       mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
-#endif
-#if BUILDFLAG(IS_FUCHSIA)
-  void BindMediaCodecProvider(
-      mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider> receiver);
 #endif
 
   // blink::mojom::DomStorageProvider:

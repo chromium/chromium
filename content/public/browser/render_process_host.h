@@ -58,6 +58,10 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom-forward.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom-forward.h"
+#endif
+
 class GURL;
 
 namespace base {
@@ -599,6 +603,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
           receiver) = 0;
   virtual void BindVideoDecodePerfHistory(
       mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver) = 0;
+#if BUILDFLAG(IS_FUCHSIA)
+  virtual void BindMediaCodecProvider(
+      mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider>
+          receiver) = 0;
+#endif
   virtual void CreateOneShotSyncService(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>

@@ -36,11 +36,6 @@ class MediaResourceProviderFuchsia final
       const std::string& key_system,
       fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
           request) final;
-  void CreateVideoDecoder(
-      media::VideoCodec codec,
-      media::mojom::VideoDecoderSecureMemoryMode secure_mode,
-      fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
-          stream_processor_request) final;
 };
 
 }  // namespace content

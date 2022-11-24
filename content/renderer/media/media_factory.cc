@@ -826,13 +826,13 @@ void MediaFactory::EnsureDecoderFactory() {
     external_decoder_factory =
         std::make_unique<media::MojoDecoderFactory>(interface_factory);
 #elif BUILDFLAG(IS_FUCHSIA)
-    mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
-        media_resource_provider;
+    mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
+        media_codec_provider;
     interface_broker_->GetInterface(
-        media_resource_provider.InitWithNewPipeAndPassReceiver());
+        media_codec_provider.InitWithNewPipeAndPassReceiver());
 
     external_decoder_factory = std::make_unique<media::FuchsiaDecoderFactory>(
-        std::move(media_resource_provider), /*allow_overlay=*/true);
+        std::move(media_codec_provider), /*allow_overlay=*/true);
 #endif
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(
         std::move(external_decoder_factory));

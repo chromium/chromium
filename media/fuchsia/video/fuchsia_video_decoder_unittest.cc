@@ -300,16 +300,10 @@ class TestRasterContextProvider
   base::OnceClosure on_destroyed_;
 };
 
-class TestFuchsiaMediaResourceProvider
-    : public media::mojom::FuchsiaMediaResourceProvider {
+class TestFuchsiaMediaCodecProvider
+    : public media::mojom::FuchsiaMediaCodecProvider {
  public:
-  // media::mojom::FuchsiaMediaResourceProvider implementation.
-  void CreateCdm(
-      const std::string& key_system,
-      fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
-          request) final {
-    ADD_FAILURE();
-  }
+  // media::mojom::FuchsiaMediaCodecProvider implementation.
   void CreateVideoDecoder(
       media::VideoCodec codec,
       media::mojom::VideoDecoderSecureMemoryMode secure_mode,
@@ -346,7 +340,12 @@ class TestFuchsiaMediaResourceProvider
                                    std::move(stream_processor_request));
   }
 
-  mojo::Receiver<media::mojom::FuchsiaMediaResourceProvider> receiver_{this};
+  void GetSupportedVideoDecoderConfigs(
+      GetSupportedVideoDecoderConfigsCallback callback) final {
+    ADD_FAILURE();
+  }
+
+  mojo::Receiver<media::mojom::FuchsiaMediaCodecProvider> receiver_{this};
 };
 
 class FakeClientNativePixmap : public gfx::ClientNativePixmap {
@@ -407,8 +406,8 @@ class FuchsiaVideoDecoderTest : public testing::Test {
             base::MakeRefCounted<TestRasterContextProvider>()) {
     auto decoder = std::make_unique<FuchsiaVideoDecoder>(
         raster_context_provider_.get(),
-        mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>(
-            test_media_resource_provider_.receiver_.BindNewPipeAndPassRemote()),
+        mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>(
+            test_media_codec_provider_.receiver_.BindNewPipeAndPassRemote()),
         /*allow_overlays=*/false);
     decoder->SetClientNativePixmapFactoryForTests(
         std::make_unique<FakeClientNativePixmapFactory>());
@@ -500,7 +499,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  TestFuchsiaMediaResourceProvider test_media_resource_provider_;
+  TestFuchsiaMediaCodecProvider test_media_codec_provider_;
 
   scoped_refptr<TestRasterContextProvider> raster_context_provider_;
 

@@ -37,17 +37,16 @@ interface FuchsiaMediaResourceProvider {
   // `key_system`. Implementation should make sure the persistent storage is
   // isolated per web origin.
   CreateCdm(string key_system, CdmRequest cdm_request);
-
-  // Create connection to fuchsia::media::StreamProcessor for the specified
-  // `codec`.
-  // TODO(crbug.com/1198266): Move this to the new FuchsiaMediaCodecProvider.
-  CreateVideoDecoder(VideoCodec codec, VideoDecoderSecureMemoryMode secure_mode,
-                     StreamProcessorRequest stream_processor_request);
 };
 
 // Interface implemented in the browser process and bound once per set of
 // GpuVideoAcceleratorFactories in the renderer to get hardware codec resources.
 interface FuchsiaMediaCodecProvider {
+  // Create connection to fuchsia::media::StreamProcessor for the specified
+  // `codec`.
+  CreateVideoDecoder(VideoCodec codec, VideoDecoderSecureMemoryMode secure_mode,
+                     StreamProcessorRequest stream_processor_request);
+
   // Returns video decoder configs that are supported by the driver-based local
   // codec factory.
   GetSupportedVideoDecoderConfigs() =>

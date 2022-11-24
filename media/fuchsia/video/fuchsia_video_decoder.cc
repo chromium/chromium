@@ -224,11 +224,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
 FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>&
-        media_resource_provider,
+    const mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>&
+        media_codec_provider,
     bool allow_overlays)
     : raster_context_provider_(raster_context_provider),
-      media_resource_provider_(media_resource_provider),
+      media_codec_provider_(media_codec_provider),
       use_overlays_for_video_(allow_overlays &&
                               base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kUseOverlaysForVideo)),
@@ -322,8 +322,8 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   ReleaseOutputBuffers();
 
   fuchsia::media::StreamProcessorPtr decoder;
-  media_resource_provider_->CreateVideoDecoder(config.codec(), secure_mode,
-                                               decoder.NewRequest());
+  media_codec_provider_->CreateVideoDecoder(config.codec(), secure_mode,
+                                            decoder.NewRequest());
   decoder_ = std::make_unique<StreamProcessorHelper>(std::move(decoder), this);
 
   current_config_ = config;

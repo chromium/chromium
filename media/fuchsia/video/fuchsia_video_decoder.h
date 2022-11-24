@@ -31,14 +31,18 @@ class RasterContextProvider;
 
 namespace media {
 
+namespace mojom {
+class FuchsiaMediaCodecProvider;
+}  // namespace mojom
+
 class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
                                          public SysmemBufferStream::Sink,
                                          public StreamProcessorHelper::Client {
  public:
   FuchsiaVideoDecoder(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>&
-          media_resource_provider,
+      const mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>&
+          media_codec_provider,
       bool allow_overlays);
   ~FuchsiaVideoDecoder() override;
 
@@ -116,8 +120,9 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   void ReleaseOutputBuffers();
 
   const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider_;
+  const mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>
+      media_codec_provider_;
+
   const bool use_overlays_for_video_;
 
   OutputCB output_cb_;

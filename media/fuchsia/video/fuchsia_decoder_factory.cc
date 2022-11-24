@@ -12,7 +12,7 @@
 namespace media {
 
 FuchsiaDecoderFactory::FuchsiaDecoderFactory(
-    mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
+    mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
         resource_provider,
     bool allow_overlays)
     : resource_provider_(std::move(resource_provider)),

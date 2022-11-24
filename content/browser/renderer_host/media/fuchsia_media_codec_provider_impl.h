@@ -35,6 +35,11 @@ class CONTENT_EXPORT FuchsiaMediaCodecProviderImpl final
       mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider> receiver);
 
   // media::mojom::FuchsiaMediaCodecProvider implementation.
+  void CreateVideoDecoder(
+      media::VideoCodec codec,
+      media::mojom::VideoDecoderSecureMemoryMode secure_mode,
+      fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
+          stream_processor_request) final;
   void GetSupportedVideoDecoderConfigs(
       GetSupportedVideoDecoderConfigsCallback callback) final;
 

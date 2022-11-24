@@ -113,7 +113,7 @@ class MediaVideoTaskWrapper {
 
 #if BUILDFLAG(IS_FUCHSIA)
     execution_context.GetBrowserInterfaceBroker().GetInterface(
-        fuchsia_media_resource_provider_.InitWithNewPipeAndPassReceiver());
+        fuchsia_media_codec_provider_.InitWithNewPipeAndPassReceiver());
 #endif
 
     // TODO(sandersd): Target color space is used by DXVA VDA to pick an
@@ -212,9 +212,9 @@ class MediaVideoTaskWrapper {
       external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
           media_interface_factory_.get());
 #elif BUILDFLAG(IS_FUCHSIA)
-      DCHECK(fuchsia_media_resource_provider_);
+      DCHECK(fuchsia_media_codec_provider_);
       external_decoder_factory = std::make_unique<media::FuchsiaDecoderFactory>(
-          std::move(fuchsia_media_resource_provider_),
+          std::move(fuchsia_media_codec_provider_),
           /*allow_overlays=*/false);
 #endif
     }
@@ -332,8 +332,8 @@ class MediaVideoTaskWrapper {
   bool decoder_factory_needs_update_ = true;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
-      fuchsia_media_resource_provider_;
+  mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
+      fuchsia_media_codec_provider_;
 #endif
 
   std::unique_ptr<media::MediaLog> media_log_;
