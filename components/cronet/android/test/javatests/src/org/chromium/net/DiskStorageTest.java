@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -53,7 +52,7 @@ public class DiskStorageTest {
     @After
     public void tearDown() throws Exception {
         if (mReadOnlyStoragePath != null) {
-            FileUtils.recursivelyDeleteFile(new File(mReadOnlyStoragePath), FileUtils.DELETE_ALL);
+            FileUtils.recursivelyDeleteFile(new File(mReadOnlyStoragePath));
         }
         NativeTestServer.shutdownNativeTestServer();
     }
