@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "ui/base/ime/text_input_client.h"
@@ -401,6 +402,18 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
                                                    result_rect.value())
               .ToRECT();
+
+  // Some IMEs such as Google Japanese Input does not support vertical
+  // writing text. So we shift the rectangle to the right side in order
+  // to avoid an IME candidate window over vertical text.
+  if ((text_input_client_->GetTextInputFlags() &
+       ui::TEXT_INPUT_FLAG_VERTICAL) &&
+      IsInputProcessorWithoutVerticalWriting()) {
+    int width = rect->right - rect->left;
+    rect->left += width;
+    rect->right += width;
+  }
+
   *clipped = FALSE;
   TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "screen rect",
                gfx::Rect(*rect).ToString());
@@ -1618,6 +1631,27 @@ bool TSFTextStore::IsInputIME() const {
            profile.dwProfileType == TF_PROFILETYPE_INPUTPROCESSOR;
   }
   return false;
+}
+
+bool TSFTextStore::IsInputProcessorWithoutVerticalWriting() const {
+  TF_INPUTPROCESSORPROFILE profile;
+  if (!SUCCEEDED(input_processor_profile_mgr_->GetActiveProfile(
+          GUID_TFCAT_TIP_KEYBOARD, &profile)))
+    return false;
+  if (profile.dwProfileType != TF_PROFILETYPE_INPUTPROCESSOR)
+    return false;
+  Microsoft::WRL::ComPtr<ITfInputProcessorProfiles> profiles;
+  if (!SUCCEEDED(::CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr,
+                                    CLSCTX_INPROC_SERVER,
+                                    IID_PPV_ARGS(&profiles))))
+    return false;
+  BSTR description = nullptr;
+  if (!SUCCEEDED(profiles->GetLanguageProfileDescription(
+          profile.clsid, profile.langid, profile.guidProfile, &description)))
+    return false;
+  bool result = base::StartsWith(description, L"Google Japanese Input");
+  ::SysFreeString(description);
+  return result;
 }
 
 }  // namespace ui
