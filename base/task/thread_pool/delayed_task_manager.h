@@ -121,7 +121,7 @@ class BASE_EXPORT DelayedTaskManager {
   // it is never modified. It is therefore safe to access
   // |service_thread_task_runner_| without synchronization once it is observed
   // that it is non-null.
-  mutable CheckedLock queue_lock_;
+  mutable CheckedLock queue_lock_{UniversalSuccessor()};
 
   scoped_refptr<SequencedTaskRunner> service_thread_task_runner_;
 
