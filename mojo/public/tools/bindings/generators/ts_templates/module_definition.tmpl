@@ -38,18 +38,12 @@ export const {{constant.name}}: {{constant.kind|ts_type_maybe_nullable}} = {{con
 
 {#--- Struct and Union forward declarations #}
 {%  for struct in structs %}
-/**
- * @const { {$:!mojo.internal.MojomType}}
- */
-export const {{struct.name}}Spec =
-    { $: /** @type {!mojo.internal.MojomType} */ ({}) };
+export const {{struct.name}}Spec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
 {% endfor %}
 {%- for union in unions %}
-/**
- * @const { {$:!mojo.internal.MojomType} }
- */
-export const {{union.name}}Spec =
-    { $: /** @type {!mojo.internal.MojomType} */ ({}) };
+export const {{union.name}}Spec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
 {% endfor %}
 
 {#--- Struct definitions #}
