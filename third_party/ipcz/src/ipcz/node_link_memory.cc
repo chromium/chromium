@@ -205,6 +205,10 @@ DriverMemoryWithMapping NodeLinkMemory::AllocateMemory(
   }
 
   DriverMemoryMapping mapping = memory.Map();
+  if (!mapping.is_valid()) {
+    return {};
+  }
+
   PrimaryBuffer& primary_buffer =
       *reinterpret_cast<PrimaryBuffer*>(mapping.bytes().data());
 
@@ -400,12 +404,12 @@ void NodeLinkMemory::RequestBlockCapacity(
   node_->AllocateSharedMemory(
       buffer_size, [self = WrapRefCounted(this), block_size,
                     link = std::move(link)](DriverMemory memory) {
-        if (!memory.is_valid()) {
+        DriverMemoryMapping mapping = memory.Map();
+        if (!mapping.is_valid()) {
           self->OnCapacityRequestComplete(block_size, false);
           return;
         }
 
-        DriverMemoryMapping mapping = memory.Map();
         BlockAllocator allocator(mapping.bytes(), block_size);
         allocator.InitializeRegion();
 

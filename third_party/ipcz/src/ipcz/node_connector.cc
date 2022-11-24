@@ -119,9 +119,9 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
              << "name " << connect.params().receiver_name.ToString()
              << " from broker " << connect.params().broker_name.ToString();
 
-    DriverMemory buffer_memory(
-        connect.TakeDriverObject(connect.params().buffer));
-    if (!buffer_memory.is_valid()) {
+    DriverMemoryMapping mapping =
+        DriverMemory(connect.TakeDriverObject(connect.params().buffer)).Map();
+    if (!mapping.is_valid()) {
       return false;
     }
 
@@ -129,7 +129,7 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
         node_, LinkSide::kB, connect.params().receiver_name,
         connect.params().broker_name, Node::Type::kBroker,
         connect.params().protocol_version, transport_,
-        NodeLinkMemory::Create(node_, buffer_memory.Map()));
+        NodeLinkMemory::Create(node_, std::move(mapping)));
     node_->SetAssignedName(connect.params().receiver_name);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(new_link);
@@ -231,13 +231,17 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
              << connect.params().broker_name.ToString() << " as referred by "
              << connect.params().referrer_name.ToString();
 
-    DriverMemory broker_buffer(
-        connect.TakeDriverObject(connect.params().broker_link_buffer));
+    DriverMemoryMapping broker_mapping =
+        DriverMemory(
+            connect.TakeDriverObject(connect.params().broker_link_buffer))
+            .Map();
+    DriverMemoryMapping referrer_mapping =
+        DriverMemory(
+            connect.TakeDriverObject(connect.params().referrer_link_buffer))
+            .Map();
     Ref<DriverTransport> referrer_transport = MakeRefCounted<DriverTransport>(
         connect.TakeDriverObject(connect.params().referrer_link_transport));
-    DriverMemory referrer_buffer(
-        connect.TakeDriverObject(connect.params().referrer_link_buffer));
-    if (!broker_buffer.is_valid() || !referrer_buffer.is_valid() ||
+    if (!broker_mapping.is_valid() || !referrer_mapping.is_valid() ||
         !referrer_transport->driver_object().is_valid()) {
       return false;
     }
@@ -252,7 +256,7 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         node_, LinkSide::kB, connect.params().name,
         connect.params().broker_name, Node::Type::kBroker,
         broker_protocol_version, transport_,
-        NodeLinkMemory::Create(node_, broker_buffer.Map()));
+        NodeLinkMemory::Create(node_, std::move(broker_mapping)));
     node_->SetAssignedName(connect.params().name);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(broker_link);
@@ -269,7 +273,7 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         node_, LinkSide::kB, connect.params().name,
         connect.params().referrer_name, Node::Type::kNormal,
         referrer_protocol_version, std::move(referrer_transport),
-        NodeLinkMemory::Create(node_, referrer_buffer.Map()));
+        NodeLinkMemory::Create(node_, std::move(referrer_mapping)));
 
     AcceptConnection({.link = referrer_link, .broker = broker_link},
                      connect.params().num_initial_portals);
@@ -441,13 +445,13 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
         remote_name < local_name_ ? LinkSide::kA : LinkSide::kB;
     DriverMemory their_memory(
         connect.TakeDriverObject(connect.params().buffer));
-    if (!their_memory.is_valid()) {
-      return false;
-    }
-
     DriverMemoryMapping primary_buffer_mapping =
         this_side.is_side_a() ? std::move(link_memory_allocation_.mapping)
                               : their_memory.Map();
+    if (!primary_buffer_mapping.is_valid()) {
+      return false;
+    }
+
     Ref<NodeLink> link = NodeLink::CreateActive(
         node_, this_side, local_name_, remote_name, Node::Type::kBroker,
         connect.params().protocol_version, transport_,
