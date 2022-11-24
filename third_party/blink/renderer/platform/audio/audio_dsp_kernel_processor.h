@@ -81,7 +81,6 @@ class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
  protected:
   Vector<std::unique_ptr<AudioDSPKernel>> kernels_;
   mutable base::Lock process_lock_;
-  bool has_just_reset_;
 };
 
 }  // namespace blink

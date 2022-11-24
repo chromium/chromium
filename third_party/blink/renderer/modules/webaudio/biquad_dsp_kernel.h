@@ -76,8 +76,6 @@ class BiquadDSPKernel final : public AudioDSPKernel {
     return static_cast<BiquadProcessor*>(Processor());
   }
 
-  // To prevent audio glitches when parameters are changed,
-  // dezippering is used to slowly change the parameters.
   void UpdateCoefficientsIfNecessary(int)
       EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 

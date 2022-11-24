@@ -141,19 +141,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   float MinValue() const { return min_value_; }
   float MaxValue() const { return max_value_; }
 
-  // Value smoothing:
-
-  // When a new value is set with setValue(), in our internal use of the
-  // parameter we don't immediately jump to it.  Instead we smoothly approach
-  // this value to avoid glitching.
-  float SmoothedValue();
-
-  // Smoothly exponentially approaches to (de-zippers) the desired value.
-  // Returns true if smoothed value has already snapped exactly to value.
-  bool Smooth();
-
-  void ResetSmoothedValue() { timeline_.SetSmoothedValue(IntrinsicValue()); }
-
   // An AudioParam needs sample accurate processing if there are
   // automations scheduled or if there are connections.
   bool HasSampleAccurateValues() {

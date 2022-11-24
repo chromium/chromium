@@ -26,9 +26,6 @@ namespace blink {
 
 namespace {
 
-constexpr double kDefaultSmoothingConstant = 0.05;
-constexpr double kSnapThreshold = 0.001;
-
 // Replace NaN values in `values` with `default_value`.
 void HandleNaNValues(float* values,
                      unsigned number_of_values,
@@ -103,8 +100,6 @@ AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
   if (context.destination()) {
     destination_handler_ = &context.destination()->GetAudioDestinationHandler();
   }
-
-  timeline_.SetSmoothedValue(default_value);
 }
 
 AudioDestinationHandler& AudioParamHandler::DestinationHandler() const {
@@ -218,43 +213,6 @@ void AudioParamHandler::SetIntrinsicValue(float new_value) {
 
 void AudioParamHandler::SetValue(float value) {
   SetIntrinsicValue(value);
-}
-
-float AudioParamHandler::SmoothedValue() {
-  return timeline_.SmoothedValue();
-}
-
-bool AudioParamHandler::Smooth() {
-  // If values have been explicitly scheduled on the timeline, then use the
-  // exact value.  Smoothing effectively is performed by the timeline.
-  auto [use_timeline_value, value] = timeline_.ValueForContextTime(
-      DestinationHandler(), IntrinsicValue(), MinValue(), MaxValue(),
-      GetDeferredTaskHandler().RenderQuantumFrames());
-
-  float smoothed_value = timeline_.SmoothedValue();
-  if (smoothed_value == value) {
-    // Smoothed value has already approached and snapped to value.
-    SetIntrinsicValue(value);
-    return true;
-  }
-
-  if (use_timeline_value) {
-    timeline_.SetSmoothedValue(value);
-  } else {
-    // Dezipper - exponential approach.
-    smoothed_value += (value - smoothed_value) * kDefaultSmoothingConstant;
-
-    // If we get close enough then snap to actual value.
-    // FIXME: the threshold needs to be adjustable depending on range - but
-    // this is OK general purpose value.
-    if (fabs(smoothed_value - value) < kSnapThreshold) {
-      smoothed_value = value;
-    }
-    timeline_.SetSmoothedValue(smoothed_value);
-  }
-
-  SetIntrinsicValue(value);
-  return false;
 }
 
 float AudioParamHandler::FinalValue() {

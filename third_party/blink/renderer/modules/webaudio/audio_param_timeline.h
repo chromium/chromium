@@ -107,9 +107,6 @@ class AudioParamTimeline {
                  double sample_rate,
                  unsigned render_quantum_frames) const;
 
-  float SmoothedValue() { return smoothed_value_; }
-  void SetSmoothedValue(float v) { smoothed_value_ = v; }
-
  private:
   class ParamEvent {
    public:
@@ -485,9 +482,6 @@ class AudioParamTimeline {
   HashSet<ParamEvent*> new_events_ GUARDED_BY(events_lock_);
 
   mutable base::Lock events_lock_;
-
-  // Smoothing (de-zippering)
-  float smoothed_value_;
 };
 
 }  // namespace blink

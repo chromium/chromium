@@ -67,11 +67,12 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
 
   std::unique_ptr<AudioDSPKernel> CreateKernel() override;
 
+  void Initialize() override;
   void Process(const AudioBus* source,
                AudioBus* destination,
                uint32_t frames_to_process) override;
-
   void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
+  void Reset() override;
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
@@ -110,6 +111,15 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
 
   // Set to true if any of the filter parameters are a-rate.
   bool is_audio_rate_;
+
+  bool has_just_reset_ = true;
+
+  // Cache previous parameter values to allow us to skip recomputing filter
+  // coefficients when parameters are not changing
+  float previous_parameter1_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
 };
 
 }  // namespace blink

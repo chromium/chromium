@@ -1347,7 +1347,6 @@ bool AudioParamTimeline::HandleAllEventsInThePast(
     // timeline events too because `default_value` has the expected
     // value.
     FillWithDefault(values, default_value, number_of_values, 0);
-    smoothed_value_ = default_value;
     RemoveOldEvents(events_.size());
 
     return true;

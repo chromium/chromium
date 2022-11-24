@@ -276,8 +276,6 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
   if (first_render_) {
     first_render_ = false;
-    frequency_->ResetSmoothedValue();
-    detune_->ResetSmoothedValue();
   }
 
   bool has_sample_accurate_values = false;

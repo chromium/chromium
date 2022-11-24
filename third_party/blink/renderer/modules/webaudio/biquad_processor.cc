@@ -81,36 +81,36 @@ void BiquadProcessor::CheckForDirtyCoefficients() {
                      parameter3_->IsAudioRate() || parameter4_->IsAudioRate();
   } else {
     if (has_just_reset_) {
-      // Snap to exact values first time after reset, then smooth for subsequent
-      // changes.
-      parameter1_->ResetSmoothedValue();
-      parameter2_->ResetSmoothedValue();
-      parameter3_->ResetSmoothedValue();
-      parameter4_->ResetSmoothedValue();
+      // Snap to exact values first time after reset
+      previous_parameter1_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
+      previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
       filter_coefficients_dirty_ = true;
       has_just_reset_ = false;
     } else {
-      // TODO(crbug.com/763994): With dezippering removed, we don't want to use
-      // these methods.  We need to implement another way of noticing if one of
-      // the parameters has changed.  We do this as an optimization because
-      // computing the filter coefficients from these parameters is fairly
-      // expensive.  NOTE: The calls to Smooth() don't actually cause the
-      // coefficients to be dezippered.  This is just a way to notice that the
-      // coefficient values have changed.  `UpdateCoefficientsIfNecessary()`
-      // checks to see if the filter coefficients are dirty and sets the filter
-      // to the new value, without smoothing.
-      //
-      // Smooth all of the filter parameters. If they haven't yet converged to
-      // their target value then mark coefficients as dirty.
-      bool is_stable1 = parameter1_->Smooth();
-      bool is_stable2 = parameter2_->Smooth();
-      bool is_stable3 = parameter3_->Smooth();
-      bool is_stable4 = parameter4_->Smooth();
-      if (!(is_stable1 && is_stable2 && is_stable3 && is_stable4)) {
+      // If filter parameters have changed then mark coefficients as dirty.
+      const float parameter1_final = parameter1_->FinalValue();
+      const float parameter2_final = parameter2_->FinalValue();
+      const float parameter3_final = parameter3_->FinalValue();
+      const float parameter4_final = parameter4_->FinalValue();
+      if ((previous_parameter1_ != parameter1_final) ||
+          (previous_parameter2_ != parameter2_final) ||
+          (previous_parameter3_ != parameter3_final) ||
+          (previous_parameter4_ != parameter4_final)) {
         filter_coefficients_dirty_ = true;
+        previous_parameter1_ = parameter1_final;
+        previous_parameter2_ = parameter2_final;
+        previous_parameter3_ = parameter3_final;
+        previous_parameter4_ = parameter4_final;
       }
     }
   }
+}
+
+void BiquadProcessor::Initialize() {
+  AudioDSPKernelProcessor::Initialize();
+  has_just_reset_ = true;
 }
 
 void BiquadProcessor::Process(const AudioBus* source,
@@ -149,6 +149,11 @@ void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   parameter2_->CalculateSampleAccurateValues(values, frames_to_process);
   parameter3_->CalculateSampleAccurateValues(values, frames_to_process);
   parameter4_->CalculateSampleAccurateValues(values, frames_to_process);
+}
+
+void BiquadProcessor::Reset() {
+  AudioDSPKernelProcessor::Reset();
+  has_just_reset_ = true;
 }
 
 void BiquadProcessor::SetType(FilterType type) {

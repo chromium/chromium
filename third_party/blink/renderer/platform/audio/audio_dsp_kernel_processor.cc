@@ -39,8 +39,7 @@ namespace blink {
 AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sample_rate,
                                                  unsigned number_of_channels,
                                                  unsigned render_quantum_frames)
-    : AudioProcessor(sample_rate, number_of_channels, render_quantum_frames),
-      has_just_reset_(true) {}
+    : AudioProcessor(sample_rate, number_of_channels, render_quantum_frames) {}
 
 void AudioDSPKernelProcessor::Initialize() {
   if (IsInitialized()) {
@@ -56,7 +55,6 @@ void AudioDSPKernelProcessor::Initialize() {
   }
 
   initialized_ = true;
-  has_just_reset_ = true;
 }
 
 void AudioDSPKernelProcessor::Uninitialize() {
@@ -121,11 +119,6 @@ void AudioDSPKernelProcessor::Reset() {
   if (!IsInitialized()) {
     return;
   }
-
-  // Forces snap to parameter values - first time.
-  // Any processing depending on this value must set it to false at the
-  // appropriate time.
-  has_just_reset_ = true;
 
   base::AutoLock locker(process_lock_);
   for (auto& kernel : kernels_) {
