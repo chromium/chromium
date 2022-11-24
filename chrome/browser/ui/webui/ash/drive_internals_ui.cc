@@ -291,6 +291,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
                             weak_ptr_factory_.GetWeakPtr(),
                             drivefs::mojom::MirrorPathStatus::kStop));
     web_ui()->RegisterMessageCallback(
+        "setBulkPinningEnabled",
+        base::BindRepeating(&DriveInternalsWebUIHandler::SetBulkPinningEnabled,
+                            weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
@@ -369,6 +373,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     UpdateDriveDebugSection();
 
     UpdateMirrorSyncSection();
+    UpdateBulkPinningSection();
 
     // When the drive-internals page is reloaded by the reload key, the page
     // content is recreated, but this WebUI object is not (instead, OnPageLoaded
@@ -580,6 +585,19 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
                         base::Value(drive::FileErrorToString(status)));
   }
 
+  void UpdateBulkPinningSection() {
+    if (!features::IsDriveFsBulkPinningEnabled()) {
+      SetSectionEnabled("bulk-pinning-section", false);
+      return;
+    }
+
+    SetSectionEnabled("bulk-pinning-section", true);
+
+    bool bulk_pinning_enabled = profile()->GetPrefs()->GetBoolean(
+        drive::prefs::kDriveFsBulkPinningEnabled);
+    MaybeCallJavascript("updateBulkPinning", base::Value(bulk_pinning_enabled));
+  }
+
   // Called when GetDeveloperMode() is complete.
   void OnGetDeveloperMode(bool enabled) {
     developer_mode_ = enabled;
@@ -768,6 +786,21 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
                                         enabled);
       SetSectionEnabled("mirror-sync-paths", enabled);
       SetSectionEnabled("mirror-path-form", enabled);
+    }
+  }
+
+  void SetBulkPinningEnabled(const base::Value::List& args) {
+    AllowJavascript();
+    drive::DriveIntegrationService* integration_service =
+        GetIntegrationService();
+    if (!integration_service) {
+      return;
+    }
+
+    if (args.size() == 1 && args[0].is_bool()) {
+      bool enabled = args[0].GetBool();
+      profile()->GetPrefs()->SetBoolean(
+          drive::prefs::kDriveFsBulkPinningEnabled, enabled);
     }
   }
 

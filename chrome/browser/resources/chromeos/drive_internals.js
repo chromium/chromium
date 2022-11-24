@@ -100,6 +100,10 @@ function updateMirroring(enabled) {
   $('mirroring-toggle').checked = enabled;
 }
 
+function updateBulkPinning(enabled) {
+  $('bulk-pinning-toggle').checked = enabled;
+}
+
 function updateStartupArguments(args) {
   $('startup-arguments-input').value = args;
 }
@@ -363,6 +367,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('mirroring-toggle').addEventListener('change', function(e) {
     chrome.send('setMirroringEnabled', [e.target.checked]);
+  });
+
+  $('bulk-pinning-toggle').addEventListener('change', function(e) {
+    chrome.send('setBulkPinningEnabled', [e.target.checked]);
   });
 
   $('startup-arguments-form').addEventListener('submit', function(e) {
