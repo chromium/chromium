@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module ash.ime.mojom;
 
@@ -264,12 +264,13 @@ struct InputFieldInfo {
 // TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
-[Stable, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
 union InputMethodSettings {
   KoreanSettings korean_settings@0;
   LatinSettings latin_settings@1;
   PinyinSettings pinyin_settings@2;
   ZhuyinSettings zhuyin_settings@3;
+  [MinVersion=14, Default] bool null_settings@4;
 };
 
 // Next ordinal: 9
