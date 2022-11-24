@@ -116,7 +116,8 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
 
 const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const Key& key,
-    const StyleResolverState& style_resolver_state) {
+    const StyleResolverState& style_resolver_state,
+    const MatchResult& match_result) {
   DCHECK(key.IsValid());
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end())
@@ -129,6 +130,11 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.StyleBuilder().InsideLink())
     return nullptr;
+  if (cache_item->computed_style->CanAffectAnimations() !=
+      (style_resolver_state.CanAffectAnimations() ||
+       match_result.ConditionallyAffectsAnimations())) {
+    return nullptr;
+  }
   if (!cache_item->DependenciesEqual(style_resolver_state))
     return nullptr;
   return cache_item;
@@ -249,14 +255,6 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
       state.StyleBuilder().UserModify() != parent_style.UserModify()) {
     return false;
   }
-
-  // Pending animation updates rely on CanAffectAnimations() flag to be set
-  // during Apply for the StyleCascade in order to store the old computed style
-  // for multi-pass recalcs for container queries. Alternatively, we could set
-  // this flag on the cached ComputedStyle and set the flag back onto the
-  // StyleResolverState when applying an entry from the MatchedPropertiesCache.
-  if (state.CanAffectAnimations())
-    return false;
 
   return true;
 }

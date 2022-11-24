@@ -97,7 +97,9 @@ class CORE_EXPORT MatchedPropertiesCache {
     unsigned hash_;
   };
 
-  const CachedMatchedProperties* Find(const Key&, const StyleResolverState&);
+  const CachedMatchedProperties* Find(const Key&,
+                                      const StyleResolverState&,
+                                      const MatchResult&);
   void Add(const Key&,
            scoped_refptr<const ComputedStyle>&&,
            scoped_refptr<const ComputedStyle>&& parent_style);
