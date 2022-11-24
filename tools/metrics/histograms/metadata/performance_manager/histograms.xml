@@ -28,6 +28,32 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram
+    name="PerformanceManager.V8DetailedMemory.{Destination}.MeasurementMode"
+    enum="V8DetailedMemoryMeasurementMode" expires_after="2023-05-23">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged every time V8DetailedMemoryReporter.GetV8MemoryUsage is sent to a
+    renderer, with the measurement mode. This can be used to find the volume of
+    measurement requests to track their performance overhead.
+
+    {Destination}
+  </summary>
+  <token key="Destination">
+    <variant name="AllRenderers"
+        summary="This metric records measurement requests stemming from
+                 V8DetailedMemoryRequest::StartMeasurement, which are sent to
+                 all renderer processes. Scale all counts by the number of
+                 renderer processes when comparing between subpopulations."/>
+    <variant name="SingleRenderer"
+        summary="This metric records measurement requests stemming from
+                 V8DetailedMemoryRequest::StartMeasurementForProcess, which
+                 are sent to a single renderer process. Counts don't need to
+                 be scaled."/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

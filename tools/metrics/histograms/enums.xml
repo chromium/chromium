@@ -102593,6 +102593,12 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
+<enum name="V8DetailedMemoryMeasurementMode">
+  <int value="0" label="Bounded"/>
+  <int value="1" label="Lazy"/>
+  <int value="2" label="Eager (for testing only)"/>
+</enum>
+
 <enum name="V8ExternalPointerTableCompactionOutcome">
   <int value="0" label="kSuccess">Table compaction was successful.</int>
   <int value="1" label="kPartialSuccess">
