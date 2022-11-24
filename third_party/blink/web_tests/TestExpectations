@@ -3447,7 +3447,6 @@ crbug.com/990240 external/wpt/css/css-multicol/multicol-breaking-005.html [ Fail
 crbug.com/990240 external/wpt/css/css-multicol/multicol-breaking-nobackground-000.html [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-breaking-nobackground-001.html [ Failure ]
 crbug.com/481431 external/wpt/css/css-multicol/multicol-breaking-nobackground-004.html [ Failure ]
-crbug.com/829028 [ Mac ] external/wpt/css/css-multicol/multicol-list-item-005.html [ Failure ]
 crbug.com/792435 external/wpt/css/css-multicol/multicol-rule-004.xht [ Failure ]
 crbug.com/792437 external/wpt/css/css-multicol/multicol-rule-inset-000.xht [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-rule-nested-balancing-001.html [ Failure ]
