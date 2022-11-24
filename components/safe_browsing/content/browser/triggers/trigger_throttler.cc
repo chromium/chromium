@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -174,18 +175,19 @@ void TriggerThrottler::WriteTriggerEventsToPref() {
   if (!local_state_prefs_)
     return;
 
-  base::DictionaryValue trigger_dict;
+  base::Value::Dict trigger_dict;
   for (const auto& trigger_item : trigger_events_) {
-    base::Value* pref_timestamps = trigger_dict.SetKey(
-        base::NumberToString(static_cast<int>(trigger_item.first)),
-        base::Value(base::Value::Type::LIST));
+    base::Value::List timestamps;
     for (const base::Time timestamp : trigger_item.second) {
-      pref_timestamps->Append(base::Value(timestamp.ToDoubleT()));
+      timestamps.Append(timestamp.ToDoubleT());
     }
+
+    trigger_dict.Set(base::NumberToString(static_cast<int>(trigger_item.first)),
+                     std::move(timestamps));
   }
 
-  local_state_prefs_->Set(prefs::kSafeBrowsingTriggerEventTimestamps,
-                          trigger_dict);
+  local_state_prefs_->SetDict(prefs::kSafeBrowsingTriggerEventTimestamps,
+                              std::move(trigger_dict));
 }
 
 size_t TriggerThrottler::GetDailyQuotaForTrigger(

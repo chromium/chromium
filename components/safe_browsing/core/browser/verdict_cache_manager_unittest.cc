@@ -21,6 +21,8 @@ namespace safe_browsing {
 
 namespace {
 
+using testing::SizeIs;
+
 class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
  public:
   MockSafeBrowsingSyncObserver() : SafeBrowsingSyncObserver() {}
@@ -230,18 +232,18 @@ TEST_F(VerdictCacheManagerTest, TestParseInvalidVerdictEntry) {
   verdict.SerializeToString(&verdict_serialized);
   base::Base64Encode(verdict_serialized, &verdict_serialized);
 
-  auto cache_dictionary = std::make_unique<base::DictionaryValue>();
-  auto* verdict_dictionary =
-      cache_dictionary->SetKey("2", base::Value(base::Value::Type::DICTIONARY));
-  auto* verdict_entry = verdict_dictionary->SetKey(
-      "www.google.com/", base::Value(base::Value::Type::DICTIONARY));
-  verdict_entry->SetStringKey("cache_creation_time", "invalid_time");
-  verdict_entry->SetStringKey("verdict_proto", verdict_serialized);
+  base::Value::Dict verdict_entry;
+  verdict_entry.Set("cache_creation_time", "invalid_time");
+  verdict_entry.Set("verdict_proto", std::move(verdict_serialized));
+  base::Value::Dict verdict_dictionary;
+  verdict_dictionary.Set("www.google.com/", std::move(verdict_entry));
+  base::Value::Dict cache_dictionary;
+  cache_dictionary.Set("2", std::move(verdict_dictionary));
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
       ContentSettingsType::PASSWORD_PROTECTION,
-      base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
+      base::Value(std::move(cache_dictionary)));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -481,18 +483,18 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
   verdict.SerializeToString(&verdict_serialized);
   base::Base64Encode(verdict_serialized, &verdict_serialized);
 
-  auto cache_dictionary = std::make_unique<base::DictionaryValue>();
-  auto* verdict_dictionary =
-      cache_dictionary->SetKey("1", base::Value(base::Value::Type::DICTIONARY));
-  auto* verdict_entry = verdict_dictionary->SetKey(
-      "www.google.com/path", base::Value(base::Value::Type::DICTIONARY));
-  verdict_entry->SetStringKey("cache_creation_time", "invalid_time");
-  verdict_entry->SetStringKey("verdict_proto", verdict_serialized);
+  base::Value::Dict verdict_entry;
+  verdict_entry.Set("cache_creation_time", "invalid_time");
+  verdict_entry.Set("verdict_proto", std::move(verdict_serialized));
+  base::Value::Dict verdict_dictionary;
+  verdict_dictionary.Set("www.google.com/path", std::move(verdict_entry));
+  base::Value::Dict cache_dictionary;
+  cache_dictionary.Set("1", std::move(verdict_dictionary));
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
       ContentSettingsType::PASSWORD_PROTECTION,
-      base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
+      base::Value(std::move(cache_dictionary)));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -502,22 +504,22 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
                          "www.google.com/", base::Time::Now());
 
   // Verify we saved two entries under PasswordType PRIMARY_ACCOUNT_PASSWORD
-  EXPECT_EQ(2U, content_setting_map_
-                    ->GetWebsiteSetting(
-                        GURL("http://www.google.com/"), GURL(),
-                        ContentSettingsType::PASSWORD_PROTECTION, nullptr)
-                    .FindDictKey("1")
-                    ->DictSize());
+  base::Value setting_entry = content_setting_map_->GetWebsiteSetting(
+      GURL("http://www.google.com/"), GURL(),
+      ContentSettingsType::PASSWORD_PROTECTION, nullptr);
+  const base::Value::Dict* setting_dict = setting_entry.GetIfDict();
+  ASSERT_TRUE(setting_dict);
+  EXPECT_THAT(*setting_dict->FindDict("1"), SizeIs(2u));
 
   cache_manager_->CleanUpExpiredVerdicts();
 
   // One should have been cleaned up
-  EXPECT_EQ(1U, content_setting_map_
-                    ->GetWebsiteSetting(
-                        GURL("http://www.google.com/"), GURL(),
-                        ContentSettingsType::PASSWORD_PROTECTION, nullptr)
-                    .FindDictKey("1")
-                    ->DictSize());
+  setting_entry = content_setting_map_->GetWebsiteSetting(
+      GURL("http://www.google.com/"), GURL(),
+      ContentSettingsType::PASSWORD_PROTECTION, nullptr);
+  ASSERT_TRUE(setting_entry.is_dict());
+  setting_dict = setting_entry.GetIfDict();
+  EXPECT_THAT(*setting_dict->FindDict("1"), SizeIs(1u));
 }
 
 TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedRealTimeUrlCheckVerdict) {
