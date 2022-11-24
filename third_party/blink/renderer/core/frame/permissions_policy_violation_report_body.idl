@@ -5,7 +5,8 @@
 // https://wicg.github.io/feature-policy/#reporting
 
 [
-    LegacyNoInterfaceObject
+    Exposed=(Window,Worker),
+    RuntimeEnabled=FeaturePolicyReporting
 ] interface PermissionsPolicyViolationReportBody : ReportBody {
   readonly attribute DOMString featureId;
   readonly attribute DOMString? sourceFile;
