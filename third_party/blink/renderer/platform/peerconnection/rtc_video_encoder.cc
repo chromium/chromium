@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -513,8 +514,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void RequestEncodingParametersChange(
       const webrtc::VideoEncoder::RateControlParameters& parameters);
 
-  void RegisterEncodeCompleteCallback(SignaledValue scoped_event,
-                                      webrtc::EncodedImageCallback* callback);
+  void RegisterEncodeCompleteCallback(webrtc::EncodedImageCallback* callback);
 
   webrtc::VideoCodecType video_codec_type() const { return video_codec_type_; }
 
@@ -629,9 +629,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // A black GpuMemoryBuffer frame used when the video track is disabled.
   scoped_refptr<media::VideoFrame> black_gmb_frame_;
 
-  // webrtc::VideoEncoder encode complete callback.
-  webrtc::EncodedImageCallback* encoded_image_callback_{nullptr};
-
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;
 
@@ -660,6 +657,15 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // interface entry point is called.
   int32_t status_ GUARDED_BY_CONTEXT(sequence_checker_){
       WEBRTC_VIDEO_CODEC_UNINITIALIZED};
+
+  // Protect |encoded_image_callback_|. |encoded_image_callback_| is read on
+  // media thread and written in webrtc encoder thread.
+  mutable base::Lock lock_;
+
+  // webrtc::VideoEncoder encode complete callback.
+  // TODO(b/257021675): Don't guard this by |lock_|
+  webrtc::EncodedImageCallback* encoded_image_callback_ GUARDED_BY(lock_){
+      nullptr};
 
   // They are bound to |gpu_task_runner_|, which is sequence checked by
   // |sequence_checker|.
@@ -1180,6 +1186,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       break;
   }
 
+  base::AutoLock lock(lock_);
   if (!encoded_image_callback_)
     return;
 
@@ -1520,15 +1527,10 @@ bool RTCVideoEncoder::Impl::RequiresSizeChange(
 }
 
 void RTCVideoEncoder::Impl::RegisterEncodeCompleteCallback(
-    SignaledValue event,
     webrtc::EncodedImageCallback* callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__;
-
-  if (status_ == WEBRTC_VIDEO_CODEC_OK)
-    encoded_image_callback_ = callback;
-  event.Set(status_);
-  event.Signal();
+  base::AutoLock lock(lock_);
+  encoded_image_callback_ = callback;
 }
 
 RTCVideoEncoder::RTCVideoEncoder(
@@ -1683,30 +1685,50 @@ int32_t RTCVideoEncoder::RegisterEncodeCompleteCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
   if (!impl_) {
+    if (!callback)
+      return WEBRTC_VIDEO_CODEC_OK;
     DVLOG(3) << "Encoder is not initialized";
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   }
 
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  base::WaitableEvent register_waiter(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  int32_t register_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  PostCrossThreadTask(
-      *gpu_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &RTCVideoEncoder::Impl::RegisterEncodeCompleteCallback, weak_impl_,
-          SignaledValue(&register_waiter, &register_retval),
-          CrossThreadUnretained(callback)));
-  register_waiter.Wait();
-  return register_retval;
+  // TOD(b/257021675): RegisterEncodeCompleteCallback() should be called twice,
+  // with a valid pointer after InitEncode() and with a nullptr after Release().
+  // Setting callback in |impl_| should be done asynchronously by posting the
+  // task to |media_task_runner_|.
+  // However, RegisterEncodeCompleteCallback() are actually called multiple
+  // times with valid pointers, this may be a bug. To workaround this problem,
+  // a mutex is used so that it is guaranteed that the previous callback is not
+  // executed after RegisterEncodeCompleteCallback().
+  impl_->RegisterEncodeCompleteCallback(callback);
+
+  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 int32_t RTCVideoEncoder::Release() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   DVLOG(3) << __func__;
-  if (impl_)
-    gpu_task_runner_->DeleteSoon(FROM_HERE, std::move(impl_));
+  if (!impl_)
+    return WEBRTC_VIDEO_CODEC_OK;
+
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  base::WaitableEvent release_waiter(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  PostCrossThreadTask(
+      *gpu_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          [](std::unique_ptr<Impl> impl, base::WaitableEvent* waiter) {
+            impl.reset();
+            waiter->Signal();
+          },
+          std::move(impl_), CrossThreadUnretained(&release_waiter)));
+
+  release_waiter.Wait();
+
+  // The object pointed by |weak_impl_| has been invalidated in Impl destructor.
+  // Calling reset() is optional, but it's good to invalidate the value of
+  // |weak_impl_| too
+  weak_impl_.reset();
 
   return WEBRTC_VIDEO_CODEC_OK;
 }
