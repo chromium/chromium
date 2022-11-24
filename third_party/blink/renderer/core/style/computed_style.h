@@ -3122,6 +3122,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     MutableInitialDataInternal() = std::move(data);
   }
 
+  // WritingMode
+  WritingDirectionMode GetWritingDirection() const {
+    return {GetWritingMode(), Direction()};
+  }
+
  private:
   ComputedStyleBuilder() = default;
 

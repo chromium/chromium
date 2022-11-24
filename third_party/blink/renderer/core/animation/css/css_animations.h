@@ -56,6 +56,7 @@ class Element;
 class StylePropertyShorthand;
 class StyleResolver;
 class StyleTimeline;
+class WritingDirectionMode;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -77,11 +78,11 @@ class CORE_EXPORT CSSAnimations final {
   static bool IsAnimatingRevert(const ElementAnimations*);
   static void CalculateTimelineUpdate(CSSAnimationUpdate&,
                                       Element& animating_element,
-                                      const ComputedStyle&);
+                                      const ComputedStyleBuilder&);
   static void CalculateAnimationUpdate(CSSAnimationUpdate&,
                                        const Element& animating_element,
                                        Element&,
-                                       const ComputedStyle&,
+                                       const ComputedStyleBuilder&,
                                        const ComputedStyle* parent_style,
                                        StyleResolver*);
   static void CalculateCompositorAnimationUpdate(
@@ -105,7 +106,7 @@ class CORE_EXPORT CSSAnimations final {
 
   static void CalculateTransitionUpdate(CSSAnimationUpdate&,
                                         Element& animating_element,
-                                        const ComputedStyle&);
+                                        const ComputedStyleBuilder&);
 
   static void SnapshotCompositorKeyframes(Element&,
                                           CSSAnimationUpdate&,
@@ -232,7 +233,7 @@ class CORE_EXPORT CSSAnimations final {
     CSSAnimationUpdate& update;
     Element& animating_element;
     const ComputedStyle& old_style;
-    const ComputedStyle& style;
+    const ComputedStyle& base_style;
     scoped_refptr<const ComputedStyle> before_change_style;
     scoped_refptr<const ComputedStyle> cloned_style;
     const TransitionMap* active_transitions;
@@ -248,7 +249,7 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState&,
       const CSSTransitionData::TransitionProperty&,
       size_t transition_index,
-      const ComputedStyle&);
+      WritingDirectionMode);
 
   static void CalculateTransitionUpdateForCustomProperty(
       TransitionUpdateState&,
@@ -259,7 +260,7 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState&,
       const CSSTransitionData::TransitionProperty&,
       size_t transition_index,
-      const ComputedStyle&);
+      WritingDirectionMode);
 
   static bool CanCalculateTransitionUpdateForProperty(
       TransitionUpdateState& state,
@@ -279,10 +280,10 @@ class CORE_EXPORT CSSAnimations final {
 
   static void CalculateScrollTimelineUpdate(CSSAnimationUpdate&,
                                             Element& animating_element,
-                                            const ComputedStyle&);
+                                            const ComputedStyleBuilder&);
   static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
                                           Element& animating_element,
-                                          const ComputedStyle&);
+                                          const ComputedStyleBuilder&);
 
   static const TimelineData* GetTimelineData(const Element&);
 

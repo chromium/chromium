@@ -1692,8 +1692,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     return false;
 
   if (HasTimelines(state)) {
-    CSSAnimations::CalculateTimelineUpdate(state.AnimationUpdate(),
-                                           *animating_element, *state.Style());
+    CSSAnimations::CalculateTimelineUpdate(
+        state.AnimationUpdate(), *animating_element, state.StyleBuilder());
   }
 
   if (!HasAnimationsOrTransitions(state))
@@ -1713,9 +1713,9 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::CalculateAnimationUpdate(
       state.AnimationUpdate(), *animating_element, state.GetElement(),
-      *state.Style(), state.ParentStyle(), this);
-  CSSAnimations::CalculateTransitionUpdate(state.AnimationUpdate(),
-                                           *animating_element, *state.Style());
+      state.StyleBuilder(), state.ParentStyle(), this);
+  CSSAnimations::CalculateTransitionUpdate(
+      state.AnimationUpdate(), *animating_element, state.StyleBuilder());
 
   bool apply = !state.AnimationUpdate().IsEmpty();
   if (apply) {

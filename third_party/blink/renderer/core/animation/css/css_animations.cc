@@ -202,7 +202,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     StyleResolver* resolver,
     Element& element,
     const Element& animating_element,
-    const ComputedStyle* style,
+    WritingDirectionMode writing_direction,
     const ComputedStyle* parent_style,
     const AtomicString& name,
     TimingFunction* default_timing_function,
@@ -249,7 +249,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    result in reverse applying the following steps:
   keyframes = ProcessKeyframesRule(keyframes_rule, element.GetDocument(),
                                    parent_style, default_timing_function,
-                                   style->GetWritingMode(), style->Direction());
+                                   writing_direction.GetWritingMode(),
+                                   writing_direction.Direction());
 
   double last_offset = 1;
   wtf_size_t merged_frame_count = 0;
@@ -454,13 +455,14 @@ const CSSAnimationUpdate* GetPendingAnimationUpdate(Node& node) {
 
 }  // namespace
 
-void CSSAnimations::CalculateScrollTimelineUpdate(CSSAnimationUpdate& update,
-                                                  Element& animating_element,
-                                                  const ComputedStyle& style) {
+void CSSAnimations::CalculateScrollTimelineUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element,
+    const ComputedStyleBuilder& style_builder) {
   Document& document = animating_element.GetDocument();
 
-  const AtomicString& name = style.ScrollTimelineName();
-  TimelineAxis axis = style.ScrollTimelineAxis();
+  const AtomicString& name = style_builder.ScrollTimelineName();
+  TimelineAxis axis = style_builder.ScrollTimelineAxis();
 
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
@@ -494,12 +496,13 @@ void CSSAnimations::CalculateScrollTimelineUpdate(CSSAnimationUpdate& update,
     update.SetChangedScrollTimeline(new_timeline);
 }
 
-void CSSAnimations::CalculateViewTimelineUpdate(CSSAnimationUpdate& update,
-                                                Element& animating_element,
-                                                const ComputedStyle& style) {
-  const Vector<AtomicString>& names = style.ViewTimelineName();
-  const Vector<TimelineAxis>& axes = style.ViewTimelineAxis();
-  const Vector<TimelineInset>& insets = style.ViewTimelineInset();
+void CSSAnimations::CalculateViewTimelineUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element,
+    const ComputedStyleBuilder& style_builder) {
+  const Vector<AtomicString>& names = style_builder.ViewTimelineName();
+  const Vector<TimelineAxis>& axes = style_builder.ViewTimelineAxis();
+  const Vector<TimelineInset>& insets = style_builder.ViewTimelineInset();
 
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
@@ -798,19 +801,21 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
   }
 }
 
-void CSSAnimations::CalculateTimelineUpdate(CSSAnimationUpdate& update,
-                                            Element& animating_element,
-                                            const ComputedStyle& style) {
-  CalculateScrollTimelineUpdate(update, animating_element, style);
-  CalculateViewTimelineUpdate(update, animating_element, style);
+void CSSAnimations::CalculateTimelineUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element,
+    const ComputedStyleBuilder& style_builder) {
+  CalculateScrollTimelineUpdate(update, animating_element, style_builder);
+  CalculateViewTimelineUpdate(update, animating_element, style_builder);
 }
 
-void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
-                                             const Element& animating_element,
-                                             Element& element,
-                                             const ComputedStyle& style,
-                                             const ComputedStyle* parent_style,
-                                             StyleResolver* resolver) {
+void CSSAnimations::CalculateAnimationUpdate(
+    CSSAnimationUpdate& update,
+    const Element& animating_element,
+    Element& element,
+    const ComputedStyleBuilder& style_builder,
+    const ComputedStyle* parent_style,
+    StyleResolver* resolver) {
   ElementAnimations* element_animations =
       animating_element.GetElementAnimations();
 
@@ -827,12 +832,14 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
   }
 #endif
 
+  const WritingDirectionMode writing_direction =
+      style_builder.GetWritingDirection();
+
   // Rebuild the keyframe model for a CSS animation if it may have been
   // invalidated by a change to the text direction or writing mode.
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
   bool logical_property_mapping_change =
-      !old_style || old_style->Direction() != style.Direction() ||
-      old_style->GetWritingMode() != style.GetWritingMode();
+      !old_style || old_style->GetWritingDirection() != writing_direction;
 
   if (logical_property_mapping_change && element_animations) {
     // Update computed keyframes for any running animations that depend on
@@ -842,13 +849,13 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       if (auto* keyframe_effect =
               DynamicTo<KeyframeEffect>(animation->effect())) {
         keyframe_effect->SetLogicalPropertyResolutionContext(
-            style.Direction(), style.GetWritingMode());
+            writing_direction.Direction(), writing_direction.GetWritingMode());
         animation->UpdateIfNecessary();
       }
     }
   }
 
-  const CSSAnimationData* animation_data = style.Animations();
+  const CSSAnimationData* animation_data = style_builder.Animations();
   const CSSAnimations* css_animations =
       element_animations ? &element_animations->CssAnimations() : nullptr;
 
@@ -857,7 +864,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
   for (bool& flag : cancel_running_animation_flags)
     flag = true;
 
-  if (animation_data && style.Display() != EDisplay::kNone) {
+  if (animation_data && style_builder.Display() != EDisplay::kNone) {
     const Vector<AtomicString>& name_list = animation_data->NameList();
     for (wtf_size_t i = 0; i < name_list.size(); ++i) {
       AtomicString name = name_list[i];
@@ -1008,7 +1015,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
               existing_animation_index, animation,
               *MakeGarbageCollected<InertEffect>(
                   CreateKeyframeEffectModel(
-                      resolver, element, animating_element, &style,
+                      resolver, element, animating_element, writing_direction,
                       parent_style, name, keyframe_timing_function.get(), i),
                   timing, is_paused, inherited_time, timeline_duration,
                   animation->playbackRate()),
@@ -1035,7 +1042,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(
                 CreateKeyframeEffectModel(resolver, element, animating_element,
-                                          &style, parent_style, name,
+                                          writing_direction, parent_style, name,
                                           keyframe_timing_function.get(), i),
                 timing, is_paused, inherited_time, timeline_duration, 1.0),
             specified_timing, keyframes_rule, timeline,
@@ -1511,7 +1518,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     if (active_transition_iter != state.active_transitions->end()) {
       const RunningTransition* running_transition =
           active_transition_iter->value;
-      if (ComputedValuesEqual(property, state.style, *running_transition->to)) {
+      if (ComputedValuesEqual(property, state.base_style,
+                              *running_transition->to)) {
         if (!state.transition_data) {
           if (!running_transition->animation->FinishedInternal()) {
             UseCounter::Count(
@@ -1531,7 +1539,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
                   ->IsAnimationStyleChange());
 
       if (ComputedValuesEqual(
-              property, state.style,
+              property, state.base_style,
               *running_transition->reversing_adjusted_start_value)) {
         interrupted_transition = running_transition;
       }
@@ -1564,13 +1572,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
         state.animating_element, *state.old_style.GetBaseComputedStyleOrThis());
   }
 
-  if (ComputedValuesEqual(property, *state.before_change_style, state.style)) {
+  if (ComputedValuesEqual(property, *state.before_change_style,
+                          state.base_style)) {
     return;
   }
 
   CSSInterpolationTypesMap map(registry, state.animating_element.GetDocument());
   CSSInterpolationEnvironment old_environment(map, *state.before_change_style);
-  CSSInterpolationEnvironment new_environment(map, state.style);
+  CSSInterpolationEnvironment new_environment(map, state.base_style);
   const InterpolationType* transition_type = nullptr;
   InterpolationValue start = nullptr;
   InterpolationValue end = nullptr;
@@ -1657,14 +1666,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     CompositorKeyframeValue* from = CompositorKeyframeValueFactory::Create(
         property, *state.before_change_style, start_keyframe->Offset().value());
     CompositorKeyframeValue* to = CompositorKeyframeValueFactory::Create(
-        property, state.style, end_keyframe->Offset().value());
+        property, state.base_style, end_keyframe->Offset().value());
     start_keyframe->SetCompositorValue(from);
     end_keyframe->SetCompositorValue(to);
   }
 
   auto* model = MakeGarbageCollected<TransitionKeyframeEffectModel>(keyframes);
   if (!state.cloned_style) {
-    state.cloned_style = ComputedStyle::Clone(state.style);
+    state.cloned_style = ComputedStyle::Clone(state.base_style);
   }
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
@@ -1680,15 +1689,15 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
     size_t transition_index,
-    const ComputedStyle& style) {
+    WritingDirectionMode writing_direction) {
   switch (transition_property.property_type) {
     case CSSTransitionData::kTransitionUnknownProperty:
       CalculateTransitionUpdateForCustomProperty(state, transition_property,
                                                  transition_index);
       break;
     case CSSTransitionData::kTransitionKnownProperty:
-      CalculateTransitionUpdateForStandardProperty(state, transition_property,
-                                                   transition_index, style);
+      CalculateTransitionUpdateForStandardProperty(
+          state, transition_property, transition_index, writing_direction);
       break;
     default:
       break;
@@ -1715,7 +1724,7 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
     size_t transition_index,
-    const ComputedStyle& style) {
+    WritingDirectionMode writing_direction) {
   DCHECK_EQ(transition_property.property_type,
             CSSTransitionData::kTransitionKnownProperty);
 
@@ -1734,8 +1743,8 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     DCHECK_GE(longhand_id, kFirstCSSProperty);
     const CSSProperty& property =
         CSSProperty::Get(longhand_id)
-            .ResolveDirectionAwareProperty(style.Direction(),
-                                           style.GetWritingMode());
+            .ResolveDirectionAwareProperty(writing_direction.Direction(),
+                                           writing_direction.GetWritingMode());
     PropertyHandle property_handle = PropertyHandle(property);
 
     if (!animate_all && !property.IsInterpolable()) {
@@ -1747,9 +1756,10 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
   }
 }
 
-void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
-                                              Element& animating_element,
-                                              const ComputedStyle& style) {
+void CSSAnimations::CalculateTransitionUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element,
+    const ComputedStyleBuilder& style_builder) {
   if (animating_element.GetDocument().FinishingOrIsPrinting())
     return;
 
@@ -1758,7 +1768,9 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   const TransitionMap* active_transitions =
       element_animations ? &element_animations->CssAnimations().transitions_
                          : nullptr;
-  const CSSTransitionData* transition_data = style.Transitions();
+  const CSSTransitionData* transition_data = style_builder.Transitions();
+  const WritingDirectionMode writing_direction =
+      style_builder.GetWritingDirection();
 
   const bool animation_style_recalc =
       element_animations && element_animations->IsAnimationStyleChange();
@@ -1770,7 +1782,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
     old_style = data->GetOldStyle(animating_element);
 
-  if (!animation_style_recalc && style.Display() != EDisplay::kNone &&
+  if (!animation_style_recalc && style_builder.Display() != EDisplay::kNone &&
       old_style && !old_style->IsEnsuredInDisplayNone()) {
     // Don't bother updating listed_properties unless we need it below.
     HashSet<PropertyHandle>* listed_properties_maybe =
@@ -1778,7 +1790,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
     TransitionUpdateState state = {update,
                                    animating_element,
                                    *old_style,
-                                   style,
+                                   *style_builder.GetBaseComputedStyle(),
                                    /*before_change_style=*/nullptr,
                                    /*cloned_style=*/nullptr,
                                    active_transitions,
@@ -1794,15 +1806,16 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
         if (transition_property.unresolved_property == CSSPropertyID::kAll) {
           any_transition_had_transition_all = true;
         }
-        CalculateTransitionUpdateForProperty(state, transition_property,
-                                             transition_index, style);
+        CalculateTransitionUpdateForProperty(
+            state, transition_property, transition_index, writing_direction);
       }
     } else if (active_transitions && active_transitions->size()) {
       // !transition_data implies transition: all 0s
       any_transition_had_transition_all = true;
       CSSTransitionData::TransitionProperty default_property(
           CSSPropertyID::kAll);
-      CalculateTransitionUpdateForProperty(state, default_property, 0, style);
+      CalculateTransitionUpdateForProperty(state, default_property, 0,
+                                           writing_direction);
     }
   }
 

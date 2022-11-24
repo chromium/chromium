@@ -182,6 +182,9 @@ class TestCascade {
   CascadeOrigin GetOrigin(String name) { return GetPriority(name).GetOrigin(); }
 
   void AddInterpolations() {
+    state_.StyleBuilder().SetBaseData(
+        StyleBaseData::Create(state_.StyleBuilder().CloneStyle(), nullptr));
+
     CalculateInterpolationUpdate();
 
     // Add to cascade:
@@ -264,10 +267,10 @@ class TestCascade {
 
   void CalculateInterpolationUpdate() {
     CSSAnimations::CalculateTransitionUpdate(
-        state_.AnimationUpdate(), state_.GetElement(), *state_.Style());
+        state_.AnimationUpdate(), state_.GetElement(), state_.StyleBuilder());
     CSSAnimations::CalculateAnimationUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
-        *state_.Style(), state_.ParentStyle(),
+        state_.StyleBuilder(), state_.ParentStyle(),
         &GetDocument().GetStyleResolver());
   }
 
