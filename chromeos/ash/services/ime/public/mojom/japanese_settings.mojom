@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module ash.ime.mojom;
 
@@ -58,7 +58,8 @@ enum KeymapStyle {
     kMsIme = 2,
     kKotoeri = 3,
     kMobile = 4,
-    kChromeOs = 5
+    kChromeOs = 5,
+    [MinVersion=2] kNone = 6
 };
 
 [Stable, Extensible]
