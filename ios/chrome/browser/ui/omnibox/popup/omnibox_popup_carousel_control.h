@@ -15,25 +15,28 @@
 /// Accessibility identifier for the label.
 extern NSString* const kCarouselControlLabelIdentifier;
 
-// Delegate for events happening in OmniboxPopupCarouselControl.
+/// Delegate for events happening in OmniboxPopupCarouselControl.
 @protocol OmniboxPopupCarouselControlDelegate <NSObject>
 
-// `control` became focused with accessibility of keyboard selection.
+/// Called when `control` becomes focused with accessibility or keyboard
+/// selection.
 - (void)carouselControlDidBecomeFocused:(OmniboxPopupCarouselControl*)control;
 
 @end
 
-// Full width of a OmniboxPopupCarouselControl.
+/// Full width of a OmniboxPopupCarouselControl.
 extern const CGFloat kOmniboxPopupCarouselControlWidth;
 
-// View inside the OmniboxCarouselCell that displays the icon and text of
-// `CarouselItem`.
+/// View inside the OmniboxCarouselCell that displays the icon and text of
+/// `CarouselItem`.
 @interface OmniboxPopupCarouselControl
     : UIControl <UIContextMenuInteractionDelegate>
 
-// Context menu provider for the carousel items.
+/// Context menu provider for the carousel item.
 @property(nonatomic, weak) id<CarouselItemMenuProvider> menuProvider;
+/// Object containing data displayed by the control.
 @property(nonatomic, strong) CarouselItem* carouselItem;
+/// Delegate for events happening in the control.
 @property(nonatomic, weak) id<OmniboxPopupCarouselControlDelegate> delegate;
 
 @end

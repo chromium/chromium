@@ -21,27 +21,27 @@ NSString* const kCarouselControlLabelIdentifier =
 
 namespace {
 
-// Size of the view behind the icon.
+/// Size of the view behind the icon.
 const CGFloat kBackgroundViewSize = 56.0f;
-// Top, leading and trailing margins of `ImageView`.
+/// Top, leading and trailing margins of `ImageView`.
 const CGFloat kBackgroundViewMargin = 7.0f;
-// Padding between the icon and the label.
+/// Padding between the icon and the label.
 const CGFloat kBackgroundLabelSpacing = 10.0f;
-// Size of the view containing the favicon.
+/// Size of the view containing the favicon.
 const CGFloat kFaviconSize = 32.0f;
-// Size of the favicon placeholder font.
+/// Size of the favicon placeholder font.
 const CGFloat kFaviconPlaceholderFontSize = 22.0f;
-// Leading and trailing margin of the label.
+/// Leading and trailing margin of the label.
 const CGFloat kLabelMargin = 1.0f;
-// Maximum number of lines for the label.
+/// Maximum number of lines for the label.
 const NSInteger kLabelNumLines = 2;
 
-// Corner radius of the context menu preview.
+/// Corner radius of the context menu preview.
 const CGFloat kPreviewCornerRadius = 13.0f;
-// Corner radius of the icon's `backgroundView`.
+/// Corner radius of the icon's `backgroundView`.
 const CGFloat kBackgroundCornerRadius = 13.0f;
 
-// UILabel displaying text at the bottom of carousel item.
+/// UILabel displaying text at the bottom of carousel item.
 UILabel* CarouselItemLabel() {
   UILabel* label = [[UILabel alloc] init];
   label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -53,7 +53,7 @@ UILabel* CarouselItemLabel() {
   return label;
 }
 
-// UIView for the squircle background of carousel item.
+/// UIView for the squircle background of carousel item.
 UIView* CarouselItemBackgroundView() {
   UIImageView* imageView = [[UIImageView alloc] init];
   UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
@@ -68,7 +68,7 @@ UIView* CarouselItemBackgroundView() {
   return imageView;
 }
 
-// FaviconView containing the icon of carousel item.
+/// FaviconView containing the icon of carousel item.
 FaviconView* CarouselItemFaviconView() {
   FaviconView* faviconView = [[FaviconView alloc] init];
   [faviconView setFont:[UIFont systemFontOfSize:kFaviconPlaceholderFontSize]];
@@ -81,7 +81,7 @@ FaviconView* CarouselItemFaviconView() {
   return faviconView;
 }
 
-// CAGradientLayer for `backgroundView` when selected.
+/// CAGradientLayer for `backgroundView` when selected.
 CAGradientLayer* CarouselBackgroundGradientLayer() {
   CAGradientLayer* gradientLayer = [[CAGradientLayer alloc] init];
   gradientLayer.startPoint = CGPointMake(0, 0.5);
@@ -105,13 +105,13 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
 
 @interface OmniboxPopupCarouselControl ()
 
-// View containing the background.
+/// View containing the background.
 @property(nonatomic, strong) UIView* backgroundView;
-// View containing the icon.
+/// View containing the icon.
 @property(nonatomic, strong) FaviconView* faviconView;
-// UILabel containing the text.
+/// UILabel containing the text.
 @property(nonatomic, strong) UILabel* label;
-// Gradient layer for `backgroundView` when selected.
+/// Gradient layer for `backgroundView` when selected.
 @property(nonatomic, strong) CAGradientLayer* gradientLayer;
 
 @end
