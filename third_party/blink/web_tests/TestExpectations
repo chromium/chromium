@@ -6927,5 +6927,8 @@ crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure 
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
 crbug.com/1393056 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]
 
+# Temporarily disable test to land BackgroundServices frontend CL
+crbug.com/1382392 http/tests/devtools/background-services/background-service-grid.js [ Failure Skip ]
+
 # Temporarily disable test to land CPU-backed canvas switching change
 crbug.com/1385633 [ Linux ] virtual/oopr-canvas2d/fast/canvas/check-stale-putImageData.html [ Failure ]
