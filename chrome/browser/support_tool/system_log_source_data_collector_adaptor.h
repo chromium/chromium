@@ -55,6 +55,15 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
       scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
+  void SetLogSourceForTesting(
+      std::unique_ptr<system_logs::SystemLogsSource> log_source);
+
+ protected:
+  // The response that the SystemLogsSource returned. Contains a map
+  // std::strings that contains the collected logs.
+  std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response_;
+  PIIMap pii_map_;
+
  private:
   // Will be called when `log_source_` is done with its Fetch() function.
   void OnDataFetched(
@@ -79,10 +88,6 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
   SEQUENCE_CHECKER(sequence_checker_);
   // Description for the DataCollector.
   std::string description_;
-  PIIMap pii_map_;
-  // The response that the SystemLogsSource returned. Contains a map
-  // std::strings that contains the collected logs.
-  std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response_;
   std::unique_ptr<system_logs::SystemLogsSource> log_source_;
   base::WeakPtrFactory<SystemLogSourceDataCollectorAdaptor> weak_ptr_factory_{
       this};

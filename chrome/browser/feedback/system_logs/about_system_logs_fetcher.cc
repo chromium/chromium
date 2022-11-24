@@ -62,7 +62,8 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
 
   // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));
-  fetcher->AddSource(std::make_unique<NetworkHealthSource>(scrub_data));
+  fetcher->AddSource(std::make_unique<NetworkHealthSource>(
+      scrub_data, /*include_guid_when_not_scrub=*/false));
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
 #endif

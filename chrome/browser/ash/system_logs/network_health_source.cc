@@ -18,13 +18,13 @@ namespace system_logs {
 
 namespace {
 
-constexpr char kNetworkHealthSnapshotEntry[] = "network-health-snapshot";
 constexpr char kNetworkDiagnosticsEntry[] = "network-diagnostics";
 
 std::string FormatNetworkHealth(
     const chromeos::network_health::mojom::NetworkHealthStatePtr&
         network_health,
-    bool scrub) {
+    bool scrub,
+    bool include_guid_when_not_scrub) {
   std::ostringstream output;
 
   for (const auto& net : network_health->networks) {
@@ -33,6 +33,10 @@ std::string FormatNetworkHealth(
              << "\n";
     } else {
       output << "Name: " << net->name.value_or("N/A") << "\n";
+    }
+
+    if (!scrub && include_guid_when_not_scrub) {
+      output << "GUID: " << net->guid.value_or("N/A") << "\n";
     }
 
     output << "Type: " << net->type << "\n";
@@ -151,6 +155,8 @@ std::string GetProblemsString(
 
 }  // namespace
 
+const char kNetworkHealthSnapshotEntry[] = "network-health-snapshot";
+
 std::string FormatNetworkDiagnosticResults(
     const base::flat_map<
         chromeos::network_diagnostics::mojom::RoutineType,
@@ -172,8 +178,11 @@ std::string FormatNetworkDiagnosticResults(
   return output.str();
 }
 
-NetworkHealthSource::NetworkHealthSource(bool scrub)
-    : SystemLogsSource("NetworkHealth"), scrub_(scrub) {
+NetworkHealthSource::NetworkHealthSource(bool scrub,
+                                         bool include_guid_when_not_scrub)
+    : SystemLogsSource("NetworkHealth"),
+      scrub_(scrub),
+      include_guid_when_not_scrub_(include_guid_when_not_scrub) {
   ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       network_health_service_.BindNewPipeAndPassReceiver());
   ash::network_health::NetworkHealthManager::GetInstance()
@@ -197,7 +206,8 @@ void NetworkHealthSource::Fetch(SysLogsSourceCallback callback) {
 
 void NetworkHealthSource::OnNetworkHealthReceived(
     chromeos::network_health::mojom::NetworkHealthStatePtr network_health) {
-  network_health_response_ = FormatNetworkHealth(network_health, scrub_);
+  network_health_response_ =
+      FormatNetworkHealth(network_health, scrub_, include_guid_when_not_scrub_);
   CheckIfDone();
 }
 

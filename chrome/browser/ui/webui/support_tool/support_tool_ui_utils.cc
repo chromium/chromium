@@ -156,6 +156,8 @@ std::string GetDataCollectorName(
       return "ChromeOS Traffic Counters";
     case support_tool::CHROMEOS_VIRTUAL_KEYBOARD:
       return "ChromeOS Virtual Keyboard";
+    case support_tool::CHROMEOS_NETWORK_HEALTH:
+      return "ChromeOS Network Health";
     default:
       return "Error: Undefined";
   }

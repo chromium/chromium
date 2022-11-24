@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/system_logs/virtual_keyboard_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 #include "chrome/browser/support_tool/ash/chrome_user_logs_data_collector.h"
+#include "chrome/browser/support_tool/ash/network_health_data_collector.h"
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 #include "chrome/browser/support_tool/ash/shill_data_collector.h"
 #include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
@@ -66,7 +67,8 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
     support_tool::CHROMEOS_BLUETOOTH_FLOSS,
     support_tool::CHROMEOS_CONNECTED_INPUT_DEVICES,
     support_tool::CHROMEOS_TRAFFIC_COUNTERS,
-    support_tool::CHROMEOS_VIRTUAL_KEYBOARD};
+    support_tool::CHROMEOS_VIRTUAL_KEYBOARD,
+    support_tool::CHROMEOS_NETWORK_HEALTH};
 
 // Data collector types that can only work on if IS_CHROMEOS_WITH_HW_DETAILS
 // flag is turned on. IS_CHROMEOS_WITH_HW_DETAILS flag will be turned on for
@@ -224,6 +226,10 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
             std::make_unique<SystemLogSourceDataCollectorAdaptor>(
                 "Fetches the virtual keyboard information.",
                 std::make_unique<system_logs::VirtualKeyboardLogSource>()));
+        break;
+      case support_tool::CHROMEOS_NETWORK_HEALTH:
+        handler->AddDataCollector(
+            std::make_unique<NetworkHealthDataCollector>());
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)

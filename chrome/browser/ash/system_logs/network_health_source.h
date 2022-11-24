@@ -17,10 +17,20 @@
 
 namespace system_logs {
 
+// The entry name for network health snapshot in the SystemLogsResponse returned
+// on `Fetch` function.
+extern const char kNetworkHealthSnapshotEntry[];
+
 // Fetches network health entry.
 class NetworkHealthSource : public SystemLogsSource {
  public:
-  explicit NetworkHealthSource(bool scrub);
+  // Includes PII (personally identifiable information) if `scrub` is false.
+  // Includes network GUIDs if `scrub` is false and
+  // `include_guid_when_not_scrub` is true. `include_guid_when_not_scrub` is set
+  // to true when the caller wants the network GUIDs to be included in
+  // `network_health_snapshot` in the fetched data e.g.
+  // NetworkHealthDataCollector.
+  explicit NetworkHealthSource(bool scrub, bool include_guid_when_not_scrub);
   ~NetworkHealthSource() override;
   NetworkHealthSource(const NetworkHealthSource&) = delete;
   NetworkHealthSource& operator=(const NetworkHealthSource&) = delete;
@@ -40,6 +50,7 @@ class NetworkHealthSource : public SystemLogsSource {
   void CheckIfDone();
 
   bool scrub_;
+  bool include_guid_when_not_scrub_;
   SysLogsSourceCallback callback_;
 
   absl::optional<std::string> network_health_response_;

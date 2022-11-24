@@ -188,3 +188,8 @@ void SystemLogSourceDataCollectorAdaptor::OnFilesWritten(
   }
   std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
 }
+
+void SystemLogSourceDataCollectorAdaptor::SetLogSourceForTesting(
+    std::unique_ptr<system_logs::SystemLogsSource> log_source) {
+  log_source_ = std::move(log_source);
+}
