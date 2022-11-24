@@ -13,6 +13,8 @@ proto_library("proto") {
   sources = [
     "aggregation.proto",
     "model_metadata.proto",
+    "output_config.proto",
+    "prediction_result.proto",
     "segmentation_platform.proto",
     "types.proto",
   ]
@@ -21,6 +23,10 @@ proto_library("proto") {
 if (is_android) {
   proto_java_library("segmentation_platform_proto_java") {
     proto_path = "//"
-    sources = [ "segmentation_platform.proto" ]
+    sources = [
+      "output_config.proto",
+      "prediction_result.proto",
+      "segmentation_platform.proto",
+    ]
   }
 }

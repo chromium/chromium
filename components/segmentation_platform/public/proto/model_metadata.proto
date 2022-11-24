@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 package segmentation_platform.proto;
 
 import "components/segmentation_platform/public/proto/aggregation.proto";
+import "components/segmentation_platform/public/proto/output_config.proto";
 import "components/segmentation_platform/public/proto/types.proto";
 
 // The version is used to verify if the metadata provided by the server is
@@ -281,42 +282,6 @@ message UMAOutput {
   // not specified or 0, the training data will be generated immediately after
   // certain UMA is recorded.
   optional uint64 duration = 2;
-}
-
-// Defines what type of model is supplied. Results are based on which
-// classifier the model is in.
-message Classifier {
-  // A classifier to interpret model results as a boolean.
-  message BooleanClassifier {
-    // Limit to classify result as false/true.
-    optional float threshold = 1;
-  }
-
-  // A classifier to interpret model results as one of multiple classes. Each
-  // output of the model corresponds to one of the classes.
-  message MultiClassClassifier {
-    // Number of top results the client is interested in. Must be less than
-    // or equal to the number of labels specified.
-    optional int64 top_k_outputs = 1;
-  }
-
-  oneof ClassifierType {
-    // Model result is classified as boolean.
-    BooleanClassifier boolean_classifier = 2;
-
-    // Model result is of multi-class type.
-    MultiClassClassifier multi_class_classifier = 3;
-  }
-}
-
-// Specified by client in the metadata on how to interpret the model results.
-message OutputConfig {
-  // Each `output_label` corresponds to one output. It signifies how to
-  // interpret the output.
-  repeated string output_label = 1;
-
-  // Tells the return type of the result for model evaluation.
-  optional Classifier classifier = 2;
 }
 
 // Metadata about a segmentation model for a given segment. Contains information

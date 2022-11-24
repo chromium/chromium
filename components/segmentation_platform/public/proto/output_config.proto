@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.segmentation_platform.proto";
+option java_outer_classname = "OutputConfigProto";
+
+package segmentation_platform.proto;
+
+// Defines what type of model is supplied. Results are based on which
+// classifier the model is in.
+message Classifier {
+  // A classifier to interpret model results as a boolean.
+  message BooleanClassifier {
+    // Limit to classify result as false/true.
+    optional float threshold = 1;
+  }
+
+  // A classifier to interpret model results as one of multiple classes. Each
+  // output of the model corresponds to one of the classes.
+  message MultiClassClassifier {
+    // Number of top results the client is interested in. Must be less than
+    // or equal to the number of labels specified.
+    optional int64 top_k_outputs = 1;
+  }
+
+  oneof ClassifierType {
+    // Model result is classified as boolean.
+    BooleanClassifier boolean_classifier = 2;
+
+    // Model result is of multi-class type.
+    MultiClassClassifier multi_class_classifier = 3;
+  }
+}
+
+// Specified by client in the metadata on how to interpret the model results.
+message OutputConfig {
+  // Each `output_label` corresponds to one output. It signifies how to
+  // interpret the output.
+  repeated string output_labels = 1;
+
+  // Tells the return type of the result for model evaluation.
+  optional Classifier classifier = 2;
+}
