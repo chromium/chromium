@@ -12,6 +12,8 @@ package org.chromium.android_webview.js_sandbox.common;
 oneway interface IJsSandboxIsolateCallback {
     // An exception was thrown during the JS evaluation.
     const int JS_EVALUATION_ERROR = 0;
+    // The evaluation failed and the isolate crashed due to running out of heap memory.
+    const int MEMORY_LIMIT_EXCEEDED = 1;
 
     void reportResult(String result) = 0;
 

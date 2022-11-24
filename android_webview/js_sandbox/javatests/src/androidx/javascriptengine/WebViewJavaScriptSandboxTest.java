@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class WebViewJavaScriptSandboxTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
     // larger in future. However, we don't want it too large as that will make the tests slower and
-    // require more memory.
+    // require more memory. Although this is a long, it must not be greater than Integer.MAX_VALUE
+    // and should be much smaller (for the purposes of testing).
     private static final long REASONABLE_HEAP_SIZE = 100 * 1024 * 1024;
 
     @Before
@@ -426,7 +427,7 @@ public class WebViewJavaScriptSandboxTest {
 
     @Test
     @MediumTest
-    public void testEvaluationThrowsWhenSandboxDead() throws Throwable {
+    public void testEvaluationThrowsWhenSandboxClosed() throws Throwable {
         final String code = "while(true){}";
         Context context = ApplicationProvider.getApplicationContext();
 
@@ -434,15 +435,36 @@ public class WebViewJavaScriptSandboxTest {
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             jsSandbox.close();
+            // Check already running evaluation gets SandboxDeadException
             try {
-                resultFuture.get(5, TimeUnit.SECONDS);
+                resultFuture1.get(5, TimeUnit.SECONDS);
                 Assert.fail("Should have thrown.");
             } catch (ExecutionException e) {
-                if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                if (!(e.getCause() instanceof SandboxDeadException)) {
                     throw e;
                 }
+            }
+            // Check post-close evaluation gets SandboxDeadException
+            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavaScriptAsync(code);
+            try {
+                resultFuture2.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                if (!(e.getCause() instanceof SandboxDeadException)) {
+                    throw e;
+                }
+            }
+            // Check that closing an isolate then causes the IllegalStateException to be
+            // thrown instead.
+            jsIsolate.close();
+            try {
+                ListenableFuture<String> postCloseResultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(code);
+                Assert.fail("Should have thrown.");
+            } catch (IllegalStateException e) {
+                // Expected
             }
         }
     }
@@ -534,33 +556,152 @@ public class WebViewJavaScriptSandboxTest {
     @MediumTest
     public void testHeapSizeEnforced() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
-        // We need to beat the v8 optimizer to ensure it really allocates the required memory.
-        // Note that we're allocating an array of elements - not bytes.
-        final String code = "this.array = Array(" + maxHeapSize + ").fill(Math.random(), 0);"
-                + "var arrayLength = this.array.length;"
-                + "var sum = 0;"
-                + "for (var i = 0; i < arrayLength; i++) {"
-                + " sum+=this.array[i];"
-                + "}";
+        // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
+        // that we're allocating an array of elements - not bytes. Filling will ensure that the
+        // array is not sparsely allocated.
+        final String oomingCode = ""
+                + "const array = Array(" + maxHeapSize + ").fill(Math.random(), 0);";
+        final String stableCode = "'PASS'";
+        final String stableExpected = "PASS";
+        final String unresolvedCode = "new Promise((resolve, reject) => {/* never resolve */})";
         Context context = ApplicationProvider.getApplicationContext();
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
-        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture1.get(5, TimeUnit.SECONDS)) {
             Assume.assumeTrue(jsSandbox.isFeatureSupported(
                     JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
-            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+            try (JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate(isolateStartupParameters);
+                    JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
+                ListenableFuture<String> earlyUnresolvedResultFuture =
+                        jsIsolate1.evaluateJavaScriptAsync(unresolvedCode);
+                ListenableFuture<String> earlyResultFuture =
+                        jsIsolate1.evaluateJavaScriptAsync(stableCode);
+                ListenableFuture<String> oomResultFuture =
+                        jsIsolate1.evaluateJavaScriptAsync(oomingCode);
+
+                // Wait for jsIsolate2 to fully initialize before using jsIsolate1.
+                jsIsolate2.evaluateJavaScriptAsync(stableCode).get(5, TimeUnit.SECONDS);
+
+                // Check that the heap limit is enforced and that it reports this was the evaluation
+                // that exceeded the limit.
                 try {
-                    resultFuture.get(10, TimeUnit.SECONDS);
+                    oomResultFuture.get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
-                    if (!(e.getCause() instanceof SandboxDeadException)) {
+                    if (!(e.getCause() instanceof MemoryLimitExceededException)) {
                         throw e;
                     }
                 }
+
+                // Check that the previously submitted (but unresolved) promise evaluation reports a
+                // crash
+                try {
+                    earlyUnresolvedResultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                        throw e;
+                    }
+                }
+
+                // Check that the previously submitted evaluation which completed before the memory
+                // limit was exceeded, but for which we haven't yet gotten the result, returns its
+                // result just fine.
+                String result = earlyResultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals(stableExpected, result);
+
+                // Check that a totally new evaluation reports a crash
+                ListenableFuture<String> lateResultFuture =
+                        jsIsolate1.evaluateJavaScriptAsync(stableCode);
+                try {
+                    lateResultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                        throw e;
+                    }
+                }
+
+                // Check that other pre-existing isolates can still be used.
+                ListenableFuture<String> otherIsolateResultFuture =
+                        jsIsolate2.evaluateJavaScriptAsync(stableCode);
+                String otherIsolateResult = otherIsolateResultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals(stableExpected, otherIsolateResult);
             }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testIsolateCreationAfterCrash() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
+        // that we're allocating an array of elements - not bytes. Filling will ensure that the
+        // array is not sparsely allocated.
+        final String oomingCode = ""
+                + "const array = Array(" + maxHeapSize + ").fill(Math.random(), 0);";
+        final String stableCode = "'PASS'";
+        final String stableExpected = "PASS";
+        Context context = ApplicationProvider.getApplicationContext();
+
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
+                JavaScriptSandbox.createConnectedInstanceAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture1.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            try (JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate(isolateStartupParameters)) {
+                ListenableFuture<String> oomResultFuture =
+                        jsIsolate1.evaluateJavaScriptAsync(oomingCode);
+
+                // Check that the heap limit is enforced and that it reports this was the evaluation
+                // that exceeded the limit.
+                try {
+                    oomResultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof MemoryLimitExceededException)) {
+                        throw e;
+                    }
+                }
+
+                // Check that other isolates can still be created and used (without closing
+                // jsIsolate1).
+                try (JavaScriptIsolate jsIsolate2 =
+                                jsSandbox.createIsolate(isolateStartupParameters)) {
+                    ListenableFuture<String> resultFuture =
+                            jsIsolate2.evaluateJavaScriptAsync(stableCode);
+                    String result = resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.assertEquals(stableExpected, result);
+                }
+            }
+
+            // Check that other isolates can still be created and used (after closing jsIsolate1).
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                ListenableFuture<String> resultFuture =
+                        jsIsolate.evaluateJavaScriptAsync(stableCode);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals(stableExpected, result);
+            }
+        }
+
+        // Check that the old sandbox with the "crashed" isolate can be torn down and that a new
+        // sandbox and isolate can be spun up.
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture2 =
+                JavaScriptSandbox.createConnectedInstanceAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture2.get(5, TimeUnit.SECONDS);
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(stableCode);
+            String result = resultFuture.get(5, TimeUnit.SECONDS);
+            Assert.assertEquals(stableExpected, result);
         }
     }
 }

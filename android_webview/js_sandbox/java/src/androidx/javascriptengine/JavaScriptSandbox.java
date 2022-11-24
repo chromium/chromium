@@ -464,7 +464,7 @@ public final class JavaScriptSandbox implements AutoCloseable {
      */
     @Override
     public void close() {
-        doClose(new IsolateTerminatedException());
+        doClose(new SandboxDeadException());
     }
 
     void doClose(Exception cancelPendingWith) {

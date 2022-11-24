@@ -132,6 +132,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
 namespace android_webview {
 class AwFormDatabaseService;
 class CookieManager;
+class JsSandboxIsolate;
 class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
@@ -683,6 +684,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
 
   // Allowed usage:
   friend class ::ChromeNSSCryptoModuleDelegate;
+  friend class android_webview::JsSandboxIsolate;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
   friend class base::SimpleThread;
   friend class blink::CategorizedWorkerPoolImpl;

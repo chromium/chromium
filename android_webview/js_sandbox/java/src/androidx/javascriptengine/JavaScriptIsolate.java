@@ -23,7 +23,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,10 +49,16 @@ import javax.annotation.concurrent.GuardedBy;
 public final class JavaScriptIsolate implements AutoCloseable {
     private static final String TAG = "JavaScriptIsolate";
     private final Object mSetLock = new Object();
+    /**
+     * Interface to underlying service-backed implementation.
+     *
+     * mJsIsolateStub should only be null when the Isolate has been explicitly closed - not when the
+     * isolate has crashed or simply had its pending and future evaluations cancelled.
+     */
     @Nullable
     private IJsSandboxIsolate mJsIsolateStub;
     private CloseGuardHelper mGuard = CloseGuardHelper.create();
-    private final Executor mThreadPoolTaskExecutor =
+    private final ExecutorService mThreadPoolTaskExecutor =
             Executors.newCachedThreadPool(new ThreadFactory() {
                 private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -67,6 +73,13 @@ public final class JavaScriptIsolate implements AutoCloseable {
     @GuardedBy("mSetLock")
     private HashSet<CallbackToFutureAdapter.Completer<String>> mPendingCompleterSet =
             new HashSet<CallbackToFutureAdapter.Completer<String>>();
+    /**
+     * If mPendingCompleterSet is null, new evaluations will throw this exception asynchronously.
+     *
+     * Note that if the isolate is closed, IllegalStateException is thrown synchronously instead.
+     */
+    @Nullable
+    private Exception mExceptionForNewEvaluations;
 
     private class IJsSandboxIsolateCallbackStubWrapper extends IJsSandboxIsolateCallback.Stub {
         private CallbackToFutureAdapter.Completer<String> mCompleter;
@@ -83,9 +96,25 @@ public final class JavaScriptIsolate implements AutoCloseable {
 
         @Override
         public void reportError(@ExecutionErrorTypes int type, String error) {
-            assert type == IJsSandboxIsolateCallback.JS_EVALUATION_ERROR;
-            mCompleter.setException(new EvaluationFailedException(error));
+            boolean crashing = false;
+            switch (type) {
+                case IJsSandboxIsolateCallback.JS_EVALUATION_ERROR:
+                    mCompleter.setException(new EvaluationFailedException(error));
+                    break;
+                case IJsSandboxIsolateCallback.MEMORY_LIMIT_EXCEEDED:
+                    mCompleter.setException(new MemoryLimitExceededException(error));
+                    crashing = true;
+                    break;
+                default:
+                    mCompleter.setException(new JavaScriptException(
+                            "Crashing due to unknown JavaScriptException: " + error));
+                    // Assume the worst
+                    crashing = true;
+            }
             removePending(mCompleter);
+            if (crashing) {
+                handleCrash();
+            }
         }
     }
 
@@ -126,8 +155,8 @@ public final class JavaScriptIsolate implements AutoCloseable {
      *         Promise of a String in case {@link JavaScriptSandbox#JS_FEATURE_PROMISE_RETURN} is
      *             supported
      *
-     * @return Future that evaluates to the result String of the evaluation or exceptions({@link
-     *         IsolateTerminatedException}, {@link SandboxDeadException}) if there is an error
+     * @return Future that evaluates to the result String of the evaluation or exceptions (see
+     *         {@link JavaScriptException} and subclasses) if there is an error
      */
     @SuppressWarnings("NullAway")
     @NonNull
@@ -136,13 +165,12 @@ public final class JavaScriptIsolate implements AutoCloseable {
             throw new IllegalStateException(
                     "Calling evaluateJavascript() after closing the Isolate");
         }
-
         return CallbackToFutureAdapter.getFuture(completer -> {
             final String futureDebugMessage = "evaluateJavascript Future";
             IJsSandboxIsolateCallbackStubWrapper callbackStub;
             synchronized (mSetLock) {
                 if (mPendingCompleterSet == null) {
-                    completer.setException(new IsolateTerminatedException());
+                    completer.setException(mExceptionForNewEvaluations);
                     return futureDebugMessage;
                 }
                 mPendingCompleterSet.add(completer);
@@ -176,6 +204,8 @@ public final class JavaScriptIsolate implements AutoCloseable {
      */
     @Override
     public void close() {
+        // IllegalStateException will be thrown synchronously instead for new evaluations.
+        mExceptionForNewEvaluations = null;
         if (mJsIsolateStub == null) {
             return;
         }
@@ -232,7 +262,9 @@ public final class JavaScriptIsolate implements AutoCloseable {
      *
      * @param name Identifier for the data that is passed, the same identifier should be used in the
      *         JavaScript environment to refer to the data
-     * @param inputBytes Bytes to be passed into the JavaScript environment
+     * @param inputBytes Bytes to be passed into the JavaScript environment. This array must not be
+     *         modified until the JavaScript promise returned by consumeNamedDataAsArrayBuffer has
+     *         resolved (or rejected).
      *
      * @return {@code true} on success, {@code false} if the name has already been used before,
      *         in which case the client should use an unused name
@@ -253,12 +285,19 @@ public final class JavaScriptIsolate implements AutoCloseable {
             ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
             ParcelFileDescriptor readSide = pipe[0];
             ParcelFileDescriptor writeSide = pipe[1];
-            OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
-            mThreadPoolTaskExecutor.execute(
-                    () -> { convertByteArrayToStream(inputBytes, outputStream); });
+            try {
+                OutputStream outputStream =
+                        new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
+                mThreadPoolTaskExecutor.execute(
+                        () -> { convertByteArrayToStream(inputBytes, outputStream); });
 
-            AssetFileDescriptor asd = new AssetFileDescriptor(readSide, offset, length);
-            return mJsIsolateStub.provideNamedData(name, asd);
+                AssetFileDescriptor asd = new AssetFileDescriptor(readSide, offset, length);
+                return mJsIsolateStub.provideNamedData(name, asd);
+            } finally {
+                // We pass the readSide to the separate sandbox process but we still need to close
+                // it on our end to avoid file descriptor leaks.
+                readSide.close();
+            }
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException was thrown during provideNamedData()", e);
         } catch (IOException e) {
@@ -278,16 +317,27 @@ public final class JavaScriptIsolate implements AutoCloseable {
         }
     }
 
+    /**
+     * Cancel all pending and future evaluations with the given exception.
+     *
+     * Only the first call to this method has any effect.
+     */
     void cancelAllPendingEvaluations(Exception e) {
         final HashSet<CallbackToFutureAdapter.Completer<String>> pendingSet;
         synchronized (mSetLock) {
             if (mPendingCompleterSet == null) return;
             pendingSet = mPendingCompleterSet;
             mPendingCompleterSet = null;
+            mExceptionForNewEvaluations = e;
         }
         for (CallbackToFutureAdapter.Completer<String> ele : pendingSet) {
             ele.setException(e);
         }
+        // This is the closest thing to a .close() method for ExecutorServices. This doesn't force
+        // the threads or their Runnables to immediately terminate, but will ensure that once the
+        // worker threads finish their current runnable (if any) that the thread pool terminates
+        // them, preventing a leak of threads.
+        mThreadPoolTaskExecutor.shutdownNow();
     }
 
     void removePending(CallbackToFutureAdapter.Completer<String> completer) {
@@ -296,6 +346,10 @@ public final class JavaScriptIsolate implements AutoCloseable {
                 mPendingCompleterSet.remove(completer);
             }
         }
+    }
+
+    private void handleCrash() {
+        cancelAllPendingEvaluations(new IsolateTerminatedException());
     }
 
     private static void closeQuietly(Closeable closeable) {

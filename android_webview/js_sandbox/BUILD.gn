@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 generate_jni("js_sandbox_jni_headers") {
-  sources = [ "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java" ]
+  sources = [
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateCallback.java",
+  ]
 }
 
 android_aidl("js_sandbox_aidl") {
@@ -24,6 +27,7 @@ android_library("js_sandbox_aidl_java") {
 android_library("js_sandbox_service_java") {
   sources = [
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateCallback.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService0.java",
   ]
@@ -50,6 +54,7 @@ android_library("js_sandbox_java") {
     "java/src/androidx/javascriptengine/JavaScriptException.java",
     "java/src/androidx/javascriptengine/JavaScriptIsolate.java",
     "java/src/androidx/javascriptengine/JavaScriptSandbox.java",
+    "java/src/androidx/javascriptengine/MemoryLimitExceededException.java",
     "java/src/androidx/javascriptengine/SandboxDeadException.java",
     "java/src/androidx/javascriptengine/SandboxUnsupportedException.java",
   ]

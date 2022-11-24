@@ -9,7 +9,6 @@ import android.os.RemoteException;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -39,23 +38,24 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
-            JsSandboxIsolateJni.get().evaluateJavascript(mJsSandboxIsolate, this, code,
-                    (result)
-                            -> {
-                        try {
-                            callback.reportResult(result);
-                        } catch (RemoteException e) {
-                            Log.e(TAG, "reporting result failed", e);
+            JsSandboxIsolateJni.get().evaluateJavascript(
+                    mJsSandboxIsolate, this, code, new JsSandboxIsolateCallback() {
+                        @Override
+                        public void onResult(String result) {
+                            try {
+                                callback.reportResult(result);
+                            } catch (RemoteException e) {
+                                Log.e(TAG, "reporting result failed", e);
+                            }
                         }
-                    },
-                    (error) -> {
-                        try {
-                            // Currently we only support
-                            // IJsSandboxIsolateCallback.JS_EVALUATION_ERROR
-                            callback.reportError(
-                                    IJsSandboxIsolateCallback.JS_EVALUATION_ERROR, error);
-                        } catch (RemoteException e) {
-                            Log.e(TAG, "reporting error failed", e);
+
+                        @Override
+                        public void onError(int errorType, String error) {
+                            try {
+                                callback.reportError(errorType, error);
+                            } catch (RemoteException e) {
+                                Log.e(TAG, "reporting error failed", e);
+                            }
                         }
                     });
         }
@@ -111,7 +111,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         void destroyNative(long nativeJsSandboxIsolate, JsSandboxIsolate caller);
 
         boolean evaluateJavascript(long nativeJsSandboxIsolate, JsSandboxIsolate caller,
-                String script, Callback<String> successCallback, Callback<String> failureCallback);
+                String script, JsSandboxIsolateCallback callback);
 
         boolean provideNamedData(long nativeJsSandboxIsolate, JsSandboxIsolate caller, String name,
                 int fd, int length);

@@ -38,20 +38,18 @@ class ObjectTemplate;
 namespace android_webview {
 
 class FdWithLength;
+class JsSandboxIsolateCallback;
 
 class JsSandboxIsolate {
  public:
   explicit JsSandboxIsolate(jlong max_heap_size_bytes = 0);
   ~JsSandboxIsolate();
 
-  using FinishedCallback = base::OnceCallback<void(const std::string&)>;
-
   jboolean EvaluateJavascript(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jcode,
-      const base::android::JavaParamRef<jobject>& j_success_callback,
-      const base::android::JavaParamRef<jobject>& j_failure_callback);
+      const base::android::JavaParamRef<jobject>& j_callback);
   void DestroyNative(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
   jboolean ProvideNamedData(JNIEnv* env,
@@ -63,19 +61,19 @@ class JsSandboxIsolate {
  private:
   void DeleteSelf();
   void InitializeIsolateOnThread();
-  void EvaluateJavascriptOnThread(const std::string code,
-                                  FinishedCallback success_callback,
-                                  FinishedCallback failure_callback);
-  void PromiseRejectCallback(FinishedCallback error_callback,
+  void EvaluateJavascriptOnThread(
+      const std::string code,
+      std::unique_ptr<JsSandboxIsolateCallback> callback);
+  void PromiseRejectCallback(std::unique_ptr<JsSandboxIsolateCallback> callback,
                              gin::Arguments* args);
 
   void TerminateAndDestroy();
   void DestroyWhenPossible();
   void NotifyInitComplete();
   void CreateCancelableTaskTracker();
-  void PostEvaluationToIsolateThread(const std::string code,
-                                     FinishedCallback success_callback,
-                                     FinishedCallback error_callback);
+  void PostEvaluationToIsolateThread(
+      const std::string code,
+      std::unique_ptr<JsSandboxIsolateCallback> callback);
   void ConvertPromiseToArrayBufferInThreadPool(base::ScopedFD fd,
                                                ssize_t length,
                                                std::string name);
@@ -93,6 +91,14 @@ class JsSandboxIsolate {
   void ConsumeNamedDataAsArrayBuffer(gin::Arguments* args);
   v8::Local<v8::ObjectTemplate> CreateAndroidNamespaceTemplate(
       v8::Isolate* isolate);
+
+  // Must only be used from isolate thread
+  [[noreturn]] static size_t NearHeapLimitCallback(void* data,
+                                                   size_t current_heap_limit,
+                                                   size_t initial_heap_limit);
+  // Must only be used from isolate thread
+  [[noreturn]] void MemoryLimitExceeded();
+  [[noreturn]] void FreezeThread();
 
   // Used as a control sequence to add ordering to binder threadpool requests.
   scoped_refptr<base::SequencedTaskRunner> control_task_runner_;
@@ -116,7 +122,19 @@ class JsSandboxIsolate {
   base::Lock named_fd_lock_;
   std::unordered_map<std::string, FdWithLength> named_fd_
       GUARDED_BY(named_fd_lock_);
-  jlong isolate_max_heap_size_bytes_;
+  // V8 heap size limit. Must be non-negative.
+  //
+  // 0 indicates no explicit limit (but use the default V8 limits).
+  const jlong isolate_max_heap_size_bytes_;
+
+  // The callback associated with the current evaluation, if any. Used for
+  // signaling errors from V8 callbacks.
+  //
+  // This can be nullptr outside of active evaluation, including when the result
+  // of an evaluation is a JS promise which is pending resolution/rejection.
+  //
+  // This pointer must only be accessed from the isolate thread.
+  JsSandboxIsolateCallback* current_callback_;
 };
 }  // namespace android_webview
 

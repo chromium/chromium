@@ -6,6 +6,8 @@ source_set("js_sandbox") {
   sources = [
     "js_sandbox_isolate.cc",
     "js_sandbox_isolate.h",
+    "js_sandbox_isolate_callback.cc",
+    "js_sandbox_isolate_callback.h",
   ]
 
   deps = [

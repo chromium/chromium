@@ -10,14 +10,18 @@
 #include <string>
 
 #include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
+#include "android_webview/js_sandbox/service/js_sandbox_isolate_callback.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -34,6 +38,7 @@
 #include "js_sandbox_isolate.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-statistics.h"
 #include "v8/include/v8-template.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -113,6 +118,7 @@ void WasmAsyncResolvePromiseCallback(v8::Isolate* isolate,
     CHECK(resolver->Reject(context, compilation_result).FromJust());
   }
 }
+
 }  // namespace
 
 namespace android_webview {
@@ -133,8 +139,9 @@ FdWithLength::FdWithLength(int fd_input, ssize_t len) {
   length = len;
 }
 
-JsSandboxIsolate::JsSandboxIsolate(jlong max_heap_size_bytes) {
-  isolate_max_heap_size_bytes_ = max_heap_size_bytes;
+JsSandboxIsolate::JsSandboxIsolate(jlong max_heap_size_bytes)
+    : isolate_max_heap_size_bytes_(max_heap_size_bytes) {
+  CHECK_GE(isolate_max_heap_size_bytes_, 0);
   control_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
   isolate_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_BLOCKING,
@@ -163,19 +170,16 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jcode,
-    const base::android::JavaParamRef<jobject>& j_success_callback,
-    const base::android::JavaParamRef<jobject>& j_failure_callback) {
+    const base::android::JavaParamRef<jobject>& j_callback) {
   std::string code = ConvertJavaStringToUTF8(env, jcode);
+  std::unique_ptr<JsSandboxIsolateCallback> callback =
+      std::make_unique<JsSandboxIsolateCallback>(
+          base::android::ScopedJavaGlobalRef(j_callback));
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,
                      base::Unretained(this), std::move(code),
-                     base::BindOnce(&base::android::RunStringCallbackAndroid,
-                                    base::android::ScopedJavaGlobalRef<jobject>(
-                                        j_success_callback)),
-                     base::BindOnce(&base::android::RunStringCallbackAndroid,
-                                    base::android::ScopedJavaGlobalRef<jobject>(
-                                        j_failure_callback))));
+                     std::move(callback)));
   return true;
 }
 
@@ -205,13 +209,12 @@ jboolean JsSandboxIsolate::ProvideNamedData(
 // Called from control sequence.
 void JsSandboxIsolate::PostEvaluationToIsolateThread(
     const std::string code,
-    FinishedCallback success_callback,
-    FinishedCallback error_callback) {
+    std::unique_ptr<JsSandboxIsolateCallback> callback) {
   cancelable_task_tracker_->PostTask(
       isolate_task_runner_.get(), FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
                      base::Unretained(this), std::move(code),
-                     std::move(success_callback), std::move(error_callback)));
+                     std::move(callback)));
 }
 
 // Called from control sequence.
@@ -317,6 +320,9 @@ v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
 }
 
 // Called from isolate thread.
+//
+// Note that this will never be called if the isolate has "crashed" due to OOM
+// and frozen its isolate thread.
 void JsSandboxIsolate::DeleteSelf() {
   delete this;
 }
@@ -337,6 +343,9 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
   v8::Isolate::Scope isolate_scope(isolate);
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
   isolate->SetWasmAsyncResolvePromiseCallback(WasmAsyncResolvePromiseCallback);
+
+  isolate->AddNearHeapLimitCallback(&JsSandboxIsolate::NearHeapLimitCallback,
+                                    this);
   v8::HandleScope handle_scope(isolate);
 
   v8::Local<v8::ObjectTemplate> android_template =
@@ -355,8 +364,10 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
 // Called from isolate thread.
 void JsSandboxIsolate::EvaluateJavascriptOnThread(
     const std::string code,
-    FinishedCallback success_callback,
-    FinishedCallback error_callback) {
+    std::unique_ptr<JsSandboxIsolateCallback> callback) {
+  base::AutoReset<JsSandboxIsolateCallback*> callback_autoreset(
+      &current_callback_, callback.get());
+
   v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
@@ -374,7 +385,7 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   }
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script)) {
-    std::move(error_callback).Run(compile_error);
+    std::move(callback)->ReportJsEvaluationError(compile_error);
     return;
   }
 
@@ -397,26 +408,27 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
       // directly.
       if (promise->State() == v8::Promise::PromiseState::kFulfilled) {
         std::string result = gin::V8ToString(v8_isolate, promise->Result());
-        std::move(success_callback).Run(result);
+        std::move(callback)->ReportResult(result);
         return;
       }
       if (promise->State() == v8::Promise::PromiseState::kRejected) {
         v8::Local<v8::Message> message = v8::Exception::CreateMessage(
             isolate_holder_->isolate(), promise->Result());
         std::string error_message = GetStackTrace(message, v8_isolate);
-        std::move(error_callback).Run(error_message);
+        std::move(callback)->ReportJsEvaluationError(error_message);
         return;
       }
       v8::Local<v8::Function> fulfill_fun =
           gin::CreateFunctionTemplate(
               v8_isolate,
               base::BindRepeating(
-                  [](FinishedCallback success_callback, gin::Arguments* args) {
+                  [](std::unique_ptr<JsSandboxIsolateCallback> callback,
+                     gin::Arguments* args) {
                     std::string output;
                     args->GetNext(&output);
-                    std::move(success_callback).Run(output);
+                    std::move(callback)->ReportResult(output);
                   },
-                  base::Passed(std::move(success_callback))))
+                  base::Passed(std::move(callback))))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
       v8::Local<v8::Function> reject_fun =
@@ -424,7 +436,7 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
               v8_isolate,
               base::BindRepeating(&JsSandboxIsolate::PromiseRejectCallback,
                                   base::Unretained(this),
-                                  base::Passed(std::move(error_callback))))
+                                  base::Passed(std::move(callback))))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
 
@@ -432,22 +444,23 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
           .ToLocalChecked();
     } else {
       std::string result = gin::V8ToString(v8_isolate, value);
-      std::move(success_callback).Run(result);
+      std::move(callback)->ReportResult(result);
     }
   } else {
-    std::move(error_callback).Run(run_error);
+    std::move(callback)->ReportJsEvaluationError(run_error);
   }
 }
 
-void JsSandboxIsolate::PromiseRejectCallback(FinishedCallback error_callback,
-                                             gin::Arguments* args) {
+void JsSandboxIsolate::PromiseRejectCallback(
+    std::unique_ptr<JsSandboxIsolateCallback> callback,
+    gin::Arguments* args) {
   v8::Local<v8::Value> value;
   args->GetNext(&value);
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate_holder_->isolate(), value);
   std::string error_message =
       GetStackTrace(message, isolate_holder_->isolate());
-  std::move(error_callback).Run(error_message);
+  std::move(callback)->ReportJsEvaluationError(error_message);
 }
 
 // Called from isolate thread.
@@ -527,6 +540,50 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
                      base::Unretained(this), std::move(fd), length,
                      std::move(name)));
   args->Return(promise);
+}
+
+// Called from isolate thread.
+[[noreturn]] size_t JsSandboxIsolate::NearHeapLimitCallback(
+    void* data,
+    size_t /*current_heap_limit*/,
+    size_t /*initial_heap_limit*/) {
+  android_webview::JsSandboxIsolate* js_sandbox_isolate =
+      static_cast<android_webview::JsSandboxIsolate*>(data);
+  js_sandbox_isolate->MemoryLimitExceeded();
+}
+
+// Called from isolate thread.
+[[noreturn]] void JsSandboxIsolate::MemoryLimitExceeded() {
+  LOG(ERROR) << "Isolate has OOMed";
+  // TODO(ashleynewson): An isolate could run out of memory outside of an
+  // evaluation when processing asynchronous code. We should add a crash
+  // signalling mechanism which doesn't rely on us having a callback for a
+  // currently running evaluation.
+  CHECK(current_callback_)
+      << "Isolate ran out of memory outside of an evaluation.";
+  uint64_t memory_limit = static_cast<uint64_t>(isolate_max_heap_size_bytes_);
+  v8::HeapStatistics heap_statistics;
+  isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
+  uint64_t heap_usage = heap_statistics.used_heap_size();
+  current_callback_->ReportMemoryLimitExceededError(memory_limit, heap_usage);
+  FreezeThread();
+}
+
+// Halt thread until process dies.
+[[noreturn]] void JsSandboxIsolate::FreezeThread() {
+  // There is no well-defined way to fully terminate a thread prematurely, so we
+  // idle the thread forever.
+  //
+  // TODO(ashleynewson): In future, we may want to look into ways to cleanup or
+  // even properly terminate the thread if language or V8 features allow for it,
+  // as we currently hold onto (essentially leaking) all resources this isolate
+  // has accumulated up to this point. C++20's <stop_token> (not permitted in
+  // Chromium at time of writing) may contribute to such a future solution.
+
+  base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+  base::WaitableEvent().Wait();
+  // Unreachable. Make sure the compiler understands that.
+  base::ImmediateCrash();
 }
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
