@@ -66,7 +66,7 @@ class DictionaryValueUpdate {
   void SetString(base::StringPiece path, const std::u16string& in_value);
   std::unique_ptr<DictionaryValueUpdate> SetDictionary(
       base::StringPiece path,
-      std::unique_ptr<base::DictionaryValue> in_value);
+      base::Value::Dict in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths. Returns a pointer to the set `value`.
@@ -77,7 +77,7 @@ class DictionaryValueUpdate {
   // Convenience forms of SetWithoutPathExpansion().
   std::unique_ptr<DictionaryValueUpdate> SetDictionaryWithoutPathExpansion(
       base::StringPiece path,
-      std::unique_ptr<base::DictionaryValue> in_value);
+      base::Value::Dict in_value);
 
   // These are convenience forms of Get().  The value will be retrieved
   // and the return value will be true if the path is valid and the value at

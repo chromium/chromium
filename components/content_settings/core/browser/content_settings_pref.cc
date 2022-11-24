@@ -383,7 +383,7 @@ void ContentSettingsPref::UpdatePref(
     if (!found && !value.is_none()) {
       settings_dictionary =
           pattern_pairs_settings->SetDictionaryWithoutPathExpansion(
-              pattern_str, std::make_unique<base::DictionaryValue>());
+              pattern_str, base::Value::Dict());
     }
 
     if (settings_dictionary) {

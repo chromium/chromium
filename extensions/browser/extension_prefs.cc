@@ -310,8 +310,7 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
     std::unique_ptr<prefs::DictionaryValueUpdate> extension;
     if (!dict->GetDictionary(extension_id_, &extension)) {
       // Extension pref does not exist, create it.
-      extension = dict->SetDictionary(
-          extension_id_, std::make_unique<base::DictionaryValue>());
+      extension = dict->SetDictionary(extension_id_, base::Value::Dict());
     }
     return extension;
   }
@@ -358,7 +357,7 @@ ExtensionPrefs::ScopedDictionaryUpdate::Create() {
   if (dict->GetDictionary(key_, &key_value))
     return key_value;
 
-  return dict->SetDictionary(key_, std::make_unique<base::DictionaryValue>());
+  return dict->SetDictionary(key_, base::Value::Dict());
 }
 
 ExtensionPrefs::ScopedListUpdate::ScopedListUpdate(
@@ -2382,18 +2381,19 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   if (ruleset_install_prefs.empty()) {
     extension_dict->Remove(kDNRStaticRulesetPref);
   } else {
-    auto ruleset_prefs = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict ruleset_prefs;
     for (const declarative_net_request::RulesetInstallPref& install_pref :
          ruleset_install_prefs) {
       std::string id_key =
           base::NumberToString(install_pref.ruleset_id.value());
-      DCHECK(!ruleset_prefs->FindKey(id_key));
-      auto* ruleset_dict = ruleset_prefs->SetKey(
-          id_key, base::Value(base::Value::Type::DICTIONARY));
-      if (install_pref.checksum)
-        ruleset_dict->SetIntKey(kDNRChecksumKey, *install_pref.checksum);
 
-      ruleset_dict->SetBoolKey(kDNRIgnoreRulesetKey, install_pref.ignored);
+      base::Value::Dict ruleset_dict;
+      ruleset_dict.Set(kDNRIgnoreRulesetKey, install_pref.ignored);
+      if (install_pref.checksum)
+        ruleset_dict.Set(kDNRChecksumKey, *install_pref.checksum);
+
+      DCHECK(!ruleset_prefs.Find(id_key));
+      ruleset_prefs.Set(id_key, std::move(ruleset_dict));
     }
 
     extension_dict->SetDictionary(kDNRStaticRulesetPref,
