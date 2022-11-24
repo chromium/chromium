@@ -325,24 +325,6 @@ const char kAutofillAutoTriggerManualFallbackForCardsDescription[] =
     "When enabled, manual fallback will be auto-triggered on form interaction "
     "in the case where autofill failed to fill a credit card form accurately.";
 
-const char kAutofillCenterAligngedSuggestionsName[] =
-    "Center-aligned Autofill suggestions.";
-const char kAutofillCenterAligngedSuggestionsDescription[] =
-    "When enabled, the Autofill suggestion popup will be aligned to the center "
-    "of the initiating field and not to its border.";
-
-const char kAutofillVisualImprovementsForSuggestionUiName[] =
-    "Visual improvements for the Autofill and Password Manager suggestion UI.";
-const char kAutofillVisualImprovementsForSuggestionUiDescription[] =
-    "Non function changes that visually improve the suggestion UI used for "
-    "addresses, passswords and credit cards.";
-
-const char kAutofillTypeSpecificPopupWidthName[] =
-    "Type-specific width limits for the Autofill popup";
-const char kAutofillTypeSpecificPopupWidthDescription[] =
-    "Controls if different width limits are used for the popup that provides "
-    "Autofill suggestions, depending on the type of data that is filled.";
-
 const char kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[] =
     "Enable parsing of the GetDetailsForEnrollResponseDetails in the "
     "UploadCardResponseDetails";

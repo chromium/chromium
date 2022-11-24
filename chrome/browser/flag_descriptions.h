@@ -192,15 +192,6 @@ extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsName[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 
-extern const char kAutofillCenterAligngedSuggestionsName[];
-extern const char kAutofillCenterAligngedSuggestionsDescription[];
-
-extern const char kAutofillVisualImprovementsForSuggestionUiName[];
-extern const char kAutofillVisualImprovementsForSuggestionUiDescription[];
-
-extern const char kAutofillTypeSpecificPopupWidthName[];
-extern const char kAutofillTypeSpecificPopupWidthDescription[];
-
 extern const char
     kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[];
 extern const char
