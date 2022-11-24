@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/non_client_frame_view_base.h"
 
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -80,9 +81,12 @@ NonClientFrameViewBase::~NonClientFrameViewBase() = default;
 
 int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   // The frame should not occupy the window area when it's in fullscreen,
-  // not visible or disabled.
+  // not visible, disabled, in immersive mode or in tablet mode.
+  // TODO(crbug.com/1385920): Support NonClientFrameViewAshImmersiveHelper on
+  // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
   if (frame_->IsFullscreen() || !GetFrameEnabled() ||
-      header_view_->in_immersive_mode()) {
+      header_view_->in_immersive_mode() ||
+      (chromeos::TabletState::Get()->InTabletMode() && frame_->IsMaximized())) {
     return 0;
   }
   return header_view_->GetPreferredHeight();
