@@ -56,9 +56,10 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //     Message queue. i.e. when:
   //      a. The pump is about to wakeup from idle.
   //      b. The pump is about to enter a nested native loop and a
-  //         ScopedNestableTaskAllower was instantiated to allow application
-  //         tasks to execute in that nested loop (ScopedNestableTaskAllower
-  //         invokes ScheduleWork()).
+  //         ScopedAllowApplicationTasksInNativeNestedLoop was instantiated to
+  //         allow application tasks to execute in that nested loop
+  //         (ScopedAllowApplicationTasksInNativeNestedLoop invokes
+  //         ScheduleWork()).
   //      c. While in a native (nested) loop : HandleWorkMessage() =>
   //         ProcessPumpReplacementMessage() invokes ScheduleWork() before
   //         processing a native message to guarantee this pump will get another
@@ -66,7 +67,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //         nested loop. This is different from (b.) because we're not yet
   //         processing an application task at the current run level and
   //         therefore are expected to keep pumping application tasks without
-  //         necessitating a ScopedNestableTaskAllower.
+  //         necessitating a ScopedAllowApplicationTasksInNativeNestedLoop.
   //
   //   * MessagePumpforIO: there's a dummy IO completion item with |this| as an
   //     lpCompletionKey in the queue which is about to wakeup

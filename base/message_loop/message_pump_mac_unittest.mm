@@ -37,7 +37,7 @@ namespace {
 // This function posts |task| and runs the given |mode|.
 void RunTaskInMode(CFRunLoopMode mode, OnceClosure task) {
   // Since this task is "ours" rather than a system task, allow nesting.
-  CurrentThread::ScopedNestableTaskAllower allow;
+  CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   CancelableOnceClosure cancelable(std::move(task));
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, cancelable.callback());
   while (CFRunLoopRunInMode(mode, 0, true) == kCFRunLoopRunHandledSource)
@@ -132,7 +132,7 @@ TEST(MessagePumpMacTest, QuitWithModalWindow) {
   RunLoop run_loop;
   ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&] {
-        CurrentThread::ScopedNestableTaskAllower allow;
+        CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
         ScopedPumpMessagesInPrivateModes pump_private;
         [NSApp runModalForWindow:window];
       }));

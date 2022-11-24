@@ -473,7 +473,7 @@ void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {
 
   // Run a nested, straight GLib message loop.
   {
-    CurrentThread::ScopedNestableTaskAllower allow_nestable_tasks;
+    CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
     runner->RunGLib();
   }
 
@@ -505,7 +505,7 @@ void TestGtkLoopInternal(EventInjector* injector, OnceClosure done) {
 
   // Run a nested, straight Gtk message loop.
   {
-    CurrentThread::ScopedNestableTaskAllower allow_nestable_tasks;
+    CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
     runner->RunLoop();
   }
 

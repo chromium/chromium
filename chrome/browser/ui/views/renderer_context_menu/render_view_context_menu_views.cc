@@ -393,7 +393,7 @@ void RenderViewContextMenuViews::Show() {
   }
   // Enable recursive tasks on the message loop so we can get updates while
   // the context menu is being displayed.
-  base::CurrentThread::ScopedNestableTaskAllower allow;
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   RunMenuAt(top_level_widget, screen_point, params().source_type);
 
   auto* submenu_view = static_cast<ToolkitDelegateViews*>(toolkit_delegate())

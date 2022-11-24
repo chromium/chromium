@@ -276,7 +276,7 @@ current virtual thread. On threads with multiple task queues (e.g.
 BrowserThread::UI) this can be a different queue than the one the current task
 belongs to. The "current" task runner is intentionally not exposed via a static
 getter. Either you know it already and can post to it directly or you don't and
-the only sensible destination is the default queue. See https://bit.ly/3JvCLsX 
+the only sensible destination is the default queue. See https://bit.ly/3JvCLsX
 for detailed discussion.
 
 ## Using Sequences Instead of Locks
@@ -903,7 +903,7 @@ with dialogs (DialogBox), common dialogs (GetOpenFileName), OLE functions
 Sample workaround when inner task processing is needed:
   HRESULT hr;
   {
-    CurrentThread::ScopedNestableTaskAllower allow;
+    CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
     hr = DoDragDrop(...); // Implicitly runs a modal message loop.
   }
   // Process |hr| (the result returned by DoDragDrop()).
@@ -911,7 +911,7 @@ Sample workaround when inner task processing is needed:
 
 Please be SURE your task is reentrant (nestable) and all global variables
 are stable and accessible before before using
-CurrentThread::ScopedNestableTaskAllower.
+CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop.
 
 ## APIs for general use
 

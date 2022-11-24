@@ -54,7 +54,7 @@ FirstRunShowBridge::FirstRunShowBridge(FirstRunDialogController* controller)
 void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
   // Proceeding past the modal dialog requires user interaction. Allow nested
   // tasks to run so that signal handlers operate correctly.
-  base::CurrentThread::ScopedNestableTaskAllower allow_nested;
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   [controller_ show];
   std::move(quit_closure).Run();
 }

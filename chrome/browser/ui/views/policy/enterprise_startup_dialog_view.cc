@@ -233,7 +233,7 @@ void EnterpriseStartupDialogView::RemoveWidgetObserver(
 
 void EnterpriseStartupDialogView::StartModalDialog() {
 #if BUILDFLAG(IS_MAC)
-  base::CurrentThread::ScopedNestableTaskAllower allow_nested;
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   StartModal(GetWidget()->GetNativeWindow());
 #endif
 }

@@ -309,7 +309,7 @@ void DoDragImpl(std::unique_ptr<ui::OSExchangeData> drag_data,
                 gfx::Point point,
                 int operation) {
   // Allow nested run loop so we get DnD events as we drag this around.
-  base::CurrentThread::ScopedNestableTaskAllower nestable_task_allower;
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
 
   views::Widget* widget = views::Widget::GetWidgetForNativeView(native_view);
   if (widget) {

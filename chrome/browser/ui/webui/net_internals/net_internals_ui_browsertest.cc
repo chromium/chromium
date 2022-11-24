@@ -276,8 +276,6 @@ void NetInternalsTest::MessageHandler::RegisterMessage(
 void NetInternalsTest::MessageHandler::HandleMessage(
     const content::WebUI::MessageCallback& handler,
     const base::Value::List& data) {
-  // The handler might run a nested loop to wait for something.
-  base::CurrentThread::ScopedNestableTaskAllower nestable_task_allower;
   handler.Run(data);
 }
 

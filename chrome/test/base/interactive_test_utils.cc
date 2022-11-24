@@ -132,7 +132,7 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
          "interactive tests.";
 #endif
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool result = ui_controls::SendKeyPressNotifyWhenDone(
       window, key, control, shift, alt, command, run_loop.QuitClosure());
 #if BUILDFLAG(IS_WIN)
@@ -149,7 +149,6 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
   // Run the message loop. It'll stop running when either the key was received
   // or the test timed out (in which case testing::Test::HasFatalFailure should
   // be set).
-  base::CurrentThread::ScopedNestableTaskAllower allow;
   run_loop.Run();
 
   return !testing::Test::HasFatalFailure();

@@ -163,7 +163,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
       screen->GetDisplayNearestView(view).device_scale_factor());
   {
     // Enable nested tasks during DnD, while |DragDownload()| blocks.
-    base::CurrentThread::ScopedNestableTaskAllower allow;
+    base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
     DragDownloadItem(file, icon, view);
   }
 }

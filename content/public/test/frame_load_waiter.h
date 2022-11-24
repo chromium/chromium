@@ -20,9 +20,6 @@ class FrameLoadWaiter : public RenderFrameObserver {
   FrameLoadWaiter(const FrameLoadWaiter&) = delete;
   FrameLoadWaiter& operator=(const FrameLoadWaiter&) = delete;
 
-  // Note: single-process browser tests need to enable nestable tasks by
-  // instantiating a base::CurrentThread::ScopedNestableTaskAllower or this
-  // method will never return.
   void Wait();
 
  private:
