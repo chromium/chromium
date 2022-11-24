@@ -3411,10 +3411,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="2022-11-30">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <owner>midi-dev@chromium.org</owner>
+  <owner>mjwilson@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     Reports whether any data was sent or received by a MidiManager. Recorded
     once per MidiManager instantiation, upon destruction. MidiManager is
@@ -3426,10 +3426,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="2022-11-30">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <owner>midi-dev@chromium.org</owner>
+  <owner>mjwilson@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     Reports sysex message size.
 
@@ -3437,10 +3437,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2022-11-30">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <owner>midi-dev@chromium.org</owner>
+  <owner>mjwilson@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     The MidiManager instance use count, but this is not intended to understand
     the real API usage because this can be counted by feature scanning scripts
