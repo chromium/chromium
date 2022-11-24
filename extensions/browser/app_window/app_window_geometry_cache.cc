@@ -212,46 +212,36 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.
     const std::string& window_id = item.first;
-    auto cached_window = extension_data.find(window_id);
-    if (cached_window == extension_data.end()) {
-      const base::DictionaryValue* stored_window;
-      if (item.second.GetAsDictionary(&stored_window)) {
-        WindowData& window_data = extension_data[window_id];
+    if (extension_data.find(window_id) != extension_data.end())
+      continue;
 
-        if (absl::optional<int> i = stored_window->FindIntKey("x"))
-          window_data.bounds.set_x(*i);
-        if (absl::optional<int> i = stored_window->FindIntKey("y"))
-          window_data.bounds.set_y(*i);
-        if (absl::optional<int> i = stored_window->FindIntKey("w"))
-          window_data.bounds.set_width(*i);
-        if (absl::optional<int> i = stored_window->FindIntKey("h"))
-          window_data.bounds.set_height(*i);
-        if (absl::optional<int> i =
-                stored_window->FindIntKey("screen_bounds_x")) {
-          window_data.screen_bounds.set_x(*i);
-        }
-        if (absl::optional<int> i =
-                stored_window->FindIntKey("screen_bounds_y")) {
-          window_data.screen_bounds.set_y(*i);
-        }
-        if (absl::optional<int> i =
-                stored_window->FindIntKey("screen_bounds_w")) {
-          window_data.screen_bounds.set_width(*i);
-        }
-        if (absl::optional<int> i =
-                stored_window->FindIntKey("screen_bounds_h")) {
-          window_data.screen_bounds.set_height(*i);
-        }
-        if (absl::optional<int> i = stored_window->FindIntKey("state")) {
-          window_data.window_state = static_cast<ui::WindowShowState>(*i);
-        }
-        if (const std::string* ts_as_string =
-                stored_window->FindStringKey("ts")) {
-          int64_t ts;
-          if (base::StringToInt64(*ts_as_string, &ts)) {
-            window_data.last_change = base::Time::FromInternalValue(ts);
-          }
-        }
+    const base::Value::Dict* stored_window = item.second.GetIfDict();
+    if (!stored_window)
+      continue;
+
+    WindowData& window_data = extension_data[window_id];
+    if (absl::optional<int> i = stored_window->FindInt("x"))
+      window_data.bounds.set_x(*i);
+    if (absl::optional<int> i = stored_window->FindInt("y"))
+      window_data.bounds.set_y(*i);
+    if (absl::optional<int> i = stored_window->FindInt("w"))
+      window_data.bounds.set_width(*i);
+    if (absl::optional<int> i = stored_window->FindInt("h"))
+      window_data.bounds.set_height(*i);
+    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_x"))
+      window_data.screen_bounds.set_x(*i);
+    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_y"))
+      window_data.screen_bounds.set_y(*i);
+    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_w"))
+      window_data.screen_bounds.set_width(*i);
+    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_h"))
+      window_data.screen_bounds.set_height(*i);
+    if (absl::optional<int> i = stored_window->FindInt("state"))
+      window_data.window_state = static_cast<ui::WindowShowState>(*i);
+    if (const std::string* ts_as_string = stored_window->FindString("ts")) {
+      int64_t ts;
+      if (base::StringToInt64(*ts_as_string, &ts)) {
+        window_data.last_change = base::Time::FromInternalValue(ts);
       }
     }
   }

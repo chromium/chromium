@@ -12,13 +12,9 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 namespace extensions {
 class APITypeReferenceMap;
@@ -46,6 +42,7 @@ class ArgumentSpec {
   // TODO(devlin): We should strongly think about generating these instead of
   // populating them at runtime.
   explicit ArgumentSpec(const base::Value& value);
+  explicit ArgumentSpec(const base::Value::Dict& dict);
   explicit ArgumentSpec(ArgumentType type);
 
   ArgumentSpec(const ArgumentSpec&) = delete;
@@ -116,7 +113,7 @@ class ArgumentSpec {
 
  private:
   // Initializes this object according to |type_string| and |dict|.
-  void InitializeType(const base::DictionaryValue* dict);
+  void InitializeType(const base::Value::Dict& dict);
 
   // Conversion functions. These should only be used if the spec is of the given
   // type (otherwise, they will DCHECK).

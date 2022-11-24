@@ -55,10 +55,8 @@ base::Value LoadManifestFile(const base::FilePath& manifest_path,
   // Calling LocalizeExtension at this point mirrors file_util::LoadExtension.
   if (manifest_path.value().find(FILE_PATH_LITERAL("localized")) !=
       std::string::npos) {
-    base::DictionaryValue* manifest_dictionary = nullptr;
-    manifest->GetAsDictionary(&manifest_dictionary);
     extension_l10n_util::LocalizeExtension(
-        extension_path, &manifest_dictionary->GetDict(),
+        extension_path, manifest->GetIfDict(),
         extension_l10n_util::GzippedMessagesPermission::kDisallow, error);
   }
 
@@ -128,12 +126,9 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
   const base::Value& value = manifest.GetManifest(test_data_dir, error);
   if (value.is_none())
     return nullptr;
-  DCHECK(value.is_dict());
-  const base::DictionaryValue* dictionary_manifest = nullptr;
-  value.GetAsDictionary(&dictionary_manifest);
   return Extension::Create(test_data_dir.DirName(), location,
-                           *dictionary_manifest, flags, GetTestExtensionID(),
-                           error);
+                           base::DictAdapterForMigration(value.GetDict()),
+                           flags, GetTestExtensionID(), error);
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(

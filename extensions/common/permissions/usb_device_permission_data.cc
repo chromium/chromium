@@ -28,10 +28,10 @@ const char kInterfaceIdKey[] = "interfaceId";
 const char kInterfaceClassKey[] = "interfaceClass";
 
 bool ExtractFromDict(const std::string& key,
-                     const base::DictionaryValue* dict_value,
+                     const base::Value::Dict* dict_value,
                      int max,
                      int* value) {
-  absl::optional<int> temp = dict_value->FindIntKey(key);
+  absl::optional<int> temp = dict_value->FindInt(key);
   if (!temp) {
     *value = UsbDevicePermissionData::SPECIAL_VALUE_ANY;
     return true;
@@ -97,8 +97,8 @@ bool UsbDevicePermissionData::FromValue(const base::Value* value) {
   if (!value)
     return false;
 
-  const base::DictionaryValue* dict_value;
-  if (!value->GetAsDictionary(&dict_value))
+  const base::Value::Dict* dict_value = value->GetIfDict();
+  if (!dict_value)
     return false;
 
   const int kMaxId = std::numeric_limits<uint16_t>::max();

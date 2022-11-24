@@ -350,8 +350,8 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
     return;
   }
 
-  const base::DictionaryValue* parsed_manifest;
-  if (!result->GetAsDictionary(&parsed_manifest)) {
+  const base::Value::Dict* parsed_manifest = result->GetIfDict();
+  if (!parsed_manifest) {
     Respond(Error(keys::kManifestParseError));
     Release();
     return;
@@ -360,7 +360,8 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
   std::string error;
   scoped_refptr<Extension> extension =
       Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
-                        *parsed_manifest, Extension::NO_FLAGS, &error);
+                        base::DictAdapterForMigration(*parsed_manifest),
+                        Extension::NO_FLAGS, &error);
   // TODO(lazyboy): Do we need to use |error|?
   if (!extension) {
     Respond(Error(keys::kExtensionCreateError));

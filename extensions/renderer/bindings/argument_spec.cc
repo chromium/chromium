@@ -77,108 +77,105 @@ bool CheckFundamentalBounds(T value,
 
 }  // namespace
 
-ArgumentSpec::ArgumentSpec(const base::Value& value) {
-  const base::DictionaryValue* dict = nullptr;
-  CHECK(value.GetAsDictionary(&dict));
-  optional_ = dict->FindBoolKey("optional").value_or(optional_);
-  dict->GetString("name", &name_);
+ArgumentSpec::ArgumentSpec(const base::Value& value)
+    : ArgumentSpec(value.GetDict()) {}
+
+ArgumentSpec::ArgumentSpec(const base::Value::Dict& dict) {
+  optional_ = dict.FindBool("optional").value_or(optional_);
+  if (const std::string* name = dict.FindString("name"))
+    name_ = *name;
 
   InitializeType(dict);
 }
 
 ArgumentSpec::ArgumentSpec(ArgumentType type) : type_(type) {}
 
-void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
-  std::string ref_string;
-  if (dict->GetString("$ref", &ref_string)) {
-    ref_ = std::move(ref_string);
+void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
+  if (const std::string* ref_string = dict.FindString("$ref")) {
+    ref_ = *ref_string;
     type_ = ArgumentType::REF;
     return;
   }
 
-  {
-    const base::ListValue* choices = nullptr;
-    if (dict->GetList("choices", &choices)) {
-      DCHECK(!choices->GetList().empty());
-      type_ = ArgumentType::CHOICES;
-      choices_.reserve(choices->GetList().size());
-      for (const auto& choice : choices->GetList())
-        choices_.push_back(std::make_unique<ArgumentSpec>(choice));
-      return;
-    }
+  if (const base::Value::List* choices = dict.FindList("choices")) {
+    DCHECK(!choices->empty());
+    type_ = ArgumentType::CHOICES;
+    choices_.reserve(choices->size());
+    for (const auto& choice : *choices)
+      choices_.push_back(std::make_unique<ArgumentSpec>(choice));
+    return;
   }
 
-  std::string type_string;
-  CHECK(dict->GetString("type", &type_string));
-  if (type_string == "integer")
+  const std::string* type_string = dict.FindString("type");
+  CHECK(type_string);
+  if (*type_string == "integer")
     type_ = ArgumentType::INTEGER;
-  else if (type_string == "number")
+  else if (*type_string == "number")
     type_ = ArgumentType::DOUBLE;
-  else if (type_string == "object")
+  else if (*type_string == "object")
     type_ = ArgumentType::OBJECT;
-  else if (type_string == "array")
+  else if (*type_string == "array")
     type_ = ArgumentType::LIST;
-  else if (type_string == "boolean")
+  else if (*type_string == "boolean")
     type_ = ArgumentType::BOOLEAN;
-  else if (type_string == "string")
+  else if (*type_string == "string")
     type_ = ArgumentType::STRING;
-  else if (type_string == "binary")
+  else if (*type_string == "binary")
     type_ = ArgumentType::BINARY;
-  else if (type_string == "any")
+  else if (*type_string == "any")
     type_ = ArgumentType::ANY;
-  else if (type_string == "function")
+  else if (*type_string == "function")
     type_ = ArgumentType::FUNCTION;
   else
     NOTREACHED();
 
-  if (absl::optional<int> minimum = dict->FindIntKey("minimum"))
+  if (absl::optional<int> minimum = dict.FindInt("minimum"))
     minimum_ = *minimum;
-  if (absl::optional<int> maximum = dict->FindIntKey("maximum"))
+  if (absl::optional<int> maximum = dict.FindInt("maximum"))
     maximum_ = *maximum;
 
-  absl::optional<int> min_length = dict->FindIntKey("minLength");
+  absl::optional<int> min_length = dict.FindInt("minLength");
   if (!min_length)
-    min_length = dict->FindIntKey("minItems");
+    min_length = dict.FindInt("minItems");
   if (min_length) {
     DCHECK_GE(*min_length, 0);
     min_length_ = *min_length;
   }
 
-  absl::optional<int> max_length = dict->FindIntKey("maxLength");
+  absl::optional<int> max_length = dict.FindInt("maxLength");
   if (!max_length)
-    max_length = dict->FindIntKey("maxItems");
+    max_length = dict.FindInt("maxItems");
   if (max_length) {
     DCHECK_GE(*max_length, 0);
     max_length_ = *max_length;
   }
 
   if (type_ == ArgumentType::OBJECT) {
-    const base::DictionaryValue* properties_value = nullptr;
-    if (dict->GetDictionary("properties", &properties_value)) {
-      for (const auto item : properties_value->GetDict()) {
+    if (const base::Value::Dict* properties_value =
+            dict.FindDict("properties")) {
+      for (const auto item : *properties_value) {
         properties_[item.first] = std::make_unique<ArgumentSpec>(item.second);
       }
     }
-    const base::DictionaryValue* additional_properties_value = nullptr;
-    if (dict->GetDictionary("additionalProperties",
-                            &additional_properties_value)) {
+
+    if (const base::Value::Dict* additional_properties_value =
+            dict.FindDict("additionalProperties")) {
       additional_properties_ =
           std::make_unique<ArgumentSpec>(*additional_properties_value);
       // Additional properties are always optional.
       additional_properties_->optional_ = true;
     }
   } else if (type_ == ArgumentType::LIST) {
-    const base::DictionaryValue* item_value = nullptr;
-    CHECK(dict->GetDictionary("items", &item_value));
+    const base::Value::Dict* item_value = dict.FindDict("items");
+    CHECK(item_value);
     list_element_type_ = std::make_unique<ArgumentSpec>(*item_value);
   } else if (type_ == ArgumentType::STRING) {
     // Technically, there's no reason enums couldn't be other objects (e.g.
     // numbers), but right now they seem to be exclusively strings. We could
     // always update this if need be.
-    const base::ListValue* enums = nullptr;
-    if (dict->GetList("enum", &enums)) {
-      CHECK(!enums->GetList().empty());
-      for (const base::Value& value : enums->GetList()) {
+    if (const base::Value::List* enums = dict.FindList("enum")) {
+      CHECK(!enums->empty());
+      for (const base::Value& value : *enums) {
         const std::string* enum_str = value.GetIfString();
         // Enum entries come in two versions: a list of possible strings, and
         // a dictionary with a field 'name'.
@@ -191,20 +188,18 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
       }
     }
   } else if (type_ == ArgumentType::FUNCTION) {
-    serialize_function_ =
-        dict->FindBoolKey("serializableFunction").value_or(false);
+    serialize_function_ = dict.FindBool("serializableFunction").value_or(false);
   }
 
   // Check if we should preserve null in objects. Right now, this is only used
   // on arguments of type object and any (in fact, it's only used in the storage
   // API), but it could potentially make sense for lists or functions as well.
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::ANY)
-    preserve_null_ = dict->FindBoolKey("preserveNull").value_or(preserve_null_);
+    preserve_null_ = dict.FindBool("preserveNull").value_or(preserve_null_);
 
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::BINARY) {
-    std::string instance_of;
-    if (dict->GetString("isInstanceOf", &instance_of))
-      instance_of_ = instance_of;
+    if (const std::string* instance_of = dict.FindString("isInstanceOf"))
+      instance_of_ = *instance_of;
   }
 }
 
