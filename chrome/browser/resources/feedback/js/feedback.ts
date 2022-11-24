@@ -48,14 +48,14 @@ class FeedbackHelper {
     const ID = Math.round(Date.now() / 1000);
     const FLOW = feedbackInfo.flow;
 
-    chrome.feedbackPrivate.sendFeedback(
-        feedbackInfo, useSystemInfo, formOpenTime,
-        function(result, landingPageType) {
-          if (result === chrome.feedbackPrivate.Status.SUCCESS) {
+    chrome.feedbackPrivate
+        .sendFeedback(feedbackInfo, useSystemInfo, formOpenTime)
+        .then(result => {
+          if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
             if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
-                landingPageType !==
+                result.landingPageType !==
                     chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
-              const landingPage = landingPageType ===
+              const landingPage = result.landingPageType ===
                       chrome.feedbackPrivate.LandingPageType.NORMAL ?
                   FEEDBACK_LANDING_PAGE :
                   FEEDBACK_LANDING_PAGE_TECHSTOP;

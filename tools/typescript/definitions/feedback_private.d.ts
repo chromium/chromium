@@ -86,12 +86,16 @@ declare namespace chrome {
       logLines: string[];
     }
 
+    export interface SendFeedbackResult {
+      status: Status;
+      landingPageType: LandingPageType;
+    }
+
     export function getUserEmail(callback: (email: string) => void): void;
 
     export function sendFeedback(
-        feedback: FeedbackInfo, loadSystemInfo?: boolean, formOpenTime?: number,
-        callback?: (status: Status, landingPage: LandingPageType) => void):
-        void;
+        feedback: FeedbackInfo, loadSystemInfo?: boolean,
+        formOpenTime?: number): Promise<SendFeedbackResult>;
 
     export function getSystemInformation(
         callback: (info: SystemInformation[]) => void): void;
