@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -39,6 +40,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -858,6 +860,28 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 
   [provider_ keyCommand_forward];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
+}
+
+#pragma mark - Validate
+
+TEST_F(KeyCommandsProviderTest, ValidateCommands) {
+  // Open a tab.
+  web::FakeWebState* web_state = InsertNewWebState(0);
+  web::FindInPageManagerImpl::CreateForWebState(web_state);
+  FindTabHelper::CreateForWebState(web_state);
+
+  // Can Find in Page.
+  web_state->SetContentIsHTML(true);
+  EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+
+  for (UIKeyCommand* command in provider_.keyCommands) {
+    [provider_ validateCommand:command];
+    if (command.action == @selector(keyCommand_find)) {
+      EXPECT_TRUE([command.discoverabilityTitle
+          isEqualToString:l10n_util::GetNSStringWithFixup(
+                              IDS_IOS_KEYBOARD_FIND_IN_PAGE)]);
+    }
+  }
 }
 
 }  // namespace

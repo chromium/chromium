@@ -54,6 +54,7 @@
 				<string>IDS_IOS_KEYBOARD_SHOW_READING_LIST</string>
 				<string>IDS_IOS_KEYBOARD_GO_TO_TAB_GRID</string>
 				<string>IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA</string>
+				<string>IDS_IOS_KEYBOARD_FIND</string>
 				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION</string>
 				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION</string>
 			</array>

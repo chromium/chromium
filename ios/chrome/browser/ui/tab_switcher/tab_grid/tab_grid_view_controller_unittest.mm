@@ -10,8 +10,11 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -104,18 +107,61 @@ TEST_F(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
 
 // Checks that TabGridViewController implements the following actions.
 TEST_F(TabGridViewControllerTest, ImplementsActions) {
+  // Load the view.
+  std::ignore = view_controller_.view;
   [view_controller_ keyCommand_openNewTab];
   [view_controller_ keyCommand_openNewRegularTab];
   [view_controller_ keyCommand_openNewIncognitoTab];
+  [view_controller_ keyCommand_find];
 }
 
 // Checks that metrics are correctly reported.
 TEST_F(TabGridViewControllerTest, Metrics) {
+  // Load the view.
+  std::ignore = view_controller_.view;
   ExpectUMA(@"keyCommand_openNewTab", "MobileKeyCommandOpenNewTab");
   ExpectUMA(@"keyCommand_openNewRegularTab",
             "MobileKeyCommandOpenNewRegularTab");
   ExpectUMA(@"keyCommand_openNewIncognitoTab",
             "MobileKeyCommandOpenNewIncognitoTab");
+  ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs");
+}
+
+// This test ensure 2 things:
+// * the key command find is available when the tab grid is currently visible,
+// * the key command associated title is correct.
+TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
+  // Load the view.
+  std::ignore = view_controller_.view;
+  EXPECT_FALSE(CanPerform(@"keyCommand_find"));
+  // Create a view revealing vertical pan handler.
+  ViewRevealingVerticalPanHandler* pan_handler =
+      [[ViewRevealingVerticalPanHandler alloc]
+          initWithPeekedHeight:212.0f
+                baseViewHeight:800.0f
+                  initialState:ViewRevealState::Peeked];
+
+  // Displays the tab grid.
+  [pan_handler addAnimatee:view_controller_];
+  [pan_handler setNextState:ViewRevealState::Revealed
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
+
+  // Ensures that the command is available.
+  EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+  id findTarget = [view_controller_ targetForAction:@selector(keyCommand_find)
+                                         withSender:nil];
+  EXPECT_EQ(findTarget, view_controller_);
+
+  // Ensures that the title is correct.
+  for (UIKeyCommand* command in view_controller_.keyCommands) {
+    [view_controller_ validateCommand:command];
+    if (command.action == @selector(keyCommand_find)) {
+      EXPECT_TRUE([command.discoverabilityTitle
+          isEqualToString:l10n_util::GetNSStringWithFixup(
+                              IDS_IOS_KEYBOARD_SEARCH_TABS)]);
+    }
+  }
 }
 
 }  // namespace

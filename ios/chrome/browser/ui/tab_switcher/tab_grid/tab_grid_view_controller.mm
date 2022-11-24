@@ -137,8 +137,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      SuggestedActionsDelegate,
                                      UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate,
-                                     UISearchBarDelegate,
-                                     ViewRevealingAnimatee>
+                                     UISearchBarDelegate>
 // Whether the view is visible. Bookkeeping is based on `-viewWillAppear:` and
 // `-viewWillDisappear methods. Note that the `Did` methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -2647,7 +2646,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
     return self.currentPage != TabGridPageRemoteTabs;
   }
+  if (sel_isEqual(action, @selector(keyCommand_find))) {
+    return self.currentState == ViewRevealState::Revealed;
+  }
   return [super canPerformAction:action withSender:sender];
+}
+
+- (void)validateCommand:(UICommand*)command {
+  if (command.action == @selector(keyCommand_find)) {
+    command.discoverabilityTitle =
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
+  } else {
+    return [super validateCommand:command];
+  }
 }
 
 - (void)keyCommand_openNewTab {
@@ -2665,6 +2676,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::RecordAction(
       base::UserMetricsAction("MobileKeyCommandOpenNewIncognitoTab"));
   [self openNewIncognitoTabForKeyboardCommand];
+}
+
+- (void)keyCommand_find {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
+  [self searchButtonTapped:nil];
 }
 
 @end

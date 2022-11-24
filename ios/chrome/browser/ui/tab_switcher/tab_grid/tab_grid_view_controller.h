@@ -94,7 +94,8 @@ enum class TabGridPageConfiguration {
                         KeyCommandActions,
                         LayoutSwitcherProvider,
                         TabGridPaging,
-                        ThumbStripSupporting>
+                        ThumbStripSupporting,
+                        ViewRevealingAnimatee>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;

@@ -261,6 +261,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search_engines",
     "//components/sessions",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",

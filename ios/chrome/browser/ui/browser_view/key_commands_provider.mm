@@ -234,6 +234,17 @@ using base::UserMetricsAction;
   return [super canPerformAction:action withSender:sender];
 }
 
+// Changes the title to display the most appropriate string in the shortcut
+// menu.
+- (void)validateCommand:(UICommand*)command {
+  if (command.action == @selector(keyCommand_find)) {
+    command.discoverabilityTitle =
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
+  } else {
+    return [super validateCommand:command];
+  }
+}
+
 #pragma mark - Key Command Actions
 
 - (void)keyCommand_openNewTab {

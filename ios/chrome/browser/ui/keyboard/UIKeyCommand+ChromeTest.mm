@@ -64,7 +64,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_reopenLastClosedTab, @"⇧⌘T",
          @"keyCommand_reopenLastClosedTab", IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB);
   Verify(UIKeyCommand.cr_find, @"⌘F", @"keyCommand_find",
-         IDS_IOS_KEYBOARD_FIND_IN_PAGE);
+         IDS_IOS_KEYBOARD_FIND);
   Verify(UIKeyCommand.cr_findNext, @"⌘G", @"keyCommand_findNext",
          IDS_IOS_KEYBOARD_FIND_NEXT);
   Verify(UIKeyCommand.cr_findPrevious, @"⇧⌘G", @"keyCommand_findPrevious",

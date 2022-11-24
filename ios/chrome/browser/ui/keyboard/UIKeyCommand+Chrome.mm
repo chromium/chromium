@@ -81,7 +81,7 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"f"
                      modifierFlags:Command
                             action:@selector(keyCommand_find)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIND_IN_PAGE"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIND"];
 }
 
 + (UIKeyCommand*)cr_findNext {
