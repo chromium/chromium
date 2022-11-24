@@ -12,16 +12,17 @@
     url: 'http://127.0.0.1:8000/inspector-protocol/resources/interactions.html'
   });
 
-  await session.evaluate('injectInputEventListener()');
+  // Wait for the DOM to be interactive.
+  await session.evaluateAsync(`new Promise((resolve) => onload = resolve)`);
 
   // Dispatch a keyboard interaction.
   await dp.Input.dispatchKeyEvent({type: 'keyDown', key: 'A'});
   await dp.Input.dispatchKeyEvent({type: 'keyUp', key: 'A'});
 
-  // Wait for trace events.
+  // Wait for trace events and stop tracing.
   await session.evaluateAsync(`window.__interactionPromise`);
-
   const devtoolsEvents = await tracingHelper.stopTracing(/devtools\.timeline/);
+
   const eventTimingTraces =
       devtoolsEvents.filter(event => event.name === 'EventTiming');
   const keyUpBeginEvent =

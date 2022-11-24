@@ -24,14 +24,9 @@
           const init = performance.now();
           while ((performance.now() - init) < threshold);
         }
-
-        function injectInputEventListener() {
-            const input = document.querySelector('input');
-            input.addEventListener('keydown', blockMainThread);
-        }
     </script>
   </head>
   <body>
-    <input autofocus>
+    <input autofocus onkeydown="blockMainThread()">
   </body>
 </html>
