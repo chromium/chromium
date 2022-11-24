@@ -537,7 +537,8 @@ void StreamFromResponseCallback(
     kValidDataURL = 8,
     kValidFileURL = 9,
     kValidBlob = 10,
-    kValidOtherProtocol = 11,
+    kValidChromeExtension = 11,
+    kValidOtherProtocol = 12,
 
     kMaxValue = kValidOtherProtocol
   };
@@ -598,19 +599,10 @@ void StreamFromResponseCallback(
                     : protocol == "https" ? WasmStreamingInputType::kValidHttps
                     : protocol == "data" ? WasmStreamingInputType::kValidDataURL
                     : protocol == "file" ? WasmStreamingInputType::kValidFileURL
-                    : protocol == "blob"
-                        ? WasmStreamingInputType::kValidBlob
+                    : protocol == "blob" ? WasmStreamingInputType::kValidBlob
+                    : protocol == "chrome-extension"
+                        ? WasmStreamingInputType::kValidChromeExtension
                         : WasmStreamingInputType::kValidOtherProtocol;
-    // Temporarily sample 0.1% of the other protocols; remove this once we
-    // identified missing protocols and added them to the
-    // "WasmStreamingInputType" enum.
-    if (protocol_type == WasmStreamingInputType::kValidOtherProtocol &&
-        base::RandInt(0, 999) == 0) {
-      static crash_reporter::CrashKeyString<16> protocol_key(
-          "wasm-streaming-protocol");
-      protocol_key.Set(protocol.Ascii().c_str());
-      base::debug::DumpWithoutCrashing();
-    }
   }
   base::UmaHistogramEnumeration("V8.WasmStreamingInputType", protocol_type);
 
