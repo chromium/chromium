@@ -133,10 +133,6 @@ found in the LICENSE file.
     <dimen name="signin_chooser_padding">16dp</dimen>
     <dimen name="signin_screen_top_padding">50dp</dimen>
 
-    <!-- Autofill tooltip dimensions -->
-    <dimen name="autofill_tooltip_horizontal_padding">16dp</dimen>
-    <dimen name="autofill_tooltip_vertical_padding">16dp</dimen>
-
     <!-- ModalDialogView dimensions -->
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
