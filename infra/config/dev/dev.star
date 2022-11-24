@@ -46,21 +46,6 @@ luci.project(
             roles = "role/analysis.editor",
             groups = ["project-chromium-committers", "googlers"],
         ),
-        # Roles for Weetbix.
-        # TODO(b/243488110): Delete when renaming to
-        # LUCI Analysis complete.
-        luci.binding(
-            roles = "role/weetbix.reader",
-            groups = "all",
-        ),
-        luci.binding(
-            roles = "role/weetbix.queryUser",
-            groups = "authenticated-users",
-        ),
-        luci.binding(
-            roles = "role/weetbix.editor",
-            groups = ["project-chromium-committers", "googlers"],
-        ),
     ],
 )
 
