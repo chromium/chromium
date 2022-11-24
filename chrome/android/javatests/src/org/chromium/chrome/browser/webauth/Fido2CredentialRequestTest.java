@@ -152,7 +152,7 @@ public class Fido2CredentialRequestTest {
                         .name("notSupportedError"),
                 new ParameterSet()
                         .value(Fido2Api.CONSTRAINT_ERR, FILLER_ERROR_MSG,
-                                Integer.valueOf(AuthenticatorStatus.CREDENTIAL_EXCLUDED))
+                                Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR))
                         .name("constraintErrorReRegistration"),
                 new ParameterSet()
                         .value(Fido2Api.INVALID_STATE_ERR, FILLER_ERROR_MSG,

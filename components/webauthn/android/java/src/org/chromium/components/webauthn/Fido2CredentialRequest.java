@@ -550,10 +550,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             case Fido2Api.CONSTRAINT_ERR:
                 if (errorMsg != null && errorMsg.equals(NO_SCREENLOCK_ERROR_MSG)) {
                     return AuthenticatorStatus.USER_VERIFICATION_UNSUPPORTED;
-                } else {
-                    // The user attempted to use a credential that was already registered.
-                    return AuthenticatorStatus.CREDENTIAL_EXCLUDED;
                 }
+                return AuthenticatorStatus.UNKNOWN_ERROR;
             case Fido2Api.INVALID_STATE_ERR:
                 if (errorMsg != null && errorMsg.equals(CREDENTIAL_EXISTS_ERROR_MSG)) {
                     return AuthenticatorStatus.CREDENTIAL_EXCLUDED;
