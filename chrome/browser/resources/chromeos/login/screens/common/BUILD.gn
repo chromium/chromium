@@ -14,7 +14,6 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 group("polymer3_elements") {
   public_deps = [
     ":family_link_notice_module",
-    ":guest_tos_module",
     ":hw_data_collection_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
@@ -54,7 +53,7 @@ js_type_check("closure_compile_local") {
     ":fingerprint_setup",
     ":gaia_signin",
     ":gesture_navigation",
-    ":guest_tos.m",
+    ":guest_tos",
     ":hw_data_collection.m",
     ":local_state_error",
     ":managed_terms_of_service",
@@ -294,8 +293,8 @@ js_library("gaia_signin") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("guest_tos.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/guest_tos.m.js" ]
+js_library("guest_tos") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/guest_tos.js" ]
   deps = [
     "../..:display_manager.m",
     "../../components:web_view_helper.m",
@@ -311,7 +310,7 @@ js_library("guest_tos.m") {
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":guest_tos_module" ]
+  extra_deps = [ ":web_components" ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
@@ -685,15 +684,6 @@ polymer_modulizer("family_link_notice") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("guest_tos") {
-  js_file = "guest_tos.js"
-  html_file = "guest_tos.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("hw_data_collection") {
   js_file = "hw_data_collection.js"
   html_file = "hw_data_collection.html"
@@ -737,6 +727,7 @@ html_to_js("web_components") {
     "fingerprint_setup.js",
     "gaia_signin.js",
     "gesture_navigation.js",
+    "guest_tos.js",
     "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
