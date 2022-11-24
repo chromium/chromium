@@ -64,6 +64,15 @@ class SegmentInfoDatabase {
                              absl::optional<proto::SegmentInfo> segment_info,
                              SuccessCallback callback);
 
+  // Called to save or update metadata for multiple segments in a single
+  // database call. The previous data for all the provided segments is
+  // overwritten with new data. `segments_to_delete` includes list of
+  // segment ids to be deleted from the database.
+  virtual void UpdateMultipleSegments(
+      const SegmentInfoList& segments_to_update,
+      const std::vector<SegmentId>& segments_to_delete,
+      SuccessCallback callback);
+
   // Called to write the model execution results for a given segment. It will
   // first read the currently stored result, and then overwrite it with
   // |result|. If |result| is null, the existing result will be deleted.

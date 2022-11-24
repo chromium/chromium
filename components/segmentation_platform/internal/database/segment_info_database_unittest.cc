@@ -215,6 +215,55 @@ TEST_P(SegmentInfoDatabaseTest, Update) {
   ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId, kSegmentId2});
 }
 
+TEST_P(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
+  // Initialize DB with two entry.
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId2), CreateSegment(kSegmentId2)));
+  SetUpDB(GetParam());
+
+  segment_db_->Initialize(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+
+  // Delete both segments.
+  segment_db_->UpdateMultipleSegments({}, {kSegmentId, kSegmentId2},
+                                      base::DoNothing());
+  db_->UpdateCallback(true);
+  VerifyDb({});
+
+  // Insert multiple segments and verify.
+  std::vector<std::pair<SegmentId, proto::SegmentInfo>> segments_to_update;
+  segments_to_update.emplace_back(
+      std::make_pair(kSegmentId, CreateSegment(kSegmentId)));
+  segments_to_update.emplace_back(
+      std::make_pair(kSegmentId2, CreateSegment(kSegmentId2)));
+  segment_db_->UpdateMultipleSegments(segments_to_update, {},
+                                      base::DoNothing());
+  db_->UpdateCallback(true);
+  VerifyDb({kSegmentId, kSegmentId2});
+
+  // Update one of the existing segment and verify.
+  proto::SegmentInfo segment_info = CreateSegment(kSegmentId2);
+  segment_info.mutable_prediction_result()->add_result(0.9f);
+  // Add this entry to `segments_to_update`.
+  segments_to_update.clear();
+  segments_to_update.emplace_back(std::make_pair(kSegmentId2, segment_info));
+  // Call and Verify.
+  segment_db_->UpdateMultipleSegments(segments_to_update, {},
+                                      base::DoNothing());
+  db_->UpdateCallback(true);
+  VerifyDb({kSegmentId, kSegmentId2});
+  VerifyResult(kSegmentId2, 0.9f);
+
+  // Verify GetSegmentInfoForSegments.
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId2});
+
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId});
+
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId, kSegmentId2});
+}
+
 TEST_P(SegmentInfoDatabaseTest, WriteResult) {
   // Initialize DB with one entry.
   db_entries_.insert(
