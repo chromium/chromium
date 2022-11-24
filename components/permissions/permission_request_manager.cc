@@ -635,14 +635,14 @@ void PermissionRequestManager::Ignore() {
 void PermissionRequestManager::PreIgnoreQuietPrompt() {
   // Random number of seconds in the range [1.0, 2.0).
   double delay_seconds = 1.0 + 1.0 * base::RandDouble();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PermissionRequestManager::PreIgnoreQuietPromptInternal,
-                     weak_factory_.GetWeakPtr()),
-      base::Seconds(delay_seconds));
+  preignore_timer_.Start(
+      FROM_HERE, base::Seconds(delay_seconds), this,
+      &PermissionRequestManager::PreIgnoreQuietPromptInternal);
 }
 
 void PermissionRequestManager::PreIgnoreQuietPromptInternal() {
+  DCHECK(!requests_.empty());
+
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
@@ -967,6 +967,10 @@ void PermissionRequestManager::FinalizeCurrentRequests(
 }
 
 void PermissionRequestManager::CleanUpRequests() {
+  // No need to execute the preignore logic as we canceling currently active
+  // requests anyway.
+  preignore_timer_.AbandonAndStop();
+
   for (; !pending_permission_requests_.IsEmpty();
        pending_permission_requests_.Pop()) {
     auto* pending_request = pending_permission_requests_.Peek();

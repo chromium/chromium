@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_queue.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -465,6 +466,10 @@ class PermissionRequestManager
   absl::optional<base::TimeDelta> time_to_decision_for_test_;
 
   absl::optional<bool> enabled_app_level_notification_permission_for_testing_;
+
+  // A timer is used to pre-ignore the permission request if it's been displayed
+  // as a quiet chip.
+  base::OneShotTimer preignore_timer_;
 
   base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
