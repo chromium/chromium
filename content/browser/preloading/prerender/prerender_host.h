@@ -46,6 +46,8 @@ namespace content {
 class FrameTreeNode;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
+class WebContentsImpl;
+class PrerenderCancellationReason;
 
 // Prerender2:
 // PrerenderHost creates a new FrameTree in WebContents associated with the page
@@ -184,9 +186,14 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   FrameTree& GetPrerenderFrameTree();
 
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
-  // uses this before abandoning the host.
-  void RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
-                         PrerenderFinalStatus status);
+  // uses this before abandoning the host. Exposed to PrerenderHostRegistry
+  // only.
+  void RecordFailedFinalStatus(base::PassKey<PrerenderHostRegistry>,
+                               const PrerenderCancellationReason& reason);
+
+  // Called by PrerenderHostRegistry to report that this prerender host is
+  // successfully activated.
+  void RecordActivation(NavigationRequest& navigation_request);
 
   enum class LoadingOutcome {
     kLoadingCompleted,
@@ -255,13 +262,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
  private:
-  // Records the status to UMA and UKM. `initiator_ukm_id` represents the page
-  // that starts prerendering and `prerendered_ukm_id` represents the
-  // prerendered page. `prerendered_ukm_id` is valid after the page is
-  // activated.
-  void RecordFinalStatus(PrerenderFinalStatus status,
-                         ukm::SourceId initiator_ukm_id,
-                         ukm::SourceId prerendered_ukm_id);
+  void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);
 
   // Asks the registry to cancel prerendering.
   void Cancel(PrerenderFinalStatus status);

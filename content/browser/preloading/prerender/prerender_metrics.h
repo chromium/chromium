@@ -66,10 +66,14 @@ class PrerenderCancellationReason {
 
   PrerenderCancellationReason(PrerenderCancellationReason&& reason);
 
+  // Reports UMA and UKM metrics.
   void ReportMetrics(PrerenderTriggerType trigger_type,
                      const std::string& embedder_histogram_suffix) const;
 
   PrerenderFinalStatus final_status() const { return final_status_; }
+
+  // This is mainly used for displaying a detailed reason on devtools panel.
+  std::string ToDevtoolReasonString() const;
 
  private:
   PrerenderCancellationReason(PrerenderFinalStatus final_status,
@@ -108,13 +112,17 @@ void RecordPrerenderActivationTime(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
-// Records the status to UMA and UKM, and reports the status other than
-// kActivated to DevTools. In the attributes, `initiator_ukm_id` represents the
-// page that starts prerendering. `prerendered_ukm_id` represents the
-// prerendered page and is valid after the page is activated.
-void RecordPrerenderFinalStatus(PrerenderFinalStatus status,
-                                const PrerenderAttributes& attributes,
-                                ukm::SourceId prerendered_ukm_id);
+// Used by failing prerender attempts. Records the status to UMA and UKM, and
+// reports the failing reason to devtools. In the attributes, `initiator_ukm_id`
+// represents the page that starts prerendering.
+void RecordFailedPrerenderFinalStatus(
+    const PrerenderCancellationReason& cancellation_reason,
+    const PrerenderAttributes& attributes);
+
+// Records a success activation to UMA and UKM.
+// `prerendered_ukm_id` is the UKM ID of the activated page.
+void ReportSuccessActivation(const PrerenderAttributes& attributes,
+                             ukm::SourceId prerendered_ukm_id);
 
 // Records which navigation parameters are different between activation and
 // initial prerender navigation when activation fails.

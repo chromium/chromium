@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -213,8 +214,8 @@ PrerenderHost::~PrerenderHost() {
   }
 
   if (!final_status_) {
-    RecordFinalStatus(PrerenderFinalStatus::kDestroyed,
-                      attributes_.initiator_ukm_id, ukm::kInvalidSourceId);
+    RecordFailedFinalStatusImpl(
+        PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
   }
 
   // If we are still waiting on test loop, we can assume the page loading step
@@ -519,12 +520,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
     }
   }
 
-  // TODO(crbug.com/1299330): Replace
-  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
-  // source ID.
-  RecordFinalStatus(PrerenderFinalStatus::kActivated,
-                    attributes_.initiator_ukm_id,
-                    navigation_request.GetNextPageUkmSourceId());
+  RecordActivation(navigation_request);
 
   // Prerender is activated. Set the status to kSuccess.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
@@ -825,14 +821,33 @@ FrameTree& PrerenderHost::GetPrerenderFrameTree() {
   return *frame_tree_;
 }
 
-void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
-                                      PrerenderFinalStatus status) {
-  RecordFinalStatus(status, attributes_.initiator_ukm_id,
-                    ukm::kInvalidSourceId);
+void PrerenderHost::RecordFailedFinalStatus(
+    base::PassKey<PrerenderHostRegistry>,
+    const PrerenderCancellationReason& reason) {
+  RecordFailedFinalStatusImpl(reason);
+}
+
+void PrerenderHost::RecordFailedFinalStatusImpl(
+    const PrerenderCancellationReason& reason) {
+  DCHECK(!final_status_);
+  DCHECK_NE(reason.final_status(), PrerenderFinalStatus::kActivated);
+  final_status_ = reason.final_status();
+  RecordFailedPrerenderFinalStatus(reason, attributes_);
 
   // Set failure reason for this PreloadingAttempt specific to the
   // FinalStatus.
-  SetFailureReason(status);
+  SetFailureReason(reason.final_status());
+}
+
+void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
+  DCHECK(!final_status_);
+  final_status_ = PrerenderFinalStatus::kActivated;
+
+  // TODO(crbug.com/1299330): Replace
+  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
+  // source ID.
+  ReportSuccessActivation(attributes_,
+                          navigation_request.GetNextPageUkmSourceId());
 }
 
 PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
@@ -852,14 +867,6 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
       loop.QuitClosure(), &status);
   loop.Run();
   return status;
-}
-
-void PrerenderHost::RecordFinalStatus(PrerenderFinalStatus status,
-                                      ukm::SourceId initiator_ukm_id,
-                                      ukm::SourceId prerendered_ukm_id) {
-  DCHECK(!final_status_);
-  final_status_ = status;
-  RecordPrerenderFinalStatus(status, attributes_, prerendered_ukm_id);
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
@@ -912,12 +919,10 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     // When adding a new failure reason, consider whether it should be
     // propagated to `attempt_`. Most values should be propagated, but we
     // explicitly do not propagate failure reasons if:
-    // 1. the prerender was actually successful (kActivated).
-    // 2. prerender was successfully prepared but then destroyed because it
+    // 1. prerender was successfully prepared but then destroyed because it
     //    wasn't needed for a subsequent navigation (kTriggerDestroyed).
-    // 3. the prerender was still pending for its initial navigation when it was
+    // 2. the prerender was still pending for its initial navigation when it was
     //    activated (kActivatedBeforeStarted).
-    case PrerenderFinalStatus::kActivated:
     case PrerenderFinalStatus::kTriggerDestroyed:
     case PrerenderFinalStatus::kActivatedBeforeStarted:
       return;
@@ -968,6 +973,10 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
       // PrerenderHost deletion is async.
       attempt_.reset();
       return;
+    case PrerenderFinalStatus::kActivated:
+      // The activation path does not call this method, so it should never reach
+      // this case.
+      NOTREACHED();
   }
 }
 

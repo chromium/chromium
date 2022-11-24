@@ -193,7 +193,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
-      PrerenderFinalStatus final_status);
+      const PrerenderCancellationReason& cancellation_reason);
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
