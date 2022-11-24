@@ -43,7 +43,7 @@ namespace {
 // - Cancel an already scheduled timer wake up if there is no delayed work.
 BASE_FEATURE(kMessagePumpMacDelayedWorkOptimizations,
              "MessagePumpMacDelayedWorkOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Caches the state of the "MessagePumpMacDelayedWorkOptimizations"
 // feature for efficiency.
