@@ -2727,22 +2727,6 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
-// The variations of --touch-to-fill-password-submission.
-const FeatureEntry::FeatureParam
-    kTouchToFillPasswordSubmissionWithConservativeHeuristics[] = {
-        {password_manager::features::
-             kTouchToFillPasswordSubmissionWithConservativeHeuristics,
-         "true"}};
-
-const FeatureEntry::FeatureVariation
-    kTouchToFillPasswordSubmissionVariations[] = {
-        {"Use conservative heuristics",
-         kTouchToFillPasswordSubmissionWithConservativeHeuristics,
-         std::size(kTouchToFillPasswordSubmissionWithConservativeHeuristics),
-         nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // The variations of --metrics-settings-android.
 const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
     {"fre", "1"}};
@@ -8201,13 +8185,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
-    {"touch-to-fill-password-submission",
-     flag_descriptions::kTouchToFillPasswordSubmissionName,
-     flag_descriptions::kTouchToFillPasswordSubmissionDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kTouchToFillPasswordSubmission,
-         kTouchToFillPasswordSubmissionVariations,
-         "TouchToFillPasswordSubmission")},
     {"fast-checkout", flag_descriptions::kFastCheckoutName,
      flag_descriptions::kFastCheckoutDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kFastCheckout)},

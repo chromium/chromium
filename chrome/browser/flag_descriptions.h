@@ -319,9 +319,6 @@ extern const char kDragWindowToNewDeskDescription[];
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
-extern const char kTouchToFillPasswordSubmissionName[];
-extern const char kTouchToFillPasswordSubmissionDescription[];
-
 extern const char kFastCheckoutName[];
 extern const char kFastCheckoutDescription[];
 

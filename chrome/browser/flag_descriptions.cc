@@ -589,12 +589,6 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
-const char kTouchToFillPasswordSubmissionName[] =
-    "Form submission in Touch-To-Fill";
-const char kTouchToFillPasswordSubmissionDescription[] =
-    "Enables automatic form submission after filling credentials with "
-    "Touch-To-Fill";
-
 const char kFastCheckoutName[] = "Fast Checkout";
 const char kFastCheckoutDescription[] =
     "Enables Fast Checkout experiences in Chrome.";
