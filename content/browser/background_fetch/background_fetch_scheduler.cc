@@ -577,11 +577,9 @@ void BackgroundFetchScheduler::LogBackgroundFetchEventForDevTools(
           base::NumberToString(request_info->request_body_size());
   }
 
-  // TODO(https://crbug.com/1199077): Pass `registration_id.storage_key()`
-  // directly once DevToolsBackgroundServicesContextImpl implements StorageKey.
   devtools_context_->LogBackgroundServiceEvent(
       registration_id.service_worker_registration_id(),
-      registration_id.storage_key().origin(),
+      registration_id.storage_key(),
       DevToolsBackgroundService::kBackgroundFetch, std::move(event_name),
       /* instance_id= */ registration_id.developer_id(), metadata);
 }

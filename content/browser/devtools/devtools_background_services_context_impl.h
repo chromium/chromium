@@ -70,7 +70,7 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
   bool IsRecording(DevToolsBackgroundService service) override;
   void LogBackgroundServiceEvent(
       uint64_t service_worker_registration_id,
-      const url::Origin& origin,
+      blink::StorageKey storage_key,
       DevToolsBackgroundService service,
       const std::string& event_name,
       const std::string& instance_id,

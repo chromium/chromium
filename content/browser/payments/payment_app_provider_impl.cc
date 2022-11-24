@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/mojom/base/time.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -119,8 +120,8 @@ void PaymentAppProviderImpl::InvokePaymentApp(
     AddMethodDataToMap(event_data->method_data, &data);
     AddModifiersToMap(event_data->modifiers, &data);
     dev_tools->LogBackgroundServiceEvent(
-        registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
-        "Payment request",
+        registration_id, blink::StorageKey(sw_origin),
+        DevToolsBackgroundService::kPaymentHandler, "Payment request",
         /*instance_id=*/event_data->payment_request_id, data);
   }
 
@@ -175,7 +176,7 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
         {"Service Worker Uses Cache", sw_use_cache ? "true" : "false"},
     };
     dev_tools->LogBackgroundServiceEvent(
-        /*service_worker_registration_id=*/-1, sw_origin,
+        /*service_worker_registration_id=*/-1, blink::StorageKey(sw_origin),
         DevToolsBackgroundService::kPaymentHandler, "Install payment handler",
         /*instance_id=*/event_data->payment_request_id, data);
   }
@@ -238,8 +239,8 @@ void PaymentAppProviderImpl::CanMakePayment(
     AddMethodDataToMap(event_data->method_data, &data);
     AddModifiersToMap(event_data->modifiers, &data);
     dev_tools->LogBackgroundServiceEvent(
-        registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
-        "Can make payment",
+        registration_id, blink::StorageKey(sw_origin),
+        DevToolsBackgroundService::kPaymentHandler, "Can make payment",
         /*instance_id=*/payment_request_id, data);
   }
 
@@ -266,8 +267,8 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
       GetDevTools(sw_origin);
   if (dev_tools) {
     dev_tools->LogBackgroundServiceEvent(
-        registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
-        "Abort payment",
+        registration_id, blink::StorageKey(sw_origin),
+        DevToolsBackgroundService::kPaymentHandler, "Abort payment",
         /*instance_id=*/payment_request_id, {});
   }
 
@@ -361,7 +362,8 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
          registration_id >= 0 ? "true" : "false"},
     };
     dev_tools->LogBackgroundServiceEvent(
-        registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
+        registration_id, blink::StorageKey(sw_origin),
+        DevToolsBackgroundService::kPaymentHandler,
         "Install payment handler result",
         /*instance_id=*/event_data->payment_request_id, data);
   }

@@ -1032,7 +1032,7 @@ void BackgroundSyncManager::RegisterDidGetDelay(
   if (registration.sync_type() == BackgroundSyncType::PERIODIC &&
       ShouldLogToDevTools(registration.sync_type())) {
     devtools_context_->LogBackgroundServiceEvent(
-        sw_registration_id, registration.origin(),
+        sw_registration_id, blink::StorageKey(registration.origin()),
         DevToolsBackgroundService::kPeriodicBackgroundSync,
         /* event_name= */ "Got next event delay",
         /* instance_id= */ registration.options()->tag,
@@ -1310,7 +1310,8 @@ void BackgroundSyncManager::RemoveActiveRegistration(
   if (registration_info.sync_type == BackgroundSyncType::PERIODIC &&
       ShouldLogToDevTools(registration_info.sync_type)) {
     devtools_context_->LogBackgroundServiceEvent(
-        registration_info.service_worker_registration_id, origin,
+        registration_info.service_worker_registration_id,
+        blink::StorageKey(origin),
         DevToolsBackgroundService::kPeriodicBackgroundSync,
         /* event_name= */ "Unregistered periodicsync",
         /* instance_id= */ registration_info.tag,
@@ -1340,7 +1341,8 @@ void BackgroundSyncManager::AddOrUpdateActiveRegistration(
           base::NumberToString(sync_registration.options()->min_interval);
     }
     devtools_context_->LogBackgroundServiceEvent(
-        sw_registration_id, origin, GetDevToolsBackgroundService(sync_type),
+        sw_registration_id, blink::StorageKey(origin),
+        GetDevToolsBackgroundService(sync_type),
         /* event_name= */ "Registered " + GetSyncEventName(sync_type),
         /* instance_id= */ sync_registration.options()->tag, event_metadata);
   }
@@ -1402,7 +1404,7 @@ void BackgroundSyncManager::DispatchSyncEvent(
   if (devtools_context_->IsRecording(
           DevToolsBackgroundService::kBackgroundSync)) {
     devtools_context_->LogBackgroundServiceEvent(
-        active_version->registration_id(), active_version->key().origin(),
+        active_version->registration_id(), active_version->key(),
         DevToolsBackgroundService::kBackgroundSync,
         /* event_name= */ "Dispatched sync event",
         /* instance_id= */ tag,
@@ -1444,7 +1446,7 @@ void BackgroundSyncManager::DispatchPeriodicSyncEvent(
   if (devtools_context_->IsRecording(
           DevToolsBackgroundService::kPeriodicBackgroundSync)) {
     devtools_context_->LogBackgroundServiceEvent(
-        active_version->registration_id(), active_version->key().origin(),
+        active_version->registration_id(), active_version->key(),
         DevToolsBackgroundService::kPeriodicBackgroundSync,
         /* event_name= */ "Dispatched periodicsync event",
         /* instance_id= */ tag,
@@ -2177,6 +2179,7 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
 
   UpdateNumFiringRegistrationsBy(registration_info->sync_type, -1);
 
+  blink::StorageKey storage_key = blink::StorageKey(origin);
   BackgroundSyncRegistration* registration =
       LookupActiveRegistration(*registration_info);
   if (!registration) {
@@ -2196,7 +2199,7 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
     registration_completed = false;
     if (ShouldLogToDevTools(registration->sync_type())) {
       devtools_context_->LogBackgroundServiceEvent(
-          registration_info->service_worker_registration_id, origin,
+          registration_info->service_worker_registration_id, storage_key,
           GetDevToolsBackgroundService(registration->sync_type()),
           /* event_name= */ "Sync event reregistered",
           /* instance_id= */ registration_info->tag,
@@ -2223,7 +2226,7 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
 
     if (ShouldLogToDevTools(registration->sync_type())) {
       devtools_context_->LogBackgroundServiceEvent(
-          registration_info->service_worker_registration_id, origin,
+          registration_info->service_worker_registration_id, storage_key,
           GetDevToolsBackgroundService(registration->sync_type()), event_name,
           /* instance_id= */ registration_info->tag, event_metadata);
     }
@@ -2235,7 +2238,7 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
 
     if (ShouldLogToDevTools(registration->sync_type())) {
       devtools_context_->LogBackgroundServiceEvent(
-          registration_info->service_worker_registration_id, origin,
+          registration_info->service_worker_registration_id, storage_key,
           GetDevToolsBackgroundService(registration->sync_type()),
           /* event_name= */ "Sync completed",
           /* instance_id= */ registration_info->tag,

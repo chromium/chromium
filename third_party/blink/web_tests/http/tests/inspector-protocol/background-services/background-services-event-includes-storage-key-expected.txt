@@ -1,0 +1,5 @@
+Tests that background service events are reported with storage key.
+
+Perform background fetch:
+background service event received with storage key: true
+

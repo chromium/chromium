@@ -368,11 +368,9 @@ void BackgroundFetchEventDispatcher::LogBackgroundFetchCompletionForDevTools(
     metadata["Failure Reason"] = stream.str();
   }
 
-  // TODO(https://crbug.com/1199077): Pass `registration_id.storage_key()`
-  // directly once DevToolsBackgroundServicesContextImpl implements StorageKey.
   devtools_context_->LogBackgroundServiceEvent(
       registration_id.service_worker_registration_id(),
-      registration_id.storage_key().origin(),
+      registration_id.storage_key(),
       DevToolsBackgroundService::kBackgroundFetch,
       /* event_name= */ "Background Fetch completed",
       /* instance_id= */ registration_id.developer_id(), metadata);

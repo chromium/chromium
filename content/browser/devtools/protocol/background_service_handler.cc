@@ -89,6 +89,7 @@ ToBackgroundServiceEvent(const devtools::proto::BackgroundServiceEvent& event) {
       .SetEventName(event.event_name())
       .SetInstanceId(event.instance_id())
       .SetEventMetadata(ProtoMapToArray(event.event_metadata()))
+      .SetStorageKey(event.storage_key())
       .Build();
 }
 

@@ -11,9 +11,9 @@
 
 #include "content/common/content_export.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -46,13 +46,14 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContext {
   virtual bool IsRecording(DevToolsBackgroundService service) = 0;
 
   // Logs the event if recording for |service| is enabled.
+  // |storage_key| refers to the storage partition the event belongs to.
   // |event_name| is a description of the event.
   // |instance_id| is for tracking events related to the same feature instance.
   // Any additional useful information relating to the feature can be sent via
   // |event_metadata|. Called from the UI thread.
   virtual void LogBackgroundServiceEvent(
       uint64_t service_worker_registration_id,
-      const url::Origin& origin,
+      blink::StorageKey storage_key,
       DevToolsBackgroundService service,
       const std::string& event_name,
       const std::string& instance_id,

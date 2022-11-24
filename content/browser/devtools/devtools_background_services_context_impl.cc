@@ -189,7 +189,7 @@ void DevToolsBackgroundServicesContextImpl::ClearLoggedBackgroundServiceEvents(
 
 void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
     uint64_t service_worker_registration_id,
-    const url::Origin& origin,
+    blink::StorageKey storage_key,
     DevToolsBackgroundService service,
     const std::string& event_name,
     const std::string& instance_id,
@@ -209,7 +209,8 @@ void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
   devtools::proto::BackgroundServiceEvent event;
   event.set_timestamp(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  event.set_origin(origin.GetURL().spec());
+  event.set_origin(storage_key.origin().GetURL().spec());
+  event.set_storage_key(storage_key.Serialize());
   event.set_service_worker_registration_id(service_worker_registration_id);
   event.set_background_service(ServiceToProtoEnum(service));
   event.set_event_name(event_name);
@@ -220,7 +221,7 @@ void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
   // TODO(crbug.com/1199077): Update this when
   // DevToolsBackgroundServicesContextImpl implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, blink::StorageKey(origin),
+      service_worker_registration_id, storage_key,
       {{CreateEntryKey(event.background_service()), event.SerializeAsString()}},
       base::DoNothing());
 

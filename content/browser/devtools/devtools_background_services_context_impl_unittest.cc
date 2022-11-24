@@ -173,7 +173,7 @@ class DevToolsBackgroundServicesContextTest
 
   void LogTestBackgroundServiceEvent(const std::string& log_message) {
     context_->LogBackgroundServiceEvent(
-        service_worker_registration_id_, origin_,
+        service_worker_registration_id_, blink::StorageKey(origin_),
         DevToolsBackgroundService::kBackgroundFetch, kEventName, kInstanceId,
         {{"key", log_message}});
   }

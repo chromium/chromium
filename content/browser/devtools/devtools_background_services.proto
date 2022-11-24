@@ -28,7 +28,7 @@ enum BackgroundService {
 // A proto for storing the background service event with common metadata for
 // all events.
 //
-// Next Tag: 8
+// Next Tag: 9
 message BackgroundServiceEvent {
   // Microseconds since windows epoch.
   optional int64 timestamp = 1;
@@ -50,4 +50,7 @@ message BackgroundServiceEvent {
 
   // Additional custom information related to this event.
   map<string, string> event_metadata = 7;
+
+  // Storage key the background service belongs to.
+  optional string storage_key = 8;
 }

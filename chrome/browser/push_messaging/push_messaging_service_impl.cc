@@ -64,6 +64,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
@@ -179,9 +180,10 @@ void LogMessageReceivedEventToDevTools(
   else if (was_encrypted)
     event_metadata["Payload"] = payload;
 
+  url::Origin origin = url::Origin::Create(app_identifier.origin());
   devtools_context->LogBackgroundServiceEvent(
       app_identifier.service_worker_registration_id(),
-      url::Origin::Create(app_identifier.origin()),
+      blink::StorageKey(origin),
       content::DevToolsBackgroundService::kPushMessaging,
       "Push message received" /* event_name */, message_id, event_metadata);
 }
@@ -723,12 +725,13 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
     if (app_identifier.is_null())
       return;
 
+    url::Origin origin = url::Origin::Create(app_identifier.origin());
     if (auto* devtools_context = GetDevToolsContext(app_identifier.origin())) {
       std::stringstream ss;
       ss << unsubscribe_reason;
       devtools_context->LogBackgroundServiceEvent(
           app_identifier.service_worker_registration_id(),
-          url::Origin::Create(app_identifier.origin()),
+          blink::StorageKey(origin),
           content::DevToolsBackgroundService::kPushMessaging,
           "Unsubscribed due to error" /* event_name */, message.message_id,
           {{"Reason", ss.str()}});
@@ -793,10 +796,11 @@ void PushMessagingServiceImpl::DidHandleMessage(
   if (app_identifier.is_null() || !did_show_generic_notification)
     return;
 
+  url::Origin origin = url::Origin::Create(app_identifier.origin());
   if (auto* devtools_context = GetDevToolsContext(app_identifier.origin())) {
     devtools_context->LogBackgroundServiceEvent(
         app_identifier.service_worker_registration_id(),
-        url::Origin::Create(app_identifier.origin()),
+        blink::StorageKey(origin),
         content::DevToolsBackgroundService::kPushMessaging,
         "Generic notification shown" /* event_name */, push_message_id,
         {} /* event_metadata */);
