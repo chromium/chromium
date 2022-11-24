@@ -101,7 +101,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sDiscardOccludedBitmaps);
                 add(ChromeFeatureList.sDownloadsAutoResumptionNative);
                 add(ChromeFeatureList.sEarlyLibraryLoad);
-                add(ChromeFeatureList.sElasticOverscroll);
                 add(ChromeFeatureList.sFeedLoadingPlaceholder);
                 add(ChromeFeatureList.sFoldableJankFix);
                 add(ChromeFeatureList.sGridTabSwitcherForTablets);

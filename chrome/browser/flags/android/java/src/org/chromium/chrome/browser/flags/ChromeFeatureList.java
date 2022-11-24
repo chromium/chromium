@@ -313,7 +313,6 @@ public abstract class ChromeFeatureList {
     public static final String EARLY_LIBRARY_LOAD = "EarlyLibraryLoad";
     public static final String ENABLE_AUTOMATIC_SNOOZE = "EnableAutomaticSnooze";
     public static final String ENABLE_PASSWORDS_ACCOUNT_STORAGE = "EnablePasswordsAccountStorage";
-    public static final String ELASTIC_OVERSCROLL = "ElasticOverscroll";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
     public static final String EXPLORE_SITES = "ExploreSites";
@@ -655,7 +654,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDownloadsAutoResumptionNative =
             new CachedFlag(DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);
     public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
-    public static final CachedFlag sElasticOverscroll = new CachedFlag(ELASTIC_OVERSCROLL, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);

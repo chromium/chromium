@@ -439,10 +439,6 @@ found in the LICENSE file.
       <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->
     </style>
 
-    <style name="ThemeOverlay.DisableOverscroll" parent="">
-        <item name="android:overScrollMode">never</item>
-    </style>
-
     <!--  Dialog for notification blocked message.  -->
     <style name="NotificationBlockedDialogContent" parent="AlertDialogContent">
         <item name="android:paddingBottom">12dp</item>
