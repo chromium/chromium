@@ -32,9 +32,13 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 
 namespace features {
+// TODO(crbug.com/1381621): This feature was disabled since it does not match
+// standard POSIX behavior. We should explore adding a flag to allow opting in
+// to overwriting moves. See discussion at
+// https://github.com/whatwg/fs/pull/10#issuecomment-1322993643.
 BASE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove,
              "FileSystemAccessDoNotOverwriteOnMove",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace content {
