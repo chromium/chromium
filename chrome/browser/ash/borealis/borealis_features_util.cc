@@ -53,10 +53,10 @@ std::string GetBoardName() {
 // Returns the model name of this device (either from its CustomizationId or by
 // parsing its hardware class). Returns "" if it fails.
 std::string GetModelName() {
-  std::string ret;
-  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kCustomizationIdKey, &ret)) {
-    return ret;
+  if (const absl::optional<base::StringPiece> ret =
+          chromeos::system::StatisticsProvider::GetInstance()
+              ->GetMachineStatistic(chromeos::system::kCustomizationIdKey)) {
+    return std::string(ret.value());
   }
   LOG(WARNING)
       << "CustomizationId unavailable, attempting to parse hardware class";
@@ -64,9 +64,10 @@ std::string GetModelName() {
   // As a fallback when the CustomizationId is not available, we try to parse it
   // out of the hardware class. If The hardware class is unavailable, all bets
   // are off.
-  std::string hardware_class;
-  if (!chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey, &hardware_class)) {
+  const absl::optional<base::StringPiece> hardware_class_statistic =
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kHardwareClassKey);
+  if (!hardware_class_statistic) {
     return "";
   }
 
@@ -79,6 +80,7 @@ std::string GetModelName() {
   //
   // Naively searching for the first hyphen is fine until we start caring about
   // models with hyphens in the name.
+  base::StringPiece hardware_class = hardware_class_statistic.value();
   size_t hyphen_pos = hardware_class.find('-');
   if (hyphen_pos != std::string::npos)
     hardware_class = hardware_class.substr(0, hyphen_pos);
