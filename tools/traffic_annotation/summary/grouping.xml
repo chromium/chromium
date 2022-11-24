@@ -269,6 +269,7 @@ after discussions on the right group.
       <annotation id="iwa_policy_update_manifest"/>
       <annotation id="iwa_policy_signed_web_bundle"/>
       <annotation id="quick_start_challenge_bytes_fetcher"/>
+      <annotation id="customization_document"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
