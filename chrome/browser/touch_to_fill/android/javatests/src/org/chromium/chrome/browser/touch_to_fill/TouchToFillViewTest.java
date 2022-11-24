@@ -376,9 +376,11 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testButtonTitleWithoutAutoSubmission() {
+        final boolean showSubmitButton = false;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, false)));
+                    .addAll(asList(buildCredentialItem(ANA),
+                            buildConfirmationButton(ANA, showSubmitButton)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
