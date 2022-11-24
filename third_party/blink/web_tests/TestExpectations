@@ -3022,6 +3022,17 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-horizontal.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-horizontal.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-vertical.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-horizontal.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-vlr.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-vrl.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-horizontal.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-vlr.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-vrl.optional.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html [ Failure ]
@@ -3029,7 +3040,7 @@ crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-na
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html [ Failure ]
-crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Timeout Failure ]
+crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-none-horizontal.optional.html [ Failure ]
@@ -6909,11 +6920,11 @@ crbug.com/1376986 [ Linux ] virtual/compute-pressure/external/wpt/compute-pressu
 crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Failure Timeout ]
 
 # Sheriff 2022-11-23
-crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/critical-origin-trial.https.php [ Pass Failure ]
-crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/window-origin-trial.https.php [ Pass Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Pass Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Pass Failure ]
-crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Pass Failure ]
+crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/critical-origin-trial.https.php [ Failure Pass ]
+crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/window-origin-trial.https.php [ Failure Pass ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure Pass ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure Pass ]
+crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
 crbug.com/1393056 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]
 
 # Temporarily disable test to land CPU-backed canvas switching change

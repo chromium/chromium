@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS select[size][style="writing-mode: horizontal-tb"] scrolls correctly
+PASS select[size][style="writing-mode: horizontal-tb"] sizing works correctly
+FAIL select[size][style="writing-mode: vertical-lr"] scrolls correctly assert_true: select should be scrollable in block axis expected true got false
+FAIL select[size][style="writing-mode: vertical-lr"] sizing works correctly assert_true: clientWidth increased when increasing size expected true got false
+FAIL select[size][style="writing-mode: vertical-rl"] scrolls correctly assert_true: select should be scrollable in block axis expected true got false
+FAIL select[size][style="writing-mode: vertical-rl"] sizing works correctly assert_true: clientWidth increased when increasing size expected true got false
+Harness: the test ran to completion.
+
