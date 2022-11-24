@@ -44,7 +44,7 @@ describe('CdpClient tests.', function () {
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const cdpClient = cdpConnection.browserClient();
-    cdpClient.Target.activateTarget({targetId: TEST_TARGET_ID});
+    cdpClient.sendCommand('Target.activateTarget', {targetId: TEST_TARGET_ID});
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -60,7 +60,7 @@ describe('CdpClient tests.', function () {
     const cdpClient = cdpConnection.browserClient();
 
     // Send CDP command and store returned promise.
-    const commandPromise = cdpClient.Target.activateTarget({
+    const commandPromise = cdpClient.sendCommand('Target.activateTarget', {
       targetId: TEST_TARGET_ID,
     });
 
@@ -90,10 +90,10 @@ describe('CdpClient tests.', function () {
     const commandResult2 = {id: 1, result: expectedResult2};
 
     // Send 2 CDP commands and store returned promises.
-    const commandPromise1 = cdpClient.Target.attachToTarget({
+    const commandPromise1 = cdpClient.sendCommand('Target.attachToTarget', {
       targetId: TEST_TARGET_ID,
     });
-    const commandPromise2 = cdpClient.Target.attachToTarget({
+    const commandPromise2 = cdpClient.sendCommand('Target.attachToTarget', {
       targetId: ANOTHER_TARGET_ID,
     });
 
@@ -124,7 +124,7 @@ describe('CdpClient tests.', function () {
     cdpClient.on('event', genericCallback);
 
     const typedCallback = sinon.fake();
-    cdpClient.Target.on('attachedToTarget', typedCallback);
+    cdpClient.on('Target.attachedToTarget', typedCallback);
 
     // Send a CDP event.
     await mockCdpServer.emulateIncomingMessage({
@@ -146,8 +146,8 @@ describe('CdpClient tests.', function () {
     typedCallback.resetHistory();
 
     // Unregister callbacks.
-    cdpClient.off('event', genericCallback);
-    cdpClient.Target.off('Target.attachedToTarget', typedCallback);
+    cdpClient.removeListener('event', genericCallback);
+    cdpClient.removeListener('Target.attachedToTarget', typedCallback);
 
     // Send another CDP event.
     await mockCdpServer.emulateIncomingMessage({

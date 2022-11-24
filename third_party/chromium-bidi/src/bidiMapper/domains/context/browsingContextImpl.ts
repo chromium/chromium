@@ -180,16 +180,18 @@ export class BrowsingContextImpl {
 
   async #unblockAttachedTarget() {
     LogManager.create(this.#cdpClient, this.#cdpSessionId, this.#eventManager);
-    await this.#cdpClient.Runtime.enable();
-    await this.#cdpClient.Page.enable();
-    await this.#cdpClient.Page.setLifecycleEventsEnabled({enabled: true});
-    await this.#cdpClient.Target.setAutoAttach({
+    await this.#cdpClient.sendCommand('Runtime.enable');
+    await this.#cdpClient.sendCommand('Page.enable');
+    await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+      enabled: true,
+    });
+    await this.#cdpClient.sendCommand('Target.setAutoAttach', {
       autoAttach: true,
       waitForDebuggerOnStart: true,
       flatten: true,
     });
 
-    await this.#cdpClient.Runtime.runIfWaitingForDebugger();
+    await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     this.#targetDefers.targetUnblocked.resolve();
   }
 
@@ -243,8 +245,8 @@ export class BrowsingContextImpl {
   }
 
   #initListeners() {
-    this.#cdpClient.Target.on(
-      'targetInfoChanged',
+    this.#cdpClient.on(
+      'Target.targetInfoChanged',
       (params: Protocol.Target.TargetInfoChangedEvent) => {
         if (this.contextId !== params.targetInfo.targetId) {
           return;
@@ -253,8 +255,8 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.Page.on(
-      'frameNavigated',
+    this.#cdpClient.on(
+      'Page.frameNavigated',
       async (params: Protocol.Page.FrameNavigatedEvent) => {
         if (this.contextId !== params.frame.id) {
           return;
@@ -271,8 +273,8 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.Page.on(
-      'navigatedWithinDocument',
+    this.#cdpClient.on(
+      'Page.navigatedWithinDocument',
       (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
         if (this.contextId !== params.frameId) {
           return;
@@ -283,8 +285,8 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.Page.on(
-      'lifecycleEvent',
+    this.#cdpClient.on(
+      'Page.lifecycleEvent',
       async (params: Protocol.Page.LifecycleEventEvent) => {
         if (this.contextId !== params.frameId) {
           return;
@@ -334,8 +336,8 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.Runtime.on(
-      'executionContextCreated',
+    this.#cdpClient.on(
+      'Runtime.executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
         if (params.context.auxData.frameId !== this.contextId) {
           return;
@@ -365,8 +367,8 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.Runtime.on(
-      'executionContextDestroyed',
+    this.#cdpClient.on(
+      'Runtime.executionContextDestroyed',
       (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
         Realm.findRealms({
           cdpSessionId: this.#cdpSessionId,
@@ -430,10 +432,13 @@ export class BrowsingContextImpl {
     await this.#targetDefers.targetUnblocked;
 
     // TODO: handle loading errors.
-    const cdpNavigateResult = await this.#cdpClient.Page.navigate({
-      url,
-      frameId: this.contextId,
-    });
+    const cdpNavigateResult = await this.#cdpClient.sendCommand(
+      'Page.navigate',
+      {
+        url,
+        frameId: this.contextId,
+      }
+    );
 
     if (cdpNavigateResult.errorText) {
       throw new UnknownException(cdpNavigateResult.errorText);
@@ -520,7 +525,7 @@ export class BrowsingContextImpl {
     });
 
     if (maybeSandboxes.length == 0) {
-      await this.#cdpClient.Page.createIsolatedWorld({
+      await this.#cdpClient.sendCommand('Page.createIsolatedWorld', {
         frameId: this.contextId,
         worldName: sandbox,
       });

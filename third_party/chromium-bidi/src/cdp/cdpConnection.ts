@@ -81,7 +81,7 @@ export class CdpConnection {
 
   sendCommand(
     method: string,
-    params: object,
+    params: object | undefined,
     sessionId: string | null
   ): Promise<object> {
     return new Promise((resolve, reject) => {
@@ -131,7 +131,8 @@ export class CdpConnection {
         ? this.#sessionCdpClients.get(parsed.sessionId)
         : this.#browserCdpClient;
       if (client) {
-        client._onCdpEvent(parsed.method, parsed.params || {});
+        client.emit(parsed.method, parsed.params || {});
+        client.emit('event', parsed.method, parsed.params || {});
       }
     }
   };

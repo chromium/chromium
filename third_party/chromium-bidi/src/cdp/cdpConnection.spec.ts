@@ -37,7 +37,7 @@ describe('CdpConnection', function () {
       id: 0,
       method: 'Browser.getVersion',
     });
-    cdpConnection.browserClient().Browser.getVersion();
+    cdpConnection.browserClient().sendCommand('Browser.getVersion');
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -106,7 +106,7 @@ describe('CdpConnection', function () {
 
     // Register for browser message callbacks.
     const browserClient = cdpConnection.browserClient();
-    browserClient.Browser.on('downloadWillBegin', browserCallback);
+    browserClient.on('Browser.downloadWillBegin', browserCallback);
 
     // Verify that the browser callback receives the message.
     await mockCdpServer.emulateIncomingMessage(browserMessage);
@@ -121,7 +121,7 @@ describe('CdpConnection', function () {
 
     const sessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID)!;
     chai.assert.isNotNull(sessionClient);
-    sessionClient.Page.on('frameNavigated', sessionCallback);
+    sessionClient.on('Page.frameNavigated', sessionCallback);
 
     // Send another message for the browser and verify that only the browser callback receives it.
     // Verifies that adding another client doesn't affect routing for existing clients.
@@ -144,7 +144,7 @@ describe('CdpConnection', function () {
 
     const otherSessionClient = cdpConnection.getCdpClient(ANOTHER_SESSION_ID)!;
     chai.assert.isNotNull(otherSessionClient);
-    otherSessionClient.Page.on('loadEventFired', otherSessionCallback);
+    otherSessionClient.on('Page.loadEventFired', otherSessionCallback);
 
     // Send a message for session B and verify that only the session B callback receives it.
     // Verifies that a message is sent only to the session client it is intended for.

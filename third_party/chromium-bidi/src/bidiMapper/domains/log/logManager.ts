@@ -57,8 +57,8 @@ export class LogManager {
   }
 
   #initializeLogEntryAddedEventListener() {
-    this.#cdpClient.Runtime.on(
-      'consoleAPICalled',
+    this.#cdpClient.on(
+      'Runtime.consoleAPICalled',
       (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
@@ -102,8 +102,8 @@ export class LogManager {
       }
     );
 
-    this.#cdpClient.Runtime.on(
-      'exceptionThrown',
+    this.#cdpClient.on(
+      'Runtime.exceptionThrown',
       (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.

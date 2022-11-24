@@ -5,7 +5,6 @@
   "main": "index.ts",
   "scripts": {
     "build": "npm run prettier && npm run clean && npm run build-mapper && npm run build-server",
-    "prebuild-mapper": "utils/filter_protocol_commands.js",
     "build-mapper": "rollup --config src/bidiMapper/rollup.config.js",
     "build-server": "tsc -b src/tsconfig.json",
     "clean": "rimraf src/.build",

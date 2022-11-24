@@ -150,10 +150,10 @@ async function _waitSelfTargetId(): Promise<string> {
 
 async function _prepareCdp(cdpClient: CdpClient) {
   // Needed to get events about new targets.
-  await cdpClient.Target.setDiscoverTargets({discover: true});
+  await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
 
   // Needed to automatically attach to new targets.
-  await cdpClient.Target.setAutoAttach({
+  await cdpClient.sendCommand('Target.setAutoAttach', {
     autoAttach: true,
     waitForDebuggerOnStart: true,
     flatten: true,

@@ -42,7 +42,7 @@ export class ScriptEvaluator {
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
-      await realm.cdpClient.Runtime.callFunctionOn({
+      await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
         functionDeclaration: String((obj: unknown) => obj),
         awaitPromise: false,
         arguments: [cdpObject],
@@ -67,17 +67,20 @@ export class ScriptEvaluator {
     cdpObject: Protocol.Runtime.RemoteObject,
     realm: Realm
   ): Promise<string> {
-    let stringifyResult = await realm.cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: String(function (
-        obj: Protocol.Runtime.RemoteObject
-      ) {
-        return String(obj);
-      }),
-      awaitPromise: false,
-      arguments: [cdpObject],
-      returnByValue: true,
-      executionContextId: realm.executionContextId,
-    });
+    let stringifyResult = await realm.cdpClient.sendCommand(
+      'Runtime.callFunctionOn',
+      {
+        functionDeclaration: String(function (
+          obj: Protocol.Runtime.RemoteObject
+        ) {
+          return String(obj);
+        }),
+        awaitPromise: false,
+        arguments: [cdpObject],
+        returnByValue: true,
+        executionContextId: realm.executionContextId,
+      }
+    );
     return stringifyResult.result.value;
   }
 
@@ -109,13 +112,16 @@ export class ScriptEvaluator {
 
     let cdpCallFunctionResult: Protocol.Runtime.CallFunctionOnResponse;
     try {
-      cdpCallFunctionResult = await realm.cdpClient.Runtime.callFunctionOn({
-        functionDeclaration: callFunctionAndSerializeScript,
-        awaitPromise,
-        arguments: thisAndArgumentsList, // this, arguments.
-        generateWebDriverValue: true,
-        executionContextId: realm.executionContextId,
-      });
+      cdpCallFunctionResult = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: callFunctionAndSerializeScript,
+          awaitPromise,
+          arguments: thisAndArgumentsList, // this, arguments.
+          generateWebDriverValue: true,
+          executionContextId: realm.executionContextId,
+        }
+      );
     } catch (e: any) {
       // Heuristic to determine if the problem is in the argument.
       // The check can be done on the `deserialization` step, but this approach
@@ -166,7 +172,9 @@ export class ScriptEvaluator {
       return;
     }
     try {
-      await realm.cdpClient.Runtime.releaseObject({objectId: handle});
+      await realm.cdpClient.sendCommand('Runtime.releaseObject', {
+        objectId: handle,
+      });
     } catch (e: any) {
       // Heuristic to determine if the problem is in the unknown handler.
       // Ignore the error if so.
@@ -241,7 +249,7 @@ export class ScriptEvaluator {
       // Remember all the handles sent to client.
       this.#knownHandlesToRealm.set(objectId, realm.realmId);
     } else {
-      await realm.cdpClient.Runtime.releaseObject({objectId});
+      await realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
     }
 
     return bidiValue as CommonDataTypes.RemoteValue;
@@ -253,12 +261,15 @@ export class ScriptEvaluator {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.ScriptResult> {
-    let cdpEvaluateResult = await realm.cdpClient.Runtime.evaluate({
-      contextId: realm.executionContextId,
-      expression,
-      awaitPromise,
-      generateWebDriverValue: true,
-    });
+    let cdpEvaluateResult = await realm.cdpClient.sendCommand(
+      'Runtime.evaluate',
+      {
+        contextId: realm.executionContextId,
+        expression,
+        awaitPromise,
+        generateWebDriverValue: true,
+      }
+    );
 
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
@@ -351,21 +362,24 @@ export class ScriptEvaluator {
           argumentValue.value,
           realm
         );
-        let argEvalResult = await realm.cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (
-            ...args: Protocol.Runtime.CallArgument[]
-          ) {
-            const result = new Map();
-            for (let i = 0; i < args.length; i += 2) {
-              result.set(args[i], args[i + 1]);
-            }
-            return result;
-          }),
-          awaitPromise: false,
-          arguments: keyValueArray,
-          returnByValue: false,
-          executionContextId: realm.executionContextId,
-        });
+        let argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(function (
+              ...args: Protocol.Runtime.CallArgument[]
+            ) {
+              const result = new Map();
+              for (let i = 0; i < args.length; i += 2) {
+                result.set(args[i], args[i + 1]);
+              }
+              return result;
+            }),
+            awaitPromise: false,
+            arguments: keyValueArray,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
 
         // TODO(sadym): dispose nested objects.
 
@@ -379,27 +393,30 @@ export class ScriptEvaluator {
           realm
         );
 
-        let argEvalResult = await realm.cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (
-            ...args: Protocol.Runtime.CallArgument[]
-          ) {
-            const result: Record<
-              string | number | symbol,
-              Protocol.Runtime.CallArgument
-            > = {};
+        let argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(function (
+              ...args: Protocol.Runtime.CallArgument[]
+            ) {
+              const result: Record<
+                string | number | symbol,
+                Protocol.Runtime.CallArgument
+              > = {};
 
-            for (let i = 0; i < args.length; i += 2) {
-              // Key should be either `string`, `number`, or `symbol`.
-              const key = args[i] as string | number | symbol;
-              result[key] = args[i + 1]!;
-            }
-            return result;
-          }),
-          awaitPromise: false,
-          arguments: keyValueArray,
-          returnByValue: false,
-          executionContextId: realm.executionContextId,
-        });
+              for (let i = 0; i < args.length; i += 2) {
+                // Key should be either `string`, `number`, or `symbol`.
+                const key = args[i] as string | number | symbol;
+                result[key] = args[i + 1]!;
+              }
+              return result;
+            }),
+            awaitPromise: false,
+            arguments: keyValueArray,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
 
         // TODO(sadym): dispose nested objects.
 
@@ -413,15 +430,18 @@ export class ScriptEvaluator {
           realm
         );
 
-        let argEvalResult = await realm.cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (...args: unknown[]) {
-            return args;
-          }),
-          awaitPromise: false,
-          arguments: args,
-          returnByValue: false,
-          executionContextId: realm.executionContextId,
-        });
+        let argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(function (...args: unknown[]) {
+              return args;
+            }),
+            awaitPromise: false,
+            arguments: args,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
 
         // TODO(sadym): dispose nested objects.
 
@@ -432,15 +452,18 @@ export class ScriptEvaluator {
         //  serialize to `unserializableValue` without CDP roundtrip.
         const args = await this.#flattenValueList(argumentValue.value, realm);
 
-        let argEvalResult = await realm.cdpClient.Runtime.callFunctionOn({
-          functionDeclaration: String(function (...args: unknown[]) {
-            return new Set(args);
-          }),
-          awaitPromise: false,
-          arguments: args,
-          returnByValue: false,
-          executionContextId: realm.executionContextId,
-        });
+        let argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(function (...args: unknown[]) {
+              return new Set(args);
+            }),
+            awaitPromise: false,
+            arguments: args,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
         return {objectId: argEvalResult.result.objectId};
       }
 

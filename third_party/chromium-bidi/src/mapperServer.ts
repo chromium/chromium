@@ -49,9 +49,9 @@ export class MapperServer {
     private _cdpConnection: CdpConnection,
     private _mapperCdpClient: CdpClient
   ) {
-    this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
-    this._mapperCdpClient.Runtime.on(
-      'consoleAPICalled',
+    this._mapperCdpClient.on('Runtime.bindingCalled', this._onBindingCalled);
+    this._mapperCdpClient.on(
+      'Runtime.consoleAPICalled',
       this._onConsoleAPICalled
     );
   }
@@ -87,7 +87,7 @@ export class MapperServer {
   }
 
   private async _sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this._mapperCdpClient.Runtime.evaluate({
+    await this._mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: 'onBidiMessage(' + JSON.stringify(bidiMessageJson) + ')',
     });
   }
@@ -124,25 +124,27 @@ export class MapperServer {
 
     const browserClient = cdpConnection.browserClient();
 
-    const {targetId} = await browserClient.Target.createTarget({
+    const {targetId} = await browserClient.sendCommand('Target.createTarget', {
       url: 'about:blank',
     });
-    const {sessionId: mapperSessionId} =
-      await browserClient.Target.attachToTarget({targetId, flatten: true});
+    const {sessionId: mapperSessionId} = await browserClient.sendCommand(
+      'Target.attachToTarget',
+      {targetId, flatten: true}
+    );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
     if (!mapperCdpClient) {
       throw new Error('Unable to connect to mapper CDP target');
     }
 
-    await mapperCdpClient.Runtime.enable();
+    await mapperCdpClient.sendCommand('Runtime.enable');
 
-    await browserClient.Target.exposeDevToolsProtocol({
+    await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
       bindingName: 'cdp',
       targetId,
     });
 
-    await mapperCdpClient.Runtime.addBinding({
+    await mapperCdpClient.sendCommand('Runtime.addBinding', {
       name: 'sendBidiResponse',
     });
 
@@ -156,8 +158,8 @@ export class MapperServer {
           try {
             const parsed = JSON.parse(payload);
             if (parsed.launched) {
-              mapperCdpClient.Runtime.removeListener(
-                'bindingCalled',
+              mapperCdpClient.removeListener(
+                'Runtime.bindingCalled',
                 onBindingCalled
               );
               resolve();
@@ -168,13 +170,15 @@ export class MapperServer {
         }
       };
 
-      mapperCdpClient.Runtime.on('bindingCalled', onBindingCalled);
+      mapperCdpClient.on('Runtime.bindingCalled', onBindingCalled);
     });
 
-    await mapperCdpClient.Runtime.evaluate({expression: mapperContent});
+    await mapperCdpClient.sendCommand('Runtime.evaluate', {
+      expression: mapperContent,
+    });
 
     // Let Mapper know what is it's TargetId to filter out related targets.
-    await mapperCdpClient.Runtime.evaluate({
+    await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: 'window.setSelfTargetId(' + JSON.stringify(targetId) + ')',
     });
 

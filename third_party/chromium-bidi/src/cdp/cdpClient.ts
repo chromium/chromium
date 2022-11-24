@@ -18,90 +18,46 @@
 import {EventEmitter} from 'events';
 import {CdpConnection} from './cdpConnection';
 
-import {domains as browserProtocolDomains} from 'devtools-protocol/json/browser_protocol_commands_only.json';
-import {domains as jsProtocolDomains} from 'devtools-protocol/json/js_protocol_commands_only.json';
-import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
-import ProtocolMapping from 'devtools-protocol/types/protocol-mapping';
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-// Publicly visible type. Has all of the methods of CdpClientImpl, and a property
-// getter for each CDP Domain (provided by ProtocolApiExt).
-export type CdpClient = CdpClientImpl & ProtocolApiExt;
-
-// A type with the same set of properties as ProtocolProxyApi, but each domain
-// property also extends DomainImpl.
-type ProtocolApiExt = {
-  [Domain in keyof ProtocolProxyApi.ProtocolApi]: DomainImpl &
-    ProtocolProxyApi.ProtocolApi[Domain];
-};
-
-const browserAndJsProtocolDomains = [
-  ...browserProtocolDomains,
-  ...jsProtocolDomains,
-];
-
-// Generate classes for each Domain and store constructors here.
-const domainConstructorMap = new Map<
-  string,
-  {new (client: CdpClientImpl): DomainImpl}
->();
-
-// Base class for all domains.
-class DomainImpl extends EventEmitter {
-  // @ts-ignore
-  constructor(private _client: CdpClientImpl) {
-    super();
-  }
-}
-
-for (let domains of browserAndJsProtocolDomains) {
-  // Dynamically create a subclass for this domain. Note: This class definition is scoped
-  // to this for-loop, so there will be a unique ThisDomain definition for each domain.
-  class ThisDomain extends DomainImpl {
-    constructor(_client: CdpClientImpl) {
-      super(_client);
-    }
-  }
-
-  // Add methods to our Domain for each available command.
-  for (let command of domains.commands) {
-    Object.defineProperty(ThisDomain.prototype, command, {
-      value: async function (params: object) {
-        return await this._client.sendCommand(
-          `${domains.domain}.${command}`,
-          params
-        );
-      },
-    });
-  }
-
-  domainConstructorMap.set(domains.domain, ThisDomain);
-}
-
-interface CdpClientImpl {
+export interface CdpClient {
   on<K extends keyof ProtocolMapping.Events>(
-    event: 'event',
-    listener: (method: K, params: object) => void
-  ): this;
+    eventName: K,
+    handler: (...params: ProtocolMapping.Events[K]) => void
+  ): EventEmitter;
+  on(
+    eventName: 'event',
+    handler: (method: keyof ProtocolMapping.Events, ...params: any) => void
+  ): EventEmitter;
+  removeListener<K extends keyof ProtocolMapping.Events>(
+    eventName: K,
+    handler: (...params: ProtocolMapping.Events[K]) => void
+  ): EventEmitter;
+  removeListener(
+    eventName: 'event',
+    handler: (method: keyof ProtocolMapping.Events, ...params: any) => void
+  ): EventEmitter;
+  emit<K extends keyof ProtocolMapping.Events>(
+    eventName: K,
+    ...args: ProtocolMapping.Events[K]
+  ): void;
+  emit<K extends keyof ProtocolMapping.Events>(
+    eventName: 'event',
+    methodName: K,
+    ...args: ProtocolMapping.Events[K]
+  ): void;
+  sendCommand<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...params: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
 }
 
-class CdpClientImpl extends EventEmitter {
-  private _domains: Map<string, DomainImpl>;
-
+class CdpClientImpl extends EventEmitter implements CdpClient {
   constructor(
     private _cdpConnection: CdpConnection,
     private _sessionId: string | null
   ) {
     super();
-
-    this._domains = new Map();
-    for (const [domainName, ctor] of domainConstructorMap.entries()) {
-      this._domains.set(domainName, new ctor(this));
-      Object.defineProperty(this, domainName, {
-        get(this: CdpClientImpl) {
-          return this._domains.get(domainName);
-        },
-      });
-    }
   }
 
   /**
@@ -109,23 +65,12 @@ class CdpClientImpl extends EventEmitter {
    * @param method Name of the CDP command to call.
    * @param params Parameters to pass to the CDP command.
    */
-  sendCommand(method: string, params: object): Promise<object> {
-    return this._cdpConnection.sendCommand(method, params, this._sessionId);
-  }
-
-  _onCdpEvent(method: string, params: object) {
-    // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
-    this.emit('event', method, params);
-
-    // Next, get the correct domain instance and tell it to emit the strongly typed event.
-    const [domainName, eventName] = method.split('.');
-    if (!domainName || !eventName) {
-      throw new Error('Malformed message');
-    } 
-    const domain = this._domains.get(domainName);
-    if (domain) {
-      domain.emit(eventName, params);
-    }
+  sendCommand<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...params: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
+    const param = params[0];
+    return this._cdpConnection.sendCommand(method, param, this._sessionId);
   }
 }
 
@@ -138,6 +83,6 @@ class CdpClientImpl extends EventEmitter {
 export function createClient(
   cdpConnection: CdpConnection,
   sessionId: string | null
-) {
-  return new CdpClientImpl(cdpConnection, sessionId) as unknown as CdpClient;
+): CdpClient {
+  return new CdpClientImpl(cdpConnection, sessionId);
 }

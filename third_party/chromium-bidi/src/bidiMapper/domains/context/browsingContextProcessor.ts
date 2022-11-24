@@ -50,10 +50,10 @@ export class BrowsingContextProcessor {
   }
 
   #setTargetEventListeners(cdpClient: CdpClient) {
-    cdpClient.Target.on('attachedToTarget', async (params) => {
+    cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
-    cdpClient.Target.on('detachedFromTarget', async (params) => {
+    cdpClient.on('Target.detachedFromTarget', async (params) => {
       await BrowsingContextProcessor.#handleDetachedFromTargetEvent(params);
     });
   }
@@ -82,8 +82,8 @@ export class BrowsingContextProcessor {
       );
     });
 
-    sessionCdpClient.Page.on(
-      'frameAttached',
+    sessionCdpClient.on(
+      'Page.frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
         await BrowsingContextImpl.createFrameContext(
           params.frameId,
@@ -106,8 +106,13 @@ export class BrowsingContextProcessor {
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target.
-      await targetSessionCdpClient.Runtime.runIfWaitingForDebugger();
-      await parentSessionCdpClient.Target.detachFromTarget(params);
+      await targetSessionCdpClient.sendCommand(
+        'Runtime.runIfWaitingForDebugger'
+      );
+      await parentSessionCdpClient.sendCommand(
+        'Target.detachFromTarget',
+        params
+      );
       return;
     }
 
@@ -179,7 +184,7 @@ export class BrowsingContextProcessor {
       }
     }
 
-    const result = await browserCdpClient.Target.createTarget({
+    const result = await browserCdpClient.sendCommand('Target.createTarget', {
       url: 'about:blank',
       newWindow: params.type === 'window',
       ...(referenceContext?.cdpBrowserContextId
@@ -294,19 +299,21 @@ export class BrowsingContextProcessor {
         eventParams: Protocol.Target.DetachedFromTargetEvent
       ) => {
         if (eventParams.targetId === commandParams.context) {
-          browserCdpClient.Target.removeListener(
-            'detachedFromTarget',
+          browserCdpClient.removeListener(
+            'Target.detachedFromTarget',
             onContextDestroyed
           );
           resolve();
         }
       };
-      browserCdpClient.Target.on('detachedFromTarget', onContextDestroyed);
+      browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
     });
 
-    await this.#cdpConnection.browserClient().Target.closeTarget({
-      targetId: commandParams.context,
-    });
+    await this.#cdpConnection
+      .browserClient()
+      .sendCommand('Target.closeTarget', {
+        targetId: commandParams.context,
+      });
 
     // Sometimes CDP command finishes before `detachedFromTarget` event,
     // sometimes after. Wait for the CDP command to be finished, and then wait
