@@ -164,4 +164,10 @@ export class OfficeFallbackElement extends HTMLElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'office-fallback': OfficeFallbackElement;
+  }
+}
+
 customElements.define('office-fallback', OfficeFallbackElement);
