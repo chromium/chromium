@@ -27,14 +27,10 @@ class CapabilityDelegationBrowserTest
   ~CapabilityDelegationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(https_server()->InitializeAndListen());
     content::SetupCrossSiteRedirector(https_server());
     https_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/capability_delegation");
-    https_server()->ServeFilesFromSourceDirectory(
-        "components/test/data/payments");
-    https_server()->StartAcceptingConnections();
+    payments::PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
   }
 
  private:

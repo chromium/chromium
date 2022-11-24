@@ -20,6 +20,7 @@
 #include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -47,6 +48,8 @@ class PaymentRequestPlatformBrowserTestBase
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+  void SetUpInProcessBrowserTestFixture() override;
+  void TearDownInProcessBrowserTestFixture() override;
 
   // Navigates |window| to the URL to a server based on the given |file_path|
   // (relative to components/test/data/payments) using |hostname| or 127.0.0.1.
@@ -123,6 +126,7 @@ class PaymentRequestPlatformBrowserTestBase
  private:
   std::unique_ptr<EventWaiter> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
   PaymentRequestTestController test_controller_;
   ConstCSPChecker const_csp_checker_{/*allow=*/true};
 };

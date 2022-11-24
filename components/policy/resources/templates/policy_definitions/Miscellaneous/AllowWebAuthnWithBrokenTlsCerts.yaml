@@ -13,9 +13,10 @@ features:
   per_profile: true
 future_on:
 - fuchsia
-- chrome.*
-- chrome_os
-- android
+supported_on:
+- chrome.*:110-
+- chrome_os:110-
+- android:110-
 items:
 - caption: Allow WebAuthn API requests on sites with broken TLS certificates.
   value: true

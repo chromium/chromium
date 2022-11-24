@@ -33,14 +33,13 @@ PaymentRequestPlatformBrowserTestBase::
 
 void PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
-  // HTTPS server only serves a valid cert for localhost, so this is needed to
-  // load pages from "a.com" without an interstitial.
-  command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  mock_cert_verifier_.SetUpCommandLine(command_line);
 }
 
 void PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread() {
-  // Map all out-going DNS lookups to the local server. This must be used in
-  // conjunction with switches::kIgnoreCertificateErrors to work.
+  mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
+  // Map all out-going DNS lookups to the local server.
   host_resolver()->AddRule("*", "127.0.0.1");
 
   // Setup the https server.
@@ -49,6 +48,15 @@ void PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread() {
 
   test_controller_.SetUpOnMainThread();
   PlatformBrowserTest::SetUpOnMainThread();
+}
+
+void PaymentRequestPlatformBrowserTestBase::SetUpInProcessBrowserTestFixture() {
+  mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+}
+
+void PaymentRequestPlatformBrowserTestBase::
+    TearDownInProcessBrowserTestFixture() {
+  mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
 void PaymentRequestPlatformBrowserTestBase::NavigateTo(
