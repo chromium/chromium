@@ -12,15 +12,20 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 using web_app::AppId;
 using GetAppsCallback =
@@ -33,6 +38,30 @@ namespace {
 constexpr char kTestAppUrl[] = "https://www.example.com/";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestAppName[] = "Test App";
+
+#if !BUILDFLAG(IS_MAC)
+void FlushShortcutTasks() {
+  // Execute the UI thread task runner before and after the shortcut task runner
+  // to ensure that tasks get to the shortcut runner, and then any scheduled
+  // replies on the UI thread get run.
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    web_app::internals::GetShortcutIOTaskRunner()->PostTask(FROM_HERE,
+                                                            loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+}
+#endif
 
 class TestAppHomePageHandler : public AppHomePageHandler {
  public:
@@ -329,4 +358,54 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ShowWebAppSettings) {
   GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + installed_app_id));
 }
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateWebAppShortcut) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  // First, install a test web app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  AppId installed_app_id = InstallTestWebApp();
+  page_handler->Wait();
+
+#if BUILDFLAG(IS_MAC)
+  base::RunLoop loop;
+  page_handler->CreateAppShortcut(installed_app_id, loop.QuitClosure());
+  loop.Run();
+#else
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "CreateChromeApplicationShortcutView");
+  page_handler->CreateAppShortcut(installed_app_id, base::DoNothing());
+  FlushShortcutTasks();
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+  views::test::AcceptDialog(widget);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  // First, install a test extension app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  scoped_refptr<const extensions::Extension> extension =
+      InstallTestExtensionApp();
+  page_handler->Wait();
+
+#if BUILDFLAG(IS_MAC)
+  base::RunLoop loop;
+  page_handler->CreateAppShortcut(extension->id(), loop.QuitClosure());
+  loop.Run();
+#else
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "CreateChromeApplicationShortcutView");
+  page_handler->CreateAppShortcut(extension->id(), base::DoNothing());
+  FlushShortcutTasks();
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+  views::test::AcceptDialog(widget);
+#endif
+}
+
 }  // namespace webapps

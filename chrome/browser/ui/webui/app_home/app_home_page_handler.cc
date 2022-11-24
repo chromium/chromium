@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -82,6 +87,35 @@ void AppHomePageHandler::ShowExtensionAppSettings(
     const extensions::Extension* extension) {
   ShowAppInfoInNativeDialog(web_ui_->GetWebContents(), profile_, extension,
                             base::DoNothing());
+}
+
+void AppHomePageHandler::CreateWebAppShortcut(const std::string& app_id,
+                                              base::OnceClosure done) {
+  Browser* browser = GetCurrentBrowser();
+  chrome::ShowCreateChromeAppShortcutsDialog(
+      browser->window()->GetNativeWindow(), browser->profile(), app_id,
+      base::BindOnce(
+          [](base::OnceClosure done, bool success) {
+            base::UmaHistogramBoolean(
+                "Apps.AppInfoDialog.CreateWebAppShortcutSuccess", success);
+            std::move(done).Run();
+          },
+          std::move(done)));
+}
+
+void AppHomePageHandler::CreateExtensionAppShortcut(
+    const extensions::Extension* extension,
+    base::OnceClosure done) {
+  Browser* browser = GetCurrentBrowser();
+  chrome::ShowCreateChromeAppShortcutsDialog(
+      browser->window()->GetNativeWindow(), browser->profile(), extension,
+      base::BindOnce(
+          [](base::OnceClosure done, bool success) {
+            base::UmaHistogramBoolean(
+                "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
+            std::move(done).Run();
+          },
+          std::move(done)));
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
@@ -288,6 +322,24 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
   if (extension) {
     ShowExtensionAppSettings(extension);
   }
+}
+
+void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
+                                           CreateAppShortcutCallback callback) {
+  if (web_app_provider_->registrar().IsInstalled(app_id) &&
+      !IsYoutubeExtension(app_id)) {
+    CreateWebAppShortcut(app_id, std::move(callback));
+    return;
+  }
+
+  const Extension* extension =
+      extensions::ExtensionRegistry::Get(extension_service_->profile())
+          ->GetExtensionById(app_id,
+                             extensions::ExtensionRegistry::ENABLED |
+                                 extensions::ExtensionRegistry::DISABLED |
+                                 extensions::ExtensionRegistry::TERMINATED);
+  if (extension)
+    CreateExtensionAppShortcut(extension, std::move(callback));
 }
 
 }  // namespace webapps
