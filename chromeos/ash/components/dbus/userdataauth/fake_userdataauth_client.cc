@@ -1612,6 +1612,13 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
+    const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
+    GetAuthFactorExtendedInfoCallback callback) {
+  ::user_data_auth::GetAuthFactorExtendedInfoReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+}
+
 void FakeUserDataAuthClient::GetRecoveryRequest(
     const ::user_data_auth::GetRecoveryRequestRequest& request,
     GetRecoveryRequestCallback callback) {

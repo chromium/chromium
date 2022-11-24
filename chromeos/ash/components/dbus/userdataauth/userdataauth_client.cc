@@ -346,6 +346,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GetAuthFactorExtendedInfo(
+      const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
+      GetAuthFactorExtendedInfoCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetAuthFactorExtendedInfo,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void GetRecoveryRequest(
       const ::user_data_auth::GetRecoveryRequestRequest& request,
       GetRecoveryRequestCallback callback) override {
