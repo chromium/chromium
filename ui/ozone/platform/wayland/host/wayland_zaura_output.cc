@@ -17,9 +17,8 @@ WaylandZAuraOutput::WaylandZAuraOutput(zaura_output* aura_output)
   DCHECK(obj_);
 
   static constexpr zaura_output_listener kZAuraOutputListener = {
-      &OnScale,    &OnConnection,       &OnDeviceScaleFactor,
-      &OnInsets,   &OnLogicalTransform, &OnDisplayId,
-      &OnActivated};
+      &OnScale,  &OnConnection,       &OnDeviceScaleFactor,
+      &OnInsets, &OnLogicalTransform, &OnDisplayId};
   zaura_output_add_listener(obj_.get(), &kZAuraOutputListener, this);
 }
 
@@ -72,8 +71,5 @@ void WaylandZAuraOutput::OnDisplayId(void* data,
         ui::wayland::FromWaylandDisplayIdPair({display_id_hi, display_id_lo});
   }
 }
-
-void WaylandZAuraOutput::OnActivated(void* data,
-                                     struct zaura_output* zaura_output) {}
 
 }  // namespace ui
