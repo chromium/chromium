@@ -35,6 +35,8 @@ using cc::UsePaintCache;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
+  static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
+
   BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
 
@@ -644,6 +646,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   bool origin_tainted_by_content_;
   UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;
+  unsigned read_count_ = 0;
 };
 
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(

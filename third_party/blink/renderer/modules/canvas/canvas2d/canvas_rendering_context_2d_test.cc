@@ -1285,7 +1285,10 @@ TEST_P(CanvasRenderingContext2DTest,
   DrawSomething();
   NonThrowableExceptionState exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
-  Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
+  int read_count = BaseRenderingContext2D::kFallbackToCPUAfterReadbacks;
+  while (read_count--) {
+    Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
+  }
   EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 

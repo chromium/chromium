@@ -2048,9 +2048,12 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
     if (IsAccelerated() && !IsDesynchronized()) {
-      DisableAcceleration();
-      base::UmaHistogramEnumeration("Blink.Canvas.GPUFallbackToCPU",
-                                    GPUFallbackToCPUScenario::kGetImageData);
+      read_count_++;
+      if (read_count_ >= kFallbackToCPUAfterReadbacks) {
+        DisableAcceleration();
+        base::UmaHistogramEnumeration("Blink.Canvas.GPUFallbackToCPU",
+                                      GPUFallbackToCPUScenario::kGetImageData);
+      }
     }
   }
 
