@@ -89784,8 +89784,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="ScreenAILoadLibraryResult">
   <int value="0" label="Succeeded to load ScreenAI libraries"/>
-  <int value="1" label="Failed to load VisualAnnotation library"/>
+  <int value="1" label="Failed to load VisualAnnotation library (deprecated)"/>
   <int value="2" label="Failed to load MainContentExtraction library"/>
+  <int value="3" label="Failed to load Layout Extraction library"/>
+  <int value="4" label="Failed to load OCR library"/>
 </enum>
 
 <enum name="ScreenRotationAcceleratorAction">

@@ -399,11 +399,8 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     return update;
   }
 
-  // TODO(https://crbug.com/1278249): After updating the service to explicitly
-  // use one of the OCR or Layout Extraction functions, remove this line and
-  // add a DCHECK that ensures either |lines| or |ui_components| exists.
-  if (visual_annotation.lines_size())
-    visual_annotation.clear_ui_component();
+  DCHECK(visual_annotation.lines_size() == 0 ||
+         visual_annotation.ui_component_size() == 0);
 
   // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
   // update using AXTreeSerializer.

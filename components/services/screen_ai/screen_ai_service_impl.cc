@@ -37,9 +37,11 @@ namespace {
 // numeric values should never be reused.
 enum class ScreenAILoadLibraryResult {
   kAllOk = 0,
-  kVisualAnnotationFailed = 1,
+  kDeprecatedVisualAnnotationFailed = 1,
   kMainContentExtractionFailed = 2,
-  kMaxValue = kMainContentExtractionFailed,
+  kLayoutExtractionFailed = 3,
+  kOcrFailed = 4,
+  kMaxValue = kOcrFailed,
 };
 
 std::vector<char> LoadModelFile(base::File& model_file) {
@@ -60,12 +62,32 @@ std::vector<char> LoadModelFile(base::File& model_file) {
 }
 
 NO_SANITIZE("cfi-icall")
-bool CallInitVisualAnnotationsFunction(LibraryFunctions* library_functions,
-                                       const base::FilePath& models_folder) {
+std::string CallGetLibraryVersionFunction(LibraryFunctions* library_functions) {
   DCHECK(library_functions);
-  DCHECK(library_functions->init_visual_annotation_);
-  return library_functions->init_visual_annotation_(
+  DCHECK(library_functions->get_library_version_);
+
+  char* library_version;
+  library_functions->get_library_version_(library_version);
+  std::string version_string(library_version);
+  delete library_version;
+  return version_string;
+}
+
+NO_SANITIZE("cfi-icall")
+bool CallInitLayoutExtractionFunction(LibraryFunctions* library_functions,
+                                      const base::FilePath& models_folder) {
+  DCHECK(library_functions);
+  DCHECK(library_functions->init_layout_extraction_);
+  return library_functions->init_layout_extraction_(
       models_folder.MaybeAsASCII().c_str());
+}
+
+NO_SANITIZE("cfi-icall")
+bool CallInitOCRFunction(LibraryFunctions* library_functions,
+                         const base::FilePath& models_folder) {
+  DCHECK(library_functions);
+  DCHECK(library_functions->init_ocr_);
+  return library_functions->init_ocr_(models_folder.MaybeAsASCII().c_str());
 }
 
 NO_SANITIZE("cfi-icall")
@@ -97,17 +119,28 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
   std::unique_ptr<LibraryFunctions> library_functions =
       std::make_unique<LibraryFunctions>(library_path);
 
+  VLOG(2) << "Screen AI library version: "
+          << CallGetLibraryVersionFunction(library_functions.get());
+
   if (features::IsScreenAIDebugModeEnabled())
     CallEnableDebugMode(library_functions.get());
 
   bool init_ok = true;
-  if (features::IsPdfOcrEnabled() || features::IsLayoutExtractionEnabled()) {
-    if (!CallInitVisualAnnotationsFunction(library_functions.get(),
-                                           library_path.DirName())) {
+  if (features::IsPdfOcrEnabled()) {
+    if (!CallInitOCRFunction(library_functions.get(), library_path.DirName())) {
+      init_ok = false;
+      base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
+                                    ScreenAILoadLibraryResult::kOcrFailed);
+    }
+  }
+
+  if (init_ok && features::IsLayoutExtractionEnabled()) {
+    if (!CallInitLayoutExtractionFunction(library_functions.get(),
+                                          library_path.DirName())) {
       init_ok = false;
       base::UmaHistogramEnumeration(
           "Accessibility.ScreenAI.LoadLibraryResult",
-          ScreenAILoadLibraryResult::kVisualAnnotationFailed);
+          ScreenAILoadLibraryResult::kLayoutExtractionFailed);
     }
   }
 
@@ -155,8 +188,9 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
 
   // Main Content Extraction functions.
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
-        library_.GetFunctionPointer("InitMainContentExtraction"));
+    init_main_content_extraction_ =
+        reinterpret_cast<InitMainContentExtractionFn>(
+            library_.GetFunctionPointer("InitMainContentExtraction"));
     DCHECK(init_main_content_extraction_);
     extract_main_content_ = reinterpret_cast<ExtractMainContent>(
         library_.GetFunctionPointer("ExtractMainContent"));
@@ -166,17 +200,30 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
     extract_main_content_ = nullptr;
   }
 
-  // Visual Annotation functions.
-  if (features::IsPdfOcrEnabled() || features::IsLayoutExtractionEnabled()) {
-    init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
-        library_.GetFunctionPointer("InitVisualAnnotations"));
-    DCHECK(init_visual_annotation_);
-    annotate_ =
-        reinterpret_cast<Annotate>(library_.GetFunctionPointer("Annotate"));
-    DCHECK(annotate_);
+  // Layout Extraction.
+  if (features::IsLayoutExtractionEnabled()) {
+    init_layout_extraction_ = reinterpret_cast<InitLayoutExtractionFn>(
+        library_.GetFunctionPointer("InitLayoutExtraction"));
+    DCHECK(init_layout_extraction_);
+    extract_layout_ = reinterpret_cast<ExtractLayoutFn>(
+        library_.GetFunctionPointer("ExtractLayout"));
+    DCHECK(extract_layout_);
   } else {
-    init_visual_annotation_ = nullptr;
-    annotate_ = nullptr;
+    init_layout_extraction_ = nullptr;
+    extract_layout_ = nullptr;
+  }
+
+  // OCR.
+  if (features::IsPdfOcrEnabled()) {
+    init_ocr_ =
+        reinterpret_cast<InitOCRFn>(library_.GetFunctionPointer("InitOCR"));
+    DCHECK(init_ocr_);
+    perform_ocr_ = reinterpret_cast<PerformOcrFn>(
+        library_.GetFunctionPointer("PerformOCR"));
+    DCHECK(perform_ocr_);
+  } else {
+    init_ocr_ = nullptr;
+    perform_ocr_ = nullptr;
   }
 }
 
@@ -216,6 +263,8 @@ void ScreenAIService::BindMainContentExtractor(
                                          std::move(main_content_extractor));
 }
 
+// TODO(https://crbug.com/1278249): Update mojo interface to have different
+// entry points for OCR and Layout Extraction requests and remove |Annotate|.
 void ScreenAIService::Annotate(const SkBitmap& image,
                                const ui::AXTreeID& parent_tree_id,
                                AnnotationCallback callback) {
@@ -231,7 +280,7 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // binding the task.
   task_runner_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&ScreenAIService::AnnotateInternal,
+      base::BindOnce(&ScreenAIService::OcrInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(image),
                      std::move(parent_tree_id),
                      base::Unretained(annotation_ptr)),
@@ -251,19 +300,17 @@ void ScreenAIService::Annotate(const SkBitmap& image,
           std::move(annotation)));
 }
 
-void ScreenAIService::AnnotateInternal(const SkBitmap& image,
-                                       const ui::AXTreeID& parent_tree_id,
-                                       ui::AXTreeUpdate* annotation) {
+void ScreenAIService::OcrInternal(const SkBitmap& image,
+                                  const ui::AXTreeID& parent_tree_id,
+                                  ui::AXTreeUpdate* annotation) {
   DCHECK(screen_ai_annotator_client_.is_bound());
-  VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
-          << image.height() << " snapshot.";
 
   char* annotation_proto = nullptr;
   uint32_t annotation_proto_length = 0;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  if (!CallLibraryAnnotateFunction(image, annotation_proto,
-                                   annotation_proto_length)) {
+  if (!CallLibraryOcrFunction(image, annotation_proto,
+                              annotation_proto_length)) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot.";
     return;
@@ -288,14 +335,14 @@ void ScreenAIService::AnnotateInternal(const SkBitmap& image,
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallLibraryAnnotateFunction(
+bool ScreenAIService::CallLibraryOcrFunction(
     const SkBitmap& image,
     char*& annotation_proto,
     uint32_t& annotation_proto_length) {
   DCHECK(library_functions_);
-  DCHECK(library_functions_->annotate_);
-  return library_functions_->annotate_(image, annotation_proto,
-                                       annotation_proto_length);
+  DCHECK(library_functions_->perform_ocr_);
+  return library_functions_->perform_ocr_(image, annotation_proto,
+                                          annotation_proto_length);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,

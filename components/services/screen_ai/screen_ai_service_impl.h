@@ -33,32 +33,52 @@ class LibraryFunctions {
   LibraryFunctions& operator=(const LibraryFunctions&) = delete;
   ~LibraryFunctions() = default;
 
-  // Initializes the pipeline for layout extraction and OCR.
+  // Initializes the pipeline for layout extraction.
   // |models_folder| is a null terminated string pointing to the
-  // folder that includes model files for layout extraction and OCR.
+  // folder that includes model files for layout extraction.
   // TODO(http://crbug.com/1278249): Replace |models_folder| with file
   // handle(s).
-  typedef bool (*InitVisualAnnotations)(const char* /*models_folder*/);
-  InitVisualAnnotations init_visual_annotation_ = nullptr;
+  typedef bool (*InitLayoutExtractionFn)(const char* /*models_folder*/);
+  InitLayoutExtractionFn init_layout_extraction_ = nullptr;
 
-  // Sends the given bitmap to ScreenAI pipeline and returns visual
+  // Sends the given bitmap to layout extraction pipeline and returns visual
   // annotations. The annotations will be returned as a serialized
   // VisualAnnotation proto. `serialized_visual_annotation` will be allocated
   // for the output and the ownership of the buffer will be passed to the
   // caller function.
-  typedef bool (*Annotate)(const SkBitmap& /*bitmap*/,
-                           char*& /*serialized_visual_annotation*/,
-                           uint32_t& /*serialized_visual_annotation_length*/);
-  Annotate annotate_ = nullptr;
+  typedef bool (*ExtractLayoutFn)(
+      const SkBitmap& /*bitmap*/,
+      char*& /*serialized_visual_annotation*/,
+      uint32_t& /*serialized_visual_annotation_length*/);
+  ExtractLayoutFn extract_layout_ = nullptr;
+
+  // Initializes the pipeline for OCR.
+  // |models_folder| is a null terminated string pointing to the
+  // folder that includes model files for OCR.
+  // TODO(http://crbug.com/1278249): Replace |models_folder| with file
+  // handle(s).
+  typedef bool (*InitOCRFn)(const char* /*models_folder*/);
+  InitOCRFn init_ocr_ = nullptr;
+
+  // Sends the given bitmap to the OCR pipeline and returns visual
+  // annotations. The annotations will be returned as a serialized
+  // VisualAnnotation proto. `serialized_visual_annotation` will be allocated
+  // for the output and the ownership of the buffer will be passed to the
+  // caller function.
+  typedef bool (*PerformOcrFn)(
+      const SkBitmap& /*bitmap*/,
+      char*& /*serialized_visual_annotation*/,
+      uint32_t& /*serialized_visual_annotation_length*/);
+  PerformOcrFn perform_ocr_ = nullptr;
 
   // Initializes the pipeline for main content extraction.
   // |model_config| and |model_tflite| pass content of the required files to
   // initialize Screen2x engine.
-  typedef bool (*InitMainContentExtraction)(const char* model_config,
-                                            uint32_t model_config_length,
-                                            const char* model_tflite,
-                                            uint32_t model_tflite_length);
-  InitMainContentExtraction init_main_content_extraction_ = nullptr;
+  typedef bool (*InitMainContentExtractionFn)(const char* model_config,
+                                              uint32_t model_config_length,
+                                              const char* model_tflite,
+                                              uint32_t model_tflite_length);
+  InitMainContentExtractionFn init_main_content_extraction_ = nullptr;
 
   // Passes the given accessibility tree proto to Screen2x pipeline and
   // returns the main content ids. The input is in form of a serialized
@@ -131,16 +151,16 @@ class ScreenAIService : public mojom::ScreenAIService,
           main_content_extractor) override;
 
   // Wrapper functions for task scheduler.
-  void AnnotateInternal(const SkBitmap& image,
-                        const ui::AXTreeID& parent_tree_id,
-                        ui::AXTreeUpdate* annotation);
+  void OcrInternal(const SkBitmap& image,
+                   const ui::AXTreeID& parent_tree_id,
+                   ui::AXTreeUpdate* annotation);
   void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
                                   std::vector<int32_t>* content_node_ids);
 
   // Library function calls are isolated to have specific compiler directives.
-  bool CallLibraryAnnotateFunction(const SkBitmap& image,
-                                   char*& annotation_proto,
-                                   uint32_t& annotation_proto_length);
+  bool CallLibraryOcrFunction(const SkBitmap& image,
+                              char*& annotation_proto,
+                              uint32_t& annotation_proto_length);
   bool CallLibraryExtractMainContentFunction(
       const char* serialized_snapshot,
       const uint32_t serialized_snapshot_length,
