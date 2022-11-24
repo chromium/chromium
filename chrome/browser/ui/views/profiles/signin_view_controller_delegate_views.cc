@@ -217,12 +217,8 @@ void SigninViewControllerDelegateViews::CloseModalSignin() {
 }
 
 void SigninViewControllerDelegateViews::ResizeNativeView(int height) {
-  int max_height = browser_->window()
-                       ->GetWebContentsModalDialogHost()
-                       ->GetMaximumDialogSize()
-                       .height();
-  content_view_->SetPreferredSize(gfx::Size(
-      content_view_->GetPreferredSize().width(), std::min(height, max_height)));
+  content_view_->SetPreferredSize(
+      gfx::Size(content_view_->GetPreferredSize().width(), height));
 
   if (!modal_signin_widget_) {
     // The modal wasn't displayed yet so just show it with the already resized
@@ -353,12 +349,7 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
     web_dialog_ui->InitializeMessageHandlerWithBrowser(browser);
   }
 
-  int max_height = browser->window()
-                       ->GetWebContentsModalDialogHost()
-                       ->GetMaximumDialogSize()
-                       .height();
-  web_view->SetPreferredSize(
-      gfx::Size(dialog_width, std::min(dialog_height, max_height)));
+  web_view->SetPreferredSize(gfx::Size(dialog_width, dialog_height));
 
   return std::unique_ptr<views::WebView>(web_view);
 }
