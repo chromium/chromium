@@ -31,7 +31,7 @@ import {getSelectedValue} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';
 import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.m.js';
-import {Oobe} from '../../cr_ui.m.js';
+import {Oobe} from '../../cr_ui.js';
 
 
 // Enum that describes the current state of the Arc Terms Of Service screen

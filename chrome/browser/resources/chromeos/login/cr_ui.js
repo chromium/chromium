@@ -8,24 +8,22 @@
  * shared between all *two* screens here.
  */
 
-// #import {assert} from 'chrome://resources/js/assert.js';
-// #import {$} from 'chrome://resources/js/util.js';
-// #import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// #import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {$} from 'chrome://resources/js/util.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
-// #import {DisplayManager} from './display_manager.m.js';
-// #import {DISPLAY_TYPE} from './components/display_manager_types.m.js';
-// #import {loadTimeData} from './i18n_setup.js';
-// #import {OobeTypes} from './components/oobe_types.m.js';
+import {DisplayManager} from './display_manager.m.js';
+import {DISPLAY_TYPE} from './components/display_manager_types.m.js';
+import {loadTimeData} from './i18n_setup.js';
+import {OobeTypes} from './components/oobe_types.m.js';
 
-cr.define('cr.ui', function() {
-  /* #ignore */ var DisplayManager = cr.ui.login.DisplayManager;
 
   /**
    * Out of box controller. It manages initialization of screens,
    * transitions, error messages display.
    */
-  /* #export */ class Oobe extends DisplayManager {
+  export class Oobe extends DisplayManager {
     /**
      * OOBE initialization coordination. Used by tests to wait for OOBE
      * to fully load when using the HTLImports polyfill.
@@ -300,9 +298,5 @@ cr.define('cr.ui', function() {
    */
   Oobe.readyForTesting = false;
 
-  cr.addSingletonGetter(Oobe);
+  addSingletonGetter(Oobe);
 
-  // #cr_define_end
-  // Export
-  return {Oobe: Oobe};
-});

@@ -24,7 +24,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {getSelectedTitle, SelectListType} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
-import {Oobe} from '../../cr_ui.m.js';
+import {Oobe} from '../../cr_ui.js';
 
 import {OobeWelcomeDialog} from './welcome_dialog.js';
 

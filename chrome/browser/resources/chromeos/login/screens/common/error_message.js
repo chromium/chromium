@@ -22,7 +22,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
-import {Oobe} from '../../cr_ui.m.js';
+import {Oobe} from '../../cr_ui.js';
 
 
 const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';

@@ -4,7 +4,7 @@
 
 // #import {OOBE_UI_STATE} from '../display_manager_types.m.js';
 // #import {OobeTypes} from '../oobe_types.m.js';
-// #import {Oobe} from '../../cr_ui.m.js';
+// #import {Oobe} from '../../cr_ui.js';
 
 /**
  * @fileoverview

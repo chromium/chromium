@@ -21,7 +21,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
-import {Oobe} from '../../cr_ui.m.js';
+import {Oobe} from '../../cr_ui.js';
 
 
 /**

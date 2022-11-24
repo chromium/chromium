@@ -17,7 +17,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {Oobe} from '../cr_ui.m.js';
+import {Oobe} from '../cr_ui.js';
 
 /**
  * Custom data that is stored with network element to trigger action.

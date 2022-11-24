@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
 import {$} from 'chrome://resources/js/util.js';
-import {Oobe} from './cr_ui.m.js';
+import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.m.js';
 import {invokePolymerMethod} from './display_manager.m.js';
 import {loadTimeData} from './i18n_setup.js';

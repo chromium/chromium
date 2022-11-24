@@ -30,7 +30,7 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
 import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
-import {Oobe} from '../../cr_ui.m.js';
+import {Oobe} from '../../cr_ui.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.m.js';
 import {keyboard} from '../../keyboard_utils.m.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
