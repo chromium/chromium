@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.NumberOfChannels" units="units"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRateRatio384kHz" units="units"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.CreateTime" units="ms"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.Autoplay" enum="WebAudioAutoplayStatus"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.CrossOrigin" enum="WebAudioAutoplayStatus"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.UnlockType"
-    enum="WebAudioAutoplayUnlockType" expires_after="2022-12-31">
+    enum="WebAudioAutoplayUnlockType" expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.BiquadFilter.Type" enum="BiquadFilterType"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.IIRFilterNode.Order" units="units"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.OfflineAudioContext.CreateTime" units="ms"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.PannerNode.PanningModel" enum="PanningModelType"
-    expires_after="2022-12-31">
+    expires_after="2023-06-30">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
