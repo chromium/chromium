@@ -2537,16 +2537,6 @@
           ],
         },
       },
-      'Linux MSan Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-        },
-      },
       'android-asan': {
         'swarming': {
           'shards': 2,
