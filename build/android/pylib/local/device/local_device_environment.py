@@ -197,8 +197,10 @@ class LocalDeviceEnvironment(environment.Environment):
             self._logcat_output_dir,
             '%s_%s' % (d.adb.GetDeviceSerial(),
                        datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%S')))
-        monitor = logcat_monitor.LogcatMonitor(
-            d.adb, clear=True, output_file=logcat_file)
+        monitor = logcat_monitor.LogcatMonitor(d.adb,
+                                               clear=True,
+                                               output_file=logcat_file,
+                                               check_error=False)
         self._logcat_monitors.append(monitor)
         monitor.Start()
 
