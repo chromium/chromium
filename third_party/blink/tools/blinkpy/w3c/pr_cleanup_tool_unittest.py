@@ -24,78 +24,108 @@ class PrCleanupToolTest(LoggingTestCase):
             }))
         self.host = host
 
-    def test_main_successful_close_abandoned_cl(self):
-        pr_cleanup = PrCleanupTool(self.host)
-        pr_cleanup.wpt_github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1',
-                number=1234,
-                body='Change-Id: 88',
-                state='open',
-                labels=[]),
+    def test_successful_close_abandoned_cl(self):
+        wpt_github = MockWPTGitHub(pull_requests=[
+            PullRequest(title='title1',
+                        number=1234,
+                        body='Change-Id: 88',
+                        state='open',
+                        labels=[]),
         ])
-        pr_cleanup.gerrit = MockGerritAPI()
-        pr_cleanup.gerrit.cl = MockGerritCL(
-            data={
-                'change_id': 'I001',
-                'subject': 'subject',
-                '_number': 1234,
-                'status': 'ABANDONED',
-                'current_revision': '1',
-                'has_review_started': True,
-                'revisions': {
-                    '1': {
-                        'commit_with_footers': 'a commit with footers'
-                    }
-                },
-                'owner': {
-                    'email': 'test@chromium.org'
-                },
+        gerrit = MockGerritAPI()
+        pr_cleanup = PrCleanupTool(self.host)
+        gerrit.cl = MockGerritCL(data={
+            'change_id': 'I001',
+            'subject': 'subject',
+            '_number': 1234,
+            'status': 'ABANDONED',
+            'updated': '2022-10-15 15:17:50.000000000',
+            'current_revision': '1',
+            'has_review_started': True,
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'a commit with footers'
+                }
             },
-            api=pr_cleanup.gerrit)
-        pr_cleanup.main(['--credentials-json', '/tmp/credentials.json'])
-        self.assertEqual(pr_cleanup.gerrit.cls_queried, ['88'])
-        self.assertEqual(pr_cleanup.wpt_github.calls, [
+            'owner': {
+                'email': 'test@chromium.org'
+            },
+        },
+                                 api=gerrit)
+        pr_cleanup.run(wpt_github, gerrit)
+        self.assertEqual(gerrit.cls_queried, ['88'])
+        self.assertEqual(wpt_github.calls, [
             'all_pull_requests',
             'add_comment "Close this PR because the Chromium CL has been abandoned."',
             'update_pr', 'get_pr_branch', 'delete_remote_branch'
         ])
 
-    def test_main_successful_close_no_exportable_changes(self):
-        pr_cleanup = PrCleanupTool(self.host)
-        pr_cleanup.wpt_github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1',
-                number=1234,
-                body='Change-Id: 99',
-                state='open',
-                labels=[]),
+    def test_not_close_pr_for_abandoned_cl(self):
+        wpt_github = MockWPTGitHub(pull_requests=[
+            PullRequest(title='title1',
+                        number=1234,
+                        body='Change-Id: 88',
+                        state='open',
+                        labels=[]),
         ])
-        pr_cleanup.gerrit = MockGerritAPI()
-        pr_cleanup.gerrit.cl = MockGerritCL(
-            data={
-                'change_id': 'I001',
-                'subject': 'subject',
-                '_number': 1234,
-                'status': 'MERGED',
-                'current_revision': '1',
-                'has_review_started': True,
-                'revisions': {
-                    '1': {
-                        'commit_with_footers': 'a commit with footers',
-                        'files': {
-                            RELATIVE_WEB_TESTS + 'foo/bar.html': '',
-                        }
-                    }
-                },
-                'owner': {
-                    'email': 'test@chromium.org'
-                },
+        gerrit = MockGerritAPI()
+        pr_cleanup = PrCleanupTool(self.host)
+        gerrit.cl = MockGerritCL(data={
+            'change_id': 'I001',
+            'subject': 'subject',
+            '_number': 1234,
+            'status': 'ABANDONED',
+            'updated': '2222-10-15 15:17:50.000000000',
+            'current_revision': '1',
+            'has_review_started': True,
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'a commit with footers'
+                }
             },
-            api=pr_cleanup.gerrit)
-        pr_cleanup.main(['--credentials-json', '/tmp/credentials.json'])
-        self.assertEqual(pr_cleanup.gerrit.cls_queried, ['99'])
-        self.assertEqual(pr_cleanup.wpt_github.calls, [
+            'owner': {
+                'email': 'test@chromium.org'
+            },
+        },
+                                 api=gerrit)
+        pr_cleanup.run(wpt_github, gerrit)
+        self.assertEqual(gerrit.cls_queried, ['88'])
+        self.assertEqual(wpt_github.calls, ['all_pull_requests'])
+
+    def test_successful_close_no_exportable_changes(self):
+        wpt_github = MockWPTGitHub(pull_requests=[
+            PullRequest(title='title1',
+                        number=1234,
+                        body='Change-Id: 99',
+                        state='open',
+                        labels=[]),
+        ])
+        gerrit = MockGerritAPI()
+        pr_cleanup = PrCleanupTool(self.host)
+        gerrit.cl = MockGerritCL(data={
+            'change_id': 'I001',
+            'subject': 'subject',
+            '_number': 1234,
+            'status': 'MERGED',
+            'updated': '2022-10-15 15:17:50.000000000',
+            'current_revision': '1',
+            'has_review_started': True,
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'a commit with footers',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'foo/bar.html': '',
+                    }
+                }
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
+        },
+                                 api=gerrit)
+        pr_cleanup.run(wpt_github, gerrit)
+        self.assertEqual(gerrit.cls_queried, ['99'])
+        self.assertEqual(wpt_github.calls, [
             'all_pull_requests',
             'add_comment "Close this PR because the Chromium'
             ' CL does not have exportable changes."', 'update_pr',
@@ -103,34 +133,33 @@ class PrCleanupToolTest(LoggingTestCase):
         ])
 
     def test_query_cl_raise_exception(self):
-        pr_cleanup = PrCleanupTool(self.host)
-        pr_cleanup.wpt_github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1',
-                number=1234,
-                body='Change-Id: 88',
-                state='open',
-                labels=[]),
+        wpt_github = MockWPTGitHub(pull_requests=[
+            PullRequest(title='title1',
+                        number=1234,
+                        body='Change-Id: 88',
+                        state='open',
+                        labels=[]),
         ])
-        pr_cleanup.gerrit = MockGerritAPI(raise_error=True)
-        pr_cleanup.gerrit.cl = MockGerritCL(
-            data={
-                'change_id': 'I001',
-                'subject': 'subject',
-                '_number': 1234,
-                'status': 'ABANDONED',
-                'current_revision': '1',
-                'has_review_started': True,
-                'revisions': {
-                    '1': {
-                        'commit_with_footers': 'a commit with footers'
-                    }
-                },
-                'owner': {
-                    'email': 'test@chromium.org'
-                },
+        gerrit = MockGerritAPI(raise_error=True)
+        pr_cleanup = PrCleanupTool(self.host)
+        gerrit.cl = MockGerritCL(data={
+            'change_id': 'I001',
+            'subject': 'subject',
+            '_number': 1234,
+            'status': 'ABANDONED',
+            'updated': '2022-10-15 15:17:50.000000000',
+            'current_revision': '1',
+            'has_review_started': True,
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'a commit with footers'
+                }
             },
-            api=pr_cleanup.gerrit)
-        pr_cleanup.main(['--credentials-json', '/tmp/credentials.json'])
-        self.assertEqual(pr_cleanup.gerrit.cls_queried, ['88'])
-        self.assertEqual(pr_cleanup.wpt_github.calls, ['all_pull_requests'])
+            'owner': {
+                'email': 'test@chromium.org'
+            },
+        },
+                                 api=gerrit)
+        pr_cleanup.run(wpt_github, gerrit)
+        self.assertEqual(gerrit.cls_queried, ['88'])
+        self.assertEqual(wpt_github.calls, ['all_pull_requests'])
