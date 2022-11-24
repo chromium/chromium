@@ -13,7 +13,7 @@ items:
   value: 1
 - caption: |-
     Roll back device to target version if current OS version is newer than target. The device is powerwashed but device-wide network configurations without certificates are preserved and it automatically re-enrolls.
-              Supported on rollback to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 106 and higher. For older clients, the preservation of networks may not work and the device will not automatically re-enroll.
+    Rollback to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 106 or earlier is not supported.
   name: RollbackAndRestoreIfPossible
   value: 3
 owners:
