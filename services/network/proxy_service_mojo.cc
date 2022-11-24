@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/network_delegate.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/network_delegate_error_observer.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"

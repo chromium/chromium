@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace safe_browsing {

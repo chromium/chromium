@@ -46,6 +46,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_MAC)
+#include "ui/aura/window.h"
+#endif  // !BUILDFLAG(IS_MAC)
+
 using bookmarks::BookmarkExpandedStateTracker;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

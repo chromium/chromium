@@ -24,6 +24,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "chrome/browser/profiles/profile.h"
 // This file gets pulled in in Chromecast builds, which causes "gn check" to
 // complain as Chromecast doesn't use (or depend on) //components/dbus.
 // TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
