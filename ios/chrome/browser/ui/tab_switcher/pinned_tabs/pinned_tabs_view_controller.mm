@@ -38,6 +38,9 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   NSLayoutConstraint* _dragEnabledConstraint;
   NSLayoutConstraint* _defaultConstraint;
 
+  // Background color of the view.
+  UIColor* _backgroundColor;
+
   // Tracks if the view is available. It does not track if the view is visible.
   BOOL _available;
 }
@@ -54,27 +57,9 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   _available = YES;
 
-  UICollectionView* collectionView = self.collectionView;
-  [collectionView registerClass:[PinnedCell class]
-      forCellWithReuseIdentifier:kPinnedCellIdentifier];
-  collectionView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  collectionView.layer.cornerRadius = kPinnedViewCornerRadius;
-  collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-  collectionView.dragDelegate = self;
-  collectionView.dropDelegate = self;
-  collectionView.dragInteractionEnabled = YES;
-
-  self.view = collectionView;
-
-  _dragEnabledConstraint = [collectionView.heightAnchor
-      constraintEqualToConstant:kPinnedViewDragEnabledHeight];
-  _defaultConstraint = [collectionView.heightAnchor
-      constraintEqualToConstant:kPinnedViewDefaultHeight];
-  _defaultConstraint.active = YES;
-
+  [self configureCollectionView];
   [self populateFakeItems];
 }
 
@@ -89,8 +74,8 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
                    }
                    completion:nil];
 
-  self.collectionView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.collectionView.backgroundColor = _backgroundColor;
+  self.collectionView.backgroundView.hidden = NO;
 }
 
 - (void)pinnedTabsAvailable:(BOOL)available {
@@ -179,12 +164,13 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidEnter:(id<UIDropSession>)session {
   self.collectionView.backgroundColor = [UIColor colorNamed:kBlueColor];
+  self.collectionView.backgroundView.hidden = YES;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidExit:(id<UIDropSession>)session {
-  self.collectionView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.collectionView.backgroundColor = _backgroundColor;
+  self.collectionView.backgroundView.hidden = NO;
 }
 
 - (UICollectionViewDropProposal*)
@@ -209,6 +195,47 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 }
 
 #pragma mark - Private
+
+// Configures the collectionView.
+- (void)configureCollectionView {
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+
+  UICollectionView* collectionView = self.collectionView;
+  [collectionView registerClass:[PinnedCell class]
+      forCellWithReuseIdentifier:kPinnedCellIdentifier];
+  collectionView.layer.cornerRadius = kPinnedViewCornerRadius;
+  collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  collectionView.dragDelegate = self;
+  collectionView.dropDelegate = self;
+  collectionView.dragInteractionEnabled = YES;
+
+  self.view = collectionView;
+
+  // Only apply the blur if transparency effects are not disabled.
+  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+    _backgroundColor = [UIColor clearColor];
+
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark];
+    UIVisualEffectView* blurEffectView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+
+    blurEffectView.frame = collectionView.bounds;
+    blurEffectView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+    collectionView.backgroundView = blurEffectView;
+  } else {
+    _backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  collectionView.backgroundColor = _backgroundColor;
+
+  _dragEnabledConstraint = [collectionView.heightAnchor
+      constraintEqualToConstant:kPinnedViewDragEnabledHeight];
+  _defaultConstraint = [collectionView.heightAnchor
+      constraintEqualToConstant:kPinnedViewDefaultHeight];
+  _defaultConstraint.active = YES;
+}
 
 // Configures `cell`'s title synchronously, and favicon asynchronously with
 // information from `item`. Updates the `cell`'s theme to this view controller's
