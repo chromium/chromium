@@ -21,13 +21,13 @@ found in the LICENSE file.
         app:maxWidthPortrait="@dimen/privacy_sandbox_dialog_max_width">
 
         <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
-            android:id="@+id/privacy_sandbox_notice_row_scroll_view"
+            android:id="@+id/privacy_sandbox_consent_eea_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
             <LinearLayout
-                android:id="@+id/privacy_sandbox_notice_row_content"
+                android:id="@+id/privacy_sandbox_consent_eea_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal"
@@ -48,7 +48,7 @@ found in the LICENSE file.
                     android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_title"
+                    android:text="@string/privacy_sandbox_m1_consent_title"
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
 
@@ -57,14 +57,14 @@ found in the LICENSE file.
                     android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_1"
+                    android:text="@string/privacy_sandbox_m1_consent_description_1"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <TextView
                     android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_2"
+                    android:text="@string/privacy_sandbox_m1_consent_description_2"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
@@ -80,7 +80,7 @@ found in the LICENSE file.
                     android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_3"
+                    android:text="@string/privacy_sandbox_m1_consent_description_3"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <LinearLayout
@@ -97,7 +97,7 @@ found in the LICENSE file.
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/privacy_sandbox_notice_dialog_dropdown_button_height"
-                        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_expand_label"
+                        android:text="@string/privacy_sandbox_m1_consent_learn_more_expand_label"
                         style="@style/TextAppearance.TextMedium.Secondary" />
 
                     <org.chromium.ui.widget.CheckableImageView
@@ -120,7 +120,7 @@ found in the LICENSE file.
                     android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_4"
+                    android:text="@string/privacy_sandbox_m1_consent_description_4"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
             </LinearLayout>
@@ -128,31 +128,31 @@ found in the LICENSE file.
         </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="2"
-            android:layout_marginTop="@dimen/privacy_sandbox_dialog_buttons_margin_top"
+            android:layout_margin="@dimen/promo_dialog_padding"
             android:layout_marginHorizontal="24dp">
 
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/ack_button"
                 android:focusable="true"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/privacy_sandbox_notice_button_margin_between"
-                android:text="@string/privacy_sandbox_m1_notice_row_ack_button"
-                style="@style/FilledButton.Flat" />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_m1_consent_accept_button"
+                style="@style/OutlinedButton" />
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/settings_button"
                 android:focusable="true"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="0dp"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/privacy_sandbox_m1_notice_row_settings_button"
-                style="@style/TextButton" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_m1_consent_decline_button"
+                style="@style/OutlinedButton" />
 
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>

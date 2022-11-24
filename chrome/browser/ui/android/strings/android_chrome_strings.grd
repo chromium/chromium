@@ -1113,6 +1113,50 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK">&lt;link&gt;</ph>estimates your interests<ph name="END_LINK">&lt;/link&gt;</ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
       </message>
 
+      <!-- Privacy Sandbox v4 - Consent EEA. -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE" translateable="false" desc="Privacy Sandbox dialog consent EEA: title.">
+        Lorem ipsum Consent
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog consent EEA: First section of the body, above the image.">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium pulvinar metus non mollis. Quisque placerat eget nisl sit amet facilisis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog consent EEA: Second section of the body, above the image.">
+        Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit. Integer et libero id metus egestas consequat non a ipsum.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog consent EEA: Third section of the body, below the image, exclues the expand text.">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu, elementum ut venenatis ornare, consequat ac turpis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog consent EEA: Text user clicks to expand the collapsed section.">
+        Vestibulum orci risus, consectetur
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog consent EEA: Fourth section of the body, below the collapsed section.">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu, elementum ut venenatis ornare, consequat ac turpis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_SAVING_LABEL" translateable="false" desc="Privacy Sandbox dialog consent EEA: Saving text.">
+        Consectetur
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_ACCEPT_BUTTON" translateable="false" desc="Privacy Sandbox dialog consent EEA: Consent Yes button.">
+        Quisque
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DECLINE_BUTTON" translateable="false" desc="Privacy Sandbox dialog consent EEA: Consent No button.">
+        Lorem
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_HEADING" translateable="false" desc="Privacy Sandbox dialog consent EEA: Header inside expand in consent.">
+        Esed purus vestibulum velit convalli
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog consent EEA: First bullet point in expand in consent.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor:<ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog consent EEA: Second bullet point in expand in consent.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Consectetur adipiscing elit:<ph name="END_BOLD">&lt;/b&gt;</ph> Duis pretium pulvinar metus non mollis
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3" translateable="false" desc="Privacy Sandbox dialog consent EEA: Third bullet point in expand in consent.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Sed purus vestibulum: <ph name="END_BOLD">&lt;/b&gt;</ph> velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK" translateable="false" desc="Privacy Sandbox dialog consent EEA: Non-interactable link out 'Learn more with Google's etc ect'">
+        Esed purus vestibulum velit convalli
+      </message>
+
       <!-- Privacy Sandbox v4 - Notice EEA. -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE" translateable="false" desc="Privacy Sandbox dialog notice EEA: title.">
         Lorem ipsum Notice EEA
