@@ -1640,6 +1640,7 @@ chromium-metrics-reviews@google.com.
     <variant name="TpmManager"/>
     <variant name="TrunksSend"/>
     <variant name="U2f"/>
+    <variant name="Unknown"/>
     <variant name="Vtpm"/>
   </token>
 </histogram>
@@ -1659,6 +1660,7 @@ chromium-metrics-reviews@google.com.
     <variant name="TpmManager"/>
     <variant name="TrunksSend"/>
     <variant name="U2f"/>
+    <variant name="Unknown"/>
     <variant name="Vtpm"/>
   </token>
 </histogram>
