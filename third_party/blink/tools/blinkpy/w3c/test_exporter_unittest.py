@@ -89,7 +89,6 @@ class TestExporterTest(LoggingTestCase):
             MockChromiumCommit(
                 self.host, position='refs/heads/main@{#3}', change_id='I003', subject='subject 3', body='body 3'),
         ], [])
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -172,7 +171,6 @@ class TestExporterTest(LoggingTestCase):
             MockChromiumCommit(
                 self.host, position='refs/heads/main@{#458479}', change_id='I0147'),
         ], [])
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -258,7 +256,6 @@ class TestExporterTest(LoggingTestCase):
                     self.host, subject='subject', body='body',
                     change_id=None)),
         ]
-        test_exporter.pr_cleaner.run = lambda x, y: None
         test_exporter.main(['--credentials-json', '/tmp/credentials.json'])
 
         self.assertEqual(test_exporter.wpt_github.calls, [
@@ -315,7 +312,6 @@ class TestExporterTest(LoggingTestCase):
                 api=test_exporter.gerrit,
                 chromium_commit=MockChromiumCommit(self.host))
         ]
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -363,7 +359,6 @@ class TestExporterTest(LoggingTestCase):
                 api=test_exporter.gerrit,
                 chromium_commit=MockChromiumCommit(self.host))
         ]
-        test_exporter.pr_cleaner.run = lambda x, y: None
         test_exporter.main(['--credentials-json', '/tmp/credentials.json'])
 
         self.assertEqual(test_exporter.wpt_github.calls, [
@@ -387,7 +382,6 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.get_exportable_commits = lambda: ([
             MockChromiumCommit(self.host, change_id='decafbad'), ], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -414,7 +408,6 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.get_exportable_commits = lambda: ([
             MockChromiumCommit(self.host, change_id='decafbad'), ], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -457,7 +450,6 @@ class TestExporterTest(LoggingTestCase):
                 api=test_exporter.gerrit,
                 chromium_commit=MockChromiumCommit(self.host))
         ]
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -475,7 +467,6 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
         test_exporter.gerrit.query_exportable_open_cls = raise_gerrit_error
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 
@@ -495,7 +486,6 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.get_exportable_commits = lambda: (
             [], ['There was an error with the rutabaga.'])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.pr_cleaner.run = lambda x, y: None
         success = test_exporter.main(
             ['--credentials-json', '/tmp/credentials.json'])
 

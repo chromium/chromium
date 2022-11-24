@@ -5,7 +5,6 @@
 import base64
 import json
 import logging
-from datetime import datetime
 from requests.exceptions import HTTPError
 
 from blinkpy.common.net.network_transaction import NetworkTimeout
@@ -147,13 +146,6 @@ class GerritCL(object):
     @property
     def status(self):
         return self._data['status']
-
-    @property
-    def updated(self):
-        # Timestamps are given in UTC and have the format "'yyyy-mm-dd hh:mm:ss.fffffffff'"
-        # where "'ffffffffff'" represents nanoseconds.
-        return datetime.strptime(self._data['updated'][:-10],
-                                 '%Y-%m-%d %H:%M:%S')
 
     @property
     def messages(self):
