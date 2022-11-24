@@ -574,6 +574,7 @@ ResultingTasks::~ResultingTasks() = default;
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
   registry->RegisterBooleanPref(prefs::kOfficeSetupComplete, false);
+  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMove, false);
 }
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
@@ -1240,6 +1241,14 @@ void SetOfficeSetupComplete(Profile* profile, bool complete) {
 
 bool OfficeSetupComplete(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kOfficeSetupComplete);
+}
+
+void SetAlwaysMoveOfficeFiles(Profile* profile, bool always_move) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMove, always_move);
+}
+
+bool AlwaysMoveOfficeFiles(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMove);
 }
 
 }  // namespace file_manager::file_tasks

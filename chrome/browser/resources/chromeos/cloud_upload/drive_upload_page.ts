@@ -35,7 +35,8 @@ export class DriveUploadPageElement extends HTMLElement {
   }
 
   private onContinueButtonClick(): void {
-    this.proxy.handler.respondAndClose(UserAction.kUploadToGoogleDrive);
+    this.proxy.handler.respondAndClose(
+        UserAction.kConfirmOrUploadToGoogleDrive);
   }
 
   private onCancelButtonClick(): void {

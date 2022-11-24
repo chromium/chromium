@@ -20,6 +20,7 @@ build_webui("build") {
     "base_setup_page.ts",
     "drive_upload_page.ts",
     "file_handler_page.ts",
+    "move_confirmation_page.ts",
     "office_pwa_install_page.ts",
     "one_drive_upload_page.ts",
     "sign_in_page.ts",

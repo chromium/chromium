@@ -1,0 +1,53 @@
+<style>
+  :host {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    width: 448px;
+  }
+
+  /* TODO(petermarshall): Possibly change font based on the specs */
+  .title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-7-font);
+  }
+
+  .normal-text {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-1-font);
+    margin-block-start: 16px;
+  }
+
+  cr-checkbox {
+    margin-block-end: 2px;
+    margin-block-start: 18px;
+  }
+
+  .checkbox-text {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-1-font);
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
+
+<!-- TODO(b/258071752): Use localized strings -->
+<div class="title">
+  Move file to <span id="provider-name"></span> to open
+</div>
+<div class="normal-text">
+  The <span id="app-name"></span> app requires files to be in
+  <span id="provider-short-name"></span>. We can move your files
+  whenever you chose to open them.
+</div>
+<cr-checkbox id="always-move-checkbox">
+  <p class="checkbox-text">Do this automatically next time</p>
+</cr-checkbox>
+<div id="button-container">
+  <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+  <cr-button class="action-button">Move & open file</cr-button>
+</div>

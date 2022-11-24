@@ -216,7 +216,7 @@ suite('<cloud-upload>', () => {
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
     assertDeepEquals(
-        [UserAction.kUploadToOneDrive],
+        [UserAction.kConfirmOrUploadToOneDrive],
         testProxy.handler.getArgs('respondAndClose'));
   });
 

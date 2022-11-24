@@ -389,6 +389,12 @@ void SetOfficeSetupComplete(Profile* profile, bool complete = true);
 // Whether or not the setup flow for office files has ever been completed.
 bool OfficeSetupComplete(Profile* profile);
 
+// Sets the user preference storing whether we should always move office files
+// without first asking the user.
+void SetAlwaysMoveOfficeFiles(Profile* profile, bool complete = true);
+// Whether we should always move office files without first asking the user.
+bool AlwaysMoveOfficeFiles(Profile* profile);
+
 }  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

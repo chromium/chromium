@@ -22,6 +22,10 @@ const char kUserActionSetUpGoogleDrive[] = "setup-drive";
 const char kUserActionSetUpOneDrive[] = "setup-onedrive";
 const char kUserActionUploadToGoogleDrive[] = "upload-drive";
 const char kUserActionUploadToOneDrive[] = "upload-onedrive";
+const char kUserActionConfirmOrUploadToGoogleDrive[] =
+    "confirm-or-upload-google-drive";
+const char kUserActionConfirmOrUploadToOneDrive[] =
+    "confirm-or-upload-onedrive";
 
 // Either OneDrive for the Office PWA or Drive for Drive Web editing.
 enum class CloudProvider {

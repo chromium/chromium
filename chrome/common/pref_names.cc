@@ -1942,6 +1942,9 @@ const char kDefaultHandlersForFileExtensions[] =
 
 // Whether the office files setup flow has ever been completed by the user.
 const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
+
+// Whether we should always move office files without prompting the user first.
+const char kOfficeFilesAlwaysMove[] = "filebrowser.office.always_move";
 #endif
 
 // A flag to enable/disable the Shared Clipboard feature which enables users to

@@ -21,6 +21,9 @@ class FilesInternalsUIDelegate {
 
   virtual bool GetOfficeSetupComplete() const = 0;
   virtual void SetOfficeSetupComplete(bool complete) = 0;
+
+  virtual bool GetAlwaysMoveOfficeFiles() const = 0;
+  virtual void SetAlwaysMoveOfficeFiles(bool always_move) = 0;
 };
 
 }  // namespace ash

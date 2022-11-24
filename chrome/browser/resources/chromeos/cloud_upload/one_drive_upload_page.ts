@@ -61,7 +61,7 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
   }
 
   private onUploadButtonClick(): void {
-    this.proxy.handler.respondAndClose(UserAction.kUploadToOneDrive);
+    this.proxy.handler.respondAndClose(UserAction.kConfirmOrUploadToOneDrive);
   }
 
   private onCancelButtonClick(): void {

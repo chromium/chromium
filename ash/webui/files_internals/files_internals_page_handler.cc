@@ -36,4 +36,14 @@ void FilesInternalsPageHandler::SetOfficeSetupComplete(bool complete) {
   files_internals_ui_->delegate()->SetOfficeSetupComplete(complete);
 }
 
+void FilesInternalsPageHandler::GetAlwaysMoveOfficeFiles(
+    GetAlwaysMoveOfficeFilesCallback callback) {
+  std::move(callback).Run(
+      files_internals_ui_->delegate()->GetAlwaysMoveOfficeFiles());
+}
+
+void FilesInternalsPageHandler::SetAlwaysMoveOfficeFiles(bool always_move) {
+  files_internals_ui_->delegate()->SetAlwaysMoveOfficeFiles(always_move);
+}
+
 }  // namespace ash

@@ -43,6 +43,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void IsOfficePWAInstalled(IsOfficePWAInstalledCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
   void SetOfficeAsDefaultHandler() override;
+  void SetAlwaysMoveOfficeFiles(bool always_move) override;
 
  private:
   Profile* profile_;

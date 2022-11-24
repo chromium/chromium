@@ -11,6 +11,8 @@ enum UserAction {
   kSetUpOneDrive,
   kUploadToGoogleDrive,
   kUploadToOneDrive,
+  kConfirmOrUploadToGoogleDrive,
+  kConfirmOrUploadToOneDrive,
 };
 
 // Options for which sub-page/flow we want to show.
@@ -21,6 +23,10 @@ enum DialogPage {
   kOneDriveSetup,
   // Set up Google Drive (one-page confirmation screen).
   kGoogleDriveSetup,
+  // Confirm that the user wants to move the file to OneDrive.
+  kMoveConfirmationOneDrive,
+  // Confirm that the user wants to move the file to Google Drive.
+  kMoveConfirmationGoogleDrive,
 };
 
 // Contains the arguments used to set up the dialog.
@@ -55,4 +61,8 @@ interface PageHandler {
   // Set Office as the default file handler for office files and mark the
   // setup as complete so that it does not need to be started again.
   SetOfficeAsDefaultHandler();
+
+  // Set the preference for whether we should always move office files without
+  // asking the user first.
+  SetAlwaysMoveOfficeFiles(bool always_move);
 };

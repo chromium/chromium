@@ -79,6 +79,12 @@ void CloudUploadUI::RespondAndCloseDialog(mojom::UserAction action) {
     case mojom::UserAction::kUploadToOneDrive:
       args.Append(kUserActionUploadToOneDrive);
       break;
+    case mojom::UserAction::kConfirmOrUploadToGoogleDrive:
+      args.Append(kUserActionConfirmOrUploadToGoogleDrive);
+      break;
+    case mojom::UserAction::kConfirmOrUploadToOneDrive:
+      args.Append(kUserActionConfirmOrUploadToOneDrive);
+      break;
   }
   ui::MojoWebDialogUI::CloseDialog(args);
 }

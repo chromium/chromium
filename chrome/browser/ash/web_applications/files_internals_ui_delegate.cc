@@ -55,3 +55,16 @@ void ChromeFilesInternalsUIDelegate::SetOfficeSetupComplete(bool complete) {
     file_manager::file_tasks::SetOfficeSetupComplete(profile, complete);
   }
 }
+
+bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFiles() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile && file_manager::file_tasks::AlwaysMoveOfficeFiles(profile);
+}
+
+void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFiles(
+    bool always_move) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (profile) {
+    file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile, always_move);
+  }
+}

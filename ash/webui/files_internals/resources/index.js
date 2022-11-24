@@ -26,4 +26,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const officeSetupComplete =
       (await pageHandler.getOfficeSetupComplete()).complete;
   officeSetupStatus.innerText = officeSetupComplete ? 'Yes' : 'No';
+
+  const clearAlwaysMoveButton =
+      document.getElementById('clear-office-always-move');
+  clearAlwaysMoveButton.addEventListener('click', () => {
+    pageHandler.setAlwaysMoveOfficeFiles(false);
+  });
+  const officeAlwaysMoveStatus =
+      document.getElementById('office-always-move-status');
+  const officeAlwaysMove =
+      (await pageHandler.getAlwaysMoveOfficeFiles()).alwaysMove;
+  officeAlwaysMoveStatus.innerText = officeAlwaysMove ? 'Yes' : 'No';
 });

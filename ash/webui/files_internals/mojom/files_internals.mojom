@@ -15,4 +15,9 @@ interface PageHandler {
   GetOfficeSetupComplete() => (bool complete);
   // Sets the filebrowser.office.setup_complete pref.
   SetOfficeSetupComplete(bool complete);
+
+  // Gets the filebrowser.office.setup_complete pref.
+  GetAlwaysMoveOfficeFiles() => (bool always_move);
+  // Sets the filebrowser.office.setup_complete pref.
+  SetAlwaysMoveOfficeFiles(bool always_move);
 };

@@ -71,4 +71,8 @@ void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
+void CloudUploadPageHandler::SetAlwaysMoveOfficeFiles(bool always_move) {
+  file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile_, always_move);
+}
+
 }  // namespace ash::cloud_upload

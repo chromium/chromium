@@ -10,6 +10,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogPage} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {CloudProvider, MoveConfirmationPageElement} from './move_confirmation_page.js';
 
 const dialogArgs =
     await CloudUploadBrowserProxy.getInstance().handler.getDialogArgs();
@@ -26,6 +27,18 @@ switch (dialogArgs.args.dialogPage) {
   }
   case DialogPage.kGoogleDriveSetup: {
     document.body.append(document.createElement('drive-upload-page'));
+    break;
+  }
+  case DialogPage.kMoveConfirmationOneDrive: {
+    const movePage = new MoveConfirmationPageElement();
+    movePage.setCloudProvider(CloudProvider.ONE_DRIVE);
+    document.body.append(movePage);
+    break;
+  }
+  case DialogPage.kMoveConfirmationGoogleDrive: {
+    const movePage = new MoveConfirmationPageElement();
+    movePage.setCloudProvider(CloudProvider.GOOGLE_DRIVE);
+    document.body.append(movePage);
     break;
   }
 }
