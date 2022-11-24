@@ -174,6 +174,15 @@ base::FilePath StartProcmonLogging() {
     return {};
   }
 
+  base::FilePath source_path;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  const base::FilePath pmc_path(source_path.Append(L"chrome")
+                                    .Append(L"updater")
+                                    .Append(L"test")
+                                    .Append(L"data")
+                                    .Append(L"ProcmonConfiguration.pmc"));
+  CHECK(base::PathExists(pmc_path));
+
   base::Time::Exploded start_time;
   base::Time::Now().LocalExplode(&start_time);
   const base::FilePath pml_file(dest_dir.Append(base::StringPrintf(
@@ -181,9 +190,9 @@ base::FilePath StartProcmonLogging() {
       start_time.day_of_month, start_time.hour, start_time.minute,
       start_time.second)));
 
-  const std::wstring& cmdline =
-      base::StrCat({kProcmonPath, L" /AcceptEula /BackingFile \"",
-                    pml_file.value(), L"\" /Nofilter /Quiet /externalcapture"});
+  const std::wstring& cmdline = base::StrCat(
+      {kProcmonPath, L" /AcceptEula /LoadConfig \"", pmc_path.value(),
+       L"\" /BackingFile \"", pml_file.value(), L"\" /Quiet /externalcapture"});
   base::LaunchOptions options;
   options.start_hidden = true;
   VLOG(1) << __func__ << ": running: " << cmdline;

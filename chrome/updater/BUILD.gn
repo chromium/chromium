@@ -753,6 +753,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data += [
+        "test/data/ProcmonConfiguration.pmc",
         "test/data/signed.exe.gz",
         "test/data/tagged_encode_utf8.exe",
         "test/data/tagged_magic_utf16.exe",
