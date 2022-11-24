@@ -3132,13 +3132,13 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   test_result->set_display_type(SearchResultDisplayType::kList);
   search_model->results()->Add(std::move(test_result));
 
-  auto test_tile_result = std::make_unique<TestSearchResult>();
-  test_tile_result->set_result_id("test_tile");
+  auto test_list_result = std::make_unique<TestSearchResult>();
+  test_list_result->set_result_id("test_list");
   // Give this item a name so that the accessibility paint checks pass.
   // (Focusable items should have accessible names.)
-  test_tile_result->SetAccessibleName(u"test_tile");
-  test_tile_result->set_display_type(SearchResultDisplayType::kTile);
-  search_model->results()->Add(std::move(test_tile_result));
+  test_list_result->SetAccessibleName(u"test_list");
+  test_list_result->set_display_type(SearchResultDisplayType::kList);
+  search_model->results()->Add(std::move(test_list_result));
 
   // The results are updated asynchronously. Wait until the update is finished.
   base::RunLoop().RunUntilIdle();
@@ -3173,13 +3173,13 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   test_result_override->set_display_type(SearchResultDisplayType::kList);
   search_model_override->results()->Add(std::move(test_result_override));
 
-  auto test_tile_result_override = std::make_unique<TestSearchResult>();
-  test_tile_result_override->set_result_id("test_tile_override");
+  auto test_list_result_override = std::make_unique<TestSearchResult>();
+  test_list_result_override->set_result_id("test_list_override");
   // Give this item a name so that the accessibility paint checks pass.
   // (Focusable items should have accessible names.)
-  test_tile_result_override->SetAccessibleName(u"test_tile_override");
-  test_tile_result_override->set_display_type(SearchResultDisplayType::kTile);
-  search_model_override->results()->Add(std::move(test_tile_result_override));
+  test_list_result_override->SetAccessibleName(u"test_list_override");
+  test_list_result_override->set_display_type(SearchResultDisplayType::kList);
+  search_model_override->results()->Add(std::move(test_list_result_override));
 
   // The results are updated asynchronously. Wait until the update is finished.
   base::RunLoop().RunUntilIdle();

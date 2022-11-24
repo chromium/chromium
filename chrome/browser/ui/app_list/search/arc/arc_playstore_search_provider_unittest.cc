@@ -108,7 +108,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
     EXPECT_EQ(results[i]->title(),
               base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
-    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kList);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
     EXPECT_EQ(results[i]->rating(), i);
@@ -149,7 +149,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
     EXPECT_EQ(results[i]->title(),
               base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
-    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kList);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
     EXPECT_EQ(results[i]->rating(), i);
@@ -186,7 +186,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
     EXPECT_EQ(results[i]->title(),
               base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
-    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kList);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()), "");
     EXPECT_EQ(results[i]->rating(), -1);
     const bool is_instant_app = i % 2 == 0;
@@ -223,7 +223,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
     EXPECT_EQ(results[i]->title(),
               base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
-    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kList);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
     EXPECT_EQ(results[i]->rating(), i);

@@ -180,12 +180,8 @@ std::string DisplayTypeToString(
       return "None";
     case ash::SearchResultDisplayType::kList:
       return "List";
-    case ash::SearchResultDisplayType::kTile:
-      return "Tile";
     case ash::SearchResultDisplayType::kAnswerCard:
       return "AnswerCard";
-    case ash::SearchResultDisplayType::kChip:
-      return "Chip";
     case ash::SearchResultDisplayType::kContinue:
       return "Continue";
     case ash::SearchResultDisplayType::kRecentApps:

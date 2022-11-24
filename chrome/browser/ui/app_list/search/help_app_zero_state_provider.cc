@@ -176,8 +176,7 @@ void HelpAppZeroStateProvider::OnImpression(
     ash::AppListNotifier::Location location,
     const std::vector<ash::AppListNotifier::Result>& results,
     const std::u16string& query) {
-  if (location != ash::AppListNotifier::Location::kChip &&
-      location != ash::AppListNotifier::Location::kContinue) {
+  if (location != ash::AppListNotifier::Location::kContinue) {
     return;
   }
 

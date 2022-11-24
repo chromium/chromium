@@ -219,15 +219,6 @@ void SearchResultPageView::AddSearchResultContainerViewInternal(
   result_container_ptr->set_delegate(this);
 }
 
-bool SearchResultPageView::IsFirstResultTile() const {
-  // In the event that the result does not exist, it is not a tile.
-  if (!first_result_view_ || !first_result_view_->result())
-    return false;
-
-  return first_result_view_->result()->display_type() ==
-         SearchResultDisplayType::kTile;
-}
-
 bool SearchResultPageView::IsFirstResultHighlighted() const {
   DCHECK(first_result_view_);
   return first_result_view_->selected();

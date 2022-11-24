@@ -121,7 +121,7 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   for (size_t i = 0; i < results.size(); ++i) {
     EXPECT_EQ(base::StringPrintf("ShortLabel %zu", i),
               base::UTF16ToUTF8(results[i]->title()));
-    EXPECT_EQ(ash::SearchResultDisplayType::kTile, results[i]->display_type());
+    EXPECT_EQ(ash::SearchResultDisplayType::kList, results[i]->display_type());
   }
 }
 

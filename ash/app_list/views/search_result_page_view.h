@@ -50,7 +50,6 @@ class ASH_EXPORT SearchResultPageView
     return result_container_views_;
   }
 
-  bool IsFirstResultTile() const;
   bool IsFirstResultHighlighted() const;
 
   // Overridden from views::View:

@@ -46,7 +46,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   SetCategory(Category::kAppShortcuts);
   SetAccessibleName(ComputeAccessibleName());
   SetResultType(ash::AppListSearchResultType::kArcAppShortcut);
-  SetDisplayType(ash::SearchResultDisplayType::kTile);
+  SetDisplayType(ash::SearchResultDisplayType::kList);
   SetMetricsType(ash::PLAY_STORE_APP_SHORTCUT);
   SetIsRecommendation(is_recommendation);
 

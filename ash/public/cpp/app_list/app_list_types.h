@@ -18,7 +18,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -412,16 +411,13 @@ enum class AppListSearchResultCategory {
 
 // Which UI container(s) the result should be displayed in.
 // Do not change the order of these as they are used for metrics.
-//
-// TODO(https://crbug.com/1258415): kChip can be deprecated once
-// ProductivityLauncher is launched.
 enum class SearchResultDisplayType {
   kNone = 0,
   kList = 1,  // Displays in search list
-  kTile = 2,  // Displays in search tiles
+  // kTile = 2,  // No longer used, Displays in search tiles
   // kRecommendation = 3  // No longer used, split between kTile and kChip
   kAnswerCard = 4,  // Displays in answer cards
-  kChip = 5,        // Displays in suggestion chips
+  // kChip = 5,        // No longer used, Displays in suggestion chips
   kContinue = 6,    // Displays in the Continue section
   kRecentApps = 7,  // Displays in recent apps row
   // Add new values here

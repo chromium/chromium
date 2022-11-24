@@ -100,15 +100,6 @@ TEST_F(FileResultTest, PenalizeScore) {
 }
 
 TEST_F(FileResultTest, Icons) {
-  const base::FilePath chipPath("/my/test/file.Pdf");
-  FileResult chipResult(
-      /*id=*/"zero_state_file://" + chipPath.value(), chipPath, u"some details",
-      ash::AppListSearchResultType::kZeroStateFile,
-      ash::SearchResultDisplayType::kChip, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
-  EXPECT_FALSE(chipResult.chip_icon().isNull());
-  EXPECT_TRUE(chipResult.icon().icon.isNull());
-
   const base::FilePath excelPath("/my/test/mySheet.xlsx");
   FileResult fileResult(
       /*id=*/"zero_state_file://" + excelPath.value(), excelPath,

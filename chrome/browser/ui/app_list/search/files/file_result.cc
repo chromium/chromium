@@ -254,9 +254,7 @@ void FileResult::UpdateIcon() {
       dark_light_mode_controller->IsDarkModeEnabled();
   const bool dark_background = !is_dark_light_enabled || is_dark_mode_enabled;
 
-  if (display_type() == DisplayType::kChip) {
-    SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
-  } else if (display_type() == DisplayType::kContinue) {
+  if (display_type() == DisplayType::kContinue) {
     // For Continue Section, if dark/light mode is disabled, we should use the
     // icon and not the chip icon with a dark background as default.
     const gfx::ImageSkia chip_icon =

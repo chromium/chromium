@@ -33,12 +33,8 @@ std::string GetViewString(Location location, const std::u16string& raw_query) {
   switch (location) {
     case Location::kList:
       return query.empty() ? "ListZeroState" : "ListSearch";
-    case Location::kTile:
-      return query.empty() ? "AppsZeroState" : "AppsSearch";
     case Location::kAnswerCard:
       return "AnswerCard";
-    case Location::kChip:
-      return "Chip";
     case Location::kRecentApps:
       return "RecentApps";
     case Location::kContinue:

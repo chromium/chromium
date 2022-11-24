@@ -146,10 +146,6 @@ int SharedAppListConfig::GetPreferredIconDimension(
   switch (display_type) {
     case SearchResultDisplayType::kList:
       return search_list_icon_dimension_;
-    case SearchResultDisplayType::kTile:
-      return search_tile_icon_dimension_;
-    case SearchResultDisplayType::kChip:
-      return suggestion_chip_icon_dimension_;
     case SearchResultDisplayType::kContinue:
       return suggestion_chip_icon_dimension_;
     case SearchResultDisplayType::kNone:

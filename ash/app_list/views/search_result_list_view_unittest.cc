@@ -421,31 +421,5 @@ TEST_P(SearchResultListViewTest, ModelObservers) {
   ExpectConsistent();
 }
 
-TEST_P(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
-  SetUpSearchResults();
-
-  // No assistant results available.
-  EXPECT_TRUE(GetAssistantResultViews().empty());
-
-  AddAssistantSearchResult();
-
-  // Assistant result should be set and visible.
-  for (const auto* view : GetAssistantResultViews()) {
-    EXPECT_TRUE(view->GetVisible());
-    EXPECT_EQ(view->result()->title(), u"assistant result");
-  }
-
-  // Add a tile result
-  std::unique_ptr<TestSearchResult> tile_result =
-      std::make_unique<TestSearchResult>();
-  tile_result->set_display_type(ash::SearchResultDisplayType::kTile);
-  GetResults()->Add(std::move(tile_result));
-
-  RunPendingMessages();
-
-  // Assistant result should be gone.
-  EXPECT_TRUE(GetAssistantResultViews().empty());
-}
-
 }  // namespace test
 }  // namespace ash

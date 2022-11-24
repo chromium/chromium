@@ -133,7 +133,7 @@ void InitializeTestSearchProviders(
     TestSearchProvider** web_provider_ptr) {
   std::unique_ptr<TestSearchProvider> apps_provider =
       std::make_unique<TestSearchProvider>(
-          "app", ChromeSearchResult::DisplayType::kTile,
+          "app", ChromeSearchResult::DisplayType::kList,
           ChromeSearchResult::Category::kApps,
           ChromeSearchResult::ResultType::kInstalledApp);
   *apps_provider_ptr = apps_provider.get();
@@ -233,19 +233,6 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     sm_.ExpectSpeech("Button");
 
     return test_item_index;
-  }
-
-  std::vector<std::string> GetPublishedSuggestionChips() {
-    std::vector<std::string> chips;
-    std::vector<ChromeSearchResult*> published_results =
-        AppListClientImpl::GetInstance()
-            ->GetModelUpdaterForTest()
-            ->GetPublishedSearchResultsForTest();
-    for (auto* result : published_results) {
-      if (result->display_type() == SearchResultDisplayType::kChip)
-        chips.push_back(base::UTF16ToUTF8(result->title()));
-    }
-    return chips;
   }
 
   AppListItem* FindItemByName(const std::string& name, int* index) {
@@ -536,8 +523,9 @@ IN_PROC_BROWSER_TEST_P(
   sm_.Replay();
 }
 
+// TODO(https://crbug.com/1393235): Update this browser test to test recent
+// apps.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
-  std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
   PopulateApps(3);
 
   int test_item_index = 0;
@@ -565,15 +553,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("Button");
-
-  // Move focus over recent apps, which are currently populated using suggestion
-  // chip results.
-  // TODO(https://crbug.com/1260427): Traverse over all recent apps when the
-  // linked issue is fixed.
-  if (!suggestion_chips.empty()) {
-    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
-    sm_.ExpectSpeech("Button");
-  }
 
   // Skip over apps that were installed before the test item.
   // This selects the first app installed by the test.
