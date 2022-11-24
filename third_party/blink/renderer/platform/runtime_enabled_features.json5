@@ -602,6 +602,11 @@
       name: "CorsRFC1918",
     },
     {
+      name: "CrossFramePerformanceTimeline",
+      status: "test",
+      base_feature: "CrossFramePerformanceTimeline",
+    },
+    {
       // Allows positioning a positioned element relative to another one.
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
