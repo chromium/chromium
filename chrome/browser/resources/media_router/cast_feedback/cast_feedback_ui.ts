@@ -52,7 +52,7 @@ export interface FeedbackUiBrowserProxy {
    * Proxy for chrome.feedbackPrivate.sendFeedback().
    */
   sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo):
-      Promise<chrome.feedbackPrivate.SendFeedbackResult>;
+      Promise<chrome.feedbackPrivate.Status>;
 }
 
 export class FeedbackUiBrowserProxyImpl implements FeedbackUiBrowserProxy {
@@ -63,8 +63,10 @@ export class FeedbackUiBrowserProxyImpl implements FeedbackUiBrowserProxy {
   }
 
   sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
-    return chrome.feedbackPrivate.sendFeedback(
-        info, /*loadSystemInfo=*/ undefined, /*formOpenTime=*/ undefined);
+    return new Promise<chrome.feedbackPrivate.Status>(
+        resolve => chrome.feedbackPrivate.sendFeedback(
+            info, /*loadSystemInfo=*/ undefined, /*formOpenTime=*/ undefined,
+            resolve));
   }
 
   static getInstance(): FeedbackUiBrowserProxy {
@@ -300,8 +302,8 @@ export class FeedbackUiElement extends PolymerElement {
       delayMs: number) {
     setTimeout(() => {
       const sendStartTime = Date.now();
-      this.browserProxy_.sendFeedback(feedback).then(result => {
-        if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
+      this.browserProxy_.sendFeedback(feedback).then(status => {
+        if (status === chrome.feedbackPrivate.Status.SUCCESS) {
           this.feedbackSent = true;
           this.updateSendDialog_(FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
         } else if (failureCount < this.maxResendAttempts) {
