@@ -237,15 +237,15 @@ TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
     @"keyCommand_stop",
     @"keyCommand_showHelp",
     @"keyCommand_showDownloads",
-    @"keyCommand_showFirstTab",
-    @"keyCommand_showTab2",
-    @"keyCommand_showTab3",
-    @"keyCommand_showTab4",
-    @"keyCommand_showTab5",
-    @"keyCommand_showTab6",
-    @"keyCommand_showTab7",
-    @"keyCommand_showTab8",
-    @"keyCommand_showLastTab",
+    @"keyCommand_select1",
+    @"keyCommand_select2",
+    @"keyCommand_select3",
+    @"keyCommand_select4",
+    @"keyCommand_select5",
+    @"keyCommand_select6",
+    @"keyCommand_select7",
+    @"keyCommand_select8",
+    @"keyCommand_select9",
   ];
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
@@ -531,15 +531,15 @@ TEST_F(KeyCommandsProviderTest, Metrics) {
   ExpectUMA(@"keyCommand_stop", "MobileKeyCommandStop");
   ExpectUMA(@"keyCommand_showHelp", "MobileKeyCommandShowHelp");
   ExpectUMA(@"keyCommand_showDownloads", "MobileKeyCommandShowDownloads");
-  ExpectUMA(@"keyCommand_showFirstTab", "MobileKeyCommandShowFirstTab");
-  ExpectUMA(@"keyCommand_showTab2", "MobileKeyCommandShowTab2");
-  ExpectUMA(@"keyCommand_showTab3", "MobileKeyCommandShowTab3");
-  ExpectUMA(@"keyCommand_showTab4", "MobileKeyCommandShowTab4");
-  ExpectUMA(@"keyCommand_showTab5", "MobileKeyCommandShowTab5");
-  ExpectUMA(@"keyCommand_showTab6", "MobileKeyCommandShowTab6");
-  ExpectUMA(@"keyCommand_showTab7", "MobileKeyCommandShowTab7");
-  ExpectUMA(@"keyCommand_showTab8", "MobileKeyCommandShowTab8");
-  ExpectUMA(@"keyCommand_showLastTab", "MobileKeyCommandShowLastTab");
+  ExpectUMA(@"keyCommand_select1", "MobileKeyCommandShowFirstTab");
+  ExpectUMA(@"keyCommand_select2", "MobileKeyCommandShowTab2");
+  ExpectUMA(@"keyCommand_select3", "MobileKeyCommandShowTab3");
+  ExpectUMA(@"keyCommand_select4", "MobileKeyCommandShowTab4");
+  ExpectUMA(@"keyCommand_select5", "MobileKeyCommandShowTab5");
+  ExpectUMA(@"keyCommand_select6", "MobileKeyCommandShowTab6");
+  ExpectUMA(@"keyCommand_select7", "MobileKeyCommandShowTab7");
+  ExpectUMA(@"keyCommand_select8", "MobileKeyCommandShowTab8");
+  ExpectUMA(@"keyCommand_select9", "MobileKeyCommandShowLastTab");
   ExpectUMA(@"keyCommand_reportAnIssue", "MobileKeyCommandReportAnIssue");
   ExpectUMA(@"keyCommand_addToReadingList", "MobileKeyCommandAddToReadingList");
   ExpectUMA(@"keyCommand_showReadingList", "MobileKeyCommandShowReadingList");
@@ -576,15 +576,15 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_stop];
   [provider_ keyCommand_showHelp];
   [provider_ keyCommand_showDownloads];
-  [provider_ keyCommand_showFirstTab];
-  [provider_ keyCommand_showTab2];
-  [provider_ keyCommand_showTab3];
-  [provider_ keyCommand_showTab4];
-  [provider_ keyCommand_showTab5];
-  [provider_ keyCommand_showTab6];
-  [provider_ keyCommand_showTab7];
-  [provider_ keyCommand_showTab8];
-  [provider_ keyCommand_showLastTab];
+  [provider_ keyCommand_select1];
+  [provider_ keyCommand_select2];
+  [provider_ keyCommand_select3];
+  [provider_ keyCommand_select4];
+  [provider_ keyCommand_select5];
+  [provider_ keyCommand_select6];
+  [provider_ keyCommand_select7];
+  [provider_ keyCommand_select8];
+  [provider_ keyCommand_select9];
   [provider_ keyCommand_reportAnIssue];
   [provider_ keyCommand_addToReadingList];
   [provider_ keyCommand_showReadingList];
@@ -760,23 +760,23 @@ TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
 TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_NoTab) {
   ASSERT_EQ(web_state_list_->count(), 0);
 
-  [provider_ keyCommand_showFirstTab];
+  [provider_ keyCommand_select1];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab2];
+  [provider_ keyCommand_select2];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab3];
+  [provider_ keyCommand_select3];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab4];
+  [provider_ keyCommand_select4];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab5];
+  [provider_ keyCommand_select5];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab6];
+  [provider_ keyCommand_select6];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab7];
+  [provider_ keyCommand_select7];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showTab8];
+  [provider_ keyCommand_select8];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  [provider_ keyCommand_showLastTab];
+  [provider_ keyCommand_select9];
   EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
 }
 
@@ -786,23 +786,23 @@ TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_OneTab) {
   InsertNewWebState(0);
   ASSERT_EQ(web_state_list_->count(), 1);
 
-  [provider_ keyCommand_showFirstTab];
+  [provider_ keyCommand_select1];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab2];
+  [provider_ keyCommand_select2];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab3];
+  [provider_ keyCommand_select3];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab4];
+  [provider_ keyCommand_select4];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab5];
+  [provider_ keyCommand_select5];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab6];
+  [provider_ keyCommand_select6];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab7];
+  [provider_ keyCommand_select7];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab8];
+  [provider_ keyCommand_select8];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showLastTab];
+  [provider_ keyCommand_select9];
   EXPECT_EQ(web_state_list_->active_index(), 0);
 }
 
@@ -821,23 +821,23 @@ TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_SomeTabs) {
   InsertNewWebState(10);
   ASSERT_EQ(web_state_list_->count(), 11);
 
-  [provider_ keyCommand_showFirstTab];
+  [provider_ keyCommand_select1];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  [provider_ keyCommand_showTab2];
+  [provider_ keyCommand_select2];
   EXPECT_EQ(web_state_list_->active_index(), 1);
-  [provider_ keyCommand_showTab3];
+  [provider_ keyCommand_select3];
   EXPECT_EQ(web_state_list_->active_index(), 2);
-  [provider_ keyCommand_showTab4];
+  [provider_ keyCommand_select4];
   EXPECT_EQ(web_state_list_->active_index(), 3);
-  [provider_ keyCommand_showTab5];
+  [provider_ keyCommand_select5];
   EXPECT_EQ(web_state_list_->active_index(), 4);
-  [provider_ keyCommand_showTab6];
+  [provider_ keyCommand_select6];
   EXPECT_EQ(web_state_list_->active_index(), 5);
-  [provider_ keyCommand_showTab7];
+  [provider_ keyCommand_select7];
   EXPECT_EQ(web_state_list_->active_index(), 6);
-  [provider_ keyCommand_showTab8];
+  [provider_ keyCommand_select8];
   EXPECT_EQ(web_state_list_->active_index(), 7);
-  [provider_ keyCommand_showLastTab];
+  [provider_ keyCommand_select9];
   EXPECT_EQ(web_state_list_->active_index(), 10);
 }
 
@@ -873,6 +873,7 @@ TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   // Can Find in Page.
   web_state->SetContentIsHTML(true);
   EXPECT_TRUE(CanPerform(@"keyCommand_find"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_select1"));
 
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];
@@ -880,6 +881,11 @@ TEST_F(KeyCommandsProviderTest, ValidateCommands) {
       EXPECT_TRUE([command.discoverabilityTitle
           isEqualToString:l10n_util::GetNSStringWithFixup(
                               IDS_IOS_KEYBOARD_FIND_IN_PAGE)]);
+    }
+    if (command.action == @selector(keyCommand_select1)) {
+      EXPECT_TRUE([command.discoverabilityTitle
+          isEqualToString:l10n_util::GetNSStringWithFixup(
+                              IDS_IOS_KEYBOARD_FIRST_TAB)]);
     }
   }
 }

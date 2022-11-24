@@ -18502,6 +18502,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyCommandGoToIncognitoTabGrid">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go to the incognito tabs.
+  </description>
+</action>
+
+<action name="MobileKeyCommandGoToRegularTabGrid">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go to the regular tab grid.
+  </description>
+</action>
+
+<action name="MobileKeyCommandGoToRemoteTabGrid">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go to the remote tabs.
+  </description>
+</action>
+
 <action name="MobileKeyCommandGoToTabGrid">
   <owner>lpromero@google.com</owner>
   <owner>alionadangla@google.com</owner>

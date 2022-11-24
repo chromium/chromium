@@ -109,16 +109,15 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_showDownloads, @"⌥⌘L", @"keyCommand_showDownloads",
          IDS_IOS_KEYBOARD_SHOW_DOWNLOADS);
   Verify(UIKeyCommand.cr_showDownloads_2, @"⇧⌘J", @"keyCommand_showDownloads");
-  Verify(UIKeyCommand.cr_showFirstTab, @"⌘1", @"keyCommand_showFirstTab",
-         IDS_IOS_KEYBOARD_FIRST_TAB);
-  Verify(UIKeyCommand.cr_showTab2, @"⌘2", @"keyCommand_showTab2");
-  Verify(UIKeyCommand.cr_showTab3, @"⌘3", @"keyCommand_showTab3");
-  Verify(UIKeyCommand.cr_showTab4, @"⌘4", @"keyCommand_showTab4");
-  Verify(UIKeyCommand.cr_showTab5, @"⌘5", @"keyCommand_showTab5");
-  Verify(UIKeyCommand.cr_showTab6, @"⌘6", @"keyCommand_showTab6");
-  Verify(UIKeyCommand.cr_showTab7, @"⌘7", @"keyCommand_showTab7");
-  Verify(UIKeyCommand.cr_showTab8, @"⌘8", @"keyCommand_showTab8");
-  Verify(UIKeyCommand.cr_showLastTab, @"⌘9", @"keyCommand_showLastTab",
+  Verify(UIKeyCommand.cr_select1, @"⌘1", @"keyCommand_select1");
+  Verify(UIKeyCommand.cr_select2, @"⌘2", @"keyCommand_select2");
+  Verify(UIKeyCommand.cr_select3, @"⌘3", @"keyCommand_select3");
+  Verify(UIKeyCommand.cr_select4, @"⌘4", @"keyCommand_select4");
+  Verify(UIKeyCommand.cr_select5, @"⌘5", @"keyCommand_select5");
+  Verify(UIKeyCommand.cr_select6, @"⌘6", @"keyCommand_select6");
+  Verify(UIKeyCommand.cr_select7, @"⌘7", @"keyCommand_select7");
+  Verify(UIKeyCommand.cr_select8, @"⌘8", @"keyCommand_select8");
+  Verify(UIKeyCommand.cr_select9, @"⌘9", @"keyCommand_select9",
          IDS_IOS_KEYBOARD_LAST_TAB);
   Verify(UIKeyCommand.cr_reportAnIssue, @"⇧⌘I", @"keyCommand_reportAnIssue",
          IDS_IOS_KEYBOARD_REPORT_AN_ISSUE);

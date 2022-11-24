@@ -83,8 +83,8 @@
   UIMenu* windowMenu = [UIMenu menuWithChildren:@[
     UIKeyCommand.cr_showNextTab,
     UIKeyCommand.cr_showPreviousTab,
-    UIKeyCommand.cr_showFirstTab,
-    UIKeyCommand.cr_showLastTab,
+    UIKeyCommand.cr_select1,
+    UIKeyCommand.cr_select9,
     UIKeyCommand.cr_showDownloads,
     UIKeyCommand.cr_showSettings,
   ]];

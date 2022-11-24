@@ -357,59 +357,58 @@ NSString* Delete(void) {
                             action:@selector(keyCommand_showDownloads)];
 }
 
-+ (UIKeyCommand*)cr_showFirstTab {
-  return [self cr_commandWithInput:@"1"
++ (UIKeyCommand*)cr_select1 {
+  return [self keyCommandWithInput:@"1"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showFirstTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIRST_TAB"];
+                            action:@selector(keyCommand_select1)];
 }
 
-+ (UIKeyCommand*)cr_showTab2 {
++ (UIKeyCommand*)cr_select2 {
   return [self keyCommandWithInput:@"2"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab2)];
+                            action:@selector(keyCommand_select2)];
 }
 
-+ (UIKeyCommand*)cr_showTab3 {
++ (UIKeyCommand*)cr_select3 {
   return [self keyCommandWithInput:@"3"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab3)];
+                            action:@selector(keyCommand_select3)];
 }
 
-+ (UIKeyCommand*)cr_showTab4 {
++ (UIKeyCommand*)cr_select4 {
   return [self keyCommandWithInput:@"4"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab4)];
+                            action:@selector(keyCommand_select4)];
 }
 
-+ (UIKeyCommand*)cr_showTab5 {
++ (UIKeyCommand*)cr_select5 {
   return [self keyCommandWithInput:@"5"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab5)];
+                            action:@selector(keyCommand_select5)];
 }
 
-+ (UIKeyCommand*)cr_showTab6 {
++ (UIKeyCommand*)cr_select6 {
   return [self keyCommandWithInput:@"6"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab6)];
+                            action:@selector(keyCommand_select6)];
 }
 
-+ (UIKeyCommand*)cr_showTab7 {
++ (UIKeyCommand*)cr_select7 {
   return [self keyCommandWithInput:@"7"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab7)];
+                            action:@selector(keyCommand_select7)];
 }
 
-+ (UIKeyCommand*)cr_showTab8 {
++ (UIKeyCommand*)cr_select8 {
   return [self keyCommandWithInput:@"8"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab8)];
+                            action:@selector(keyCommand_select8)];
 }
 
-+ (UIKeyCommand*)cr_showLastTab {
++ (UIKeyCommand*)cr_select9 {
   return [self cr_commandWithInput:@"9"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showLastTab)
+                            action:@selector(keyCommand_select9)
                    titleIDAsString:@"IDS_IOS_KEYBOARD_LAST_TAB"];
 }
 

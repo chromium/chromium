@@ -112,13 +112,13 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_back_2,
       UIKeyCommand.cr_forward_2,
       UIKeyCommand.cr_showDownloads_2,
-      UIKeyCommand.cr_showTab2,
-      UIKeyCommand.cr_showTab3,
-      UIKeyCommand.cr_showTab4,
-      UIKeyCommand.cr_showTab5,
-      UIKeyCommand.cr_showTab6,
-      UIKeyCommand.cr_showTab7,
-      UIKeyCommand.cr_showTab8,
+      UIKeyCommand.cr_select2,
+      UIKeyCommand.cr_select3,
+      UIKeyCommand.cr_select4,
+      UIKeyCommand.cr_select5,
+      UIKeyCommand.cr_select6,
+      UIKeyCommand.cr_select7,
+      UIKeyCommand.cr_select8,
       UIKeyCommand.cr_reportAnIssue_2,
     ];
   } else {
@@ -152,15 +152,15 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_showHelp,
       UIKeyCommand.cr_showDownloads,
       UIKeyCommand.cr_showDownloads_2,
-      UIKeyCommand.cr_showFirstTab,
-      UIKeyCommand.cr_showTab2,
-      UIKeyCommand.cr_showTab3,
-      UIKeyCommand.cr_showTab4,
-      UIKeyCommand.cr_showTab5,
-      UIKeyCommand.cr_showTab6,
-      UIKeyCommand.cr_showTab7,
-      UIKeyCommand.cr_showTab8,
-      UIKeyCommand.cr_showLastTab,
+      UIKeyCommand.cr_select1,
+      UIKeyCommand.cr_select2,
+      UIKeyCommand.cr_select3,
+      UIKeyCommand.cr_select4,
+      UIKeyCommand.cr_select5,
+      UIKeyCommand.cr_select6,
+      UIKeyCommand.cr_select7,
+      UIKeyCommand.cr_select8,
+      UIKeyCommand.cr_select9,
     ];
   }
 }
@@ -196,15 +196,15 @@ using base::UserMetricsAction;
       sel_isEqual(action, @selector(keyCommand_stop)) ||
       sel_isEqual(action, @selector(keyCommand_showHelp)) ||
       sel_isEqual(action, @selector(keyCommand_showDownloads)) ||
-      sel_isEqual(action, @selector(keyCommand_showFirstTab)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab2)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab3)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab4)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab5)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab6)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab7)) ||
-      sel_isEqual(action, @selector(keyCommand_showTab8)) ||
-      sel_isEqual(action, @selector(keyCommand_showLastTab))) {
+      sel_isEqual(action, @selector(keyCommand_select1)) ||
+      sel_isEqual(action, @selector(keyCommand_select2)) ||
+      sel_isEqual(action, @selector(keyCommand_select3)) ||
+      sel_isEqual(action, @selector(keyCommand_select4)) ||
+      sel_isEqual(action, @selector(keyCommand_select5)) ||
+      sel_isEqual(action, @selector(keyCommand_select6)) ||
+      sel_isEqual(action, @selector(keyCommand_select7)) ||
+      sel_isEqual(action, @selector(keyCommand_select8)) ||
+      sel_isEqual(action, @selector(keyCommand_select9))) {
     return self.tabsCount > 0;
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
@@ -240,6 +240,10 @@ using base::UserMetricsAction;
   if (command.action == @selector(keyCommand_find)) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
+  }
+  if (command.action == @selector(keyCommand_select1)) {
+    command.discoverabilityTitle =
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
   } else {
     return [super validateCommand:command];
   }
@@ -432,47 +436,47 @@ using base::UserMetricsAction;
   [_browserCoordinatorCommandsHandler showDownloadsFolder];
 }
 
-- (void)keyCommand_showFirstTab {
+- (void)keyCommand_select1 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowFirstTab"));
   [self showTabAtIndex:0];
 }
 
-- (void)keyCommand_showTab2 {
+- (void)keyCommand_select2 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab2"));
   [self showTabAtIndex:1];
 }
 
-- (void)keyCommand_showTab3 {
+- (void)keyCommand_select3 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab3"));
   [self showTabAtIndex:2];
 }
 
-- (void)keyCommand_showTab4 {
+- (void)keyCommand_select4 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab4"));
   [self showTabAtIndex:3];
 }
 
-- (void)keyCommand_showTab5 {
+- (void)keyCommand_select5 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab5"));
   [self showTabAtIndex:4];
 }
 
-- (void)keyCommand_showTab6 {
+- (void)keyCommand_select6 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab6"));
   [self showTabAtIndex:5];
 }
 
-- (void)keyCommand_showTab7 {
+- (void)keyCommand_select7 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab7"));
   [self showTabAtIndex:6];
 }
 
-- (void)keyCommand_showTab8 {
+- (void)keyCommand_select8 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowTab8"));
   [self showTabAtIndex:7];
 }
 
-- (void)keyCommand_showLastTab {
+- (void)keyCommand_select9 {
   RecordAction(UserMetricsAction("MobileKeyCommandShowLastTab"));
   [self showTabAtIndex:self.tabsCount - 1];
 }

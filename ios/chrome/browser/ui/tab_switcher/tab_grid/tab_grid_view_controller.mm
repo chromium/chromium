@@ -2630,6 +2630,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // Other key commands are already declared in the menu.
     return @[
       UIKeyCommand.cr_openNewRegularTab,
+      // TODO(crbug.com/1385469): Move it to the menu builder once we have the
+      // strings.
+      UIKeyCommand.cr_select2,
+      UIKeyCommand.cr_select3,
     ];
   } else {
     return @[
@@ -2657,6 +2661,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
   } else {
+    // TODO(crbug.com/1385469): Add string for change pane's functions.
     return [super validateCommand:command];
   }
 }
@@ -2681,6 +2686,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)keyCommand_find {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
   [self searchButtonTapped:nil];
+}
+
+- (void)keyCommand_select1 {
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyCommandGoToIncognitoTabGrid"));
+  [self setCurrentPageAndPageControl:TabGridPageIncognitoTabs animated:YES];
+}
+
+- (void)keyCommand_select2 {
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyCommandGoToRegularTabGrid"));
+  [self setCurrentPageAndPageControl:TabGridPageRegularTabs animated:YES];
+}
+
+- (void)keyCommand_select3 {
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
+  [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
 }
 
 @end
