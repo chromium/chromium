@@ -64,7 +64,7 @@ Event::Event(Event&& event)
       sequence_(event.sequence_),
       type_id_(event.type_id_),
       event_(std::move(event.event_)),
-      window_(event.window_) {
+      window_(std::move(event.window_)) {
   memset(&event, 0, sizeof(Event));
 }
 
@@ -77,7 +77,7 @@ Event& Event::operator=(Event&& event) {
   window_ = nullptr;
   event_.reset();
   event_ = std::move(event.event_);
-  window_ = event.window_;
+  window_ = std::move(event.window_);
   memset(&event, 0, sizeof(Event));
   return *this;
 }
