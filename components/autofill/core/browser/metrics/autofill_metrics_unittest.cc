@@ -7719,7 +7719,6 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
 }
 
 // Verify that we correctly log metrics tracking the duration of form fill.
-// TODO(crbug.com/1009364) Test is flake on many builders.
 TEST_F(AutofillMetricsTest, FormFillDuration) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
   TestAutofillTickClock test_clock;

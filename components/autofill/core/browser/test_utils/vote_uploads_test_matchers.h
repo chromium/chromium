@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -22,8 +23,8 @@ namespace autofill {
 MATCHER_P(SignatureIsSameAs,
           form,
           std::string(negation ? "signature isn't " : "signature is ") +
-              autofill::FormStructure(form.form_data).FormSignatureAsStr()) {
-  if (autofill::FormStructure(form.form_data).FormSignatureAsStr() ==
+              FormStructure(form.form_data).FormSignatureAsStr()) {
+  if (FormStructure(form.form_data).FormSignatureAsStr() ==
       arg.FormSignatureAsStr())
     return true;
 
@@ -48,8 +49,7 @@ MATCHER_P(
     expected_submission_event,
     std::string(negation ? "submission event isn't " : "submission event is ") +
         base::NumberToString(static_cast<int>(expected_submission_event))) {
-  autofill::FormStructureTestApi test_api(
-      const_cast<autofill::FormStructure*>(&arg));
+  FormStructureTestApi test_api(const_cast<FormStructure*>(&arg));
   if (expected_submission_event == test_api.get_submission_event())
     return true;
 
@@ -58,29 +58,63 @@ MATCHER_P(
   return false;
 }
 
+// Consumes a FormFieldData as `arg` and a map of field name (u16string) to
+// a ServerFieldType type.
 MATCHER_P(UploadedAutofillTypesAre, expected_types, "") {
   size_t fields_matched_type_count = 0;
   bool conflict_found = false;
   for (const auto& field : arg) {
     fields_matched_type_count +=
-        expected_types.find(field->name) == expected_types.end() ? 0 : 1;
+        base::Contains(expected_types, field->name) ? 1 : 0;
     if (field->possible_types().size() > 1) {
       *result_listener << (conflict_found ? ", " : "") << "Field "
                        << field->name << ": has several possible types";
       conflict_found = true;
     }
 
-    autofill::ServerFieldType expected_vote =
-        expected_types.find(field->name) == expected_types.end()
-            ? autofill::UNKNOWN_TYPE
-            : expected_types.find(field->name)->second;
-    autofill::ServerFieldType actual_vote =
-        field->possible_types().empty() ? autofill::UNKNOWN_TYPE
-                                        : *field->possible_types().begin();
+    ServerFieldType expected_vote =
+        base::Contains(expected_types, field->name)
+            ? expected_types.find(field->name)->second
+            : UNKNOWN_TYPE;
+    ServerFieldType actual_vote = field->possible_types().empty()
+                                      ? UNKNOWN_TYPE
+                                      : *field->possible_types().begin();
     if (expected_vote != actual_vote) {
       *result_listener << (conflict_found ? ", " : "") << "Field "
                        << field->name << ": expected vote " << expected_vote
                        << " but found " << actual_vote;
+      conflict_found = true;
+    }
+  }
+  if (expected_types.size() != fields_matched_type_count) {
+    *result_listener << (conflict_found ? ", " : "")
+                     << "Some types were expected but not found in the vote";
+    return false;
+  }
+
+  return !conflict_found;
+}
+
+// Consumes a FormFieldData as `arg` and a map of field name (u16string) to
+// a ServerFieldTypeSet type.
+MATCHER_P(UploadedAutofillTypesAreSet, expected_types, "") {
+  size_t fields_matched_type_count = 0;
+  bool conflict_found = false;
+  for (const auto& field : arg) {
+    fields_matched_type_count +=
+        base::Contains(expected_types, field->name) ? 1 : 0;
+    ServerFieldTypeSet unknown_type_set = {ServerFieldType::UNKNOWN_TYPE};
+    ServerFieldTypeSet expected_votes =
+        base::Contains(expected_types, field->name)
+            ? expected_types.find(field->name)->second
+            : unknown_type_set;
+    ServerFieldTypeSet actual_votes = field->possible_types().empty()
+                                          ? unknown_type_set
+                                          : field->possible_types();
+    if (expected_votes != actual_votes) {
+      *result_listener << (conflict_found ? ", " : "") << "Field "
+                       << field->name << ": expected votes " << expected_votes
+                       << " but found " << actual_votes;
       conflict_found = true;
     }
   }

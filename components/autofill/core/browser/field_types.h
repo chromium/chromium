@@ -381,6 +381,8 @@ enum class FieldTypeGroup {
 
 using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;
 
+std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
+
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
 // constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,
 // returns |fallback_value|.

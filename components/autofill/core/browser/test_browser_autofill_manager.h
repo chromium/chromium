@@ -69,6 +69,9 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
+  void StoreUploadVotesAndLogQualityCallback(
+      FormSignature form_signature,
+      base::OnceClosure callback) override;
   void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
                                 base::TimeTicks interaction_time,
                                 base::TimeTicks submission_time,

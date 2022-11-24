@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
@@ -75,6 +76,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -96,6 +98,7 @@
 
 using base::UTF8ToUTF16;
 using testing::_;
+using testing::AllOf;
 using testing::AnyOf;
 using testing::AtLeast;
 using testing::Contains;
@@ -10055,6 +10058,207 @@ TEST_F(BrowserAutofillManagerClearFieldTest, NoLoggingAfterDelay) {
 
   EXPECT_THAT(histogram_tester_.GetAllSamples("Autofill.FormEvents.CreditCard"),
               base::BucketsInclude(base::Bucket(kEvent, 0)));
+}
+
+class BrowserAutofillManagerVotingTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerVotingTest() {
+    features_.InitWithFeatureState(features::kAutofillDelayBlurVotes,
+                                   GetParam());
+  }
+
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+
+    // All uploads should be expected explicitly.
+    EXPECT_CALL(*download_manager_, StartUploadRequest(_, _, _, _, _, _))
+        .Times(0);
+
+    form_.name = u"MyForm";
+    form_.url = GURL("https://myform.com/form.html");
+    form_.action = GURL("https://myform.com/submit.html");
+    form_.fields.resize(2);
+    test::CreateTestFormField("First Name", "firstname", "", "text",
+                              "given-name", &form_.fields[0]);
+    test::CreateTestFormField("Last Name", "lastname", "", "text",
+                              "family-name", &form_.fields[1]);
+
+    // Set up our form data.
+    FormsSeen({form_});
+  }
+
+  void SimulateTypingFirstNameIntoFirstField() {
+    form_.fields[0].value = u"Elvis";
+    browser_autofill_manager_->OnTextFieldDidChange(
+        form_, form_.fields[0], gfx::RectF(), AutofillTickClock::NowTicks());
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+  FormData form_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAutofillManagerVotingTest,
+                         testing::Bool());
+
+// Ensure that a vote is submitted after a regular form submission.
+TEST_P(BrowserAutofillManagerVotingTest, Submission) {
+  SimulateTypingFirstNameIntoFirstField();
+
+  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
+      {u"firstname",
+       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
+      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
+  };
+
+  // Ensure that vote is submitted after form submission.
+  EXPECT_CALL(*download_manager_,
+              StartUploadRequest(
+                  AllOf(SignatureIs(CalculateFormSignature(form_)),
+                        UploadedAutofillTypesAreSet(expected_vote_types)),
+                  _, _, _, /*observed_submission=*/true, _))
+      .Times(1);
+  FormSubmitted(form_);
+}
+
+// Test that when modifying the form, a blur vote can be sent for the early
+// version and a submission vote can be sent for the final version.
+TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
+  // 1. Simulate typing.
+  SimulateTypingFirstNameIntoFirstField();
+
+  // 2. Simulate removing focus from the form, which triggers a blur vote.
+  FormSignature first_form_signature = CalculateFormSignature(form_);
+  if (!base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
+    // Only if kAutofillDelayBlurVotes is disabled, we expect a blur vote being
+    // sent. If kAutofillDelayBlurVotes is enabled, the next two operations
+    // will override this vote.
+    std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
+        {u"firstname",
+         {ServerFieldType::NAME_FIRST,
+          ServerFieldType::CREDIT_CARD_NAME_FIRST}},
+        {u"lastname", {ServerFieldType::EMPTY_TYPE}},
+    };
+    EXPECT_CALL(*download_manager_,
+                StartUploadRequest(
+                    AllOf(SignatureIs(first_form_signature),
+                          UploadedAutofillTypesAreSet(expected_vote_types)),
+                    _, _, _, /*observed_submission=*/false, _))
+        .Times(1);
+  }
+  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+
+  // 3. Simulate typing into second field
+  form_.fields[1].value = u"Presley";
+  browser_autofill_manager_->OnTextFieldDidChange(
+      form_, form_.fields[1], gfx::RectF(), AutofillTickClock::NowTicks());
+
+  // 4. Simulate removing the focus from the form, which generaets a second blur
+  // vote which should be sent.
+  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
+      {u"firstname",
+       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
+      {u"lastname",
+       {ServerFieldType::NAME_LAST, ServerFieldType::CREDIT_CARD_NAME_LAST,
+        ServerFieldType::NAME_LAST_SECOND}},
+  };
+  EXPECT_CALL(*download_manager_,
+              StartUploadRequest(
+                  AllOf(SignatureIs(first_form_signature),
+                        UploadedAutofillTypesAreSet(expected_vote_types)),
+                  _, _, _, /*observed_submission=*/false, _))
+      .Times(1);
+  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+
+  // 5. Grow the form by one field, which changes the form signature.
+  FormFieldData field;
+  test::CreateTestFormField("Zip code", "zip", "", "text", "postal-code",
+                            &field);
+  form_.fields.push_back(field);
+  FormsSeen({form_});
+
+  // 6. Ensure that a form submission triggers votes for the new form.
+  // Adding a field should have changed the form signature.
+  FormSignature second_form_signature = CalculateFormSignature(form_);
+  EXPECT_NE(first_form_signature, second_form_signature);
+  // Because the next field after the two names is not a credit card field,
+  // field disambiguation removes the credit card name votes.
+  expected_vote_types = {
+      {u"firstname", {ServerFieldType::NAME_FIRST}},
+      {u"lastname",
+       {ServerFieldType::NAME_LAST, ServerFieldType::NAME_LAST_SECOND}},
+      {u"zip", {ServerFieldType::EMPTY_TYPE}},
+  };
+  EXPECT_CALL(*download_manager_,
+              StartUploadRequest(
+                  AllOf(SignatureIs(second_form_signature),
+                        UploadedAutofillTypesAreSet(expected_vote_types)),
+                  _, _, _,
+                  /*observed_submission=*/true, _))
+      .Times(1);
+  FormSubmitted(form_);
+}
+
+// Ensure that a blur votes is sent after a navigation.
+TEST_P(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
+  SimulateTypingFirstNameIntoFirstField();
+
+  // Simulate removing focus from form, which triggers a blur vote.
+  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
+      {u"firstname",
+       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
+      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
+  };
+  EXPECT_CALL(*download_manager_,
+              StartUploadRequest(
+                  AllOf(SignatureIs(CalculateFormSignature(form_)),
+                        UploadedAutofillTypesAreSet(expected_vote_types)),
+                  _, _, _, /*observed_submission=*/false, _))
+      .Times(1);
+  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+
+  // Simulate a navigation. If kAutofillDelayBlurVotes is enabled, this is when
+  // the vote is sent.
+  browser_autofill_manager_->Reset();
+}
+
+// Ensure that a submission vote blocks sending a blur vote for the same form
+// signature.
+TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
+  SimulateTypingFirstNameIntoFirstField();
+
+  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
+      {u"firstname",
+       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
+      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
+  };
+
+  // Simulate removing focus from form, which enqueues a blur vote.
+  if (!base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
+    // If AutofillDelayBlurVotes is disabled, the blur vote is actually sent.
+    // Otherwise, it is overridden by the form submission vote.
+    EXPECT_CALL(*download_manager_,
+                StartUploadRequest(
+                    AllOf(SignatureIs(CalculateFormSignature(form_)),
+                          UploadedAutofillTypesAreSet(expected_vote_types)),
+                    _, _, _, /*observed_submission=*/false, _))
+        .Times(1);
+  } else {
+    // If kAutofillDelayBlurVotes is enabled, the blur vote will be ignored and
+    // only the submission will be sent.
+  }
+  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+
+  EXPECT_CALL(*download_manager_,
+              StartUploadRequest(
+                  AllOf(SignatureIs(CalculateFormSignature(form_)),
+                        UploadedAutofillTypesAreSet(expected_vote_types)),
+                  _, _, _, /*observed_submission=*/true, _))
+      .Times(1);
+  FormSubmitted(form_);
 }
 
 }  // namespace autofill

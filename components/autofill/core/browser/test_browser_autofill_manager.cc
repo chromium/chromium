@@ -10,13 +10,14 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "form_structure_test_api.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -127,7 +128,19 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     bool observed_submission) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
 
-  run_loop_->Quit();
+  if (observed_submission) {
+    // In case no submission was observed, the run_loop is quit in
+    // StoreUploadVotesAndLogQualityCallback.
+    run_loop_->Quit();
+  }
+
+  // If the feature is disabled, StoreUploadVotesAndLogQualityCallback does
+  // not get called.
+  // TODO(crbug.com/1383502): Remove the following if clause.
+  if (!observed_submission &&
+      !base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
+    run_loop_->Quit();
+  }
 
   if (expected_observed_submission_ != absl::nullopt)
     EXPECT_EQ(expected_observed_submission_, observed_submission);
@@ -156,6 +169,16 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
       observed_submission);
 }
 
+void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
+    FormSignature form_signature,
+    base::OnceClosure callback) {
+  // TODO(crbug.com/1383502): Remove this DCHECK statement.
+  DCHECK(base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes));
+  BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
+      form_signature, std::move(callback));
+  run_loop_->Quit();
+}
+
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) const {
   return card_image_;
@@ -168,6 +191,10 @@ void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission) {
+  // The purpose of this runloop is to ensure that the field type determination
+  // finishes. If `observed_submission` is true, it's terminated in
+  // LogQualityAndUploadVotes. Otherwise, it is already terminated in
+  // StoreUploadVotesAndLogQualityCallback.
   run_loop_ = std::make_unique<base::RunLoop>();
   if (BrowserAutofillManager::MaybeStartVoteUploadProcess(
           std::move(form_structure), observed_submission)) {

@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -406,6 +408,19 @@ class BrowserAutofillManager : public AutofillManager,
   FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
 
  protected:
+  // Stores a `callback` for `form_signature`, possibly overriding an older
+  // callback for `form_signature` or triggering a pending callback in case too
+  // many callbacks are stored to create space.
+  virtual void StoreUploadVotesAndLogQualityCallback(
+      FormSignature form_signature,
+      base::OnceClosure callback);
+
+  // Triggers and wipes all pending QualityAndVotesUploadCallbacks.
+  void FlushPendingLogQualityAndVotesUploadCallbacks();
+
+  // Removes a callback for the given `form_signature` without calling it.
+  void WipeLogQualityAndVotesUploadCallback(FormSignature form_signature);
+
   // Logs quality metrics for the |submitted_form| and uploads votes for the
   // field types to the crowdsourcing server, if appropriate.
   // |observed_submission| indicates whether the upload is a result of an
@@ -806,6 +821,29 @@ class BrowserAutofillManager : public AutofillManager,
   // value="6" label="Phone Collected, WebOTP Used, OTC Not Used"
   // value="7" label="Phone Collected, WebOTP Used, OTC Used"
   uint32_t phone_collection_metric_state_ = 0;
+
+  // List of callbacks to be called for sending blur votes. Only one callback is
+  // stored per FormSignature. We rely on FormSignatures rather than
+  // FormGlobalId to send votes for the various signatures of a form while it
+  // evolves (when fields are added or removed). The list of callbacks is
+  // ordered by time of creation: newest elements first. If the list becomes too
+  // long, the oldest pending callbacks are just called and popped removed the
+  // list.
+  //
+  // Callbacks are triggered in the following situations:
+  // - We observe a form submission.
+  // - The list becomes to large.
+
+  // Callbacks are wiped in the following  situations:
+  // - A form is submitted.
+  // - A callback is overridden by a more recent version.
+  std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads_;
+
+  // This task runner sequentializes calls to
+  // DeterminePossibleFieldTypesForUpload to ensure that blur votes are
+  // processed before form submission votes. This is important so that a
+  // submission can trigger the upload of blur votes.
+  scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
 
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };

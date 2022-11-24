@@ -331,4 +331,19 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
   return "";
 }
 
+std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {
+  o << "[";
+  bool first = true;
+  for (const auto type : field_type_set) {
+    if (!first) {
+      o << ", ";
+    } else {
+      first = false;
+    }
+    o << FieldTypeToStringPiece(type);
+  }
+  o << "]";
+  return o;
+}
+
 }  // namespace autofill
