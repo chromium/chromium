@@ -232,11 +232,10 @@ mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
   return settings;
 }
 
-}  // namespace
-
-mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
+const base::Value::Dict& GetPrefsDictionaryForEngineId(
     const PrefService& prefs,
-    const std::string& engine_id) {
+    const std::string& engine_id,
+    const base::Value::Dict& fallback_dictionary) {
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
   const base::Value::Dict& all_input_method_pref =
@@ -244,19 +243,28 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
 
   // For each input method, the dictionary contains an entry, with the key being
   // a string that identifies the input method, and the value being a
-  // subdictionary with the specific settings for that input method.
-  // The subdictionary structure depends on the type of input method it's for.
-  // The subdictionary may be null if the user hasn't changed any settings for
-  // that input method.
+  // subdictionary with the specific settings for that input method.  The
+  // subdictionary structure depends on the type of input method it's for.  The
+  // subdictionary may be null if the user hasn't changed any settings for that
+  // input method.
   const base::Value::Dict* input_method_specific_pref_or_null =
       all_input_method_pref.FindDict(engine_id);
 
   // For convenience, pass an empty dictionary if there are no settings for this
   // input method yet.
-  base::Value::Dict empty_value;
+  return input_method_specific_pref_or_null
+             ? *input_method_specific_pref_or_null
+             : fallback_dictionary;
+}
+
+}  // namespace
+
+mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
+    const PrefService& prefs,
+    const std::string& engine_id) {
+  base::Value::Dict empty_dictionary;
   const auto& input_method_specific_pref =
-      input_method_specific_pref_or_null ? *input_method_specific_pref_or_null
-                                         : empty_value;
+      GetPrefsDictionaryForEngineId(prefs, engine_id, empty_dictionary);
 
   if (IsFstEngine(engine_id)) {
     return mojom::InputMethodSettings::NewLatinSettings(
