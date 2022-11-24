@@ -3622,13 +3622,6 @@ void RenderFrameHostManager::CommitPending(
   //    order to receive the IPC.
   DCHECK(pending_rfh->IsRenderFrameLive());
 
-  // We should not have a pending bfcache entry unless bfcache or prerendering
-  // is enabled. Note that in prerendering, the prerendering page information is
-  // stored in `pending_stored_page` prior to activating the page
-  // (despite the "bfcache" name).
-  DCHECK(!pending_stored_page || IsBackForwardCacheEnabled() ||
-         blink::features::IsPrerender2Enabled());
-
 #if BUILDFLAG(IS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
   // RenderWidgetHostView takes its contents. Ensure that Cocoa sees this as
