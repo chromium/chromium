@@ -508,25 +508,6 @@ class CONTENT_EXPORT MediaStreamManager
   MediaStreamProvider* GetDeviceManager(
       blink::mojom::MediaStreamType stream_type) const;
   void StartEnumeration(DeviceRequest* request, const std::string& label);
-  // Creates and returns a DeviceRequest of type |type|. |type| should be either
-  // blink::MEDIA_GENERATE_STREAM or blink::MEDIA_GET_OPEN_DEVICE.
-  // TODO(crbug.com/1288839): Once all device-related callbacks are packed in a
-  // single struct, delete this function and replace its usage with
-  // make_unique<DeviceRequest> calls.
-  static std::unique_ptr<DeviceRequest> CreateDeviceRequest(
-      int render_process_id,
-      int render_frame_id,
-      int requester_id,
-      int page_request_id,
-      const blink::StreamControls& controls,
-      blink::MediaStreamRequestType type,
-      MediaDeviceSaltAndOrigin salt_and_origin,
-      bool user_gesture,
-      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-      DeviceStoppedCallback device_stopped_cb,
-      DeviceChangedCallback device_changed_cb,
-      DeviceRequestStateChangeCallback device_request_state_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
   std::string AddRequest(std::unique_ptr<DeviceRequest> request);
   DeviceRequest* FindRequest(const std::string& label) const;
   // Clones an existing device identified by |existing_device_session_id| and
