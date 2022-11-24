@@ -6,21 +6,29 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
  * Dialog in the form of a notice shown for the Privacy Sandbox.
@@ -95,16 +103,13 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                         .inflate(R.layout.privacy_sandbox_notice_eea_dropdown_v4,
                                 mDropdownContainer);
 
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer,
+                setDropdownDescription(mDropdownContainer,
                         R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_one,
                         R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_1);
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer,
+                setDropdownDescription(mDropdownContainer,
                         R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_two,
                         R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_2);
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer,
+                setDropdownDescription(mDropdownContainer,
                         R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_three,
                         R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_3);
 
@@ -124,6 +129,17 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                             ? R.string.accessibility_expanded_group
                             : R.string.accessibility_collapsed_group));
         }
+    }
+
+    private void setDropdownDescription(
+            ViewGroup container, @IdRes int viewId, @StringRes int stringRes) {
+        TextView view = container.findViewById(viewId);
+        SpannableString spannableString =
+                SpanApplier.applySpans(getContext().getResources().getString(stringRes),
+                        new SpanApplier.SpanInfo(
+                                "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
+        spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
+        view.setText(spannableString);
     }
 
     private void setBulletsDescription() {
