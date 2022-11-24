@@ -85,7 +85,7 @@ class SchemaValidator(object):
     self.used_pattern_properties = {}
     self.used_additional_properties = {}
 
-  def ValidateSchema(self, schema):
+  def ValidateSchema(self, schema, schemas_by_id):
     """Checks if |schema| is a valid schema and only uses valid $ref links.
 
     See _ValidateSchemaInternal() for a detailed description of the schema
@@ -93,11 +93,14 @@ class SchemaValidator(object):
     valid.
     Args:
       schema (dict): The JSON schema.
+      schemas_by_id (dict): A dictionary of all the schemas that can refered to
+                            using $ref.
     Returns:
       A list contains all schema errors.
     """
     self.found_ref_ids.clear()
     self.errors = []
+    self.schemas_by_id = schemas_by_id
 
     self._ValidateSchemaInternal(schema)
 

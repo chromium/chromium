@@ -354,7 +354,14 @@ class PolicyTypeProvider():
     # - The downloaded file shouldn't be publicly accessible
     self._external_type_mismatch_allowlist = ['PluginVmImage']
 
-  def GetPolicyType(self, policy):
+  def GetPolicyType(self, policy, schemas_by_id={}):
+    '''Gets the type of `policy` according to its schema.
+
+    Args:
+      policy (dict): The policy to get the type for.
+      schemas_by_id (dict): Maps schema id to a a schema.
+
+    '''
     # Policies may have the same name as the groups they belong to, so caching
     # would not work. Instead, first check if the policy is a group; if it's
     # not, go ahead with caching.
@@ -364,18 +371,25 @@ class PolicyTypeProvider():
     policy_name = policy.get('name')
     if not policy_name or policy_name not in self._policy_types:
       return self._policy_types.setdefault(
-          policy_name, self._GetPolicyTypeFromSchema(policy))
+          policy_name, self._GetPolicyTypeFromSchema(policy, schemas_by_id))
     return self._policy_types[policy_name]
 
   def _IsGroup(self, policy):
     return policy.get('type') == 'group'
 
-  def _GetPolicyTypeFromSchema(self, policy):
+  def _GetPolicyTypeFromSchema(self, policy, schemas_by_id):
     schema = policy.get('schema')
     if not schema:
       raise NotImplementedError(
           'Policy %s does not have a schema. A schema must be implemented for '
           'all non-group type policies.' % policy.get('name'))
+
+    if '$ref' in schema:
+      if not schema['$ref'] in schemas_by_id:
+        raise NotImplementedError(
+            'Policy %s uses unknow $ref %s in schema' % policy['name'],
+            schema['$ref'])
+      schema = schemas_by_id[schema['$ref']]
 
     schema_type = schema.get('type')
     if schema_type == 'boolean':
@@ -400,6 +414,9 @@ class PolicyTypeProvider():
         return 'string-enum-list'
       elif schema_items.get('type') == 'object' and schema_items.get(
           'properties'):
+        return 'dict'
+      elif ('$ref' in schema_items
+            and schemas_by_id[schema_items['$ref']].get('type') == 'object'):
         return 'dict'
       return 'list'
     elif schema_type == 'object':
@@ -537,11 +554,11 @@ class PolicyTemplateChecker(object):
     return value
 
 
-  def _ValidateSchema(self, schema, schema_name, policy):
+  def _ValidateSchema(self, schema, schema_name, policy, schemas_by_id):
     ''' Helper fuction to call `schema_validator.ValidateSchema`. Appends error
         to `self.errors` if necessary.
     '''
-    schema_errors = self.schema_validator.ValidateSchema(schema)
+    schema_errors = self.schema_validator.ValidateSchema(schema, schemas_by_id)
     if schema_errors:
       schema_error_message = "\n  ".join(schema_errors)
       self._PolicyError(
@@ -563,7 +580,7 @@ class PolicyTemplateChecker(object):
           'does not use all properties at least once.\n'
           f'  {value_error_message}', policy)
 
-  def _CheckPolicySchema(self, policy, policy_type):
+  def _CheckPolicySchema(self, policy, policy_type, schemas_by_id):
     '''Checks that the 'schema' field matches the 'type' field.'''
     self.has_schema_error = False
 
@@ -589,11 +606,11 @@ class PolicyTemplateChecker(object):
           f'Unexpected type. Type "{policy_type}" was expected based on the '
           'schema.', policy, 'type')
 
-    self._ValidateSchema(schema, 'schema', policy)
+    self._ValidateSchema(schema, 'schema', policy, schemas_by_id)
 
     if 'validation_schema' in policy:
       self._ValidateSchema(policy.get('validation_schema'), 'validation schema',
-                           policy)
+                           policy, schemas_by_id)
 
     # Checks that boolean policies are not negated (which makes them harder to
     # reason about).
@@ -915,7 +932,11 @@ class PolicyTemplateChecker(object):
 
     return False
 
-  def _CheckPolicyDefinition(self, policy, current_version, is_in_group=False):
+  def _CheckPolicyDefinition(self,
+                             policy,
+                             current_version,
+                             schemas_by_id,
+                             is_in_group=False):
     if not isinstance(policy, dict):
       self._Error('Each policy must be a dictionary.', 'policy', None, policy)
       return
@@ -959,7 +980,7 @@ class PolicyTemplateChecker(object):
     # Each policy must have a type.
     policy_types = ('group', 'main', 'string', 'int', 'list', 'int-enum',
                     'string-enum', 'string-enum-list', 'dict', 'external')
-    policy_type = self.policy_type_provider.GetPolicyType(policy)
+    policy_type = self.policy_type_provider.GetPolicyType(policy, schemas_by_id)
     if policy_type not in policy_types:
       self._PolicyError('Policy type is not one of: ' + ', '.join(policy_types),
                         policy)
@@ -1017,7 +1038,7 @@ class PolicyTemplateChecker(object):
       # 'schema' is the new 'type'.
       # TODO(crbug.com/1310258): remove 'type' from policy_templates and
       # all supporting files (including this one), and exclusively use 'schema'.
-      self._CheckPolicySchema(policy, policy_type)
+      self._CheckPolicySchema(policy, policy_type, schemas_by_id)
 
       # Each policy must have a supported_on list.
       supported_on = self._CheckContains(policy,
@@ -1332,7 +1353,7 @@ class PolicyTemplateChecker(object):
                           policy, 'max_size')
 
   def _CheckPolicy(self, policy, current_version):
-    self._CheckPolicyDefinition(policy, current_version)
+    self._CheckPolicyDefinition(policy, current_version, {})
 
   def _CheckPlatform(self, platforms, field_name, policy):
     ''' Verifies the |platforms| list. Records any error with |field_name| and
@@ -2001,7 +2022,8 @@ class PolicyTemplateChecker(object):
     return
 
   def CheckModifiedPolicies(self, policy_change_list, current_version,
-                            skip_compability_check, known_features):
+                            skip_compability_check, known_features,
+                            schemas_by_id):
     '''
       Checks that changes made to policies `policy_change_list` are compatible
       with the `current_version` and previous versions of the policy.
@@ -2018,7 +2040,7 @@ class PolicyTemplateChecker(object):
         if pc['new_policy'] is not None
     ]
     for policy in modified_policies:
-      self._CheckPolicyDefinition(policy, current_version)
+      self._CheckPolicyDefinition(policy, current_version, schemas_by_id)
     self.non_compatibility_error_count = 0
     if (not self.errors and not skip_compability_check):
       self._CheckPolicyDefinitionsChangeCompatibility(policy_change_list,

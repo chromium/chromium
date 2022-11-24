@@ -33,6 +33,7 @@ _TEMPLATES_PATH = os.path.join(
       'components', 'policy', 'resources',
       'templates')
 _MESSAGES_PATH = os.path.join(_TEMPLATES_PATH, 'messages.yaml')
+_COMMON_SCHEMAS_PATH = os.path.join(_TEMPLATES_PATH, 'common_schemas.yaml')
 _POLICIES_DEFINITIONS_PATH = os.path.join(_TEMPLATES_PATH, 'policy_definitions')
 _POLICIES_YAML_PATH = os.path.join(_TEMPLATES_PATH, 'policies.yaml')
 _HISTOGRAMS_PATH = os.path.join(
@@ -71,12 +72,17 @@ def _LoadYamlFile(root, path):
 def _GetKnownFeatures(input_api):
   feature_messages = []
   root = input_api.change.RepositoryRoot()
-  messages_path = input_api.os_path.join(_TEMPLATES_PATH, 'messages.yaml')
-  messages = _LoadYamlFile(root, messages_path)
+  messages = _LoadYamlFile(root, _MESSAGES_PATH)
   for message in messages:
     if message.startswith('doc_feature_'):
       feature_messages.append(message[12:])
   return feature_messages
+
+
+def _GetCommonSchema(input_api):
+  root = input_api.change.RepositoryRoot()
+  commmon_schemas = _LoadYamlFile(root, _COMMON_SCHEMAS_PATH)
+  return commmon_schemas
 
 
 def _GetPolicyChangeList(input_api):
@@ -569,7 +575,7 @@ def CheckPolicyDefinitions(input_api, output_api):
   if _SkipPresubmitChecks(
       input_api,
       [_MESSAGES_PATH, _POLICIES_DEFINITIONS_PATH, _SYNTAX_CHECK_SCRIPT_PATH,
-       _PRESUBMIT_PATH]):
+       _COMMON_SCHEMAS_PATH, _PRESUBMIT_PATH]):
     return results
 
   root = input_api.change.RepositoryRoot()
@@ -601,7 +607,7 @@ def CheckPolicyDefinitions(input_api, output_api):
                                 in input_api.change.tags)
   errors, warnings = checker.CheckModifiedPolicies(
     _GetPolicyChangeList(input_api), current_version, skip_compatibility_check,
-    _GetKnownFeatures(input_api))
+    _GetKnownFeatures(input_api), _GetCommonSchema(input_api))
 
   # PRESUBMIT won't print warning if there is any error. Append warnings to
   # error for policy_templates.json so that they can always be printed
