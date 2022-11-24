@@ -19,8 +19,6 @@ import {ITransport} from '../utils/transport';
 import {CdpMessage} from './cdpMessage';
 import {CdpClient, createClient} from './cdpClient';
 
-import {log, LogType} from '../utils/log';
-
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;
   reject: (errorObj: object) => void;

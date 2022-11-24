@@ -27,10 +27,7 @@ export class Buffer<T> {
    * @param capacity
    * @param onItemRemoved optional delegate called for each removed element.
    */
-  constructor(
-    capacity: number,
-    onItemRemoved: (value: T) => void = (value: T) => {}
-  ) {
+  constructor(capacity: number, onItemRemoved: (value: T) => void = () => {}) {
     this.#capacity = capacity;
     this.#onItemRemoved = onItemRemoved;
   }

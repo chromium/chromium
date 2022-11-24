@@ -64,7 +64,6 @@ export class CommandProcessor {
     this.#contextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
-      bidiServer,
       eventManager
     );
   }

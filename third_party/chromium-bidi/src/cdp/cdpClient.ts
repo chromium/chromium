@@ -47,6 +47,7 @@ const domainConstructorMap = new Map<
 
 // Base class for all domains.
 class DomainImpl extends EventEmitter {
+  // @ts-ignore
   constructor(private _client: CdpClientImpl) {
     super();
   }
@@ -118,6 +119,9 @@ class CdpClientImpl extends EventEmitter {
 
     // Next, get the correct domain instance and tell it to emit the strongly typed event.
     const [domainName, eventName] = method.split('.');
+    if (!domainName || !eventName) {
+      throw new Error('Malformed message');
+    } 
     const domain = this._domains.get(domainName);
     if (domain) {
       domain.emit(eventName, params);

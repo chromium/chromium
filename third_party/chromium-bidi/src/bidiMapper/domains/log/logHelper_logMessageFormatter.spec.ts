@@ -379,6 +379,6 @@ describe('test logMessageFormatter', () => {
         undefined,
         inputArgs as CommonDataTypes.RemoteValue[]
       )
-    ).to.throw('Less value is provided: "test string %i %i string test 1"');
+    ).to.throw(outputString);
   });
 });

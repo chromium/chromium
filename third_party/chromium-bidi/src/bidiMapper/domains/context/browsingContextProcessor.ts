@@ -19,7 +19,6 @@ import {log, LogType} from '../../../utils/log';
 import {CdpClient, CdpConnection} from '../../../cdp';
 import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
-import {IBidiServer} from '../../utils/bidiServer';
 import {IEventManager} from '../events/EventManager';
 import {InvalidArgumentException} from '../protocol/error';
 import {BrowsingContextImpl} from './browsingContextImpl';
@@ -32,18 +31,15 @@ export class BrowsingContextProcessor {
   readonly sessions: Set<string> = new Set();
   readonly #cdpConnection: CdpConnection;
   readonly #selfTargetId: string;
-  readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
 
   constructor(
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    bidiServer: IBidiServer,
     eventManager: IEventManager
   ) {
     this.#cdpConnection = cdpConnection;
     this.#selfTargetId = selfTargetId;
-    this.#bidiServer = bidiServer;
     this.#eventManager = eventManager;
 
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
@@ -93,7 +89,6 @@ export class BrowsingContextProcessor {
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
-          this.#bidiServer,
           sessionId,
           this.#eventManager
         );
@@ -130,7 +125,6 @@ export class BrowsingContextProcessor {
         targetInfo.targetId,
         null,
         targetSessionCdpClient,
-        this.#bidiServer,
         sessionId,
         params.targetInfo.browserContextId ?? null,
         this.#eventManager

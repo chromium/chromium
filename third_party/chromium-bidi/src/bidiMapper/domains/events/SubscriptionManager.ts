@@ -42,7 +42,7 @@ export class SubscriptionManager {
         ),
         channel,
       }))
-      .filter(({priority, channel}) => priority !== null) as {
+      .filter(({priority}) => priority !== null) as {
       priority: number;
       channel: string | null;
     }[];
@@ -50,7 +50,7 @@ export class SubscriptionManager {
     // Sort channels by priority.
     return prioritiesAndChannels
       .sort((a, b) => a.priority - b.priority)
-      .map(({priority, channel}) => channel);
+      .map(({channel}) => channel);
   }
 
   #getEventSubscriptionPriorityForChannel(

@@ -22,7 +22,6 @@ import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../utils/deferred';
 import {UnknownException} from '../protocol/error';
 import {LogManager} from '../log/logManager';
-import {IBidiServer} from '../../utils/bidiServer';
 import {Realm, RealmType} from '../script/realm';
 import {BrowsingContextStorage} from './browsingContextStorage';
 import LoadEvent = BrowsingContext.LoadEvent;
@@ -45,7 +44,6 @@ export class BrowsingContextImpl {
   readonly #parentId: string | null;
   readonly #cdpBrowserContextId: string | null;
 
-  readonly #bidiServer: IBidiServer;
   readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
 
@@ -68,7 +66,6 @@ export class BrowsingContextImpl {
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
-    bidiServer: IBidiServer,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager
@@ -79,7 +76,6 @@ export class BrowsingContextImpl {
     this.#cdpBrowserContextId = cdpBrowserContextId;
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
-    this.#bidiServer = bidiServer;
 
     this.#initListeners();
 
@@ -90,7 +86,6 @@ export class BrowsingContextImpl {
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
-    bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
   ): Promise<void> {
@@ -98,7 +93,6 @@ export class BrowsingContextImpl {
       contextId,
       parentId,
       cdpClient,
-      bidiServer,
       cdpSessionId,
       null,
       eventManager
@@ -115,7 +109,6 @@ export class BrowsingContextImpl {
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
-    bidiServer: IBidiServer,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager
@@ -124,7 +117,6 @@ export class BrowsingContextImpl {
       contextId,
       parentId,
       cdpClient,
-      bidiServer,
       cdpSessionId,
       cdpBrowserContextId,
       eventManager
@@ -187,12 +179,7 @@ export class BrowsingContextImpl {
   }
 
   async #unblockAttachedTarget() {
-    LogManager.create(
-      this.#contextId,
-      this.#cdpClient,
-      this.#cdpSessionId,
-      this.#eventManager
-    );
+    LogManager.create(this.#cdpClient, this.#cdpSessionId, this.#eventManager);
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
     await this.#cdpClient.Page.setLifecycleEventsEnabled({enabled: true});
@@ -547,6 +534,6 @@ export class BrowsingContextImpl {
     if (maybeSandboxes.length !== 1) {
       throw Error(`Sandbox ${sandbox} wasn't created.`);
     }
-    return maybeSandboxes[0];
+    return maybeSandboxes[0]!;
   }
 }

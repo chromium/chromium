@@ -156,8 +156,8 @@ export class ScriptEvaluator {
 
   static realmDestroyed(realm: Realm) {
     return Array.from(this.#knownHandlesToRealm.entries())
-      .filter(([h, r]) => r === realm.realmId)
-      .map(([h, r]) => this.#knownHandlesToRealm.delete(h));
+      .filter(([, r]) => r === realm.realmId)
+      .map(([h]) => this.#knownHandlesToRealm.delete(h));
   }
 
   static async disown(realm: Realm, handle: string) {
@@ -391,7 +391,7 @@ export class ScriptEvaluator {
             for (let i = 0; i < args.length; i += 2) {
               // Key should be either `string`, `number`, or `symbol`.
               const key = args[i] as string | number | symbol;
-              result[key] = args[i + 1];
+              result[key] = args[i + 1]!;
             }
             return result;
           }),

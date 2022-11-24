@@ -32,7 +32,7 @@ function parseArguments() {
   parser.add_argument('-p', '--port', {
     help: 'Port that BiDi server should listen to. Default is 8080.',
     type: 'int',
-    default: process.env.PORT || 8080,
+    default: process.env['PORT'] || 8080,
   });
 
   parser.add_argument('-c', '--channel', {
@@ -41,7 +41,7 @@ function parseArguments() {
       'instead of one pointed by Puppeteer version. Can be one of ``, ' +
       '`chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. The given ' +
       'Chrome channel should be installed. Default is ``.',
-    default: process.env.CHANNEL || '',
+    default: process.env['CHANNEL'] || '',
   });
 
   parser.add_argument('-hl', '--headless', {

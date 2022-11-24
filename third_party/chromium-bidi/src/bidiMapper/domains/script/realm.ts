@@ -272,8 +272,7 @@ export class Realm {
    * @returns string The stringified object.
    */
   async stringifyObject(
-    cdpObject: Protocol.Runtime.RemoteObject,
-    realm: Realm
+    cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
     return ScriptEvaluator.stringifyObject(cdpObject, this);
   }

@@ -23,35 +23,26 @@ import {Realm} from '../script/realm';
 import {IEventManager} from '../events/EventManager';
 
 export class LogManager {
-  readonly #contextId: string;
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
 
   private constructor(
-    contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
     this.#cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
-    this.#contextId = contextId;
     this.#eventManager = eventManager;
   }
 
   public static create(
-    contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager
   ) {
-    const logManager = new LogManager(
-      contextId,
-      cdpClient,
-      cdpSessionId,
-      eventManager
-    );
+    const logManager = new LogManager(cdpClient, cdpSessionId, eventManager);
 
     logManager.#initialize();
     return logManager;
@@ -129,10 +120,7 @@ export class LogManager {
           if (realm === undefined) {
             return JSON.stringify(params.exceptionDetails.exception);
           }
-          return await realm.stringifyObject(
-            params.exceptionDetails.exception,
-            realm
-          );
+          return await realm.stringifyObject(params.exceptionDetails.exception);
         })();
 
         // No need in waiting for the result, just register the event promise.
