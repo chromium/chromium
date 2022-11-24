@@ -12,16 +12,30 @@ right for a given use case, such as `absl::optional<T>` and
 [here](https://docs.google.com/document/d/1VRevv8JhlP4I8fIlvf87IrW2IRjE0PbkSfIcI6-UbJo/edit?usp=sharing).
 
 ## `raw_ptr<T>`
-Use for class fields/members that would otherwise be a native pointer.
+Use for class fields/members that would otherwise be a `T*`.
 
-This is a weakly refcounted wrapper for a native pointer (also called a raw
+This is a weakly refcounted wrapper for a `T*` (also called a raw
 pointer). When the object is deleted, the allocator will "poison" the memory
 that object occupied and keep the memory around so it’s not reused. This reduces
 the risk and impact of a use-after-free bug.
 
 Depending on the use case, it's possible a smart pointer with additional
 features would be more appropriate, but if none of those are applicable or
-necesssary, `raw_ptr<T>` is much safer than a native pointer.
+necessary, `raw_ptr<T>` is preferred over a `T*`.
+
+For more information, see [`raw_ptr.md`](./raw_ptr.md); for guidance on
+usage, see
+[the style guide](../../styleguide/c++/c++.md#non_owning-pointers-in-class-fields).
+
+## `raw_ref<T>`
+Use for class fields/members that would otherwise be a `T&`.
+
+This shares much in common with `raw_ptr<T>`, but asserts that the
+`raw_ref<T>` is not nullable.
+
+For more information, see [`raw_ptr.md`](./raw_ptr.md); for guidance on
+usage, see
+[the style guide](../../styleguide/c++/c++.md#non_owning-pointers-in-class-fields).
 
 ## `base::WeakPtr<T>`
 Use when a reference to an object might outlive the object itself.
