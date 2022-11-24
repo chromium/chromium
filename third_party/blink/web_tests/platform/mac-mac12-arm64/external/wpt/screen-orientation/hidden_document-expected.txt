@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL hidden documents must reject went trying to call lock or unlock assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL hidden documents must reject went trying to call unlock assert_throws_dom: function "() => screen.orientation.unlock()" did not throw
-FAIL hidden documents must not unlock the screen orientation assert_throws_dom: function "() => screen.orientation.unlock()" did not throw
-FAIL Once maximized, a minimized window can lock or unlock the screen orientation again assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-
