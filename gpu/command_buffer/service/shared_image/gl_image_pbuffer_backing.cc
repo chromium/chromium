@@ -18,14 +18,11 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
 
 namespace {
-
-using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 using InitializeGLTextureParams =
     GLTextureImageBackingHelper::InitializeGLTextureParams;
@@ -60,7 +57,6 @@ GLImagePbufferBacking::CreateFromGLTexture(
           surface_origin, alpha_type, usage, params));
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
-  shared_image->image_bind_or_copy_needed_ = false;
 
   return shared_image;
 }
@@ -107,16 +103,8 @@ void GLImagePbufferBacking::ReleaseGLTexture(bool have_context) {
   }
 
   if (passthrough_texture_) {
-    if (have_context) {
-      if (!passthrough_texture_->is_bind_pending()) {
-        const GLenum target = GetGLTarget();
-        gl::ScopedTextureBinder binder(target,
-                                       passthrough_texture_->service_id());
-        image_->ReleaseTexImage(target);
-      }
-    } else {
+    if (!have_context)
       passthrough_texture_->MarkContextLost();
-    }
     passthrough_texture_.reset();
   }
 }
@@ -132,7 +120,7 @@ GLuint GLImagePbufferBacking::GetGLServiceId() const {
 }
 
 scoped_refptr<gfx::NativePixmap> GLImagePbufferBacking::GetNativePixmap() {
-  return image_->GetNativePixmap();
+  return nullptr;
 }
 
 void GLImagePbufferBacking::OnMemoryDump(
@@ -150,7 +138,6 @@ void GLImagePbufferBacking::OnMemoryDump(
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
     pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
   }
-  image_->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
 SharedImageBackingType GLImagePbufferBacking::GetType() const {
@@ -237,12 +224,12 @@ void GLImagePbufferBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
         gl::GLFence::CreateFromGpuFence(*in_fence.get());
     egl_fence->ServerWait();
   }
-  image_bind_or_copy_needed_ = true;
 }
 
 bool GLImagePbufferBacking::GLTextureImageRepresentationBeginAccess(
     bool readonly) {
-  return BindOrCopyImageIfNeeded();
+  passthrough_texture_->set_is_bind_pending(false);
+  return true;
 }
 
 void GLImagePbufferBacking::GLTextureImageRepresentationEndAccess(
@@ -252,49 +239,6 @@ void GLImagePbufferBacking::GLTextureImageRepresentationRelease(
     bool has_context) {
   // No action needed: This class retains the passed-in texture for its
   // lifetime, and releases it in its destructor.
-}
-
-bool GLImagePbufferBacking::BindOrCopyImageIfNeeded() {
-  // This is called by code that has retained the GL texture.
-  DCHECK(passthrough_texture_);
-  if (!image_bind_or_copy_needed_)
-    return true;
-
-  const GLenum target = GetGLTarget();
-  gl::GLApi* api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, target);
-  api->glBindTextureFn(target, GetGLServiceId());
-
-  // Un-bind the GLImage from the texture if it is currently bound.
-  if (image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    bool is_bound = !passthrough_texture_->is_bind_pending();
-    if (is_bound)
-      image_->ReleaseTexImage(target);
-  }
-
-  // Bind or copy the GLImage to the texture.
-  gles2::Texture::ImageState new_state = gles2::Texture::UNBOUND;
-  if (image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    if (!image_->BindTexImage(target)) {
-      LOG(ERROR) << "Failed to bind GLImage to target";
-      return false;
-    }
-    new_state = gles2::Texture::BOUND;
-  } else {
-    ScopedUnpackState scoped_unpack_state(
-        /*uploading_data=*/true);
-    if (!image_->CopyTexImage(target)) {
-      LOG(ERROR) << "Failed to copy GLImage to target";
-      return false;
-    }
-    new_state = gles2::Texture::COPIED;
-  }
-  DCHECK(new_state == gles2::Texture::BOUND ||
-         new_state == gles2::Texture::COPIED);
-  passthrough_texture_->set_is_bind_pending(false);
-
-  image_bind_or_copy_needed_ = false;
-  return true;
 }
 
 }  // namespace gpu

@@ -95,11 +95,6 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
 
   scoped_refptr<GLImagePbuffer> image_;
 
-  // If |image_bind_or_copy_needed_| is true, then either bind or copy |image_|
-  // to the GL texture, and un-set |image_bind_or_copy_needed_|.
-  bool BindOrCopyImageIfNeeded();
-  bool image_bind_or_copy_needed_ = true;
-
   void ReleaseGLTexture(bool have_context);
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
