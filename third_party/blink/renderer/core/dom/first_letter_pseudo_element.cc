@@ -421,9 +421,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* fi
   letter->SetFirstLetterPseudoElement(this);
   if (UNLIKELY(GetLayoutObject()->IsInitialLetterBox())) {
     const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();
+    // TODO(crbug.com/1393280): Once we can store used font somewhere, we should
+    // compute initial-letter font during layout to take proper effective style.
+    const ComputedStyle& paragraph_style =
+        paragraph.EffectiveStyle(NGStyleVariant::kFirstLine);
     scoped_refptr<const ComputedStyle> initial_letter_text_style =
         GetDocument().GetStyleResolver().StyleForInitialLetterText(
-            *letter_style, paragraph.StyleRef());
+            *letter_style, paragraph_style);
     letter->SetStyle(std::move(initial_letter_text_style));
   } else {
     letter->SetStyle(letter_style);
