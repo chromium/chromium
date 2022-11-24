@@ -52,12 +52,7 @@
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
-
-#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 #include "base/profiler/chrome_unwinder_android_v2.h"
-#else  // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
-#include "base/profiler/chrome_unwinder_android.h"
-#endif  // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
@@ -81,7 +76,6 @@ namespace {
 
 // Encapsulates the setup required to create the Chrome unwinder on Android.
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
-#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
@@ -110,38 +104,6 @@ class ChromeUnwinderCreator {
  private:
   base::MemoryMappedFile chrome_cfi_file_;
 };
-#else   // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
-class ChromeUnwinderCreator {
- public:
-  ChromeUnwinderCreator() {
-    constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
-    constexpr char kSplitName[] = "stack_unwinder";
-
-    base::MemoryMappedFile::Region cfi_region;
-    int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
-    DCHECK_GE(fd, 0);
-    bool mapped_file_ok =
-        chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
-    DCHECK(mapped_file_ok);
-    chrome_cfi_table_ = base::ArmCFITable::Parse(
-        {chrome_cfi_file_.data(), chrome_cfi_file_.length()});
-    DCHECK(chrome_cfi_table_);
-  }
-
-  ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
-  ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
-
-  std::unique_ptr<base::Unwinder> Create() {
-    return std::make_unique<base::ChromeUnwinderAndroid>(
-        chrome_cfi_table_.get(),
-        reinterpret_cast<uintptr_t>(&__executable_start));
-  }
-
- private:
-  base::MemoryMappedFile chrome_cfi_file_;
-  std::unique_ptr<base::ArmCFITable> chrome_cfi_table_;
-};
-#endif  // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
 #elif ANDROID_ARM64_UNWINDING_SUPPORTED  // ANDROID_ARM32_UNWINDING_SUPPORTED
 class ChromeUnwinderCreator {
  public:
