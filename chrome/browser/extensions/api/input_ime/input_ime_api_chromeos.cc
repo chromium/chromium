@@ -55,8 +55,6 @@ namespace SetAssistiveWindowButtonHighlighted =
 namespace ClearComposition = extensions::api::input_ime::ClearComposition;
 namespace OnCompositionBoundsChanged =
     extensions::api::input_method_private::OnCompositionBoundsChanged;
-namespace NotifyImeMenuItemActivated =
-    extensions::api::input_method_private::NotifyImeMenuItemActivated;
 namespace OnScreenProjectionChanged =
     extensions::api::input_method_private::OnScreenProjectionChanged;
 namespace FinishComposingText =
@@ -1324,31 +1322,6 @@ InputMethodPrivateFinishComposingTextFunction::Run() {
   return RespondNow(
       error.empty() ? NoArguments()
                     : Error(InformativeError(error, static_function_name())));
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateNotifyImeMenuItemActivatedFunction::Run() {
-  ash::input_method::InputMethodDescriptor current_input_method =
-      ash::input_method::InputMethodManager::Get()
-          ->GetActiveIMEState()
-          ->GetCurrentInputMethod();
-  std::string active_extension_id =
-      ash::extension_ime_util::GetExtensionIDFromInputMethodID(
-          current_input_method.id());
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(Profile::FromBrowserContext(browser_context()),
-                        active_extension_id, &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  std::unique_ptr<NotifyImeMenuItemActivated::Params> params(
-      NotifyImeMenuItemActivated::Params::Create(args()));
-  if (params->engine_id != engine->GetActiveComponentId())
-    return RespondNow(
-        Error(InformativeError(kErrorEngineNotActive, static_function_name())));
-  engine->PropertyActivate(params->name);
-  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction

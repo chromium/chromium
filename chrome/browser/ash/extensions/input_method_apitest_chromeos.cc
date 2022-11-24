@@ -140,7 +140,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   ExtensionTestMessageListener activated_listener("activated");
   ExtensionTestMessageListener menu_listener("get_menu_update");
-  ExtensionTestMessageListener item_activated_listenter("get_menu_activated");
   ExtensionTestMessageListener list_listenter("list_change");
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
                                                true);
@@ -163,7 +162,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
 
   ASSERT_TRUE(activated_listener.WaitUntilSatisfied()) << message_;
   ASSERT_TRUE(menu_listener.WaitUntilSatisfied()) << message_;
-  ASSERT_TRUE(item_activated_listenter.WaitUntilSatisfied()) << message_;
 
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kTestIMEID2, false /* show_message */);

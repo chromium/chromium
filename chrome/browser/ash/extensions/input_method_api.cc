@@ -521,8 +521,6 @@ InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
   registry
       .RegisterFunction<InputMethodPrivateFetchAllDictionaryWordsFunction>();
   registry.RegisterFunction<InputMethodPrivateAddWordToDictionaryFunction>();
-  registry
-      .RegisterFunction<InputMethodPrivateNotifyImeMenuItemActivatedFunction>();
   registry.RegisterFunction<InputMethodPrivateOpenOptionsPageFunction>();
 }
 

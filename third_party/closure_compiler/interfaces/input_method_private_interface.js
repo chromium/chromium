@@ -100,13 +100,6 @@ InputMethodPrivate.prototype = {
   setSelectionRange: function(parameters, callback) {},
 
   /**
-   * Fires the input.ime.onMenuItemActivated event.
-   * @param {string} engineID ID of the engine to use.
-   * @param {string} name Name of the MenuItem which was activated
-   */
-  notifyImeMenuItemActivated: function(engineID, name) {},
-
-  /**
    * Shows the input view window. If the input view window is already shown,
    * this function will do nothing.
    * @param {function(): void=} callback Called when the operation completes.

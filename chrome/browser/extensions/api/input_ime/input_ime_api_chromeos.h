@@ -152,27 +152,6 @@ class InputMethodPrivateFinishComposingTextFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_FINISHCOMPOSINGTEXT)
 };
 
-class InputMethodPrivateNotifyImeMenuItemActivatedFunction
-    : public ExtensionFunction {
- public:
-  InputMethodPrivateNotifyImeMenuItemActivatedFunction() = default;
-
-  InputMethodPrivateNotifyImeMenuItemActivatedFunction(
-      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
-  InputMethodPrivateNotifyImeMenuItemActivatedFunction& operator=(
-      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
-
- protected:
-  ~InputMethodPrivateNotifyImeMenuItemActivatedFunction() override = default;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.notifyImeMenuItemActivated",
-                             INPUTMETHODPRIVATE_NOTIFYIMEMENUITEMACTIVATED)
-};
-
 class InputMethodPrivateGetCompositionBoundsFunction
     : public ExtensionFunction {
  public:
