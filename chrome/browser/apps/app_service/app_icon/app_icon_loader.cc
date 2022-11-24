@@ -649,6 +649,69 @@ void AppIconLoader::LoadArcActivityIcons(
   }
 }
 
+void AppIconLoader::GetWebAppCompressedIconData(
+    const std::string& web_app_id,
+    ui::ResourceScaleFactor scale_factor,
+    web_app::WebAppIconManager& icon_manager) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  absl::optional<IconPurpose> icon_purpose_to_read =
+      GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
+
+  if (!icon_purpose_to_read.has_value()) {
+    MaybeLoadFallbackOrCompleteEmpty();
+    return;
+  }
+
+  icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
+  icon_size_in_px_ =
+      apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale_);
+
+  auto size_and_purpose = icon_manager.FindIconMatchBigger(
+      web_app_id, {*icon_purpose_to_read}, icon_size_in_px_);
+  DCHECK(size_and_purpose.has_value());
+
+  switch (icon_type_) {
+    case IconType::kCompressed:
+      // Only read IconPurpose::ANY icons compressed as other purposes would
+      // need to find the icon size to match the icon purpose.
+      //
+      // If the icon px size returned from FindIconMatchBigger doesn't match
+      // icon_size_in_px_, the returned compressed icon should be resized, so
+      // ReadSmallestCompressedIconAny can't be used.
+      //
+      // If `icon_effects_` is not none, the icon needs to be converted to the
+      // uncompressed icon to apply the icon effects. So ReadIcons is used to
+      // get the icon to match the size in px and icon purpose to keep the
+      // consistent implementation with LoadWebAppIcon.
+      if (icon_effects_ == apps::IconEffects::kNone &&
+          *icon_purpose_to_read == IconPurpose::ANY &&
+          icon_size_in_px_ == size_and_purpose->size_px) {
+        icon_manager.ReadSmallestCompressedIconAny(
+            web_app_id, icon_size_in_px_,
+            base::BindOnce(&AppIconLoader::CompleteWithCompressed,
+                           base::WrapRefCounted(this)));
+        return;
+      }
+      [[fallthrough]];
+    case IconType::kUncompressed:
+      [[fallthrough]];
+    case IconType::kStandard: {
+      std::vector<int> icon_pixel_sizes;
+      icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
+      icon_manager.ReadIcons(
+          web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
+          base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
+                         base::WrapRefCounted(this)));
+      return;
+    }
+    case IconType::kUnknown:
+      MaybeLoadFallbackOrCompleteEmpty();
+      return;
+  }
+  NOTREACHED();
+}
+
 std::unique_ptr<arc::IconDecodeRequest>
 AppIconLoader::CreateArcIconDecodeRequest(
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
@@ -735,7 +798,6 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
 }
 
 void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
-  DCHECK_EQ(icon_type_, IconType::kCompressed);
   if (data.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -820,6 +882,30 @@ void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
   DCHECK_EQ(image_skia.image_reps().size(),
             ui::GetSupportedResourceScaleFactors().size());
   MaybeApplyEffectsAndComplete(image_skia);
+}
+
+void AppIconLoader::OnReadWebAppForCompressedIconData(
+    std::map<int, SkBitmap> icon_bitmaps) {
+  if (icon_bitmaps.empty()) {
+    MaybeLoadFallbackOrCompleteEmpty();
+    return;
+  }
+
+  SkBitmap bitmap = icon_bitmaps.begin()->second;
+
+  // Resize |bitmap| to match |icon_scale|.
+  bitmap = skia::ImageOperations::Resize(bitmap,
+                                         skia::ImageOperations::RESIZE_LANCZOS3,
+                                         icon_size_in_px_, icon_size_in_px_);
+
+  gfx::ImageSkia image_skia;
+  image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, icon_scale_));
+  image_skia.MakeThreadSafe();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&apps::EncodeImageToPngBytes, image_skia, icon_scale_),
+      base::BindOnce(&AppIconLoader::CompleteWithCompressed,
+                     base::WrapRefCounted(this)));
 }
 
 void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {

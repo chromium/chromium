@@ -489,6 +489,30 @@ void LoadIconFromWebApp(content::BrowserContext* context,
       web_app_provider->icon_manager(), Profile::FromBrowserContext(context));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void GetWebAppCompressedIconData(content::BrowserContext* context,
+                                 const std::string& web_app_id,
+                                 IconEffects icon_effects,
+                                 IconType icon_type,
+                                 int size_in_dip,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 LoadIconCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(context);
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(
+          Profile::FromBrowserContext(context));
+
+  DCHECK(web_app_provider);
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
+          icon_type, size_in_dip, /*is_placeholder_icon=*/false, icon_effects,
+          kInvalidIconResource, std::move(callback));
+  icon_loader->GetWebAppCompressedIconData(web_app_id, scale_factor,
+                                           web_app_provider->icon_manager());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void LoadIconFromFileWithFallback(
     IconType icon_type,
     int size_hint_in_dip,

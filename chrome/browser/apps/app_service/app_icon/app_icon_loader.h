@@ -22,6 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace arc {
@@ -111,6 +112,12 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // Loads icons for ARC activities.
   void LoadArcActivityIcons(
       const std::vector<arc::mojom::ActivityIconPtr>& icons);
+
+  // Requests a compressed icon data with `scale_factor` for an web app
+  // identified by `app_id`.
+  void GetWebAppCompressedIconData(const std::string& web_app_id,
+                                   ui::ResourceScaleFactor scale_factor,
+                                   web_app::WebAppIconManager& icon_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -142,15 +149,17 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
 
+  void OnReadWebAppForCompressedIconData(std::map<int, SkBitmap> icon_bitmaps);
+
   void MaybeLoadFallbackOrCompleteEmpty();
 
   const IconType icon_type_ = IconType::kUnknown;
 
   const int size_hint_in_dip_ = 0;
-  const int icon_size_in_px_ = 0;
+  int icon_size_in_px_ = 0;
   // The scale factor the icon is intended for. See gfx::ImageSkiaRep::scale
   // comments.
-  const float icon_scale_ = 0.0f;
+  float icon_scale_ = 0.0f;
   // A scale factor to take as input for the IconType::kCompressed response. See
   // gfx::ImageSkia::GetRepresentation() comments.
   float icon_scale_for_compressed_response_ = 1.0f;
