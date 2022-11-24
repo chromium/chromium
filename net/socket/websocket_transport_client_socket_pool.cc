@@ -161,7 +161,7 @@ void WebSocketTransportClientSocketPool::CancelRequest(
     ReleaseSocket(handle->group_id(), std::move(socket),
                   handle->group_generation());
   if (!DeleteJob(handle))
-    pending_callbacks_.erase(handle);
+    pending_callbacks_.erase(reinterpret_cast<ClientSocketHandleID>(handle));
 
   ActivateStalledRequest();
 }
@@ -230,7 +230,7 @@ LoadState WebSocketTransportClientSocketPool::GetLoadState(
     const ClientSocketHandle* handle) const {
   if (stalled_request_map_.find(handle) != stalled_request_map_.end())
     return LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET;
-  if (pending_callbacks_.count(handle))
+  if (pending_callbacks_.count(reinterpret_cast<ClientSocketHandleID>(handle)))
     return LOAD_STATE_CONNECTING;
   return LookupConnectJob(handle)->GetLoadState();
 }
@@ -345,21 +345,21 @@ void WebSocketTransportClientSocketPool::InvokeUserCallbackLater(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
     int rv) {
-  DCHECK(!pending_callbacks_.count(handle));
-  pending_callbacks_.insert(handle);
+  const auto handle_id = reinterpret_cast<ClientSocketHandleID>(handle);
+  DCHECK(!pending_callbacks_.count(handle_id));
+  pending_callbacks_.insert(handle_id);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebSocketTransportClientSocketPool::InvokeUserCallback,
-                     weak_factory_.GetWeakPtr(),
-                     base::UnsafeDanglingUntriaged(handle), std::move(callback),
+                     weak_factory_.GetWeakPtr(), handle_id, std::move(callback),
                      rv));
 }
 
 void WebSocketTransportClientSocketPool::InvokeUserCallback(
-    ClientSocketHandle* handle,
+    ClientSocketHandleID handle_id,
     CompletionOnceCallback callback,
     int rv) {
-  if (pending_callbacks_.erase(handle))
+  if (pending_callbacks_.erase(handle_id))
     std::move(callback).Run(rv);
 }
 

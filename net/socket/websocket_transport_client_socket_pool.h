@@ -29,6 +29,13 @@ namespace net {
 struct CommonConnectJobParams;
 struct NetworkTrafficAnnotationTag;
 
+// Identifier for a ClientSocketHandle to scope the lifetime of references.
+// ClientSocketHandleID are derived from ClientSocketHandle*, used in
+// comparison only, and are never dereferenced. We use an std::uintptr_t here to
+// match the size of a pointer, and to prevent dereferencing. Also, our
+// tooling complains about dangling pointers if we pass around a raw ptr.
+using ClientSocketHandleID = std::uintptr_t;
+
 class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     : public ClientSocketPool {
  public:
@@ -183,7 +190,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   void InvokeUserCallbackLater(ClientSocketHandle* handle,
                                CompletionOnceCallback callback,
                                int rv);
-  void InvokeUserCallback(ClientSocketHandle* handle,
+  void InvokeUserCallback(ClientSocketHandleID handle_id,
                           CompletionOnceCallback callback,
                           int rv);
   bool ReachedMaxSocketsLimit() const;
@@ -199,7 +206,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   bool DeleteStalledRequest(ClientSocketHandle* handle);
 
   const ProxyServer proxy_server_;
-  std::set<const ClientSocketHandle*> pending_callbacks_;
+  std::set<ClientSocketHandleID> pending_callbacks_;
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;
   StalledRequestMap stalled_request_map_;
