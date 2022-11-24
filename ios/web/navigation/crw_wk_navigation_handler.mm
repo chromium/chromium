@@ -211,8 +211,16 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   const WKContentMode contentMode = userAgentType == web::UserAgentType::DESKTOP
                                         ? WKContentModeDesktop
                                         : WKContentModeMobile;
+  BOOL isMainFrameNavigationAction = [self isMainFrameNavigationAction:action];
   auto decisionHandler = ^(WKNavigationActionPolicy policy) {
     preferences.preferredContentMode = contentMode;
+    if (@available(iOS 16.0, *)) {
+      if ((policy == WKNavigationActionPolicyAllow) &&
+          isMainFrameNavigationAction) {
+        UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInLockdownMode",
+                              preferences.lockdownModeEnabled);
+      }
+    }
     handler(policy, preferences);
   };
 
@@ -256,7 +264,6 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
 
   ui::PageTransition transition =
       [self pageTransitionFromNavigationType:action.navigationType];
-  BOOL isMainFrameNavigationAction = [self isMainFrameNavigationAction:action];
   if (isMainFrameNavigationAction) {
     web::NavigationContextImpl* context =
         [self contextForPendingMainFrameNavigationWithURL:requestURL];
