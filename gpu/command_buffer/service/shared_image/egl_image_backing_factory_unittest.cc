@@ -38,7 +38,6 @@
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"

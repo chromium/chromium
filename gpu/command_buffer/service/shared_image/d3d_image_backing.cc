@@ -23,7 +23,6 @@
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/scoped_restore_texture.h"
 #include "ui/gl/trace_util.h"
 

@@ -95,8 +95,6 @@ component("gl") {
     "gl_image.h",
     "gl_image_memory.cc",
     "gl_image_memory.h",
-    "gl_image_shared_memory.cc",
-    "gl_image_shared_memory.h",
     "gl_image_stub.cc",
     "gl_image_stub.h",
     "gl_implementation.cc",
@@ -574,7 +572,6 @@ test("gl_unittests") {
 
   sources = [
     "gl_api_unittest.cc",
-    "gl_image_shared_memory_unittest.cc",
     "gl_surface_format_unittest.cc",
     "gl_version_info_unittest.cc",
     "gpu_timing_unittest.cc",

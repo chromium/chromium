@@ -1,7 +1,2 @@
 # crbug.com/1264644
--GLImageSharedMemory/GLImageCopyTest/0.CopyTexImage
--GLImageSharedMemory/GLImageCopyTest/1.CopyTexImage
--GLImageSharedMemory/GLImageCopyTest/2.CopyTexImage
--GLImageSharedMemory/GLImageCopyTest/3.CopyTexImage
--GLImageSharedMemory/GLImageCopyTest/4.CopyTexImage
 -GLImageSharedMemoryPool/GLImageCopyTest/0.CopyTexImage
