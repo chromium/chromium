@@ -874,7 +874,7 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     private_footprint_total_kb += pmd.os_dump().private_footprint_kb;
   }
 
-  // TODO(crbug.com/1273341): Finalize the threshold after the experiment
+  // TODO(crbug.com/1382697): Finalize the threshold after the experiment
   // completes. The default acceptable percent is 10% of the system memory.
   int acceptable_percent_of_system_memory =
       base::GetFieldTrialParamByFeatureAsInt(
