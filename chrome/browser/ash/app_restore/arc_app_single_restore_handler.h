@@ -56,6 +56,8 @@ class ArcAppSingleRestoreHandler
                            NotLaunchIfShelfNotReady);
   FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,
                            PendingLaunchIfShelfHasReady);
+  FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,
+                           NullBoundsNotCauseCrash);
 
   // Called when ARC app has ready. It's expected only called once.
   void SendAppLaunchRequestToARC();
