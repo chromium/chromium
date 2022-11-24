@@ -755,6 +755,10 @@ void AuraToplevel::SetFullscreenMode(uint32_t mode) {
   shell_surface_->SetUseImmersiveForFullscreen(IsImmersive(mode));
 }
 
+void AuraToplevel::SetScaleFactor(float scale_factor) {
+  shell_surface_->SetScaleFactor(scale_factor);
+}
+
 void AuraToplevel::SetClientUsesScreenCoordinates() {
   supports_window_bounds_ = true;
   shell_surface_->set_client_supports_window_bounds(true);
@@ -840,6 +844,10 @@ void AuraPopup::SetDecoration(SurfaceFrameType type) {
 
 void AuraPopup::SetMenu() {
   shell_surface_->SetMenu();
+}
+
+void AuraPopup::SetScaleFactor(float scale_factor) {
+  shell_surface_->SetScaleFactor(scale_factor);
 }
 
 namespace {
@@ -1282,6 +1290,15 @@ void aura_toplevel_set_fullscreen_mode(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetFullscreenMode(mode);
 }
 
+void aura_toplevel_set_scale_factor(wl_client* client,
+                                    wl_resource* resource,
+                                    uint32_t scale_factor_as_uint) {
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes much match for reinterpret cast to be meaningful");
+  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  GetUserDataAs<AuraToplevel>(resource)->SetScaleFactor(scale_factor);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1300,6 +1317,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_activate,
     aura_toplevel_deactivate,
     aura_toplevel_set_fullscreen_mode,
+    aura_toplevel_set_scale_factor,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
@@ -1337,11 +1355,21 @@ void aura_popup_release(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
+void aura_popup_set_scale_factor(wl_client* client,
+                                 wl_resource* resource,
+                                 uint32_t scale_factor_as_uint) {
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes much match for reinterpret cast to be meaningful");
+  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  GetUserDataAs<AuraPopup>(resource)->SetScaleFactor(scale_factor);
+}
+
 const struct zaura_popup_interface aura_popup_implementation = {
     aura_popup_surface_submission_in_pixel_coordinates,
     aura_popup_set_decoration,
     aura_popup_set_menu,
     aura_popup_release,
+    aura_popup_set_scale_factor,
 };
 
 void aura_shell_get_aura_toplevel(wl_client* client,

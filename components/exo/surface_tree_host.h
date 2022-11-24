@@ -61,6 +61,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void DidPresentCompositorFrame(uint32_t presentation_token,
                                  const gfx::PresentationFeedback& feedback);
 
+  // Sets the scale factor for all buffers associated with this surface. This
+  // affects all future commits.
+  void SetScaleFactor(float scale_factor);
+
   aura::Window* host_window() { return host_window_.get(); }
   const aura::Window* host_window() const { return host_window_.get(); }
 
@@ -133,6 +137,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
  protected:
   void UpdateDisplayOnTree();
 
+  // Call this after a buffer has been committed but before a compositor frame
+  // has been submitted.
+  void DidCommit();
+
   // Call this to submit a compositor frame.
   void SubmitCompositorFrame();
 
@@ -154,6 +162,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void HandleContextLost();
 
+  // If the client has submitted a scale factor, we use that. Otherwise we use
+  // the host window's layer's scale factor.
+  float GetScaleFactor();
+
   Surface* root_surface_ = nullptr;
 
   // Position of root surface relative to topmost, leftmost sub-surface. The
@@ -174,6 +186,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
   PresentationCallbacks presentation_callbacks_;
   base::flat_map<uint32_t, PresentationCallbacks>
       active_presentation_callbacks_;
+
+  // When a client calls set_scale_factor they're actually setting the scale
+  // factor for all future commits.
+  absl::optional<float> pending_scale_factor_;
+
+  // This is the client-set scale factor that is being used for the current
+  // buffer.
+  absl::optional<float> scale_factor_;
 
   viz::FrameTokenGenerator next_token_;
 

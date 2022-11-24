@@ -881,7 +881,7 @@ void ShellSurfaceBase::OnSurfaceCommit() {
 
   CommitWidget();
   OnPostWidgetCommit();
-
+  DidCommit();
   SubmitCompositorFrame();
 }
 
