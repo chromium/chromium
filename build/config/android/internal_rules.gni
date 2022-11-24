@@ -534,6 +534,20 @@ template("write_build_config") {
           rebase_path(invoker.proguard_configs, root_build_dir)
       args += [ "--proguard-configs=$_rebased_proguard_configs" ]
     }
+    if (defined(invoker.static_library_dependent_targets)) {
+      _dependent_configs = []
+      foreach(_dep, invoker.static_library_dependent_targets) {
+        _dep_name = _dep.name
+        _dep_label = get_label_info(_dep_name, "label_no_toolchain")
+        deps += [ "$_dep_label$build_config_target_suffix" ]
+        _dep_gen_dir = get_label_info(_dep_name, "target_gen_dir")
+        _dep_name = get_label_info(_dep_name, "name")
+        _config = rebase_path("$_dep_gen_dir/$_dep_name.build_config.json",
+                              root_build_dir)
+        _dependent_configs += [ _config ]
+      }
+      args += [ "--static-library-dependent-configs=$_dependent_configs" ]
+    }
     if (defined(invoker.gradle_treat_as_prebuilt) &&
         invoker.gradle_treat_as_prebuilt) {
       args += [ "--gradle-treat-as-prebuilt" ]
@@ -1259,6 +1273,13 @@ if (enable_java_templates) {
       _args += [ "--disable-checks" ]
     }
 
+    if (defined(invoker.is_static_library) && invoker.is_static_library) {
+      _args += [
+        "--extra-mapping-output-paths",
+        "@FileArg($_rebased_build_config:deps_info:static_library_proguard_mapping_output_paths)",
+      ]
+    }
+
     if (_enable_jdk_library_desugaring) {
       _args += [
         "--desugar-jdk-libs-json",
@@ -1511,6 +1532,7 @@ if (enable_java_templates) {
                                      "expected_proguard_config",
                                      "expected_proguard_config_base",
                                      "ignore_desugar_missing_deps",
+                                     "is_static_library",
                                      "modules",
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
@@ -2209,6 +2231,7 @@ if (enable_java_templates) {
       rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
       "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
       "--extra-res-packages=@FileArg($_rebased_build_config:deps_info:extra_package_names)",
+      "--extra-main-r-text-files=@FileArg($_rebased_build_config:deps_info:extra_main_r_text_files)",
       "--min-sdk-version=${invoker.min_sdk_version}",
       "--target-sdk-version=${invoker.target_sdk_version}",
       "--webp-cache-dir=obj/android-webp-cache",
@@ -3589,6 +3612,7 @@ if (enable_java_templates) {
               "secondary_abi_shared_libraries_runtime_deps_file",
               "secondary_native_lib_placeholders",
               "shared_libraries_runtime_deps_file",
+              "static_library_dependent_targets",
               "uncompress_shared_libraries",
               "library_always_compress",
             ])
@@ -4311,6 +4335,59 @@ template("create_android_app_bundle_module") {
              "--depfile",
              rebase_path(depfile, root_build_dir),
            ]
+  }
+}
+
+# Splits input dex file(s) based on given feature jars into seperate dex files
+# for each feature.
+#
+# Variables:
+#   proguard_mapping: Path to input proguard mapping produced by synchronized
+#     proguarding.
+#   input_dex_zip: Path to zipped dex files to split.
+#   all_modules: Path to list of all modules. Each Module must have
+#     build_config, name, and build_config_target properties.
+#   feature_jars_args: Optional list of args to be passed to dexsplitter.py.
+#     If used should include the jars owned by each feature (in the same order
+#     as all_modules). Allows invoker to pull the list of jars from a different
+#     .build_config.json than the module's .build_config.
+template("dexsplitter") {
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker, [ "deps" ])
+    script = "//build/android/gyp/dexsplitter.py"
+    _stamp = "${target_gen_dir}/${target_name}.stamp"
+    outputs = [ _stamp ]
+
+    depfile = "${target_gen_dir}/${target_name}.d"
+    args = [
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--r8-path",
+      rebase_path(_r8_path, root_build_dir),
+      "--input-dex-zip",
+      rebase_path(invoker.input_dex_zip, root_build_dir),
+      "--proguard-mapping-file",
+      rebase_path(invoker.proguard_mapping, root_build_dir),
+    ]
+
+    foreach(_feature_module, invoker.all_modules) {
+      _rebased_module_build_config =
+          rebase_path(_feature_module.build_config, root_build_dir)
+      args += [
+        "--feature-name",
+        _feature_module.name,
+        "--dex-dest=@FileArg($_rebased_module_build_config:final_dex:path)",
+      ]
+      if (!defined(invoker.feature_jars_args)) {
+        args += [ "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:device_classpath)" ]
+      }
+      deps += [ _feature_module.build_config_target ]
+    }
+    if (defined(invoker.feature_jars_args)) {
+      args += invoker.feature_jars_args
+    }
   }
 }
 

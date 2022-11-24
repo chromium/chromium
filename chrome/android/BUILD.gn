@@ -2840,6 +2840,7 @@ if (current_toolchain == default_toolchain) {
                                "is_base_module",
                                "resource_ids_provider_dep",
                                "static_library_provider",
+                               "static_library_synchronized_proguard",
                                "target_type",
                                "use_chromium_linker",
                                "use_trichrome_library",
@@ -2916,6 +2917,11 @@ if (current_toolchain == default_toolchain) {
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
+      }
+
+      if (trichrome_synchronized_proguard) {
+        webview_target = "//android_webview:trichrome_webview_apk"
+        chrome_target = ":trichrome_chrome_bundle"
       }
 
       if (_enable_manifest_verification) {
@@ -3692,19 +3698,25 @@ if (current_toolchain == default_toolchain) {
                                "include_32_bit_webview",
                                "include_64_bit_webview",
                                "static_library_provider",
+                               "static_library_synchronized_proguard",
                                "resource_ids_provider_dep",
                                "use_trichrome_library",
                              ])
       target_type = "android_app_bundle_module"
       is_base_module = true
       version_code = _version_code
-      bundle_target = ":${invoker.target_name}"
 
       if (defined(invoker.expected_android_manifest_template)) {
         expected_android_manifest =
             string_replace(invoker.expected_android_manifest_template,
                            "SPLIT_NAME",
                            "base")
+      }
+
+      if (!_is_trichrome ||
+          !defined(invoker.static_library_synchronized_proguard) ||
+          !invoker.static_library_synchronized_proguard) {
+        bundle_target = ":${invoker.target_name}"
       }
     }
 
@@ -3720,6 +3732,7 @@ if (current_toolchain == default_toolchain) {
                                "lint_min_sdk_version",
                                "lint_suppressions_file",
                                "static_library_provider",
+                               "static_library_synchronized_proguard",
                                "expected_android_manifest_template",
                                "expected_libs_and_assets",
                                "expected_proguard_config",
@@ -3808,6 +3821,12 @@ if (current_toolchain == default_toolchain) {
       use_trichrome_library = true
       static_library_provider = ":trichrome_library_apk"
       add_view_trace_events = true
+      if (!is_java_debug) {
+        static_library_synchronized_proguard = trichrome_synchronized_proguard
+        if (trichrome_synchronized_proguard) {
+          resource_ids_provider_dep = "//android_webview:trichrome_webview_apk"
+        }
+      }
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
