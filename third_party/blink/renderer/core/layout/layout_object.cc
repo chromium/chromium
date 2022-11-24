@@ -5075,7 +5075,7 @@ void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
   // use a more targeted invalidation when tree-scoped @position-fallback rules
   // are supported.
 
-  bool invalidate = !StyleRef().PositionFallback().IsNull();
+  bool invalidate = StyleRef().PositionFallback() != nullptr;
   if (invalidate) {
     // Invalidate layout as @position-fallback styles are applied during layout.
     SetNeedsLayout(layout_invalidation_reason::kStyleChange);

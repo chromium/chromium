@@ -2647,7 +2647,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
   DCHECK(base_style.PositionFallback());
   StyleRulePositionFallback* position_fallback_rule =
       GetDocument().GetScopedStyleResolver()->PositionFallbackForName(
-          base_style.PositionFallback());
+          base_style.PositionFallback()->GetName());
   if (!position_fallback_rule ||
       index >= position_fallback_rule->TryRules().size())
     return nullptr;

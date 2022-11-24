@@ -5948,9 +5948,10 @@ const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.PositionFallback().empty())
+  if (!style.PositionFallback())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.PositionFallback());
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.PositionFallback()->GetName());
 }
 
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,
