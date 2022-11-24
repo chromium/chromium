@@ -166,6 +166,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Enables to keep prerenderings alive in the background when their visibility
 // state changes to HIDDEN.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InBackground);
+// Enables to run prerendering for new tabs (e.g., target="_blank").
+// See https://crbug.com/1350676.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 // Returns true when the same-site cross origin Prerender2 feature is

@@ -5,8 +5,11 @@
 #include "content/browser/preloading/prerenderer.h"
 
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
+#include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/web_contents.h"
 
@@ -222,30 +225,60 @@ void Prerenderer::ProcessCandidatesForPrerender(
       }
     }
 
-    // TODO(crbug.com/1354049): Pass `target_browsing_context_name_hint` to
-    // start prerendering in a new tab.
     Referrer referrer(*(it->referrer));
-    int prerender_host_id = registry_->CreateAndStartHost(
-        PrerenderAttributes(it->url, PrerenderTriggerType::kSpeculationRule,
-                            /*embedder_histogram_suffix=*/"", referrer,
-                            rfhi.GetLastCommittedOrigin(),
-                            rfhi.GetLastCommittedURL(),
-                            rfhi.GetProcess()->GetID(), rfhi.GetFrameToken(),
-                            rfhi.GetFrameTreeNodeId(),
-                            rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-                            /*url_match_predicate=*/absl::nullopt),
-        *web_contents, /*preloading_attempt=*/preloading_attempt);
+    PrerenderAttributes attributes(
+        it->url, PrerenderTriggerType::kSpeculationRule,
+        /*embedder_histogram_suffix=*/"", referrer,
+        rfhi.GetLastCommittedOrigin(), rfhi.GetLastCommittedURL(),
+        rfhi.GetProcess()->GetID(), rfhi.GetFrameToken(),
+        rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
+        ui::PAGE_TRANSITION_LINK,
+        /*url_match_predicate=*/absl::nullopt);
+
     // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
     // have the same URL but its `target_browsing_context_name_hint` is
     // different. In the current implementation, only the first rule is
     // triggered.
-    started_prerenders_.insert(end, {.url = it->url,
-                                     .referrer = referrer,
-                                     .prerender_host_id = prerender_host_id});
+    switch (it->target_browsing_context_name_hint) {
+      case blink::mojom::SpeculationTargetHint::kBlank: {
+        if (base::FeatureList::IsEnabled(
+                blink::features::kPrerender2InNewTab)) {
+          // `preloading_attempt` is not available for prerendering in a new tab
+          // as it's associated with the current WebContents.
+          // TODO(crbug.com/1350676): Create new PreloadAttempt associated with
+          // WebContents for prerendering.
+          int prerender_host_id =
+              registry_->CreateAndStartHostForNewTab(attributes, *web_contents);
+          started_prerenders_.insert(end,
+                                     {.url = it->url,
+                                      .referrer = referrer,
+                                      .prerender_host_id = prerender_host_id});
 
-    // Start to observe PrerenderHost to get the information about FinalStatus.
-    observers_.push_back(std::make_unique<PrerenderHostObserver>(
-        registry_->FindNonReservedHostById(prerender_host_id)));
+          // TODO(crbug.com/1350676): Observe PrerenderHost created for
+          // prerendering in a new tab like the kNoHint and kSelf cases.
+          break;
+        }
+        // Handle the rule as kNoHint if the prerender-in-new-tab is not
+        // enabled.
+        [[fallthrough]];
+      }
+      case blink::mojom::SpeculationTargetHint::kNoHint:
+      case blink::mojom::SpeculationTargetHint::kSelf: {
+        int prerender_host_id = registry_->CreateAndStartHost(
+            attributes, *web_contents,
+            /*preloading_attempt=*/preloading_attempt);
+        started_prerenders_.insert(end,
+                                   {.url = it->url,
+                                    .referrer = referrer,
+                                    .prerender_host_id = prerender_host_id});
+
+        // Start to observe PrerenderHost to get the information about
+        // FinalStatus.
+        observers_.push_back(std::make_unique<PrerenderHostObserver>(
+            registry_->FindNonReservedHostById(prerender_host_id)));
+        break;
+      }
+    }
   }
 }
 

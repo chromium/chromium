@@ -339,6 +339,10 @@ BASE_FEATURE(kPrerender2InBackground,
              "Prerender2InBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerender2InNewTab,
+             "Prerender2InNewTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }

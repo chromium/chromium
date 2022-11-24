@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
+#include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -305,6 +306,28 @@ int PrerenderHostRegistry::CreateAndStartHost(
   return frame_tree_node_id;
 }
 
+int PrerenderHostRegistry::CreateAndStartHostForNewTab(
+    const PrerenderAttributes& attributes,
+    WebContents& web_contents) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
+  std::string recorded_url =
+      attributes.initiator_origin.has_value()
+          ? attributes.initiator_origin.value().GetURL().spec()
+          : "(empty_url)";
+  TRACE_EVENT2("navigation",
+               "PrerenderHostRegistry::CreateAndStartHostForNewTab",
+               "attributes", attributes, "initiator_origin", recorded_url);
+
+  auto handle = std::make_unique<PrerenderNewTabHandle>(
+      attributes, *web_contents.GetBrowserContext());
+  int prerender_host_id = handle->StartPrerendering();
+  if (prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =
+      std::move(handle);
+  return prerender_host_id;
+}
+
 int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
   if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
     DCHECK(base::FeatureList::IsEnabled(
@@ -387,21 +410,37 @@ void PrerenderHostRegistry::CancelHosts(
 
   for (int host_id : frame_tree_node_ids) {
     // Look up the id in the non-reserved host map.
-    auto iter = prerender_host_by_frame_tree_node_id_.find(host_id);
-    if (iter == prerender_host_by_frame_tree_node_id_.end())
-      continue;
+    if (auto iter = prerender_host_by_frame_tree_node_id_.find(host_id);
+        iter != prerender_host_by_frame_tree_node_id_.end()) {
+      if (running_prerender_host_id_ == host_id)
+        running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
-    if (running_prerender_host_id_ == host_id)
-      running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+      // Remove the prerender host from the host map so that it's not used for
+      // activation during asynchronous deletion.
+      std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
+      prerender_host_by_frame_tree_node_id_.erase(iter);
 
-    // Remove the prerender host from the host map so that it's not used for
-    // activation during asynchronous deletion.
-    std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
-    prerender_host_by_frame_tree_node_id_.erase(iter);
+      // Asynchronously delete the prerender host.
+      ScheduleToDeleteAbandonedHost(std::move(prerender_host),
+                                    PrerenderCancellationReason(final_status));
+    }
 
-    // Asynchronously delete the prerender host.
-    ScheduleToDeleteAbandonedHost(std::move(prerender_host),
-                                  PrerenderCancellationReason(final_status));
+    if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+      // Look up the id in the prerender-in-new-tab handle map.
+      if (auto iter =
+              prerender_new_tab_handle_by_frame_tree_node_id_.find(host_id);
+          iter != prerender_new_tab_handle_by_frame_tree_node_id_.end()) {
+        // The host should be driven by PrerenderHostRegistry associated with
+        // the new tab.
+        DCHECK_NE(running_prerender_host_id_, host_id);
+
+        std::unique_ptr<PrerenderNewTabHandle> handle = std::move(iter->second);
+        prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
+        handle->CancelPrerendering(final_status);
+      }
+    } else {
+      DCHECK(prerender_new_tab_handle_by_frame_tree_node_id_.empty());
+    }
   }
 
   // Start another prerender if the running prerender is cancelled.
@@ -429,29 +468,42 @@ bool PrerenderHostRegistry::CancelHost(
 
   // Look up the id in the non-reserved host map, remove it from the map, and
   // record the cancellation reason.
-  auto iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter == prerender_host_by_frame_tree_node_id_.end())
-    return false;
+  if (auto iter =
+          prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+      iter != prerender_host_by_frame_tree_node_id_.end()) {
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
+    prerender_host_by_frame_tree_node_id_.erase(iter);
 
-  reason.ReportMetrics(iter->second->trigger_type(),
-                       iter->second->embedder_histogram_suffix());
+    reason.ReportMetrics(prerender_host->trigger_type(),
+                         prerender_host->embedder_histogram_suffix());
 
-  // Remove the prerender host from the host map so that it's not used for
-  // activation during asynchronous deletion.
+    // Asynchronously delete the prerender host.
+    ScheduleToDeleteAbandonedHost(std::move(prerender_host), reason);
 
-  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
-  prerender_host_by_frame_tree_node_id_.erase(iter);
+    // Start another prerender if the running prerender is cancelled.
+    if (running_prerender_host_id_ == frame_tree_node_id) {
+      running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+      StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+    }
 
-  // Asynchronously delete the prerender host.
-  ScheduleToDeleteAbandonedHost(std::move(prerender_host), reason);
-
-  // Start another prerender if the running prerender is cancelled.
-  if (running_prerender_host_id_ == frame_tree_node_id) {
-    running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-    StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+    return true;
   }
 
-  return true;
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+    // Look up the id in the prerender new-tab handle map, remove it from the
+    // map, and record the cancellation reason.
+    if (auto iter = prerender_new_tab_handle_by_frame_tree_node_id_.find(
+            frame_tree_node_id);
+        iter != prerender_new_tab_handle_by_frame_tree_node_id_.end()) {
+      iter->second->CancelPrerendering(reason.final_status());
+      prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
+      return true;
+    }
+  } else {
+    DCHECK(prerender_new_tab_handle_by_frame_tree_node_id_.empty());
+  }
+
+  return false;
 }
 
 void PrerenderHostRegistry::CancelAllHosts(PrerenderFinalStatus final_status) {
@@ -464,6 +516,11 @@ void PrerenderHostRegistry::CancelAllHosts(PrerenderFinalStatus final_status) {
     ScheduleToDeleteAbandonedHost(std::move(prerender_host),
                                   PrerenderCancellationReason(final_status));
   }
+
+  auto prerender_new_tab_handle_map =
+      std::move(prerender_new_tab_handle_by_frame_tree_node_id_);
+  for (auto& iter : prerender_new_tab_handle_map)
+    iter.second->CancelPrerendering(final_status);
 
   pending_prerenders_.clear();
 }
@@ -568,6 +625,32 @@ PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
   return reserved_prerender_host_.get();
 }
 
+std::unique_ptr<WebContentsImpl>
+PrerenderHostRegistry::TakePreCreatedWebContentsForNewTabIfExists(
+    const mojom::CreateNewWindowParams& create_new_window_params,
+    const WebContents::CreateParams& web_contents_create_params) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
+
+  // Don't serve a prerendered page if the window needs the opener or is created
+  // for non-regular navigations.
+  if (!create_new_window_params.opener_suppressed ||
+      create_new_window_params.is_form_submission ||
+      create_new_window_params.pip_options) {
+    return nullptr;
+  }
+
+  for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
+    std::unique_ptr<WebContentsImpl> web_contents =
+        iter.second->TakeWebContentsIfAvailable(create_new_window_params,
+                                                web_contents_create_params);
+    if (web_contents) {
+      prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
+      return web_contents;
+    }
+  }
+  return nullptr;
+}
+
 std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
   std::vector<FrameTree*> result;
   for (auto& i : prerender_host_by_frame_tree_node_id_) {
@@ -584,6 +667,11 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
     if (iter.second->GetInitialUrl() == prerendering_url)
       return iter.second.get();
+  }
+  for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
+    PrerenderHost* host = iter.second->GetPrerenderHostForTesting();  // IN-TEST
+    if (host && host->GetInitialUrl() == prerendering_url)
+      return host;
   }
   return nullptr;
 }
@@ -778,6 +866,10 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
       cancelled_prerenders.push_back(host_id);
     }
   }
+  for (const auto& [host_id, _] :
+       prerender_new_tab_handle_by_frame_tree_node_id_) {
+    cancelled_prerenders.push_back(host_id);
+  }
   CancelHosts(cancelled_prerenders, PrerenderFinalStatus::kTriggerDestroyed);
   pending_prerenders_.clear();
 
@@ -828,6 +920,8 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     if (host_by_id.second->trigger_type() == trigger_type)
       ++trigger_type_count;
   }
+  // TODO(crbug.com/1350676): Make this function care about
+  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
 
   switch (trigger_type) {
     case PrerenderTriggerType::kSpeculationRule:

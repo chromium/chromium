@@ -1480,6 +1480,8 @@ source_set("browser") {
     "preloading/prerender/prerender_navigation_throttle.h",
     "preloading/prerender/prerender_navigation_utils.cc",
     "preloading/prerender/prerender_navigation_utils.h",
+    "preloading/prerender/prerender_new_tab_handle.cc",
+    "preloading/prerender/prerender_new_tab_handle.h",
     "preloading/prerender/prerender_subframe_navigation_throttle.cc",
     "preloading/prerender/prerender_subframe_navigation_throttle.h",
     "preloading/prerenderer.cc",

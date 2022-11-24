@@ -20,7 +20,9 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
+#include "content/common/frame.mojom.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -29,6 +31,7 @@
 
 namespace content {
 
+class PrerenderNewTabHandle;
 class RenderFrameHostImpl;
 class PrerenderCancellationReason;
 
@@ -91,6 +94,14 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   int CreateAndStartHost(const PrerenderAttributes& attributes,
                          WebContents& web_contents,
                          PreloadingAttempt* preloading_attempt = nullptr);
+
+  // Creates and starts a host in a new WebContents so that a navigation in a
+  // new tab will be able to activate it. PrerenderHostRegistry associated with
+  // the new WebContents manages the started host, and `this`
+  // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
+  // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
+  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes,
+                                  WebContents& web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved hosts but asynchronously
@@ -155,6 +166,13 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Returns the reserved host with the given id. Returns nullptr if the id
   // does not match any reserved host.
   PrerenderHost* FindReservedHostById(int frame_tree_node_id);
+
+  // Returns the ownership of a pre-created WebContentsImpl that contains a
+  // prerendered page that corresponds to the given params for a new tab
+  // navigation, if it exists.
+  std::unique_ptr<WebContentsImpl> TakePreCreatedWebContentsForNewTabIfExists(
+      const mojom::CreateNewWindowParams& create_new_window_params,
+      const WebContents::CreateParams& web_contents_create_params);
 
   // Returns the FrameTrees owned by this registry's prerender hosts.
   std::vector<FrameTree*> GetPrerenderFrameTrees();
@@ -247,6 +265,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // The host that is reserved for activation.
   std::unique_ptr<PrerenderHost> reserved_prerender_host_;
+
+  // Handles that manage WebContents for prerendering in new tabs.
+  base::flat_map<int, std::unique_ptr<PrerenderNewTabHandle>>
+      prerender_new_tab_handle_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.
   // Design note: PrerenderHostRegistry should explicitly manage the hosts to be

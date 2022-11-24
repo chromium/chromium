@@ -129,6 +129,8 @@ class PrerenderTestHelper {
   // the completion of prerendering.
   int AddPrerender(const GURL& prerendering_url);
   void AddPrerenderAsync(const GURL& prerendering_url);
+  void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
+                                       const std::string& target_hint);
 
   // Adds multiple URLs to the speculation rules at the same time. This function
   // doesn't wait for the completion of prerendering.

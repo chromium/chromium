@@ -185,6 +185,21 @@ PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
           PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
 }
 
+// Tests the params of WebContentsImpl that contains a prerendered page for a
+// new tab navigation.
+void ExpectWebContentsIsForNewTabPrerendering(WebContentsImpl& web_contents) {
+  // The primary page shows the initial blank page.
+  EXPECT_TRUE(web_contents.GetLastCommittedURL().is_empty());
+
+  EXPECT_FALSE(web_contents.HasOpener());
+
+  // In the current implementation, WebContentsImpl needs to be visible to start
+  // prerendering, but actually this WebContents is not visible to users. This
+  // should be fixed. See the TODO comment in the constructor of
+  // PrerenderNewTabHandle for details.
+  EXPECT_FALSE(web_contents.IsHidden());
+}
+
 class PrerenderBrowserTest : public ContentBrowserTest,
                              public WebContentsObserver {
  public:
@@ -200,6 +215,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_ =
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2InNewTab);
   }
   ~PrerenderBrowserTest() override = default;
 
@@ -248,6 +264,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls) {
     prerender_helper_->AddMultiplePrerenderAsync(prerendering_urls);
+  }
+
+  void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
+                                       const std::string& target_hint) {
+    prerender_helper_->AddPrerenderWithTargetHintAsync(prerendering_url,
+                                                       target_hint);
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
@@ -691,6 +713,50 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick_TargetBlank) {
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
 }
 
+// Tests that clicking a link annotated with "target=_blank" can activate a
+// prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivateOnLinkClick_TargetBlank_WithTargetHintBlank) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+
+  PrerenderHost* prerender_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
+      prerender_host->GetPrerenderFrameTree().root());
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  // Click the link annotated with "target=_blank". This should activate the
+  // prerendered page.
+  test::PrerenderHostObserver prerender_observer(
+      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+}
+
 // Tests that clicking a link annotated with "target=_blank rel=noopener" cannot
 // activate a prerender.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
@@ -730,6 +796,51 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_TRUE(prerender_observer.was_activated());
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+}
+
+// Tests that clicking a link annotated with "target=_blank rel=noopener" can
+// activate a prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+
+  PrerenderHost* prerender_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
+      prerender_host->GetPrerenderFrameTree().root());
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  // Click the link annotated with "target=_blank rel=noopener". This should
+  // activate the prerendered page.
+  test::PrerenderHostObserver prerender_observer(
+      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowWithNoopenerLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 }
 
 // Tests that clicking a link annotated with "target=_blank rel=opener" cannot
@@ -778,6 +889,60 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             RenderFrameHost::kNoFrameTreeNodeId);
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
 }
+
+// Tests that clicking a link annotated with "target=_blank rel=opener" cannot
+// activate a prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    ActivateOnLinkClick_TargetBlankWithOpener_WithTargetHintBlank) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+
+  PrerenderHost* prerender_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
+      prerender_host->GetPrerenderFrameTree().root());
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  // Click the link annotated with "target=_blank rel=opener". This should not
+  // activate the prerendered page.
+  test::PrerenderHostObserver prerender_observer(
+      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowWithOpenerLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  // The WebContents pre-created for prerendering should not be used.
+  EXPECT_NE(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+  // The host should still be available.
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+}
+
+// TODO(crbug.com/1350676): Add more test cases for prerender-in-new-tab:
+// - Multiple prerendering requests with the same URL but different target hint.
+// - Navigation in a new tab to the prerendering URL multiple times. Only the
+//   first navigation should activate the prerendered page.
+// - Cancellation of prerender-in-new-tab (e.g., removing speculation rules,
+//   calling disallowed features in a prerendered page).
+// - Behavior of PrerenderNewTabHandle::WebContentsDelegateImpl.
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
   const GURL kInitialUrl = GetUrl("/empty.html");

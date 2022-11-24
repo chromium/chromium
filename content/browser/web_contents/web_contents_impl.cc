@@ -78,6 +78,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -3996,17 +3997,41 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         params.pip_options->lock_aspect_ratio;
   }
 
+  // Check whether there is an available prerendered page for this navigation if
+  // this is not for guest. If it exists, take WebContents pre-created for
+  // hosting the prerendered page instead of creating new WebContents.
+  // TODO(crbug.com/1350676): Instead of filtering out the guest case here,
+  // check it and drop prerender requests before starting prerendering.
   std::unique_ptr<WebContentsImpl> new_contents;
-  if (!is_guest) {
-    create_params.context = view_->GetNativeView();
-    new_contents = WebContentsImpl::Create(create_params);
-  } else {
-    new_contents = GetBrowserPluginGuest()->CreateNewGuestWindow(create_params);
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab) &&
+      !is_guest) {
+    new_contents =
+        GetPrerenderHostRegistry()->TakePreCreatedWebContentsForNewTabIfExists(
+            params, create_params);
+    if (new_contents) {
+      // The SiteInstance of the pre-created WebContents should be in a
+      // different BrowsingInstance from the source SiteInstance, while they
+      // should be in the same StoragePartition.
+      SiteInstanceImpl* new_site_instance = new_contents->GetSiteInstance();
+      DCHECK(!new_site_instance->IsRelatedSiteInstance(source_site_instance));
+      DCHECK_EQ(new_site_instance->GetStoragePartitionConfig(),
+                source_site_instance->GetStoragePartitionConfig());
+    }
   }
-  auto* new_contents_impl = new_contents.get();
 
-  new_contents_impl->GetController().SetSessionStorageNamespace(
-      partition_config, session_storage_namespace);
+  if (!new_contents) {
+    if (!is_guest) {
+      create_params.context = view_->GetNativeView();
+      new_contents = WebContentsImpl::Create(create_params);
+    } else {
+      new_contents =
+          GetBrowserPluginGuest()->CreateNewGuestWindow(create_params);
+    }
+    new_contents->GetController().SetSessionStorageNamespace(
+        partition_config, session_storage_namespace);
+  }
+
+  auto* new_contents_impl = new_contents.get();
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after
