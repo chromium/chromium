@@ -89,7 +89,7 @@
               "type": {
                 "$ref": "ViewType",
                 "optional": true,
-                "description": "The type of view to get. If omitted, returns all views (including background pages and tabs). Valid values: 'tab', 'notification', 'popup'."
+                "description": "The type of view to get. If omitted, returns all views (including background pages and tabs)."
               },
               "windowId": {
                 "type": "integer",
