@@ -200,15 +200,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_ =
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
-
-    // Need to initialize features after creating PrerenderTestHelper since it
-    // initializes features in its constructor.
-    feature_list_.InitWithFeaturesAndParameters(
-        // TODO(crbug.com/1273341): remove the limitation and run tests with
-        // multiple prerenders.
-        {{blink::features::kPrerender2,
-          {{"max_num_of_running_speculation_rules", "1"}}}},
-        {});
   }
   ~PrerenderBrowserTest() override = default;
 
@@ -6341,73 +6332,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   prerender_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
-}
-
-// Tests that PrerenderHostRegistry only starts prerendering for the first
-// prerender speculation rule it receives.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
-  const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
-
-  // Add the first prerender speculation rule; it should trigger prerendering
-  // successfully.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  AddPrerender(kFirstPrerenderingUrl);
-  histogram_tester().ExpectBucketCount(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
-
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-
-  // Add a new prerender speculation rule. Since PrerenderHostRegistry limits
-  // the number of running prerenders to one, this rule should not be applied.
-  AddPrerenderAsync(kSecondPrerenderingUrl);
-  registry_observer.WaitForTrigger(kSecondPrerenderingUrl);
-  EXPECT_FALSE(HasHostForUrl(kSecondPrerenderingUrl));
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
-
-  // Navigate primary page to flush the metrics.
-  NavigationHandleObserver activation_observer(web_contents(),
-                                               kFirstPrerenderingUrl);
-  NavigatePrimaryPage(kFirstPrerenderingUrl);
-  {
-    // Verify that we log the correct metrics associated with case when we hit
-    // max prerenders exceeded.
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
-    auto prediction_ukm_entries =
-        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
-                                        test::kPreloadingPredictionUkmMetrics);
-    EXPECT_EQ(prediction_ukm_entries.size(), 3u);
-    EXPECT_EQ(ukm_entries.size(), 2u);
-
-    std::vector<UkmEntry> expected_entries = {
-        attempt_ukm_entry_builder().BuildEntry(
-            ukm_source_id, PreloadingType::kPrerender,
-            PreloadingEligibility::kEligible,
-            PreloadingHoldbackStatus::kAllowed,
-            PreloadingTriggeringOutcome::kSuccess,
-            PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
-        attempt_ukm_entry_builder().BuildEntry(
-            ukm_source_id, PreloadingType::kPrerender,
-            PreloadingEligibility::kEligible,
-            PreloadingHoldbackStatus::kAllowed,
-            PreloadingTriggeringOutcome::kFailure,
-            ToPreloadingFailureReason(
-                PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded),
-            /*accurate=*/false),
-    };
-
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
 }
 
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the
