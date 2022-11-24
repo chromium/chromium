@@ -16,6 +16,8 @@ import traceback
 
 DEFAULT_STP_DRIVER_PATH = '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver'
 
+WS_DISPLAY_LIST_PATH = '/Library/Preferences/com.apple.windowserver.displays.plist'
+
 # Maximum number of times the benchmark will be run before giving up.
 MAX_ATTEMPTS = 6
 
@@ -30,6 +32,19 @@ class BrowserBench(object):
     self._githash = None
     self._browser = None
     self._driver = None
+    self._is_120 = BrowserBench._IsDisplayRefreshRate120()
+
+  @staticmethod
+  def _IsDisplayRefreshRate120():
+    # The current refresh rate is stored in
+    # /Library/Preferences/com.apple.windowserver.displays.plist . If it has the
+    # string Hz = 120 then display is at 120. This likely isn't right if there
+    # are multiple displays, but it's good enough for the lab where we only
+    # have devices with a single display.
+    windowserver_output = subprocess.run(["defaults", "read",
+                                          WS_DISPLAY_LIST_PATH],
+                                         capture_output=True)
+    return windowserver_output.stdout.decode('utf-8').find('Hz = 120') != -1
 
   @staticmethod
   def _CreateChromeDriver(optargs):
@@ -184,6 +199,7 @@ class BrowserBench(object):
             'test': self._name,
             'version': self._version,
             'browser': self._browser,
+            'Refresh Rate': '120' if self._is_120 else '60',
         },
         'results': self._ConvertMeasurementsToSkiaFormat(measurements),
         'links': {
