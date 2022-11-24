@@ -11,6 +11,7 @@ For Chromium contributors that have different nicks on other domains.
 | dbaron            | ldavidbaron     |
 | dom               | domfarolino     |
 | dougt             | dft             |
+| dsv               | dsv, danilsomsikov |
 | eaugusti          | eaugustine      |
 | eroman            | ericroman       |
 | evan              | evanm           |
