@@ -56,7 +56,7 @@ base::PlatformThreadId g_main_thread_identifier;
 #if !BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
 BASE_FEATURE(kEnableSsePathForCopyLCharsX86,
              "EnableSsePathForCopyLCharsX86",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

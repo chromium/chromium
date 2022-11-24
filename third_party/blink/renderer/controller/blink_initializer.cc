@@ -108,13 +108,13 @@ class EndOfTaskRunner : public Thread::TaskObserver {
 // LiteralBuffer as to what this controls.
 BASE_FEATURE(kLiteralBufferCreateStringWithEncoding,
              "LiteralBufferCreateStringWithEncoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // See description of `g_use_html_attribute_name_lookup` in AtomicHTMLToken as
 // to what this controls.
 BASE_FEATURE(kUseHtmlAttributeNameLookup,
              "UseHtmlAttributeNameLookup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 Thread::TaskObserver* g_end_of_task_runner = nullptr;
 
