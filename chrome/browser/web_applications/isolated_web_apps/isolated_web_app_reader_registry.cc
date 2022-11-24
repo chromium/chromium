@@ -143,13 +143,9 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, we only verify integrity at install-time. On other OSes,
-  // we verify integrity once per session.
-  std::move(integrity_callback)
-      .Run(SignedWebBundleReader::SignatureVerificationAction::
-               ContinueAndSkipSignatureVerification());
-#else
+  // TODO(crbug.com/1366309): On ChromeOS, we should only verify signatures at
+  // install-time. Until this is implemented, we will verify signatures on
+  // ChromeOS once per session.
   if (verified_files_.contains(web_bundle_path)) {
     // If we already verified the signatures of this Signed Web Bundle during
     // the current browser session, we trust that the Signed Web Bundle has not
@@ -162,7 +158,6 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated(
         .Run(SignedWebBundleReader::SignatureVerificationAction::
                  ContinueAndVerifySignatures());
   }
-#endif
 }
 
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
