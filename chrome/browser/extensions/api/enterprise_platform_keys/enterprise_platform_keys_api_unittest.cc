@@ -94,6 +94,17 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
         std::move(mock_tpm_challenge_key));
   }
 
+  void SetMockTpmChallengerBadBase64Error() {
+    auto mock_tpm_challenge_key =
+        std::make_unique<NiceMock<ash::attestation::MockTpmChallengeKey>>();
+    // Error text is "Challenge is not base64 encoded."
+    mock_tpm_challenge_key->EnableFakeError(
+        ash::attestation::TpmChallengeKeyResultCode::kChallengeBadBase64Error);
+    // transfer ownership inside factory
+    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
+        std::move(mock_tpm_challenge_key));
+  }
+
   // This will be called by BrowserWithTestWindowTest::SetUp();
   TestingProfile* CreateProfile() override {
     fake_user_manager_->AddUserWithAffiliation(
@@ -216,6 +227,21 @@ TEST_F(EPKChallengeMachineKeyTest, Success) {
   EXPECT_EQ("response", response);
 }
 
+TEST_F(EPKChallengeMachineKeyTest, BadChallengeThenErrorMessageReturned) {
+  SetMockTpmChallengerBadBase64Error();
+
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
+
+  base::Value value(
+      RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
+
+  EXPECT_EQ(
+      ash::attestation::TpmChallengeKeyResult::kChallengeBadBase64ErrorMsg,
+      value);
+}
+
 TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   SetMockTpmChallenger();
 
@@ -266,7 +292,37 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   scoped_refptr<EnterprisePlatformKeysChallengeUserKeyFunction> func_;
 };
 
-TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowed) {
+TEST_F(EPKChallengeUserKeyTest, Success) {
+  SetMockTpmChallenger();
+
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
+
+  base::Value value(
+      RunFunctionAndReturnSingleResult(func_.get(), CreateArgs(), browser()));
+
+  ASSERT_TRUE(value.is_blob());
+  std::string response(value.GetBlob().begin(), value.GetBlob().end());
+  EXPECT_EQ("response", response);
+}
+
+TEST_F(EPKChallengeUserKeyTest, BadChallengeThenErrorMessageReturned) {
+  SetMockTpmChallengerBadBase64Error();
+
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
+
+  base::Value value(
+      RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
+
+  EXPECT_EQ(
+      ash::attestation::TpmChallengeKeyResult::kChallengeBadBase64ErrorMsg,
+      value);
+}
+
+TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowedThenErrorMessageReturned) {
   base::ListValue empty_allowlist;
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
