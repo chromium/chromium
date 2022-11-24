@@ -44,10 +44,14 @@ class LockScreenStartReauthDialog
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
-  void Show();
-  void Dismiss();
-  bool IsRunning();
-  int GetDialogWidth();
+  // Creates singleton instance of LockScreenStartReauthDialog. It will
+  // self-destruct in `OnDialogClosed` method.
+  static void Show();
+  static void Dismiss();
+  static bool IsShown();
+  static LockScreenStartReauthDialog* GetInstance();
+
+  int GetDialogWidth() const;
   content::WebContents* GetWebContents();
 
   void DismissLockScreenNetworkDialog();
@@ -57,14 +61,25 @@ class LockScreenStartReauthDialog
   static gfx::Size CalculateLockScreenReauthDialogSize(
       bool is_new_layout_enabled);
 
+  // Forces network state update because webview reported frame loading error.
+  void OnWebviewLoadAborted();
+
   // Used for waiting for the corresponding dialogs in tests.
   // Similar methods exist for the main dialog in InSessionPasswordSyncManager.
   bool IsNetworkDialogLoadedForTesting(base::OnceClosure callback);
   bool IsCaptivePortalDialogLoadedForTesting(base::OnceClosure callback);
   void OnNetworkDialogReadyForTesting();
 
-  // NetworkStateInformer::NetworkStateInformerObserver:
-  void UpdateState(NetworkError::ErrorReason reason) override;
+  // Check if dialog is loaded.
+  // `callback` is used to notify test when the reauth dialog is loaded.
+  bool IsLoadedForTesting(base::OnceClosure callback);
+
+  // Check if dialog is closed.
+  // `callback` is used to notify test when the reauth dialog is closed.
+  bool IsClosedForTesting(base::OnceClosure callback);
+
+  // Notify test that the dialog is ready for testing.
+  void OnReadyForTesting();
 
   LockScreenNetworkDialog* get_network_dialog_for_testing() {
     return lock_screen_network_dialog_.get();
@@ -87,6 +102,9 @@ class LockScreenStartReauthDialog
   // BaseLockDialog:
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
+
+  // NetworkStateInformer::NetworkStateInformerObserver:
+  void UpdateState(NetworkError::ErrorReason reason) override;
 
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -127,10 +145,13 @@ class LockScreenStartReauthDialog
 
   content::NotificationRegistrar registrar_;
 
-  // Callbacks that are used to notify tests that the corresponding dialog is
-  // loaded.
+  // Callbacks and flags that are used in tests to check that the corresponding
+  // dialog is loaded or closed.
+  base::OnceClosure on_dialog_loaded_callback_for_testing_;
+  base::OnceClosure on_dialog_closed_callback_for_testing_;
   base::OnceClosure on_network_dialog_loaded_callback_for_testing_;
   base::OnceClosure on_captive_portal_dialog_loaded_callback_for_testing_;
+  bool is_dialog_loaded_for_testing_ = false;
   bool is_network_dialog_loaded_for_testing_ = false;
   bool is_captive_portal_dialog_loaded_for_testing_ = false;
 

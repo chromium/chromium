@@ -9,8 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/task/task_traits.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"

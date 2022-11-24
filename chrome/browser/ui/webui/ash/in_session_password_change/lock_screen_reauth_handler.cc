@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -71,11 +72,6 @@ std::string GetHostedDomain(const std::string& gaia_id) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   return account_info.hosted_domain;
-}
-
-InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
-  Profile* profile = GetActiveUserProfile();
-  return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
 
 std::string GetSSOProfile() {
@@ -238,9 +234,9 @@ void LockScreenReauthHandler::UpdateOrientationAndWidth() {
   gfx::Size display = display::Screen::GetScreen()->GetPrimaryDisplay().size();
   bool is_horizontal = display.width() >= display.height();
   CallJavascript("setOrientation", is_horizontal);
-
-  auto* password_sync_manager = GetInSessionPasswordSyncManager();
-  int width = password_sync_manager->GetDialogWidth();
+  const LockScreenStartReauthDialog* lock_screen_online_reauth_dialog =
+      LockScreenStartReauthDialog::GetInstance();
+  int width = lock_screen_online_reauth_dialog->GetDialogWidth();
   CallJavascript("setWidth", width);
 }
 
@@ -314,13 +310,13 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
 
 void LockScreenReauthHandler::OnCookieWaitTimeout() {
   NOTREACHED() << "Cookie has timed out while attempting to login in.";
-  auto* password_sync_manager = GetInSessionPasswordSyncManager();
-  password_sync_manager->DismissDialog();
+  LockScreenStartReauthDialog::Dismiss();
 }
 
 void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
-  auto* password_sync_manager = GetInSessionPasswordSyncManager();
-  password_sync_manager->OnReauthDialogReadyForTesting();
+  LockScreenStartReauthDialog* lock_screen_online_reauth_dialog =
+      LockScreenStartReauthDialog::GetInstance();
+  lock_screen_online_reauth_dialog->OnReadyForTesting();  // IN-TEST
 }
 
 void LockScreenReauthHandler::CheckCredentials(
@@ -417,8 +413,9 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
   }
 
   LOG(ERROR) << "Gaia webview error: " << net::ErrorToShortString(error_code);
-  auto* password_sync_manager = GetInSessionPasswordSyncManager();
-  password_sync_manager->OnWebviewLoadAborted();
+  LockScreenStartReauthDialog* lock_screen_online_reauth_dialog =
+      LockScreenStartReauthDialog::GetInstance();
+  lock_screen_online_reauth_dialog->OnWebviewLoadAborted();
 }
 
 void LockScreenReauthHandler::ReloadGaia() {

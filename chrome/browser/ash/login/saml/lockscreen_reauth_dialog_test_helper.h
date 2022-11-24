@@ -15,7 +15,6 @@ class WebContents;
 
 namespace ash {
 
-class InSessionPasswordSyncManager;
 class LockScreenStartReauthDialog;
 class LockScreenStartReauthUI;
 class LockScreenReauthHandler;
@@ -150,7 +149,6 @@ class LockScreenReauthDialogTestHelper {
   void WaitForNetworkDialogToLoad();
 
   // Main Dialog
-  base::raw_ptr<InSessionPasswordSyncManager> password_sync_manager_ = nullptr;
   base::raw_ptr<LockScreenStartReauthDialog> reauth_dialog_ = nullptr;
   base::raw_ptr<LockScreenStartReauthUI> reauth_webui_controller_ = nullptr;
   base::raw_ptr<LockScreenReauthHandler> main_handler_ = nullptr;

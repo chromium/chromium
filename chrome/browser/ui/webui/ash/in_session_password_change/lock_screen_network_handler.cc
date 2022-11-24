@@ -12,10 +12,9 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -42,14 +41,6 @@ constexpr char kAddNetwork[] = "addNetwork";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kGetHostname[] = "getHostname";
-
-InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-
-  return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-}
 
 }  // namespace
 
@@ -83,9 +74,8 @@ void NetworkConfigMessageHandler::Initialize(const base::Value::List& args) {
 
   // Check if the main dialog exists and notify that the network dialog has
   // been loaded.
-  auto* password_sync_manager = GetInSessionPasswordSyncManager();
   LockScreenStartReauthDialog* start_reauth_dialog =
-      password_sync_manager->get_reauth_dialog_for_testing();
+      LockScreenStartReauthDialog::GetInstance();
   if (!start_reauth_dialog)
     return;
   start_reauth_dialog->OnNetworkDialogReadyForTesting();

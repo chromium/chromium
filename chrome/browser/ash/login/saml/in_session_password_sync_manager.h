@@ -12,7 +12,6 @@
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -109,47 +108,12 @@ class InSessionPasswordSyncManager
   // with an IdP.
   void OnAuthSuccess(const UserContext& user_context) override;
 
-  // Create and show lockscreen re-authentication dialog.
-  void CreateAndShowDialog();
-
-  // Dismiss lockscreen re-authentication dialog.
-  void DismissDialog();
-
-  // Reset lockscreen re-authentication dialog.
-  void ResetDialog();
-
-  // Get lockscreen reauth dialog width.
-  int GetDialogWidth();
-
-  // Get web contents of lockscreen reauth dialog.
-  content::WebContents* GetDialogWebContents();
-
-  // Check if reauth dialog is loaded and ready for testing.
-  bool IsReauthDialogLoadedForTesting(base::OnceClosure callback);
-
-  // Check if reauth dialog is closed.
-  // |callback| is used to notify test that the reauth dialog is closed.
-  bool IsReauthDialogClosedForTesting(base::OnceClosure callback);
-
-  // Notify test that the reauth dialog is ready for testing.
-  void OnReauthDialogReadyForTesting();
-
-  // Forces network state update because webview reported frame loading error.
-  void OnWebviewLoadAborted();
-
-  LockScreenStartReauthDialog* get_reauth_dialog_for_testing() {
-    return lock_screen_start_reauth_dialog_.get();
-  }
-
  private:
   void UpdateOnlineAuth();
   void OnCookiesTransfered();
   // Password sync token API calls.
   void CreateTokenAsync();
   void FetchTokenAsync();
-
-  // Notify test that the reauth dialog is closed.
-  void OnReauthDialogClosedForTesting();
 
   void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
   void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
@@ -169,18 +133,7 @@ class InSessionPasswordSyncManager
   scoped_refptr<AuthSessionAuthenticator> auth_session_authenticator_;
   std::unique_ptr<PasswordUpdateFlow> password_update_flow_;
 
-  // Used to create dialog to authenticate the user on lockscreen.
-  std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog_;
-
   PasswordChangedCallback password_changed_callback_;
-
-  // A callback that is used to notify test that the reauth dialog is loaded.
-  base::OnceClosure on_dialog_loaded_callback_for_testing_;
-
-  // A callback that is used to notify test that the reauth dialog is closed.
-  base::OnceClosure on_dialog_closed_callback_for_testing_;
-
-  bool is_dialog_loaded_for_testing_ = false;
 
   friend class InSessionPasswordSyncManagerTest;
   friend class InSessionPasswordSyncManagerFactory;

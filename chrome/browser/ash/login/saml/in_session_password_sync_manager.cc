@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
@@ -287,81 +288,7 @@ void InSessionPasswordSyncManager::OnAuthSuccess(
   if (screenlock_bridge_->IsLocked()) {
     screenlock_bridge_->lock_handler()->Unlock(user_context.GetAccountId());
   }
-  DismissDialog();
-}
-
-void InSessionPasswordSyncManager::CreateAndShowDialog() {
-  DCHECK(!lock_screen_start_reauth_dialog_);
-  lock_screen_start_reauth_dialog_ =
-      std::make_unique<LockScreenStartReauthDialog>();
-  lock_screen_start_reauth_dialog_->Show();
-}
-
-void InSessionPasswordSyncManager::DismissDialog() {
-  if (lock_screen_start_reauth_dialog_) {
-    lock_screen_start_reauth_dialog_->Dismiss();
-  }
-}
-
-void InSessionPasswordSyncManager::ResetDialog() {
-  DCHECK(lock_screen_start_reauth_dialog_);
-  lock_screen_start_reauth_dialog_.reset();
-  OnReauthDialogClosedForTesting();  // IN-TEST
-}
-
-int InSessionPasswordSyncManager::GetDialogWidth() {
-  if (!lock_screen_start_reauth_dialog_)
-    return 0;
-  return lock_screen_start_reauth_dialog_->GetDialogWidth();
-}
-
-content::WebContents* InSessionPasswordSyncManager::GetDialogWebContents() {
-  if (!lock_screen_start_reauth_dialog_)
-    return nullptr;
-  return lock_screen_start_reauth_dialog_->GetWebContents();
-}
-
-bool InSessionPasswordSyncManager::IsReauthDialogLoadedForTesting(
-    base::OnceClosure callback) {
-  if (is_dialog_loaded_for_testing_)
-    return true;
-  DCHECK(!on_dialog_loaded_callback_for_testing_);
-  on_dialog_loaded_callback_for_testing_ = std::move(callback);
-  return false;
-}
-
-bool InSessionPasswordSyncManager::IsReauthDialogClosedForTesting(
-    base::OnceClosure callback) {
-  if (!is_dialog_loaded_for_testing_)
-    return true;
-  DCHECK(!on_dialog_closed_callback_for_testing_);
-  on_dialog_closed_callback_for_testing_ = std::move(callback);
-  return false;
-}
-
-void InSessionPasswordSyncManager::OnReauthDialogReadyForTesting() {
-  if (is_dialog_loaded_for_testing_)
-    return;
-  is_dialog_loaded_for_testing_ = true;
-  if (on_dialog_loaded_callback_for_testing_) {
-    std::move(on_dialog_loaded_callback_for_testing_).Run();
-  }
-}
-
-void InSessionPasswordSyncManager::OnReauthDialogClosedForTesting() {
-  if (!is_dialog_loaded_for_testing_)
-    return;
-  is_dialog_loaded_for_testing_ = false;
-  if (on_dialog_closed_callback_for_testing_) {
-    std::move(on_dialog_closed_callback_for_testing_).Run();
-  }
-}
-
-void InSessionPasswordSyncManager::OnWebviewLoadAborted() {
-  if (lock_screen_start_reauth_dialog_) {
-    lock_screen_start_reauth_dialog_->UpdateState(
-        NetworkError::ERROR_REASON_FRAME_ERROR);
-  }
+  LockScreenStartReauthDialog::Dismiss();
 }
 
 void InSessionPasswordSyncManager::OnPasswordUpdateSuccess(

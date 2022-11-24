@@ -6,8 +6,6 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -103,24 +101,14 @@ bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
     return false;
   }
 
-  // The screen can only be locked if there is an active user session, so
-  // ProfileManager::GetActiveUserProfile() must return a non-null Profile.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile);
-  password_sync_manager_ =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  if (!password_sync_manager_) {
-    ADD_FAILURE() << "Could not retrieve InSessionPasswordSyncManager";
-    return false;
-  }
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
       prefs::kLockScreenReauthenticationEnabled, true);
-  password_sync_manager_->CreateAndShowDialog();
 
-  WaitForReauthDialogToLoad();
+  LockScreenStartReauthDialog::Show();
 
   // Fetch the dialog, WebUi controller and main message handler.
-  reauth_dialog_ = password_sync_manager_->get_reauth_dialog_for_testing();
+  reauth_dialog_ = LockScreenStartReauthDialog::GetInstance();
+  WaitForReauthDialogToLoad();
   if (!reauth_dialog_ || !reauth_dialog_->GetWebUIForTest()) {
     ADD_FAILURE() << "Could not retrieve LockScreenStartReauthDialog";
     return false;
@@ -283,16 +271,14 @@ void LockScreenReauthDialogTestHelper::WaitForAuthenticatorToLoad() {
 
 void LockScreenReauthDialogTestHelper::WaitForReauthDialogToClose() {
   base::RunLoop run_loop;
-  if (!password_sync_manager_->IsReauthDialogClosedForTesting(
-          run_loop.QuitClosure())) {
+  if (!reauth_dialog_->IsClosedForTesting(run_loop.QuitClosure())) {
     run_loop.Run();
   }
 }
 
 void LockScreenReauthDialogTestHelper::WaitForReauthDialogToLoad() {
   base::RunLoop run_loop;
-  if (!password_sync_manager_->IsReauthDialogLoadedForTesting(
-          run_loop.QuitClosure())) {
+  if (!reauth_dialog_->IsLoadedForTesting(run_loop.QuitClosure())) {
     run_loop.Run();
   }
 }

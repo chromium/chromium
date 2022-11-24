@@ -10,12 +10,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/base_lock_dialog.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_captive_portal_dialog.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_dialog.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
@@ -35,6 +33,7 @@
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -47,14 +46,6 @@ namespace ash {
 
 namespace {
 LockScreenStartReauthDialog* g_dialog = nullptr;
-
-InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-
-  return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-}
 
 bool IsDialogLoaded(bool is_loaded,
                     base::OnceClosure& on_loaded_callback,
@@ -130,17 +121,20 @@ bool LockScreenStartReauthDialog::CheckMediaAccessPermission(
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 
+// static
 void LockScreenStartReauthDialog::Show() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(session_manager::SessionManager::Get()->IsScreenLocked());
   if (g_dialog) {
     g_dialog->Focus();
     return;
   }
-  g_dialog = this;
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      ProfileHelper::GetLockScreenProfileDir(),
-      base::BindOnce(&LockScreenStartReauthDialog::OnProfileInitialized,
-                     weak_factory_.GetWeakPtr()));
+  g_dialog = new LockScreenStartReauthDialog();
+}
+
+// static
+LockScreenStartReauthDialog* LockScreenStartReauthDialog::GetInstance() {
+  return g_dialog;
 }
 
 void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
@@ -170,11 +164,12 @@ void LockScreenStartReauthDialog::Dismiss() {
     g_dialog->Close();
 }
 
-bool LockScreenStartReauthDialog::IsRunning() {
+// static
+bool LockScreenStartReauthDialog::IsShown() {
   return g_dialog;
 }
 
-int LockScreenStartReauthDialog::GetDialogWidth() {
+int LockScreenStartReauthDialog::GetDialogWidth() const {
   gfx::Size ret;
   GetDialogSize(&ret);
   return ret.width();
@@ -193,8 +188,10 @@ void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {
   lock_screen_network_dialog_.reset();
   if (is_network_dialog_visible_) {
     is_network_dialog_visible_ = false;
-    auto* password_sync_manager = GetInSessionPasswordSyncManager();
-    password_sync_manager->DismissDialog();
+    // We end up here when user manually closes the network dialog - in this
+    // case we should also close reauth dialog as it doesn't make sense to show
+    // it without a network connection
+    Dismiss();
   }
 }
 
@@ -212,12 +209,11 @@ void LockScreenStartReauthDialog::OnDialogShown(content::WebUI* webui) {
 
 void LockScreenStartReauthDialog::OnDialogClosed(
     const std::string& json_retval) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  auto* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager->ResetDialog();
+  // `BaseLockDialog::OnDialogClosed` will delete this so we need to
+  // move callback to a local variable here for it to be executed.
+  base::ScopedClosureRunner closure(
+      std::move(on_dialog_closed_callback_for_testing_));
+  BaseLockDialog::OnDialogClosed(json_retval);
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
@@ -290,6 +286,11 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
                  content::NotificationService::AllSources());
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
                  content::NotificationService::AllSources());
+
+  g_browser_process->profile_manager()->CreateProfileAsync(
+      ProfileHelper::GetLockScreenProfileDir(),
+      base::BindOnce(&LockScreenStartReauthDialog::OnProfileInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
@@ -297,6 +298,10 @@ LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
   scoped_observation_.Reset();
   DeleteLockScreenNetworkDialog();
   g_dialog = nullptr;
+}
+
+void LockScreenStartReauthDialog::OnWebviewLoadAborted() {
+  UpdateState(NetworkError::ERROR_REASON_FRAME_ERROR);
 }
 
 void LockScreenStartReauthDialog::UpdateState(
@@ -335,6 +340,33 @@ void LockScreenStartReauthDialog::UpdateState(
       reauth_handler->ReloadGaia();
       should_reload_gaia_ = false;
     }
+  }
+}
+
+bool LockScreenStartReauthDialog::IsLoadedForTesting(
+    base::OnceClosure callback) {
+  if (is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_loaded_callback_for_testing_);
+  on_dialog_loaded_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+bool LockScreenStartReauthDialog::IsClosedForTesting(
+    base::OnceClosure callback) {
+  if (!is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_closed_callback_for_testing_);
+  on_dialog_closed_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+void LockScreenStartReauthDialog::OnReadyForTesting() {
+  if (is_dialog_loaded_for_testing_)
+    return;
+  is_dialog_loaded_for_testing_ = true;
+  if (on_dialog_loaded_callback_for_testing_) {
+    std::move(on_dialog_loaded_callback_for_testing_).Run();
   }
 }
 

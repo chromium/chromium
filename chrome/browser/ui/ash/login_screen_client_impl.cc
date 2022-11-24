@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
@@ -407,16 +405,10 @@ void LoginScreenClientImpl::OnParentAccessValidation(
 void LoginScreenClientImpl::ShowGaiaSigninInternal(
     const AccountId& prefilled_account) {
   if (ash::LoginDisplayHost::default_host()) {
+    // Login screen case.
     ash::LoginDisplayHost::default_host()->ShowGaiaDialog(prefilled_account);
   } else {
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->FindUser(prefilled_account);
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
-    auto* password_sync_manager =
-        ash::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-    if (password_sync_manager) {
-      password_sync_manager->CreateAndShowDialog();
-    }
+    // Lock screen case.
+    ash::LockScreenStartReauthDialog::Show();
   }
 }
