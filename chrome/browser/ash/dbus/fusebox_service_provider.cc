@@ -16,9 +16,12 @@
 
 // The "fusebox_staging" concept is described in
 // chrome/browser/ash/fusebox/fusebox_staging.proto
+//
+// TODO(b/255520194): remove this section.
 namespace fusebox_staging {
 const char kRead2Method[] = "Read2";
-}
+const char kWrite2Method[] = "Write2";
+}  // namespace fusebox_staging
 
 namespace ash {
 
@@ -173,6 +176,11 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
                        base::BindOnce(&OnExportedCallback));
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::Stat,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface,
+                       fusebox_staging::kWrite2Method,
+                       base::BindRepeating(&FuseBoxServiceProvider::Write2,
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
 
@@ -409,6 +417,26 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
 
   server_.Stat(fs_url_as_string,
                base::BindOnce(&ReplyToStat, method_call, std::move(sender)));
+}
+
+void FuseBoxServiceProvider::Write2(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method_call);
+  fusebox_staging::Write2RequestProto request_proto;
+  if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
+    fusebox_staging::Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    ReplyToProtoMethod(method_call, std::move(sender), response_proto);
+    return;
+  }
+
+  server_.Write2(
+      request_proto,
+      base::BindOnce(&ReplyToProtoMethod<fusebox_staging::Write2ResponseProto>,
+                     method_call, std::move(sender)));
 }
 
 void FuseBoxServiceProvider::ListStorages(

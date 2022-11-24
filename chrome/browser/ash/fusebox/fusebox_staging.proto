@@ -132,3 +132,15 @@ message RmDirRequestProto {
 message RmDirResponseProto {
   optional int32 posix_error_code = 1;
 }
+
+// Write2 writes to a fuse_handle previously returned by Open2.
+
+message Write2RequestProto {
+  optional uint64 fuse_handle = 2;
+  optional int64 offset = 4;
+  optional bytes data = 5;
+}
+
+message Write2ResponseProto {
+  optional int32 posix_error_code = 1;
+}
