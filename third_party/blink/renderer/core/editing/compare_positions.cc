@@ -375,11 +375,9 @@ class Comparator {
   //  |------------------+---------------------------------+----------------|
   //  ```
   //
-  //  The maximum number of iterations is `number_of_children / 4`.
-  //
-  //  The minimum number of iterations is: ```
+  //  The number of iterations is: ```
   //    std::min(offset_a, offset_b,
-  //             abs(offset_a - offset_b),
+  //             abs(offset_a - offset_b) / 2,
   //             number_of_children - offset_a,
   //             number_of_children - offset_b)
   //  where
@@ -387,6 +385,8 @@ class Comparator {
   //    `offset_b` == `Traversal::Index(*child_b)`
   //
   //  ```
+  // Note: this number can't exceed `number_of_children / 4`.
+  //
   // Note: We call this function both "node before position" and "node after
   // position" cases. For "node after position" case, `child_a` and `child_b`
   // should not be `nullptr`.
@@ -407,16 +407,29 @@ class Comparator {
     const Node* forward_b = child_b;
 
     for (;;) {
-      if (!backward_a || !forward_b)
+      backward_a = Traversal::PreviousSibling(*backward_a);
+      if (!backward_a)
         return kAIsBeforeB;
-      if (!forward_a || !backward_b || backward_a == forward_b)
+      if (backward_a == forward_b)
+        return kAIsAfterB;
+
+      forward_a = Traversal::NextSibling(*forward_a);
+      if (!forward_a)
         return kAIsAfterB;
       if (forward_a == backward_b)
         return kAIsBeforeB;
-      backward_a = Traversal::PreviousSibling(*backward_a);
-      forward_a = Traversal::NextSibling(*forward_a);
+
       backward_b = Traversal::PreviousSibling(*backward_b);
+      if (!backward_b)
+        return kAIsAfterB;
+      if (forward_a == backward_b)
+        return kAIsBeforeB;
+
       forward_b = Traversal::NextSibling(*forward_b);
+      if (!forward_b)
+        return kAIsBeforeB;
+      if (backward_a == forward_b)
+        return kAIsAfterB;
     }
 
     NOTREACHED();
