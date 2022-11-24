@@ -16,10 +16,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "media/base/android/media_drm_bridge.h"
-#endif
-
 namespace content_settings {
 
 namespace {

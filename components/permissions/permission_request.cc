@@ -13,10 +13,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "media/base/android/media_drm_bridge.h"
-#endif
-
 namespace permissions {
 
 PermissionRequest::PermissionRequest(

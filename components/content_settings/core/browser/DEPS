@@ -8,7 +8,6 @@ include_rules = [
   "+components/sync_preferences",
   "+components/url_formatter",
   "+extensions/buildflags",
-  "+media/base/android",
   "+net/base",
   "+net/cookies",
   "+ppapi/buildflags",

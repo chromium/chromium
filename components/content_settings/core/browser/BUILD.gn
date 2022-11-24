@@ -61,10 +61,6 @@ static_library("browser") {
     "//url",
   ]
 
-  if (is_android) {
-    deps += [ "//media" ]
-  }
-
   if (!is_ios) {
     sources += [
       "cookie_settings_policy_handler.cc",
