@@ -666,6 +666,21 @@ TEST_F(PositionIteratorTest, decrementWithTextAreaElement) {
           "-S-- HTML HTML@offsetInAnchor[0]"));
 }
 
+// http://crbug.com/1392758
+TEST_F(PositionIteratorTest, DecrementWithTextAreaFromAfterChildren) {
+  SetBodyContent("<textarea>abc</textarea>");
+  const Element& body = *GetDocument().body();
+  const auto expectation = ElementsAre(
+      "---E BODY BODY@afterChildren", "---E TEXTAREA@1 TEXTAREA@afterAnchor",
+      "-S-E TEXTAREA@0 TEXTAREA@beforeAnchor TEXTAREA@afterAnchor",
+      "-S-- BODY BODY@offsetInAnchor[0]", "---- HTML HTML@offsetInAnchor[1]",
+      "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+      "-S-- HTML HTML@offsetInAnchor[0]");
+
+  EXPECT_THAT(ScanBackward(Position(body, 1)), expectation);
+  EXPECT_THAT(ScanBackward(Position::LastPositionInNode(body)), expectation);
+}
+
 // ---
 
 TEST_F(PositionIteratorTest, IncrementFromInputElementAfterChildren) {

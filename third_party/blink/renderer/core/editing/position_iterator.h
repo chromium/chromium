@@ -172,6 +172,12 @@ class FastPositionIteratorAlgorithm {
   void MoveToPreviousContainer();
   void MoveToPreviousSkippingChildren();
 
+  // Set `child_before_position_` to `Strategy::PreviousChildren(node)`
+  // and set `offset_` to zero if `child_before_position_` becomes
+  // `nullptr`.
+  void SetChildBeforePositionToPreviosuSigblingOf(const Node& node);
+
+  // Set `container_node_` to `node` and `container_type` from `node.
   void SetContainer(Node* node);
 
   // Returns `PositionType::AfterNode(*container_node_)` if
@@ -188,6 +194,8 @@ class FastPositionIteratorAlgorithm {
   Node* container_node_ = nullptr;
   Node* child_before_position_ = nullptr;
   uint64_t dom_tree_version_ = 0;
+  // Note: When `child_before_position_` is `nullptr`, `offset_is_container`
+  // should be zero.
   mutable unsigned offset_in_container_ = kInvalidOffset;
 
   Vector<unsigned> offset_stack_;

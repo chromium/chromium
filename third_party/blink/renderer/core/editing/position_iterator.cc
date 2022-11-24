@@ -729,11 +729,7 @@ void FastPositionIteratorAlgorithm<Strategy>::MoveToNextSkippingChildren() {
 template <typename Strategy>
 void FastPositionIteratorAlgorithm<Strategy>::MoveToPreviousContainer() {
   PopOffsetStack();
-  child_before_position_ = Strategy::PreviousSibling(*container_node_);
-  if (!child_before_position_) {
-    DCHECK(offset_in_container_ == kInvalidOffset || !offset_in_container_);
-    offset_in_container_ = 0;
-  }
+  SetChildBeforePositionToPreviosuSigblingOf(*container_node_);
   SetContainer(SelectableParentOf<Strategy>(*container_node_));
 }
 
@@ -741,15 +737,23 @@ template <typename Strategy>
 void FastPositionIteratorAlgorithm<Strategy>::MoveToPreviousSkippingChildren() {
   if (!child_before_position_) {
     PopOffsetStack();
-    child_before_position_ = Strategy::PreviousSibling(*container_node_);
+    SetChildBeforePositionToPreviosuSigblingOf(*container_node_);
     return SetContainer(SelectableParentOf<Strategy>(*container_node_));
   }
   MoveOffsetInContainerBy(-1);
-  child_before_position_ = Strategy::PreviousSibling(*child_before_position_);
-  if (!child_before_position_) {
-    DCHECK(offset_in_container_ == kInvalidOffset || !offset_in_container_);
-    offset_in_container_ = 0;
+  SetChildBeforePositionToPreviosuSigblingOf(*child_before_position_);
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<
+    Strategy>::SetChildBeforePositionToPreviosuSigblingOf(const Node& node) {
+  child_before_position_ = Strategy::PreviousSibling(node);
+  if (child_before_position_) {
+    DCHECK(offset_in_container_);
+    return;
   }
+  DCHECK(offset_in_container_ == kInvalidOffset || !offset_in_container_);
+  offset_in_container_ = 0;
 }
 
 template <typename Strategy>
