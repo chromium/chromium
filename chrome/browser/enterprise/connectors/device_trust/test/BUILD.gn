@@ -1,0 +1,39 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  public = [ "device_trust_test_environment.h" ]
+
+  sources = []
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
+  ]
+
+  deps = []
+
+  if (is_win) {
+    public += [ "device_trust_test_environment_win.h" ]
+    sources += [ "device_trust_test_environment_win.cc" ]
+
+    public_deps += [
+      "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+      "//crypto:test_support",
+    ]
+
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:persistence",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:rotate_util",
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:constants",
+      "//components/policy/proto",
+    ]
+  }
+}
