@@ -30,6 +30,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -125,9 +126,13 @@ void ResetScreen::SetTpmFirmwareUpdateCheckerForTesting(
 void ResetScreen::CheckIfPowerwashAllowed(
     base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback) {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsDeviceLocked()) {
+    if (!InstallAttributes::Get()->IsEnterpriseManaged()) {
+      // The consumer owned device is always allowed to powerwash.
+      std::move(callback).Run(/*is_reset_allowed=*/true, absl::nullopt);
+      return;
+    }
+
     // Powerwash is allowed by default, if the policy is loaded. Admin can
     // explicitly forbid powerwash. If the policy is not loaded yet, we
     // consider by default that the device is not allowed to powerwash.
@@ -135,7 +140,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
                                     &is_powerwash_allowed);
     if (is_powerwash_allowed) {
-      std::move(callback).Run(true, absl::nullopt);
+      std::move(callback).Run(/*is_reset_allowed=*/true, absl::nullopt);
       return;
     }
 
