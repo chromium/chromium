@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.site_settings;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -17,6 +19,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -28,6 +32,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.Intent;
@@ -132,7 +137,6 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -443,6 +447,10 @@ public class SiteSettingsTest {
                 preferences.onPreferenceChange(toggle, enabled);
             }
         });
+        if (type == SiteSettingsCategory.Type.SITE_DATA && !enabled) {
+            int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
+            onViewWaiting(withText(id)).perform(click());
+        }
         settingsActivity.finish();
     }
 
@@ -508,9 +516,8 @@ public class SiteSettingsTest {
                 if (key != null) actualKeys.add(key);
             }
 
-            Assert.assertTrue(
-                    actualKeys.toString() + " should match " + Arrays.toString(expectedKeys),
-                    Arrays.equals(actualKeys.toArray(), expectedKeys));
+            assertThat(actualKeys,
+                    expectedKeys.length == 0 ? emptyIterable() : contains(expectedKeys));
         });
         settingsActivity.finish();
     }

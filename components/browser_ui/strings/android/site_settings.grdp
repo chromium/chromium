@@ -393,6 +393,8 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_BLOCK" desc="The description for the block Cookies for website dialog.">
     Block cookies for a specific site.
   </message>
+
+  <!-- Site data page -->
   <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_DESCRIPTION" desc="" translateable="false">
     Sed finibus augue vel risus pellentesque, id auctor enim congue. Donec tincidunt pulvinar orci, et mattis dolor egestas ut. Nam ultrices mauris tortor, et maximus arcu iaculis vitae.
   </message>
@@ -408,7 +410,20 @@
   <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_ADD_BLOCK_EXCEPTION_DESCRIPTION" desc="" translateable="false">
     Block site data for a specific site.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_TITLE" desc="" translateable="false">
+    Duis non nisi sed lectus viverra venenati?
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_DESCRIPTION" desc="" translateable="false">
+    Suspendisse vitae malesuada purus, ut molestie eros. Fusce malesuada ullamcorper sem a blandit.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CONFIRM_BUTTON" desc="" translateable="false">
+    Turn off
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON" desc="" translateable="false">
+    Cancel
+  </message>
 
+  <!-- Third-party cookies page -->
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="" translateable="false">
     Suspendisse non porta leo. Donec egestas semper justo, ac ultricies quam malesuada a. Sed vestibulum enim non consectetur volutpat. Nullam vel dolor at nunc pulvinar lobortis quis aliquam nulla. Curabitur id pharetra felis, at tempor urna.
   </message>
