@@ -339,7 +339,7 @@ struct PasswordChangeParams {
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY, IDS_CLOSE, true, true},
+     IDS_OK, IDS_CLOSE, false, true},
     {CreateLeakType(IsSaved(true),
                     IsReused(true),
                     IsSyncing(false),
@@ -349,7 +349,7 @@ struct PasswordChangeParams {
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY, IDS_CLOSE, true, true}};
+     IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE, true, true}};
 
 class PasswordChangeCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<PasswordChangeParams> {
@@ -362,35 +362,8 @@ class PasswordChangeCredentialLeakDialogUtilsTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
-       ShouldNotShowChangePasswordButtonWithoutScript) {
-  // Get IsSaved, IsReused, and IsSyncing from the test parameter...
-  IsSaved is_saved = IsSaved(IsPasswordSaved(GetParam().leak_type));
-  IsReused is_reused =
-      IsReused(IsPasswordUsedOnOtherSites(GetParam().leak_type));
-  IsSyncing is_syncing = IsSyncing(IsPasswordSynced(GetParam().leak_type));
-  // ...but set HasChangeScript to false.
-  CredentialLeakType leak_type =
-      CreateLeakType(is_saved, is_reused, is_syncing, HasChangeScript(false));
-  SCOPED_TRACE(testing::Message() << leak_type);
-
-  EXPECT_FALSE(ShouldShowAutomaticChangePasswordButton(leak_type));
-  EXPECT_NE(l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY),
-            GetAcceptButtonLabel(leak_type));
-}
-
-TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
-       ShouldShowAutomaticChangePasswordButton) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-
-  // ShouldCheckPasswords and ShouldShowAutomaticChangePasswordButton
-  // should never be true both.
-  EXPECT_FALSE(ShouldCheckPasswords(GetParam().leak_type) &&
-               ShouldShowAutomaticChangePasswordButton(GetParam().leak_type));
-
-  EXPECT_EQ(GetParam().should_show_change_password_button,
-            ShouldShowAutomaticChangePasswordButton(GetParam().leak_type));
-}
+// Even with a change script, APC is no longer offered.
+// TODO (https://crbug.com/1386065): Clean-up the test cases according to the APC removal changes.
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);

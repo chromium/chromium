@@ -149,17 +149,9 @@ bool ShouldCheckPasswords(CredentialLeakType leak_type) {
 }
 
 bool ShouldShowAutomaticChangePasswordButton(CredentialLeakType leak_type) {
-  // Automatic Password change should be offered if all following conditions are
-  // fulfilled:
-  // - Password is saved. (The password change flows will automatically save the
-  //   password. This should only happen as an update of an existing entry.)
-  // - Password is synced to a remote store (synced profile store or account
-  //   store), because the password change flow relies on password
-  //   generation which is only available for those credentials.
-  // - Automatic password change is enabled and there is an automatic password
-  //   change script available for this site.
-  return IsPasswordSaved(leak_type) && IsPasswordSynced(leak_type) &&
-         IsAutomaticPasswordChangeScriptAvailable(leak_type);
+  // TODO (https://crbug.com/1386065): Remove this function and its usages
+  // as part of all APC-related removals.
+  return false;
 }
 
 bool ShouldShowCancelButton(CredentialLeakType leak_type) {

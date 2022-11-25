@@ -143,40 +143,6 @@ TEST(CredentialLeakControllerAndroidTest, ClickedCheckPasswords) {
       LeakDialogDismissalReason::kClickedCheckPasswords);
 }
 
-TEST(CredentialLeakControllerAndroidTest, ClickedChangePasswordAutomatically) {
-  base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList enable_password_change;
-  enable_password_change.InitAndEnableFeature(
-      password_manager::features::kPasswordChange);
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
-  testing::NiceMock<MockPasswordChangeSuccessTracker>
-      password_change_success_tracker;
-  EXPECT_CALL(
-      password_change_success_tracker,
-      OnChangePasswordFlowStarted(
-          GURL(kOrigin), base::UTF16ToUTF8(kUsername),
-          PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
-          PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog));
-
-  MakeController(IsSaved(true), IsReused(false), IsSyncing(true),
-                 HasChangeScript(true), &password_change_success_tracker)
-      ->OnAcceptDialog();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.ChangeAutomatically",
-      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
-
-  CheckUkmMetricsExpectations(
-      test_ukm_recorder, LeakDialogType::kChangeAutomatically,
-      LeakDialogDismissalReason::kClickedChangePasswordAutomatically);
-}
-
 TEST(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
   base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;

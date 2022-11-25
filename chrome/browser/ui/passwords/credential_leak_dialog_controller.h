@@ -45,10 +45,6 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
   // Checks whether the dialog should prompt user to password checkup.
   virtual bool ShouldCheckPasswords() const = 0;
 
-  // Checks whether the dialog should prompt the user to do an automated
-  // password change.
-  virtual bool ShouldOfferAutomatedPasswordChange() const = 0;
-
   // Checks whether the dialog should show cancel button.
   virtual bool ShouldShowCancelButton() const = 0;
 };

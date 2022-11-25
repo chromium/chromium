@@ -204,31 +204,4 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCheckPasswords) {
   EXPECT_CALL(leak_prompt(), ControllerGone());
 }
 
-TEST_F(CredentialLeakDialogControllerTest,
-       CredentialLeakDialogAutomatedPasswordChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordChange);
-  SetUpController(CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true),
-                                 HasChangeScript(true)));
-
-  EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
-  controller().ShowCredentialLeakPrompt(&leak_prompt());
-
-  EXPECT_CALL(ui_controller_mock(), StartAutomatedPasswordChange(
-                                        GURL(kUrl), std::u16string(kUsername)));
-  EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
-  controller().OnAcceptDialog();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.ChangeAutomatically",
-      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
-
-  EXPECT_CALL(leak_prompt(), ControllerGone());
-}
-
 }  // namespace

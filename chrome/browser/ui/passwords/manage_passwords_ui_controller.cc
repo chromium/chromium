@@ -685,14 +685,6 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-void ManagePasswordsUIController::StartAutomatedPasswordChange(
-    const GURL& origin,
-    const std::u16string& username) {
-  ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(web_contents());
-  // Start checks that no other run is ongoing, so we can always call it.
-  apc_client->Start(origin, base::UTF16ToUTF8(username), /*skip_login=*/true);
-}
-
 void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,

@@ -23,10 +23,6 @@ class PasswordsLeakDialogDelegate {
   virtual void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) = 0;
 
-  // Initiate an automated password change flow in the current tab.
-  virtual void StartAutomatedPasswordChange(const GURL& origin,
-                                            const std::u16string& username) = 0;
-
  protected:
   virtual ~PasswordsLeakDialogDelegate() = default;
 };
