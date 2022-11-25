@@ -178,12 +178,6 @@ found in the LICENSE file.
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- Touch To Fill -->
-      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_SINGLE" desc="Header for Touch To Fill sheet where users only have a single credential to fill into a form to.">
-        Continue with account
-      </message>
-      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to fill into a form to.">
-        Choose an account
-      </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_UNIFORM_TITLE" desc="Header for Touch To Fill sheet where users can pick a password credential to fill into a form. Will replace SHEET_TITLE_SINGLE and SHEET_TITLE.">
         Use saved password?
       </message>
