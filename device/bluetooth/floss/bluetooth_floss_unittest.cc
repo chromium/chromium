@@ -280,7 +280,7 @@ TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
   EXPECT_TRUE(device->IsPaired());
 }
 
-TEST_F(BluetoothFlossTest, PairDisplayPasskey) {
+TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
   InitializeAdapter();
   DiscoverDevices();
 
@@ -312,6 +312,42 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskey) {
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
+}
+
+TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate,
+              DisplayPasskey(_, FakeFlossAdapterClient::kPasskey))
+      .WillOnce([this](BluetoothDevice* device, uint32_t passkey) {
+        // Pretend that the remote device has entered wrong passkey.
+        fake_floss_adapter_client_->NotifyObservers(base::BindLambdaForTesting(
+            [device](FlossAdapterClient::Observer* observer) {
+              observer->DeviceBondStateChanged(
+                  FlossDeviceId({.address = device->GetAddress(), .name = ""}),
+                  static_cast<uint32_t>(
+                      FlossAdapterClient::BtifStatus::kAuthFailure),
+                  FlossAdapterClient::BondState::kNotBonded);
+            }));
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_TRUE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_FALSE(device->IsPaired());
 }
 
 TEST_F(BluetoothFlossTest, PairPasskeyEntry) {

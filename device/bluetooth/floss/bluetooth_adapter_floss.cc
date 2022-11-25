@@ -785,13 +785,17 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
 
   if (status != 0) {
     LOG(ERROR) << "Received BondStateChanged with error status = " << status;
+    device->SetBondState(bond_state);
+    if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
+      // Since we're no longer bonded, update connection state so that
+      // ConnectCallback can process the error correctly.
+      device->SetIsConnected(false);
+    }
+    NotifyDeviceChanged(device);
+    NotifyDevicePairedChanged(device, device->IsPaired());
+
     // TODO(b/192289534): Record status in UMA.
     device->TriggerConnectCallback(BtifStatusToConnectErrorCode(status));
-
-    // Since we're no longer bonded, also remove this from found list.
-    if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
-      AdapterClearedDevice(remote_device);
-    }
     return;
   }
 
