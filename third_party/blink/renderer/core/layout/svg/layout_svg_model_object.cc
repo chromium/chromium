@@ -46,7 +46,7 @@ LayoutSVGModelObject::LayoutSVGModelObject(SVGElement* node)
 bool LayoutSVGModelObject::IsChildAllowed(LayoutObject* child,
                                           const ComputedStyle&) const {
   NOT_DESTROYED();
-  return child->IsSVG() && !(child->IsSVGInline() || child->IsSVGInlineText());
+  return SVGContentContainer::IsChildAllowed(*child);
 }
 
 void LayoutSVGModelObject::MapLocalToAncestor(

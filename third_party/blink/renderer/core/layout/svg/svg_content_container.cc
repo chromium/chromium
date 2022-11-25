@@ -33,6 +33,27 @@ static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
     marker->LayoutIfNeeded();
 }
 
+// static
+bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
+  // https://svgwg.org/svg2-draft/struct.html#ForeignNamespaces
+  // the SVG user agent must include the unknown foreign-namespaced elements
+  // in the DOM but will ignore and exclude them for rendering purposes.
+  if (!child.IsSVG())
+    return false;
+  if (child.IsSVGInline() || child.IsSVGInlineText())
+    return false;
+  // The above IsSVG() check is not enough for foreign elements with
+  // `display: contents`. We ignore SVG descendants in a foreign element.
+  if (RuntimeEnabledFeatures::
+          SvgContainersRejectSvgInDisplayContentsEnabled()) {
+    if (const Node* node = child.GetNode()) {
+      if (const Element* parent_element = node->parentElement())
+        return parent_element->IsSVGElement();
+    }
+  }
+  return true;
+}
+
 void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
@@ -83,6 +104,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     if (child->IsSVGResourceContainer()) {
       child->LayoutIfNeeded();
     } else {
+      DCHECK(!child->IsSVGRoot());
       SubtreeLayoutScope layout_scope(*child);
       if (force_child_layout) {
         layout_scope.SetNeedsLayout(child,

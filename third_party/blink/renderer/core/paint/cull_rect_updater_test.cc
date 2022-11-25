@@ -595,7 +595,7 @@ TEST_P(CullRectUpdaterTest, LayerUnderSVGHiddenContainer) {
       GetDocument().getElementById("div"));
   // This should not crash.
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetCullRect("svg1").Rect().IsEmpty());
+  EXPECT_FALSE(GetLayoutObjectByElementId("svg1"));
 }
 
 TEST_P(CullRectUpdaterTest, PerspectiveDescendants) {

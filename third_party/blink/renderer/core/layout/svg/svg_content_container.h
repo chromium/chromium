@@ -28,6 +28,7 @@ class SVGContentContainer {
   DISALLOW_NEW();
 
  public:
+  static bool IsChildAllowed(const LayoutObject& child);
   void Layout(const SVGContainerLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestPhase) const;
 
