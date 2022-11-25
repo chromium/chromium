@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
@@ -17,6 +19,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
@@ -86,5 +89,24 @@ public class PrivacySandboxDialogUtils {
 
         bullet.setSpan(new ChromeBulletSpan(context), 0, bullet.length(), 0);
         bulletView.setText(bullet);
+    }
+
+    /**
+     * Creates a ChromeBulletSpan with bold content and set its text.
+     *
+     * @param context Current context.
+     * @param targetLayout The layout view where the bullet should live.
+     * @param bulletViewId The bullet viewId.
+     * @param stringRes The string resource from where the text is retrieved.
+     */
+    public static void setBulletTextWithBoldContent(Context context, ViewGroup targetLayout,
+            @IdRes int bulletViewId, @StringRes int stringRes) {
+        TextView view = targetLayout.findViewById(bulletViewId);
+        SpannableString spannableString =
+                SpanApplier.applySpans(context.getResources().getString(stringRes),
+                        new SpanApplier.SpanInfo(
+                                "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
+        spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
+        view.setText(spannableString);
     }
 }
