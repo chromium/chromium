@@ -21,6 +21,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.settings.AutofillEditorBase;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -1066,8 +1068,8 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public void getFullCard(
-            WebContents webContents, CreditCard card, FullCardRequestDelegate delegate) {
+    public void getFullCard(WebContents webContents, CreditCard card,
+            FullCardRequestDelegate delegate) {
         PersonalDataManagerJni.get().getFullCardForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, webContents, card, delegate);
     }

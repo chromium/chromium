@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
  * Helper class for testing AutofillProfiles.
  */
 public class AutofillTestHelper {
+
     private final CallbackHelper mOnPersonalDataChangedHelper = new CallbackHelper();
 
     public AutofillTestHelper() {
@@ -160,9 +161,8 @@ public class AutofillTestHelper {
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PersonalDataManager.getInstance().setProfileUseStatsForTesting(
-                                guid, count, date));
+                () -> PersonalDataManager.getInstance().setProfileUseStatsForTesting(guid, count,
+                        date));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -219,9 +219,8 @@ public class AutofillTestHelper {
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PersonalDataManager.getInstance().setCreditCardUseStatsForTesting(
-                                guid, count, date));
+                () -> PersonalDataManager.getInstance().setCreditCardUseStatsForTesting(
+                        guid, count, date));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 

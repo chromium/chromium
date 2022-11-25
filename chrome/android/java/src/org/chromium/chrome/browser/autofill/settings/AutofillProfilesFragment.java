@@ -23,11 +23,10 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -76,9 +75,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
-                    getActivity().getString(R.string.help_context_autofill),
-                    Profile.getLastUsedRegularProfile(), null);
+            AutofillUiUtils.launchAutofillHelpPage(
+                    getActivity(), Profile.getLastUsedRegularProfile());
             return true;
         }
         return super.onOptionsItemSelected(item);

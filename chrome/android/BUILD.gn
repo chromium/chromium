@@ -262,7 +262,6 @@ if (current_toolchain == default_toolchain) {
       ":ui_locale_string_resources",
       "//chrome/android/webapk/libs/common:splash_resources",
       "//chrome/app:java_strings_grd",
-      "//chrome/browser/autofill/android:java_resources",
       "//chrome/browser/download/android:java_resources",
       "//chrome/browser/feed/android:feed_java_resources",
       "//chrome/browser/feedback/android:java_resources",
@@ -407,7 +406,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/customtabs/branding:java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/android/messages:java",
-      "//chrome/browser/autofill/android:java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/banners/android:java",
       "//chrome/browser/battery/android:java",
@@ -718,6 +716,7 @@ if (current_toolchain == default_toolchain) {
     deps += feed_deps
 
     srcjar_deps = [
+      ":autofill_verification_status_generated_enum",
       ":chrome_android_java_enums_srcjar",
       ":chrome_android_java_google_api_keys_srcjar",
       ":chrome_strict_mode_switch",
@@ -893,6 +892,10 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
+  java_cpp_enum("autofill_verification_status_generated_enum") {
+    sources = [ "//components/autofill/core/browser/data_model/autofill_structured_address_component.h" ]
+  }
+
   java_cpp_enum("chrome_android_java_enums_srcjar") {
     sources = [
       "//chrome/browser/android/customtabs/detached_resource_request.h",
@@ -1007,7 +1010,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/customtabs/branding:junit",
       "//chrome/browser/android/httpclient:junit_tests",
       "//chrome/browser/android/lifecycle:java",
-      "//chrome/browser/autofill/android:java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/back_press/android:junit",
       "//chrome/browser/banners/android:java",
@@ -1547,8 +1549,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/android/metrics:ukm_java_test_support",
       "//chrome/browser/android/metrics:ukm_javatests",
-      "//chrome/browser/autofill/android:java_resources",
-      "//chrome/browser/autofill/test:test_support_java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/banners/android:java",
       "//chrome/browser/browser_controls/android:java",
@@ -3235,7 +3235,6 @@ if (current_toolchain == default_toolchain) {
       ":chrome_test_java",
       "//chrome/android/features/autofill_assistant:test_java",
       "//chrome/android/features/keyboard_accessory:test_java",
-      "//chrome/browser/autofill/test:test_java",
       "//chrome/browser/banners/android:javatests",
       "//chrome/browser/download/internal/android:javatests",
       "//chrome/browser/engagement/android:javatests",
@@ -4003,6 +4002,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
     "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
+    "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
