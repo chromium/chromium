@@ -160,7 +160,7 @@ class FirstRunAppRestrictionInfo {
                     Bundle bundle =
                             AppRestrictionsProvider.getApplicationRestrictionsFromUserManager(
                                     userManager, appContext.getPackageName());
-                    return !bundle.isEmpty();
+                    return bundle != null && !bundle.isEmpty();
                 }
 
                 @Override
