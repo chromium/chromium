@@ -50,6 +50,7 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
   void OnUkmSourceIdChanged(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
   void OnTitleUpdated(const PageNode* page_node) override;
+  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
 
   // ProcessNodeObserver implementation:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
@@ -80,6 +81,7 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
         kTabFromBackgroundedToFirstTitleUpdatedUMA,
         internal::UKMFrameReportType::kMainFrameOnly>
         first_title_updated;
+    GURL previous_url;
   };
 
   struct UkmCollectionState {

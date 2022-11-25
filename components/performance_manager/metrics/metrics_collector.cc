@@ -89,6 +89,9 @@ const char kTabFromBackgroundedToFirstNonPersistentNotificationCreatedUMA[] =
     "TabManager.Heuristics."
     "FromBackgroundedToFirstNonPersistentNotificationCreated";
 
+const char kTabNavigationWithSameOriginTabHistogramName[] =
+    "Tabs.NewNavigationWithSameOriginTab";
+
 const int kDefaultFrequencyUkmEQTReported = 5u;
 
 MetricsCollector::MetricsCollector() = default;
@@ -140,6 +143,32 @@ void MetricsCollector::OnFaviconUpdated(const PageNode* page_node) {
   record->first_favicon_updated.OnSignalReceived(
       true, page_node->GetTimeSinceLastVisibilityChange(),
       graph_->GetUkmRecorder());
+}
+
+void MetricsCollector::OnMainFrameDocumentChanged(const PageNode* page_node) {
+  bool found_same_origin_page = false;
+  auto* record = GetMetricsReportRecord(page_node);
+  if (!page_node->GetMainFrameUrl().SchemeIsHTTPOrHTTPS() ||
+      url::IsSameOriginWith(record->previous_url,
+                            page_node->GetMainFrameUrl())) {
+    record->previous_url = page_node->GetMainFrameUrl();
+    return;
+  }
+
+  for (const auto* page_node_it : graph_->GetAllPageNodes()) {
+    if (page_node_it != page_node) {
+      if (page_node_it->GetBrowserContextID() ==
+              page_node->GetBrowserContextID() &&
+          url::IsSameOriginWith(page_node_it->GetMainFrameUrl(),
+                                page_node->GetMainFrameUrl())) {
+        found_same_origin_page = true;
+        break;
+      }
+    }
+  }
+  record->previous_url = page_node->GetMainFrameUrl();
+  base::UmaHistogramBoolean(kTabNavigationWithSameOriginTabHistogramName,
+                            found_same_origin_page);
 }
 
 void MetricsCollector::OnProcessLifetimeChange(

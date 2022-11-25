@@ -397,4 +397,50 @@ TEST_F(MetricsCollectorTest, ProcessLifetime_Utility) {
               ElementsAre(Pair("ChildProcess.ProcessLifetime.Utility", 1)));
 }
 
+TEST_F(MetricsCollectorTest, NewNavigationWithSameOriginTab) {
+  auto page_node = CreateNode<PageNodeImpl>(WebContentsProxy(), "context_1");
+
+  page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), kDummyID, GURL("http://www.example1.org"),
+      kHtmlMimeType);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Tabs.NewNavigationWithSameOriginTab"),
+      ElementsAre(base::Bucket(0, 1)));
+
+  auto same_origin_page_node =
+      CreateNode<PageNodeImpl>(WebContentsProxy(), "context_1");
+  same_origin_page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), kDummyID,
+      GURL("http://www.example1.org/example"), kHtmlMimeType);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Tabs.NewNavigationWithSameOriginTab"),
+      ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+
+  // Same site navigation under the same page won't be recorded again
+  same_origin_page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), kDummyID + 1,
+      GURL("http://www.example1.org/example"), kHtmlMimeType);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Tabs.NewNavigationWithSameOriginTab"),
+      ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+
+  auto different_origin_page_node =
+      CreateNode<PageNodeImpl>(WebContentsProxy(), "context_1");
+  different_origin_page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), kDummyID, GURL("http://www.example2.org"),
+      kHtmlMimeType);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Tabs.NewNavigationWithSameOriginTab"),
+      ElementsAre(base::Bucket(0, 2), base::Bucket(1, 1)));
+
+  auto different_context_page_node =
+      CreateNode<PageNodeImpl>(WebContentsProxy(), "context_2");
+  different_context_page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), kDummyID, GURL("http://www.example1.org"),
+      kHtmlMimeType);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Tabs.NewNavigationWithSameOriginTab"),
+      ElementsAre(base::Bucket(0, 3), base::Bucket(1, 1)));
+}
+
 }  // namespace performance_manager
