@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -514,7 +514,7 @@ void ViewTransition::ProcessCurrentState() {
             style_tracker_->TakeCaptureResourceIds(),
             ConvertToBaseOnceCallback(
                 CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
-                                    WrapCrossThreadWeakPersistent(this)))));
+                                    MakeUnwrappingCrossThreadHandle(this)))));
 
         if (document_->GetFrame()->IsLocalRoot()) {
           document_->GetPage()->GetChromeClient().StopDeferringCommits(
