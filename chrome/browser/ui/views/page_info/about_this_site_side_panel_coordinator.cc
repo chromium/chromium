@@ -134,9 +134,10 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
   // we need to remove the SidePanel registration. We might already have data
   // from cacao for the current pageload if it was locally cached.
   auto* registry = SidePanelRegistry::Get(web_contents());
-  if (web_contents()->GetLastCommittedURL() != last_url_info_->context_url) {
-    registry->Deregister(
-        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  SidePanelEntry::Key key(SidePanelEntry::Id::kAboutThisSite);
+  if (registry->GetEntryForKey(key) &&
+      web_contents()->GetLastCommittedURL() != last_url_info_->context_url) {
+    registry->Deregister(key);
     last_url_info_.reset();
   }
 
