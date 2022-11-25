@@ -1893,26 +1893,6 @@
             ]
         }
     ],
-    "BatchFetchRequests": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatchFetchRequests"
-                    ]
-                }
-            ]
-        }
-    ],
     "BatchSimpleURLLoader": [
         {
             "platforms": [

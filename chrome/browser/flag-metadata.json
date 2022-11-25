@@ -616,11 +616,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "batch-fetch-requests",
-    "owners": ["pmeenan"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "battery-saver-mode-available",
     "owners": [ "chrome-performance-ui-team@google.com" ],
     "expiry_milestone": 115
