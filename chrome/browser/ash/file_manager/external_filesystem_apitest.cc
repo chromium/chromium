@@ -418,7 +418,8 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
         storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
-        false /* read_only */);
+        /*read_only*/ false, /*device_path*/ {}, /*drive_label*/ {},
+        /*file_system_type*/ {}, /*hidden*/ false, /*watchable*/ true);
   }
 
  private:
@@ -750,8 +751,7 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileSystemOperations) {
       << message_;
 }
 
-// TODO(crbug.com/1296001): Test is flaky.
-IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DISABLED_FileWatch) {
+IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileWatch) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/file_watcher_test",
                                             FILE_PATH_LITERAL("manifest.json"),
                                             "", FLAGS_NONE))
