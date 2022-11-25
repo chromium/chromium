@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.InspectElement" units="ms" expires_after="2022-12-01">
+<histogram name="DevTools.InspectElement" units="ms" expires_after="2023-12-01">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
