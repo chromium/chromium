@@ -8560,14 +8560,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Manifest.FetchResult" enum="ManifestFetchResultType"
-    expires_after="2020-12-13">
-  <owner>mgiuca@chromium.org</owner>
-  <summary>
-    Tracks whether the Manifest fetch succeed and why it failed if it failed.
-  </summary>
-</histogram>
-
 <histogram name="Manifest.HasProperty" enum="Boolean"
     expires_after="2023-05-07">
   <owner>mgiuca@chromium.org</owner>
@@ -8584,16 +8576,6 @@ chromium-metrics-reviews@google.com.
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@chromium.org</owner>
   <summary>Tracks the result of parsing id field in the Manifest.</summary>
-</histogram>
-
-<histogram name="Manifest.ParseSuccess" enum="Boolean"
-    expires_after="2020-06-07">
-  <owner>mgiuca@chromium.org</owner>
-  <summary>
-    Tracks the Manifest parsing result. A failure will be recorded if the
-    Manifest was incorrectly structured. This doesn't take into account parse
-    failures for each individual properties.
-  </summary>
 </histogram>
 
 <histogram name="Mist.SwitchResult" enum="MistSwitchResult" expires_after="M77">

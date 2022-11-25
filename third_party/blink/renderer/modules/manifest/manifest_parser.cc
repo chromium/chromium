@@ -146,7 +146,6 @@ bool ManifestParser::Parse() {
   manifest_ = mojom::blink::Manifest::New();
   if (!root) {
     AddErrorInfo(error.message, true, error.line, error.column);
-    ManifestUmaUtil::ParseFailed();
     failed_ = true;
     return false;
   }
@@ -154,7 +153,6 @@ bool ManifestParser::Parse() {
   std::unique_ptr<JSONObject> root_object = JSONObject::From(std::move(root));
   if (!root_object) {
     AddErrorInfo("root element must be a valid JSON object.", true);
-    ManifestUmaUtil::ParseFailed();
     failed_ = true;
     return false;
   }

@@ -11,29 +11,12 @@ namespace blink {
 
 namespace {
 
-static const char kUMANameParseSuccess[] = "Manifest.ParseSuccess";
-static const char kUMANameFetchResult[] = "Manifest.FetchResult";
 static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
-
-// Enum for UMA purposes, make sure you update histograms.xml if you add new
-// result types. Never delete or reorder an entry; only add new entries
-// immediately before MANIFEST_FETCH_RESULT_TYPE_COUNT.
-enum ManifestFetchResultType {
-  MANIFEST_FETCH_SUCCESS = 0,
-  MANIFEST_FETCH_ERROR_EMPTY_URL = 1,
-  MANIFEST_FETCH_ERROR_UNSPECIFIED = 2,
-  MANIFEST_FETCH_ERROR_FROM_OPAQUE_ORIGIN = 3,
-
-  // Must stay at the end.
-  MANIFEST_FETCH_RESULT_TYPE_COUNT
-};
 
 }  // anonymous namespace
 
 void ManifestUmaUtil::ParseSucceeded(
     const mojom::blink::ManifestPtr& manifest) {
-  UMA_HISTOGRAM_BOOLEAN(kUMANameParseSuccess, true);
-
   auto empty_manifest = mojom::blink::Manifest::New();
   if (manifest == empty_manifest)
     return;
@@ -63,36 +46,8 @@ void ManifestUmaUtil::ParseSucceeded(
                         !manifest->gcm_sender_id.empty());
 }
 
-void ManifestUmaUtil::ParseFailed() {
-  UMA_HISTOGRAM_BOOLEAN(kUMANameParseSuccess, false);
-}
-
 void ManifestUmaUtil::ParseIdResult(ParseIdResultType result) {
   base::UmaHistogramEnumeration(kUMAIdParseResult, result);
-}
-
-void ManifestUmaUtil::FetchSucceeded() {
-  UMA_HISTOGRAM_ENUMERATION(kUMANameFetchResult, MANIFEST_FETCH_SUCCESS,
-                            MANIFEST_FETCH_RESULT_TYPE_COUNT);
-}
-
-void ManifestUmaUtil::FetchFailed(FetchFailureReason reason) {
-  ManifestFetchResultType fetch_result_type = MANIFEST_FETCH_RESULT_TYPE_COUNT;
-  switch (reason) {
-    case FETCH_EMPTY_URL:
-      fetch_result_type = MANIFEST_FETCH_ERROR_EMPTY_URL;
-      break;
-    case FETCH_FROM_OPAQUE_ORIGIN:
-      fetch_result_type = MANIFEST_FETCH_ERROR_FROM_OPAQUE_ORIGIN;
-      break;
-    case FETCH_UNSPECIFIED_REASON:
-      fetch_result_type = MANIFEST_FETCH_ERROR_UNSPECIFIED;
-      break;
-  }
-  DCHECK_NE(fetch_result_type, MANIFEST_FETCH_RESULT_TYPE_COUNT);
-
-  UMA_HISTOGRAM_ENUMERATION(kUMANameFetchResult, fetch_result_type,
-                            MANIFEST_FETCH_RESULT_TYPE_COUNT);
 }
 
 }  // namespace blink

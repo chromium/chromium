@@ -11,12 +11,6 @@ namespace blink {
 
 class ManifestUmaUtil {
  public:
-  enum FetchFailureReason {
-    FETCH_EMPTY_URL = 0,
-    FETCH_FROM_OPAQUE_ORIGIN,
-    FETCH_UNSPECIFIED_REASON
-  };
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class ParseIdResultType {
@@ -31,16 +25,6 @@ class ManifestUmaUtil {
   // Manifest, it will recorded as so and nothing will happen. Otherwise, the
   // presence of each properties will be recorded.
   static void ParseSucceeded(const mojom::blink::ManifestPtr& manifest);
-
-  // Record that the Manifest parsing failed.
-  static void ParseFailed();
-
-  // Record that the Manifest fetching succeeded.
-  static void FetchSucceeded();
-
-  // Record that the Manifest fetching failed and takes the |reason| why it
-  // failed.
-  static void FetchFailed(FetchFailureReason reason);
 
   // Record the result of parsing manifest id.
   static void ParseIdResult(ParseIdResultType result);
