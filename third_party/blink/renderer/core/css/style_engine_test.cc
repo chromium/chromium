@@ -6130,4 +6130,42 @@ TEST_F(StyleEngineTest, BorderWidthsAreRecalculatedWhenZoomChanges) {
   checkBorderWidth(1.0f);
 }
 
+TEST_F(StyleEngineTest, SubsequentSiblingRecalcFlatTree) {
+  GetDocument()
+      .documentElement()
+      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="host">
+      <template shadowroot=open>
+        <slot name=a></slot>
+      </template>
+      <div slot=a id=target></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div slot=a></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div slot=a></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+
+  target->SetInlineStyleProperty(CSSPropertyID::kScrollTimelineName, "foo");
+  UpdateAllLifecyclePhasesForTest();
+
+  unsigned after_count = GetStyleEngine().StyleForElementCount();
+
+  // Only the slotted elements should get style recalc.
+  EXPECT_EQ(3u, after_count - before_count);
+}
+
 }  // namespace blink

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -1394,9 +1395,11 @@ void ContainerNode::RecalcSubsequentSiblingStyles(
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!NeedsStyleRecalc());
 
-  // TODO(crbug.com/1356098): Use flat-tree siblings.
-  for (Node* sibling = nextSibling(); sibling;
-       sibling = sibling->nextSibling()) {
+  // We use LayoutTreeBuilderTraversal to skip siblings which are not in the
+  // flat tree, because they don't have a ComputedStyle (and are therefore not
+  // affected by any change on this node).
+  for (Node* sibling = LayoutTreeBuilderTraversal::NextSibling(*this); sibling;
+       sibling = LayoutTreeBuilderTraversal::NextSibling(*sibling)) {
     if (auto* sibling_element = DynamicTo<Element>(sibling)) {
       sibling_element->RecalcStyle(change, style_recalc_context);
     }

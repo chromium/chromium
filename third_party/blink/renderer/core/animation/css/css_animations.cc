@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -617,9 +618,11 @@ ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
   if (ScrollTimeline* timeline = FindTimelineForNode(name, node, update))
     return timeline;
 
-  // TODO(crbug.com/1356098): Use flat-tree siblings.
-  for (Node* prev = node->previousSibling(); prev;
-       prev = prev->previousSibling()) {
+  // We use LayoutTreeBuilderTraversal to skip siblings which are not in the
+  // flat tree, because they don't have a ComputedStyle (and therefore can't
+  // provide any timelines).
+  for (Node* prev = LayoutTreeBuilderTraversal::PreviousSibling(*node); prev;
+       prev = LayoutTreeBuilderTraversal::PreviousSibling(*prev)) {
     if (ScrollTimeline* timeline =
             FindTimelineForNode(name, prev, GetPendingAnimationUpdate(*prev))) {
       return timeline;

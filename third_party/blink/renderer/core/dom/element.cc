@@ -3136,6 +3136,9 @@ StyleRecalcChange Element::RecalcStyle(
   DCHECK(!GetDocument().Lifecycle().InDetach());
   DCHECK(!GetForceReattachLayoutTree() || GetComputedStyle())
       << "No need to force a layout tree reattach if we had no computed style";
+  DCHECK(LayoutTreeBuilderTraversal::ParentElement(*this) ||
+         this == GetDocument().documentElement())
+      << "No recalc for Elements outside flat tree";
 
   DisplayLockStyleScope display_lock_style_scope(this);
   if (HasCustomStyleCallbacks())
