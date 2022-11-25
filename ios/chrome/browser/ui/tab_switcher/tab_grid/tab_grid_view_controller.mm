@@ -1499,14 +1499,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                            constant:-kPinnedViewHorizontalPadding],
       ]];
   switch (GetPinnedTabsPosition()) {
-    case PinnedTabsTopPosition::kBottomPosition:
+    case PinnedTabsPosition::kBottomPosition:
       [pinnedTabsConstraints
           addObject:[pinnedTabsViewController.view.bottomAnchor
                         constraintEqualToAnchor:self.bottomToolbar.topAnchor
                                        constant:-kPinnedViewBottomPadding]];
       break;
 
-    case PinnedTabsTopPosition::kTopPosition:
+    case PinnedTabsPosition::kTopPosition:
       [pinnedTabsConstraints
           addObject:[pinnedTabsViewController.view.topAnchor
                         constraintEqualToAnchor:self.topToolbar.bottomAnchor

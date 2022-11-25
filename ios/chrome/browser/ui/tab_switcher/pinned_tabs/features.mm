@@ -23,11 +23,11 @@ bool IsPinnedTabsEnabled() {
   return base::FeatureList::IsEnabled(kEnablePinnedTabs);
 }
 
-PinnedTabsTopPosition GetPinnedTabsPosition() {
+PinnedTabsPosition GetPinnedTabsPosition() {
   DCHECK(IsPinnedTabsEnabled());
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kEnablePinnedTabs, kEnablePinnedTabsParameterName);
   if (featureParam == kEnablePinnedTabsTopParam)
-    return PinnedTabsTopPosition::kTopPosition;
-  return PinnedTabsTopPosition::kBottomPosition;
+    return PinnedTabsPosition::kTopPosition;
+  return PinnedTabsPosition::kBottomPosition;
 }

@@ -17,7 +17,7 @@ extern const char kEnablePinnedTabsBottomParam[];
 extern const char kEnablePinnedTabsTopParam[];
 
 // Positions of the Pinned tabs.
-enum PinnedTabsTopPosition {
+enum PinnedTabsPosition {
   kBottomPosition = 0,
   kTopPosition,
 };
@@ -26,6 +26,6 @@ enum PinnedTabsTopPosition {
 bool IsPinnedTabsEnabled();
 
 // Convenience method for determining the position of Pinned Tabs.
-PinnedTabsTopPosition GetPinnedTabsPosition();
+PinnedTabsPosition GetPinnedTabsPosition();
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_FEATURES_H_
