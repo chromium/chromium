@@ -226582,6 +226582,32 @@
         {}
        ]
       ],
+      "range-input-vertical-ltr-painting.html": [
+       "03e02b10a3f475502bac428a4cf15bf74cd5b66f",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/range-input-painting-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "range-input-vertical-rtl-painting.html": [
+       "8c7d234db5c913eab3ea14649d81a1714f3b1028",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/range-input-painting-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "select-multiple-appearance-native-horizontal.optional.html": [
        "57b84109a823a0e1781f56a5241c5b1394309820",
        [
@@ -254722,6 +254748,19 @@
         [
          [
           "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "nested-svg-through-display-contents.svg": [
+       "f5440303502c7b268480a949f0433e078ca80b1a",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/nested-svg-through-display-contents-ref.svg",
           "=="
          ]
         ],
@@ -317763,6 +317802,10 @@
         ]
        }
       },
+      "range-input-painting-ref.html": [
+       "650a8139ca6cc13403957c2b68e8ef954cd80058",
+       []
+      ],
       "select-multiple-scrolling.optional-expected.txt": [
        "464cdd671865d23e588523f9b2e8e4195b965eb6",
        []
@@ -372402,6 +372445,10 @@
        ],
        "green-100x100.svg": [
         "120941444a4898197d6b6001f9908a6cd48b62ba",
+        []
+       ],
+       "nested-svg-through-display-contents-ref.svg": [
+        "622978f37881a4d40440595962b84bdb4c00dd91",
         []
        ]
       },
