@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Function;
 import org.chromium.base.TraceEvent;
@@ -93,7 +94,6 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -167,6 +167,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
 
     private int mStatusIndicatorHeight;
+
+    /**
+     * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
+     * {@link StartSurface} is available.
+     */
+    private CallbackController mTabSwitcherCustomViewManagerCallbackController;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -386,6 +392,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCommerceSubscriptionsService = null;
         }
 
+        if (mTabSwitcherCustomViewManagerCallbackController != null) {
+            mTabSwitcherCustomViewManagerCallbackController.destroy();
+        }
+
         super.onDestroy();
     }
 
@@ -529,33 +539,29 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /**
      * Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity.
-     *
-     * Note that, it requires a valid instance of start surface to work properly if
-     * {@link ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled} returns false. Start surface is
-     * only constructed if grid tab switcher is enabled.
-     * See {@link ChromeTabbedActivity#setupCompositorContentPreNativeForPhone} and
-     * {@link ChromeTabbedActivity#setupCompositorContentPreNativeForTablet} for more detail.
-     *
-     * TODO(crbug.com/1355870): Validate the Chrome behaviour when grid tab switcher is not enabled.
      */
     @Override
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
-        // TODO(crbug.com/1315676): When the refactor is enabled by default, use
-        // |tabSwitcherCustomView| directly instead of the supplier.
-        OneshotSupplier<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
+        OneshotSupplierImpl<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
                 new OneshotSupplierImpl<>();
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mActivity)) {
-            ((OneshotSupplierImpl) tabSwitcherCustomViewSupplier)
-                    .set(mTabSwitcherSupplier.get().getTabSwitcherCustomViewManager());
-        } else {
-            if (mStartSurfaceSupplier.hasValue()) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(mActivity)
-                        || TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mActivity)
-                    : "Grid tab switcher should be enabled.";
-                tabSwitcherCustomViewSupplier =
-                        mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier();
-            }
-        }
+        mTabSwitcherCustomViewManagerCallbackController = new CallbackController();
+        mStartSurfaceSupplier.onAvailable(
+                mTabSwitcherCustomViewManagerCallbackController.makeCancelable((startSurface) -> {
+                    startSurface.getTabSwitcherCustomViewManagerSupplier().onAvailable(
+                            (tabSwitcherCustomViewManager) -> {
+                                if (!tabSwitcherCustomViewSupplier.hasValue()) {
+                                    tabSwitcherCustomViewSupplier.set(tabSwitcherCustomViewManager);
+                                }
+                            });
+                }));
+
+        mTabSwitcherSupplier.onAvailable(
+                mTabSwitcherCustomViewManagerCallbackController.makeCancelable((tabSwitcher) -> {
+                    if (!tabSwitcherCustomViewSupplier.hasValue()) {
+                        tabSwitcherCustomViewSupplier.set(
+                                tabSwitcher.getTabSwitcherCustomViewManager());
+                    }
+                }));
 
         // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
         // IncognitoReauthTopToolbarDelegate and pass TopToolbarInteractabilityManager.
