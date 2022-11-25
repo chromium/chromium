@@ -450,22 +450,21 @@ TEST_F(ToolbarMediatorTest, MenuElements) {
   UIMenu* tab_grid_menu =
       [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeTabGrid];
 
-  ASSERT_EQ(2U, tab_grid_menu.children.count);
+  ASSERT_EQ(3U, tab_grid_menu.children.count);
 
-  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIMenu class]]);
-  UIMenu* open_tab_menu = (UIMenu*)tab_grid_menu.children[0];
-  ASSERT_EQ(2U, open_tab_menu.children.count);
-  for (UIMenuElement* element in open_tab_menu.children) {
-    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
-    UIAction* action = (UIAction*)element;
-    EXPECT_EQ(0U, action.attributes);
-  }
-
-  ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
-  UIAction* close_tab = (UIAction*)tab_grid_menu.children[1];
+  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[0];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
               close_tab.title);
   EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
+
+  ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
+  UIAction* action = (UIAction*)tab_grid_menu.children[1];
+  EXPECT_EQ(0U, action.attributes);
+
+  ASSERT_TRUE([tab_grid_menu.children[2] isKindOfClass:[UIAction class]]);
+  action = (UIAction*)tab_grid_menu.children[2];
+  EXPECT_EQ(0U, action.attributes);
 }
 
 // Tests the back/forward items for the menu.
