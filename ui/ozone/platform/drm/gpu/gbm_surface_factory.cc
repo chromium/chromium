@@ -220,8 +220,9 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
     ScopedGbmDevice device(gbm_create_device(dev_path_file.GetPlatformFile()));
     if (!device) {
       LOG(ERROR) << "Couldn't create Gbm Device at " << dev_path.MaybeAsASCII();
-      return supported_buffer_formats;
+      continue;
     }
+    VLOG(1) << "Found Gbm Device at " << dev_path.MaybeAsASCII();
 
     for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
       const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
