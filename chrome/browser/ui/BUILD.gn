@@ -2552,8 +2552,6 @@ static_library("ui") {
       "views/frame/browser_frame_ash.h",
       "views/frame/custom_tab_browser_frame.cc",
       "views/frame/custom_tab_browser_frame.h",
-      "views/frame/immersive_mode_controller_chromeos.cc",
-      "views/frame/immersive_mode_controller_chromeos.h",
       "views/frame/native_browser_frame_factory_chromeos.cc",
       "views/plugin_vm/plugin_vm_installer_view.cc",
       "views/plugin_vm/plugin_vm_installer_view.h",
@@ -3093,8 +3091,6 @@ static_library("ui") {
       "webui/signin/ash/signin_helper.h",
       "webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc",
       "webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h",
-      "window_sizer/window_sizer_chromeos.cc",
-      "window_sizer/window_sizer_chromeos.h",
     ]
 
     deps += [
@@ -3372,6 +3368,8 @@ static_library("ui") {
       "views/frame/browser_non_client_frame_view_chromeos.cc",
       "views/frame/browser_non_client_frame_view_chromeos.h",
       "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
+      "views/frame/immersive_mode_controller_chromeos.cc",
+      "views/frame/immersive_mode_controller_chromeos.h",
       "views/frame/tab_search_frame_caption_button.cc",
       "views/frame/tab_search_frame_caption_button.h",
       "views/frame/top_controls_slide_controller_chromeos.cc",
@@ -3388,6 +3386,8 @@ static_library("ui") {
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
       "webui/version/version_handler_chromeos.cc",
       "webui/version/version_handler_chromeos.h",
+      "window_sizer/window_sizer_chromeos.cc",
+      "window_sizer/window_sizer_chromeos.h",
     ]
     deps += [
       "//chrome/app:generated_resources",
@@ -3410,14 +3410,10 @@ static_library("ui") {
       "views/frame/browser_frame_lacros.h",
       "views/frame/desktop_browser_frame_lacros.cc",
       "views/frame/desktop_browser_frame_lacros.h",
-      "views/frame/immersive_mode_controller_chromeos.cc",
-      "views/frame/immersive_mode_controller_chromeos.h",
       "views/profiles/first_run_flow_controller_lacros.cc",
       "views/profiles/first_run_flow_controller_lacros.h",
       "webui/signin/profile_picker_lacros_sign_in_provider.cc",
       "webui/signin/profile_picker_lacros_sign_in_provider.h",
-      "window_sizer/window_sizer_chromeos.cc",
-      "window_sizer/window_sizer_chromeos.h",
     ]
     deps += [
       "//chrome/browser/policy:onc",
