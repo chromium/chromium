@@ -943,7 +943,7 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                                      apps::IconType icon_type,
                                      int32_t size_hint_in_dip,
                                      apps::IconEffects icon_effects,
-                                     LoadIconCallback callback) {
+                                     apps::LoadIconCallback callback) {
   DCHECK(provider_);
   if (IsShuttingDown()) {
     return;
@@ -952,6 +952,25 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
   LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
                      icon_effects, std::move(callback));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void WebAppPublisherHelper::GetCompressedIconData(
+    const std::string& app_id,
+    apps::IconEffects icon_effects,
+    apps::IconType icon_type,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  DCHECK(provider_);
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  apps::GetWebAppCompressedIconData(profile_, app_id, icon_effects, icon_type,
+                                    size_in_dip, scale_factor,
+                                    std::move(callback));
+}
+#endif
 
 void WebAppPublisherHelper::Launch(
     const std::string& app_id,

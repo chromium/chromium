@@ -45,6 +45,17 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void AppPublisher::GetCompressedIconData(const std::string& app_id,
+                                         IconEffects icon_effects,
+                                         apps::IconType icon_type,
+                                         int32_t size_in_dip,
+                                         ui::ResourceScaleFactor scale_factor,
+                                         LoadIconCallback callback) {
+  std::move(callback).Run(std::make_unique<IconValue>());
+}
+#endif
+
 void AppPublisher::LaunchAppWithFiles(const std::string& app_id,
                                       int32_t event_flags,
                                       LaunchSource launch_source,

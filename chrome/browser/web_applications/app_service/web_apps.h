@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "url/gurl.h"
 
 static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
@@ -94,6 +96,14 @@ class WebApps : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void GetCompressedIconData(const std::string& app_id,
+                             apps::IconEffects icon_effects,
+                             apps::IconType icon_type,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             apps::LoadIconCallback callback) override;
+#endif
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::LaunchSource launch_source,

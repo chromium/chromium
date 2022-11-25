@@ -45,6 +45,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -213,7 +214,16 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 apps::IconEffects icon_effects,
-                LoadIconCallback callback);
+                apps::LoadIconCallback callback);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void GetCompressedIconData(const std::string& app_id,
+                             apps::IconEffects icon_effects,
+                             apps::IconType icon_type,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             apps::LoadIconCallback callback);
+#endif
 
   void Launch(const std::string& app_id,
               int32_t event_flags,

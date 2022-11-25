@@ -100,6 +100,19 @@ void WebApps::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void WebApps::GetCompressedIconData(const std::string& app_id,
+                                    IconEffects icon_effects,
+                                    apps::IconType icon_type,
+                                    int32_t size_in_dip,
+                                    ui::ResourceScaleFactor scale_factor,
+                                    apps::LoadIconCallback callback) {
+  publisher_helper().GetCompressedIconData(app_id, icon_effects, icon_type,
+                                           size_in_dip, scale_factor,
+                                           std::move(callback));
+}
+#endif
+
 void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::LaunchSource launch_source,
