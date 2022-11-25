@@ -38,13 +38,16 @@
 
 class GURL;
 class PrefRegistrySimple;
-class PrefService;
 class Profile;
 class PushMessagingAppIdentifier;
 class PushMessagingServiceTest;
 class FCMRevocationTest;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
+
+#if BUILDFLAG(IS_ANDROID)
+class PrefService;
+#endif
 
 namespace blink {
 namespace mojom {
@@ -66,6 +69,14 @@ class InstanceIDDriver;
 }  // namespace instance_id
 
 namespace {
+
+enum class FcmTokenRevocation {
+  kResetGracePeriod = 0,
+  kRevokePermission = 1,
+  kGracePeriodIsNotOver = 2,
+  kMaxValue = kGracePeriodIsNotOver,
+};
+
 struct PendingMessage {
   PendingMessage(std::string app_id, gcm::IncomingMessage message);
   PendingMessage(const PendingMessage& other);
@@ -106,6 +117,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 #if BUILDFLAG(IS_ANDROID)
   // Registers Local State prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  static void RevokePermissionIfPossible(GURL origin,
+                                         bool app_level_notifications_enabled,
+                                         PrefService* prefs,
+                                         Profile* profile);
 #endif
 
   // gcm::GCMAppHandler implementation.
@@ -195,12 +211,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::RepeatingClosure callback);
   void SetRemoveExpiredSubscriptionsCallbackForTesting(
       base::OnceClosure closure);
-  void set_enabled_app_level_notification_permission_for_testing(bool enabled) {
-    enabled_app_level_notification_permission_for_testing_ = enabled;
-  }
-  void set_prefs_for_testing(PrefService* prefs_for_testing) {
-    prefs_for_testing_ = prefs_for_testing;
-  }
 
  private:
   friend class PushMessagingBrowserTestBase;
@@ -252,17 +262,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   void CheckOriginAndDispatchNextMessage();
 
-#if BUILDFLAG(IS_ANDROID)
-  //  Verifies if Chrome has Android app-level Notifications permission. If
-  //  app-level permission is missing, `message` will be ignored, and site-level
-  //  Notifications permission and FCM will be revoked.
-  //
-  //  Returns true if `message` should be ignored, returns false otherwise.
-  bool CheckAndRevokeNotificationPermissionIfNeeded(
-      const std::string& app_id,
-      const gcm::IncomingMessage& message,
-      const PushMessagingAppIdentifier& app_identifier);
-#endif
   // Subscribe methods ---------------------------------------------------------
 
   void DoSubscribe(PushMessagingAppIdentifier app_identifier,
@@ -498,9 +497,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   bool shutdown_started_ = false;
 
   int render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
-
-  absl::optional<bool> enabled_app_level_notification_permission_for_testing_;
-  absl::optional<PrefService*> prefs_for_testing_;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };

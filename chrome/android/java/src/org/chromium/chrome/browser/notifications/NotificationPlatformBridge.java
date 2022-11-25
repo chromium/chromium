@@ -23,6 +23,7 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.Callback;
@@ -576,6 +577,16 @@ public class NotificationPlatformBridge {
             NotificationSuspender.maybeSuspendNotification(notification).then(suspendedCallback);
         } else {
             suspendedCallback.onResult(false /* suspended */);
+        }
+
+        // If Chrome has no app-level notifications permission, check if an origin-level permission
+        // should be revoked.
+        // Notifications permission is not allowed for incognito profile.
+        if (!origin.isEmpty() && !incognito) {
+            NotificationManagerCompat manager =
+                    NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+            PushMessagingServiceBridge.getInstance().verify(
+                    origin, profileId, manager.areNotificationsEnabled());
         }
     }
 
