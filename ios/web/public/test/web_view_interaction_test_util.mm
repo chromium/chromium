@@ -197,19 +197,16 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
       "    };"
       "})();";
 
-  __block std::unique_ptr<base::DictionaryValue> rect;
+  __block std::unique_ptr<base::Value::Dict> rect;
 
   bool found = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     std::unique_ptr<base::Value> value =
         ExecuteJavaScript(web_state, kGetBoundsScript);
-    base::DictionaryValue* dictionary = nullptr;
-    if (value && value->GetAsDictionary(&dictionary)) {
-      std::string error;
-      if (dictionary->GetString("error", &error)) {
+    if (base::Value::Dict* dictionary = value->GetIfDict()) {
+      if (const std::string* error = dictionary->FindString("error")) {
         DLOG(ERROR) << "Error getting rect: " << error << ", retrying..";
       } else {
-        rect = base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(dictionary->Clone()));
+        rect = std::make_unique<base::Value::Dict>(dictionary->Clone());
         return true;
       }
     }
@@ -219,10 +216,10 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
   if (!found)
     return CGRectNull;
 
-  absl::optional<double> left = rect->FindDoubleKey("left");
-  absl::optional<double> top = rect->FindDoubleKey("top");
-  absl::optional<double> width = rect->FindDoubleKey("width");
-  absl::optional<double> height = rect->FindDoubleKey("height");
+  absl::optional<double> left = rect->FindDouble("left");
+  absl::optional<double> top = rect->FindDouble("top");
+  absl::optional<double> width = rect->FindDouble("width");
+  absl::optional<double> height = rect->FindDouble("height");
   if (!(left && top && width && height))
     return CGRectNull;
 
