@@ -3,6 +3,9 @@
 # Objective
 Provide the instructions on the OEM name customization on ChromeOS devices.
 
+For an overview of the Telemetry Extension platform, please visit our
+[main documentation](README.md).
+
 [TOC]
 
 # Overview

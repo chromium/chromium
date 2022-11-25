@@ -242,6 +242,14 @@ able to set the root CA. Just select the `Authorities` tab and click `Import`.
 Select the generated `CA.pem` file and click open. Now your Chrome instance
 and testing environment trust each other.
 
+# Further reads
+
+For information around configuration of certain cros-config values please visit:
+
+1. [Customization Guide - OEM Name](add_oem_name.md)
+
+2. [Customization Guide - Fingerprint Diagnostics](fingerprint_diag.md)
+
 # FAQs
 
 Q: I found a bug, how do I report it?<br>
@@ -251,4 +259,4 @@ and logs (if possible) on our
 You need a partner account to do that.
 
 Q: Have a question?<br>
-A: Please reach out to cros-oem-services-team@google.com.
+A: Please reach out to chromeos-oem-services@google.com.
