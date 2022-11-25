@@ -132,7 +132,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     // The renderer has marked this prefetch as restricted, meaning it is a
     // cross-origin prefetch intended for top-leve navigation reuse. We must
     // verify that the request meets the necessary security requirements, and
-    // populate |resource_request|'s NetworkAnonymizationKey appropriately.
+    // populate `resource_request`'s IsolationInfo appropriately.
     EnsureCrossOriginFactory();
     DCHECK(current_context.cross_origin_factory);
 
@@ -149,7 +149,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     resource_request.site_for_cookies = net::SiteForCookies();
 
     // Use the trusted cross-origin prefetch loader factory, and set the
-    // request's NetworkAnonymizationKey suitable for the cross-origin prefetch.
+    // request's IsolationInfo suitable for the cross-origin prefetch.
     network_loader_factory_to_use = current_context.cross_origin_factory;
     url::Origin destination_origin = url::Origin::Create(resource_request.url);
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();

@@ -386,14 +386,15 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // request's NetworkAnonymizationKey is not present. This is because the
-  // restricted prefetch flag is only used when the browser sets the request's
-  // NetworkAnonymizationKey to correctly cache-partition the resource.
-  bool request_network_isolation_key_present =
+  // Reject request if the restricted prefetch load flag is set but the
+  // request's IsolationInfo is not present. This is because the restricted
+  // prefetch flag is only used when the browser sets the request's
+  // IsolationInfo to correctly cache-partition the resource.
+  bool request_network_isolation_info_present =
       request.trusted_params &&
       !request.trusted_params->isolation_info.IsEmpty();
   if (request.load_flags & net::LOAD_RESTRICTED_PREFETCH &&
-      !request_network_isolation_key_present) {
+      !request_network_isolation_info_present) {
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: Request with LOAD_RESTRICTED_PREFETCH flag is "
         "not trusted");
