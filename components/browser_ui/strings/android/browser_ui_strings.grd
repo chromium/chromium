@@ -568,9 +568,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
         This deletes cookies and other site data for <ph name="WEBSITE">%1$s<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_FPS_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
-        This deletes cookies and other site data for <ph name="FPS_MEMBER">%1$s<ex>freep.com</ex></ph> and for sites in <ph name="FPS_OWNER">%2$s<ex>gannett.com</ex></ph>’s group of sites
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION_BUTTON" desc="Button in the confirmation dialog when the user clicked 'Delete cookies'.">
         Delete
       </message>

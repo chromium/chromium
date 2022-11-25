@@ -120,12 +120,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
-                        .setMessage(mFPSInfo != null
-                                        ? getContext().getString(
-                                                R.string.page_info_cookies_clear_fps_confirmation,
-                                                mHostName, mFPSInfo.getOwner())
-                                        : getString(R.string.page_info_cookies_clear_confirmation,
-                                                mHostName))
+                        .setMessage(
+                                getString(R.string.page_info_cookies_clear_confirmation, mHostName))
                         .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
                                 (dialog, which) -> mOnClearCallback.run())
                         .setNegativeButton(
