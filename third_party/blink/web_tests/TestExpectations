@@ -4279,6 +4279,7 @@ crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-na
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html [ Failure ]
+crbug.com/1393567 [ Mac ] external/wpt/screen-orientation/hidden_document.html [ Failure Pass ]
 crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html [ Failure ]
