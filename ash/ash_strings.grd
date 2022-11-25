@@ -4513,10 +4513,10 @@ Here are some things you can try to get started.
         Turn on camera access to allow apps and webpages with the camera permission to use the camera(s) connected to this device.
       </message>
       <message name="IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON" desc="Label for an action button that disables the camera.">
-        Turn off camera access.
+        Turn off camera access
       </message>
       <message name="IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON" desc="Label for an action button that enables the camera.">
-        Turn on camera access.
+        Turn on camera access
       </message>
 
       <!-- Strings for microphone mute switch notification -->
