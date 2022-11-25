@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/shadow_realm_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/use_counter_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -874,6 +875,9 @@ void V8Initializer::InitializeMainThread(
   // is enabled. For that reason, the partition can only be initialized after V8
   // has been initialized.
   WTF::Partitions::InitializeArrayBufferPartition();
+
+  isolate->SetHostCreateShadowRealmContextCallback(
+      OnCreateShadowRealmV8Context);
 }
 
 // Stack size for workers is limited to 500KB because default stack size for

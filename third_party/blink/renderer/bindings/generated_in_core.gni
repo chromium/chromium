@@ -1253,6 +1253,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_selection.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_selector_directive.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_selector_directive.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_realm_global_scope.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_realm_global_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_root.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_root.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shared_worker.cc",

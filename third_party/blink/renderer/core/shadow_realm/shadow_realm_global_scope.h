@@ -14,6 +14,8 @@ namespace blink {
 class CORE_EXPORT ShadowRealmGlobalScope final
     : public EventTargetWithInlineData,
       public ExecutionContext {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit ShadowRealmGlobalScope(
       ExecutionContext* initiator_execution_context);
