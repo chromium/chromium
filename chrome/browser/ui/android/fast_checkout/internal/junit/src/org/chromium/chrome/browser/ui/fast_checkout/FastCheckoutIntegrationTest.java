@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillPro
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -279,82 +278,6 @@ public class FastCheckoutIntegrationTest {
             mBottomSheetController.hideContent(otherBottomSheetContent, /* animate = */ false);
         });
         pollUiThread(() -> getBottomSheetState() == SheetState.HIDDEN);
-    }
-
-    @Test
-    @MediumTest
-    public void testWaiForOnboardingScreenAcceptedToShow() throws Exception {
-        BottomSheetContent onboardingBottomSheetContent = runOnUiThreadBlocking(() -> {
-            TextView highPriorityBottomSheetContentView =
-                    new TextView(mActivityTestRule.getActivity());
-            highPriorityBottomSheetContentView.setText("Autofill Assistant onboarding");
-            highPriorityBottomSheetContentView.setTag(
-                    AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
-            BottomSheetContent content = new BottomSheetContent() {
-                @Override
-                public View getContentView() {
-                    return highPriorityBottomSheetContentView;
-                }
-
-                @Nullable
-                @Override
-                public View getToolbarView() {
-                    return null;
-                }
-
-                @Override
-                public int getVerticalScrollOffset() {
-                    return 0;
-                }
-
-                @Override
-                public void destroy() {}
-
-                @Override
-                public int getPriority() {
-                    return ContentPriority.HIGH;
-                }
-
-                @Override
-                public boolean swipeToDismissEnabled() {
-                    return false;
-                }
-
-                @Override
-                public int getSheetContentDescriptionStringId() {
-                    return 0;
-                }
-
-                @Override
-                public int getSheetHalfHeightAccessibilityStringId() {
-                    return 0;
-                }
-
-                @Override
-                public int getSheetFullHeightAccessibilityStringId() {
-                    return 0;
-                }
-
-                @Override
-                public int getSheetClosedAccessibilityStringId() {
-                    return 0;
-                }
-            };
-            mBottomSheetController.requestShowContent(content, /* animate = */ false);
-            return content;
-        });
-        pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
-        onView(withText("Autofill Assistant onboarding")).check(matches(isDisplayed()));
-
-        runOnUiThreadBlocking(() -> { mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS); });
-
-        verify(mMockBridge, never()).onDismissed();
-        verify(mMockBridge, never()).onOptionsSelected(any(), any());
-
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.fast_checkout_home_sheet_title)))
-                .check(matches(isDisplayed()));
     }
 
     public static <T> T waitForEvent(T mock) {

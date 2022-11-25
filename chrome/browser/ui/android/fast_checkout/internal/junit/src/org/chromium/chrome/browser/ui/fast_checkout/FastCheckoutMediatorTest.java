@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfil
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
-import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -212,20 +210,6 @@ public class FastCheckoutMediatorTest {
 
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean());
         assertThat(mModel.get(VISIBLE), is(true));
-    }
-
-    @Test
-    public void testAssistantOnboardingGetsHiddenIfShowing() {
-        when(mMockParentView.getTag())
-                .thenReturn(
-                        AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
-        when(mMockBottomSheetContent.getContentView()).thenReturn(mMockParentView);
-        when(mMockBottomSheetController.getCurrentSheetContent())
-                .thenReturn(mMockBottomSheetContent);
-
-        mMediator.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
-
-        verify(mMockBottomSheetController).hideContent(any(), eq(true));
     }
 
     @Test

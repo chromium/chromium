@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
@@ -21,7 +19,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfil
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
-import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -42,7 +39,6 @@ public class FastCheckoutMediator {
     private PropertyModel mModel;
     private FastCheckoutComponent.Delegate mDelegate;
     private BottomSheetController mBottomSheetController;
-    private BottomSheetObserver mBottomSheetClosedObserver;
     private BottomSheetObserver mBottomSheetDismissedObserver;
     private @Px int mAddressItemHeight;
     private @Px int mCreditCardItemHeight;
@@ -55,16 +51,6 @@ public class FastCheckoutMediator {
         mBottomSheetController = bottomSheetController;
         mAddressItemHeight = addressItemHeight;
         mCreditCardItemHeight = creditCardItemHeight;
-
-        mBottomSheetClosedObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                if (newContent == null) {
-                    mModel.set(FastCheckoutProperties.VISIBLE, true);
-                    mBottomSheetController.removeObserver(mBottomSheetClosedObserver);
-                }
-            }
-        };
 
         mBottomSheetDismissedObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -120,17 +106,8 @@ public class FastCheckoutMediator {
         setAutofillProfileItems(profiles);
         setCreditCardItems(creditCards);
         setCurrentScreen(mModel.get(FastCheckoutProperties.CURRENT_SCREEN));
-
-        // It is possible that FC onboarding has been just accepted but the bottom sheet is still
-        // showing. If that's the case we try hiding it and then show FC bottom sheet.
-        if (isOnboardingSheet()) {
-            // Delay showing the bottom sheet until the consent sheet is fully closed.
-            mBottomSheetController.addObserver(mBottomSheetClosedObserver);
-            mBottomSheetController.hideContent(
-                    mBottomSheetController.getCurrentSheetContent(), /* animate= */ true);
-        } else {
-            mModel.set(FastCheckoutProperties.VISIBLE, true);
-        }
+        // Show the bottom sheet.
+        mModel.set(FastCheckoutProperties.VISIBLE, true);
     }
 
     /**
@@ -162,18 +139,6 @@ public class FastCheckoutMediator {
         FastCheckoutUserActions.DISMISSED.log();
         mModel.set(FastCheckoutProperties.VISIBLE, false);
         mDelegate.onDismissed();
-    }
-
-    private boolean isOnboardingSheet() {
-        if (mBottomSheetController == null
-                || mBottomSheetController.getCurrentSheetContent() == null) {
-            return false;
-        }
-
-        View view = mBottomSheetController.getCurrentSheetContent().getContentView();
-        return view.getTag() != null
-                && view.getTag().equals(
-                        AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
     }
 
     /**
