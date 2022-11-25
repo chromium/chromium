@@ -235,7 +235,7 @@
   {
     "name": "arc-keyboard-shortcut-helper-integration",
     "owners": [ "yhanada", "mduggan" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 114
   },
   {
     "name": "arc-native-bridge-toggle",
