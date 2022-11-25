@@ -416,15 +416,6 @@ group("gn_all") {
     }
   }
 
-  # NOTE: The following should really be 'is_android', but the fuzzing build
-  #       seems currently broken for this platform at the moment, and the
-  #       corresponding code build and works on Linux unmodified.
-  #       See instructions in the corresponding BUILD.gn.
-  if (is_linux || is_chromeos) {
-    deps +=
-        [ "//third_party/android_crazy_linker:android_crazy_linker_zip_fuzzer" ]
-  }
-
   if (is_linux || is_chromeos) {
     # This is only used by ChromeOS, but we want maximal fuzzer coverage, so
     # run it under linux too.

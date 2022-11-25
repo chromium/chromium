@@ -9,8 +9,6 @@ assert(is_android)
 
 shared_library("chromium_android_linker") {
   sources = [
-    "legacy_linker_jni.cc",
-    "legacy_linker_jni.h",
     "linker_jni.cc",
     "linker_jni.h",
     "linker_jni_onload.cc",
@@ -21,10 +19,7 @@ shared_library("chromium_android_linker") {
   # The NDK contains the crazy_linker here:
   #   '<(android_ndk_root)/crazy_linker.gyp:crazy_linker'
   # However, we use our own fork.  See bug 384700.
-  deps = [
-    "//build:buildflag_header_h",
-    "//third_party/android_crazy_linker",
-  ]
+  deps = [ "//build:buildflag_header_h" ]
 
   # Export JNI symbols.
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
@@ -51,5 +46,8 @@ shared_library("chromium_android_linker") {
   # format is always supported). It would be nice to also remove the GNU version
   # tables, for the same reason, but a linker flag to disable them doesn't seem
   # to exist. This saves 52 bytes on ARM.
-  ldflags = [ "-Wl,--hash-style=sysv" ]
+  ldflags = [
+    "-Wl,--hash-style=sysv",
+    "-llog",
+  ]
 }
