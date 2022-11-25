@@ -1598,8 +1598,6 @@ component("platform") {
       "mac/color_mac.mm",
       "mac/graphics_context_canvas.h",
       "mac/graphics_context_canvas.mm",
-      "mac/web_core_ns_cell_extras.h",
-      "mac/web_core_ns_cell_extras.mm",
       "text/locale_mac.h",
       "text/locale_mac.mm",
       "theme/web_theme_engine_mac.cc",
