@@ -1170,9 +1170,17 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
                          Values(wl::ServerConfig{}));
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandAuraShellScreenTest,
-                         Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    WaylandScreenTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTest,
+    WaylandAuraShellScreenTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          LazilyConfiguredScreenTest,

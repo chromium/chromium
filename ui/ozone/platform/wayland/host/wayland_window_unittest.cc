@@ -4305,9 +4305,18 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
-
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    WaylandWindowTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSubsurfaceTest,
                          Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    WaylandSubsurfaceTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

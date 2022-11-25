@@ -156,7 +156,7 @@ void WaylandOutputManager::OnOutputHandleMetrics(
   // received for their root surface) and |output_id| is the primary output.
   const bool is_primary =
       wayland_screen_ &&
-      metrics.output_id == wayland_screen_->GetPrimaryDisplay().id();
+      metrics.display_id == wayland_screen_->GetPrimaryDisplay().id();
   for (auto* window : connection_->wayland_window_manager()->GetAllWindows()) {
     auto entered_output = window->GetPreferredEnteredOutputId();
     if (entered_output == metrics.output_id || (!entered_output && is_primary))

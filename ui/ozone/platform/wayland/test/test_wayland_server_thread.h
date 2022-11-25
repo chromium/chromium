@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
@@ -51,6 +52,7 @@ struct DisplayDeleter {
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class CompositorVersion { kV3, kV4 };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
+enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 
 struct ServerConfig {
   CompositorVersion compositor_version = CompositorVersion::kV4;
@@ -58,6 +60,8 @@ struct ServerConfig {
       PrimarySelectionProtocol::kNone;
   ShouldUseExplicitSynchronizationProtocol use_explicit_synchronization =
       ShouldUseExplicitSynchronizationProtocol::kUse;
+  EnableAuraShellProtocol enable_aura_shell =
+      EnableAuraShellProtocol::kDisabled;
 };
 
 class TestWaylandServerThread;
@@ -134,6 +138,8 @@ class TestWaylandServerThread : public base::Thread,
 
   TestOutput* CreateAndInitializeOutput() {
     auto output = std::make_unique<TestOutput>();
+    if (output_.aura_shell_enabled())
+      output->set_aura_shell_enabled();
     output->Initialize(display());
 
     TestOutput* output_ptr = output.get();

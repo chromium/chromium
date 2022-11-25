@@ -134,6 +134,7 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!alpha_compositing_.Initialize(display_.get()))
     return false;
+
   if (!output_.Initialize(display_.get()))
     return false;
   SetupOutputs();
@@ -148,8 +149,12 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (!xdg_shell_.Initialize(display_.get()))
     return false;
-  if (!zaura_shell_.Initialize(display_.get()))
-    return false;
+
+  if (config.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
+    output_.set_aura_shell_enabled();
+    if (!zaura_shell_.Initialize(display_.get()))
+      return false;
+  }
 
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;

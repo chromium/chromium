@@ -159,7 +159,7 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
       }
     }
   }
-  auto it = display_list_.FindDisplayById(output_id);
+  auto it = display_list_.FindDisplayById(display_id);
   if (it != display_list_.displays().end())
     display_list_.RemoveDisplay(display_id);
 }

@@ -1395,4 +1395,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
 
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    WaylandWindowDragControllerTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+
 }  // namespace ui

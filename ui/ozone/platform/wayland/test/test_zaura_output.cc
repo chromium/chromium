@@ -7,11 +7,23 @@
 #include <aura-shell-server-protocol.h>
 
 namespace wl {
+namespace {
+int64_t display_id_counter = 10;
+}
 
 TestZAuraOutput::TestZAuraOutput(wl_resource* resource)
-    : ServerObject(resource) {}
+    : ServerObject(resource), display_id_(display_id_counter++) {
+  if (wl_resource_get_version(resource) >=
+      ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION) {
+    uint32_t display_id_hi = static_cast<uint32_t>(display_id_ >> 32);
+    uint32_t display_id_lo = static_cast<uint32_t>(display_id_);
+    zaura_output_send_display_id(resource, display_id_hi, display_id_lo);
+  }
+}
 
 TestZAuraOutput::~TestZAuraOutput() = default;
+
+void TestZAuraOutput::SendActivated() {}
 
 void TestZAuraOutput::Flush() {
   if (pending_insets_) {

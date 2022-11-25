@@ -28,6 +28,10 @@ class TestOutput : public GlobalObject {
 
   static TestOutput* FromResource(wl_resource* resource);
 
+  // Useful only when zaura_shell is supported.
+  void set_aura_shell_enabled() { aura_shell_enabled_ = true; }
+  bool aura_shell_enabled() { return aura_shell_enabled_; }
+
   const gfx::Rect GetRect() { return rect_; }
   void SetRect(const gfx::Rect& rect);
   int32_t GetScale() const { return scale_; }
@@ -43,6 +47,7 @@ class TestOutput : public GlobalObject {
   void OnBind() override;
 
  private:
+  bool aura_shell_enabled_ = false;
   gfx::Rect rect_;
   int32_t scale_;
   wl_output_transform transform_{WL_OUTPUT_TRANSFORM_NORMAL};

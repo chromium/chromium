@@ -23,6 +23,8 @@ class TestZAuraOutput : public ServerObject {
 
   ~TestZAuraOutput() override;
 
+  int64_t display_id() const { return display_id_; }
+
   const gfx::Insets& GetInsets() const { return insets_; }
   void SetInsets(const gfx::Insets& insets) { pending_insets_ = insets; }
 
@@ -31,9 +33,13 @@ class TestZAuraOutput : public ServerObject {
     pending_logical_transform_ = logical_transform;
   }
 
+  // Send display id, activated events, immediately.
+  void SendActivated();
+
   void Flush();
 
  private:
+  int64_t display_id_;
   gfx::Insets insets_;
   absl::optional<gfx::Insets> pending_insets_;
 

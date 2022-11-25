@@ -21,7 +21,8 @@ TEST(WaylandZAuraShellTest, BugFix) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
-  ASSERT_TRUE(server.Start({}));
+  ASSERT_TRUE(server.Start(
+      {.enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
   wl::MockZAuraShell* zaura_shell = server.zaura_shell();
 
   WaylandConnection connection;
