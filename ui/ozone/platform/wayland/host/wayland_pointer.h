@@ -127,8 +127,12 @@ class WaylandPointer::Delegate {
       EventType evtype,
       int changed_button,
       WaylandWindow* window,
-      wl::EventDispatchPolicy dispatch_policy,
-      bool allow_release_of_unpressed_button = false) = 0;
+      wl::EventDispatchPolicy dispatch_policy) = 0;
+  virtual void OnPointerButtonEvent(EventType evtype,
+                                    int changed_button,
+                                    WaylandWindow* window,
+                                    wl::EventDispatchPolicy dispatch_policy,
+                                    bool allow_release_of_unpressed_button) = 0;
   virtual void OnPointerMotionEvent(
       const gfx::PointF& location,
       wl::EventDispatchPolicy dispatch_policy) = 0;

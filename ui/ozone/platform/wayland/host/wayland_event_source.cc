@@ -287,6 +287,14 @@ void WaylandEventSource::OnPointerButtonEvent(
     EventType type,
     int changed_button,
     WaylandWindow* window,
+    wl::EventDispatchPolicy dispatch_policy) {
+  OnPointerButtonEvent(type, changed_button, window, dispatch_policy, false);
+}
+
+void WaylandEventSource::OnPointerButtonEvent(
+    EventType type,
+    int changed_button,
+    WaylandWindow* window,
     wl::EventDispatchPolicy dispatch_policy,
     bool allow_release_of_unpressed_button) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);

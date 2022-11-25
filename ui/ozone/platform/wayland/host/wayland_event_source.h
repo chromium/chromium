@@ -107,12 +107,15 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerFocusChanged(WaylandWindow* window,
                              const gfx::PointF& location,
                              wl::EventDispatchPolicy dispatch_policy) override;
-  void OnPointerButtonEvent(
-      EventType evtype,
-      int changed_button,
-      WaylandWindow* window,
-      wl::EventDispatchPolicy dispatch_policy,
-      bool allow_release_of_unpressed_button = false) override;
+  void OnPointerButtonEvent(EventType evtype,
+                            int changed_button,
+                            WaylandWindow* window,
+                            wl::EventDispatchPolicy dispatch_policy) override;
+  void OnPointerButtonEvent(EventType evtype,
+                            int changed_button,
+                            WaylandWindow* window,
+                            wl::EventDispatchPolicy dispatch_policy,
+                            bool allow_release_of_unpressed_button) override;
   void OnPointerMotionEvent(const gfx::PointF& location,
                             wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset) override;
