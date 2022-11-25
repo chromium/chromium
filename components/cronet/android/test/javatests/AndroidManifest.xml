@@ -36,7 +36,13 @@ found in the LICENSE file.
     <application android:name="org.chromium.net.CronetTestApplication"
                  android:label="Cronet Test"
                  android:networkSecurityConfig="@xml/network_security_config"
-                 android:requestLegacyExternalStorage="true" />
+                 android:requestLegacyExternalStorage="true">
+      <!-- Disables at startup init of Emoji2. See crbug.com/1393109. -->
+      <provider android:authorities="org.chromium.net.tests.androidx-startup"
+                android:name="androidx.startup.InitializationProvider"
+                android:exported="false"
+                tools:node="remove" />
+    </application>
     <!-- Does not use BaseChromiumAndroidJUnitRunner so that it's easy to run
          tests when dropped into non-chromium repositories. -->
     <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
