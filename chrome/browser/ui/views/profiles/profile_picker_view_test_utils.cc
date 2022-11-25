@@ -56,25 +56,25 @@ class TestProfileManagementFlowController
       Step step,
       ProfileManagementStepTestView::StepControllerFactory factory,
       base::OnceClosure initial_step_load_finished_closure)
-      : ProfileManagementFlowController(host,
-                                        std::move(clear_host_callback),
-                                        step),
+      : ProfileManagementFlowController(host, std::move(clear_host_callback)),
+        step_(step),
+        step_controller_factory_(std::move(factory)),
         initial_step_load_finished_closure_(
-            std::move(initial_step_load_finished_closure)) {
-    RegisterStep(initial_step(), factory.Run(host));
+            std::move(initial_step_load_finished_closure)) {}
+
+  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override {
+    RegisterStep(step_, step_controller_factory_.Run(host()));
+    SwitchToStep(
+        step_, /*reset_state=*/true,
+        /*step_switch_finished_callback=*/
+        base::BindOnce(
+            &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
+            weak_ptr_factory_.GetWeakPtr(),
+            std::move(step_switch_finished_callback)));
   }
 
-  void Init(base::OnceCallback<void(bool)>
-                initial_step_switch_finished_callback) override {
-    ProfileManagementFlowController::Init(base::BindOnce(
-        &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
-        weak_ptr_factory_.GetWeakPtr(),
-        std::move(initial_step_switch_finished_callback)));
-  }
-
-  void OnInitialStepSwitchFinished(
-      base::OnceCallback<void(bool)> original_callback,
-      bool success) {
+  void OnInitialStepSwitchFinished(StepSwitchFinishedCallback original_callback,
+                                   bool success) {
     if (original_callback) {
       std::move(original_callback).Run(success);
     }
@@ -93,6 +93,8 @@ class TestProfileManagementFlowController
     std::move(initial_step_load_finished_closure_).Run();
   }
 
+  Step step_;
+  ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;
   base::OnceClosure initial_step_load_finished_closure_;
   base::WeakPtrFactory<TestProfileManagementFlowController> weak_ptr_factory_{
       this};

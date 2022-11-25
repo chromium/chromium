@@ -21,9 +21,9 @@ class ProfilePickerWebContentsHost;
 // `ProfileManagementStepController`s and owned by this object.
 //
 // Typical usage starts with calling `Init()` on the instantiated flow, which
-// will switch to the `initial_step()`. Then as the user interacts with the
-// flow, this controller will handle instantiating and navigating between the
-// steps.
+// will register and switch to the first step. Then as the user interacts with
+// the flow, this controller will handle instantiating and navigating between
+// the next steps.
 class ProfileManagementFlowController {
  public:
   // TODO(https://crbug.com/1358843): Split the steps more granularly across
@@ -52,33 +52,30 @@ class ProfileManagementFlowController {
     kIntro,
   };
 
-  // Creates a flow controller that will advance to `initial_step` when it is
-  // `Init()`-ed.
+  // Creates a flow controller that will start showing UI when `Init()`-ed.
   // `clear_host_callback` will be called if `host` needs to be closed.
-  explicit ProfileManagementFlowController(ProfilePickerWebContentsHost* host,
-                                           ClearHostClosure clear_host_callback,
-                                           Step initial_step);
+  explicit ProfileManagementFlowController(
+      ProfilePickerWebContentsHost* host,
+      ClearHostClosure clear_host_callback);
   virtual ~ProfileManagementFlowController();
 
-  // Switches to the `initial_step()`.
-  // If `initial_step_switch_finished_callback` is provided, it will be called
-  // with `true` when the navigation to the initial step succeeded, or with
-  // `false` otherwise.
-  virtual void Init(
-      base::OnceCallback<void(bool)> initial_step_switch_finished_callback =
-          base::OnceCallback<void(bool success)>());
+  // Starts the flow by registering and switching to the first step.
+  // If `step_switch_finished_callback` is provided, it will be called with
+  // `true` when the navigation to the initial step succeeded, or with `false`
+  // otherwise.
+  virtual void Init(StepSwitchFinishedCallback step_switch_finished_callback =
+                        StepSwitchFinishedCallback()) = 0;
 
   // Instructs a step registered as `step` to be shown.
   // If `step_switch_finished_callback` is provided, it will be called
   // with `true` when the navigation to `step` succeeded, or with
   // `false` otherwise.
   // Also see `ProfileManagementStepController::Show()`.
-  void SwitchToStep(
-      Step step,
-      bool reset_state,
-      base::OnceClosure pop_step_callback = base::OnceClosure(),
-      base::OnceCallback<void(bool)> step_switch_finished_callback =
-          base::OnceCallback<void(bool success)>());
+  void SwitchToStep(Step step,
+                    bool reset_state,
+                    StepSwitchFinishedCallback step_switch_finished_callback =
+                        StepSwitchFinishedCallback(),
+                    base::OnceClosure pop_step_callback = base::OnceClosure());
 
   void OnNavigateBackRequested();
 
@@ -115,14 +112,10 @@ class ProfileManagementFlowController {
 
   Step current_step() const { return current_step_; }
 
-  Step initial_step() const { return initial_step_; }
-
   ProfilePickerWebContentsHost* host() { return host_; }
 
  private:
   Step current_step_ = Step::kUnknown;
-
-  Step initial_step_;
 
   raw_ptr<ProfilePickerWebContentsHost> host_;
   ClearHostClosure clear_host_callback_;

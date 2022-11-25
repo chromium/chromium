@@ -21,9 +21,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowController {
                               ProfilePicker::EntryPoint entry_point);
   ~ProfilePickerFlowController() override;
 
-  void SwitchToDiceSignIn(
-      absl::optional<SkColor> profile_color,
-      base::OnceCallback<void(bool)> switch_finished_callback);
+  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+
+  void SwitchToDiceSignIn(absl::optional<SkColor> profile_color,
+                          StepSwitchFinishedCallback switch_finished_callback);
 
   void SwitchToPostSignIn(Profile* signed_in_profile,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

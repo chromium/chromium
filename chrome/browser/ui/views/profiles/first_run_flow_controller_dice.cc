@@ -142,25 +142,28 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
     ClearHostClosure clear_host_callback,
     Profile* profile,
     ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
-    : ProfileManagementFlowController(host,
-                                      std::move(clear_host_callback),
-                                      Step::kIntro),
+    : ProfileManagementFlowController(host, std::move(clear_host_callback)),
       profile_(profile),
-      first_run_exited_callback_(std::move(first_run_exited_callback)) {
-  RegisterStep(
-      initial_step(),
-      CreateIntroStep(host,
-                      base::BindRepeating(
-                          &FirstRunFlowControllerDice::HandleIntroSigninChoice,
-                          weak_ptr_factory_.GetWeakPtr()),
-                      /*enable_animations=*/true));
-}
+      first_run_exited_callback_(std::move(first_run_exited_callback)) {}
 
 FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   if (first_run_exited_callback_) {
     std::move(first_run_exited_callback_)
         .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
   }
+}
+
+void FirstRunFlowControllerDice::Init(
+    StepSwitchFinishedCallback step_switch_finished_callback) {
+  RegisterStep(
+      Step::kIntro,
+      CreateIntroStep(host(),
+                      base::BindRepeating(
+                          &FirstRunFlowControllerDice::HandleIntroSigninChoice,
+                          weak_ptr_factory_.GetWeakPtr()),
+                      /*enable_animations=*/true));
+  SwitchToStep(Step::kIntro, /*reset_state=*/true,
+               std::move(step_switch_finished_callback));
 }
 
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
@@ -187,12 +190,13 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
       // Binding as Unretained as `this` outlives the step
       // controllers.
       base::Unretained(this), ProfileManagementFlowController::Step::kIntro,
-      /*reset_state=*/false, /*pop_step_callback=*/base::OnceClosure(),
-      /*step_switch_finished_callback=*/base::OnceCallback<void(bool)>());
+      /*reset_state=*/false,
+      /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
+      /*pop_step_callback=*/base::OnceClosure());
   SwitchToStep(ProfileManagementFlowController::Step::kAccountSelection,
                /*reset_state=*/true,
-               /*pop_step_callback=*/std::move(pop_closure),
                /*step_switch_finished_callback=*/
                base::IgnoreArgs<bool>(base::BindOnce(
-                   &NavigateBackInOneSecond, weak_ptr_factory_.GetWeakPtr())));
+                   &NavigateBackInOneSecond, weak_ptr_factory_.GetWeakPtr())),
+               /*pop_step_callback=*/std::move(pop_closure));
 }

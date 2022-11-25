@@ -17,27 +17,18 @@
 
 ProfileManagementFlowController::ProfileManagementFlowController(
     ProfilePickerWebContentsHost* host,
-    ClearHostClosure clear_host_callback,
-    Step initial_step)
-    : initial_step_(initial_step),
-      host_(host),
-      clear_host_callback_(std::move(clear_host_callback)) {}
+    ClearHostClosure clear_host_callback)
+    : host_(host), clear_host_callback_(std::move(clear_host_callback)) {
+  DCHECK(clear_host_callback_.value());
+}
 
 ProfileManagementFlowController::~ProfileManagementFlowController() = default;
-
-void ProfileManagementFlowController::Init(
-    base::OnceCallback<void(bool)> initial_step_switch_finished_callback) {
-  DCHECK(clear_host_callback_.value());
-  SwitchToStep(initial_step(), /*reset_state=*/true,
-               /*pop_step_callback=*/base::OnceClosure(),
-               std::move(initial_step_switch_finished_callback));
-}
 
 void ProfileManagementFlowController::SwitchToStep(
     Step step,
     bool reset_state,
-    base::OnceClosure pop_step_callback,
-    base::OnceCallback<void(bool)> step_switch_finished_callback) {
+    StepSwitchFinishedCallback step_switch_finished_callback,
+    base::OnceClosure pop_step_callback) {
   DCHECK_NE(Step::kUnknown, step);
   DCHECK_NE(current_step_, step);
 

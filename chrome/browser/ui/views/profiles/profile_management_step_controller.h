@@ -68,7 +68,7 @@ class ProfileManagementStepController {
   // `reset_state` indicates that the step should reset its internal state and
   // appear as freshly created. Callers should pass `true` for newly created
   // steps.
-  virtual void Show(base::OnceCallback<void(bool success)> step_shown_callback,
+  virtual void Show(StepSwitchFinishedCallback step_shown_callback,
                     bool reset_state = false) = 0;
 
   // Frees up unneeded resources. `Show()` will be called if it's needed again.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_LACROS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 
@@ -26,12 +27,18 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
 
   ~FirstRunFlowControllerLacros() override;
 
- protected:
   // ProfileManagementFlowController:
+  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+
+ protected:
   bool PreFinishWithBrowser() override;
 
  private:
   void MarkSyncConfirmationSeen();
+
+  // Pointer to the primary profile. Safe to keep, in particular we are going to
+  // register a profile keep alive through the step we create in `Init()`.
+  const raw_ptr<Profile> profile_;
 
   // Captures the operation that the user expected to run at the time we chose
   // to show them the FRE. When we exit the FRE, we MUST run this. We expect

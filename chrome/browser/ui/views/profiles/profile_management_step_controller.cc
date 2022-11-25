@@ -80,7 +80,7 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
   ~DiceSignInStepController() override = default;
 
-  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     DCHECK(step_shown_callback);
     DCHECK(signed_in_callback_) << "Attempting to show Dice step again while "
