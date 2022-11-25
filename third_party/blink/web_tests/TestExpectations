@@ -2231,6 +2231,8 @@ crbug.com/346473 fast/events/drag-on-mouse-move-cancelled.html [ Failure ]
 
 # This test relies on racy should_send_resource_timing_info_to_parent() flag being sent between processes.
 crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Failure Pass ]
+crbug.com/1378015 external/wpt/resource-timing/nested-context-navigations-object.html [ Failure Pass ]
+crbug.com/1380078 external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
 
 # During work on crbug.com/1171767, we discovered a bug demonstrable through
 # WPT. Marking as a failing test until we update our implementation.
@@ -6710,16 +6712,12 @@ crbug.com/1249176 [ Mac11-arm64 ] transforms/3d/general/cssmatrix-3d-zoom.html [
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-lossy-images-max-bpp.php [ Failure Pass Timeout ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/images/document-policy-lossy-images-max-bpp.php [ Failure Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/plaintext-mode-2.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/resource-timing/nested-context-navigations-object.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] external/wpt/resource-timing/nested-context-navigations-object.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/preload/without_doc_write_evaluator.html [ Failure Pass ]
@@ -7615,7 +7613,6 @@ crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-
 crbug.com/1380069 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/1380069 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/1380069 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
-crbug.com/1380078 [ Mac11 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure ]
 crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearance-no-default-width.html [ Failure ]
 crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-contenteditable.html [ Skip Timeout ]
