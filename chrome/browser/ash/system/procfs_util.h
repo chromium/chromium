@@ -55,14 +55,4 @@ absl::optional<int64_t> GetCpuTimeJiffies(
 }  // namespace system
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace system {
-using ::ash::system::GetCpuTimeJiffies;
-using ::ash::system::GetSingleProcStat;
-using ::ash::system::SingleProcStat;
-}  // namespace system
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_PROCFS_UTIL_H_

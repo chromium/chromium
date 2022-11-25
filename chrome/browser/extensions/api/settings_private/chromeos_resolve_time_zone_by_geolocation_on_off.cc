@@ -71,7 +71,7 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
 
   // Check if preference is policy or primary-user controlled, and therefore
   // cannot deactivate automatic timezone.
-  if (chromeos::system::TimeZoneResolverManager::
+  if (ash::system::TimeZoneResolverManager::
           IsTimeZoneResolutionPolicyControlled() ||
       !profile_->IsSameOrParent(ProfileManager::GetPrimaryUserProfile())) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
@@ -86,9 +86,9 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
 
   profile_->GetPrefs()->SetInteger(
       ::prefs::kResolveTimezoneByGeolocationMethod,
-      static_cast<int>(new_value ? chromeos::system::TimeZoneResolverManager::
+      static_cast<int>(new_value ? ash::system::TimeZoneResolverManager::
                                        TimeZoneResolveMethod::IP_ONLY
-                                 : chromeos::system::TimeZoneResolverManager::
+                                 : ash::system::TimeZoneResolverManager::
                                        TimeZoneResolveMethod::DISABLED));
 
   return SetPrefResult::SUCCESS;

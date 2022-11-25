@@ -20,17 +20,16 @@ class Browser;
 
 namespace ash {
 
-class HelpAppSystemAppDelegate : public ash::SystemWebAppDelegate {
+class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
  public:
   explicit HelpAppSystemAppDelegate(Profile* profile);
 
-  // ash::SystemWebAppDelegate overrides:
+  // SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
-  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
-      const override;
+  absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   bool ShouldCaptureNavigations() const override;
 };
 

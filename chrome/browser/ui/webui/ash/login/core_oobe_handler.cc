@@ -84,7 +84,8 @@ CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
     ToggleSystemInfo();
   }
 
-  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
+  if (ash::system::InputDeviceSettings::Get()
+          ->ForceKeyboardDrivenUINavigation())
     CallJS("cr.ui.Oobe.enableKeyboardFlow", true);
 }
 

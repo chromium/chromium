@@ -65,9 +65,4 @@ class ClientCertStoreAsh : public net::ClientCertStore {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::ClientCertStoreAsh;
-}
-
 #endif  // CHROME_BROWSER_ASH_NET_CLIENT_CERT_STORE_ASH_H_

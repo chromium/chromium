@@ -40,9 +40,4 @@ class NearbyDependenciesProviderFactory
 
 }  // namespace ash::nearby
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::nearby {
-using ::ash::nearby::NearbyDependenciesProviderFactory;
-}  // namespace chromeos::nearby
-
 #endif  // CHROME_BROWSER_ASH_NEARBY_NEARBY_DEPENDENCIES_PROVIDER_FACTORY_H_

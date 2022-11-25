@@ -20,21 +20,21 @@
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/ime_service_connector.h"
 #include "chrome/browser/profiles/profile.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ui/base/ime/ash/component_extension_ime_manager.h"
-#include "ui/base/ime/ash/text_input_method.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ui/base/ime/ash/ime_keyboard.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ui/base/ime/ash/input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/ime/ash/text_input_method.h"
 
 namespace ui {
 class TextInputMethod;
 }  // namespace ui
 
 namespace ash {
+
+class ComponentExtensionIMEManager;
+class ComponentExtensionIMEManagerDelegate;
+class ImeKeyboard;
+class InputMethodDelegate;
+
 namespace ime {
 struct AssistiveWindow;
 }  // namespace ime
@@ -332,12 +332,5 @@ class InputMethodManagerImpl : public InputMethodManager,
 
 }  // namespace input_method
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace input_method {
-using ::ash::input_method::InputMethodManagerImpl;
-}  // namespace input_method
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_MANAGER_IMPL_H_

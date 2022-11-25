@@ -18,7 +18,7 @@ namespace policy {
 // proxy credentials for system services connecting through System-proxy.
 class SystemProxyHandler {
  public:
-  explicit SystemProxyHandler(chromeos::CrosSettings* cros_settings);
+  explicit SystemProxyHandler(ash::CrosSettings* cros_settings);
 
   SystemProxyHandler(const SystemProxyHandler&) = delete;
   SystemProxyHandler& operator=(const SystemProxyHandler&) = delete;
@@ -35,7 +35,7 @@ class SystemProxyHandler {
 
   // Owned by the test fixture.
   ash::SystemProxyManager* system_proxy_manager_for_testing_ = nullptr;
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;
 };
 

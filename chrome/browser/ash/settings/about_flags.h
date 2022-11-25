@@ -95,13 +95,4 @@ class FeatureFlagsUpdate {
 }  // namespace about_flags
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace about_flags {
-using ::ash::about_flags::OwnerFlagsStorage;
-using ::ash::about_flags::ReadOnlyFlagsStorage;
-}  // namespace about_flags
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_ABOUT_FLAGS_H_

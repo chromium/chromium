@@ -258,11 +258,4 @@ class SmbService : public KeyedService,
 }  // namespace smb_client
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace smb_client {
-using ::ash::smb_client::SmbService;
-}  // namespace smb_client
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_H_

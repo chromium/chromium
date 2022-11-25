@@ -38,13 +38,4 @@ class BootClock {
 }  // namespace power
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace power {
-namespace ml {
-using ::ash::power::ml::BootClock;
-}  // namespace ml
-}  // namespace power
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_ML_BOOT_CLOCK_H_

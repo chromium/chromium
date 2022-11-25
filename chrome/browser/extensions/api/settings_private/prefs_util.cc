@@ -162,10 +162,6 @@ PrefsUtil::PrefsUtil(Profile* profile) : profile_(profile) {}
 
 PrefsUtil::~PrefsUtil() {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-using CrosSettings = chromeos::CrosSettings;
-#endif
-
 const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   static PrefsUtil::TypedPrefMap* s_allowlist = nullptr;
   if (s_allowlist)
@@ -997,7 +993,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
       new settings_api::PrefObject());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::Value* value = CrosSettings::Get()->GetPref(name);
+  const base::Value* value = ash::CrosSettings::Get()->GetPref(name);
   if (!value) {
     LOG(WARNING) << "Cros settings pref not found: " << name;
     return nullptr;
@@ -1386,7 +1382,7 @@ PrefService* PrefsUtil::FindServiceForPref(const std::string& pref_name) {
 
 bool PrefsUtil::IsCrosSetting(const std::string& pref_name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return CrosSettings::Get()->IsCrosSettings(pref_name);
+  return ash::CrosSettings::Get()->IsCrosSettings(pref_name);
 #else
   return false;
 #endif

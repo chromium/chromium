@@ -74,10 +74,4 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::CryptohomeTokenEncryptor;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_

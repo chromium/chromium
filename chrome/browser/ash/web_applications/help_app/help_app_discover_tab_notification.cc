@@ -53,10 +53,10 @@ void HelpAppDiscoverTabNotification::Show() {
 void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
   SystemNotificationHelper::GetInstance()->Close(
       kShowHelpAppDiscoverTabNotificationId);
-  ash::SystemAppLaunchParams params;
+  SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/discover");
   params.launch_source = apps::LaunchSource::kFromDiscoverTabNotification;
-  LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP, params);
+  LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP, params);
 
   base::RecordAction(
       base::UserMetricsAction("Discover.DiscoverTabNotification.Clicked"));

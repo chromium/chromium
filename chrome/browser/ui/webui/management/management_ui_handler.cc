@@ -314,11 +314,11 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
 
   // Elements appear on the page in the order they are added.
   bool report_device_peripherals = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
-                                            &report_device_peripherals);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
+                                       &report_device_peripherals);
   bool report_audio_status = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
-                                            &report_audio_status);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
+                                       &report_audio_status);
   if (collector->IsReportingActivityTimes() || report_device_peripherals ||
       report_audio_status ||
       profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
@@ -360,8 +360,8 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   }
 
   bool report_graphics_status = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceGraphicsStatus,
-                                            &report_graphics_status);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportDeviceGraphicsStatus,
+                                       &report_graphics_status);
   if (report_graphics_status) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportDeviceGraphicsStatus,
@@ -375,8 +375,8 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   }
 
   bool report_print_jobs = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePrintJobs,
-                                            &report_print_jobs);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportDevicePrintJobs,
+                                       &report_print_jobs);
   if (report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
                               DeviceReportingType::kPrintJobs);
@@ -421,16 +421,16 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   }
 
   bool report_login_logout = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
-                                            &report_login_logout);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
+                                       &report_login_logout);
   if (report_login_logout) {
     AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
                               DeviceReportingType::kLoginLogout);
   }
 
   bool report_crd_sessions = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportCRDSessions,
-                                            &report_crd_sessions);
+  ash::CrosSettings::Get()->GetBoolean(ash::kReportCRDSessions,
+                                       &report_crd_sessions);
   if (report_crd_sessions) {
     AddDeviceReportingElement(report_sources, kManagementReportCRDSessions,
                               DeviceReportingType::kCRDSessions);

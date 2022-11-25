@@ -108,11 +108,4 @@ std::string ResultCodeToMessage(const PrinterSetupResult result);
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::PrinterConfigurer;
-using ::ash::PrinterSetupResult;
-using ::ash::UsbPrinterSetupSource;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_CONFIGURER_H_

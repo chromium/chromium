@@ -959,7 +959,7 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 // TODO(crbug.com/1146430) Revisit this place when Lacros-Chrome starts being
 // used on the login screen.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ProfileHelper::IsSigninProfile(
+  return ash::ProfileHelper::IsSigninProfile(
       Profile::FromBrowserContext(browser_context_));
 #else
   return false;

@@ -49,10 +49,4 @@ class StubPrinterConfigurer : public PrinterConfigurer {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::StubCupsPrintersManager;
-using ::ash::StubPrinterConfigurer;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTING_STUBS_H_

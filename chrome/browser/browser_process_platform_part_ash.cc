@@ -229,11 +229,11 @@ BrowserProcessPlatformPart::browser_policy_connector_ash() {
       g_browser_process->browser_policy_connector());
 }
 
-chromeos::system::TimeZoneResolverManager*
+ash::system::TimeZoneResolverManager*
 BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   if (!timezone_resolver_manager_.get()) {
     timezone_resolver_manager_ =
-        std::make_unique<chromeos::system::TimeZoneResolverManager>();
+        std::make_unique<ash::system::TimeZoneResolverManager>();
   }
   return timezone_resolver_manager_.get();
 }
@@ -270,9 +270,9 @@ void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
   BrowserProcessPlatformPartChromeOS::AttemptExit(try_to_quit_application);
 }
 
-chromeos::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
+ash::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
   if (!system_clock_.get())
-    system_clock_ = std::make_unique<chromeos::system::SystemClock>();
+    system_clock_ = std::make_unique<ash::system::SystemClock>();
   return system_clock_.get();
 }
 

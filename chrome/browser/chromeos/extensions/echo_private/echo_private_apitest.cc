@@ -126,7 +126,7 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
  protected:
   int expected_dialog_buttons_;
   DialogTestAction dialog_action_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   int dialog_invocation_count_;

@@ -307,9 +307,4 @@ class KerberosCredentialsManager : public KeyedService,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::KerberosCredentialsManager;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_

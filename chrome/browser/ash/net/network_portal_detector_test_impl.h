@@ -48,9 +48,4 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::NetworkPortalDetectorTestImpl;
-}
-
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_DETECTOR_TEST_IMPL_H_

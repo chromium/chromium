@@ -55,9 +55,4 @@ class ReleaseNotesNotification {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::ReleaseNotesNotification;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_NOTIFICATION_H_

@@ -55,9 +55,4 @@ class CupsPrintersManagerFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CupsPrintersManagerFactory;
-}
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINTERS_MANAGER_FACTORY_H_

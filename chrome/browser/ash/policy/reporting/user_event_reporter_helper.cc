@@ -38,7 +38,7 @@ bool UserEventReporterHelper::ReportingEnabled(
     const std::string& policy_path) const {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   bool enabled = false;
-  chromeos::CrosSettings::Get()->GetBoolean(policy_path, &enabled);
+  ash::CrosSettings::Get()->GetBoolean(policy_path, &enabled);
   return enabled;
 }
 

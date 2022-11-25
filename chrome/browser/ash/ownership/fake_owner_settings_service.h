@@ -52,10 +52,4 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::FakeOwnerSettingsService;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_

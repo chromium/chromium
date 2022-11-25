@@ -661,8 +661,8 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   localized_strings.Set("buildType", "chromium");
 #endif
 
-  bool keyboard_driven_oobe =
-      system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation();
+  bool keyboard_driven_oobe = ash::system::InputDeviceSettings::Get()
+                                  ->ForceKeyboardDrivenUINavigation();
   localized_strings.Set("highlightStrength",
                         keyboard_driven_oobe ? "strong" : "normal");
 

@@ -288,7 +288,7 @@ SystemTrayClientImpl::SystemTrayClientImpl()
           std::make_unique<EnterpriseAccountObserver>(this)) {
   // If this observes clock setting changes before ash comes up the IPCs will
   // be queued on |system_tray_|.
-  chromeos::system::SystemClock* clock =
+  ash::system::SystemClock* clock =
       g_browser_process->platform_part()->GetSystemClock();
   clock->AddObserver(this);
   system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
@@ -818,7 +818,7 @@ void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
 // chromeos::system::SystemClockObserver:
 
 void SystemTrayClientImpl::OnSystemClockChanged(
-    chromeos::system::SystemClock* clock) {
+    ash::system::SystemClock* clock) {
   system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
 }
 

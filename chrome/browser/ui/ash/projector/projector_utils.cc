@@ -29,7 +29,7 @@ namespace {
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
-  return chromeos::ProfileHelper::IsUserProfile(profile) &&
+  return ash::ProfileHelper::IsUserProfile(profile) &&
          !profile->IsOffTheRecord();
 }
 
@@ -40,7 +40,7 @@ bool IsProjectorAllowedForProfile(const Profile* profile) {
   if (!IsRealUserProfile(profile))
     return false;
 
-  auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return false;
 

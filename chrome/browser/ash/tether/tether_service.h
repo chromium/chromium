@@ -286,11 +286,4 @@ class TetherService
 }  // namespace tether
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-namespace tether {
-using ::ash::tether::TetherService;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_H_

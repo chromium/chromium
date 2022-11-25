@@ -39,7 +39,7 @@ PersonalizationAppUI* CreatePersonalizationAppUI(content::WebUI* web_ui) {
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
-  auto* profile_helper = chromeos::ProfileHelper::Get();
+  auto* profile_helper = ProfileHelper::Get();
   DCHECK(profile_helper);
   const user_manager::User* user = profile_helper->GetUserByProfile(profile);
   return user;

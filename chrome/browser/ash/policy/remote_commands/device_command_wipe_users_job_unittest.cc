@@ -161,7 +161,7 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestLogOutCalled) {
         run_loop->Quit();
       },
       &run_loop2, &log_out_called);
-  chromeos::user_removal_manager::OverrideLogOutForTesting(
+  ash::user_removal_manager::OverrideLogOutForTesting(
       std::move(log_out_callback));
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

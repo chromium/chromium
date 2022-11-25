@@ -33,9 +33,4 @@ class SetTimeDialog : public SystemWebDialogDelegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::SetTimeDialog;
-}
-
 #endif  // CHROME_BROWSER_ASH_SET_TIME_DIALOG_H_

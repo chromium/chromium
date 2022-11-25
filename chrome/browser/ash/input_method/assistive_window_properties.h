@@ -32,11 +32,4 @@ struct AssistiveWindowProperties {
 }  // namespace input_method
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace input_method {
-using ::ash::input_method::AssistiveWindowProperties;
-}  // namespace input_method
-}  // namespace chromeos
-
 #endif  //  CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_PROPERTIES_H_

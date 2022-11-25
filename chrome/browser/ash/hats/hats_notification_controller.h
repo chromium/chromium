@@ -19,6 +19,7 @@ class Profile;
 class NetworkState;
 
 namespace ash {
+
 struct HatsConfig;
 
 // TODO(jackshira): Extract non-notification specific code into a manager class.
@@ -88,8 +89,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
              const absl::optional<std::u16string>& reply) override;
 
   // NetworkStateHandlerObserver override:
-  void PortalStateChanged(const ash::NetworkState* default_network,
-                          ash::NetworkState::PortalState portal_state) override;
+  void PortalStateChanged(const NetworkState* default_network,
+                          NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
   // Must be run on a blocking thread pool.
@@ -116,10 +117,5 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::HatsNotificationController;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_

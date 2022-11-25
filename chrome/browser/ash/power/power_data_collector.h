@@ -118,9 +118,4 @@ void AddSample(base::circular_deque<SampleType>* sample_queue,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PowerDataCollector;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_POWER_DATA_COLLECTOR_H_

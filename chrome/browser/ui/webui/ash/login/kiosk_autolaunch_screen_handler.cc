@@ -23,6 +23,9 @@
 
 namespace ash {
 
+// TODO(https://crbug.com/1164001): remove after the migration to namespace ash
+using ::ash::KioskAppManager;
+
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
     : BaseScreenHandler(kScreenId) {
   KioskAppManager::Get()->AddObserver(this);

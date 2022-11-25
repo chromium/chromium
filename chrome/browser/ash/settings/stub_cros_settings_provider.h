@@ -66,10 +66,4 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::StubCrosSettingsProvider;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_STUB_CROS_SETTINGS_PROVIDER_H_

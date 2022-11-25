@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace input_method {

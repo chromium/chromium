@@ -46,12 +46,12 @@ void DeviceCommandWipeUsersJob::RunImpl(CallbackWithResult succeeded_callback,
   // to log out only after the server got the ACK, otherwise we could log out
   // before ACKing and then the server would never get the ACK.
   service_->SetOnCommandAckedCallback(
-      base::BindOnce(&chromeos::user_removal_manager::LogOut));
+      base::BindOnce(&ash::user_removal_manager::LogOut));
 
   // Initiate the user removal process. Once the first part is done, the passed
   // callback gets called and signals that the command was successfully received
   // and will be executed.
-  chromeos::user_removal_manager::InitiateUserRemoval(
+  ash::user_removal_manager::InitiateUserRemoval(
       base::BindOnce(std::move(succeeded_callback), nullptr));
 }
 

@@ -49,11 +49,4 @@ class NearbyProcessManagerFactory : public ProfileKeyedServiceFactory {
 }  // namespace nearby
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-namespace nearby {
-using ::ash::nearby::NearbyProcessManagerFactory;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_

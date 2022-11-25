@@ -53,11 +53,4 @@ SmbMountResult TranslateErrorToMountResult(base::File::Error error);
 }  // namespace smb_client
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace smb_client {
-using ::ash::smb_client::SmbMountResult;
-}  // namespace smb_client
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_ERRORS_H_

@@ -24,9 +24,4 @@ printing::proto::PrintJobInfo CupsPrintJobToProto(
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ash::PrintSettingsToProto;
-}
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_INFO_PROTO_CONVERSIONS_H_

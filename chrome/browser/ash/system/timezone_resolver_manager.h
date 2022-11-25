@@ -113,12 +113,4 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
 }  // namespace system
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace system {
-using ::ash::system::TimeZoneResolverManager;
-}  // namespace system
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_

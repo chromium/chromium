@@ -137,10 +137,4 @@ class CupsPrintersManager : public PrinterInstallationManager,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CupsPrintersManager;
-using ::ash::IsIppUri;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINTERS_MANAGER_H_

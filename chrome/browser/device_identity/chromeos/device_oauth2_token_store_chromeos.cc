@@ -109,7 +109,7 @@ void DeviceOAuth2TokenStoreChromeOS::FlushTokenSaveCallbacks(bool result) {
 }
 
 void DeviceOAuth2TokenStoreChromeOS::EncryptAndSaveToken() {
-  CryptohomeTokenEncryptor encryptor(system_salt_);
+  ash::CryptohomeTokenEncryptor encryptor(system_salt_);
   std::string encrypted_refresh_token =
       encryptor.EncryptWithSystemSalt(refresh_token_);
   bool result = true;
@@ -149,7 +149,7 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
   std::string encrypted_refresh_token =
       local_state_->GetString(prefs::kDeviceRobotAnyApiRefreshToken);
   if (!encrypted_refresh_token.empty()) {
-    CryptohomeTokenEncryptor encryptor(system_salt_);
+    ash::CryptohomeTokenEncryptor encryptor(system_salt_);
     refresh_token_ = encryptor.DecryptWithSystemSalt(encrypted_refresh_token);
     if (refresh_token_.empty()) {
       LOG(ERROR) << "Failed to decrypt refresh token.";

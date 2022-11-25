@@ -117,9 +117,9 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   if (current_user_is_owner) {
     ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
-    dom_handler->Init(new chromeos::about_flags::OwnerFlagsStorage(
-                          profile->GetPrefs(), service),
-                      flags_ui::kOwnerAccessToFlags);
+    dom_handler->Init(
+        new ash::about_flags::OwnerFlagsStorage(profile->GetPrefs(), service),
+        flags_ui::kOwnerAccessToFlags);
   } else {
     dom_handler->Init(
         new flags_ui::PrefServiceFlagsStorage(profile->GetPrefs()),

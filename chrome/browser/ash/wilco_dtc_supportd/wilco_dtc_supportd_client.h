@@ -48,10 +48,4 @@ class WilcoDtcSupportdClient : public chromeos::DBusClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::WilcoDtcSupportdClient;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_CLIENT_H_

@@ -59,10 +59,4 @@ class MojoUtils final {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::MojoUtils;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_MOJO_UTILS_H_

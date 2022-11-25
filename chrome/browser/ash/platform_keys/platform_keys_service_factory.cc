@@ -28,9 +28,6 @@ namespace platform_keys {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to ash.
-using ::chromeos::ClientCertStoreAsh;
-
 // Invoked on the IO thread when a NSSCertDatabase is available, delegates back
 // to origin thread.
 void DidGetCertDbOnIoThread(

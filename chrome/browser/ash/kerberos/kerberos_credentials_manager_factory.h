@@ -59,9 +59,4 @@ class KerberosCredentialsManagerFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-using ::ash::KerberosCredentialsManagerFactory;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_

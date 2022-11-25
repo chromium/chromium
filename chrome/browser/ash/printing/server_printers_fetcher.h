@@ -65,10 +65,4 @@ class ServerPrintersFetcher {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrintServerQueryResult;
-using ::ash::ServerPrintersFetcher;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_SERVER_PRINTERS_FETCHER_H_

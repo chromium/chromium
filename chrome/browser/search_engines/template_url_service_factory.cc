@@ -92,8 +92,8 @@ KeyedService* TemplateURLServiceFactory::BuildServiceInstanceFor(
   // sign-in flow creates a window with a URL bar.  The URL bar code currently
   // assumes a template URL service exists.  (This is true even though the user
   // cannot search from the captive portal sign-in window.)
-  if (!chromeos::ProfileHelper::IsUserProfile(profile) &&
-      !chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile) &&
+      !ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
 #endif

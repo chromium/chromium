@@ -285,7 +285,7 @@ base::Value::List WelcomeScreenHandler::GetTimezoneList() {
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
 
   base::Value::List timezone_list;
-  base::Value::List timezones = system::GetTimezoneList();
+  base::Value::List timezones = ash::system::GetTimezoneList();
   for (const auto& value : timezones) {
     CHECK(value.is_list());
     const base::Value::List& timezone = value.GetList();

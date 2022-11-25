@@ -69,11 +69,4 @@ class MockInputMethodEngine : public ui::TextInputMethod {
 }  // namespace input_method
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace input_method {
-using ::ash::input_method::MockInputMethodEngine;
-}  // namespace input_method
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_INPUT_METHOD_ENGINE_H_

@@ -25,12 +25,4 @@ void StoreLogs(
 }  // namespace debug_log_writer
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace debug_log_writer {
-using ::ash::debug_log_writer::StoreLogs;
-}  // namespace debug_log_writer
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_LOGS_DEBUG_LOG_WRITER_H_

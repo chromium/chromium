@@ -459,7 +459,7 @@ void ExtensionContextMenuModelTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The ash::KioskAppManager, if initialized, needs to be cleaned up.
   // TODO(devlin): This should probably go somewhere more central, like
-  // chromeos::ScopedCrosSettingsTestHelper.
+  // ash::ScopedCrosSettingsTestHelper.
   ash::KioskAppManager::Shutdown();
 #endif
 

@@ -331,9 +331,4 @@ class ProcessDataCollector {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::ProcessDataCollector;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_PROCESS_DATA_COLLECTOR_H_

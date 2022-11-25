@@ -54,9 +54,4 @@ extern const HatsConfig kHatsGeneralCameraSurvey;
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::kHatsGeneralSurvey;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_CONFIG_H_

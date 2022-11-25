@@ -106,7 +106,7 @@ class SystemProxyHandlerTest : public testing::Test {
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;

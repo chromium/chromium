@@ -38,9 +38,4 @@ class TestPrintJobDatabase : public PrintJobDatabase {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::TestPrintJobDatabase;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_TEST_PRINT_JOB_DATABASE_H_

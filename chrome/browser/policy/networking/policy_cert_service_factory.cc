@@ -49,7 +49,7 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
   if (!policy_certificate_provider)
     return nullptr;
 
-  if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return new PolicyCertService(profile, policy_certificate_provider,
                                  /*may_use_profile_wide_trust_anchors=*/false);
   }
@@ -57,9 +57,8 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
   // Don't allow policy-provided certificates for "special" Profiles except the
   // one listed above.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          profile->GetOriginalProfile());
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      profile->GetOriginalProfile());
   if (!user)
     return nullptr;
 

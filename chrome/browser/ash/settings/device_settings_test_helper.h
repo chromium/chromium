@@ -92,11 +92,4 @@ class DeviceSettingsTestBase : public testing::Test {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::DeviceSettingsTestBase;
-using ::ash::ScopedDeviceSettingsTestHelper;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_DEVICE_SETTINGS_TEST_HELPER_H_

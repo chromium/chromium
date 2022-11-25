@@ -33,8 +33,7 @@ void OnConnectResponse(
 void HIDImpl::Bind(Profile* profile,
                    const content::ServiceWorkerVersionBaseInfo& info,
                    mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<ash::HIDImpl>(),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<HIDImpl>(), std::move(receiver));
 }
 
 HIDImpl::HIDImpl() = default;

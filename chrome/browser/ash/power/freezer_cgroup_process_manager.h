@@ -45,9 +45,4 @@ class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::FreezerCgroupProcessManager;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_

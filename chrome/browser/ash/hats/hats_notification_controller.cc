@@ -44,6 +44,7 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
+
 namespace {
 
 const char kNotificationOriginUrl[] = "chrome://hats";
@@ -187,7 +188,7 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     // Observe NetworkStateHandler to be notified when an internet connection
     // is available.
     NetworkStateHandler* handler =
-        ash::NetworkHandler::Get()->network_state_handler();
+        NetworkHandler::Get()->network_state_handler();
     handler->AddObserver(this);
     // Create an immediate update for the current default network.
     const NetworkState* default_network = handler->DefaultNetwork();
@@ -274,7 +275,7 @@ void HatsNotificationController::Click(
   state_ = HatsState::kNotificationClicked;
 
   // Remove the notification.
-  ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   notification_.reset(nullptr);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
@@ -297,7 +298,7 @@ void HatsNotificationController::Close(bool by_user) {
 
   if (by_user) {
     UpdateLastInteractionTime();
-    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
     notification_.reset(nullptr);
     state_ = HatsState::kNotificationDismissed;
   }
@@ -305,8 +306,8 @@ void HatsNotificationController::Close(bool by_user) {
 
 // NetworkStateHandlerObserver override:
 void HatsNotificationController::PortalStateChanged(
-    const ash::NetworkState* default_network,
-    ash::NetworkState::PortalState portal_state) {
+    const NetworkState* default_network,
+    NetworkState::PortalState portal_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "PortalStateChanged: default_network="
           << (default_network ? default_network->path() : "")

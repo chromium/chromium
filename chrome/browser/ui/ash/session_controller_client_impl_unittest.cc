@@ -124,7 +124,7 @@ class SessionControllerClientImplTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
 
     cros_settings_test_helper_ =
-        std::make_unique<chromeos::ScopedCrosSettingsTestHelper>();
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
   }
 
   void TearDown() override {
@@ -205,8 +205,7 @@ class SessionControllerClientImplTest : public testing::Test {
   // Owned by |user_manager_enabler_|.
   TestChromeUserManager* user_manager_ = nullptr;
 
-  std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
-      cros_settings_test_helper_;
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };
 
 // Make sure that cycling one user does not cause any harm.

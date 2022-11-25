@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/input_method/input_method_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace input_method {

@@ -34,9 +34,9 @@
 
 namespace {
 
+using ::ash::OwnerSettingsServiceAsh;
+using ::ash::OwnerSettingsServiceAshFactory;
 using ::ash::UpdateEngineClient;
-using ::chromeos::OwnerSettingsServiceAsh;
-using ::chromeos::OwnerSettingsServiceAshFactory;
 
 // Network status in the context of device update.
 enum NetworkStatus {

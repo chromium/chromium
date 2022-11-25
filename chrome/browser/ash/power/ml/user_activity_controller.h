@@ -42,13 +42,4 @@ class UserActivityController {
 }  // namespace power
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace power {
-namespace ml {
-using ::ash::power::ml::UserActivityController;
-}  // namespace ml
-}  // namespace power
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_CONTROLLER_H_

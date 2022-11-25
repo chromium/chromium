@@ -106,9 +106,4 @@ class ThrottleService {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::ThrottleService;
-}
-
 #endif  // CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_

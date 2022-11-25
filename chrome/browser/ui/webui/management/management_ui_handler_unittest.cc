@@ -249,7 +249,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
 // TODO(1071436, marcgrimme): refactor so that ChromeOS and non ChromeOS part is
 // better separated.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-using TestingBaseClass = chromeos::DeviceSettingsTestBase;
+using TestingBaseClass = ash::DeviceSettingsTestBase;
 #else
 using TestingBaseClass = testing::Test;
 #endif

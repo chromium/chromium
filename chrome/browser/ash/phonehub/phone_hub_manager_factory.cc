@@ -8,6 +8,7 @@
 #include "ash/components/phonehub/multidevice_feature_access_manager_impl.h"
 #include "ash/components/phonehub/multidevice_setup_state_updater.h"
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/phone_hub_manager_impl.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
@@ -34,6 +35,7 @@
 
 namespace ash {
 namespace phonehub {
+
 namespace {
 
 content::BrowserContext* g_context_for_service = nullptr;
