@@ -4483,8 +4483,16 @@ double AXNodeObject::EstimatedLoadingProgress() const {
 Element* AXNodeObject::ActionElement() const {
   const AXObject* current = this;
 
-  if (!current->GetElement())
-    return nullptr;  // Do not expose action element for text or document.
+  if (blink::IsA<blink::Document>(current->GetNode()))
+    return nullptr;  // Do not expose action element for document.
+
+  // In general, we look an action element up only for AXObjects that have a
+  // backing Element. We make an exception for text nodes and pseudo elements
+  // because we also want these to expose a default action when any of their
+  // ancestors is clickable. We have found Windows ATs relying on this behavior
+  // (see https://crbug.com/1382034).
+  DCHECK(current->GetElement() || current->IsTextObject() ||
+         current->ShouldUseLayoutObjectTraversalForChildren());
 
   while (current) {
     // Handles clicks or is a textfield and is not a disabled form control.
