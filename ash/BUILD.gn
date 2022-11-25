@@ -3449,6 +3449,9 @@ test("ash_pixeltests") {
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "system/bluetooth/bluetooth_detailed_view_legacy_pixeltest.cc",
     "system/message_center/ash_notification_view_pixeltest.cc",
+    "system/time/calendar_unittest_utils.cc",
+    "system/time/calendar_unittest_utils.h",
+    "system/time/calendar_up_next_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
   ]
 

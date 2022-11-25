@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_UNITTEST_UTILS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_UNITTEST_UTILS_H_
 
+#include <list>
+#include <memory>
 #include <set>
 #include <string>
 
@@ -251,6 +253,9 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
         self_response_status =
             google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
     const bool all_day_event = false);
+
+std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
+    std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events);
 
 // Checks if the two exploded are in the same month.
 bool IsTheSameMonth(const base::Time& date_a, const base::Time& date_b);

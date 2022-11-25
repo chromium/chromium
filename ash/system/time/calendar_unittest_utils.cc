@@ -73,6 +73,17 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
   return event;
 }
 
+std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
+    std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events) {
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("Greenwich Mean Time");
+
+  for (auto& event : events)
+    event_list->InjectItemForTesting(std::move(event));
+
+  return event_list;
+}
+
 ASH_EXPORT bool IsTheSameMonth(const base::Time& date_a,
                                const base::Time& date_b) {
   return base::TimeFormatWithPattern(date_a, "MM YYYY") ==

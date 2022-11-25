@@ -28,17 +28,6 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
       all_day_event);
 }
 
-std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
-    std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>>& events) {
-  auto event_list = std::make_unique<google_apis::calendar::EventList>();
-  event_list->set_time_zone("Greenwich Mean Time");
-
-  for (auto& event : events)
-    event_list->InjectItemForTesting(std::move(event));
-
-  return event_list;
-}
-
 }  // namespace
 
 class CalendarUpNextViewTest : public AshTestBase {
@@ -61,13 +50,12 @@ class CalendarUpNextViewTest : public AshTestBase {
 
   void CreateUpNextView(
       base::Time date,
-      std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>>&
-          events) {
+      std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events) {
     up_next_view_.reset();
     Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
         calendar_utils::GetStartOfMonthUTC(date),
         google_apis::ApiErrorCode::HTTP_SUCCESS,
-        CreateMockEventList(events).get());
+        calendar_test_utils::CreateMockEventList(std::move(events)).get());
     up_next_view_ = std::make_unique<CalendarUpNextView>(controller_.get());
   }
 
@@ -115,12 +103,12 @@ TEST_F(CalendarUpNextViewTest,
   const char* event_in_progress_end_time_string = "22 Nov 2021 09:30 GMT";
 
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
-  events.emplace_back(CreateEvent(event_in_ten_mins_start_time_string,
-                                  event_in_ten_mins_end_time_string));
-  events.emplace_back(CreateEvent(event_in_progress_start_time_string,
-                                  event_in_progress_end_time_string));
+  events.push_back(CreateEvent(event_in_ten_mins_start_time_string,
+                               event_in_ten_mins_end_time_string));
+  events.push_back(CreateEvent(event_in_progress_start_time_string,
+                               event_in_progress_end_time_string));
 
-  CreateUpNextView(date, events);
+  CreateUpNextView(date, std::move(events));
 
   EXPECT_EQ(GetHeaderLabel()->GetText(), u"Up next");
   EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
