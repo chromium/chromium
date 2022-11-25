@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <tuple>
+#include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -189,12 +191,12 @@ class BrowserAppShelfControllerBrowserTest
 
   void SetUpOnMainThread() override {
     crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
+    profile_ = browser()->profile();
     if (!HasLacrosArgument()) {
       return;
     }
 
-    web_app::AppTypeInitializationWaiter(browser()->profile(),
-                                         apps::AppType::kWeb)
+    web_app::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb)
         .Await();
 
     auto* registry = AppServiceProxy()->BrowserAppInstanceRegistry();
@@ -202,15 +204,39 @@ class BrowserAppShelfControllerBrowserTest
     registry_ = registry;
   }
 
+  void TearDownOnMainThread() override {
+    crosapi::AshRequiresLacrosBrowserTestBase::TearDownOnMainThread();
+    if (!HasLacrosArgument()) {
+      return;
+    }
+
+    std::vector<std::string> app_ids;
+    AppServiceProxy()->AppRegistryCache().ForEachApp(
+        [&app_ids](const apps::AppUpdate& update) {
+          if (update.AppType() == apps::AppType::kWeb) {
+            app_ids.push_back(update.AppId());
+          }
+        });
+
+    for (const std::string& app_id : app_ids) {
+      AppServiceProxy()->UninstallSilently(app_id,
+                                           apps::UninstallSource::kShelf);
+      web_app::AppReadinessWaiter(profile(), app_id,
+                                  apps::Readiness::kUninstalledByUser)
+          .Await();
+    }
+  }
+
+  Profile* profile() { return profile_; }
+
   apps::AppServiceProxy* AppServiceProxy() {
-    return apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
   void WaitForCondition(const base::Location& from_here,
                         TestConditionWaiter::Condition condition,
                         const std::string& message) {
-    auto* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     TestConditionWaiter(*registry_, proxy->AppRegistryCache(),
                         std::move(condition))
         .Wait(from_here, message);
@@ -226,9 +252,12 @@ class BrowserAppShelfControllerBrowserTest
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
-    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
-    EXPECT_EQ(AppServiceProxy()->AppRegistryCache().GetAppType(app_id),
-              apps::AppType::kWeb);
+    web_app::AppReadinessWaiter(profile(), app_id).Await();
+    AppServiceProxy()->AppRegistryCache().ForOneApp(
+        app_id, [mode](const apps::AppUpdate& update) {
+          EXPECT_EQ(update.AppType(), apps::AppType::kWeb);
+          EXPECT_EQ(update.WindowMode(), mode);
+        });
 
     return app_id;
   }
@@ -309,6 +338,7 @@ class BrowserAppShelfControllerBrowserTest
     return SelectResult{action_taken, std::move(app_menu_items)};
   }
 
+  Profile* profile_ = nullptr;
   apps::BrowserAppInstanceRegistry* registry_{nullptr};
 };
 
