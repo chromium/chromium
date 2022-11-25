@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -161,6 +163,10 @@
                            incognito:isIncognito];
 
   _popupView->SetMediator(self.mediator);
+
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [self setupDebug];
+  }
 }
 
 - (void)stop {
@@ -208,6 +214,20 @@
                           params:params
                       originView:originView];
   [self.sharingCoordinator start];
+}
+
+#pragma mark - private
+
+- (void)setupDebug {
+  DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+
+  PopupDebugInfoViewController* viewController =
+      [[PopupDebugInfoViewController alloc] init];
+  self.mediator.debugInfoConsumer = viewController;
+
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:viewController];
+  self.popupViewController.debugInfoViewController = navController;
 }
 
 @end

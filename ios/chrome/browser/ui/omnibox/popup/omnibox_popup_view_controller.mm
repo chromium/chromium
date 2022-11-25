@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "components/favicon/core/large_icon_service.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/elements/self_sizing_table_view.h"
@@ -354,6 +355,18 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 // Set text alignment for popup cells.
 - (void)setTextAlignment:(NSTextAlignment)alignment {
   self.alignment = alignment;
+}
+
+- (void)setDebugInfoViewController:(UIViewController*)viewController {
+  DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+  _debugInfoViewController = viewController;
+
+  UITapGestureRecognizer* debugGestureRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(showDebugUI)];
+  debugGestureRecognizer.numberOfTapsRequired = 2;
+  debugGestureRecognizer.numberOfTouchesRequired = 2;
+  [self.view addGestureRecognizer:debugGestureRecognizer];
 }
 
 - (void)newResultsAvailable {
@@ -1075,6 +1088,12 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   [self.carouselAttributeProvider
       fetchFaviconAttributesForURL:carouselItem.URL.gurl
                         completion:completion];
+}
+
+- (void)showDebugUI {
+  [self presentViewController:self.debugInfoViewController
+                     animated:YES
+                   completion:nil];
 }
 
 @end

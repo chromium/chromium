@@ -17,7 +17,10 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/variations/variations_associated_data.h"
+#import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -30,6 +33,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -104,6 +108,16 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     // Avoid calling consumer visible size and set all suggestions as visible to
     // get only one grouping.
     [self requestResultsWithVisibleSuggestionCount:_currentResult.size()];
+  }
+
+  if (self.debugInfoConsumer) {
+    DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+
+    [self.debugInfoConsumer
+        setVariationIDString:
+            base::SysUTF8ToNSString(
+                variations::VariationsIdsProvider::GetInstance()
+                    ->GetTriggerVariationsString())];
   }
 }
 

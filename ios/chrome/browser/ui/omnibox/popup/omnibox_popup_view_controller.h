@@ -48,6 +48,12 @@ class LargeIconService;
 @property(nonatomic, assign) LargeIconCache* largeIconCache;
 @property(nonatomic, weak) id<CarouselItemMenuProvider> carouselMenuProvider;
 
+// View controller that displays debug information.
+// Must only be set when OmniboxDebuggingEnabled flag is set.
+// When set, this view controller will present `debugInfoViewController` when a
+// special debug gesture is executed.
+@property(nonatomic, strong) UIViewController* debugInfoViewController;
+
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* currentResult;
 

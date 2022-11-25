@@ -10,11 +10,12 @@
 #include <memory>
 
 #import "components/history/core/browser/top_sites.h"
-#include "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol BrowserCommands;
@@ -85,6 +86,8 @@ class OmniboxPopupMediatorDelegate {
 
 @property(nonatomic, weak) id<BrowserCommands> dispatcher;
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
+// Consumer for debug info.
+@property(nonatomic, weak) id<PopupDebugInfoConsumer> debugInfoConsumer;
 // Scheduler to notify about events happening in this popup.
 @property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;

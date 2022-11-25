@@ -83,6 +83,7 @@ source_set("popup") {
     "//components/open_from_clipboard",
     "//components/search_engines",
     "//components/strings:components_strings_grit",
+    "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/default_browser",
@@ -157,6 +158,8 @@ source_set("popup_ui") {
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
+    "popup_debug_info_view_controller.h",
+    "popup_debug_info_view_controller.mm",
     "simple_omnibox_icon.h",
     "simple_omnibox_icon.mm",
   ]
@@ -176,6 +179,7 @@ source_set("popup_ui") {
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
@@ -235,6 +239,7 @@ source_set("popup_ui_protocols") {
     "content_providing.h",
     "omnibox_icon.h",
     "omnibox_pedal.h",
+    "popup_debug_info_consumer.h",
     "popup_match_preview_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
