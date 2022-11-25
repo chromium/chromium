@@ -100,6 +100,7 @@ int WaylandZAuraShell::GetActiveDeskIndex() const {
 void WaylandZAuraShell::OnLayoutMode(void* data,
                                      struct zaura_shell* zaura_shell,
                                      uint32_t layout_mode) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* self = static_cast<WaylandZAuraShell*>(data);
   auto* connection = self->connection_.get();
   auto* screen = connection->wayland_output_manager()->wayland_screen();
@@ -121,6 +122,7 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
         screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
       return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // static

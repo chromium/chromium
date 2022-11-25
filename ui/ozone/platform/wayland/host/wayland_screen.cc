@@ -501,17 +501,15 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
   return values;
 }
 
-void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
   tablet_state_ = tablet_state;
-#endif
 
   auto* observer_list = display_list_.observers();
   for (auto& observer : *observer_list)
     observer.OnDisplayTabletStateChanged(tablet_state);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 display::TabletState WaylandScreen::GetTabletState() const {
   return tablet_state_;
 }

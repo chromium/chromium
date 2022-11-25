@@ -73,8 +73,8 @@ class WaylandScreen : public PlatformScreen {
   void RemoveObserver(display::DisplayObserver* observer) override;
   base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
-  void OnTabletStateChanged(display::TabletState tablet_state) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnTabletStateChanged(display::TabletState tablet_state) override;
   display::TabletState GetTabletState() const override;
 #endif
 
