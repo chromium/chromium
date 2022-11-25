@@ -1675,11 +1675,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   auto* model = MakeGarbageCollected<TransitionKeyframeEffectModel>(keyframes);
-  if (!state.cloned_style) {
-    state.cloned_style = ComputedStyle::Clone(state.base_style);
-  }
   state.update.StartTransition(
-      property, state.before_change_style, state.cloned_style,
+      property, state.before_change_style, &state.base_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
       *MakeGarbageCollected<InertEffect>(
           model, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0));
@@ -1795,7 +1792,6 @@ void CSSAnimations::CalculateTransitionUpdate(
                                    *old_style,
                                    *style_builder.GetBaseComputedStyle(),
                                    /*before_change_style=*/nullptr,
-                                   /*cloned_style=*/nullptr,
                                    active_transitions,
                                    listed_properties_maybe,
                                    transition_data};
