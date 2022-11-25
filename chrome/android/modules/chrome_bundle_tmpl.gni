@@ -189,7 +189,6 @@ template("chrome_bundle") {
                              "proguard_android_sdk_dep",
                              "rotation_config",
                              "static_library_provider",
-                             "static_library_synchronized_proguard",
                              "version_code",
                            ])
     command_line_flags_file = "chrome-command-line"

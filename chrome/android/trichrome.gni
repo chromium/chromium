@@ -25,10 +25,6 @@ declare_args() {
   # calculate the correct digest.
   trichrome_certdigest = default_trichrome_certdigest
 
-  # WIP: Enable synchronized proguard for Trichrome. (http://crbug.com/901465)
-  # Only affects trichrome targets when !is_java_debug.
-  enable_trichrome_synchronized_proguard = false
-
   # By default, Trichrome channels are compiled using separate package names.
   # Set this to 'true' to compile Trichrome channels using the Stable channel's
   # package name. This currently only affects builds with `android_channel =
@@ -44,9 +40,6 @@ trichrome_jinja_variables = [
   "use32bitAbi=android:use32bitAbi=\"true\"",
   "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
 ]
-
-trichrome_synchronized_proguard =
-    enable_trichrome_synchronized_proguard && !is_java_debug
 
 template("trichrome_library_apk_tmpl") {
   android_apk(target_name) {
@@ -68,26 +61,8 @@ template("trichrome_library_apk_tmpl") {
     include_size_info = is_official_build
 
     alternative_android_sdk_dep = webview_framework_dep
-    if (trichrome_synchronized_proguard) {
-      if (defined(invoker.webview_target) && defined(invoker.chrome_target)) {
-        shared_resources_allowlist_locales = locales
-        static_library_dependent_targets = [
-          {
-            name = invoker.webview_target
-            is_resource_ids_provider = true
-          },
-          {
-            name = invoker.chrome_target
-            is_resource_ids_provider = false
-          },
-        ]
-      }
-    } else {
-      # TODO(crbug.com/901465): Remove r_java_root_package_name once shared
-      # Java code is moved to the shared library even in debug.
-      r_java_root_package_name = "trichrome_lib"
-      app_as_shared_lib = true
-    }
+    r_java_root_package_name = "trichrome_lib"
+    app_as_shared_lib = true
 
     # No support for this has been added, also not supported by test runner
     # since trichrome library is used in "additional_apks" in the trichrome
@@ -155,12 +130,7 @@ template("trichrome_library_apk_tmpl") {
       "//third_party/icu:icu_assets",
     ]
 
-    if (trichrome_synchronized_proguard) {
-      build_config_include_product_version_resource = true
-      deps += [ "//chrome/android:product_version_resources" ]
-    } else {
-      omit_dex = true
-    }
+    omit_dex = true
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
