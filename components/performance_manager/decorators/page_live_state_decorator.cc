@@ -388,6 +388,12 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
 }
 
 void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
+  // Don't get the content settings on android on each navigation because it may
+  // induce scroll jank. There are many same-document navigations while
+  // scrolling and getting the settings can invoke expensive platform APIs on
+  // Android. Moreover, this information is only used to decide if a tab should
+  // be discarded, which doesn't happen through Chrome code on that platform.
+#if !BUILDFLAG(IS_ANDROID)
   // Get the content settings from the main thread.
   // This call is not using `Then` and is instead passing a callback for the
   // delegate to invoke with `CallOnGraph` on purpose. This is because it's
@@ -402,6 +408,7 @@ void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
                 base::BindOnce(
                     &PageLiveStateDecorator::OnContentSettingsReceived,
                     weak_factory_.GetWeakPtr(), page_node->GetMainFrameUrl()));
+#endif
 }
 
 void PageLiveStateDecorator::OnContentSettingsReceived(

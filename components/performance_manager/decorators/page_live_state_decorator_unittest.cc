@@ -380,6 +380,8 @@ TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
 }
 
+// Content settings aren't fetched on navigation on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
@@ -435,5 +437,6 @@ TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
 }
+#endif
 
 }  // namespace performance_manager
