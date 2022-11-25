@@ -13,9 +13,9 @@ using testing::Values;
 
 namespace ui {
 
-using WaylandZAuraShellTest = WaylandTest;
+using WaylandZAuraShellTest = WaylandTestSimpleWithAuraShell;
 
-TEST_P(WaylandZAuraShellTest, BugFix) {
+TEST_F(WaylandZAuraShellTest, BugFix) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* const zaura_shell = server->zaura_shell()->resource();
     zaura_shell_send_bug_fix(zaura_shell, 1);
@@ -26,11 +26,5 @@ TEST_P(WaylandZAuraShellTest, BugFix) {
   ASSERT_TRUE(connection_->zaura_shell()->HasBugFix(3));
   ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(2));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTest,
-    WaylandZAuraShellTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

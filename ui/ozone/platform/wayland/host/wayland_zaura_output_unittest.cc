@@ -18,7 +18,7 @@ using ::testing::Values;
 
 namespace ui {
 
-class WaylandZAuraOutputTest : public WaylandTest {
+class WaylandZAuraOutputTest : public WaylandTestSimpleWithAuraShell {
  public:
   WaylandZAuraOutputTest() = default;
   WaylandZAuraOutputTest(const WaylandZAuraOutputTest&) = delete;
@@ -26,7 +26,7 @@ class WaylandZAuraOutputTest : public WaylandTest {
   ~WaylandZAuraOutputTest() override = default;
 
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimpleWithAuraShell::SetUp();
 
     // Set default values for the output.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -51,7 +51,7 @@ class WaylandZAuraOutputTest : public WaylandTest {
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
 
-TEST_P(WaylandZAuraOutputTest, HandleInsets) {
+TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -78,7 +78,7 @@ TEST_P(WaylandZAuraOutputTest, HandleInsets) {
   EXPECT_EQ(wayland_output->insets(), insets);
 }
 
-TEST_P(WaylandZAuraOutputTest, HandleLogicalTransform) {
+TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -97,7 +97,7 @@ TEST_P(WaylandZAuraOutputTest, HandleLogicalTransform) {
 }
 
 // Test edge case display ids are converted correctly.
-TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
+TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
   const int64_t kTestIds[] = {
       std::numeric_limits<int64_t>::min(),
       std::numeric_limits<int64_t>::min() + 1,
@@ -121,11 +121,5 @@ TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
     EXPECT_EQ(id, aura_output.display_id().value());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTest,
-    WaylandZAuraOutputTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

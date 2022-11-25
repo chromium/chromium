@@ -257,4 +257,18 @@ void WaylandTestSimple::TearDown() {
   WaylandTestBase::TearDown();
 }
 
+WaylandTestSimpleWithAuraShell::WaylandTestSimpleWithAuraShell()
+    : WaylandTestBase(
+          {.enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}) {}
+
+WaylandTestSimpleWithAuraShell::~WaylandTestSimpleWithAuraShell() = default;
+
+void WaylandTestSimpleWithAuraShell::SetUp() {
+  WaylandTestBase::SetUp();
+}
+
+void WaylandTestSimpleWithAuraShell ::TearDown() {
+  WaylandTestBase::TearDown();
+}
+
 }  // namespace ui

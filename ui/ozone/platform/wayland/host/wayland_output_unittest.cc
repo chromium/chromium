@@ -13,11 +13,11 @@ using ::testing::Values;
 
 namespace ui {
 
-using WaylandOutputTest = WaylandTest;
+using WaylandOutputTest = WaylandTestSimple;
 
 // Tests that name and description fall back to ones in the WaylandOutput if
 // XDGOutput is not created.
-TEST_P(WaylandOutputTest, NameAndDescriptionFallback) {
+TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   constexpr char kWlOutputName[] = "kWlOutputName";
   constexpr char kWlOutputDescription[] = "kWlOutputDescription";
   constexpr char kXDGOutputName[] = "kXDGOutputName";
@@ -46,15 +46,5 @@ TEST_P(WaylandOutputTest, NameAndDescriptionFallback) {
   EXPECT_EQ(wl_output->name(), kWlOutputName);
   EXPECT_EQ(wl_output->description(), kWlOutputDescription);
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandOutputTest,
-                         Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandOutputTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

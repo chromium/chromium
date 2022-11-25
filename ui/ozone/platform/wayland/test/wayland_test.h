@@ -153,6 +153,20 @@ class WaylandTestSimple : public WaylandTestBase, public ::testing::Test {
   void TearDown() override;
 };
 
+// Version of WaylandTest that uses simple test fixtures (TEST_F) and
+// aura_shell enabled.
+class WaylandTestSimpleWithAuraShell : public WaylandTestBase,
+                                       public ::testing::Test {
+ public:
+  WaylandTestSimpleWithAuraShell();
+  WaylandTestSimpleWithAuraShell(const WaylandTestSimple&) = delete;
+  WaylandTestSimpleWithAuraShell& operator=(const WaylandTestSimple&) = delete;
+  ~WaylandTestSimpleWithAuraShell() override;
+
+  void SetUp() override;
+  void TearDown() override;
+};
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_TEST_H_

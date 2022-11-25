@@ -1321,4 +1321,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          LazilyConfiguredScreenTest,
                          Values(wl::ServerConfig{}));
 
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    LazilyConfiguredScreenTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+
 }  // namespace ui
