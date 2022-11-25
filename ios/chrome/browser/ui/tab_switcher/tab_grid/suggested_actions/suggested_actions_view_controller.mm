@@ -8,6 +8,7 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
@@ -85,7 +86,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableView setTableHeaderView:[[UIView alloc] initWithFrame:frame]];
   [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:frame]];
 
-  self.tableView.layer.cornerRadius = kGridCellCornerRadius;
+  if (UseSymbols()) {
+    self.tableView.layer.cornerRadius = kGridCellCornerRadius;
+  } else {
+    self.tableView.layer.cornerRadius = kLegacyGridCellCornerRadius;
+  }
   [self loadModel];
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];

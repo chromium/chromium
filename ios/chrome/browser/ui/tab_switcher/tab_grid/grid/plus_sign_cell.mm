@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -25,7 +26,11 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.layer.cornerRadius = kGridCellCornerRadius;
+    if (UseSymbols()) {
+      self.layer.cornerRadius = kGridCellCornerRadius;
+    } else {
+      self.layer.cornerRadius = kLegacyGridCellCornerRadius;
+    }
     self.layer.masksToBounds = YES;
     UIImageView* plusSignView = [[UIImageView alloc]
         initWithImage:[UIImage imageNamed:@"grid_cell_plus_sign"]];

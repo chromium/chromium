@@ -24,10 +24,6 @@ colorset("grid_theme_selection_tint_color") {
   sources = [ "grid_theme_selection_tint_color.colorset/Contents.json" ]
 }
 
-colorset("grid_theme_dark_selection_tint_color") {
-  sources = [ "grid_theme_dark_selection_tint_color.colorset/Contents.json" ]
-}
-
 colorset("plus_sign_grid_cell_background_color") {
   sources = [ "plus_sign_grid_cell_background_color.colorset/Contents.json" ]
 }

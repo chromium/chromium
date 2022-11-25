@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -16,7 +17,11 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.layer.cornerRadius = kGridCellCornerRadius;
+    if (UseSymbols()) {
+      self.layer.cornerRadius = kGridCellCornerRadius;
+    } else {
+      self.layer.cornerRadius = kLegacyGridCellCornerRadius;
+    }
     self.layer.masksToBounds = YES;
     self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     self.backgroundView = [[UIView alloc] init];

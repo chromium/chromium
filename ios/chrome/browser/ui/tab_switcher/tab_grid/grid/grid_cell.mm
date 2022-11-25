@@ -106,7 +106,11 @@ void PositionView(UIView* view, CGPoint point) {
 
     [self setupSelectedBackgroundView];
     UIView* contentView = self.contentView;
-    contentView.layer.cornerRadius = kGridCellCornerRadius;
+    if (UseSymbols()) {
+      contentView.layer.cornerRadius = kGridCellCornerRadius;
+    } else {
+      contentView.layer.cornerRadius = kLegacyGridCellCornerRadius;
+    }
     contentView.layer.masksToBounds = YES;
     UIView* topBar = [self setupTopBar];
     TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
@@ -137,7 +141,11 @@ void PositionView(UIView* view, CGPoint point) {
     self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
-    self.layer.cornerRadius = kGridCellCornerRadius;
+    if (UseSymbols()) {
+      self.layer.cornerRadius = kGridCellCornerRadius;
+    } else {
+      self.layer.cornerRadius = kLegacyGridCellCornerRadius;
+    }
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = CGSizeMake(0, 0);
     self.layer.shadowRadius = 4.0f;
@@ -255,12 +263,16 @@ void PositionView(UIView* view, CGPoint point) {
   // enough here.
   switch (theme) {
     case GridThemeLight:
-      self.border.layer.borderColor =
-          [UIColor colorNamed:@"grid_theme_selection_tint_color"].CGColor;
+      if (UseSymbols()) {
+        self.border.layer.borderColor =
+            [UIColor colorNamed:kStaticBlue400Color].CGColor;
+      } else {
+        self.border.layer.borderColor =
+            [UIColor colorNamed:@"grid_theme_selection_tint_color"].CGColor;
+      }
       break;
     case GridThemeDark:
-      self.border.layer.borderColor =
-          [UIColor colorNamed:@"grid_theme_dark_selection_tint_color"].CGColor;
+      self.border.layer.borderColor = UIColor.whiteColor.CGColor;
       break;
   }
 
@@ -575,9 +587,15 @@ void PositionView(UIView* view, CGPoint point) {
   border.hidden = self.isInSelectionMode;
   border.translatesAutoresizingMaskIntoConstraints = NO;
   border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  border.layer.cornerRadius = kGridCellCornerRadius +
-                              kGridCellSelectionRingGapWidth +
-                              kGridCellSelectionRingTintWidth;
+  if (UseSymbols()) {
+    border.layer.cornerRadius = kGridCellCornerRadius +
+                                kGridCellSelectionRingGapWidth +
+                                kGridCellSelectionRingTintWidth;
+  } else {
+    border.layer.cornerRadius = kLegacyGridCellCornerRadius +
+                                kGridCellSelectionRingGapWidth +
+                                kGridCellSelectionRingTintWidth;
+  }
   border.layer.borderWidth = kGridCellSelectionRingTintWidth;
   [self.selectedBackgroundView addSubview:border];
   _border = border;

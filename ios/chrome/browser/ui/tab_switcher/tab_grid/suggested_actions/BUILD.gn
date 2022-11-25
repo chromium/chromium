@@ -19,6 +19,7 @@ source_set("suggested_actions") {
     "resources",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",
