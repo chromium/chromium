@@ -615,13 +615,8 @@ set_defaults("component") {
 #
 # As remote execution requires inputs to be made more explicit than is normally
 # expected with gn, you may find that setting allow_remote to true will result
-# in many missing file errors. In most cases, this should be resolved by
-# explicitly declaring these inputs/sources.
-#
-# However, it may be impractical to determine these inputs in gn. For such
-# cases, the invoker can specify a custom input processor, which are currently
-# defined and implemented in //build/util/action_remote.py. The appropriate
-# value should be set using the custom_processor arg.
+# in many missing file errors. This should be resolved by explicitly declaring
+# these inputs/sources.
 
 # Variables needed by rbe.gni aren't available at the top of this file.
 import("//build/toolchain/rbe.gni")
