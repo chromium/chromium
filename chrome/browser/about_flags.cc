@@ -3282,6 +3282,17 @@ const FeatureEntry::FeatureVariation
          std::size(kGalleryAppPdfEditNotificationOpenWithGalleryApp), nullptr}};
 #endif
 
+constexpr FeatureEntry::FeatureParam
+    kPasswordStrengthIndicatorMinimizedVariation[] = {
+        {password_manager::features::
+             kPasswordStrengthIndicatorWithMinimizedState.name,
+         "true"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kPasswordStrengthIndicatorVariations[] = {
+        {" with minimized state", kPasswordStrengthIndicatorMinimizedVariation,
+         std::size(kPasswordStrengthIndicatorMinimizedVariation), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8250,8 +8261,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"password-strength-indicator",
      flag_descriptions::kPasswordStrengthIndicatorName,
      flag_descriptions::kPasswordStrengthIndicatorDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordStrengthIndicator)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kPasswordStrengthIndicator,
+         kPasswordStrengthIndicatorVariations,
+         "PasswordStrengthIndicator")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"partial-split", flag_descriptions::kPartialSplit,

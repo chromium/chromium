@@ -97,6 +97,13 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
     &kPasswordDomainCapabilitiesFetching, "live_experiment", false};
 
+// If true, then password strength indicator will display a minimized state for
+// passwords with more than 5 characters as long as they are weak. Otherwise,
+// the full dropdown will be displayed as long as the password is weak.
+constexpr base::FeatureParam<bool>
+    kPasswordStrengthIndicatorWithMinimizedState = {
+        &kPasswordStrengthIndicator, "strength_indicator_minimized", false};
+
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
 
