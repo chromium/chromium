@@ -11,6 +11,10 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -49,6 +53,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_source.h"
@@ -226,6 +231,29 @@ void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {
 void TestControllerAsh::ExitTabletMode(ExitTabletModeCallback callback) {
   SetTabletModeEnabled(false);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::GetShelfItemState(const std::string& app_id,
+                                          GetShelfItemStateCallback callback) {
+  ash::RootWindowController* const controller =
+      ash::Shell::GetRootWindowControllerWithDisplayId(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  ash::ShelfView* const shelf_view =
+      controller->shelf()->GetShelfViewForTesting();
+  const ash::ShelfAppButton* const app_button =
+      shelf_view->GetShelfAppButton(ash::ShelfID(app_id));
+  uint32_t state = static_cast<uint32_t>(mojom::ShelfItemState::kNormal);
+  if (app_button) {
+    if (app_button->state() & ash::ShelfAppButton::STATE_ACTIVE)
+      state = static_cast<uint32_t>(mojom::ShelfItemState::kActive);
+    else if (app_button->state() & ash::ShelfAppButton::STATE_RUNNING)
+      state = static_cast<uint32_t>(mojom::ShelfItemState::kRunning);
+
+    if (app_button->state() & ash::ShelfAppButton::STATE_NOTIFICATION)
+      state |= static_cast<uint32_t>(mojom::ShelfItemState::kNotification);
+  }
+
+  std::move(callback).Run(state);
 }
 
 void TestControllerAsh::GetContextMenuForShelfItem(

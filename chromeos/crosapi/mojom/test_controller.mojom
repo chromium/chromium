@@ -10,6 +10,20 @@ import "chromeos/crosapi/mojom/tts.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// The enum of possible states for a shelf item.
+// Each value must be a power of 2.
+[Stable, Extensible]
+enum ShelfItemState {
+  // Usually represents an app with no running instance.
+  [Default] kNormal = 0,
+  // Shelf item has a running instance.
+  kRunning = 1,
+  // Shelf item owns the window that is currently active.
+  kActive = 2,
+  // App has at least 1 notification.
+  kNotification = 4
+};
+
 [Stable, Extensible]
 enum TouchEventType {
   kUnknown = 0,
@@ -148,8 +162,8 @@ interface InputMethodTestInterface {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 21
-// Next method id: 32
+// Next version: 22
+// Next method id: 33
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -324,4 +338,8 @@ interface TestController {
   // Clear App Service state, including from any previously installed apps.
   [MinVersion=20]
   ReinitializeAppService@31() => ();
+
+  // Reads state of Shelf item. Returns a bitmask of `ShelfItemState` values.
+  [MinVersion=21]
+  GetShelfItemState@32(string app_id) => (uint32 state);
 };

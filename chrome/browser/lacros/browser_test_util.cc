@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -156,6 +155,47 @@ void WaitForShelfItem(const std::string& id, bool exists) {
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_shelf_item));
   outer_loop.Run();
+}
+
+// TODO(crbug.com/1208258): Use ASSERT or EXPECT macros instead of CHECK.
+void WaitForShelfItemState(const std::string& id,
+                           uint32_t state,
+                           const base::Location& location) {
+  base::RunLoop outer_loop;
+  auto wait_for_state = base::BindRepeating(
+      [](base::RunLoop* outer_loop, const std::string& id,
+         uint32_t expected_state) {
+        auto* lacros_service = chromeos::LacrosService::Get();
+        CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
+        int interface_version = lacros_service->GetInterfaceVersion(
+            crosapi::mojom::TestController::Uuid_);
+        int min_version =
+            static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                                 kGetShelfItemStateMinVersion);
+        CHECK_GE(interface_version, min_version);
+
+        base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        uint32_t actual_state =
+            static_cast<uint32_t>(crosapi::mojom::ShelfItemState::kNormal);
+        lacros_service->GetRemote<crosapi::mojom::TestController>()
+            ->GetShelfItemState(id,
+                                base::BindOnce(
+                                    [](base::RunLoop* loop, uint32_t* out_state,
+                                       uint32_t state) {
+                                      *out_state = std::move(state);
+                                      loop->Quit();
+                                    },
+                                    &inner_loop, &actual_state));
+        inner_loop.Run();
+
+        if (actual_state == expected_state)
+          outer_loop->Quit();
+      },
+      &outer_loop, id, state);
+
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_state));
+  outer_loop.Run(location);
 }
 
 // Sends a TestController message to Ash to send a mouse click to this |window|.

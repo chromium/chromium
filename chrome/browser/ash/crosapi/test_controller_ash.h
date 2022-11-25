@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -49,6 +51,8 @@ class TestControllerAsh : public mojom::TestController,
   void ExitOverviewMode(ExitOverviewModeCallback callback) override;
   void EnterTabletMode(EnterTabletModeCallback callback) override;
   void ExitTabletMode(ExitTabletModeCallback callback) override;
+  void GetShelfItemState(const std::string& app_id,
+                         GetShelfItemStateCallback callback) override;
   void GetContextMenuForShelfItem(
       const std::string& item_id,
       GetContextMenuForShelfItemCallback callback) override;

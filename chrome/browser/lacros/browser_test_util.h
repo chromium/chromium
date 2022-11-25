@@ -7,7 +7,12 @@
 #ifndef CHROME_BROWSER_LACROS_BROWSER_TEST_UTIL_H_
 #define CHROME_BROWSER_LACROS_BROWSER_TEST_UTIL_H_
 
+#include <stdint.h>
+
 #include <string>
+
+#include "base/location.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 
 namespace aura {
 class Window;
@@ -32,6 +37,13 @@ void WaitForWindowDestruction(const std::string& id);
 // Waits for the shelf item to either be created or destroyed, matching
 // |exists|.
 void WaitForShelfItem(const std::string& id, bool exists);
+
+// Waits for the app to be closed, running or active, matching |state|,
+// a bitmask of |crosapi::mojom::ShelfItemState| values.
+void WaitForShelfItemState(
+    const std::string& id,
+    uint32_t state,
+    const base::Location& location = base::Location::Current());
 
 // This function relies on |window| already being available in ash. It prompts
 // ash to send the Wayland events associated with a mouse click to the |window|.
