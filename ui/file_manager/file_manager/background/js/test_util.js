@@ -383,13 +383,20 @@ test.util.sync.execCommand = (contentWindow, command) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {Array<Object>} taskList List of tasks to be returned in
  *     fileManagerPrivate.getFileTasks().
+ * @param {boolean}
+ *     isPolicyDefault Whether the default is set by policy.
  * @return {boolean} Always return true.
  */
-test.util.sync.overrideTasks = (contentWindow, taskList) => {
+test.util.sync
+    .overrideTasks = (contentWindow, taskList, isPolicyDefault = false) => {
   const getFileTasks = (entries, onTasks) => {
     // Call onTask asynchronously (same with original getFileTasks).
     setTimeout(() => {
-      onTasks({tasks: taskList});
+      const policyDefaultHandlerStatus = isPolicyDefault ?
+          chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+              .DEFAULT_HANDLER_ASSIGNED_BY_POLICY :
+          undefined;
+      onTasks({tasks: taskList, policyDefaultHandlerStatus});
     }, 0);
   };
 

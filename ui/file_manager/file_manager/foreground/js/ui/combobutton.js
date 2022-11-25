@@ -47,11 +47,16 @@ export class ComboButton extends MultiMenuButton {
 
   addDropDownItem(item) {
     this.multiple = true;
-    const menuitem = this.menu.addMenuItem(item);
+    const menuitem = /** @type {!MenuItem} */ (this.menu.addMenuItem(item));
 
     // If menu is files-menu, decorate menu item as FilesMenuItem.
     if (this.menu.classList.contains('files-menu')) {
       decorate(menuitem, FilesMenuItem);
+      /** @type {!FilesMenuItem} */ (menuitem).toggleManagedIcon(
+          /*visible=*/ item.isPolicyDefault);
+      if (item.isDefault) {
+        /** @type {!FilesMenuItem} */ (menuitem).setIsDefaultAttribute();
+      }
     }
 
     menuitem.data = item;

@@ -238,9 +238,12 @@ export class TaskController {
       // an item to change default task.
       if (defaultTask) {
         combobutton.addSeparator();
+        // TODO(greengrape): Ensure that the passed object is a `DropdownItem`.
         const changeDefaultMenuItem = combobutton.addDropDownItem({
           type: TaskMenuItemType.CHANGE_DEFAULT_TASK,
           label: str('CHANGE_DEFAULT_MENU_ITEM'),
+          isDefault: false,
+          isPolicyDefault: false,
         });
         changeDefaultMenuItem.classList.add('change-default');
 
@@ -272,7 +275,9 @@ export class TaskController {
     for (const task of tasks) {
       if (task === fileTasks.defaultTask) {
         const title = task.title + ' ' + str('DEFAULT_TASK_LABEL');
-        items.push(createDropdownItem(task, title, true, true));
+        items.push(createDropdownItem(
+            task, title, /*bold=*/ true, /*isDefault=*/ true,
+            /*isPolicyDefault=*/ !!fileTasks.getPolicyDefaultHandlerStatus()));
       } else {
         items.push(createDropdownItem(task));
       }
@@ -480,6 +485,7 @@ export class TaskController {
     if (taskCount > 0) {
       if (defaultTask) {
         const menuItem = this.ui_.defaultTaskMenuItem;
+        menuItem.setIsDefaultAttribute();
         /**
          * Menu icon can be controlled by either `iconEndImage` or
          * `iconEndFileType`, since the default task menu item DOM is shared,
@@ -499,6 +505,9 @@ export class TaskController {
         } else {
           menuItem.setIconEndHidden(true);
         }
+
+        menuItem.toggleManagedIcon(
+            /*visible=*/ !!openTasks.policyDefaultHandlerStatus);
 
         menuItem.label = defaultTask.title;
         menuItem.descriptor = defaultTask.descriptor;
@@ -656,6 +665,7 @@ export interface DropdownItem {
   task: chrome.fileManagerPrivate.FileTask;
   bold: boolean;
   isDefault: boolean;
+  isPolicyDefault: boolean;
   isGenericFileHandler?: boolean;
 }
 
@@ -666,7 +676,7 @@ export interface DropdownItem {
  */
 function createDropdownItem(
     task: chrome.fileManagerPrivate.FileTask, title?: string, bold?: boolean,
-    isDefault?: boolean): DropdownItem {
+    isDefault?: boolean, isPolicyDefault?: boolean): DropdownItem {
   return {
     type: TaskMenuItemType.RUN_TASK,
     label: title || task.title,
@@ -675,6 +685,7 @@ function createDropdownItem(
     task: task,
     bold: bold || false,
     isDefault: isDefault || false,
+    isPolicyDefault: isPolicyDefault || false,
     isGenericFileHandler: task.isGenericFileHandler,
   };
 }

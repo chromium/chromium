@@ -932,19 +932,22 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * @param {string} appId App window Id.
    * @param {string|!Array<string>} query Query to find the elements.
-   * @return {!Promise<!ElementObject>} Promise to be fulfilled with the
+   * @return {!Promise<!Array<!ElementObject>>} Promise to be fulfilled with the
    *     elements.
    * @private
    */
   async queryElements_(appId, query) {
-    return this.callRemoteTestUtil('deepQueryAllElements', appId, [query]);
+    if (typeof query === 'string') {
+      query = [query];
+    }
+    return this.callRemoteTestUtil('deepQueryAllElements', appId, query);
   }
 
   /**
    * Returns the menu as ElementObject and its menu-items (including separators)
    * in the `items` property.
    * @param {string} appId App window Id.
-   * @param {string|!Array<string>} menu Query to find the elements.
+   * @param {string|!Array<string>} menu The name of the menu.
    * @return {!Promise<undefined|!ElementObject>} Promise to be fulfilled with
    *     the menu.
    */
@@ -953,7 +956,10 @@ export class RemoteCallFilesApp extends RemoteCall {
     // TODO: Implement for other menus.
     if (menu === 'context-menu') {
       menuId = '#file-context-menu';
+    } else if (menu == 'tasks') {
+      menuId = '#tasks-menu';
     }
+
     if (!menuId) {
       console.error(`Invalid menu '${menu}'`);
       return;
@@ -964,5 +970,15 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Query all the menu items.
     menuElement.items = await this.queryElements_(appId, `${menuId} > *`);
     return menuElement;
+  }
+
+  /**
+   * Displays the "tasks" menu from the "OPEN" button dropdown.
+   * The caller code has to prepare the selection to have multiple tasks.
+   * @param {string} appId App window Id.
+   */
+  async expandOpenDropdown(appId) {
+    // Wait the OPEN button to have multiple tasks.
+    await this.waitAndClickElement(appId, '#tasks[multiple]');
   }
 }

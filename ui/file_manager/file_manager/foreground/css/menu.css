@@ -73,7 +73,9 @@ cr-menu[hidden].files-menu.animating {
 }
 
 cr-menu.files-menu > cr-menu-item {
-  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 }
 
 /* Icon on the left of the item label for cr.ui.FilesMenuItem.
@@ -91,7 +93,7 @@ cr-menu.files-menu cr-menu-item .icon {
 }
 
 cr-menu.files-menu cr-menu-item .icon.start {
-  display: inline-block;
+  align-self: flex-start;
   margin-inline-end: 8px;
 }
 
@@ -99,22 +101,22 @@ cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
   display: none;
 }
 
-cr-menu.files-menu cr-menu-item .icon.end {
-  float: right;
+cr-menu.files-menu cr-menu-item .icon.managed {
+  background-image: url(chrome://resources/images/business.svg);
+  margin-inline-start: 8px;
 }
 
-html[dir='rtl'] cr-menu.files-menu cr-menu-item .icon.end {
-  float: left;
+cr-menu.files-menu cr-menu-item .icon.end {
+  align-self: flex-end;
+  margin-inline-start: 8px;
 }
 
 cr-menu.files-menu > cr-menu-item > .icon {
-  position: relative;
   z-index: 1;
 }
 
 cr-menu.files-menu > cr-menu-item > span {
-  position: relative;
-  vertical-align: middle;
+  flex-grow: 1;
   z-index: 1;
 }
 

@@ -346,6 +346,7 @@ checked_in_dts_files = [
   "file_manager/foreground/js/ui/command.d.ts",
   "file_manager/foreground/js/ui/list.d.ts",
   "file_manager/foreground/js/ui/list_item.d.ts",
+  "file_manager/foreground/js/ui/menu_item.d.ts",
   "file_manager/foreground/js/ui/multi_menu_button.d.ts",
 ]
 

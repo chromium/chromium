@@ -882,7 +882,6 @@ testcase.checkContextMenuFocus = async () => {
   chrome.test.assertEq('menuitem', focusedElement.attributes['role']);
 };
 
-
 testcase.checkDefaultTask = async () => {
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(
@@ -924,4 +923,67 @@ testcase.checkDefaultTask = async () => {
       el => el.attributes.id === 'default-task-menu-item');
   chrome.test.assertTrue(!!folderDefaultTaskItem);
   chrome.test.assertTrue(folderDefaultTaskItem.hidden);
+};
+
+testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
+  // Open FilesApp on Downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Force a task for the `hello` file.
+  const fakeDefaultTask = new FakeTask(
+      /* isDefault */ true,
+      {appId: 'dummyId1', taskType: 'app', actionId: 'open-with'},
+      'DummyDefaultTask');
+  const fakeSecondaryTask = new FakeTask(
+      /* isDefault */ false,
+      {appId: 'dummyId2', taskType: 'app', actionId: 'open-with'},
+      'DummySecondaryTask');
+
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId,
+      [[fakeDefaultTask, fakeSecondaryTask], /*isPolicyDefault=*/ true]);
+
+  // Display the context menu.
+  await remoteCall.showContextMenuFor(appId, ENTRIES.hello.nameText);
+
+  // Get the context menu.
+  const contextMenu = await remoteCall.getMenu(appId, 'context-menu');
+
+  // Check the default task item is visible and has is-default/is-managed
+  // properties set.
+  const contextMenuDefaultTaskItem = contextMenu['items'].find(
+      el => el.attributes.id === 'default-task-menu-item');
+  chrome.test.assertTrue(!!contextMenuDefaultTaskItem);
+  chrome.test.assertFalse(contextMenuDefaultTaskItem.hidden);
+  chrome.test.assertEq(contextMenuDefaultTaskItem.text, 'DummyDefaultTask');
+  chrome.test.assertTrue('is-default' in contextMenuDefaultTaskItem.attributes);
+  chrome.test.assertTrue('is-managed' in contextMenuDefaultTaskItem.attributes);
+
+  // Dismiss the context menu.
+  await remoteCall.dismissMenu(appId);
+
+  // Display the tasks menu.
+  await remoteCall.expandOpenDropdown(appId);
+
+  // Get the tasks menu.
+  const tasksMenu = await remoteCall.getMenu(appId, 'tasks');
+
+  // Check the default task item is visible and has is-default/is-managed
+  // properties set.
+  const tasksMenuDefaultTaskItem = tasksMenu['items'][0];
+  chrome.test.assertTrue(!!tasksMenuDefaultTaskItem);
+  chrome.test.assertFalse(tasksMenuDefaultTaskItem.hidden);
+  chrome.test.assertTrue(
+      tasksMenuDefaultTaskItem.text.includes('DummyDefaultTask'));
+  chrome.test.assertTrue('is-default' in tasksMenuDefaultTaskItem.attributes);
+  chrome.test.assertTrue('is-managed' in tasksMenuDefaultTaskItem.attributes);
+
+  // Check that the remaining items do not have is-default/is-managed
+  // properties.
+  const tasksMenuNonDefaultTaskItems = tasksMenu['items'].slice(1);
+  for (const nonDefaultTaskItem of tasksMenuNonDefaultTaskItems) {
+    chrome.test.assertFalse('is-default' in nonDefaultTaskItem.attributes);
+    chrome.test.assertFalse('is-managed' in nonDefaultTaskItem.attributes);
+  }
 };

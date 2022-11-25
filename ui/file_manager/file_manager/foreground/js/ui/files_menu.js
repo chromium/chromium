@@ -26,6 +26,9 @@ export class FilesMenuItem extends MenuItem {
     this.iconStart_ = null;
 
     /** @private {?HTMLElement} */
+    this.iconManaged_ = null;
+
+    /** @private {?HTMLElement} */
     this.iconEnd_ = null;
 
     /** @private {?HTMLElement} */
@@ -64,20 +67,26 @@ export class FilesMenuItem extends MenuItem {
           assertInstanceof(document.createElement('div'), HTMLElement);
       this.iconStart_.classList.add('icon', 'start');
 
+      this.iconManaged_ =
+          assertInstanceof(document.createElement('div'), HTMLElement);
+      this.iconManaged_.classList.add('icon', 'managed');
+
       this.iconEnd_ =
           assertInstanceof(document.createElement('div'), HTMLElement);
       this.iconEnd_.classList.add('icon', 'end');
       /**
-       * This is hidden by default because most of the menu items don't require
-       * an end icon, the component which uses end icon should explicitly make
-       * it visible.
+       * This is hidden by default because most of the menu items require
+       * neither the end icon nor the managed icon, so the component that
+       * plans to use either end icon should explicitly make it visible.
        */
       this.setIconEndHidden(true);
+      this.toggleManagedIcon(/*visible=*/ false);
 
       // Override with standard menu item elements.
       this.textContent = '';
       this.appendChild(this.iconStart_);
       this.appendChild(this.label_);
+      this.appendChild(this.iconManaged_);
       this.appendChild(this.iconEnd_);
     }
 
@@ -235,6 +244,30 @@ export class FilesMenuItem extends MenuItem {
    */
   set iconStartFileType(value) {
     this.iconStart_.setAttribute('file-type-icon', value);
+  }
+
+  /**
+   * Sets or removes the `is-managed` attribute.
+   * @param {boolean} isManaged
+   */
+  toggleIsManagedAttribute(isManaged) {
+    this.toggleAttribute('is-managed', isManaged);
+  }
+
+  /**
+   * Sets the `is-default` attribute.
+   */
+  setIsDefaultAttribute() {
+    this.toggleAttribute('is-default', true);
+  }
+
+  /**
+   * Toggles visibility of the `Managed by Policy` icon.
+   * @param {boolean} visible
+   */
+  toggleManagedIcon(visible) {
+    this.iconManaged_.toggleAttribute('hidden', !visible);
+    this.toggleIsManagedAttribute(visible);
   }
 
   /**
