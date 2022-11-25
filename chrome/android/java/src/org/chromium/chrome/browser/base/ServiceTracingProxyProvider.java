@@ -100,9 +100,8 @@ public class ServiceTracingProxyProvider {
         // A lot of service bindings were uncached pre-R, so easier to start tracing at R+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
 
-        // TODO(https://crbug.com/1339984): Enable for Beta once this has time to stabilize on
-        // Canary/Dev.
-        if (VersionConstants.CHANNEL > Channel.DEV) return false;
+        // Don't ship this tracing to Stable.
+        if (VersionConstants.CHANNEL > Channel.BETA) return false;
 
         // static init failed.
         if (sGetDeclaredMethod == null) return false;
