@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MOUNTER_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MOUNTER_H_
 
+#include <map>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -17,6 +18,8 @@ namespace file_manager {
 using FuseBoxDiskMountManager = ::ash::disks::DiskMountManager;
 
 using FuseBoxMountInfo = ::ash::disks::DiskMountManager::MountPoint;
+
+using UrlReadOnlyPair = std::pair<std::string, bool>;
 
 class FuseBoxMounter {
  public:
@@ -52,6 +55,10 @@ class FuseBoxMounter {
  private:
   // True if this fusebox instance is mounted.
   bool mounted_ = false;
+
+  // A list of `AttachStorage` invocations that were called prior to the fusebox
+  // mounting, these get called when fusebox successfully mounts.
+  std::map<std::string, UrlReadOnlyPair> pending_attach_storage_calls_;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<FuseBoxMounter> weak_ptr_factory_{this};
