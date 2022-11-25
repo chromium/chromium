@@ -59,6 +59,8 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
   if (!value_to_set)
     return false;
 
+  bool multiple_idents_allowed =
+      peek == CSSValueID::kStyleset || peek == CSSValueID::kCharacterVariant;
   CSSFunctionValue* function_value =
       MakeGarbageCollected<CSSFunctionValue>(peek);
   CSSParserTokenRange range_copy = range;
@@ -67,6 +69,9 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
       ConsumeCommaSeparatedList(ConsumeCustomIdent, inner, context);
   if (!inner.AtEnd())
     return false;
+  if (aliases->length() > 1 && !multiple_idents_allowed) {
+    return false;
+  }
   range = range_copy;
   *value_to_set = MakeGarbageCollected<cssvalue::CSSAlternateValue>(
       *function_value, *aliases);
