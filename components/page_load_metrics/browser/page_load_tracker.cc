@@ -879,6 +879,14 @@ void PageLoadTracker::OnSubFrameInputTimingChanged(
   }
 }
 
+void PageLoadTracker::OnPageRenderDataChanged(
+    const mojom::FrameRenderDataUpdate& render_data,
+    bool is_main_frame) {
+  for (const auto& observer : observers_) {
+    observer->OnPageRenderDataUpdate(render_data, is_main_frame);
+  }
+}
+
 void PageLoadTracker::OnSubFrameRenderDataChanged(
     content::RenderFrameHost* rfh,
     const mojom::FrameRenderDataUpdate& render_data) {

@@ -346,6 +346,13 @@ class PageLoadMetricsObserverInterface {
   // available at the page level.
   virtual void OnPageInputTimingUpdate(uint64_t num_input_events) = 0;
 
+  // OnPageRenderDataChanged is triggered when an updated PageRenderData is
+  // available at the page level. This method may be called multiple times over
+  // the course of the page load.
+  virtual void OnPageRenderDataUpdate(
+      const mojom::FrameRenderDataUpdate& render_data,
+      bool is_main_frame) = 0;
+
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the
   // course of the page load.

@@ -127,6 +127,9 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubFrameInputTimingChanged(
         content::RenderFrameHost* rfh,
         const mojom::InputTiming& input_timing_delta) = 0;
+    virtual void OnPageRenderDataChanged(
+        const mojom::FrameRenderDataUpdate& render_data,
+        bool is_main_frame) = 0;
     virtual void OnSubFrameRenderDataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameRenderDataUpdate& render_data) = 0;
@@ -264,7 +267,8 @@ class PageLoadMetricsUpdateDispatcher {
   void MaybeUpdateMainFrameViewportRect(
       const mojom::FrameMetadataPtr& frame_metadata);
 
-  void UpdatePageRenderData(const mojom::FrameRenderDataUpdate& render_data);
+  void UpdatePageRenderData(const mojom::FrameRenderDataUpdate& render_data,
+                            bool is_main_frame);
   void UpdateMainFrameRenderData(
       const mojom::FrameRenderDataUpdate& render_data);
   void OnSubFrameRenderDataChanged(

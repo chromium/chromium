@@ -15,6 +15,7 @@
 using absl::optional;
 using base::Bucket;
 using base::Value;
+using ShiftFrame = page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
 using trace_analyzer::TraceEventVector;
@@ -22,14 +23,6 @@ using ukm::builders::PageLoad;
 
 class LayoutInstabilityTest : public MetricIntegrationTest {
  protected:
-  // Identify which frame the layout shift happens.
-  enum class ShiftFrame {
-    LayoutShiftOnlyInMainFrame,
-    LayoutShiftOnlyInSubFrame,
-    LayoutShiftOnlyInBothFrames,
-    NoLayoutShift,
-  };
-
   // This function will load and run the WPT, merge the layout shift scores
   // from both the main frame and sub-frame.
   // We need to specify which frame the layout shift happens and whether we
@@ -50,16 +43,9 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
                                    bool check_UKM_UMA_metrics) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
-  // Wait for the layout shift in the main frame
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLayoutShift);
-  // Wait for the layout shift in the sub frame
-  if (frame == ShiftFrame::LayoutShiftOnlyInSubFrame ||
-      frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
-    waiter->AddSubFrameExpectation(
-        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
-            kLayoutShift);
-  }
+  // Wait for the layout shift in the desired frame.
+  waiter->AddPageLayoutShiftExpectation(frame);
+
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/" + test_file);
@@ -86,7 +72,6 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
 
   waiter->Wait();
-
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
@@ -202,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
                        CumulativeLayoutShift_OneSecondGap) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLayoutShift);
+  waiter->AddPageLayoutShiftExpectation();
+
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/simple-block-movement.html");
@@ -214,6 +199,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   // Have the program sleep for 1 second to ensure the one second gap
   base::PlatformThread::Sleep(base::Milliseconds(1000));
 
+  waiter->AddPageLayoutShiftExpectation();
   // Simulate the layout shift and this layout shift should be in the
   // new window session because it has been 1 second since last
   // layout shift. The first layout shift in simple-block-movement moves
@@ -257,11 +243,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   EXPECT_GT(*record_startTime_two, *record_startTime_one + 1000);
   EXPECT_GT(*record_score_two, *record_score_one);
 
-  // TODO(crbug.com/1385897): We have issue with test_waiter while there are multiple
-  // layout shifts. Should replace Sleep() with waiter->Wait() after
-  // fixing the test_waiter for layout shifts.
-  base::PlatformThread::Sleep(base::Milliseconds(1000));
-
+  // Wait for the second layout shift after the one second gap.
+  waiter->Wait();
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
@@ -285,8 +268,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
                        CumulativeLayoutShift_hadRecentInput) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLayoutShift);
+  waiter->AddPageLayoutShiftExpectation();
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/simple-block-movement.html");

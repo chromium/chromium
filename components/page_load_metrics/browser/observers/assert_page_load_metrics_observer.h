@@ -124,6 +124,11 @@ class AssertPageLoadMetricsObserver final
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::InputTiming& input_timing_delta) override;
 
+  // Page render data update
+  void OnPageRenderDataUpdate(
+      const page_load_metrics::mojom::FrameRenderDataUpdate& render_data,
+      bool is_main_frame) override;
+
   // Subframe events
   void OnSubFrameRenderDataUpdate(
       content::RenderFrameHost* subframe_rfh,

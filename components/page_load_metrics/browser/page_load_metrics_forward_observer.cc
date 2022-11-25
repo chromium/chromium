@@ -150,6 +150,10 @@ void PageLoadMetricsForwardObserver::OnInputTimingUpdate(
 void PageLoadMetricsForwardObserver::OnPageInputTimingUpdate(
     uint64_t num_input_events) {}
 
+void PageLoadMetricsForwardObserver::OnPageRenderDataUpdate(
+    const mojom::FrameRenderDataUpdate& render_data,
+    bool is_main_frame) {}
+
 void PageLoadMetricsForwardObserver::OnSubFrameRenderDataUpdate(
     content::RenderFrameHost* subframe_rfh,
     const mojom::FrameRenderDataUpdate& render_data) {

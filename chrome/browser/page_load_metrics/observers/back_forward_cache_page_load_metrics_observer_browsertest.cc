@@ -350,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     auto waiter = CreatePageLoadMetricsTestWaiter();
     waiter->AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kFirstPaint);
-    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                   TimingField::kLayoutShift);
+    waiter->AddPageLayoutShiftExpectation();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
     waiter->Wait();
   }
@@ -370,8 +369,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     waiter->AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
             kFirstPaintAfterBackForwardCacheRestore);
-    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                   TimingField::kLayoutShift);
+    waiter->AddPageLayoutShiftExpectation();
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
@@ -526,8 +524,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     auto waiter = CreatePageLoadMetricsTestWaiter();
     waiter->AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kFirstPaint);
-    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                   TimingField::kLayoutShift);
+    waiter->AddPageLayoutShiftExpectation();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
     waiter->Wait();
   }
@@ -546,8 +543,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     waiter->AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
             kFirstPaintAfterBackForwardCacheRestore);
-    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                   TimingField::kLayoutShift);
+    waiter->AddPageLayoutShiftExpectation();
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());

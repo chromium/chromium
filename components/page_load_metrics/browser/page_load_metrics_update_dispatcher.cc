@@ -500,7 +500,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSubFrameInputTiming(render_frame_host, *input_timing_delta);
   }
   UpdatePageInputTiming(*input_timing_delta);
-  UpdatePageRenderData(*render_data);
+  UpdatePageRenderData(*render_data, is_main_frame);
   if (!is_main_frame) {
     // This path is just for the AMP metrics.
     OnSubFrameRenderDataChanged(render_frame_host, *render_data);
@@ -777,7 +777,8 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
-    const mojom::FrameRenderDataUpdate& render_data) {
+    const mojom::FrameRenderDataUpdate& render_data,
+    bool is_main_frame) {
   page_render_data_.layout_shift_score += render_data.layout_shift_delta;
   layout_shift_normalization_.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
@@ -804,6 +805,7 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
       render_data.all_layout_call_count_delta;
   page_render_data_.ng_layout_call_count +=
       render_data.ng_layout_call_count_delta;
+  client_->OnPageRenderDataChanged(render_data, is_main_frame);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(

@@ -366,6 +366,12 @@ void AssertPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
   DCHECK(started_);
 }
 
+void AssertPageLoadMetricsObserver::OnPageRenderDataUpdate(
+    const page_load_metrics::mojom::FrameRenderDataUpdate& render_data,
+    bool is_main_frame) {
+  DCHECK(committed_);
+}
+
 void AssertPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::FrameRenderDataUpdate& render_data) {

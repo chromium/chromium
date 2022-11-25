@@ -38,12 +38,20 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     kFirstInputDelay = 1 << 8,
     kFirstPaintAfterBackForwardCacheRestore = 1 << 9,
     kFirstInputDelayAfterBackForwardCacheRestore = 1 << 10,
-    kLayoutShift = 1 << 11,
-    kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 12,
-    kFirstScrollDelay = 1 << 13,
-    kSoftNavigationCountUpdated = 1 << 14,
-    kTotalInputDelay = 1 << 15,
+    kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 11,
+    kFirstScrollDelay = 1 << 12,
+    kSoftNavigationCountUpdated = 1 << 13,
+    kTotalInputDelay = 1 << 14,
   };
+
+  // Identify which frame the layout shift happens.
+  enum class ShiftFrame {
+    LayoutShiftOnlyInMainFrame,
+    LayoutShiftOnlyInSubFrame,
+    LayoutShiftOnlyInBothFrames,
+    NoLayoutShift,
+  };
+
   using FrameTreeNodeId =
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
 
@@ -107,6 +115,10 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // Adds all |blink::LoadingBehaviorFlag|s set in |behavior_flags| to the
   // set of expected behaviors.
   void AddLoadingBehaviorExpectation(int behavior_flags);
+
+  // Add a main/sub frame layout shift expectation.
+  void AddPageLayoutShiftExpectation(
+      ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame);
 
   // Whether the given TimingField was observed in the page.
   bool DidObserveInPage(TimingField field) const;
@@ -198,9 +210,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   TimingFieldBitSet GetMatchedBits(
       const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::mojom::FrameMetadata& metadata,
-      const PageRenderData* render_data,
-      bool is_main_frame);
+      const page_load_metrics::mojom::FrameMetadata& metadata);
 
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
@@ -245,6 +255,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features);
 
+  // Updates |observed_.layout_shift_| to record any update of new layout
+  // shift. Stops waiting if expectations are satisfied after update.
+  void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
+                              bool is_main_frame);
+
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);
 
@@ -279,6 +294,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool MainFrameViewportRectExpectationsSatisfied() const;
   bool MemoryUpdateExpectationsSatisfied() const;
   bool TotalInputDelayExpectationsSatisfied() const;
+  bool LayoutShiftExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -303,6 +319,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     std::unordered_set<content::GlobalRenderFrameHostId,
                        content::GlobalRenderFrameHostIdHasher>
         memory_update_frame_ids_;
+    bool layout_shift_ = false;
   };
   State expected_;
   State observed_;
@@ -328,6 +345,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   uint64_t current_num_input_events_ = 0;
   uint64_t expected_num_input_events_ = 0;
+
+  ShiftFrame shift_frame_ = ShiftFrame::NoLayoutShift;
 
   base::WeakPtrFactory<PageLoadMetricsTestWaiter> weak_factory_{this};
 
