@@ -493,6 +493,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_update_o4c_list_via_a2c2(
       base::FeatureList::IsEnabled(kArcUpdateO4CListViaA2C2));
 
+  // Controls whether WebView Zygote is lazily initialized in ARC.
+  request.set_enable_web_view_zygote_lazy_init(
+      base::FeatureList::IsEnabled(arc::kEnableLazyWebViewInit));
+
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {
     base::SystemMemoryInfoKB info;

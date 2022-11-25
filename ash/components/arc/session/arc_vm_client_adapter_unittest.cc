@@ -2800,6 +2800,7 @@ TEST_F(ArcVmClientAdapterTest, LazyWebViewInitEnabled) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.enable_web_view_zygote_lazy_init());
   EXPECT_TRUE(base::Contains(request.params(),
                              "androidboot.arc.web_view_zygote.lazy_init=1"));
 }
@@ -2812,6 +2813,7 @@ TEST_F(ArcVmClientAdapterTest, LazyWebViewInitDisabled) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.enable_web_view_zygote_lazy_init());
   EXPECT_FALSE(HasParameterWithPrefix(
       request, "androidboot.arc.web_view_zygote.lazy_init="));
 }
