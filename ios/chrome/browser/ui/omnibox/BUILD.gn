@@ -231,8 +231,10 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//components/google/core/common",
+    "//components/history/core/browser",
     "//components/variations:variations",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",

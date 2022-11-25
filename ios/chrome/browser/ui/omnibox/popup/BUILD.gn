@@ -260,6 +260,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":popup",
+    ":popup_accessibility_identifier_constants",
     ":popup_internal",
     ":popup_ui",
     ":popup_ui_protocols",
@@ -282,14 +283,19 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "omnibox_popup_egtest.mm" ]
+  sources = [
+    "omnibox_popup_carousel_egtest.mm",
+    "omnibox_popup_egtest.mm",
+  ]
   deps = [
     ":popup_accessibility_identifier_constants",
     "//base",
+    "//components/omnibox/common",
     "//components/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/history:constants",
+    "//ios/chrome/browser/ui/omnibox:eg_test_support+eg2",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",

@@ -17,6 +17,9 @@
 // YES if the forcing was successful.
 + (BOOL)forceVariationID:(int)variationID;
 
+// Blocks `URL` from most visited sites.
++ (void)blockURLFromTopSites:(NSString*)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_APP_INTERFACE_H_

@@ -19,6 +19,12 @@ NSString* const kOmniboxPopupRowAppendAccessibilityIdentifier =
 NSString* const kOmniboxPopupTableViewAccessibilityIdentifier =
     @"OmniboxPopupTableViewAccessibilityIdentifier";
 
+NSString* const kOmniboxCarouselCellAccessibilityIdentifier =
+    @"OmniboxCarouselCellAccessibilityIdentifier";
+
+NSString* const kOmniboxCarouselControlLabelAccessibilityIdentifier =
+    @"OmniboxCarouselControlLabelAccessibilityIdentifier";
+
 @implementation OmniboxPopupAccessibilityIdentifierHelper
 
 + (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath {

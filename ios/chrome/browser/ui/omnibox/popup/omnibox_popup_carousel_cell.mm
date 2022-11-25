@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -106,6 +107,7 @@ CAGradientLayer* CarouselGradientLayer() {
     self.contentView.isAccessibilityElement = NO;
     self.backgroundColor =
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    self.accessibilityIdentifier = kOmniboxCarouselCellAccessibilityIdentifier;
   }
   return self;
 }

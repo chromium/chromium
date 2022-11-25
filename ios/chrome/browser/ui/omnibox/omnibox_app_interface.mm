@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
+#import "components/history/core/browser/top_sites.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -49,6 +53,15 @@ bool GoogleToLocalhostURLRewriter(GURL* url, web::BrowserState* browser_state) {
          variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
              /*variation_ids=*/{base::NumberToString(variationID)},
              /*command_line_variation_ids=*/"");
+}
+
++ (void)blockURLFromTopSites:(NSString*)URL {
+  scoped_refptr<history::TopSites> top_sites =
+      ios::TopSitesFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  if (top_sites) {
+    top_sites->AddBlockedUrl(GURL(base::SysNSStringToUTF8(URL)));
+  }
 }
 
 @end

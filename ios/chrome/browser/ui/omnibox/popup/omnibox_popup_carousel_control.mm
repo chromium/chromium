@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -14,10 +15,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-/// Accessibility identifier for the label.
-NSString* const kCarouselControlLabelIdentifier =
-    @"CarouselControlLabelIdentifier";
 
 namespace {
 
@@ -49,7 +46,8 @@ UILabel* CarouselItemLabel() {
   label.numberOfLines = kLabelNumLines;
   label.textAlignment = NSTextAlignmentCenter;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  label.accessibilityIdentifier = kCarouselControlLabelIdentifier;
+  label.accessibilityIdentifier =
+      kOmniboxCarouselControlLabelAccessibilityIdentifier;
   return label;
 }
 

@@ -16,6 +16,12 @@ extern NSString* const kOmniboxPopupRowAppendAccessibilityIdentifier;
 // A11y identifier for the table view containing suggestions.
 extern NSString* const kOmniboxPopupTableViewAccessibilityIdentifier;
 
+// A11y identifier for the carousel cell.
+extern NSString* const kOmniboxCarouselCellAccessibilityIdentifier;
+
+// A11y identifier for the label of Carousel Control.
+extern NSString* const kOmniboxCarouselControlLabelAccessibilityIdentifier;
+
 // Helper to generate omnibox popup accessibility identifiers.
 @interface OmniboxPopupAccessibilityIdentifierHelper : NSObject
 
