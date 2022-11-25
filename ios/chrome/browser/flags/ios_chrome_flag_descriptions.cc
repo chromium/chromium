@@ -771,6 +771,11 @@ extern const char kTrendingQueriesModuleName[] = "Show Trending Queries module";
 extern const char kTrendingQueriesModuleDescription[] =
     "When enabled, the trending queries module will be shown in the NTP";
 
+extern const char kTruncateTableViewCellTitleName[] =
+    "Truncate title of table view cell";
+extern const char kTruncateTableViewCellTitleDescription[] =
+    "When enabled, title of table view cell is truncated and not wrapped";
+
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
     "Update history entry points in Incognito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
