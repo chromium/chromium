@@ -936,7 +936,8 @@ TEST_F(ProfileManagerGuestTest, GetGuestProfilePath) {
 
 TEST_F(ProfileManagerGuestTest, GuestProfileAttributes) {
   // In these tests, the primary profile is a guest one.
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  Profile* primary_profile = ProfileManager::GetLastUsedProfile();
+  ASSERT_TRUE(primary_profile);
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

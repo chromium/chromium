@@ -668,6 +668,8 @@ Profile* ProfileManager::GetLastUsedProfile() {
 // static
 Profile* ProfileManager::GetLastUsedProfileIfLoaded() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)  // Can be null in unit tests.
+    return nullptr;
   return profile_manager->GetProfileByPath(
       profile_manager->GetLastUsedProfileDir());
 }
@@ -730,6 +732,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   return to_return;
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // static
 Profile* ProfileManager::GetPrimaryUserProfile() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -762,6 +765,7 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
 
   return profile_manager->GetActiveUserOrOffTheRecordProfile();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 // static
 Profile* ProfileManager::GetActiveUserProfile() {
