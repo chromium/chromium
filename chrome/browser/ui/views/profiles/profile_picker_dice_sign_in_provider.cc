@@ -260,13 +260,14 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       contents(), host_->GetPreferredBackgroundColor());
 
-  std::move(switch_finished_callback).Run(true);
-  host_->ShowScreen(
-      contents(), GetSigninURL(host_->ShouldUseDarkColors()),
+  base::OnceClosure navigation_finished_closure =
       base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,
                      // Unretained is enough as the callback is called by the
                      // host itself.
-                     base::Unretained(host_), /*visible=*/true));
+                     base::Unretained(host_), /*visible=*/true)
+          .Then(base::BindOnce(std::move(switch_finished_callback), true));
+  host_->ShowScreen(contents(), GetSigninURL(host_->ShouldUseDarkColors()),
+                    std::move(navigation_finished_closure));
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {
