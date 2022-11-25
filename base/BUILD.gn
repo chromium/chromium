@@ -4736,6 +4736,11 @@ fuzzer_test("escape_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("file_path_fuzzer") {
+  sources = [ "files/file_path_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("string_number_conversions_fuzzer") {
   sources = [ "strings/string_number_conversions_fuzzer.cc" ]
   deps = [ "//base" ]

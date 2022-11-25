@@ -493,6 +493,9 @@ class BASE_EXPORT FilePath {
   bool IsContentUri() const;
 #endif
 
+  // NOTE: When adding a new public method, consider adding it to
+  // file_path_fuzzer.cc as well.
+
  private:
   // Remove trailing separators from this object.  If the path is absolute, it
   // will never be stripped any more than to refer to the absolute root
