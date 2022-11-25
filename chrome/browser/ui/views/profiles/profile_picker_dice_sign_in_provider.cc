@@ -53,8 +53,12 @@ bool IsExternalURL(const GURL& url) {
 }  // namespace
 
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
-    ProfilePickerWebContentsHost* host)
-    : host_(host) {}
+    ProfilePickerWebContentsHost* host,
+    absl::optional<base::FilePath> profile_path)
+    : host_(host), profile_path_(profile_path) {
+  // If the path is provided, it must be non-empty.
+  DCHECK(!(profile_path.has_value() && profile_path->empty()));
+}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
@@ -63,9 +67,10 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
     if (IsInitialized()) {
       contents()->SetDelegate(nullptr);
 
-      // Schedule the profile for deletion if it wasn't deleted yet, since it's
-      // not needed any more.
-      if (!ProfileManager::IsProfileDirectoryMarkedForDeletion(
+      // Schedule the ephemeral profile for deletion if it wasn't deleted yet,
+      // since it's not needed any more.
+      if (!profile_path_.has_value() &&
+          !ProfileManager::IsProfileDirectoryMarkedForDeletion(
               profile_->GetPath())) {
         g_browser_process->profile_manager()
             ->ScheduleEphemeralProfileForDeletion(profile_->GetPath());
@@ -93,17 +98,24 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
     return;
   }
 
-  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
-  // Silently create the new profile for browsing on GAIA (so that the sign-in
-  // cookies are stored in the right profile).
-  ProfileManager::CreateMultiProfileAsync(
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .ChooseNameForNewProfile(icon_index),
-      icon_index, /*is_hidden=*/true,
-      base::BindOnce(&ProfilePickerDiceSignInProvider::OnProfileInitialized,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(switch_finished_callback)));
+  auto profile_init_callback = base::BindOnce(
+      &ProfilePickerDiceSignInProvider::OnProfileInitialized,
+      weak_ptr_factory_.GetWeakPtr(), std::move(switch_finished_callback));
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_path_.has_value()) {
+    bool profile_exists = profile_manager->LoadProfileByPath(
+        profile_path_.value(), /*incognito=*/false,
+        std::move(profile_init_callback));
+    DCHECK(profile_exists);
+  } else {
+    size_t icon_index = profiles::GetPlaceholderAvatarIndex();
+    // Silently create the new profile for browsing on GAIA (so that the sign-in
+    // cookies are stored in the right profile).
+    ProfileManager::CreateMultiProfileAsync(
+        profile_manager->GetProfileAttributesStorage().ChooseNameForNewProfile(
+            icon_index),
+        icon_index, /*is_hidden=*/true, std::move(profile_init_callback));
+  }
 }
 
 void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
@@ -156,7 +168,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
 bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  return host_->HandleKeyboardEvent(source, event);
+  return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
 }
 
 void ProfilePickerDiceSignInProvider::NavigationStateChanged(
@@ -184,7 +196,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
 
 web_modal::WebContentsModalDialogHost*
 ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
-  return host_;
+  return host_->GetWebContentsModalDialogHost();
 }
 
 void ProfilePickerDiceSignInProvider::OnRefreshTokenUpdatedForAccount(
@@ -250,10 +262,13 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 
-  // Apply the default theme to get consistent colors for toolbars (this matters
-  // for linux where the 'system' theme is used for new profiles).
-  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-  theme_service->UseDefaultTheme();
+  // Apply the default theme to get consistent colors for toolbars in newly
+  // created profiles (this matters for linux where the 'system' theme is used
+  // for new profiles).
+  if (!profile_path_.has_value()) {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+    theme_service->UseDefaultTheme();
+  }
 
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).

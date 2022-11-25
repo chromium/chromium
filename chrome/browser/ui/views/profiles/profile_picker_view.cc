@@ -454,6 +454,15 @@ content::WebContents* ProfilePickerView::GetPickerContents() const {
   return contents_.get();
 }
 
+content::WebContentsDelegate* ProfilePickerView::GetWebContentsDelegate() {
+  return this;
+}
+
+web_modal::WebContentsModalDialogHost*
+ProfilePickerView::GetWebContentsModalDialogHost() {
+  return this;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   if (!visible) {

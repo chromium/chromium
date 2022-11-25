@@ -41,7 +41,9 @@ class WebContents;
 
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
-                          public ProfilePickerWebContentsHost {
+                          public ProfilePickerWebContentsHost,
+                          public content::WebContentsDelegate,
+                          public web_modal::WebContentsModalDialogHost {
  public:
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
@@ -66,6 +68,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
           base::OnceClosure()) override;
   bool ShouldUseDarkColors() const override;
   content::WebContents* GetPickerContents() const override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+  content::WebContentsDelegate* GetWebContentsDelegate() override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;

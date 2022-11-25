@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct CoreAccountInfo;
 class ProfilePickerWebContentsHost;
@@ -23,7 +25,7 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-// Class responsible for the GAIA sign-in within profile creation flow.
+// Class responsible for the GAIA sign-in within profile management flows.
 class ProfilePickerDiceSignInProvider
     : public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate,
@@ -42,7 +44,13 @@ class ProfilePickerDiceSignInProvider
                               bool is_saml,
                               std::unique_ptr<content::WebContents>)>;
 
-  explicit ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host);
+  // Creates a new provider that will render the Gaia sign-in flow in `host` for
+  // a profile at `profile_path`.
+  // If no `profile_path` is provided, a new profile (and associated directory)
+  // will be created.
+  explicit ProfilePickerDiceSignInProvider(
+      ProfilePickerWebContentsHost* host,
+      absl::optional<base::FilePath> profile_path = absl::nullopt);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
       delete;
@@ -65,7 +73,7 @@ class ProfilePickerDiceSignInProvider
   void NavigateBack();
 
   // Returns whether the flow is initialized (i.e. whether `profile_` has been
-  // created).
+  // loaded).
   bool IsInitialized() const;
 
   content::WebContents* contents() const { return contents_.get(); }
@@ -97,7 +105,7 @@ class ProfilePickerDiceSignInProvider
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // Initializes the flow with the newly created profile.
+  // Initializes the flow with the newly created or loaded profile.
   void OnProfileInitialized(
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
@@ -113,6 +121,9 @@ class ProfilePickerDiceSignInProvider
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
+  // The path to the profile in which to perform the sign-in. If absent, a new
+  // profile will be created.
+  const absl::optional<base::FilePath> profile_path_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 
@@ -121,7 +132,7 @@ class ProfilePickerDiceSignInProvider
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
-  // The web contents backed by `profile`. This is used for displaying the
+  // The web contents backed by `profile_`. This is used for displaying the
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
 
