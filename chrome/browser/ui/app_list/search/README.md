@@ -54,12 +54,41 @@ determine their final display order. Located inside the `ranking/` subdirectory.
 5. Results are published to the UI.
 
 Steps #3-5 may be repeated several times due to the asynchronous nature of #3.
-The `BurnInController' contains timing logic to reduce the UI effect of results
+The `BurnInController` contains timing logic to reduce the UI effect of results
 popping in.
 
 Training may be performed:
 
 6. The user clicks on a result.
-7. The 'SearchController' forwards this information to its various search
+7. The `SearchController` forwards this information to its various search
    providers and rankers, which can use this information to inform future
    searches and ranking.
+
+## Life of zero state
+
+Zero state is the UI shown before the user types any query. It consists of the
+Continue section (recent files), the recent apps row, as well as the app grid.
+The `SearchController` handles ranking for continue files and recent apps.
+
+Steps #1-4 closely mirror query search, but publishing is handled differently.
+
+1. The user opens the launcher. This eventually reaches
+   `SearchController::StartZeroState(callback, timeout)`.
+   - The UI blocks itself until `callback` is run, which by contract should
+     happen no later than `timeout`.
+2. The `SearchController` forwards this request to its various zero state
+   providers.
+3. Providers return their results **asynchronously**.
+4. The `SearchController` collects these results and performs ranking on the
+   results and their categories.
+5. Once either of the following two conditions is satisfied, the
+   `SearchController` will publish any existing results and unblock the UI:
+   - `timeout` has elapsed,
+   - All zero state providers have returned.
+6. If there are any providers still pending, the `SearchController` waits until
+   all of them have returned and publishes results once more to the UI.
+
+The most common situation is that recent apps return before the timeout, but the
+continue files providers return later.
+
+Training may be performed, the same as with query search.
