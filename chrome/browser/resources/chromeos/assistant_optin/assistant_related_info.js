@@ -10,7 +10,24 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../components/buttons/oobe_next_button.js';
+import '../components/buttons/oobe_text_button.js';
+import '../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../components/dialogs/oobe_adaptive_dialog.js';
+import './assistant_common_styles.m.js';
+import './assistant_icon.m.js';
+import './setting_zippy.js';
+
+import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.m.js';
+
+import {BrowserProxyImpl} from './browser_proxy.m.js';
+import {AssistantNativeIconType, webviewStripLinksContentScript} from './utils.m.js';
+
 
 /**
  * Name of the screen.
@@ -22,8 +39,8 @@ const RELATED_INFO_SCREEN_ID = 'RelatedInfoScreen';
  * @constructor
  * @extends {PolymerElement}
  */
-const AssistantRelatedInfoBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
+const AssistantRelatedInfoBase =
+    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
 
 /**
  * @polymer
@@ -33,7 +50,9 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
     return 'assistant-related-info';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -148,8 +167,8 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
      */
     this.screenShown_ = false;
 
-    /** @private {?assistant.BrowserProxy} */
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+    /** @private {?BrowserProxy} */
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
   }
 
   setUrlTemplateForTesting(url) {
@@ -314,8 +333,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
       this.reloadPage();
       this.initialized_ = true;
     } else {
-      Polymer.RenderStatus.afterNextRender(
-          this, () => this.$['next-button'].focus());
+      afterNextRender(this, () => this.$['next-button'].focus());
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
     }
