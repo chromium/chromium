@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class Navigator;
 class ScriptPromise;
 class ScriptState;
@@ -17,7 +18,9 @@ class NavigatorInstalledApp final {
   STATIC_ONLY(NavigatorInstalledApp);
 
  public:
-  static ScriptPromise getInstalledRelatedApps(ScriptState*, Navigator&);
+  static ScriptPromise getInstalledRelatedApps(ScriptState*,
+                                               Navigator&,
+                                               ExceptionState& exception_state);
 };
 
 }  // namespace blink
