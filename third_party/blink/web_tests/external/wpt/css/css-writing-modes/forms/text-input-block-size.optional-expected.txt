@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+FAIL Test input[type=text] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=text] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=email] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=email] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=password] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=password] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=search] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=search] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=tel] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=tel] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=url] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=url] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=number] block-size in writing-mode: vertical-lr assert_true: input has correct aspect ratio for default input size expected true got false
+FAIL Test input[type=number] block-size in writing-mode: vertical-rl assert_true: input has correct aspect ratio for default input size expected true got false
+Harness: the test ran to completion.
+

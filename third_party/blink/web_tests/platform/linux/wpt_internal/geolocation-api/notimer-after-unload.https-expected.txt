@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL geolocation callbacks are not invoked after page unload promise_test: Unhandled rejection with value: "Geolocation callback invoked after page unload"
+Harness: the test ran to completion.
+
