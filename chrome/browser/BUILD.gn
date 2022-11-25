@@ -6397,6 +6397,7 @@ static_library("browser") {
 
     if (is_win) {
       deps += [
+        "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/win",
         "//components/device_signals/core/browser/win",
         "//components/device_signals/core/common/win",
       ]

@@ -18,6 +18,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/management/management_service.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/win/win_signals_decorator.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
@@ -53,6 +57,10 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
   decorators.push_back(std::make_unique<ContextSignalsDecorator>(
       enterprise_signals::ContextInfoFetcher::CreateInstance(
           profile, ConnectorsServiceFactory::GetForBrowserContext(profile))));
+
+#if BUILDFLAG(IS_WIN)
+  decorators.push_back(std::make_unique<WinSignalsDecorator>());
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   policy::CloudPolicyStore* store = nullptr;
