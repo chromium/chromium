@@ -488,27 +488,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.FCM.Revocation" enum="FcmTokenRevocation"
-    expires_after="2023-10-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records when Chrome has no app-level Notifications permission on Android and
-    receives a push message.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.FCM.Revocation.ResetGracePeriod" units="ms"
-    expires_after="2023-10-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records when Chrome has app-level Notifications permission on Android,
-    receives a push message but the grace period was initialized and needs to be
-    reset.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.MissingOSLevelPermission.Action"
     enum="PermissionAction" expires_after="2023-05-07">
   <owner>andypaicu@chromium.org</owner>

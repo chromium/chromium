@@ -577,15 +577,6 @@ public class NotificationPlatformBridge {
         } else {
             suspendedCallback.onResult(false /* suspended */);
         }
-
-        // If Chrome has no app-level notifications permission, check if an origin-level permission
-        // should be revoked.
-        // Notifications permission is not allowed for incognito profile.
-        if (!origin.isEmpty() && !incognito) {
-            PushMessagingServiceBridge.getInstance().verify(origin, profileId,
-                    NotificationSystemStatusUtil.getAppNotificationStatus()
-                            != NotificationSystemStatusUtil.APP_NOTIFICATIONS_STATUS_DISABLED);
-        }
     }
 
     private NotificationBuilderBase prepareNotificationBuilder(String notificationId,
