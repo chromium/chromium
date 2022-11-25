@@ -13,7 +13,6 @@ import logging
 import os
 import posixpath
 import re
-import string
 import subprocess
 import sys
 import tempfile
@@ -494,29 +493,6 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
         num_deduced, num_arbitrations, num_unassigned)
 
 
-def _NameStringLiterals(raw_symbols, elf_path):
-  # Assign ASCII-readable string literals names like "string contents".
-  STRING_LENGTH_CUTOFF = 30
-
-  PRINTABLE_TBL = [False] * 256
-  for ch in string.printable:
-    PRINTABLE_TBL[ord(ch)] = True
-
-  for sym, name in string_extract.ReadStringLiterals(raw_symbols, elf_path):
-    # Newlines and tabs are used as delimiters in file_format.py
-    # At this point, names still have a terminating null byte.
-    name = name.replace(b'\n', b'').replace(b'\t', b'').strip(b'\00')
-    is_printable = all(PRINTABLE_TBL[c] for c in name)
-    if is_printable:
-      name = name.decode('ascii')
-      if len(name) > STRING_LENGTH_CUTOFF:
-        sym.full_name = '"{}[...]"'.format(name[:STRING_LENGTH_CUTOFF])
-      else:
-        sym.full_name = '"{}"'.format(name)
-    else:
-      sym.full_name = models.STRING_LITERAL_NAME
-
-
 def _ParseElfInfo(native_spec, outdir_context=None):
   """Adds ELF section ranges and symbols."""
   assert native_spec.map_path or native_spec.elf_path, (
@@ -646,7 +622,10 @@ def _ParseElfInfo(native_spec, outdir_context=None):
                                                    linker_map_extras)
 
   if native_spec.elf_path and native_spec.track_string_literals:
-    _NameStringLiterals(raw_symbols, native_spec.elf_path)
+    sym_and_string_literals = string_extract.ReadStringLiterals(
+        raw_symbols, native_spec.elf_path)
+    for sym, data in sym_and_string_literals:
+      sym.full_name = string_extract.GetNameOfStringLiteralBytes(data)
 
   # If we have an ELF file, use its ranges as the source of truth, since some
   # sections can differ from the .map.

@@ -29,6 +29,12 @@ ResolveStringPieces():
     each string_section. If found, translates to string_range and annotates it
     to the string_section.
   - Returns [{path: [string_ranges]} for each string_section].
+
+GetNameOfStringLiteralBytes():
+  Converts string literal bytes to printable form, useful for assigning
+  full_name of string literal symbols. If any non-printable character is found
+  then returns models.STRING_LITERAL_NAME. Otherwise the returned string is
+  quoted, and may be truncated (with "[...]" appended).
 """
 
 import ast
@@ -36,12 +42,20 @@ import collections
 import itertools
 import logging
 import os
+import string
 import subprocess
 
 import ar
 import models
 import parallel
 import path_util
+
+
+_STRING_LITERAL_LENGTH_CUTOFF = 30
+
+_PRINTABLE_TABLE = [False] * 256
+for ch in string.printable:
+  _PRINTABLE_TABLE[ord(ch)] = True
 
 
 def LookupElfRodataInfo(elf_path):
@@ -296,7 +310,9 @@ def ResolveStringPieces(encoded_strings_by_path, string_data):
 
 
 def ReadStringLiterals(symbols, elf_path, all_rodata=False):
-  """Returns an iterable of (symbol, string) for all string literal symbols.
+  """Returns an iterable of (symbol, data) for all string literal symbols.
+
+  Emitted string literal data are null-terminated bytes.
 
   Args:
     symbols: An iterable of Symbols
@@ -319,3 +335,15 @@ def ReadStringLiterals(symbols, elf_path, all_rodata=False):
       # ** merge strings (less common).
       if symbol.IsStringLiteral() or (all_rodata and data and data[-1] == 0):
         yield ((symbol, data))
+
+
+def GetNameOfStringLiteralBytes(b):
+  """Converts string literal bytes to printable form, may be truncated."""
+  b = b.replace(b'\n', b'').replace(b'\t', b'').strip(b'\00')
+  is_printable = all(_PRINTABLE_TABLE[c] for c in b)
+  if is_printable:
+    s = b.decode('ascii')
+    if len(s) > _STRING_LITERAL_LENGTH_CUTOFF:
+      return '"{}[...]"'.format(s[:_STRING_LITERAL_LENGTH_CUTOFF])
+    return '"{}"'.format(s)
+  return models.STRING_LITERAL_NAME
