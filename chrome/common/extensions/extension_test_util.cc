@@ -42,8 +42,8 @@ scoped_refptr<Extension> LoadManifestUnchecked(const std::string& dir,
       deserializer.Deserialize(nullptr, error);
   if (!result)
     return nullptr;
-  const base::DictionaryValue* dict;
-  CHECK(result->GetAsDictionary(&dict));
+  const base::Value::Dict* dict = result->GetIfDict();
+  CHECK(dict);
 
   scoped_refptr<Extension> extension = Extension::Create(
       path.DirName(), location, *dict, extra_flags, id, error);
