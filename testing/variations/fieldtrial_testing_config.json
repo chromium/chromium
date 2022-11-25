@@ -6866,38 +6866,6 @@
             ]
         }
     ],
-    "NetworkServiceMemoryCacheAndCodeCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableBoth",
-                    "enable_features": [
-                        "InMemoryCodeCache",
-                        "NetworkServiceMemoryCache"
-                    ]
-                },
-                {
-                    "name": "NetworkServiceMemoryCacheEnabled",
-                    "params": {
-                        "max_per_entry_size": "5242880",
-                        "max_total_size": "52428800"
-                    },
-                    "enable_features": [
-                        "NetworkServiceMemoryCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "NeuralPalmRejectionModelForRedrix": [
         {
             "platforms": [
