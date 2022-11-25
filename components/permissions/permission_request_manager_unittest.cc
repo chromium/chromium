@@ -915,11 +915,27 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
       {{QuietUiReason::kTriggeredByCrowdDeny, QuietUiReason::kEnabledInPrefs},
        {false, false},
        QuietUiReason::kTriggeredByCrowdDeny},
+      {{QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+        QuietUiReason::kEnabledInPrefs},
+       {false, false},
+       QuietUiReason::kTriggeredDueToDisruptiveBehavior},
+      {{QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+        QuietUiReason::kServicePredictedVeryUnlikelyGrant},
+       {false, false},
+       QuietUiReason::kTriggeredDueToDisruptiveBehavior},
+      {{QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+        QuietUiReason::kTriggeredByCrowdDeny},
+       {false, false},
+       QuietUiReason::kTriggeredDueToDisruptiveBehavior},
       // First selector is async but should still take priority even if it
       // returns later.
       {{QuietUiReason::kTriggeredByCrowdDeny, QuietUiReason::kEnabledInPrefs},
        {true, false},
        QuietUiReason::kTriggeredByCrowdDeny},
+      {{QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+        QuietUiReason::kEnabledInPrefs},
+       {true, false},
+       QuietUiReason::kTriggeredDueToDisruptiveBehavior},
       // The first selector that has a quiet ui decision should be used.
       {{absl::nullopt, absl::nullopt,
         QuietUiReason::kTriggeredDueToAbusiveContent,
@@ -947,6 +963,12 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
         absl::nullopt, QuietUiReason::kEnabledInPrefs},
        {true, true, true, true, true, true, true, true},
        QuietUiReason::kTriggeredDueToAbusiveRequests},
+      // Use a bunch of selectors both async and sync.
+      {{absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+        absl::nullopt, QuietUiReason::kEnabledInPrefs},
+       {true, false, false, true, true, true, false, false},
+       QuietUiReason::kTriggeredDueToDisruptiveBehavior},
   };
 
   for (const auto& test : kTests) {
