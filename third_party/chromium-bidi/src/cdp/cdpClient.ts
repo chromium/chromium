@@ -15,44 +15,16 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from 'events';
+import {EventEmitter} from '../utils/EventEmitter';
 import {CdpConnection} from './cdpConnection';
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-export interface CdpClient {
-  on<K extends keyof ProtocolMapping.Events>(
-    eventName: K,
-    handler: (...params: ProtocolMapping.Events[K]) => void
-  ): EventEmitter;
-  on(
-    eventName: 'event',
-    handler: (method: keyof ProtocolMapping.Events, ...params: any) => void
-  ): EventEmitter;
-  removeListener<K extends keyof ProtocolMapping.Events>(
-    eventName: K,
-    handler: (...params: ProtocolMapping.Events[K]) => void
-  ): EventEmitter;
-  removeListener(
-    eventName: 'event',
-    handler: (method: keyof ProtocolMapping.Events, ...params: any) => void
-  ): EventEmitter;
-  emit<K extends keyof ProtocolMapping.Events>(
-    eventName: K,
-    ...args: ProtocolMapping.Events[K]
-  ): void;
-  emit<K extends keyof ProtocolMapping.Events>(
-    eventName: 'event',
-    methodName: K,
-    ...args: ProtocolMapping.Events[K]
-  ): void;
-  sendCommand<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...params: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
-}
+type Mapping = {
+  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
+};
 
-class CdpClientImpl extends EventEmitter implements CdpClient {
+export class CdpClient extends EventEmitter<Mapping> {
   constructor(
     private _cdpConnection: CdpConnection,
     private _sessionId: string | null
@@ -84,5 +56,5 @@ export function createClient(
   cdpConnection: CdpConnection,
   sessionId: string | null
 ): CdpClient {
-  return new CdpClientImpl(cdpConnection, sessionId);
+  return new CdpClient(cdpConnection, sessionId);
 }

@@ -16,7 +16,7 @@
  */
 
 import {log, LogType} from '../../utils/log';
-import {EventEmitter} from 'events';
+import {EventEmitter} from '../../utils/EventEmitter';
 
 import {ITransport} from '../../utils/transport';
 import {Message} from '../domains/protocol/bidiProtocolTypes';
@@ -36,9 +36,9 @@ export interface IBidiServer {
   close(): void;
 }
 
-interface BidiServerEvents {
+type BidiServerEvents = {
   message: Message.RawCommandRequest;
-}
+};
 
 export class BiDiMessageEntry {
   readonly #message: Message.OutgoingMessage;
@@ -74,19 +74,10 @@ export class BiDiMessageEntry {
   }
 }
 
-export declare interface BidiServer {
-  on<U extends keyof BidiServerEvents>(
-    event: U,
-    listener: (params: BidiServerEvents[U]) => void
-  ): this;
-
-  emit<U extends keyof BidiServerEvents>(
-    event: U,
-    params: BidiServerEvents[U]
-  ): boolean;
-}
-
-export class BidiServer extends EventEmitter implements IBidiServer {
+export class BidiServer
+  extends EventEmitter<BidiServerEvents>
+  implements IBidiServer
+{
   #messageQueue: ProcessingQueue<BiDiMessageEntry>;
 
   constructor(private _transport: ITransport) {

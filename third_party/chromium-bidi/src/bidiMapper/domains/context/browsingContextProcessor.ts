@@ -68,13 +68,13 @@ export class BrowsingContextProcessor {
 
     this.#setTargetEventListeners(sessionCdpClient);
 
-    sessionCdpClient.on('event', async (method, params) => {
+    sessionCdpClient.on('*', async (method, params) => {
       await this.#eventManager.registerEvent(
         {
           method: 'cdp.eventReceived',
           params: {
             cdpMethod: method,
-            cdpParams: params,
+            cdpParams: params || {},
             cdpSession: sessionId,
           },
         },
@@ -299,10 +299,7 @@ export class BrowsingContextProcessor {
         eventParams: Protocol.Target.DetachedFromTargetEvent
       ) => {
         if (eventParams.targetId === commandParams.context) {
-          browserCdpClient.removeListener(
-            'Target.detachedFromTarget',
-            onContextDestroyed
-          );
+          browserCdpClient.off('Target.detachedFromTarget', onContextDestroyed);
           resolve();
         }
       };

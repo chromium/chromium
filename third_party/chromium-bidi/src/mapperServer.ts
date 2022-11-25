@@ -158,10 +158,7 @@ export class MapperServer {
           try {
             const parsed = JSON.parse(payload);
             if (parsed.launched) {
-              mapperCdpClient.removeListener(
-                'Runtime.bindingCalled',
-                onBindingCalled
-              );
+              mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
               resolve();
             }
           } catch (e) {

@@ -16,7 +16,6 @@
  */
 
 import typescript from '@rollup/plugin-typescript';
-import nodePolyfills from 'rollup-plugin-node-polyfills';
 import json from '@rollup/plugin-json';
 import {string} from 'rollup-plugin-string';
 import {terser} from 'rollup-plugin-terser';
@@ -32,7 +31,6 @@ export default {
   },
   plugins: [
     json(),
-    nodePolyfills(),
     string({
       include: 'src/bidiMapper/scripts/*.es',
     }),

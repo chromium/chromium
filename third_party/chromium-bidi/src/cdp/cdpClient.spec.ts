@@ -121,7 +121,7 @@ describe('CdpClient tests.', function () {
 
     // Register event callbacks.
     const genericCallback = sinon.fake();
-    cdpClient.on('event', genericCallback);
+    cdpClient.on('*', genericCallback);
 
     const typedCallback = sinon.fake();
     cdpClient.on('Target.attachedToTarget', typedCallback);
@@ -146,8 +146,8 @@ describe('CdpClient tests.', function () {
     typedCallback.resetHistory();
 
     // Unregister callbacks.
-    cdpClient.removeListener('event', genericCallback);
-    cdpClient.removeListener('Target.attachedToTarget', typedCallback);
+    cdpClient.off('*', genericCallback);
+    cdpClient.off('Target.attachedToTarget', typedCallback);
 
     // Send another CDP event.
     await mockCdpServer.emulateIncomingMessage({

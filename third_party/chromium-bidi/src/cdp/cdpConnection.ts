@@ -132,7 +132,6 @@ export class CdpConnection {
         : this.#browserCdpClient;
       if (client) {
         client.emit(parsed.method, parsed.params || {});
-        client.emit('event', parsed.method, parsed.params || {});
       }
     }
   };
