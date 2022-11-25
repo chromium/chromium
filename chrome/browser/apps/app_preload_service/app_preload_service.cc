@@ -9,8 +9,10 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/cxx20_erase_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
@@ -20,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
@@ -27,11 +30,13 @@ namespace {
 // {
 //  ...
 //  "apps.app_preload_service.state_manager": {
-//    first_run_completed: <bool>,
+//    "first_login_flow_started": <bool>,
+//    "first_login_flow_completed": <bool>
 //  },
 //  ...
 // }
 
+static constexpr char kFirstLoginFlowStartedKey[] = "first_login_flow_started";
 static constexpr char kFirstLoginFlowCompletedKey[] =
     "first_login_flow_completed";
 
@@ -44,16 +49,30 @@ static constexpr char kApsStateManager[] =
     "apps.app_preload_service.state_manager";
 }  // namespace prefs
 
+BASE_FEATURE(kAppPreloadServiceForceRun,
+             "AppPreloadServiceForceRun",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
       web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
-  // Check to see if the service has been run before.
-  auto is_first_run = GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
-  if (is_first_run == absl::nullopt) {
-    // the first run completed key has not been set, kick off the initial app
-    // installation flow.
+  // Preloads currently run for new users only. The "completed" pref is only set
+  // when preloads finish successfully, so preloads will be retried if they have
+  // been "started" but never "completed".
+  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
+        ->Set(kFirstLoginFlowStartedKey, true);
+  }
+
+  bool first_run_started =
+      GetStateManager().FindBool(kFirstLoginFlowStartedKey).value_or(false);
+  bool first_run_complete =
+      GetStateManager().FindBool(kFirstLoginFlowCompletedKey).value_or(false);
+
+  if ((first_run_started && !first_run_complete) ||
+      base::FeatureList::IsEnabled(kAppPreloadServiceForceRun)) {
     device_info_manager_->GetDeviceInfo(
         base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -102,12 +121,18 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
 
 void AppPreloadService::OnAllAppInstallationFinished(
     const std::vector<bool>& results) {
-  // TODO(b/259152331): Handle failed app installs.
-  ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
-      ->Set(kFirstLoginFlowCompletedKey, true);
+  OnFirstLoginFlowComplete(
+      base::ranges::all_of(results, [](bool b) { return b; }));
+}
 
-  if (check_first_pref_set_callback_) {
-    std::move(check_first_pref_set_callback_).Run();
+void AppPreloadService::OnFirstLoginFlowComplete(bool success) {
+  if (success) {
+    ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
+        ->Set(kFirstLoginFlowCompletedKey, true);
+  }
+
+  if (installation_complete_callback_) {
+    std::move(installation_complete_callback_).Run(success);
   }
 }
 

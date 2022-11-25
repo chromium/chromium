@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -24,6 +25,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -32,6 +35,7 @@
 
 namespace {
 
+constexpr char kFirstLoginFlowStartedKey[] = "first_login_flow_started";
 constexpr char kFirstLoginFlowCompletedKey[] = "first_login_flow_completed";
 
 constexpr char kApsStateManager[] = "apps.app_preload_service.state_manager";
@@ -45,25 +49,16 @@ const base::Value::Dict& GetStateManager(Profile* profile) {
 namespace apps {
 
 class AppPreloadServiceTest : public testing::Test {
- public:
-  void VerifyFirstLoginPrefSet(base::OnceClosure on_complete) {
-    // We expect that the key has been set after the first login flow has been
-    // completed.
-    auto flow_completed =
-        GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
-    EXPECT_NE(flow_completed, absl::nullopt);
-    EXPECT_TRUE(flow_completed.value());
-
-    std::move(on_complete).Run();
-  }
-
  protected:
-  AppPreloadServiceTest() {
+  AppPreloadServiceTest()
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kAppPreloadService);
   }
 
   void SetUp() override {
     testing::Test::SetUp();
+
+    GetFakeUserManager()->set_current_user_new(true);
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
@@ -76,12 +71,18 @@ class AppPreloadServiceTest : public testing::Test {
 
   Profile* GetProfile() { return profile_.get(); }
 
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+
   network::TestURLLoaderFactory url_loader_factory_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
+  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
@@ -121,28 +122,51 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
   EXPECT_NE(otr_guest_service, service);
 }
 
-TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
+TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {
+  // Ensure that the AppPreloadService is created.
+  AppPreloadService::Get(GetProfile());
+
+  auto flow_started =
+      GetStateManager(GetProfile()).FindBool(kFirstLoginFlowStartedKey);
+  auto flow_completed =
+      GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
+  // Since we're creating a new profile with no saved state, we expect the state
+  // to be "started", but not "completed".
+  EXPECT_TRUE(flow_started.has_value() && flow_started.value());
+  EXPECT_EQ(flow_completed, absl::nullopt);
+}
+
+TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
   proto::AppProvisioningResponse response;
-  auto* app = response.add_apps_to_install();
-  app->set_name("Peanut Types");
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
+  base::test::TestFuture<bool> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // We expect that the key has been set after the first login flow has been
+  // completed.
   auto flow_completed =
       GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
-  // Since we're creating a new profile with no saved state, we expect the
-  // absence of the key.
-  EXPECT_EQ(flow_completed, absl::nullopt);
+  EXPECT_NE(flow_completed, absl::nullopt);
+  EXPECT_TRUE(flow_completed.value());
+}
 
-  base::RunLoop run_loop;
-  auto* service = AppPreloadService::Get(GetProfile());
-  service->check_first_pref_set_callback_ =
-      base::BindOnce(&AppPreloadServiceTest::VerifyFirstLoginPrefSet,
-                     base::Unretained(this), run_loop.QuitClosure());
+TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
+  GetFakeUserManager()->set_current_user_new(false);
+  TestingProfile existing_user_profile;
 
-  run_loop.Run();
+  // Ensure that the AppPreloadService is created.
+  AppPreloadService::Get(&existing_user_profile);
+
+  auto flow_started = GetStateManager(&existing_user_profile)
+                          .FindBool(kFirstLoginFlowStartedKey);
+  // Existing users should not start the first-login flow.
+  EXPECT_FALSE(flow_started.has_value());
 }
 
 TEST_F(AppPreloadServiceTest, WebAppInstall) {
@@ -161,10 +185,10 @@ TEST_F(AppPreloadServiceTest, WebAppInstall) {
       AppPreloadServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<void> result;
+  base::test::TestFuture<bool> result;
   auto* service = AppPreloadService::Get(GetProfile());
-  service->check_first_pref_set_callback_ = result.GetCallback();
-  ASSERT_TRUE(result.Wait());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
 
   auto app_id = web_app::GenerateAppId(absl::nullopt,
                                        GURL("https://peanuttypes.com/app"));

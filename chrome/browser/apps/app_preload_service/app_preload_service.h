@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +30,10 @@ class WebAppPreloadInstaller;
 
 struct DeviceInfo;
 
+// Debugging feature to always run the App Preload Service on startup, even if
+// the Profile would not normally be eligible.
+BASE_DECLARE_FEATURE(kAppPreloadServiceForceRun);
+
 class AppPreloadService : public KeyedService {
  public:
   explicit AppPreloadService(Profile* profile);
@@ -41,20 +46,24 @@ class AppPreloadService : public KeyedService {
   // Registers prefs used for state management of the App Preload Service.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  void SetInstallationCompleteCallbackForTesting(
+      base::OnceCallback<void(bool)> callback) {
+    installation_complete_callback_ = std::move(callback);
+  }
+
+ private:
   // This function begins the process to get a list of apps from the back end
   // service, processes the list and installs the app list. This call should
   // only be used the first time a profile is created on the device as this call
   // installs a set of default and OEM apps.
   void StartAppInstallationForFirstLogin(DeviceInfo device_info);
-
- private:
-  friend class AppPreloadServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, FirstLoginPrefSet);
-  FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, WebAppInstall);
-
   // Processes the list of apps retrieved by the server connector.
   void OnGetAppsForFirstLoginCompleted(std::vector<PreloadAppDefinition> apps);
   void OnAllAppInstallationFinished(const std::vector<bool>& results);
+  // Called when the installation flow started by
+  // `StartAppInstallationForFirstLogin` is complete, with `success` indicating
+  // whether the overall flow was successful.
+  void OnFirstLoginFlowComplete(bool success);
 
   const base::Value::Dict& GetStateManager() const;
 
@@ -64,9 +73,9 @@ class AppPreloadService : public KeyedService {
   std::unique_ptr<WebAppPreloadInstaller> web_app_installer_;
 
   // For testing
-  base::OnceClosure check_first_pref_set_callback_;
+  base::OnceCallback<void(bool)> installation_complete_callback_;
 
-  // |weak_ptr_factory_| must be the last member of this class.
+  // `weak_ptr_factory_` must be the last member of this class.
   base::WeakPtrFactory<AppPreloadService> weak_ptr_factory_{this};
 };
 
