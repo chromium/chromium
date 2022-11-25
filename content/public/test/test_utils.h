@@ -52,9 +52,6 @@ blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
 // force nesting in browser tests.
 void RunMessageLoop();
 
-// Deprecated: Invoke |run_loop->Run()| directly.
-void RunThisRunLoop(base::RunLoop* run_loop);
-
 // Turns on nestable tasks, runs all pending tasks in the message loop, then
 // resets nestable tasks to what they were originally. Can only be called from
 // the UI thread. Only use this instead of RunLoop::RunUntilIdle() to work
@@ -209,7 +206,7 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
   // True after closure returned by |QuitClosure| has been called.
   bool quit_closure_called_ = false;
 
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   base::ThreadChecker thread_checker_;
 };

@@ -16,14 +16,13 @@ ResultCatcher::ResultCatcher() : browser_context_restriction_(nullptr) {
 ResultCatcher::~ResultCatcher() = default;
 
 bool ResultCatcher::GetNextResult() {
-  // Depending on the tests, multiple results can come in from a single call
-  // to RunMessageLoop(), so we maintain a queue of results and just pull them
-  // off as the test calls this, going to the run loop only when the queue is
-  // empty.
+  // Depending on the tests, multiple results can come in from a single call to
+  // RunLoop::Run() so we maintain a queue of results and just pull them off as
+  // the test calls this, going to the run loop only when the queue is empty.
   if (results_.empty()) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     quit_closure_ = content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    content::RunThisRunLoop(&run_loop);
+    run_loop.Run();
   }
 
   if (!results_.empty()) {

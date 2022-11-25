@@ -58,7 +58,7 @@ class PasswordStoreConsumerHelper
 
   std::vector<std::unique_ptr<PasswordForm>> WaitForResult() {
     DCHECK(!run_loop_.running());
-    content::RunThisRunLoop(&run_loop_);
+    run_loop_.Run();
     return std::move(result_);
   }
 
@@ -67,7 +67,9 @@ class PasswordStoreConsumerHelper
   }
 
  private:
-  base::RunLoop run_loop_;
+  // This RunLoop uses kNestableTasksAllowed because it runs nested within
+  // another RunLoop.
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   std::vector<std::unique_ptr<PasswordForm>> result_;
   base::WeakPtrFactory<PasswordStoreConsumerHelper> weak_ptr_factory_{this};
 };

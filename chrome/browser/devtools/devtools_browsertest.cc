@@ -804,7 +804,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
     scoped_refptr<DevToolsAgentHost> host;
     base::RunLoop run_loop;
     new WorkerCreationObserver(path, &host, run_loop.QuitWhenIdleClosure());
-    content::RunThisRunLoop(&run_loop);
+    run_loop.Run();
     return host;
   }
 

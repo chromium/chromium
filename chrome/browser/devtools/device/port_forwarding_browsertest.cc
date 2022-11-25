@@ -178,5 +178,5 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
       run_loop.QuitWhenIdleClosure()));
   wait_for_port_forwarding.reset();
 
-  content::RunThisRunLoop(&run_loop);
+  run_loop.Run();
 }

@@ -55,7 +55,7 @@ void LoadDictionary(SpellcheckCustomDictionary* dictionary) {
       content::GetDeferredQuitTaskForRunLoop(&run_loop));
   dictionary->AddObserver(&observer);
   dictionary->Load();
-  content::RunThisRunLoop(&run_loop);
+  run_loop.Run();
   dictionary->RemoveObserver(&observer);
   ASSERT_TRUE(dictionary->IsLoaded());
 }

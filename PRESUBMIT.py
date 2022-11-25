@@ -1134,14 +1134,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (),
     ),
     BanRule(
-      'RunThisRunLoop',
-      (
-          'RunThisRunLoop is deprecated, use RunLoop directly instead.',
-      ),
-      False,
-      (),
-    ),
-    BanRule(
       'RunAllPendingInMessageLoop()',
       (
           "Prefer RunLoop over RunAllPendingInMessageLoop, please contact gab@",

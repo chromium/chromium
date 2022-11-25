@@ -51,7 +51,6 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/entity_builder_factory.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -144,7 +143,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
 
   void WaitUntilFaviconChangedToIconURL() {
     DCHECK(!run_loop_.running());
-    content::RunThisRunLoop(&run_loop_);
+    run_loop_.Run();
   }
 
   // bookmarks::BookmarkModelObserver:

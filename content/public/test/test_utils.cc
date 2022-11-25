@@ -132,13 +132,7 @@ blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
 }
 
 void RunMessageLoop() {
-  base::RunLoop run_loop;
-  RunThisRunLoop(&run_loop);
-}
-
-void RunThisRunLoop(base::RunLoop* run_loop) {
-  base::CurrentThread::ScopedNestableTaskAllower allow;
-  run_loop->Run();
+  base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).Run();
 }
 
 void RunAllPendingInMessageLoop() {
@@ -343,7 +337,7 @@ void MessageLoopRunner::Run() {
     return;
 
   loop_running_ = true;
-  RunThisRunLoop(&run_loop_);
+  run_loop_.Run();
 }
 
 base::OnceClosure MessageLoopRunner::QuitClosure() {
