@@ -38,23 +38,26 @@
 namespace {
 
 bool IsFirstRunEligibleProfile(Profile* profile) {
+  // Profile selections should exclude these already.
+  DCHECK(!profile->IsOffTheRecord());
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
   if (!profiles::SessionHasGaiaAccount())
+    return false;
+
+  // The profile in Guest user sessions is considered "regular" but should
+  // also be excluded here.
+  if (profile->IsGuestSession())
     return false;
 
   // Having secondary profiles implies that the user already used Chrome and so
   // should not have to see the FRE. So we never want to run it for these.
   if (!profile->IsMainProfile())
     return false;
+#else
+  DCHECK(!profile->IsGuestSession());
 #endif
-
-  // Don't show the FRE if we are in a Guest user pod or in a Guest profile.
-  if (profile->IsGuestSession())
-    return false;
-
-  if (profile->IsOffTheRecord())
-    return false;
 
   return true;
 }
@@ -215,10 +218,10 @@ void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point,
 FirstRunServiceFactory::FirstRunServiceFactory()
     : ProfileKeyedServiceFactory(
           "FirstRunServiceFactory",
-          // TODO(crbug.com/1375277): Update this instead of checking
-          // the profile compatibility with `IsFirstRunEligibleProfile()`?
           ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
               .Build()) {
   // Used for checking Sync consent level.
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -242,6 +245,9 @@ FirstRunService* FirstRunServiceFactory::GetForBrowserContext(
 KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  // `ProfileSelections` exclude some profiles already, but they do not check
+  // for some more specific conditions where we don't want to instantiate the
+  // service.
   if (!IsFirstRunEligibleProfile(profile))
     return nullptr;
 
