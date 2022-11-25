@@ -36,6 +36,8 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
     private Callback<Integer> mObfuscatedLastChildAt;
+    private ObjectAnimator mAnimator;
+    private float mLastBarItemsViewPosition;
 
     // Records the first time a user scrolled to suppress an IPH explaining how scrolling works.
     private final RecyclerView.OnScrollListener mScrollingIphCallback =
@@ -228,15 +230,20 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     private void animateSuggestionArrival() {
         if (areAnimationsDisabled()) return;
         int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
-        float basePosition = mBarItemsView.getX();
-        float start = basePosition
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        } else {
+            mLastBarItemsViewPosition = mBarItemsView.getX();
+        }
+
+        float start = mLastBarItemsViewPosition
                 - bounceDirection * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
                         * getContext().getResources().getDisplayMetrics().density;
         mBarItemsView.setTranslationX(start);
-        ObjectAnimator animator =
-                ObjectAnimator.ofFloat(mBarItemsView, "translationX", start, basePosition);
-        animator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
-        animator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
-        animator.start();
+        mAnimator = ObjectAnimator.ofFloat(
+                mBarItemsView, "translationX", start, mLastBarItemsViewPosition);
+        mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
+        mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
+        mAnimator.start();
     }
 }
