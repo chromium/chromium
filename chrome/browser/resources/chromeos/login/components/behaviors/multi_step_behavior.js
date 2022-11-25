@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {dom, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {invokePolymerMethod} from '../../display_manager.m.js';
+// #import {invokePolymerMethod} from '../../display_manager.js';
 // clang-format on
 
 /**

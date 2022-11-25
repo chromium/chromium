@@ -6,25 +6,23 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-// #import {assert} from 'chrome://resources/js/assert.js';
-// #import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.js';
-// #import {loadTimeData} from './i18n_setup.js';
-// #import {OobeTypes} from './components/oobe_types.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.js';
+import {loadTimeData} from './i18n_setup.js';
+import {OobeTypes} from './components/oobe_types.m.js';
 
- // #import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
-// #import {MultiTapDetector} from './multi_tap_detector.m.js';
-// #import {keyboard} from './keyboard_utils.m.js'
+import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+import {MultiTapDetector} from './multi_tap_detector.m.js';
+import {keyboard} from './keyboard_utils.m.js';
 
-cr.define('cr.ui.login', function() {
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
    * The value is used as the duration for ensureTransitionEndEvent below.
    * It needs to be inline with the step screen transition duration time
    * defined in css file. The current value in css is 200ms. To avoid emulated
    * transitionend fired before real one, 250ms is used.
-   * @const
    */
-  var MAX_SCREEN_TRANSITION_DURATION = 250;
+  const MAX_SCREEN_TRANSITION_DURATION = 250;
 
   /**
    * As Polymer behaviors do not provide true inheritance, when two behaviors
@@ -41,7 +39,7 @@ cr.define('cr.ui.login', function() {
    * element.behaviors
    * TODO(crbug.com/1229130) - Remove this suppression.
    */
-  /* #export */ function invokePolymerMethod(element, name, ...args) {
+  export function invokePolymerMethod(element, name, ...args) {
     const method = element[name];
     if (!method || typeof method !== 'function') {
       return;
@@ -53,7 +51,7 @@ cr.define('cr.ui.login', function() {
 
     // If element has behaviors call functions on them in reverse order,
     // ignoring case when method on element was derived from behavior.
-    for (var i = element.behaviors.length - 1; i >= 0; i--) {
+    for (let i = element.behaviors.length - 1; i >= 0; i--) {
       const behavior = element.behaviors[i];
       const behaviorMethod = behavior[name];
       if (!behaviorMethod || typeof behaviorMethod !== 'function') {
@@ -70,7 +68,7 @@ cr.define('cr.ui.login', function() {
    * A display manager that manages initialization of screens,
    * transitions, error messages display.
    */
-  /* #export */ class DisplayManager {
+  export class DisplayManager {
     constructor() {
       /**
        * Registered screens.
@@ -478,10 +476,3 @@ cr.define('cr.ui.login', function() {
       $('bluetooth-name').textContent = bluetoothName;
     }
   }
-  // #cr_define_end
-  // Export
-  return {
-    DisplayManager: DisplayManager,
-    invokePolymerMethod: invokePolymerMethod,
-  };
-});

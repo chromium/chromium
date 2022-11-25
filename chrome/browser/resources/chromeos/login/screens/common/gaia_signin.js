@@ -31,7 +31,7 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {Oobe} from '../../cr_ui.js';
-import {invokePolymerMethod} from '../../display_manager.m.js';
+import {invokePolymerMethod} from '../../display_manager.js';
 
 
 // GAIA animation guard timer. Started when GAIA page is loaded (Authenticator

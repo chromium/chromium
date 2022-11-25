@@ -181,7 +181,7 @@ js_library("welcome") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.js" ]
   deps = [
     ":welcome_dialog",
-    "../..:display_manager.m",
+    "../..:display_manager",
     "../../components:oobe_cr_lottie",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",

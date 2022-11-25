@@ -125,7 +125,7 @@ js_library("app_launch_splash") {
 js_library("arc_terms_of_service") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/arc_terms_of_service.js" ]
   deps = [
-    "../../:display_manager.m",
+    "../../:display_manager",
     "../../components:oobe_select.m",
     "../../components:web_view_helper.m",
     "../../components:web_view_loader.m",
@@ -166,7 +166,7 @@ js_library("autolaunch") {
 js_library("consolidated_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
   deps = [
-    "../..:display_manager.m",
+    "../..:display_manager",
     "../../components:display_manager_types.m",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
@@ -277,7 +277,7 @@ js_library("gesture_navigation") {
 js_library("gaia_signin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.js" ]
   deps = [
-    "../..:display_manager.m",
+    "../..:display_manager",
     "../../../../gaia_auth_host:authenticator",
     "../../components:gaia_dialog",
     "../../components:notification_card",
@@ -296,7 +296,7 @@ js_library("gaia_signin") {
 js_library("guest_tos") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/guest_tos.js" ]
   deps = [
-    "../..:display_manager.m",
+    "../..:display_manager",
     "../../components:web_view_helper.m",
     "../../components:web_view_loader.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -421,7 +421,7 @@ js_library("offline_ad_login") {
 js_library("oobe_eula") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_eula.js" ]
   deps = [
-    "../../:display_manager.m",
+    "../../:display_manager",
     "../../components:web_view_helper.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -456,7 +456,7 @@ js_library("oobe_reset") {
 js_library("os_install") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_install.js" ]
   deps = [
-    "../../:display_manager.m",
+    "../../:display_manager",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -661,7 +661,7 @@ js_library("wrong_hwid") {
 js_library("error_message") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.js" ]
   deps = [
-    "../../:cr_ui.m",
+    "../../:cr_ui",
     "../../components:display_manager_types.m",
     "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
