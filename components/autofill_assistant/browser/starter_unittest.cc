@@ -1926,11 +1926,10 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringForShoppingAndCoupons) {
 class StarterPrerenderTest : public StarterTest {
  public:
   StarterPrerenderTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
+    feature_list_.InitAndDisableFeature(
         // Disable the memory requirement of Prerender2 so the test can run on
         // any bot.
-        {blink::features::kPrerender2MemoryControls});
+        blink::features::kPrerender2MemoryControls);
   }
   ~StarterPrerenderTest() override = default;
 

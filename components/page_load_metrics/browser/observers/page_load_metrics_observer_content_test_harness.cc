@@ -20,7 +20,6 @@ PageLoadMetricsObserverContentTestHarness::
     PageLoadMetricsObserverContentTestHarness() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {
-          {blink::features::kPrerender2, {}},
           {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
       },
       {
