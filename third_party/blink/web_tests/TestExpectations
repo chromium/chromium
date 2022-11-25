@@ -8171,3 +8171,10 @@ crbug.com/1382392 http/tests/devtools/background-services/background-service-gri
 
 # Temporarily disable test to land CPU-backed canvas switching change
 crbug.com/1385633 [ Linux ] virtual/oopr-canvas2d/fast/canvas/check-stale-putImageData.html [ Failure ]
+
+# Sheriff 2022-11-25
+crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/notimer-after-unload.https.html [ Failure ]
+crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-clear-watch.https.html [ Failure ]
+crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-negative.https.html [ Failure ]
+crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-zero.https.html [ Failure ]
+crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout.https.html [ Failure ]
