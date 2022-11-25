@@ -26,20 +26,38 @@ namespace {
 
 net::ProxyConfigWithAnnotation GetConfigOrDirect(
     const absl::optional<net::ProxyConfigWithAnnotation>& optional_config,
-    PrefService* pref_service) {
-  if (!optional_config || !pref_service ||
-      !pref_service->GetBoolean(prefs::kUseAshProxy)) {
-    net::ProxyConfigWithAnnotation config =
-        net::ProxyConfigWithAnnotation::CreateDirect();
-    return config;
+    Profile* profile,
+    bool proxy_controlled_by_extension) {
+  DCHECK(profile);
+
+  auto CreateDirect = net::ProxyConfigWithAnnotation::CreateDirect;
+
+  if (!optional_config)
+    return CreateDirect();
+
+  // The primary profile always uses the OS proxy.
+  if (profile->IsMainProfile())
+    return optional_config.value();
+
+  // Incognito profile doesn't apply proxies set by an extension in the main
+  // profile.
+  if (profile->IsIncognitoProfile()) {
+    if (proxy_controlled_by_extension)
+      return CreateDirect();
+    return optional_config.value();
   }
-  return optional_config.value();
+
+  // Secondary Lacros profiles can opt to use the OS proxy.
+  return profile->GetPrefs()->GetBoolean(prefs::kUseAshProxy)
+             ? optional_config.value()
+             : CreateDirect();
 }
 }  // namespace
 
 namespace chromeos {
 
-ProxyConfigServiceLacros::ProxyConfigServiceLacros(Profile* profile) {
+ProxyConfigServiceLacros::ProxyConfigServiceLacros(Profile* profile)
+    : profile_(profile) {
   DCHECK(profile);
   auto* lacros_service = chromeos::LacrosService::Get();
   // crosapi is disabled in browser_tests.
@@ -58,13 +76,11 @@ ProxyConfigServiceLacros::ProxyConfigServiceLacros(Profile* profile) {
   // TODO(acostinas, b:192915915) Enable secondary profiles to configure
   // `kUseAshProxy` from chrome://settings.
   if (profile->IsMainProfile()) {
-    profile->GetPrefs()->SetBoolean(prefs::kUseAshProxy, true);
     lacros_extension_proxy_tracker_ =
         std::make_unique<lacros::net::LacrosExtensionProxyTracker>(profile);
   }
 
-  profile_prefs_ = profile->GetPrefs();
-  profile_pref_change_registrar_.Init(profile_prefs_);
+  profile_pref_change_registrar_.Init(profile->GetPrefs());
   profile_pref_change_registrar_.Add(
       prefs::kUseAshProxy,
       base::BindRepeating(&ProxyConfigServiceLacros::OnUseAshProxyPrefChanged,
@@ -75,6 +91,7 @@ ProxyConfigServiceLacros::~ProxyConfigServiceLacros() = default;
 
 void ProxyConfigServiceLacros::OnProxyChanged(
     crosapi::mojom::ProxyConfigPtr proxy_config) {
+  proxy_controlled_by_extension_ = !proxy_config->extension.is_null();
   cached_config_ = CrosapiProxyToNetProxy(std::move(proxy_config));
   NotifyObservers();
 }
@@ -86,7 +103,8 @@ void ProxyConfigServiceLacros::OnUseAshProxyPrefChanged() {
 void ProxyConfigServiceLacros::NotifyObservers() {
   for (auto& observer : observers_) {
     observer.OnProxyConfigChanged(
-        GetConfigOrDirect(cached_config_, profile_prefs_),
+        GetConfigOrDirect(cached_config_, profile_,
+                          proxy_controlled_by_extension_),
         ConfigAvailability::CONFIG_VALID);
   }
 }
@@ -111,7 +129,8 @@ ProxyConfigServiceLacros::GetLatestProxyConfig(
   // Returns the last proxy configuration that the Ash
   // NetworkSettingsService notified us, or the direct proxy if `cached_config_`
   // is not set.
-  *config = GetConfigOrDirect(cached_config_, profile_prefs_);
+  *config = GetConfigOrDirect(cached_config_, profile_,
+                              proxy_controlled_by_extension_);
   return ConfigAvailability::CONFIG_VALID;
 }
 

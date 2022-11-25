@@ -85,6 +85,8 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   void OnProfileManagerDestroying() override;
 
   crosapi::mojom::ProxyConfigPtr cached_proxy_config_;
+  crosapi::mojom::ExtensionControllingProxyPtr extension_controlling_proxy_;
+
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
   GURL cached_wpad_url_;
