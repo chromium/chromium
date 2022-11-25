@@ -34,10 +34,18 @@ namespace autofill {
 //
 // Iterators are invalidated when the owning container is destructed or moved,
 // or when the element the iterator points to is erased from the container.
-template <typename T, T kMaxValue = T::kMaxValue>
+//
+// If `packed` is true, the smallest sufficient raw integer is used to represent
+// the underlying bitset. Otherwise, or if more than 64 bits are needed, it uses
+// std::bitset.
+template <typename T, T kMaxValue = T::kMaxValue, bool packed = true>
 class DenseSet {
  private:
   using Index = std::make_unsigned_t<T>;
+
+  // The maximum supported bit index. Indexing starts at 0, so kMaxBitIndex ==
+  // 63 means we need 64 bits.
+  static constexpr size_t kMaxBitIndex = base::checked_cast<Index>(kMaxValue);
 
  public:
   // A bidirectional iterator for the DenseSet.
@@ -130,13 +138,13 @@ class DenseSet {
   // DenseSets. This only works if the set fits into 64 bits. Otherwise, we
   // fall back to a non-`constexpr` constructor.
 
-  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
-            std::enable_if_t<(kMaxBit < 64), bool> = true>
+  template <size_t kMaxBitIndex = kMaxBitIndex,
+            std::enable_if_t<(kMaxBitIndex < 64), bool> = true>
   constexpr DenseSet(std::initializer_list<T> init)
       : bitset_(initializer_list_to_bitmask(init)) {}
 
-  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
-            std::enable_if_t<(kMaxBit >= 64), bool> = true>
+  template <size_t kMaxBitIndex = kMaxBitIndex,
+            std::enable_if_t<(kMaxBitIndex >= 64), bool> = true>
   DenseSet(std::initializer_list<T> init) {
     for (const auto& x : init) {
       insert(x);
@@ -151,8 +159,8 @@ class DenseSet {
   }
 
   // Converts the bitset back to a raw bitmask. Useful for serialization.
-  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
-            std::enable_if_t<(kMaxBit < 64), bool> = true>
+  template <size_t kMaxBitIndex = kMaxBitIndex,
+            std::enable_if_t<(kMaxBitIndex < 64), bool> = true>
   uint64_t to_uint64() const {
     return bitset_.to_ullong();
   }
@@ -196,7 +204,7 @@ class DenseSet {
   size_t size() const { return bitset_.count(); }
 
   // Returns the maximum number of elements the set can have.
-  constexpr size_t max_size() const { return bitset_.size(); }
+  constexpr size_t max_size() const { return kMaxBitIndex + 1; }
 
   // Modifiers.
 
@@ -289,6 +297,87 @@ class DenseSet {
  private:
   friend Iterator;
 
+  // The default implementation for the underlying bitset forwards to
+  // std::bitset. For bitsets up to 64 bits, there's a specialization.
+  template <size_t kMaxBitIndex, typename Enable = void>
+  class BitSet : public std::bitset<kMaxBitIndex + 1> {
+   public:
+    using std::bitset<kMaxBitIndex + 1>::bitset;
+  };
+
+  // Specialization that uses the smallest fundamental integer type that can
+  // hold `kMaxBitIndex + 1` bits (note that kMaxBitIndex is an index).
+  // Only enabled if `packed` is true.
+  template <size_t kMaxBitIndex>
+  class BitSet<kMaxBitIndex, std::enable_if_t<(packed && kMaxBitIndex < 64)>> {
+   public:
+    using bitmask_type = std::conditional_t<
+        (kMaxBitIndex < 8),
+        uint8_t,
+        std::conditional_t<
+            (kMaxBitIndex < 16),
+            uint16_t,
+            std::conditional_t<(kMaxBitIndex < 32), uint32_t, uint64_t>>>;
+
+    constexpr explicit BitSet(bitmask_type bitmask = 0) : bitmask_(bitmask) {}
+
+    constexpr uint64_t to_ullong() const { return bitmask_; }
+
+    friend constexpr bool operator==(BitSet lhs, BitSet rhs) {
+      return lhs.bitmask_ == rhs.bitmask_;
+    }
+
+    friend constexpr bool operator!=(BitSet lhs, BitSet rhs) {
+      return !(lhs == rhs);
+    }
+
+    friend constexpr BitSet operator&(BitSet lhs, BitSet rhs) {
+      return BitSet(lhs.bitmask_ & rhs.bitmask_);
+    }
+
+    friend constexpr BitSet& operator&=(BitSet& lhs, BitSet rhs) {
+      lhs.bitmask_ &= rhs.bitmask_;
+      return lhs;
+    }
+
+    friend constexpr BitSet& operator|=(BitSet& lhs, BitSet rhs) {
+      lhs.bitmask_ |= rhs.bitmask_;
+      return lhs;
+    }
+
+    constexpr BitSet operator~() const { return BitSet(~bitmask_); }
+
+    constexpr bool none() const { return bitmask_ == 0; }
+    constexpr bool any() const { return bitmask_ != 0; }
+
+    constexpr size_t count() const {
+      // Compiles to a POPCOUNT instruction. Could be replaced with
+      // std::popcount() in C++20.
+      return std::bitset<kMaxBitIndex + 1>(bitmask_).count();
+    }
+
+    constexpr bool test(size_t i) const {
+      DCHECK_LE(i, kMaxBitIndex);
+      return bitmask_ & (1ULL << i);
+    }
+
+    constexpr void set(size_t i) {
+      DCHECK_LE(i, kMaxBitIndex);
+      bitmask_ |= 1ULL << i;
+    }
+
+    constexpr void reset(size_t i) {
+      DCHECK_LE(i, kMaxBitIndex);
+      bitmask_ &= ~(1ULL << i);
+    }
+
+    constexpr void reset() { bitmask_ = 0; }
+
+   private:
+    bitmask_type bitmask_ = 0;
+  };
+
+  // Needed to use std::conditional_t.
   struct Wrapper {
     using type = T;
   };
@@ -323,7 +412,7 @@ class DenseSet {
   static_assert(std::is_integral<T>::value || std::is_enum<T>::value, "");
   static_assert(0 <= base::checked_cast<Index>(kMaxValue) + 1, "");
 
-  std::bitset<base::checked_cast<Index>(kMaxValue) + 1> bitset_{};
+  BitSet<kMaxBitIndex> bitset_{};
 };
 
 }  // namespace autofill

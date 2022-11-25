@@ -80,13 +80,24 @@ constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
 // for autofill regex_constants. In the future, to implement faster
 // changes without global updates also for having a quick possibility
 // to recognize incorrect matches.
+//
+// We pack this struct to minimize memory consumption of the built-in array of
+// MatchingPatterns (see GetMatchPatterns()), which holds several hundred
+// objects.
+// Using packed DenseSets reduces the size of the struct by 40 to 24 on 64 bit
+// platforms, and from 20 to 16 bytes on 32 bit platforms. The pragma saves
+// another 2 bytes.
+#pragma pack(push, 1)
 struct MatchingPattern {
   const char16_t* positive_pattern;
   const char16_t* negative_pattern;
   const float positive_score = 1.1;
-  const DenseSet<MatchAttribute> match_field_attributes;
-  const DenseSet<MatchFieldType> match_field_input_types;
+  const DenseSet<MatchAttribute, MatchAttribute::kMaxValue, /*packed=*/true>
+      match_field_attributes;
+  const DenseSet<MatchFieldType, MatchFieldType::kMaxValue, /*packed=*/true>
+      match_field_input_types;
 };
+#pragma pack(pop)
 
 }  // namespace autofill
 
