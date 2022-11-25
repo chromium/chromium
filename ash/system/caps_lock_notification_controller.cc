@@ -83,9 +83,7 @@ CapsLockNotificationController::~CapsLockNotificationController() {
 bool CapsLockNotificationController::IsSearchKeyMappedToCapsLock() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  // Null early in mash startup.
-  if (!prefs)
-    return false;
+  DCHECK(prefs);
 
   // Don't bother to observe for the pref changing because the system tray
   // menu is rebuilt every time it is opened and the user has to close the

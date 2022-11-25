@@ -10,10 +10,6 @@
 namespace ash {
 
 // A delegate class to control and query accessibility features.
-//
-// NOTE: Methods in this class are migrating to AccessibilityController to
-// support mash (because ash is in a separate process and cannot call back into
-// chrome). Add new methods there, not here.
 class ASH_EXPORT AccessibilityDelegate {
  public:
   virtual ~AccessibilityDelegate() {}
@@ -33,8 +29,6 @@ class ASH_EXPORT AccessibilityDelegate {
   // Gets a saved value of the zoom scale of full screen magnifier. If a value
   // is not saved, return a negative value.
   virtual double GetSavedScreenMagnifierScale() = 0;
-
-  // NOTE: Prefer adding methods to AccessibilityController, see class comment.
 };
 
 }  // namespace ash
