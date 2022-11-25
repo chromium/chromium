@@ -248,7 +248,7 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
         new_battery_state->full_charged_capacity.value());
 
     base::UmaHistogramBoolean(
-        "Power. BatteryDischargeGranularityAvailable",
+        "Power.BatteryDischargeGranularityAvailable",
         new_battery_state->battery_discharge_granularity.has_value());
 
     DCHECK_EQ(new_battery_state->battery_discharge_granularity.has_value(),
