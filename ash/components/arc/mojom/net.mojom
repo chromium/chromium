@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -655,6 +655,19 @@ struct ArcPingTestResult {
   int64 duration_ms;
 };
 
+// Chrome flags that should be passed into ARC via NetInstance::SetUpFlag().
+[Extensible]
+enum Flag {
+  [Default] UNKNOWN  = 0,
+
+  // Chrome Finch flag kEnableArcHostVpn. If true, ARC should start the
+  // ArcHostVpn service when a builtin VPN client is started. This flag value
+  // can be toggled at any time, but ARC will only use the latest value when a
+  // builtin VPN network is detected and sent to ARC as part of an
+  // ActiveNetworksChanged call.
+  ENABLE_ARC_HOST_VPN = 1,
+};
+
 // Next Method ID: 18
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
@@ -736,7 +749,7 @@ interface NetHost {
   [MinVersion=18] DisconnectHostVpn@17();
 };
 
-// Next Method ID: 11
+// Next Method ID: 12
 // IDs 0 and 2 are missing as they belonged to deprecated method.
 // Mojo interface exposed by ARC for networking/WiFi/VPN, the Chrome
 // browser process is the client.
@@ -785,4 +798,7 @@ interface NetInstance {
   // name |transport_name|.
   [MinVersion=15] PingTest@10(string transport_name, string ip_address)
       => (ArcPingTestResult result);
+
+  // Pass a Chrome flag value into ARC.
+  [MinVersion=22] SetUpFlag@11(Flag flag, bool value);
 };

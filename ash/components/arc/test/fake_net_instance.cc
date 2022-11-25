@@ -54,4 +54,6 @@ void FakeNetInstance::PingTest(const std::string& transport_name,
   std::move(callback).Run(std::move(result_ptr));
 }
 
+void FakeNetInstance::SetUpFlag(mojom::Flag flag, bool value) {}
+
 }  // namespace arc

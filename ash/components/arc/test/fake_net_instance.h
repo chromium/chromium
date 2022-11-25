@@ -43,6 +43,8 @@ class FakeNetInstance : public mojom::NetInstance {
                 const std::string& ip_address,
                 PingTestCallback callback) override;
 
+  void SetUpFlag(mojom::Flag flag, bool value) override;
+
   void set_http_test_result(mojom::ArcHttpTestResult http_test_result) {
     http_test_result_ = http_test_result;
   }

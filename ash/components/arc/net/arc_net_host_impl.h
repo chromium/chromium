@@ -192,6 +192,9 @@ class ArcNetHostImpl : public KeyedService,
   // the properties values translated taken from mojo.
   void AddPasspointCredentialsWithProperties(base::Value properties);
 
+  // Pass any Chrome flags into ARC.
+  void SetUpFlags();
+
   void CreateNetworkSuccessCallback(
       base::OnceCallback<void(const std::string&)> callback,
       const std::string& service_path,
