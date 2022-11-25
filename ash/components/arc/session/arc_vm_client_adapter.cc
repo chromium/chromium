@@ -86,10 +86,6 @@ constexpr char kArcVmPostVmStartServicesJobName[] =
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
-constexpr int kLogdConfigSizeSmall = 256;   // kBytes
-constexpr int kLogdConfigSizeMed = 512;     // kBytes
-constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
-
 constexpr int64_t kInvalidCid = -1;
 
 constexpr base::TimeDelta kConnectTimeoutLimit = base::Seconds(20);
@@ -171,161 +167,6 @@ std::vector<std::string> GenerateUpgradeProps(
   return result;
 }
 
-std::vector<std::string> GenerateKernelCmdline(const StartParams& start_params,
-                                               bool is_host_on_vm) {
-  std::string native_bridge;
-  switch (IdentifyBinaryTranslationType(start_params)) {
-    case ArcBinaryTranslationType::NONE:
-      native_bridge = "0";
-      break;
-    case ArcBinaryTranslationType::HOUDINI:
-      native_bridge = "libhoudini.so";
-      break;
-    case ArcBinaryTranslationType::NDK_TRANSLATION:
-      native_bridge = "libndk_translation.so";
-      break;
-  }
-
-  const int guest_zram_size = kGuestZramSize.Get();
-  VLOG(1) << "Setting ARCVM guest's zram size to " << guest_zram_size;
-
-  std::vector<std::string> result = {
-      base::StringPrintf("androidboot.native_bridge=%s", native_bridge.c_str()),
-      base::StringPrintf("androidboot.host_is_in_vm=%d", is_host_on_vm),
-      base::StringPrintf("androidboot.lcd_density=%d",
-                         start_params.lcd_density),
-      base::StringPrintf("androidboot.arc_file_picker=%d",
-                         start_params.arc_file_picker_experiment),
-      base::StringPrintf("androidboot.arc_custom_tabs=%d",
-                         start_params.arc_custom_tabs_experiment),
-      base::StringPrintf(
-          "androidboot.keyboard_shortcut_helper_integration=%d",
-          start_params.enable_keyboard_shortcut_helper_integration),
-      base::StringPrintf("androidboot.enable_notifications_refresh=%d",
-                         start_params.enable_notifications_refresh),
-      base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
-  };
-
-  const ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
-  switch (mode) {
-    case ArcVmUreadaheadMode::READAHEAD:
-      result.push_back("androidboot.arcvm_ureadahead_mode=readahead");
-      break;
-    case ArcVmUreadaheadMode::GENERATE:
-      result.push_back("androidboot.arcvm_ureadahead_mode=generate");
-      break;
-    case ArcVmUreadaheadMode::DISABLED:
-      break;
-  }
-
-  // Only add boot property if flag to disable media store maintenance is set.
-  if (start_params.disable_media_store_maintenance)
-    result.push_back("androidboot.disable_media_store_maintenance=1");
-
-  if (start_params.arc_generate_play_auto_install)
-    result.push_back("androidboot.arc_generate_pai=1");
-
-  if (start_params.use_virtio_blk_data)
-    result.push_back("androidboot.arcvm_virtio_blk_data=1");
-  else
-    result.push_back("androidboot.arcvm_virtio_blk_data=0");
-
-  // Conditionally sets some properties based on |start_params|.
-  switch (start_params.play_store_auto_update) {
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:
-      break;
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON:
-      result.push_back("androidboot.play_store_auto_update=1");
-      break;
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_OFF:
-      result.push_back("androidboot.play_store_auto_update=0");
-      break;
-  }
-
-  // Set logcat size, only if configured to one of the few supported sizes.
-  if (base::FeatureList::IsEnabled(kLogdConfig)) {
-    auto logd_config_size = kLogdConfigSize.Get();
-    switch (logd_config_size) {
-      case kLogdConfigSizeSmall:
-        result.push_back("androidboot.arcvm.logd.size=256K");
-        break;
-      case kLogdConfigSizeMed:
-        result.push_back("androidboot.arcvm.logd.size=512K");
-        break;
-      case kLogdConfigSizeLarge:
-        result.push_back("androidboot.arcvm.logd.size=1M");
-        break;
-      default:
-        VLOG(1) << "WARNING: Invalid logd size ignored: [" << logd_config_size
-                << "]";
-        break;
-    }
-  }
-
-  if (base::FeatureList::IsEnabled(kVmMemoryPSIReports)) {
-    auto period = kVmMemoryPSIReportsPeriod.Get();
-    // Since Android performs parameter validation, not doing it here.
-    result.push_back(base::StringPrintf(
-        "androidboot.arcvm_metrics_mem_psi_period=%d", period));
-  }
-
-  if (base::FeatureList::IsEnabled(arc::kUseDalvikMemoryProfile)) {
-    switch (start_params.dalvik_memory_profile) {
-      case StartParams::DalvikMemoryProfile::DEFAULT:
-      case StartParams::DalvikMemoryProfile::M4G:
-        // Use the 4G profile for devices with 4GB RAM or less.
-        result.push_back("androidboot.arc_dalvik_memory_profile=4G");
-        break;
-      case StartParams::DalvikMemoryProfile::M8G:
-        result.push_back("androidboot.arc_dalvik_memory_profile=8G");
-        break;
-      case StartParams::DalvikMemoryProfile::M16G:
-        result.push_back("androidboot.arc_dalvik_memory_profile=16G");
-        break;
-    }
-  } else {
-    VLOG(1) << "Dalvik memory profile is not enabled, the default setting is "
-            << "used.";
-  }
-
-  std::string log_profile_name;
-  switch (start_params.usap_profile) {
-    case StartParams::UsapProfile::DEFAULT:
-      log_profile_name = "default low-memory";
-      break;
-    case StartParams::UsapProfile::M4G:
-      result.push_back("androidboot.usap_profile=4G");
-      log_profile_name = "high-memory 4G";
-      break;
-    case StartParams::UsapProfile::M8G:
-      result.push_back("androidboot.usap_profile=8G");
-      log_profile_name = "high-memory 8G";
-      break;
-    case StartParams::UsapProfile::M16G:
-      result.push_back("androidboot.usap_profile=16G");
-      log_profile_name = "high-memory 16G";
-      break;
-  }
-  VLOG(1) << "Applied " << log_profile_name << " USAP profile";
-
-  if (start_params.disable_download_provider)
-    result.push_back("androidboot.disable_download_provider=1");
-
-  if (base::FeatureList::IsEnabled(arc::kVmGmsCoreLowMemoryKillerProtection))
-    result.push_back("androidboot.arc_enable_gmscore_lmk_protection=1");
-
-  if (start_params.enable_tts_caching)
-    result.push_back("androidboot.arc.tts.caching=1");
-
-  if (base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR))
-    result.push_back("androidboot.arc.broadcast_anr_prenotify=1");
-
-  if (base::FeatureList::IsEnabled(arc::kEnableLazyWebViewInit))
-    result.push_back("androidboot.arc.web_view_zygote.lazy_init=1");
-
-  return result;
-}
-
 void AppendParamsFromStartParams(
     vm_tools::concierge::StartArcVmRequest& request,
     const StartParams& start_params) {
@@ -394,14 +235,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash);
   request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
-
-  if (file_system_status.is_host_rootfs_writable() &&
-      file_system_status.is_system_image_ext_format()) {
-    request.add_params("rw");
-  }
-
-  for (auto& entry : GenerateKernelCmdline(start_params, is_host_on_vm))
-    request.add_params(std::move(entry));
 
   const bool should_set_blocksize =
       !base::FeatureList::IsEnabled(arc::kUseDefaultBlockSize);
