@@ -204,6 +204,12 @@ class PermissionRequestManager
     permission_ui_selectors_.clear();
   }
 
+  // Getter for testing.
+  const std::vector<std::unique_ptr<PermissionUiSelector>>&
+  get_permission_ui_selectors_for_testing() {
+    return permission_ui_selectors_;
+  }
+
   void set_view_factory_for_testing(PermissionPrompt::Factory view_factory) {
     view_factory_ = std::move(view_factory);
   }

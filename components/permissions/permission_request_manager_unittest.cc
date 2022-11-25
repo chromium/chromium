@@ -737,6 +737,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
 
   void SelectUiToUse(PermissionRequest* request,
                      DecisionMadeCallback callback) override {
+    selected_ui_to_use_ = true;
     Decision decision(quiet_ui_reason_, Decision::ShowNoWarning());
     if (async_delay_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -768,11 +769,14 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
             quiet_ui_reason, prediction_likelihood, async_delay));
   }
 
+  bool selected_ui_to_use() const { return selected_ui_to_use_; }
+
  private:
   absl::optional<QuietUiReason> quiet_ui_reason_;
   absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_likelihood_;
   absl::optional<base::TimeDelta> async_delay_;
+  bool selected_ui_to_use_ = false;
 };
 
 // Same as the MockNotificationPermissionUiSelector but handling only the
@@ -881,8 +885,27 @@ TEST_P(PermissionRequestManagerTest,
   Accept();
 }
 
-TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
+TEST_P(PermissionRequestManagerTest, SkipNextUiSelector) {
+  manager_->clear_permission_ui_selector_for_testing();
+  MockNotificationPermissionUiSelector::CreateForManager(
+      manager_, QuietUiReason::kEnabledInPrefs,
+      /* async_delay */ absl::nullopt);
+  MockNotificationPermissionUiSelector::CreateForManager(
+      manager_, PermissionUiSelector::Decision::UseNormalUi(),
+      /* async_delay */ absl::nullopt);
+  MockPermissionRequest request1(RequestType::kNotifications,
+                                 PermissionRequestGestureType::GESTURE);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1);
+  WaitForBubbleToBeShown();
+  auto* next_selector =
+      manager_->get_permission_ui_selectors_for_testing().back().get();
+  EXPECT_FALSE(static_cast<MockNotificationPermissionUiSelector*>(next_selector)
+                   ->selected_ui_to_use());
+  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
+  Accept();
+}
 
+TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
   const struct {
     std::vector<absl::optional<QuietUiReason>> quiet_ui_reasons;
     std::vector<bool> simulate_delayed_decision;

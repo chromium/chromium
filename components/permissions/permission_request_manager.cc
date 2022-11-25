@@ -763,32 +763,37 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
       validated_requests_set_.insert(request);
   }
 
-  if (!permission_ui_selectors_.empty()) {
-    DCHECK(!current_request_ui_to_use_.has_value());
-    // Initialize the selector decisions vector.
-    DCHECK(selector_decisions_.empty());
-    selector_decisions_.resize(permission_ui_selectors_.size());
-
-    for (size_t selector_index = 0;
-         selector_index < permission_ui_selectors_.size(); ++selector_index) {
-      if (permission_ui_selectors_[selector_index]
-              ->IsPermissionRequestSupported(
-                  requests_.front()->request_type())) {
-        permission_ui_selectors_[selector_index]->SelectUiToUse(
-            requests_.front(),
-            base::BindOnce(
-                &PermissionRequestManager::OnPermissionUiSelectorDone,
-                weak_factory_.GetWeakPtr(), selector_index));
-      } else {
-        OnPermissionUiSelectorDone(
-            selector_index,
-            PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
-      }
-    }
-  } else {
+  if (permission_ui_selectors_.empty()) {
     current_request_ui_to_use_ =
         UiDecision(UiDecision::UseNormalUi(), UiDecision::ShowNoWarning());
     ShowPrompt();
+    return;
+  }
+
+  DCHECK(!current_request_ui_to_use_.has_value());
+  // Initialize the selector decisions vector.
+  DCHECK(selector_decisions_.empty());
+  selector_decisions_.resize(permission_ui_selectors_.size());
+
+  for (size_t selector_index = 0;
+       selector_index < permission_ui_selectors_.size(); ++selector_index) {
+    // Skip if we have already made a decision due to a higher priority
+    // selector
+    if (current_request_ui_to_use_.has_value())
+      break;
+
+    if (permission_ui_selectors_[selector_index]->IsPermissionRequestSupported(
+            requests_.front()->request_type())) {
+      permission_ui_selectors_[selector_index]->SelectUiToUse(
+          requests_.front(),
+          base::BindOnce(&PermissionRequestManager::OnPermissionUiSelectorDone,
+                         weak_factory_.GetWeakPtr(), selector_index));
+      continue;
+    }
+
+    OnPermissionUiSelectorDone(
+        selector_index,
+        PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
   }
 }
 
