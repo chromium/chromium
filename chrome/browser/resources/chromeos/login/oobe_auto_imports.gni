@@ -58,7 +58,6 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.html|OobeWelcomeDialog",
   "chrome/browser/resources/chromeos/login/display_manager.html|DisplayManager,invokePolymerMethod",
   "chrome/browser/resources/chromeos/login/keyboard_utils.html|keyboard",
-  "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
   "chrome/browser/resources/gaia_auth_host/authenticator.html|Authenticator,AuthFlow,AuthMode,AuthParams,SUPPORTED_PARAMS",
   "ash/webui/common/resources/multidevice_setup/multidevice_setup_delegate.html|MultiDeviceSetupDelegate",
   "ash/webui/common/resources/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",

@@ -12,7 +12,7 @@ import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
 import 'chrome://oobe/test_api/test_api.m.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from 'chrome://oobe/screens.js';
-import {MultiTapDetector} from './multi_tap_detector.m.js';
+import {MultiTapDetector} from './multi_tap_detector.js';
 import './components/common_styles/oobe_flex_layout_styles.m.js';
 // clang-format on
 

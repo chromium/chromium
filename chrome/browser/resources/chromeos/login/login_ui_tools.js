@@ -6,13 +6,12 @@
  * @fileoverview JS helpers used on login.
  */
 
-cr.define('cr.ui.LoginUITools', function() {
   /**
    * Listens to key events on input element.
    * @param {Element} element DOM element
    * @param {Object} callback
    */
-  /* #export */ function addSubmitListener(element, callback) {
+  export function addSubmitListener(element, callback) {
     element.addEventListener('keydown', (function(callback, e) {
                                           if (e.keyCode != 13) {
                                             return;
@@ -20,9 +19,3 @@ cr.define('cr.ui.LoginUITools', function() {
                                           callback();
                                         }).bind(undefined, callback));
   }
-  // #cr_define_end
-  // Export
-  return {
-    addSubmitListener: addSubmitListener,
-  };
-});
