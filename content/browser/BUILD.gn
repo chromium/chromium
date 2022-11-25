@@ -2222,6 +2222,8 @@ source_set("browser") {
     "webid/federated_auth_request_impl.h",
     "webid/federated_auth_request_web_contents_data.cc",
     "webid/federated_auth_request_web_contents_data.h",
+    "webid/federated_manifest_requester.cc",
+    "webid/federated_manifest_requester.h",
     "webid/flags.cc",
     "webid/flags.h",
     "webid/idp_network_request_manager.cc",

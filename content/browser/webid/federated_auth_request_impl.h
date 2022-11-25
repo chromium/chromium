@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/federated_manifest_requester.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
@@ -74,28 +75,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
-  // Fetched from the IDP FedCM manifest configuration.
-  struct Endpoints {
-    Endpoints();
-    ~Endpoints();
-    Endpoints(const Endpoints&);
-
-    GURL idp;
-    GURL token;
-    GURL accounts;
-    GURL client_metadata;
-    GURL metrics;
-  };
-
   struct IdentityProviderInfo {
     IdentityProviderInfo();
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
     blink::mojom::IdentityProvider provider;
-    Endpoints endpoints;
+    FederatedManifestRequester::Endpoints endpoints;
     bool has_failing_idp_signin_status{false};
-    bool manifest_list_checked{false};
     absl::optional<IdentityProviderMetadata> metadata;
   };
 
@@ -110,22 +97,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
-  GURL ResolveManifestUrl(const blink::mojom::IdentityProvider& idp,
-                          const std::string& url);
 
-  // Checks validity of the passed-in endpoint URL origin.
-  bool IsEndpointUrlValid(const blink::mojom::IdentityProvider& idp,
-                          const GURL& endpoint_url);
-
-  void FetchManifest(const blink::mojom::IdentityProvider& idp);
-  void OnManifestListFetched(const blink::mojom::IdentityProvider& idp,
-                             IdpNetworkRequestManager::FetchStatus status,
-                             const std::set<GURL>& urls);
-  void OnManifestFetched(const blink::mojom::IdentityProvider& idp,
-                         IdpNetworkRequestManager::FetchStatus status,
-                         IdpNetworkRequestManager::Endpoints,
-                         IdentityProviderMetadata idp_metadata);
-  void OnManifestReady(const IdentityProviderInfo& idp_info);
+  void OnAllManifestsFetched(
+      std::unique_ptr<FederatedManifestRequester> manifest_requester,
+      std::vector<FederatedManifestRequester::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
       const IdentityProviderInfo& idp_info,
       const IdpNetworkRequestManager::AccountList& accounts,

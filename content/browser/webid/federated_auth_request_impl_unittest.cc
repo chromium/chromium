@@ -1108,12 +1108,15 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
-  IdentityProviderParameters identity_provider{"https://not-in-list.example",
-                                               kClientId, kNonce};
-  RequestParameters parameters{
-      std::vector<IdentityProviderParameters>{identity_provider},
-      /*prefer_auto_sign_in=*/false};
-  RunAuthTest(parameters, request_not_in_list, kConfigurationValid);
+  const char* idp_config_url =
+      kDefaultRequestParameters.identity_providers[0].provider;
+  const char* kManifestListMismatchConfigUrl = "https://mismatch.example";
+  EXPECT_NE(std::string(idp_config_url), kManifestListMismatchConfigUrl);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[idp_config_url].manifest_list = {
+      {kManifestListMismatchConfigUrl}};
+  RunAuthTest(kDefaultRequestParameters, request_not_in_list, config);
 }
 
 // Test that not having the filename in the manifest list fails.

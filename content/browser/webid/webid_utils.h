@@ -22,6 +22,19 @@ void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 
+// Computes string to display in developer tools console for a FedCM endpoint
+// request with the passed-in `endpoint_name` and which returns the passed-in
+// `http_response_code`. Returns absl::nullopt if the `http_response_code` does
+// not represent an error in the fetch.
+absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
+    const char* endpoint_name,
+    int http_response_code);
+
+// Returns whether a FedCM endpoint URL is valid given the passed-in config
+// endpoint URL.
+bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
+                        const GURL& endpoint_url);
+
 }  // namespace webid
 }  // namespace content
 
