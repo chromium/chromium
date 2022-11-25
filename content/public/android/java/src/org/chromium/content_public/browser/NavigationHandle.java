@@ -45,20 +45,25 @@ public class NavigationHandle {
     private boolean mIsReload;
     private UserDataHost mUserDataHost;
 
+    public static NavigationHandle createForTesting(@NonNull GURL url, boolean isRendererInitiated,
+            @PageTransition int transition, boolean hasUserGesture) {
+        return createForTesting(url, true /* isInPrimaryMainFrame */, false /* isSameDocument */,
+                isRendererInitiated, transition, hasUserGesture, false /* isReload */);
+    }
+
+    public static NavigationHandle createForTesting(@NonNull GURL url, boolean isInPrimaryMainFrame,
+            boolean isSameDocument, boolean isRendererInitiated, @PageTransition int transition,
+            boolean hasUserGesture, boolean isReload) {
+        NavigationHandle handle = new NavigationHandle();
+        handle.initialize(0, url, GURL.emptyGURL(), GURL.emptyGURL(), isInPrimaryMainFrame,
+                isSameDocument, isRendererInitiated, null, transition, false /* isPost */,
+                hasUserGesture, false /* isRedirect*/, false /* isExternalProtocol */,
+                0 /* navigationId */, false /* isPageActivation */, isReload);
+        return handle;
+    }
+
     @CalledByNative
     private NavigationHandle() {}
-
-    public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
-            @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
-            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
-            boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId, boolean isPageActivation, boolean isReload) {
-        initialize(nativeNavigationHandleProxy, url, referrerUrl, baseUrlForDataUrl,
-                isInPrimaryMainFrame, isSameDocument, isRendererInitiated, initiatorOrigin,
-                transition, isPost, hasUserGesture, isRedirect, isExternalProtocol, navigationId,
-                isPageActivation, isReload);
-    }
 
     @CalledByNative
     private void initialize(long nativeNavigationHandleProxy, @NonNull GURL url,

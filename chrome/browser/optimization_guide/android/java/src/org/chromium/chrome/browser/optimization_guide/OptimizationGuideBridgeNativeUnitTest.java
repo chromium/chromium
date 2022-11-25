@@ -64,9 +64,10 @@ public class OptimizationGuideBridgeNativeUnitTest {
     public void testCanApplyOptimizationAsyncHasHint() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
-        NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                        true, false, false, null, 0, false, false, false, false, 0, false, false);
+        NavigationHandle navHandle = NavigationHandle.createForTesting(new GURL(TEST_URL),
+                false /* isRendererInitiated */, 0 /* pageTransition */,
+                false /* hasUserGesture */);
+
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
         bridge.canApplyOptimizationAsync(navHandle, OptimizationType.LOADING_PREDICTOR, callback);
 

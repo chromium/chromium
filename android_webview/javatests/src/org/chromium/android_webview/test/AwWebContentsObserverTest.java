@@ -162,11 +162,9 @@ public class AwWebContentsObserverTest {
 
     private void simulateNavigation(GURL gurl, boolean isErrorPage, boolean isSameDocument,
             boolean isFragmentNavigation, boolean isRendererInitiated, int transition) {
-        NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
-                GURL.emptyGURL(), GURL.emptyGURL(), true, isSameDocument, isRendererInitiated,
-                null /* initiatorOrigin */, transition, false /* isPost */,
-                false /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
+        NavigationHandle navigation = NavigationHandle.createForTesting(gurl,
+                true /* isInPrimaryMainFrame */, isSameDocument, isRendererInitiated, transition,
+                false /* hasUserGesture */, false /* isReload */);
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
 
         navigation.didFinish(gurl, isErrorPage, true /* hasCommitted */, isFragmentNavigation,

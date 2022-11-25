@@ -332,13 +332,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testRedirectedExternalNavigationWithUserGesture() throws Exception {
         simulateResolveSearch("intelligence");
         GURL initialUrl = new GURL("http://test.com");
-        final NavigationHandle navigationHandle = new NavigationHandle(
-                0 /* nativeNavigationHandleProxy*/, initialUrl, GURL.emptyGURL() /* referrerUrl */,
-                GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
-                false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
-                true /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
+        final NavigationHandle navigationHandle = NavigationHandle.createForTesting(initialUrl,
+                true /* isRendererInitiated */, PageTransition.LINK, true /* hasUserGesture */);
 
         GURL redirectUrl = new GURL(EXTERNAL_APP_URL);
 
@@ -384,14 +379,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     private void testExternalNavigationImpl(boolean hasGesture) throws Exception {
         simulateResolveSearch("intelligence");
         GURL url = new GURL(EXTERNAL_APP_URL);
-        final NavigationHandle navigationHandle = new NavigationHandle(
-                0 /* nativeNavigationHandleProxy*/, url, GURL.emptyGURL() /* referrerUrl */,
-                GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
-                false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
-                hasGesture /* hasUserGesture */, false /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
-                false /* isReload */);
+        final NavigationHandle navigationHandle = NavigationHandle.createForTesting(
+                url, true /* isRendererInitiated */, PageTransition.LINK, hasGesture);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
