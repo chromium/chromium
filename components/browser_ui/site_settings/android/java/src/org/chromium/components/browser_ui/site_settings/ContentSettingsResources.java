@@ -158,10 +158,10 @@ public class ContentSettingsResources {
                                                                     : R.string.cookies_title,
                         ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                         delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_category_site_data_page_allow_radio_label
+                                ? R.string.website_settings_site_data_page_toggle_sub_label_allow
                                 : R.string.website_settings_category_cookie_allowed,
                         delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_category_site_data_page_block_radio_label
+                                ? R.string.website_settings_site_data_page_toggle_sub_label_block
                                 : 0);
 
             case ContentSettingsType.REQUEST_DESKTOP_SITE:

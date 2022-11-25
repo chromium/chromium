@@ -669,8 +669,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             case SiteSettingsCategory.Type.SITE_DATA:
                 resource = WebsitePreferenceBridge.isCategoryEnabled(
                                    browserContextHandle, ContentSettingsType.COOKIES)
-                        ? R.string.website_settings_add_site_description_site_data_block
-                        : R.string.website_settings_add_site_description_site_data_allow;
+                        ? R.string.website_settings_site_data_page_add_block_exception_description
+                        : R.string.website_settings_site_data_page_add_allow_exception_description;
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 resource = getCookieControlsMode() == CookieControlsMode.BLOCK_THIRD_PARTY
@@ -1061,6 +1061,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         Preference infoText = screen.findPreference(INFO_TEXT_KEY);
         if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             infoText.setSummary(R.string.website_settings_cookie_info);
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
+            infoText.setSummary(R.string.website_settings_site_data_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else {
