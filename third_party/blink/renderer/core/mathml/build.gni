@@ -24,3 +24,5 @@ blink_core_sources_mathml = [
   "mathml_under_over_element.cc",
   "mathml_under_over_element.h",
 ]
+
+blink_core_tests_mathml = [ "mathml_use_counters_test.cc" ]

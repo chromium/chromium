@@ -3740,6 +3740,8 @@ enum WebFeature {
   kV8DocumentPictureInPictureEvent_Window_AttributeGetter = 4399,
   kDocumentPictureInPictureEnterEvent = 4400,
   kSoftNavigationHeuristics = 4401,
+  kMathMLMathElement = 4402,
+  kMathMLMathElementInDocument = 4403,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

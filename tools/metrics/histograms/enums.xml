@@ -41654,6 +41654,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8DocumentPictureInPictureEvent_Window_AttributeGetter"/>
   <int value="4400" label="DocumentPictureInPictureEnterEvent"/>
   <int value="4401" label="SoftNavigationHeuristics"/>
+  <int value="4402" label="MathMLMathElement"/>
+  <int value="4403" label="MathMLMathElementInDocument"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
