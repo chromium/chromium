@@ -117,9 +117,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     JSONStringValueDeserializer json_string_deserializer(json_manifest);
     std::unique_ptr<base::Value> manifest =
         json_string_deserializer.Deserialize(&error_code, &error);
-    base::DictionaryValue* manifest_dictionary;
-
-    manifest->GetAsDictionary(&manifest_dictionary);
+    base::Value::Dict* manifest_dictionary = manifest->GetIfDict();
     ASSERT_TRUE(manifest_dictionary);
 
     scoped_refptr<extensions::Extension> extension =
