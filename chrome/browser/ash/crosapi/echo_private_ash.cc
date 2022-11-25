@@ -95,12 +95,18 @@ void EchoPrivateAsh::GetRegistrationCode(mojom::RegistrationCodeType type,
   std::string result;
   switch (type) {
     case mojom::RegistrationCodeType::kCoupon:
-      provider->GetMachineStatistic(chromeos::system::kOffersCouponCodeKey,
-                                    &result);
+      if (const absl::optional<base::StringPiece> offers_code =
+              provider->GetMachineStatistic(
+                  chromeos::system::kOffersCouponCodeKey)) {
+        result = std::string(offers_code.value());
+      }
       break;
     case mojom::RegistrationCodeType::kGroup:
-      provider->GetMachineStatistic(chromeos::system::kOffersGroupCodeKey,
-                                    &result);
+      if (const absl::optional<base::StringPiece> offers_code =
+              provider->GetMachineStatistic(
+                  chromeos::system::kOffersGroupCodeKey)) {
+        result = std::string(offers_code.value());
+      }
       break;
   }
 

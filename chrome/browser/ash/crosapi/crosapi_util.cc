@@ -225,8 +225,10 @@ mojom::DevicePropertiesPtr GetDeviceProperties() {
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   result->directory_device_id = policy_connector->GetDirectoryApiID();
-  result->serial_number = chromeos::system::StatisticsProvider::GetInstance()
-                              ->GetEnterpriseMachineID();
+  result->serial_number =
+      std::string(chromeos::system::StatisticsProvider::GetInstance()
+                      ->GetMachineID()
+                      .value_or(""));
   result->annotated_asset_id = policy_connector->GetDeviceAssetID();
   result->annotated_location = policy_connector->GetDeviceAnnotatedLocation();
   auto* device_name_policy_handler =

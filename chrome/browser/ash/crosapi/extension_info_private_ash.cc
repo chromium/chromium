@@ -256,29 +256,28 @@ const char* GetBoolPrefNameForApiProperty(const char* api_name) {
 
 std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   if (property_name == kPropertyHWID) {
-    std::string hwid;
     chromeos::system::StatisticsProvider* provider =
         chromeos::system::StatisticsProvider::GetInstance();
-    provider->GetMachineStatistic(chromeos::system::kHardwareClassKey, &hwid);
-    return std::make_unique<base::Value>(hwid);
+    const absl::optional<base::StringPiece> hwid =
+        provider->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+    return std::make_unique<base::Value>(hwid.value_or(""));
   }
 
   if (property_name == kPropertyCustomizationID) {
-    std::string customization_id;
     chromeos::system::StatisticsProvider* provider =
         chromeos::system::StatisticsProvider::GetInstance();
-    provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey,
-                                  &customization_id);
-    return std::make_unique<base::Value>(customization_id);
+    const absl::optional<base::StringPiece> customization_id =
+        provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey);
+    return std::make_unique<base::Value>(customization_id.value_or(""));
   }
 
   if (property_name == kPropertyDeviceRequisition) {
-    std::string device_requisition;
     chromeos::system::StatisticsProvider* provider =
         chromeos::system::StatisticsProvider::GetInstance();
-    provider->GetMachineStatistic(chromeos::system::kOemDeviceRequisitionKey,
-                                  &device_requisition);
-    return std::make_unique<base::Value>(device_requisition);
+    const absl::optional<base::StringPiece> device_requisition =
+        provider->GetMachineStatistic(
+            chromeos::system::kOemDeviceRequisitionKey);
+    return std::make_unique<base::Value>(device_requisition.value_or(""));
   }
 
   if (property_name == kPropertyMeetDevice) {
