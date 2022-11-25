@@ -52,6 +52,8 @@
 - (void)keyCommand_showReadingList;
 - (void)keyCommand_goToTabGrid;
 - (void)keyCommand_clearBrowsingData;
+- (void)keyCommand_closeAll;
+- (void)keyCommand_undo;
 
 @end
 

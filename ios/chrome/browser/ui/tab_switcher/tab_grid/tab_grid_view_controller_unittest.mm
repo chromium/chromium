@@ -10,19 +10,44 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
+#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Fake WebStateList delegate that attaches the required tab helper.
+class TabGridFakeWebStateListDelegate : public FakeWebStateListDelegate {
+ public:
+  TabGridFakeWebStateListDelegate() {}
+  ~TabGridFakeWebStateListDelegate() override {}
+
+  // WebStateListDelegate implementation.
+  void WillAddWebState(web::WebState* web_state) override {
+    SnapshotTabHelper::CreateForWebState(web_state);
+  }
+};
 
 class TabGridViewControllerTest : public PlatformTest {
  protected:
   TabGridViewControllerTest() {
     view_controller_ = [[TabGridViewController alloc]
         initWithPageConfiguration:TabGridPageConfiguration::kAllPagesEnabled];
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(
+        browser_state_.get(),
+        std::make_unique<TabGridFakeWebStateListDelegate>());
+    SnapshotBrowserAgent::CreateForBrowser(browser_.get());
   }
   ~TabGridViewControllerTest() override {}
 
@@ -46,8 +71,11 @@ class TabGridViewControllerTest : public PlatformTest {
     EXPECT_EQ(user_action_tester_.GetActionCount(user_action), 1);
   }
 
+  web::WebTaskEnvironment task_environment_;
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Checks that TabGridViewController returns key commands when the Keyboard
@@ -113,6 +141,8 @@ TEST_F(TabGridViewControllerTest, ImplementsActions) {
   [view_controller_ keyCommand_openNewRegularTab];
   [view_controller_ keyCommand_openNewIncognitoTab];
   [view_controller_ keyCommand_find];
+  [view_controller_ keyCommand_closeAll];
+  [view_controller_ keyCommand_undo];
 }
 
 // Checks that metrics are correctly reported.
@@ -125,6 +155,8 @@ TEST_F(TabGridViewControllerTest, Metrics) {
   ExpectUMA(@"keyCommand_openNewIncognitoTab",
             "MobileKeyCommandOpenNewIncognitoTab");
   ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs");
+  ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
+  ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
 }
 
 // This test ensure 2 things:
@@ -164,4 +196,64 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
   }
 }
 
+TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
+  // Load the view.
+  [view_controller_.view self];
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+  // Create a view revealing vertical pan handler.
+  ViewRevealingVerticalPanHandler* pan_handler =
+      [[ViewRevealingVerticalPanHandler alloc]
+          initWithPeekedHeight:212.0f
+                baseViewHeight:800.0f
+                  initialState:ViewRevealState::Peeked];
+
+  [pan_handler addAnimatee:view_controller_];
+
+  [pan_handler setNextState:ViewRevealState::Revealed
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageIncognitoTabs
+                                        animated:NO];
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+  TabGridMediator* incognitoMediator = [[TabGridMediator alloc]
+      initWithConsumer:view_controller_.incognitoTabsConsumer];
+  [incognitoMediator setBrowser:browser_.get()];
+  view_controller_.incognitoTabsDelegate = incognitoMediator;
+  [view_controller_.incognitoTabsDelegate addNewItem];
+  EXPECT_TRUE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+  [view_controller_.incognitoTabsDelegate closeAllItems];
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageRegularTabs
+                                        animated:NO];
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+  TabGridMediator* regularMediator = [[TabGridMediator alloc]
+      initWithConsumer:view_controller_.regularTabsConsumer];
+  [regularMediator setBrowser:browser_.get()];
+  view_controller_.regularTabsDelegate = regularMediator;
+  [view_controller_.regularTabsDelegate addNewItem];
+  EXPECT_TRUE(CanPerform(@"keyCommand_closeAll"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
+  [view_controller_.incognitoTabsDelegate closeAllItems];
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
+
+  // closeAllItems from the mediator do not change the value of the boolean, set
+  // it manually.
+  view_controller_.undoCloseAllAvailable = YES;
+  EXPECT_TRUE(CanPerform(@"keyCommand_undo"));
+
+  // Forces the TabGridMediator to removes its Observer from WebStateList
+  // before the Browser is destroyed.
+  incognitoMediator.browser = nullptr;
+  incognitoMediator = nil;
+
+  regularMediator.browser = nullptr;
+  regularMediator = nil;
+}
 }  // namespace

@@ -34,6 +34,7 @@
     UIKeyCommand.cr_openLocation,
     UIKeyCommand.cr_closeTab,
     UIKeyCommand.cr_voiceSearch,
+    UIKeyCommand.cr_closeAll,
   ]];
   [builder insertChildMenu:fileMenu atStartOfMenuForIdentifier:UIMenuFile];
 

@@ -163,7 +163,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, strong) UIControl* scrimView;
 @property(nonatomic, weak) TabGridTopToolbar* topToolbar;
 @property(nonatomic, weak) TabGridBottomToolbar* bottomToolbar;
-@property(nonatomic, assign) BOOL undoCloseAllAvailable;
 // Bool informing if the confirmation action sheet is displayed.
 @property(nonatomic, assign) BOOL closeAllConfirmationDisplayed;
 @property(nonatomic, assign) TabGridConfiguration configuration;
@@ -2617,6 +2616,29 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+#pragma mark - UIResponder Helper
+
+// Returns YES if "close all" can be performed. Conditions are:
+// * Tab grid is currently displayed,
+// * There are tabs to close in the current page,
+// * Not in an undo scenario.
+- (BOOL)canCloseAllTab {
+  return self.currentState == ViewRevealState::Revealed &&
+         ((self.currentPage == TabGridPageIncognitoTabs &&
+           !self.incognitoTabsViewController.gridEmpty) ||
+          (self.currentPage == TabGridPageRegularTabs &&
+           !self.regularTabsViewController.gridEmpty &&
+           !self.undoCloseAllAvailable));
+}
+
+// Returns YES if "undo" the close all action can be performed.
+- (BOOL)canUndoCloseAllTab {
+  return /* Ensure the tab grid is currently displayed. */ self.currentState ==
+             ViewRevealState::Revealed &&
+         self.currentPage == TabGridPageRegularTabs &&
+         self.undoCloseAllAvailable;
+}
+
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
@@ -2630,6 +2652,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // Other key commands are already declared in the menu.
     return @[
       UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_undo,
       // TODO(crbug.com/1385469): Move it to the menu builder once we have the
       // strings.
       UIKeyCommand.cr_select2,
@@ -2652,6 +2675,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
     return self.currentState == ViewRevealState::Revealed;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
+    return [self canCloseAllTab];
+  }
+  if (sel_isEqual(action, @selector(keyCommand_undo))) {
+    return [self canUndoCloseAllTab];
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -2704,6 +2733,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::RecordAction(
       base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
   [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
+}
+
+- (void)keyCommand_closeAll {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandCloseAll"));
+  [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_undo {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
+  // This function is also responsible for handling undo.
+  [self closeAllButtonTapped:nil];
 }
 
 @end

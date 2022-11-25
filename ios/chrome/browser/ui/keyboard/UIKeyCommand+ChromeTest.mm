@@ -130,6 +130,9 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
          IDS_IOS_KEYBOARD_GO_TO_TAB_GRID);
   Verify(UIKeyCommand.cr_clearBrowsingData, @"⇧⌘⌫",
          @"keyCommand_clearBrowsingData", IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA);
+  Verify(UIKeyCommand.cr_closeAll, @"⇧⌘W", @"keyCommand_closeAll",
+         IDS_IOS_KEYBOARD_CLOSE_ALL);
+  Verify(UIKeyCommand.cr_undo, @"⌘Z", @"keyCommand_undo");
 
   // Prior to iOS 15, RTL needs to be handled manually. Check it for key
   // commands that need to adapt.

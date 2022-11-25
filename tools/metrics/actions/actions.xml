@@ -18462,6 +18462,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyCommandCloseAll">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to close all tabs.
+  </description>
+</action>
+
 <action name="MobileKeyCommandCloseTab">
   <owner>lpromero@google.com</owner>
   <owner>alionadangla@google.com</owner>
@@ -18756,6 +18764,15 @@ should be able to be added at any place in this file.
   <owner>alionadangla@google.com</owner>
   <description>
     The user has performed the key command to stop loading the page.
+  </description>
+</action>
+
+<action name="MobileKeyCommandUndo">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to undo the command which closes all
+    tabs.
   </description>
 </action>
 

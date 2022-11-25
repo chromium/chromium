@@ -68,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showReadingList;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_goToTabGrid;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_clearBrowsingData;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_closeAll;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_undo;
 
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;

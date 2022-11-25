@@ -453,6 +453,24 @@ NSString* Delete(void) {
                    titleIDAsString:@"IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA"];
 }
 
++ (UIKeyCommand*)cr_closeAll {
+  return [self cr_commandWithInput:@"w"
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_closeAll)
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_ALL"];
+}
+
++ (UIKeyCommand*)cr_undo {
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"z"
+                  modifierFlags:Command
+                         action:@selector(keyCommand_undo)];
+  if (@available(iOS 15.0, *)) {
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+  }
+  return keyCommand;
+}
+
 #pragma mark - Symbolic Description
 
 - (NSString*)cr_symbolicDescription {
