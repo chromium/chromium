@@ -3437,32 +3437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.WebRequest.OnBeforeSendHeadersEventResponse"
-    enum="WebRequestEventResponse" expires_after="M77">
-  <owner>rockot@chromium.org</owner>
-  <summary>
-    For every network request visible to the Web Request API, this indicates
-    whether any registered declarative rules or event listeners observed the
-    onBeforeSendHeaders event.
-
-    This histogram is temporary, for investigating https://crbug.com/827582. It
-    can probably be removed by M69.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.WebRequest.OnHeadersReceivedEventResponse"
-    enum="WebRequestEventResponse" expires_after="M77">
-  <owner>rockot@chromium.org</owner>
-  <summary>
-    For every network request visible to the Web Request API, this indicates
-    whether any registered declarative rules or event listeners observed the
-    onHeadersReceived event.
-
-    This histogram is temporary, for investigating https://crbug.com/827582. It
-    can probably be removed by M69.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.WebRequest.RequestHeaderAdded"
     enum="WebRequest.RequestHeader" expires_after="never">
 <!-- expires-never: For monitoring Web Request API usage. -->

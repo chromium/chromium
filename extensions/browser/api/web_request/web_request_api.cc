@@ -1277,11 +1277,6 @@ int ExtensionWebRequestEventRouter::OnBeforeSendHeaders(
         browser_context, request, listeners, std::move(event_details));
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.WebRequest.OnBeforeSendHeadersEventResponse",
-      initialize_blocked_requests ? WebRequestEventResponse::kObserved
-                                  : WebRequestEventResponse::kIgnored);
-
   if (!initialize_blocked_requests)
     return net::OK;  // Nobody saw a reason for modifying the request.
 
@@ -1362,11 +1357,6 @@ int ExtensionWebRequestEventRouter::OnHeadersReceived(
     initialize_blocked_requests |= DispatchEvent(
         browser_context, request, listeners, std::move(event_details));
   }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.WebRequest.OnHeadersReceivedEventResponse",
-      initialize_blocked_requests ? WebRequestEventResponse::kObserved
-                                  : WebRequestEventResponse::kIgnored);
 
   if (!initialize_blocked_requests)
     return net::OK;  // Nobody saw a reason for modifying the request.
