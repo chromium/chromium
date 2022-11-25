@@ -392,12 +392,27 @@ class LoggingValidationTestForNickname
   bool card_has_nickname_;
 };
 
-TEST_P(LoggingValidationTestForNickname, LogShown) {
+TEST_P(LoggingValidationTestForNickname,
+       MaskedServerCard_LogUnmaskPromptShown) {
   base::HistogramTester histogram_tester;
   ShowPrompt();
 
-  histogram_tester.ExpectUniqueSample("Autofill.UnmaskPrompt.Events",
+  histogram_tester.ExpectUniqueSample("Autofill.UnmaskPrompt.ServerCard.Events",
                                       AutofillMetrics::UNMASK_PROMPT_SHOWN, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.UnmaskPrompt.Events.WithNickname",
+      AutofillMetrics::UNMASK_PROMPT_SHOWN, card_has_nickname() ? 1 : 0);
+}
+
+TEST_P(LoggingValidationTestForNickname, VirtualCard_LogUnmaskPromptShown) {
+  base::HistogramTester histogram_tester;
+  ShowPrompt(absl::optional<autofill::CardUnmaskChallengeOption>(
+      test::GetCardUnmaskChallengeOptions(
+          {CardUnmaskChallengeOptionType::kCvc})[0]));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.UnmaskPrompt.VirtualCard.Events",
+      AutofillMetrics::UNMASK_PROMPT_SHOWN, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.UnmaskPrompt.Events.WithNickname",
       AutofillMetrics::UNMASK_PROMPT_SHOWN, card_has_nickname() ? 1 : 0);
@@ -409,7 +424,7 @@ TEST_P(LoggingValidationTestForNickname, LogClosedNoAttempts) {
   controller_->OnUnmaskDialogClosed();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_CLOSED_NO_ATTEMPTS, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.UnmaskPrompt.Events.WithNickname",
@@ -424,7 +439,7 @@ TEST_P(LoggingValidationTestForNickname, LogClosedAbandonUnmasking) {
   controller_->OnUnmaskDialogClosed();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_CLOSED_ABANDON_UNMASKING, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.UnmaskPrompt.Events.WithNickname",
@@ -446,7 +461,7 @@ TEST_P(LoggingValidationTestForNickname, LogClosedFailedToUnmaskRetriable) {
             controller_->GetVerificationResult());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics ::UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_RETRIABLE_FAILURE,
       1);
   histogram_tester.ExpectBucketCount(
@@ -469,7 +484,7 @@ TEST_P(LoggingValidationTestForNickname, LogClosedFailedToUnmaskNonRetriable) {
             controller_->GetVerificationResult());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics ::
           UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_NON_RETRIABLE_FAILURE,
       1);
@@ -495,7 +510,7 @@ TEST_P(LoggingValidationTestForNickname, LogUnmaskedCardFirstAttempt) {
             controller_->GetVerificationResult());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_UNMASKED_CARD_FIRST_ATTEMPT, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.UnmaskPrompt.Events.WithNickname",
@@ -517,7 +532,7 @@ TEST_P(LoggingValidationTestForNickname, LogUnmaskedCardAfterFailure) {
   controller_->OnUnmaskDialogClosed();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_UNMASKED_CARD_AFTER_FAILED_ATTEMPTS, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.UnmaskPrompt.Events.WithNickname",
@@ -531,16 +546,16 @@ TEST_P(LoggingValidationTestForNickname, DontLogForHiddenCheckbox) {
   controller_->OnUnmaskDialogClosed();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_IN, 0);
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_IN, 0);
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_OUT, 0);
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.ServerCard.Events",
       AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_OUT, 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.UnmaskPrompt.Events.WithNickname",
@@ -861,7 +876,7 @@ TEST_P(VirtualCardErrorTest, VirtualCardFailureDismissesUnmaskPrompt) {
             controller_->GetVerificationResult());
   // Verify that prompt closing metrics are logged.
   histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events",
+      "Autofill.UnmaskPrompt.VirtualCard.Events",
       AutofillMetrics::
           UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_NON_RETRIABLE_FAILURE,
       1);

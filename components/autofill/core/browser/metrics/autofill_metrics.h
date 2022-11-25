@@ -1237,7 +1237,8 @@ class AutofillMetrics {
 
   // Logs |event| to the unmask prompt events histogram.
   static void LogUnmaskPromptEvent(UnmaskPromptEvent event,
-                                   bool has_valid_nickname);
+                                   bool has_valid_nickname,
+                                   CreditCard::RecordType card_type);
 
   // Logs |event| to cardholder name fix flow prompt events histogram.
   static void LogCardholderNameFixFlowPromptEvent(

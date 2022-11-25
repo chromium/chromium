@@ -78,7 +78,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     web_state_.SetBrowserState(chrome_browser_state_.get());
     personal_data_manager_.SetPrefService(chrome_browser_state_->GetPrefs());
 
-    AddCreditCard(autofill::test::GetCreditCard());  // Visa.
+    AddCreditCard(autofill::test::GetMaskedServerCard());  // Mastercard.
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
