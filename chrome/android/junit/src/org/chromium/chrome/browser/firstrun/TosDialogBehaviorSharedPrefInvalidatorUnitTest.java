@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import android.os.Looper;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -18,19 +20,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.components.policy.PolicyService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit test for {@link TosDialogBehaviorSharedPrefInvalidator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -41,7 +41,6 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @Mock
     public SkipTosDialogPolicyListener mMockPolicyListener;
 
-    private TosDialogBehaviorSharedPrefInvalidator mStatusHelper;
     private Callback<Boolean> mOnPolicyAvailableCallback;
 
     @Before
@@ -69,8 +68,8 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @Test
     @SmallTest
     public void testSkipNotTriggered() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                TosDialogBehaviorSharedPrefInvalidator::refreshSharedPreferenceIfTosSkipped);
+        TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         Mockito.verify(mMockAppRestrictionInfo, Mockito.never()).getHasAppRestriction(any());
         Mockito.verify(mMockPolicyService, Mockito.never()).addObserver(any());
@@ -80,8 +79,8 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @SmallTest
     public void testSkipTriggered() {
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                TosDialogBehaviorSharedPrefInvalidator::refreshSharedPreferenceIfTosSkipped);
+        TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         Mockito.verify(mMockAppRestrictionInfo).getHasAppRestriction(any());
         Mockito.verify(mMockPolicyService).addObserver(any());
@@ -95,6 +94,7 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
 
         // Assuming SkipTosDialogPolicyListener supplied with "False".
         mOnPolicyAvailableCallback.onResult(false);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         Assert.assertFalse("Value for #isFirstRunSkippedByPolicy should be set to false.",
                 FirstRunStatus.isFirstRunSkippedByPolicy());
         Mockito.verify(mMockPolicyListener).destroy();
@@ -117,6 +117,7 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
 
         // Assuming SkipTosDialogPolicyListener supplied with "True".
         mOnPolicyAvailableCallback.onResult(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         Assert.assertTrue("Value for #isFirstRunSkippedByPolicy should stay true.",
                 FirstRunStatus.isFirstRunSkippedByPolicy());
         Mockito.verify(mMockPolicyListener).destroy();
