@@ -43,7 +43,9 @@ void OperationForwarded(ProviderId provider_id,
       service->GetProvidedFileSystem(provider_id, file_system_id);
   if (!file_system)
     return;
-  file_system->GetRequestManager()->DestroyRequest(request_id);
+  file_system->GetRequestManager()->RejectRequest(
+      request_id, std::make_unique<RequestValue>(),
+      base::File::FILE_ERROR_FAILED);
 }
 
 // Default implementation for dispatching an event. Can be replaced for unit
