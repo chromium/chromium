@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Tests that when a watch times out and is cleared from the error callback, there is no crash. This a regression test for https://bugs.webkit.org/show_bug.cgi?id=32111.
+Harness: the test ran to completion.
+

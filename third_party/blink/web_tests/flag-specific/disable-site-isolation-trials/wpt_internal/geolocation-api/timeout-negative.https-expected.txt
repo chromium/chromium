@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Tests that when timeout is negative (and maximumAge is too), the error callback is called immediately with code TIMEOUT.
+Harness: the test ran to completion.
+

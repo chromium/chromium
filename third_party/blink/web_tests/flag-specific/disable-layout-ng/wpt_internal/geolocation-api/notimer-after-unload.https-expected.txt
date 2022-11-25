@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS geolocation callbacks are not invoked after page unload
+Harness: the test ran to completion.
+

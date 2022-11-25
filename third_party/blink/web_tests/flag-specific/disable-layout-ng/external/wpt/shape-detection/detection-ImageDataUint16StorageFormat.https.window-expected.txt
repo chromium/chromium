@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS FaceDetector.detect() can process uint16 storage format ImageData
+PASS BarcodeDetector.detect() can process uint16 storage format ImageData
+PASS TextDetector.detect() can process uint16 storage format ImageData
+Harness: the test ran to completion.
+

@@ -5,21 +5,15 @@
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
-  <script src="/feature-policy/resources/featurepolicy.js"></script>
+  <script src="/permissions-policy/resources/permissions-policy.js"></script>
   <script>
     const same_origin_src =
-      "/feature-policy/resources/feature-policy-geolocation.html";
+      "/permissions-policy/resources/permissions-policy-geolocation.html";
     const cross_origin_src =
-      "https://{{domains[www]}}:{{ports[https][0]}}" + same_origin_src;
+      "https://{{hosts[][]}}:{{ports[https][0]}}" + same_origin_src;
 
     promise_test(async (t) => {
-
-      await test_driver.set_permission(
-        { name: "geolocation" },
-        "granted",
-        false
-      );
-
+      await test_driver.set_permission({ name: "geolocation" }, "granted");
       const result = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
@@ -28,7 +22,7 @@
         result instanceof GeolocationPosition,
         "Expected a GeolocationPosition"
       );
-    }, "Feature-Policy header geolocation: * allows the top-level document.");
+    }, "Permissions-Policy header geolocation=* allows the top-level document.");
 
     async_test((t) => {
       test_feature_availability(
@@ -37,7 +31,7 @@
         same_origin_src,
         expect_feature_available_default
       );
-    }, "Feature-Policy header geolocation: * allows same-origin iframes.");
+    }, "Permissions-Policy header geolocation=* allows same-origin iframes.");
 
     async_test((t) => {
       test_feature_availability(
@@ -46,6 +40,6 @@
         cross_origin_src,
         expect_feature_available_default
       );
-    }, "Feature-Policy header geolocation: * allows cross-origin iframes.");
+    }, "Permissions-Policy header geolocation=* allows cross-origin iframes.");
   </script>
 </body>

@@ -4,18 +4,20 @@
   "use strict";
 
   Promise.resolve().then(async () => {
+    test_driver.set_test_context(window.parent);
     await test_driver.set_permission(
       { name: "geolocation" },
       "granted",
       false
     );
+    let enabled = true;
     try {
       await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
-      window.parent.postMessage({ enabled: true }, "*");
     } catch (e) {
-      window.parent.postMessage({ enabled: false }, "*");
+      enabled = false;
     }
+    window.parent.postMessage({ type: "availability-result", enabled }, "*");
   });
 </script>
