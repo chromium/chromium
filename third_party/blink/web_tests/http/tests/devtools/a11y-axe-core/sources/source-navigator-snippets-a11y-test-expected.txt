@@ -1,0 +1,6 @@
+Tests accessibility in the Sources panel Navigator pane Snippets tab using axe-core.
+Script snippet #1
+Script snippet #2
+aXe violations: []
+
+

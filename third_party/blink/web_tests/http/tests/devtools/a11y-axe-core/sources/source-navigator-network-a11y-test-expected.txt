@@ -1,0 +1,8 @@
+Tests accessibility in the Sources panel Navigator pane Network tab using axe-core.
+top
+  127.0.0.1:8000
+    devtools/resources
+      inspected-page.html
+aXe violations: []
+
+

@@ -1,0 +1,10 @@
+Testing accessibility in the DOM breakpoints pane.
+Setting DOM breakpoints.
+DOM breakpoints container text content: DOM BreakpointsNo breakpointsSubtree modifiedNode removed
+DOM breakpoints container ARIA descriptions: checked,unchecked
+DOM breakpoints pane text content: No breakpointsSubtree modifiedNode removed
+DOM breakpoints pane ARIA descriptions: checked,unchecked
+Running the axe-core linter on the DOM breakpoints pane.
+aXe violations: []
+
+

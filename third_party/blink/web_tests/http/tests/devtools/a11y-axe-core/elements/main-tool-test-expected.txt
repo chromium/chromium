@@ -1,0 +1,21 @@
+
+Running: testElementsDomTree
+Tests accessibility in the DOM tree using the axe-core linter
+aXe violations: []
+
+
+Running: testElementsDomBreadcrumbs
+Tests accessibility in the DOM breadcrumbs using the axe-core linter
+aXe violations: []
+
+
+Running: testElementsStylesPane
+Tests accessibility of the Styles pane using the axe-core linter
+aXe violations: []
+
+
+Running: testElementsComputedStylesPane
+Tests accessibility in the Computed Styles pane using the axe-core linter
+aXe violations: []
+
+

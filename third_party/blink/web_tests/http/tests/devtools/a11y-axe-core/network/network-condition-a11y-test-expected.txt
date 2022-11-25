@@ -1,0 +1,4 @@
+Tests accessibility in Network conditions view using the axe-core linter.
+aXe violations: []
+
+

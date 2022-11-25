@@ -1,0 +1,8 @@
+Tests accessibility in DOM eventlistener pane using axe-core linter.
+Running the axe-core linter on tree element.
+aXe violations: []
+
+Running the axe-core linter on toolbar.
+aXe violations: []
+
+

@@ -1,0 +1,14 @@
+Adding global listener.
+Dumping event listeners view:
+
+======== touchstart ========
+== Raw
+[expanded] WindowRemoveToggle Passiveglobal-listeners-sidebar-a11y-test.js:13
+    useCapture: false
+    passive: true
+    once: false
+    handler: () => console.log
+Running the axe-core linter on the global listeners pane.
+aXe violations: []
+
+

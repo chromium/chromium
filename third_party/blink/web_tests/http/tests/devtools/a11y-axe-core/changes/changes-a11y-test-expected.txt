@@ -1,0 +1,6 @@
+Tests accessibility in the Changes drawer.
+Showing the Changes drawer.
+Running aXe on the Changes drawer.
+aXe violations: []
+
+

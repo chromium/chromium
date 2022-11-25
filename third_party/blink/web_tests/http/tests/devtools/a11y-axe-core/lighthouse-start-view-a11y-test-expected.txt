@@ -1,0 +1,5 @@
+Tests accessibility in the lighthouse start view using the axe-core linter.
+
+aXe violations: []
+
+

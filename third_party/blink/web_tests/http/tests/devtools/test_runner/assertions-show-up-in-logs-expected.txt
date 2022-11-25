@@ -1,0 +1,10 @@
+Tests the test runner shows assertions in the logs
+
+Passing assert should not show up
+
+Failing assert should show up
+ASSERTION FAILURE: This is a failing assertion.
+
+Failing assert with multiple arguments
+ASSERTION FAILURE: This is  a  failing assertion.
+

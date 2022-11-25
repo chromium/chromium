@@ -1,0 +1,5 @@
+Tests that snippet scripts are evaluated in REPL mode
+
+Called RuntimeAgent.invoke_evaluate
+Value of 'replMode': true
+
