@@ -3798,13 +3798,22 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/tools/bazel': {
+  'src/tools/bazel/windows-amd64': {
     'packages': [{
-       'package': 'infra/3pp/tools/bazel_bootstrap/${{platform}}',
-       'version': 'version:2@5.2.0.1',
+       'package': 'infra/3pp/tools/bazel_bootstrap/windows-amd64',
+       'version': 'version:2@5.3.2',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_bazel',
+    'condition': 'checkout_win and checkout_bazel',
+  },
+
+  'src/tools/bazel/linux-amd64': {
+    'packages': [{
+       'package': 'infra/3pp/tools/bazel_bootstrap/linux-amd64',
+       'version': 'version:2@5.3.2.1',
+    }],
+    'dep_type': 'cipd',
+    'condition': 'checkout_linux and checkout_bazel',
   },
 }
 

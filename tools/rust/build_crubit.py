@@ -32,9 +32,20 @@ sys.path.append(
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR)
 from build import (LLVM_BOOTSTRAP_INSTALL_DIR, MaybeDownloadHostGcc)
 
-from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, THIRD_PARTY_DIR)
+from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, THIRD_PARTY_DIR,
+                         BUILD_MAC_ARM)
 
-BAZEL_EXE = os.path.join(CHROMIUM_DIR, 'tools', 'bazel', 'bazel')
+BAZEL_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'bazel')
+if sys.platform == 'darwin':
+    if BUILD_MAC_ARM or platform.machine() == 'arm64':
+        BAZEL_EXE = os.path.join(BAZEL_DIR, 'mac-arm64', 'bazel')
+    else:
+        BAZEL_EXE = os.path.join(BAZEL_DIR, 'mac-amd64', 'bazel')
+elif sys.platform == 'win32':
+    BAZEL_EXE = os.path.join(BAZEL_DIR, 'windows-amd64', 'bazel.exe')
+else:
+    BAZEL_EXE = os.path.join(BAZEL_DIR, 'linux-amd64', 'bazel')
+
 CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit', 'src')
 
 
