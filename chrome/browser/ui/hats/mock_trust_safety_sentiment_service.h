@@ -41,6 +41,7 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               InteractedWithPrivacySandbox3,
               (FeatureArea feature_area),
               (override));
+  MOCK_METHOD(void, FinishedPrivacyGuide, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(

@@ -65,6 +65,7 @@ extern const char kHatsSurveyTriggerTrustSafetyV2BrowsingData[];
 extern const char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[];
 extern const char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[];
+extern const char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[];
 extern const char kHatsSurveyTriggerWhatsNew[];
 
 // The Trigger ID for a test HaTS Next survey which is available for testing

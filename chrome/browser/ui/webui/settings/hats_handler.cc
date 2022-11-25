@@ -141,6 +141,8 @@ void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {
     sentiment_service->OpenedPasswordManager(web_ui()->GetWebContents());
   } else if (interaction == TrustSafetyInteraction::RAN_PASSWORD_CHECK) {
     sentiment_service->RanPasswordCheck();
+  } else if (interaction == TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE) {
+    sentiment_service->FinishedPrivacyGuide();
   }
 }
 

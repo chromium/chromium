@@ -83,6 +83,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[] =
     "ts-v2-safety-check";
 constexpr char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[] =
     "ts-v2-trusted-surface";
+constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[] =
+    "ts-v2-privacy-guide";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -276,6 +278,10 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerTrustSafetyV2TrustedSurface,
       features::kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId.Get(),
       std::vector<std::string>{"Interacted with Page Info"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurveyV2,
+      kHatsSurveyTriggerTrustSafetyV2PrivacyGuide,
+      features::kTrustSafetySentimentSurveyV2PrivacyGuideTriggerId.Get());
 
   // Accuracy tips survey.
   survey_configs.emplace_back(

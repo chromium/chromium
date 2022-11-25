@@ -1251,6 +1251,9 @@ const base::FeatureParam<double>
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2TrustedSurfaceProbability{
         &kTrustSafetySentimentSurveyV2, "trusted-surface-probability", 0.0};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2PrivacyGuideProbability{
+        &kTrustSafetySentimentSurveyV2, "privacy-guide-probability", 0.0};
 // The HaTS trigger IDs, which determine which survey is delivered from the HaTS
 // backend.
 const base::FeatureParam<std::string>
@@ -1265,6 +1268,9 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId{
         &kTrustSafetySentimentSurveyV2, "trusted-surface-trigger-id", ""};
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2PrivacyGuideTriggerId{
+        &kTrustSafetySentimentSurveyV2, "privacy-guide-trigger-id", ""};
 // The time the user must have the Trusted Surface bubble open to be considered.
 // Alternatively the user can interact with the bubble, in which case this time
 // is irrelevant.

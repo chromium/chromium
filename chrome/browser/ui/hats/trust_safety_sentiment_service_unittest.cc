@@ -128,10 +128,12 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string password_check_probability = "0.4";
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
+    std::string privacy_guide_probability = "0.4";
     std::string browsing_data_trigger_id = "browsing-data-test";
     std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
+    std::string privacy_guide_trigger_id = "privacy-guide-test";
   };
 
   void SetupFeatureParametersV2(FeatureParamsV2 params) {
@@ -147,10 +149,12 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"password-check-probability", params.password_check_probability},
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
+            {"privacy-guide-probability", params.privacy_guide_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
+            {"privacy-guide-trigger-id", params.privacy_guide_trigger_id},
         });
   }
 
@@ -982,4 +986,24 @@ TEST_F(TrustSafetySentimentServiceTest, V2_BrowsingData_NotInterested) {
   service()->ClearedBrowsingData(browsing_data::BrowsingDataType::COOKIES);
   service()->OpenedNewTabPage();
   CheckHistograms({}, {});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_PrivacyGuide) {
+  // Finishing the privacy guide is considered a trigger, and should make a user
+  // eligible to receive a survey.
+  FeatureParamsV2 params;
+  params.privacy_guide_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  // The correct survey should be launched.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PrivacyGuide, _, _, _, _));
+  service()->FinishedPrivacyGuide();
+  service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacyGuide},
+                  {TrustSafetySentimentService::FeatureArea::kPrivacyGuide});
 }

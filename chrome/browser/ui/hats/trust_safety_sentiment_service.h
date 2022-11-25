@@ -75,6 +75,10 @@ class TrustSafetySentimentService : public KeyedService,
   // Called when the user deletes data from Clear Browsing Data dialog.
   virtual void ClearedBrowsingData(browsing_data::BrowsingDataType datatype);
 
+  // Called when the user finishes the privacy guide. Virtual to allow mocking
+  // in tests.
+  virtual void FinishedPrivacyGuide();
+
   // Profile Observer:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -103,7 +107,8 @@ class TrustSafetySentimentService : public KeyedService,
     kSafetyCheck = 10,
     kPasswordCheck = 11,
     kBrowsingData = 12,
-    kMaxValue = kBrowsingData,
+    kPrivacyGuide = 13,
+    kMaxValue = kPrivacyGuide,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
@@ -135,6 +140,7 @@ class TrustSafetySentimentService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_BrowsingData);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            V2_BrowsingData_NotInterested);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_PrivacyGuide);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing

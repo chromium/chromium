@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideStep, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,6 +15,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {getSyncAllPrefs} from './sync_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
 // clang-format on
 
@@ -830,6 +831,7 @@ suite('CookiesFragmentNavigations', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -845,6 +847,9 @@ suite('CookiesFragmentNavigations', function() {
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     return flushTasks();
   });
@@ -919,6 +924,17 @@ suite('CookiesFragmentNavigations', function() {
     setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
     await flushTasks();
     assertCompletionCardVisible(page);
+  });
+
+  test('hatsInformedOnFinish', async function() {
+    await navigateToStep(PrivacyGuideStep.COOKIES);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+
+    // HaTS gets triggered if the user navigates to the completion page.
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
   });
 });
 

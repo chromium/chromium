@@ -73,6 +73,8 @@ std::string GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2PasswordCheck;
       case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
         return kHatsSurveyTriggerTrustSafetyV2BrowsingData;
+      case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
+        return kHatsSurveyTriggerTrustSafetyV2PrivacyGuide;
       default:
         NOTREACHED();
         return "";
@@ -132,6 +134,7 @@ bool VersionCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
     case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
     case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
+    case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
       return isV2 == true;
     // Both Versions
     case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
@@ -164,6 +167,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kBrowsingData):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2BrowsingDataProbability
+                   .Get();
+      case (TrustSafetySentimentService::FeatureArea::kPrivacyGuide):
+        return base::RandDouble() <
+               features::kTrustSafetySentimentSurveyV2PrivacyGuideProbability
                    .Get();
       default:
         NOTREACHED();
@@ -503,6 +510,10 @@ void TrustSafetySentimentService::ClearedBrowsingData(
        {"Deleted autofill form data",
         datatype == browsing_data::BrowsingDataType::FORM_DATA}});
   ;
+}
+
+void TrustSafetySentimentService::FinishedPrivacyGuide() {
+  TriggerOccurred(FeatureArea::kPrivacyGuide, {});
 }
 
 void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
