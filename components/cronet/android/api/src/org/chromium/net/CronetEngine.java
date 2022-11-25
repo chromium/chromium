@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
@@ -91,6 +92,8 @@ public abstract class CronetEngine {
     // NOTE(kapishnikov): In order to avoid breaking the existing API clients, all future methods
     // added to this class and other API classes must have default implementation.
     public static class Builder {
+        private static final String TAG = "CronetEngine.Builder";
+
         /**
          * A class which provides a method for loading the cronet native library. Apps needing to
          * implement custom library loading logic can inherit from this class and pass an instance
@@ -386,6 +389,14 @@ public abstract class CronetEngine {
          * @return constructed {@link CronetEngine}.
          */
         public CronetEngine build() {
+            int implLevel = getImplementationApiLevel();
+            if (implLevel != -1 && implLevel < getMaximumApiLevel()) {
+                Log.w(TAG,
+                        "The implementation version is lower than the API version. Calls to "
+                                + "methods added in API " + (implLevel + 1) + " and newer will "
+                                + "likely have no effect.");
+            }
+
             return mBuilderDelegate.build();
         }
 
@@ -493,6 +504,29 @@ public abstract class CronetEngine {
                 }
             }
             return Integer.signum(s1segments.length - s2segments.length);
+        }
+
+        private int getMaximumApiLevel() {
+            return ApiVersion.getMaximumAvailableApiLevel();
+        }
+
+        /**
+         * Returns the implementation version, the implementation being represented by the delegate
+         * builder, or {@code -1} if the version couldn't be retrieved.
+         */
+        private int getImplementationApiLevel() {
+            try {
+                ClassLoader implClassLoader = mBuilderDelegate.getClass().getClassLoader();
+                Class<?> implVersionClass =
+                        implClassLoader.loadClass("org.chromium.net.impl.ImplVersion");
+                Method getApiLevel = implVersionClass.getMethod("getApiLevel");
+                int implementationApiLevel = (Integer) getApiLevel.invoke(null);
+
+                return implementationApiLevel;
+            } catch (Exception e) {
+                // Any exception in the block above isn't critical, don't bother the app about it.
+                return -1;
+            }
         }
     }
 
