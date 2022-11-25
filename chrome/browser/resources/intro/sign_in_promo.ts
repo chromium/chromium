@@ -20,6 +20,7 @@ export interface SignInPromoElement {
   $: {
     acceptSignInButton: CrButtonElement,
     buttonContainer: HTMLElement,
+    contentArea: HTMLElement,
     declineSignInButton: CrButtonElement,
     safeZone: HTMLElement,
   };
@@ -74,25 +75,58 @@ export class SignInPromoElement extends SignInPromoElementBase {
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
   private benefitCards_: BenefitCard[];
-  private resizeObserver_: ResizeObserver|null = null;
+  private divisionLineResizeObserver_: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addResizeObserver_();
+    this.toggleDivisionLine_();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver_!.disconnect();
+    this.divisionLineResizeObserver_!.disconnect();
   }
 
-  private addResizeObserver_() {
+  override ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+  }
+
+  private onViewEnterStart_() {
+    this.setTranslationHeightToAlignLogoAndAnimation();
+  }
+
+  private toggleDivisionLine_() {
     const safeZone = this.$.safeZone;
-    this.resizeObserver_ = new ResizeObserver(() => {
+
+    this.divisionLineResizeObserver_ = new ResizeObserver(() => {
       this.$.buttonContainer.classList.toggle(
           'division-line', safeZone.scrollHeight > safeZone.clientHeight);
     });
-    this.resizeObserver_.observe(safeZone);
+    this.divisionLineResizeObserver_.observe(safeZone);
+  }
+
+  // At the start of the signInPromo animation, the product logo should be at
+  // the same position as the splash view logo animation. To be able
+  // to do that, we had to translate the safeZone vertically up by the value
+  // calculated in the function below, after doing top:50%.
+  private setTranslationHeightToAlignLogoAndAnimation() {
+    const contentAreaHeight = this.$.contentArea.clientHeight;
+    const safeZoneHeight = this.$.safeZone.clientHeight;
+    const productLogoMarginTop = parseInt(
+        getComputedStyle(this).getPropertyValue('--product-logo-margin-top'));
+    const productLogoSize = parseInt(
+        getComputedStyle(this).getPropertyValue('--product-logo-size'));
+
+    const contentAreaAndSafeZoneHeightDifference =
+        contentAreaHeight < safeZoneHeight ?
+        safeZoneHeight - contentAreaHeight :
+        0;
+    const translationHeight = contentAreaAndSafeZoneHeightDifference / 2 +
+        productLogoMarginTop + productLogoSize / 2;
+
+    this.style.setProperty(
+        '--safe-zone-animation-translation-height', translationHeight + 'px');
   }
 
   private onContinueWithAccountClick_() {

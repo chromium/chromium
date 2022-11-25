@@ -1,7 +1,8 @@
 <style>
   :host {
-    --btn-margin: 24px;
+    --background-image-width: 17vw;
     --btn-container-height: calc(2 * var(--btn-margin) + var(--cr-button-height));
+    --btn-margin: 24px;
     --card-background-color: var(--google-grey-50);
     --card-bottom-padding: 24px;
     --card-description-color: var(--cr-secondary-text-color);
@@ -14,8 +15,12 @@
     --gap-between-cards: 12px;
     --icon-color: var(--google-blue-600);
     --left-background-image-url: url(images/left_background.svg);
+    --product-logo-margin-top: 50px;
     --product-logo-size: 90px;
     --right-background-image-url: url(images/right_background.svg);
+    /* This is a dummy value, we set the actual one in javascript using
+    "setTranslationHeightToAlignLogoAndAnimation" */
+    --safe-zone-animation-translation-height: 0;
     --scrollbar-background: var(--google-grey-100);
     --scrollbar-width: 4px;
     --subtitle-font-size: 1.67em;
@@ -62,6 +67,44 @@
     }
   }
 
+  @keyframes left-background-slide-animation {
+    0% {
+      transform: translateX(calc(-1 * var(--background-image-width)));
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes right-background-slide-animation {
+    0% {
+      transform: translateX(var(--background-image-width));
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fade-in-animation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 100%;
+    }
+  }
+
+  @keyframes safe-zone-transition-animation {
+    0% {
+      top: 50%;
+      transform: translateY(calc(-1 * var(--safe-zone-animation-translation-height)));
+    }
+    100% {
+      top: 0;
+      transform: translateY(0);
+    }
+  }
+
   p {
     margin: 0;
   }
@@ -87,19 +130,23 @@
     margin-bottom: 16px;
   }
 
-  #content-area {
+  .fade-in {
+    animation: fade-in-animation 500ms 1 ease-in-out;
+  }
+
+  #contentArea {
     --card-horizontal-size: calc(var(--card-width) + 2 * var(--card-horizontal-padding));
     align-items: center;
     display: flex;
     flex-direction: column;
-    margin: auto 0;
+    margin: auto var(--gap-between-cards);
     text-align: center ;
     width: calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
   }
 
   #product-logo {
     height: var(--product-logo-size);
-    margin-top: 50px;
+    margin-top: var(--product-logo-margin-top);
     width: var(--product-logo-size);
   }
 
@@ -133,7 +180,7 @@
     flex-direction: row;
     gap: 8px;
     height: var(--btn-container-height);
-    justify-content: right;
+    justify-content: flex-end;
     position: fixed;
     width: 100vw;
   }
@@ -172,28 +219,35 @@
   .background-image {
     position: fixed;
     top: 0;
-    width: calc(100vw * 17/100);
+    width: var(--background-image-width);
   }
 
   #left-background-image {
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-name: left-background-slide-animation, fade-in-animation;
     content: var(--left-background-image-url);
     left: 0;
+    transition-timing-function: ease-in-out;
   }
 
   #right-background-image {
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-name: right-background-slide-animation, fade-in-animation;
     content: var(--right-background-image-url);
     right: 0;
   }
 
   #safeZone {
+    animation: safe-zone-transition-animation 500ms 1 ease-in-out;
     box-sizing: border-box;
     display: flex;
     height: calc(100% - var(--btn-container-height));
     justify-content: center;
     overflow-y: auto;
-    padding: 0 var(--gap-between-cards);
     position: fixed;
-    width: 100%;
+    width: 100vw;
   }
 
   #buttonContainer.division-line {
@@ -205,13 +259,13 @@
 <img class="background-image" id="right-background-image">
 
 <div class="custom-scrollbar" id="safeZone">
-  <div id="content-area">
+  <div id="contentArea">
     <img id="product-logo" src="product-logo.png">
-    <h1>$i18n{pageTitle}</h1>
-    <p id="subtitle">$i18n{pageSubtitle}</p>
+    <h1 class="fade-in">$i18n{pageTitle}</h1>
+    <p class="fade-in" id="subtitle">$i18n{pageSubtitle}</p>
     <div id="benefit-cards-container">
       <template is="dom-repeat" items="[[benefitCards_]]">
-        <div class="benefit-card">
+        <div class="benefit-card fade-in">
           <iron-icon icon="[[item.iconName]]"></iron-icon>
           <h2>[[item.title]]</h2>
           <p class="benefit-card-description">[[item.description]]</p>
@@ -221,7 +275,7 @@
   </div>
 </div>
 
-<div id="buttonContainer">
+<div class="fade-in" id="buttonContainer">
   <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
   <cr-button class="action-button" id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
   </cr-button>

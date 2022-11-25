@@ -12,7 +12,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './dice_app.html.js';
 
 export interface IntroAppElement {
-  $: {viewManager: CrViewManagerElement};
+  $: {
+    viewManager: CrViewManagerElement,
+  };
 }
 
 export class IntroAppElement extends PolymerElement {
@@ -32,12 +34,13 @@ export class IntroAppElement extends PolymerElement {
   private async setupViewManager_(queryParams: URLSearchParams) {
     if (!queryParams.has('noAnimations')) {
       const kSplashViewDurationMillis = 1500;
-      this.$.viewManager.switchView('splash', 'fade-in', 'fade-out');
+      this.$.viewManager.switchView('splash', 'no-animation', 'no-animation');
       // Delay the switch to signInPromo based on the splash animation timing.
       await new Promise(
           resolve => setTimeout(resolve, kSplashViewDurationMillis));
     }
-    this.$.viewManager.switchView('signInPromo', 'fade-in', 'no-animation');
+    this.$.viewManager.switchView(
+        'signInPromo', 'no-animation', 'no-animation');
   }
 
   async setupViewManagerForTest(queryParams: URLSearchParams) {
