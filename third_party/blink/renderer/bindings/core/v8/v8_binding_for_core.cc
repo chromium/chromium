@@ -41,8 +41,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worker_global_scope.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_global_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -55,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/shadow_realm/shadow_realm_global_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
@@ -696,13 +695,15 @@ ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
   if (global_proxy->InternalFieldCount() == 0)
     return nullptr;
 
-  const WrapperTypeInfo* wrapper_type_info = ToWrapperTypeInfo(global_proxy);
-  if (wrapper_type_info->Equals(V8Window::GetWrapperTypeInfo()))
-    return V8Window::ToImpl(global_proxy)->GetExecutionContext();
-  if (wrapper_type_info->IsSubclass(V8WorkerGlobalScope::GetWrapperTypeInfo()))
-    return V8WorkerGlobalScope::ToImpl(global_proxy)->GetExecutionContext();
-  if (wrapper_type_info->IsSubclass(V8WorkletGlobalScope::GetWrapperTypeInfo()))
-    return V8WorkletGlobalScope::ToImpl(global_proxy)->GetExecutionContext();
+  ScriptWrappable::TypeDispatcher dispatcher(ToScriptWrappable(global_proxy));
+  if (auto* x = dispatcher.ToMostDerived<DOMWindow>())
+    return x->GetExecutionContext();
+  if (auto* x = dispatcher.DowncastTo<WorkerGlobalScope>())
+    return x->GetExecutionContext();
+  if (auto* x = dispatcher.DowncastTo<WorkletGlobalScope>())
+    return x->GetExecutionContext();
+  if (auto* x = dispatcher.ToMostDerived<ShadowRealmGlobalScope>())
+    return x->GetExecutionContext();
 
   NOTREACHED();
   return nullptr;
