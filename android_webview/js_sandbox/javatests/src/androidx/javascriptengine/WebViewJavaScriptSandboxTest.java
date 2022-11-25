@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -553,7 +554,7 @@ public class WebViewJavaScriptSandboxTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testHeapSizeEnforced() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
@@ -590,7 +591,9 @@ public class WebViewJavaScriptSandboxTest {
                 // Check that the heap limit is enforced and that it reports this was the evaluation
                 // that exceeded the limit.
                 try {
-                    oomResultFuture.get(5, TimeUnit.SECONDS);
+                    // Use a generous timeout for OOM, as it may involve multiple rounds of garbage
+                    // collection.
+                    oomResultFuture.get(60, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof MemoryLimitExceededException)) {
@@ -637,7 +640,7 @@ public class WebViewJavaScriptSandboxTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testIsolateCreationAfterCrash() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
@@ -665,7 +668,9 @@ public class WebViewJavaScriptSandboxTest {
                 // Check that the heap limit is enforced and that it reports this was the evaluation
                 // that exceeded the limit.
                 try {
-                    oomResultFuture.get(5, TimeUnit.SECONDS);
+                    // Use a generous timeout for OOM, as it may involve multiple rounds of garbage
+                    // collection.
+                    oomResultFuture.get(60, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof MemoryLimitExceededException)) {
