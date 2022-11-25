@@ -56,8 +56,6 @@ static_assert(!internal::TypeSupportsUnretainedV<BansUnretained>);
 static_assert(!internal::TypeSupportsUnretainedV<BansUnretainedInPrivate>);
 static_assert(!internal::TypeSupportsUnretainedV<DerivedButBaseBansUnretained>);
 
-class IncompleteType;
-
 class NoRef {
  public:
   NoRef() = default;
@@ -1100,12 +1098,6 @@ TYPED_TEST(BindVariantsTest, ArgumentBinding) {
   NoRefParent p;
   p.value = 5;
   EXPECT_EQ(5, TypeParam::Bind(&UnwrapNoRefParent, p).Run());
-
-  IncompleteType* incomplete_ptr = reinterpret_cast<IncompleteType*>(123);
-  EXPECT_EQ(
-      incomplete_ptr,
-      TypeParam::Bind(&PolymorphicIdentity<IncompleteType*>, incomplete_ptr)
-          .Run());
 
   NoRefChild c;
   c.value = 6;

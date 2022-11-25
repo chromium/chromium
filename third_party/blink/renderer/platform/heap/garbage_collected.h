@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "base/functional/disallow_unretained.h"
+#include "base/functional/unretained_traits.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"

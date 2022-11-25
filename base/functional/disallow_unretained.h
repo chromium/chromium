@@ -68,23 +68,4 @@
   /* No-op statement so use of this macro can be followed by `;`. */ \
   static_assert(true)
 
-namespace base::internal {
-
-template <typename T, typename SFINAE = void>
-struct TypeSupportsUnretained {
-  static constexpr inline bool kValue = true;
-};
-
-template <typename T>
-struct TypeSupportsUnretained<T, typename T::DisallowBaseUnretainedMarker> {
-  static constexpr inline bool kValue = false;
-};
-
-// True if `T` is annotated with `DISALLOW_UNRETAINED()` and false otherwise.
-template <typename T>
-static inline constexpr bool TypeSupportsUnretainedV =
-    TypeSupportsUnretained<T>::kValue;
-
-}  // namespace base::internal
-
 #endif  // BASE_FUNCTIONAL_DISALLOW_UNRETAINED_H_

@@ -5,6 +5,8 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
+#define FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS 1
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -82,6 +84,9 @@ struct NonEmptyFunctor {
   int x;
   void operator()() const {}
 };
+
+class Incomplete;
+void PassIncompleteByPtr(Incomplete*) {}
 
 class Dangerous {
  public:
@@ -516,6 +521,18 @@ void F(float);
 
 void WontCompile() {
   BindRepeating(&F, 1, 2, 3);
+}
+
+#elif defined(NCTEST_UNRETAINED_WITH_INCOMPLETE_TYPE)  // [r"fatal error: .+ T must be fully defined\."]
+
+void WontCompile(Incomplete* incomplete) {
+  BindOnce(&PassIncompleteByPtr, base::Unretained(incomplete));
+}
+
+#elif defined(NCTEST_RAW_POINTER_WITH_INCOMPLETE_TYPE)  // [r"fatal error: .+ T must be fully defined\."]
+
+void WontCompile(Incomplete* incomplete) {
+  BindOnce(&PassIncompleteByPtr, incomplete);
 }
 
 #elif defined(NCTEST_UNRETAINED_WITH_DISALLOWED_TYPE)  // [r"fatal error: static assertion failed due to requirement 'TypeSupportsUnretainedV"]

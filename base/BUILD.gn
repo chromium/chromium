@@ -368,6 +368,7 @@ component("base") {
     "functional/invoke.h",
     "functional/not_fn.h",
     "functional/overloaded.h",
+    "functional/unretained_traits.h",
     "gtest_prod_util.h",
     "guid.cc",
     "guid.h",
