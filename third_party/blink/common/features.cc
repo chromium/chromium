@@ -892,10 +892,6 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
              "SendCnameAliasesToSubresourceFilterFromRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableDocumentDomainByDefault,
-             "DisableDocumentDomainByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Scopes the memory cache to a fetcher i.e. document/frame. Any resource cached
 // in the blink cache will only be reused if the most recent fetcher that
 // fetched it was the same as the current document.

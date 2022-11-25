@@ -29,7 +29,6 @@ clipboard-read
 clipboard-write
 cross-origin-isolated
 display-capture
-document-domain
 encrypted-media
 fullscreen
 gamepad

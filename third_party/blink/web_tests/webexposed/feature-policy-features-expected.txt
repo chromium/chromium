@@ -33,7 +33,6 @@ compute-pressure
 cross-origin-isolated
 direct-sockets
 display-capture
-document-domain
 encrypted-media
 execution-while-not-rendered
 execution-while-out-of-viewport

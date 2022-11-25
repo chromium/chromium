@@ -219,11 +219,6 @@
       permissions_policy_name: "display-capture",
     },
     {
-      name: "DocumentDomain",
-      permissions_policy_name: "document-domain",
-      feature_default: "EnableForAll",
-    },
-    {
       name: "EncryptedMedia",
       permissions_policy_name: "encrypted-media",
     },

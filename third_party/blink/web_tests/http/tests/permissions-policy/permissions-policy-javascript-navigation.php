@@ -1,5 +1,5 @@
 <?php
-header("Permissions-Policy: document-domain=()");
+header("Permissions-Policy: geolocation=()");
 ?>
 <!DOCTYPE html>
 
@@ -16,16 +16,12 @@ header("Permissions-Policy: document-domain=()");
   <${script} src="/resources/testharness.js"></${script}>
   <${script} src="/resources/testharnessreport.js"></${script}>
   <${script}>
-    test(() => {
-      let feature_allowed;
-      try {
-        document.domain = document.domain;
-        feature_allowed = true;
-      } catch(e) {
-        feature_allowed = false;
-      }
-
-      assert_false(feature_allowed, "Feature(Document Domain) should not be allowed by permissions policy.");
+    test(t => {
+      navigator.geolocation.getCurrentPosition(
+          t.step_func_done(),
+          t.unreached_func(
+              "Feature(Geolocation) should not be allowed by permissions policy.")
+      );
     });
   </${script}>
 </head>

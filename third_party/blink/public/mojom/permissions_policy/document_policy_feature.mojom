@@ -36,8 +36,8 @@ enum DocumentPolicyFeature {
   kJSProfiling = 11,
   // Controls use of synchronous XMLHTTPRequest API.
   kSyncXHR = 12,
-  // Controls access to document.domain attribute.
-  kDocumentDomain = 13,
+  // Slot 13 (kDocumentDomain) was removed. Do not re-use its number.
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_document_policy_enum.py in

@@ -9,7 +9,7 @@
       <script src="../../resources/testharness.js"></script>
       <script src="../../resources/testharnessreport.js"></script>
       <script>
-        // 'document-domain' is enabled in the page but is disabled
+        // 'geolocation' is enabled in the page but is disabled
         // in Permissions-Policy-Report-Only header.
         // A permissions-policy-violation report is expected.
 
@@ -18,12 +18,11 @@
             assert_equals(reports.length, 1);
             const report = reports[0];
             assert_equals(report.type, 'permissions-policy-violation');
-            assert_equals(report.body.featureId, 'document-domain');
+            assert_equals(report.body.featureId, 'geolocation');
             assert_equals(report.body.disposition, 'report');
           }), {types: ['permissions-policy-violation']}).observe();
         });
-
-        document.domain = document.domain;
+        navigator.geolocation.getCurrentPosition(_ => {});
       </script>
     </head>
     <body bgcolor="#ffffff">

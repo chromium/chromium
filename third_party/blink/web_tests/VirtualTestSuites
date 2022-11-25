@@ -934,15 +934,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "document-domain-disabled-by-default",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/document-policy/experimental-features/document-domain"
-    ],
-    "args": [ "--enable-features=DisableDocumentDomainByDefault" ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "backface-visibility-interop",
     "platforms": ["Linux"],
     "bases": [ "external/wpt/css/css-transforms" ],

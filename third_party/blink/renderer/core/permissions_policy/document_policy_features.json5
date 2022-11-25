@@ -141,16 +141,6 @@
       value_type: "Bool",
       default_value: "true",
       depends_on: ["DocumentPolicySyncXHR"],
-    },
-    {
-      name: "DocumentDomain",
-      document_policy_name: "document-domain",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["DocumentPolicyDocumentDomain"],
-      default_value_behind_flag: [
-        ["DisableDocumentDomainByDefault", "false"],
-      ],
     }
   ],
 }

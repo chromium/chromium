@@ -606,7 +606,6 @@ external/wpt/custom-elements/upgrading/upgrading-parser-created-element.html
 external/wpt/delegated-ink/exception-thrown-bad-color.tentative.html
 external/wpt/density-size-correction/srcset-cross-origin.sub.html
 external/wpt/direct-sockets/open-securecontext.http.html
-external/wpt/document-policy/experimental-features/document-domain/document-domain.tentative.sub.html
 external/wpt/document-policy/font-display/reporting-blank.tentative.html
 external/wpt/document-policy/reporting/lossy-images-max-bpp-reporting-tentative.html
 external/wpt/document-policy/required-policy/document-policy.html

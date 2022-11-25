@@ -31,8 +31,6 @@ enum PermissionsPolicyFeature {
   kMidiFeature = 7,
   // Controls access to PaymentRequest interface.
   kPayment = 8,
-  // Controls access to document.domain attribute.
-  kDocumentDomain = 11,
   // Controls use of synchronous XMLHTTPRequest API.
   kSyncXHR = 13,
   // Controls access to the WebUSB API.

@@ -5868,23 +5868,6 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
-  const String permissions_policy_error =
-      "Setting `document.domain` is disabled by permissions policy.";
-  if (!dom_window_->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDocumentDomain,
-          ReportOptions::kReportOnFailure, permissions_policy_error)) {
-    exception_state.ThrowSecurityError(permissions_policy_error);
-    return;
-  }
-
-  const String document_policy_error =
-      "Setting `document.domain` is disabled by document policy.";
-  if (!dom_window_->IsFeatureEnabled(
-          mojom::blink::DocumentPolicyFeature::kDocumentDomain,
-          ReportOptions::kReportOnFailure, document_policy_error)) {
-    return;
-  }
-
   if (SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
           dom_window_->GetSecurityOrigin()->Protocol())) {
     exception_state.ThrowSecurityError(

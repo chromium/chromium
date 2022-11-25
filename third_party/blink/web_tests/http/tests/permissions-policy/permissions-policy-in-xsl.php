@@ -1,5 +1,5 @@
 <?php
-header("Permissions-Policy: document-domain=()");
+header("Permissions-Policy: geolocation=()");
 header("Content-Type: application/xml");
 
 echo '<?xml version="1.0"?>

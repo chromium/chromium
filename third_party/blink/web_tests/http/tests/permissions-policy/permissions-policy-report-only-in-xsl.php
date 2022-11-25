@@ -1,5 +1,5 @@
 <?php
-header("Permissions-Policy-Report-Only: document-domain=()");
+header("Permissions-Policy-Report-Only: geolocation=()");
 header("Content-Type: application/xml");
 
 echo '<?xml version="1.0"?>

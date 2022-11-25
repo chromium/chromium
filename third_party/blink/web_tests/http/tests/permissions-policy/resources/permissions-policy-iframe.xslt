@@ -8,15 +8,10 @@
       <title> Test XSLT </title>
       <script>
         window.onload = () => {
-          let message;
-          try {
-            document.domain = document.domain;
-            message = 'document-domain allowed';
-          } catch (_) {
-            message = 'document-domain disallowed';
-          }
-
-          parent.postMessage(message, '*');
+          navigator.geolocation.getCurrentPosition(
+            () => { parent.postMessage('geolocation allowed', '*'); },
+            () => { parent.postMessage('geolocation disallowed', '*'); }
+          );
         };
       </script>
     </head>
