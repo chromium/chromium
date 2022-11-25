@@ -63,6 +63,7 @@ class WaylandZAuraOutput {
                           struct zaura_output* zaura_output,
                           uint32_t display_id_hi,
                           uint32_t display_id_lo);
+  static void OnActivated(void* data, struct zaura_output* zaura_output);
 
   wl::Object<zaura_output> obj_;
   gfx::Insets insets_;
