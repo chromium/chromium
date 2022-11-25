@@ -258,9 +258,7 @@ class MultiplePrerendersDevToolsProtocolTest
  public:
   MultiplePrerendersDevToolsProtocolTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2,
-          {{"max_num_of_running_speculation_rules", "4"}}},
-         {blink::features::kPrerender2MemoryControls,
+        {{blink::features::kPrerender2MemoryControls,
           // A value 100 allows prerenderings regardless of the current memory
           // usage.
           {{"acceptable_percent_of_system_memory", "100"},
