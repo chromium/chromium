@@ -26,6 +26,8 @@ enum V8ContextWorldType {
   kMain,
   // Corresponds to the main world of a worker or worklet.
   kWorkerOrWorklet,
+  // Corresponds to a ShadowRealm.
+  kShadowRealm,
   // Corresponds to an extension. Will have a stable extension ID.
   kExtension,
   // Corresponds to a non-extension isolated world. Will have a human readable

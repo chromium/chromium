@@ -89,6 +89,12 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kRegExp,
     kForV8ContextSnapshotNonMain,
     kWorker,
+    // Shadow realms do not have a corresponding Frame nor DOMWindow so they're
+    // very different from the main world. Shadow realms are not workers nor
+    // worklets obviously, nor Chrome extensions' content scripts. So, we use
+    // a distinguishable world type. Shadow realms can be created not only in
+    // the main isolate but also in worker isolates and other isolates.
+    kShadowRealm,
   };
 
   static bool IsIsolatedWorldId(int32_t world_id) {
@@ -151,6 +157,9 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 
   bool IsMainWorld() const { return world_type_ == WorldType::kMain; }
   bool IsWorkerWorld() const { return world_type_ == WorldType::kWorker; }
+  bool IsShadowRealmWorld() const {
+    return world_type_ == WorldType::kShadowRealm;
+  }
   bool IsIsolatedWorld() const {
     return world_type_ == WorldType::kIsolated ||
            world_type_ == WorldType::kInspectorIsolated;

@@ -67,6 +67,7 @@ enum class V8ContextDescriptionStatus {
   kMissingLocalFrameToken,
   kUnexpectedLocalFrameToken,
   kUnexpectedWorkletToken,
+  kMissingShadowRealmToken,
 };
 
 // Validates the given V8ContextDescription.

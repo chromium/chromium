@@ -119,6 +119,15 @@ V8ContextDescriptionStatus ValidateV8ContextDescription(
         return V8ContextDescriptionStatus::kUnexpectedLocalFrameToken;
     } break;
 
+    case mojom::V8ContextWorldType::kShadowRealm: {
+      if (description.world_name)
+        return V8ContextDescriptionStatus::kUnexpectedWorldName;
+      if (!description.execution_context_token)
+        return V8ContextDescriptionStatus::kMissingExecutionContextToken;
+      if (!description.execution_context_token->Is<blink::ShadowRealmToken>())
+        return V8ContextDescriptionStatus::kMissingShadowRealmToken;
+    } break;
+
     case mojom::V8ContextWorldType::kExtension: {
       if (!description.world_name)
         return V8ContextDescriptionStatus::kMissingWorldName;
@@ -180,6 +189,7 @@ absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
     }
 
     case mojom::V8ContextWorldType::kWorkerOrWorklet:
+    case mojom::V8ContextWorldType::kShadowRealm:
     case mojom::V8ContextWorldType::kExtension:
     case mojom::V8ContextWorldType::kIsolated:
     case mojom::V8ContextWorldType::kInspector:

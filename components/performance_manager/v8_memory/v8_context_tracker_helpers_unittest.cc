@@ -206,6 +206,41 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionWorkerWorld) {
 }
 
 TEST_F(V8ContextTrackerHelpersTest,
+       ValidateV8ContextDescriptionShadowRealmWorld) {
+  // A valid shadow realm description.
+  blink::ShadowRealmToken shadow_realm_token;
+  auto desc = mojom::V8ContextDescription(
+      blink::V8ContextToken(), mojom::V8ContextWorldType::kShadowRealm,
+      /* world_name */ absl::nullopt, shadow_realm_token);
+  EXPECT_EQ(V8ContextDescriptionStatus::kValid,
+            ValidateV8ContextDescription(desc));
+  EXPECT_EQ(false,
+            ExpectIframeAttributionDataForV8ContextDescription(desc, graph()));
+
+  // A shadow realm should not have a world name.
+  EXPECT_EQ(
+      V8ContextDescriptionStatus::kUnexpectedWorldName,
+      ValidateV8ContextDescription(mojom::V8ContextDescription(
+          blink::V8ContextToken(), mojom::V8ContextWorldType::kShadowRealm,
+          kWorldName, shadow_realm_token)));
+
+  // A shadow realm must have an |execution_context_token|.
+  EXPECT_EQ(
+      V8ContextDescriptionStatus::kMissingExecutionContextToken,
+      ValidateV8ContextDescription(mojom::V8ContextDescription(
+          blink::V8ContextToken(), mojom::V8ContextWorldType::kShadowRealm,
+          /* world_name */ absl::nullopt,
+          /* execution_context_token */ absl::nullopt)));
+
+  // A shadow realm must have a valid shadow realm token.
+  EXPECT_EQ(
+      V8ContextDescriptionStatus::kMissingShadowRealmToken,
+      ValidateV8ContextDescription(mojom::V8ContextDescription(
+          blink::V8ContextToken(), mojom::V8ContextWorldType::kShadowRealm,
+          /* world_name */ absl::nullopt, blink::LocalFrameToken())));
+}
+
+TEST_F(V8ContextTrackerHelpersTest,
        ValidateV8ContextDescriptionExtensionWorld) {
   // A valid extension description.
   auto desc = mojom::V8ContextDescription(

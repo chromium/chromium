@@ -172,6 +172,9 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
     case DOMWrapperWorld::WorldType::kWorker: {
       v8_desc->world_type = V8ContextWorldType::kWorkerOrWorklet;
     } break;
+    case DOMWrapperWorld::WorldType::kShadowRealm: {
+      v8_desc->world_type = V8ContextWorldType::kShadowRealm;
+    } break;
   }
 
   if (execution_context) {
