@@ -369,7 +369,6 @@ void SVGElement::RemovedFrom(ContainerNode& root_parent) {
       corresponding_element->RemoveInstance(this);
       SvgRareData()->SetCorrespondingElement(nullptr);
     }
-    RebuildAllIncomingReferences();
     RemoveAllIncomingReferences();
   }
 
@@ -962,7 +961,6 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   Element::AttributeChanged(params);
 
   if (params.name == html_names::kIdAttr) {
-    RebuildAllIncomingReferences();
     InvalidateInstances();
     return;
   }
@@ -1300,28 +1298,6 @@ SVGElementSet& SVGElement::GetDependencyTraversalVisitedSet() {
   DEFINE_STATIC_LOCAL(Persistent<SVGElementSet>, invalidating_dependencies,
                       (MakeGarbageCollected<SVGElementSet>()));
   return *invalidating_dependencies;
-}
-
-void SVGElement::RebuildAllIncomingReferences() {
-  if (!HasSVGRareData())
-    return;
-
-  const SVGElementSet& incoming_references =
-      SvgRareData()->IncomingReferences();
-
-  // Iterate on a snapshot as |incoming_references| may be altered inside loop.
-  HeapVector<Member<SVGElement>> incoming_references_snapshot(
-      incoming_references);
-
-  // Force rebuilding the |source_element| so it knows about this change.
-  const SvgAttributeChangedParams params(
-      svg_names::kHrefAttr, AttributeModificationReason::kDirectly);
-  for (SVGElement* source_element : incoming_references_snapshot) {
-    // Before rebuilding |source_element| ensure it was not removed from under
-    // us.
-    if (incoming_references.Contains(source_element))
-      source_element->SvgAttributeChanged(params);
-  }
 }
 
 void SVGElement::RemoveAllIncomingReferences() {
