@@ -327,6 +327,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   void RunPrivacyScreenRoutine(
       bool target_state,
       RunPrivacyScreenRoutineCallback callback) override;
+  void RunLedLitUpRoutine(
+      mojom::LedName name,
+      mojom::LedColor color,
+      mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
+      RunLedLitUpRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

@@ -142,6 +142,9 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnplugACPower;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower:
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kPlugInACPower;
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kCheckLedColor:
+      NOTIMPLEMENTED();
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
   }
   NOTREACHED();
   return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(

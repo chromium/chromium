@@ -513,6 +513,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           target_state.value_or(true), std::move(response_callback));
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLedLitUp: {
+      NOTIMPLEMENTED();
+      break;
+    }
   }
 }
 

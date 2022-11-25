@@ -15,7 +15,7 @@ const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// NextMinVersion: 4, NextIndex: 35
+// NextMinVersion: 5, NextIndex: 36
 [Stable, Extensible]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
@@ -52,7 +52,8 @@ enum DiagnosticRoutineEnum {
   [MinVersion=1] kSensitiveSensor = 31,
   [MinVersion=2] kFingerprint = 32,
   [MinVersion=2] kFingerprintAlive = 33,
-  [MinVersion=3] kPrivacyScreen = 34
+  [MinVersion=3] kPrivacyScreen = 34,
+  [MinVersion=4] kLedLitUp = 35,
 };
 
 // Enumeration of the possible DiskRead routine's command type
@@ -91,12 +92,13 @@ enum DiagnosticRoutineStatusEnum {
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
 //
-// NextMinVersion: 1, NextIndex: 3
+// NextMinVersion: 2, NextIndex: 4
 [Stable, Extensible]
 enum DiagnosticRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
+  [MinVersion=1] kCheckLedColor = 3, // The user needs to check the LED color.
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
@@ -194,4 +196,48 @@ enum NvmeSelfTestTypeEnum {
   [Default] kUnknown = 2,
   kShortSelfTest = 0, // Short time self-test.
   kLongSelfTest = 1,  // Long time self-test.
+};
+
+// Enumeration of each possible LEDs on a device. This enum type is a mirror of
+// the enums defined in EC. To find out the actual names of each installed LEDs,
+// please refer to the EC firmware.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable, Extensible]
+enum LedName {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kBattery = 1,
+  kPower = 2,
+  kAdapter = 3,
+  kLeft = 4,
+  kRight = 5,
+};
+
+// Enumeration of each possible supported LED colors.
+//
+// NextMinVersion: 1, NextIndex: 7
+[Stable, Extensible]
+enum LedColor {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kRed = 1,
+  kGreen = 2,
+  kBlue = 3,
+  kYellow = 4,
+  kWhite = 5,
+  kAmber = 6,
+};
+
+// Replier interface for LED lit up routine.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface LedLitUpRoutineReplier {
+  // Returns whether the actual LED color matches the expected color.
+  //
+  // The response:
+  // * |matched| - true if the actual LED color matches the expected color.
+  //               Otherwise, false.
+  GetColorMatched@0() => (bool matched);
 };

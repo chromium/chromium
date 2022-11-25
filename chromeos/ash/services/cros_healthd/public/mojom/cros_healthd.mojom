@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 5, NextIndex: 37
+// NextMinVersion: 6, NextIndex: 38
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -561,6 +561,44 @@ interface CrosHealthdDiagnosticsService {
   // * |target_state| - privacy screen target state.
   [MinVersion=4] RunPrivacyScreenRoutine@36(bool target_state)
       => (RunRoutineResponse response);
+
+  // Requests that the LedLitUp routine is created and started on the
+  // platform. This routine lights up the target LED in the specified color and
+  // requests the caller to verify the change.
+  // The availability of this routine can be determined by checking that
+  // kLedLitUp is returned by GetAvailableRoutines.
+  //
+  // The routine proceeds with the following steps:
+  // 1. Set the specified LED with the specified color. If the LED name or color
+  //    is not supported by EC, the routine fails at this step.
+  // 2. Invoke the |GetColorMatched| method of |replier|. The method should
+  //    return |true| if the actual color matches the specified color and
+  //    |false|, otherwise. Notice that there is no timeout so it will wait
+  //    indefinitely.
+  // 3. After receiving the response from |replier|, the color of the LED will
+  //    be reset (back the auto control). If the replier disconnects before
+  //    the response is received, the LED will also be reset.
+  // 4. The status of the routine is updated. The routine passes when the
+  //    response is |true|. If the response is |false| or the disconnection
+  //    occurs, the routine fails.
+  //
+  // Requirement:
+  // * The LED name and color provided by the client must be valid. In other
+  //   words, the specified LED must be installed and the specified color must
+  //   be supported.
+  //
+  // The request:
+  // * |name| - specifies the LED to be lit up.
+  // * |color| - specifies the color to be lit up.
+  // * |replier| - a replier that can answer whether the actual LED color
+  //               matches the expected color.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=5] RunLedLitUpRoutine@37(LedName name, LedColor color,
+    pending_remote<LedLitUpRoutineReplier> replier)
+        => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

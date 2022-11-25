@@ -785,6 +785,15 @@ void FakeCrosHealthd::RunPrivacyScreenRoutine(
       callback_delay_);
 }
 
+void FakeCrosHealthd::RunLedLitUpRoutine(
+    mojom::LedName name,
+    mojom::LedColor color,
+    mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
+    RunLedLitUpRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kLedLitUp;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));
