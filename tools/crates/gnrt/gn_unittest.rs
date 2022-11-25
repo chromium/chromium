@@ -46,6 +46,7 @@ fn test() {
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
+                    gn_variables_lib: "variables = []".to_string(),
                 },
             },
         )],
@@ -90,6 +91,7 @@ build_sources = [ "crate/build.rs" ]
 build_script_outputs = [
 "binding.rs",
 ]
+variables = []
 }
 "#,
     );
@@ -118,6 +120,7 @@ build_script_outputs = [
                         features: vec![],
                         build_root: None,
                         build_script_outputs: vec![],
+                        gn_variables_lib: String::new(),
                     },
                 },
             ),
@@ -212,6 +215,7 @@ testonly = true
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
+                    gn_variables_lib: String::new(),
                 },
             },
         )],

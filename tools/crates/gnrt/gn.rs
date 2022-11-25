@@ -60,6 +60,7 @@ pub struct RuleConcrete {
     pub features: Vec<String>,
     pub build_root: Option<String>,
     pub build_script_outputs: Vec<String>,
+    pub gn_variables_lib: String,
 }
 
 /// Describes a single GN build rule for a crate configuration. Each field
@@ -110,10 +111,18 @@ pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package
     metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
     build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
     deps_visibility: &HashMap<ChromiumVendoredCrate, Visibility>,
+    gn_variables_libs: &HashMap<ChromiumVendoredCrate, String>,
 ) -> HashMap<ChromiumVendoredCrate, BuildFile> {
     deps.into_iter()
         .filter_map(|dep| {
-            make_build_file_for_dep(dep, paths, metadata, build_script_outputs, deps_visibility)
+            make_build_file_for_dep(
+                dep,
+                paths,
+                metadata,
+                build_script_outputs,
+                deps_visibility,
+                gn_variables_libs,
+            )
         })
         .collect()
 }
@@ -126,6 +135,7 @@ fn make_build_file_for_dep(
     metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
     build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
     deps_visibility: &HashMap<ChromiumVendoredCrate, Visibility>,
+    gn_variables_libs: &HashMap<ChromiumVendoredCrate, String>,
 ) -> Option<(ChromiumVendoredCrate, BuildFile)> {
     let third_party_path_str = paths.third_party.to_str().unwrap();
     let crate_id = dep.third_party_crate_id();
@@ -161,6 +171,7 @@ fn make_build_file_for_dep(
         features: Vec::new(),
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
         build_script_outputs: build_script_outputs.get(&crate_id).cloned().unwrap_or_default(),
+        gn_variables_lib: String::new(),
     };
 
     // Enumerate the dependencies of each kind for the package.
@@ -250,6 +261,8 @@ fn make_build_file_for_dep(
             lib_details.crate_type = lib_target.lib_type.to_string();
             lib_details.crate_root = to_gn_path(lib_target.root.as_path());
             lib_details.features = per_kind_info.features.clone();
+            lib_details.gn_variables_lib =
+                gn_variables_libs.get(&crate_id).cloned().unwrap_or_default();
 
             let testonly = dep_kind == deps::DependencyKind::Development;
             let visibility =
@@ -386,6 +399,10 @@ fn write_concrete<W: fmt::Write>(
             write!(writer, "build_script_outputs = ")?;
             write_list(&mut writer, &details.build_script_outputs)?;
         }
+    }
+
+    if !details.gn_variables_lib.is_empty() {
+        writeln!(writer, "{}", details.gn_variables_lib)?;
     }
 
     writeln!(writer, "}}")

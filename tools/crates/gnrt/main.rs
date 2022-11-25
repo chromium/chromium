@@ -79,14 +79,21 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // TODO(crbug.com/1291994): handle visibility separately for each kind.
     let mut deps_visibility = HashMap::<ChromiumVendoredCrate, crates::Visibility>::new();
     let mut build_script_outputs = HashMap::<ChromiumVendoredCrate, Vec<String>>::new();
+    let mut gn_variables_libs = HashMap::<ChromiumVendoredCrate, String>::new();
 
     let mut walk_deps = |dep_name: &str, dep_spec: &Dependency, visibility: crates::Visibility| {
-        let (version_req, is_public, dep_outputs): (&_, bool, &[_]) = match dep_spec {
-            Dependency::Short(version_req) => (version_req, true, &[]),
+        let (version_req, is_public, dep_outputs, gn_variables_lib): (
+            &_,
+            bool,
+            &[_],
+            Option<&String>,
+        ) = match dep_spec {
+            Dependency::Short(version_req) => (version_req, true, &[], None),
             Dependency::Full(dep) => (
                 dep.version.as_ref().unwrap(),
                 dep.allow_first_party_usage,
                 &dep.build_script_outputs,
+                dep.gn_variables_lib.as_ref(),
             ),
         };
         let epoch = crates::Epoch::from_version_req_str(&version_req.0);
@@ -96,7 +103,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             if is_public { visibility } else { crates::Visibility::ThirdParty },
         );
         if !dep_outputs.is_empty() {
-            build_script_outputs.insert(crate_id, dep_outputs.to_vec());
+            build_script_outputs.insert(crate_id.clone(), dep_outputs.to_vec());
+        }
+        if gn_variables_lib.is_some() {
+            gn_variables_libs.insert(crate_id, gn_variables_lib.unwrap().clone());
         }
     };
 
@@ -117,8 +127,8 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         .extend(std::mem::take(&mut third_party_manifest.dependency_spec.dev_dependencies));
 
     // Rebind as immutable.
-    let (third_party_manifest, deps_visibility, build_script_outputs) =
-        (third_party_manifest, deps_visibility, build_script_outputs);
+    let (third_party_manifest, deps_visibility, build_script_outputs, gn_variables_libs) =
+        (third_party_manifest, deps_visibility, build_script_outputs, gn_variables_libs);
 
     // Traverse our third-party directory to collect the set of vendored crates.
     // Used to generate Cargo.toml [patch] sections, and later to check against
@@ -227,6 +237,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         &crates.iter().cloned().collect(),
         &build_script_outputs,
         &deps_visibility,
+        &gn_variables_libs,
     );
 
     // Before modifying anything make sure we have a one-to-one mapping of

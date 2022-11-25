@@ -14,12 +14,19 @@ fn test() {
             "features = [\"foo\", \"bar\"]\n",
             "allow-first-party-usage = false\n",
             "build-script-outputs = [\"stuff.rs\"]\n",
+            "gn-variables-lib = \"\"\"
+            deps = []
+            configs = []
+            \"\"\""
         )),
         Ok(FullDependency {
             version: Some(VersionConstraint("1.0.0".to_string())),
             features: vec!["foo".to_string(), "bar".to_string()],
             allow_first_party_usage: false,
             build_script_outputs: vec!["stuff.rs".to_string()],
+            gn_variables_lib: Some(
+                "            deps = []\n            configs = []\n            ".to_string()
+            )
         })
     );
 
@@ -33,6 +40,7 @@ fn test() {
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["generated.rs".to_string()],
+            gn_variables_lib: None,
         })
     );
 }
@@ -49,6 +57,10 @@ fn test() {
         "version = \"0.1\"\n",
         "allow-first-party-usage = false\n",
         "build-script-outputs = [ \"table.rs\" ]\n",
+        "\n",
+        "[dependencies.special-stuff]\n",
+        "version = \"0.1\"\n",
+        "gn-variables-lib = \"hello = \\\"world\\\"\"\n",
         "\n",
         "[dev-dependencies]\n",
         "syn = {version = \"1\", features = [\"full\"]}\n",
@@ -71,6 +83,7 @@ fn test() {
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["version.rs".to_string()],
+            gn_variables_lib: None,
         }))
     );
 
@@ -81,6 +94,18 @@ fn test() {
             features: vec![],
             allow_first_party_usage: false,
             build_script_outputs: vec!["table.rs".to_string()],
+            gn_variables_lib: None,
+        }))
+    );
+
+    expect_eq!(
+        manifest.dependency_spec.dependencies.get("special-stuff"),
+        Some(&Dependency::Full(FullDependency {
+            version: Some(VersionConstraint("0.1".to_string())),
+            features: vec![],
+            allow_first_party_usage: true,
+            build_script_outputs: vec![],
+            gn_variables_lib: Some("hello = \"world\"".to_string()),
         }))
     );
 
@@ -91,6 +116,7 @@ fn test() {
             features: vec!["full".to_string()],
             allow_first_party_usage: true,
             build_script_outputs: vec![],
+            gn_variables_lib: None,
         }))
     );
 }
