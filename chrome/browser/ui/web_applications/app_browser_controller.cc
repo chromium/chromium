@@ -17,6 +17,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -82,6 +83,24 @@ bool AppBrowserController::IsWebApp(const Browser* browser) {
 bool AppBrowserController::IsForWebApp(const Browser* browser,
                                        const AppId& app_id) {
   return IsWebApp(browser) && browser->app_controller()->app_id() == app_id;
+}
+
+// static
+Browser* AppBrowserController::FindForWebApp(const Profile& profile,
+                                             const AppId& app_id) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  for (auto it = browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
+    Browser* browser = *it;
+    if (browser->type() == Browser::TYPE_POPUP)
+      continue;
+    if (browser->profile() != &profile)
+      continue;
+    if (!IsForWebApp(browser, app_id))
+      continue;
+    return browser;
+  }
+  return nullptr;
 }
 
 // static

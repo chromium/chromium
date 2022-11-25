@@ -48,9 +48,8 @@ class WebAppLaunchProcess {
       const apps::ShareTarget* share_target) const;
   WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
   std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
+  LaunchHandler GetLaunchHandler() const;
   LaunchHandler::ClientMode GetLaunchClientMode() const;
-  bool LaunchInExistingClient() const;
-  bool NeverNavigateExistingClients() const;
 
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();

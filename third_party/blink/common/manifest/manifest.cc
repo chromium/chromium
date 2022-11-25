@@ -82,6 +82,28 @@ bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
   return !(*this == other);
 }
 
+bool Manifest::LaunchHandler::TargetsExistingClients() const {
+  switch (client_mode) {
+    case ClientMode::kAuto:
+    case ClientMode::kNavigateNew:
+      return false;
+    case ClientMode::kNavigateExisting:
+    case ClientMode::kFocusExisting:
+      return true;
+  }
+}
+
+bool Manifest::LaunchHandler::NeverNavigateExistingClients() const {
+  switch (client_mode) {
+    case ClientMode::kAuto:
+    case ClientMode::kNavigateNew:
+    case ClientMode::kNavigateExisting:
+      return false;
+    case ClientMode::kFocusExisting:
+      return true;
+  }
+}
+
 Manifest::TranslationItem::TranslationItem() = default;
 
 Manifest::TranslationItem::~TranslationItem() = default;

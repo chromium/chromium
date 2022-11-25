@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -204,7 +203,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
 
   // If launch handler is routing to an existing client, we want to use the
   // existing WebContents rather than opening a new tab.
-  if (LaunchInExistingClient()) {
+  if (GetLaunchHandler().TargetsExistingClients()) {
     return WindowOpenDisposition::CURRENT_TAB;
   }
 
@@ -215,35 +214,16 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 }
 
-LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
+LaunchHandler WebAppLaunchProcess::GetLaunchHandler() const {
   DCHECK(web_app_);
-  LaunchHandler launch_handler =
-      web_app_->launch_handler().value_or(LaunchHandler());
+  return web_app_->launch_handler().value_or(LaunchHandler());
+}
+
+LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
+  LaunchHandler launch_handler = GetLaunchHandler();
   if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto)
     return LaunchHandler::ClientMode::kNavigateNew;
   return launch_handler.client_mode;
-}
-
-bool WebAppLaunchProcess::LaunchInExistingClient() const {
-  switch (GetLaunchClientMode()) {
-    case LaunchHandler::ClientMode::kAuto:
-    case LaunchHandler::ClientMode::kNavigateNew:
-      return false;
-    case LaunchHandler::ClientMode::kNavigateExisting:
-    case LaunchHandler::ClientMode::kFocusExisting:
-      return true;
-  }
-}
-
-bool WebAppLaunchProcess::NeverNavigateExistingClients() const {
-  switch (GetLaunchClientMode()) {
-    case LaunchHandler::ClientMode::kAuto:
-    case LaunchHandler::ClientMode::kNavigateNew:
-    case LaunchHandler::ClientMode::kNavigateExisting:
-      return false;
-    case LaunchHandler::ClientMode::kFocusExisting:
-      return true;
-  }
 }
 
 std::tuple<Browser*, bool /*is_new_browser*/>
@@ -277,17 +257,7 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     return nullptr;
   }
 
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto it = browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
-    if (browser->profile() == &*profile_ &&
-        AppBrowserController::IsForWebApp(browser, params_->app_id)) {
-      return browser;
-    }
-  }
-
-  return nullptr;
+  return AppBrowserController::FindForWebApp(*profile_, params_->app_id);
 }
 
 Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
@@ -330,7 +300,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
   DCHECK(existing_tab);
-  if (NeverNavigateExistingClients()) {
+  if (GetLaunchHandler().NeverNavigateExistingClients()) {
     if (base::ValuesEquivalent(WebAppTabHelper::FromWebContents(existing_tab)
                                    ->EnsureLaunchQueue()
                                    .GetPendingLaunchAppId(),

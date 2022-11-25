@@ -140,6 +140,9 @@ class BLINK_COMMON_EXPORT Manifest {
     bool operator==(const LaunchHandler& other) const;
     bool operator!=(const LaunchHandler& other) const;
 
+    bool TargetsExistingClients() const;
+    bool NeverNavigateExistingClients() const;
+
     ClientMode client_mode = ClientMode::kAuto;
   };
 

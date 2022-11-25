@@ -21,6 +21,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/app_session_service.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -270,6 +272,10 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // affected.
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile)->registrar();
+  const WebApp* web_app = registrar.GetAppById(app_id);
+  if (!web_app)
+    return nullptr;
+
   if (registrar.IsInstalled(app_id)) {
     absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)
@@ -284,13 +290,32 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                       extensions::AppLaunchSource::kSourceReparenting,
                       launch_url, contents);
 
+  if (web_app->launch_handler()
+          .value_or(LaunchHandler{})
+          .TargetsExistingClients()) {
+    if (Browser* browser =
+            AppBrowserController::FindForWebApp(*profile, app_id)) {
+      // TODO(crbug.com/1385226): Use apps::AppServiceProxy::LaunchAppWithUrl()
+      // instead to ensure all the usual wrapping code around web app launches
+      // gets executed.
+      apps::AppLaunchParams params(
+          app_id, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromOmnibox);
+      params.override_url = launch_url;
+      content::WebContents* new_web_contents =
+          WebAppLaunchProcess(*profile, params).Run();
+      contents->Close();
+      return chrome::FindBrowserWithWebContents(new_web_contents);
+    }
+  }
+
   bool as_pinned_home_tab = IsPinnedHomeTabUrl(registrar, app_id, launch_url);
 
   if (registrar.IsTabbedWindowModeEnabled(app_id)) {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (AppBrowserController::IsForWebApp(browser, app_id))
-        return ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
-                                                 as_pinned_home_tab);
+    if (Browser* browser =
+            AppBrowserController::FindForWebApp(*profile, app_id)) {
+      return ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
+                                               as_pinned_home_tab);
     }
   }
 

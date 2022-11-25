@@ -35,13 +35,19 @@ absl::optional<AppId> GetWebAppForActiveTab(Browser* browser);
 void PrunePreScopeNavigationHistory(const GURL& scope,
                                     content::WebContents* contents);
 
-// Reparents the active tab into a new app browser for the web app that has the
-// tab's URL in its scope. Does nothing if there is no web app in scope.
+// Invokes ReparentWebContentsIntoAppBrowser() for the active tab for the
+// web app that has the tab's URL in its scope. Does nothing if there is no web
+// app in scope.
 Browser* ReparentWebAppForActiveTab(Browser* browser);
 
-// Reparents |contents| into an app browser for |app_id|.
-// Uses existing app browser if they are in experimental tabbed mode, otherwise
-// creates a new browser window.
+// Reparents |contents| into a standalone web app window for |app_id|.
+// - If the web app has a launch_handler set to reuse existing windows and there
+// are existing web app windows around this will launch the web app into the
+// existing window and close |contents|.
+// - If the web app is in experimental tabbed mode and has and existing web app
+// window, |contents| will be reparented into the existing window.
+// - Otherwise a new browser window is created for |contents| to be reparented
+// into.
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const AppId& app_id);
 

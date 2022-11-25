@@ -68,6 +68,9 @@ class AppBrowserController
   static bool IsWebApp(const Browser* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
   static bool IsForWebApp(const Browser* browser, const AppId& app_id);
+  // Returns a Browser* that is for |app_id| and |profile| if any, searches in
+  // order of last browser activation. Ignores pop-up Browsers.
+  static Browser* FindForWebApp(const Profile& profile, const AppId& app_id);
 
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(
