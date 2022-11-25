@@ -123,7 +123,6 @@ class AppLaunchSplashScreenHandler
   void ContinueAppLaunch() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
-  void OnNetworkReady() override;
   void UpdateState(NetworkError::ErrorReason reason) override;
 
  private:

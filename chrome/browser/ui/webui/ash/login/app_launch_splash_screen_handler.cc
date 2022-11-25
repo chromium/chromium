@@ -203,11 +203,6 @@ bool AppLaunchSplashScreenHandler::IsNetworkReady() {
   return network_state_informer_->state() == NetworkStateInformer::ONLINE;
 }
 
-void AppLaunchSplashScreenHandler::OnNetworkReady() {
-  // Purposely leave blank because the online case is handled in UpdateState
-  // call below.
-}
-
 void AppLaunchSplashScreenHandler::UpdateState(
     NetworkError::ErrorReason reason) {
   if (!delegate_)
