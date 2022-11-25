@@ -64,6 +64,7 @@ public abstract class AsyncTask<Result> {
 
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
+    private int mIterationIdForTesting = PostTask.sTestIterationForTesting;
 
     private static class StealRunnableHandler implements RejectedExecutionHandler {
         @Override
@@ -142,7 +143,7 @@ public abstract class AsyncTask<Result> {
         // We check if this task is of a type which does not require post-execution.
         if (this instanceof BackgroundOnlyAsyncTask) {
             mStatus = Status.FINISHED;
-        } else {
+        } else if (mIterationIdForTesting == PostTask.sTestIterationForTesting) {
             ThreadUtils.postOnUiThread(() -> { finish(result); });
         }
     }

@@ -57,6 +57,18 @@ public class TaskRunnerImpl implements TaskRunner {
     @GuardedBy("mPreNativeTaskLock")
     private List<Pair<Runnable, Long>> mPreNativeDelayedTasks;
 
+    int clearTaskQueueForTesting() {
+        int taskCount = 0;
+        synchronized (mPreNativeTaskLock) {
+            if (mPreNativeTasks != null) {
+                taskCount = mPreNativeTasks.size() + mPreNativeDelayedTasks.size();
+                mPreNativeTasks.clear();
+                mPreNativeDelayedTasks.clear();
+            }
+        }
+        return taskCount;
+    }
+
     private static class TaskRunnerCleaner extends WeakReference<TaskRunnerImpl> {
         final long mNativePtr;
 

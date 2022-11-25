@@ -4,6 +4,7 @@
 
 package org.chromium.base.task;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -24,6 +26,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JNINamespace("base")
 public class PostTask {
+    private static final String TAG = "PostTask";
     private static final Object sPreNativeTaskRunnerLock = new Object();
     @GuardedBy("sPreNativeTaskRunnerLock")
     private static List<TaskRunnerImpl> sPreNativeTaskRunners = new ArrayList<>();
@@ -32,12 +35,16 @@ public class PostTask {
     // one-way switch (outside of testing) and volatile makes writes to it immediately visible to
     // other threads.
     private static volatile boolean sNativeInitialized;
-    private static final Executor sPrenativeThreadPoolExecutor = new ChromeThreadPoolExecutor();
+    private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
+            new ChromeThreadPoolExecutor();
     private static volatile Executor sPrenativeThreadPoolExecutorOverride;
 
     // We really only need volatile here, but volatile semantics can't be applied to members of an
     // array. AtomicReferenceArray #get and #set are equivalent to volatile read/writes.
     private static AtomicReferenceArray<TaskExecutor> sTaskExecutors = getInitialTaskExecutors();
+
+    // Used by AsyncTask / ChainedTask to auto-cancel tasks from prior tests.
+    static int sTestIterationForTesting;
 
     private static AtomicReferenceArray<TaskExecutor> getInitialTaskExecutors() {
         AtomicReferenceArray<TaskExecutor> taskExecutors =
@@ -265,6 +272,36 @@ public class PostTask {
         sTaskExecutors.set(0, new DefaultTaskExecutor());
         for (int i = 1; i < sTaskExecutors.length(); ++i) {
             sTaskExecutors.set(i, null);
+        }
+    }
+
+    /** Drops all queued pre-native tasks. */
+    public static void flushJobsAndResetForTesting() throws InterruptedException {
+        ChromeThreadPoolExecutor executor = sPrenativeThreadPoolExecutor;
+        // Potential race condition, but by checking queue size first we overcount if anything.
+        int taskCount = executor.getQueue().size() + executor.getActiveCount();
+        if (taskCount > 0) {
+            executor.shutdownNow();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+            sPrenativeThreadPoolExecutor = new ChromeThreadPoolExecutor();
+        }
+        synchronized (sPreNativeTaskRunnerLock) {
+            // Clear rather than rely on sTestIterationForTesting in case there are task runners
+            // that are stored in static fields (re-used between tests).
+            if (sPreNativeTaskRunners != null) {
+                for (TaskRunnerImpl taskRunner : sPreNativeTaskRunners) {
+                    // Clearing would not reliably work in non-robolectric environments since
+                    // a currently running background task could post a new task after the queue
+                    // is cleared. However, Robolectric controls executors to prevent actual
+                    // concurrency, so this approach should work fine.
+                    taskCount += taskRunner.clearTaskQueueForTesting();
+                }
+            }
+            sTestIterationForTesting++;
+        }
+        resetPrenativeThreadPoolExecutorForTesting();
+        if (taskCount > 0) {
+            Log.w(TAG, "%d background task(s) existed after test finished.", taskCount);
         }
     }
 

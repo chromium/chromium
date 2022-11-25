@@ -31,11 +31,15 @@ public class ChainedTasks {
     @GuardedBy("mTasks")
     private boolean mFinalized;
     private volatile boolean mCanceled;
+    private int mIterationIdForTesting = PostTask.sTestIterationForTesting;
 
     private final Runnable mRunAndPost = new Runnable() {
         @Override
         @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void run() {
+            if (mIterationIdForTesting != PostTask.sTestIterationForTesting) {
+                cancel();
+            }
             if (mCanceled) return;
 
             Pair<TaskTraits, Runnable> pair = mTasks.pop();
@@ -52,6 +56,8 @@ public class ChainedTasks {
      * called.
      */
     public void add(TaskTraits traits, Runnable task) {
+        assert mIterationIdForTesting == PostTask.sTestIterationForTesting;
+
         synchronized (mTasks) {
             assert !mFinalized : "Must not call add() after start()";
             mTasks.add(new Pair<>(traits, task));
