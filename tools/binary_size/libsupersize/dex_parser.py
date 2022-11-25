@@ -72,7 +72,8 @@ DexHeader = collections.namedtuple('DexHeader',
                                    ','.join(t[0] for t in _DEX_HEADER_FMT))
 
 # Simple memory items.
-_StringDataItem = collections.namedtuple('StringDataItem', 'utf16_size,data')
+_StringDataItem = collections.namedtuple('StringDataItem',
+                                         'utf16_size,data,byte_size')
 _TypeIdItem = collections.namedtuple('TypeIdItem', 'descriptor_idx')
 _ProtoIdItem = collections.namedtuple(
     'ProtoIdItem', 'shorty_idx,return_type_idx,parameters_off')
@@ -239,9 +240,11 @@ class _StringItemList(_MemoryItemList):
     string_data_item_offsets = iter([reader.NextUInt() for _ in range(size)])
 
     def factory(x):
-      x.Seek(next(string_data_item_offsets))
+      start_pos = next(string_data_item_offsets)
+      x.Seek(start_pos)
       string = x.NextString()
-      return _StringDataItem(len(string), string)
+      byte_size = x.Tell() - start_pos
+      return _StringDataItem(len(string), string, byte_size)
 
     super().__init__(reader, offset, size, factory)
 
@@ -412,19 +415,23 @@ class DexFile:
       self.class_data_item_list = _ClassDataItemList(self.reader,
                                                      class_data_item.offset,
                                                      class_data_item.size)
-      self._class_data_item_by_offset = {
-          class_data_item.offset: class_data_item
-          for class_data_item in self.class_data_item_list
-      }
+    else:
+      self.class_data_item_list = []
+    self._class_data_item_by_offset = {
+        class_data_item.offset: class_data_item
+        for class_data_item in self.class_data_item_list
+    }
 
     code_item = self.map_list.get(_TYPE_CODE_ITEM)
     if code_item:
       self.code_item_list = _CodeItemList(self.reader, code_item.offset,
                                           code_item.size)
-      self._code_item_by_offset = {
-          code_item.offset: code_item
-          for code_item in self.code_item_list
-      }
+    else:
+      self.code_item_list = []
+    self._code_item_by_offset = {
+        code_item.offset: code_item
+        for code_item in self.code_item_list
+    }
 
   def GetString(self, string_idx):
     string_data_item = self.string_data_item_list[string_idx]
