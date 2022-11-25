@@ -2643,31 +2643,39 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
     Element& element,
     unsigned index) {
   const ComputedStyle& base_style = element.ComputedStyleRef();
-  // TODO(crbug.com/1309178): Support tree-scoped fallback name lookup.
-  DCHECK(base_style.PositionFallback());
-  StyleRulePositionFallback* position_fallback_rule =
-      GetDocument().GetScopedStyleResolver()->PositionFallbackForName(
-          base_style.PositionFallback()->GetName());
-  if (!position_fallback_rule ||
-      index >= position_fallback_rule->TryRules().size())
-    return nullptr;
-  StyleRuleTry* try_rule = position_fallback_rule->TryRules()[index];
-  StyleResolverState state(GetDocument(), element);
-  state.SetStyle(ComputedStyle::Clone(base_style));
-  const CSSPropertyValueSet& properties = try_rule->Properties();
+  const ScopedCSSName* position_fallback = base_style.PositionFallback();
+  DCHECK(position_fallback);
 
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().FinishAddingUARules();
-  cascade.MutableMatchResult().FinishAddingUserRules();
-  cascade.MutableMatchResult().FinishAddingPresentationalHints();
-  cascade.MutableMatchResult().AddMatchedProperties(&properties);
-  // TODO(crbug.com/1381623): Pass proper TreeScope here once @position-fallback
-  // is supported in ShadowDOM.
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
-      GetDocument());
-  cascade.Apply();
+  const TreeScope* tree_scope = position_fallback->GetTreeScope();
+  if (!tree_scope)
+    tree_scope = &GetDocument();
 
-  return state.TakeStyle();
+  for (; tree_scope; tree_scope = tree_scope->ParentTreeScope()) {
+    if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
+      StyleRulePositionFallback* position_fallback_rule =
+          resolver->PositionFallbackForName(position_fallback->GetName());
+      if (!position_fallback_rule)
+        continue;
+      if (index >= position_fallback_rule->TryRules().size())
+        return nullptr;
+      StyleRuleTry* try_rule = position_fallback_rule->TryRules()[index];
+      StyleResolverState state(GetDocument(), element);
+      state.SetStyle(ComputedStyle::Clone(base_style));
+      const CSSPropertyValueSet& properties = try_rule->Properties();
+
+      STACK_UNINITIALIZED StyleCascade cascade(state);
+      cascade.MutableMatchResult().FinishAddingUARules();
+      cascade.MutableMatchResult().FinishAddingUserRules();
+      cascade.MutableMatchResult().FinishAddingPresentationalHints();
+      cascade.MutableMatchResult().AddMatchedProperties(&properties);
+      cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+          *tree_scope);
+      cascade.Apply();
+
+      return state.TakeStyle();
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink
