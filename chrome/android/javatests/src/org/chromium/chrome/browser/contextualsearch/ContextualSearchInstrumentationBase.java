@@ -320,6 +320,9 @@ public class ContextualSearchInstrumentationBase {
     private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
     private static final String CONTEXTUAL_SEARCH_PREFETCH_PARAM = "&pf=c";
 
+    protected static final String EXTERNAL_APP_URL =
+            "intent://test/#Intent;scheme=externalappscheme;end";
+
     //--------------------------------------------------------------------------------------------
     // Feature maps that we use for parameterized tests.
     // NOTE: We want to test all Features under development both on and off, regardless of whether
@@ -452,7 +455,7 @@ public class ContextualSearchInstrumentationBase {
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
-        filter.addDataScheme("market");
+        filter.addDataScheme("externalappscheme");
         mActivityMonitor = InstrumentationRegistry.getInstrumentation().addMonitor(
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
 

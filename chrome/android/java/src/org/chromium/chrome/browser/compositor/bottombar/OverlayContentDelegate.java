@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.compositor.bottombar;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /**
@@ -53,7 +53,9 @@ public class OverlayContentDelegate {
      * @return True if the navigation should be intercepted.
      */
     public boolean shouldInterceptNavigation(ExternalNavigationHandler externalNavHandler,
-            NavigationHandle navigationHandle, GURL escapedUrl) {
+            GURL escapedUrl, @PageTransition int pageTransition, boolean isRedirect,
+            boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
+            boolean isInPrimaryMainFrame, boolean isExternalProtocol) {
         return true;
     }
 

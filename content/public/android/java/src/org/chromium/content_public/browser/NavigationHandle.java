@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
@@ -89,7 +90,8 @@ public class NavigationHandle {
      * @param url The new URL.
      */
     @CalledByNative
-    private void didRedirect(GURL url, boolean isExternalProtocol) {
+    @VisibleForTesting
+    public void didRedirect(GURL url, boolean isExternalProtocol) {
         mUrl = url;
         mIsRedirect = true;
         mIsExternalProtocol = isExternalProtocol;
@@ -99,6 +101,7 @@ public class NavigationHandle {
      * The navigation finished. Called once per navigation.
      */
     @CalledByNative
+    @VisibleForTesting
     public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
             boolean isPrimaryMainFrameFragmentNavigation, boolean isDownload,
             boolean isValidSearchFormUrl, @PageTransition int transition, @NetError int errorCode,

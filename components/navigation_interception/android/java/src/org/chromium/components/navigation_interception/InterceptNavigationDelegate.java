@@ -36,22 +36,13 @@ public abstract class InterceptNavigationDelegate {
      * @param transition The {@link PageTransition} for the Navigation
      * @param hasUserGesture Whether the navigation is associated with a user gesture.
      * @param initiatorOrigin The Origin that initiated this navigation, if any.
+     *
+     * @return A URL to redirect the subframe to, or null if the frame should not be redirected.
      */
     @CalledByNative
-    private void handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
+    protected GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
             boolean hasUserGesture, Origin initiatorOrigin) {
-        // TODO(https://crbug.com/1290507): Refactor this to construct the ExternalNavigationParams
-        // directly and don't create an intermediate NavigationHandle.
-        // Treat external protocol dialogs as a navigation to the provided |url|.
-        NavigationHandle navigationHandle = new NavigationHandle(0 /* nativeNavigationHandleProxy*/,
-                escapedUrl, GURL.emptyGURL() /* referrerUrl */,
-                GURL.emptyGURL() /* baseUrlForDataUrl */, false /* isInPrimaryMainFrame */,
-                false /* isSameDocument*/, true /* isRendererInitiated */, initiatorOrigin,
-                transition, false /* isPost */, hasUserGesture, false /* isRedirect */,
-                true /* isExternalProtocol */,
-                0 /* navigationId - doesn't correspond to a native NavigationHandle*/,
-                false /* isPageActivation */, false /* isReload */);
-        shouldIgnoreNavigation(navigationHandle, escapedUrl);
+        return null;
     }
 
     /**

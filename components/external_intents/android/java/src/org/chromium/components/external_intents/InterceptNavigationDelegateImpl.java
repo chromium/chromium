@@ -144,57 +144,24 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     @Override
     public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
+        // We should never get here for non-main-frame navigations.
+        if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
+
         mClient.onNavigationStarted(navigationHandle);
 
-        GURL url = escapedUrl;
-        long lastUserInteractionTime = mClient.getLastUserInteractionTime();
-
-        RedirectHandler redirectHandler = null;
-        if (navigationHandle.isInPrimaryMainFrame()) {
-            redirectHandler = mClient.getOrCreateRedirectHandler();
-        } else if (navigationHandle.isExternalProtocol()) {
-            // Only external protocol navigations are intercepted for iframe navigations.  Since
-            // we do not see all previous navigations for the iframe, we can not build a complete
-            // redirect handler for each iframe.  Nor can we use the top level redirect handler as
-            // that has the potential to incorrectly give access to the navigation due to previous
-            // main frame gestures.
-            //
-            // By creating a new redirect handler for each external navigation, we are specifically
-            // not covering the case where a gesture is carried over via a redirect.  This is
-            // currently not feasible because we do not see all navigations for iframes and it is
-            // better to error on the side of caution and require direct user gestures for iframes.
-            redirectHandler = RedirectHandler.create();
-        } else {
-            assert false;
-            return false;
-        }
-
-        redirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
-                navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
-                lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation(),
-                navigationHandle.isRendererInitiated());
-
-        ExternalNavigationParams params =
-                buildExternalNavigationParams(navigationHandle, redirectHandler, escapedUrl)
-                        .build();
-        OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        if (mResultCallbackForTesting != null) {
-            mResultCallbackForTesting.onResult(Pair.create(url, result));
-        }
+        RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
+        OverrideUrlLoadingResult result = shouldOverrideUrlLoading(redirectHandler, escapedUrl,
+                navigationHandle.pageTransition(), navigationHandle.isRedirect(),
+                navigationHandle.hasUserGesture(), navigationHandle.isRendererInitiated(),
+                navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
+                navigationHandle.getInitiatorOrigin(), navigationHandle.isExternalProtocol(),
+                mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle));
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
-        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
-        String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.TabNavigationInterceptResult.For" + protocolType, result.getResultType(),
-                OverrideUrlLoadingResultType.NUM_ENTRIES);
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                assert mExternalNavHandler.canExternalAppHandleUrl(url);
-                if (navigationHandle.isInPrimaryMainFrame()) {
-                    onDidFinishMainFrameUrlOverriding(true, false, params);
-                }
+                onDidFinishMainFrameUrlOverriding(true, false, escapedUrl);
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
                 mShouldClearRedirectHistoryForTabClobbering = true;
@@ -204,11 +171,93 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
                 if (navigationHandle.isExternalProtocol()) {
-                    logBlockedNavigationToDevToolsConsole(url);
+                    logBlockedNavigationToDevToolsConsole(escapedUrl);
                     return true;
                 }
                 return false;
         }
+    }
+
+    @Override
+    public GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
+            boolean hasUserGesture, Origin initiatorOrigin) {
+        // Only external protocol navigations are intercepted for iframe navigations.  Since
+        // we do not see all previous navigations for the iframe, we can not build a complete
+        // redirect handler for each iframe.  Nor can we use the top level redirect handler as
+        // that has the potential to incorrectly give access to the navigation due to previous
+        // main frame gestures.
+        //
+        // By creating a new redirect handler for each external navigation, we are specifically
+        // not covering the case where a gesture is carried over via a redirect.  This is
+        // currently not feasible because we do not see all navigations for iframes and it is
+        // better to error on the side of caution and require direct user gestures for iframes.
+        RedirectHandler redirectHandler = RedirectHandler.create();
+
+        OverrideUrlLoadingResult result = shouldOverrideUrlLoading(redirectHandler, escapedUrl,
+                transition, false /* isRedirect */, hasUserGesture, true /* isRendererInitiated */,
+                GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
+                initiatorOrigin, true /* isExternalProtocol */,
+                false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */);
+
+        switch (result.getResultType()) {
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
+                return null;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+                // TODO(https://crbug.com/1365100): Pass the clobbering URL to native and do a
+                // redirect rather than clobbering the tab.
+                return null;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
+                return null;
+            case OverrideUrlLoadingResultType.NO_OVERRIDE:
+            default:
+                logBlockedNavigationToDevToolsConsole(escapedUrl);
+                return null;
+        }
+    }
+
+    private OverrideUrlLoadingResult shouldOverrideUrlLoading(RedirectHandler redirectHandler,
+            GURL escapedUrl, @PageTransition int pageTransition, boolean isRedirect,
+            boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
+            boolean isInPrimaryMainFrame, Origin initiatorOrigin, boolean isExternalProtocol,
+            boolean areIntentLaunchesAllowedInHiddenTabsForNavigation) {
+        redirectHandler.updateNewUrlLoading(pageTransition, isRedirect, hasUserGesture,
+                mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(),
+                isInitialNavigation(), isRendererInitiated);
+
+        // http://crbug.com/448977: If this is on the initial navigation chain we set the parameter
+        // to open any outgoing intents that come back to Chrome in a new tab as the existing one
+        // may have been closed.
+        boolean onInitialNavigationChain = isTabOnInitialNavigationChain();
+        boolean isInitialTabLaunchInBackground =
+                mClient.wasTabLaunchedFromLongPressInBackground() && onInitialNavigationChain;
+        ExternalNavigationParams params =
+                new ExternalNavigationParams
+                        .Builder(escapedUrl, mClient.isIncognito(), referrerUrl, pageTransition,
+                                isRedirect)
+                        .setApplicationMustBeInForeground(true)
+                        .setRedirectHandler(redirectHandler)
+                        .setOpenInNewTab(onInitialNavigationChain)
+                        .setIsBackgroundTabNavigation(
+                                mClient.isHidden() && !isInitialTabLaunchInBackground)
+                        .setIntentLaunchesAllowedInBackgroundTabs(
+                                areIntentLaunchesAllowedInHiddenTabsForNavigation)
+                        .setIsMainFrame(isInPrimaryMainFrame)
+                        .setHasUserGesture(hasUserGesture)
+                        .setIsRendererInitiated(isRendererInitiated)
+                        .setInitiatorOrigin(initiatorOrigin)
+                        .setAsyncActionTakenInMainFrameCallback(this::onDidTakeMainFrameAsyncAction)
+                        .build();
+
+        OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
+        if (mResultCallbackForTesting != null) {
+            mResultCallbackForTesting.onResult(Pair.create(escapedUrl, result));
+        }
+
+        String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabNavigationInterceptResult.For" + protocolType, result.getResultType(),
+                OverrideUrlLoadingResultType.NUM_ENTRIES);
+        return result;
     }
 
     @Override
@@ -219,34 +268,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         int transition = PageTransition.LINK;
         mClient.getOrCreateRedirectHandler().updateNewUrlLoading(transition, false, true,
                 mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(), false, true);
-    }
-
-    /**
-     * Returns ExternalNavigationParams.Builder to generate ExternalNavigationParams for
-     * ExternalNavigationHandler#shouldOverrideUrlLoading().
-     */
-    public ExternalNavigationParams.Builder buildExternalNavigationParams(
-            NavigationHandle navigationHandle, RedirectHandler redirectHandler, GURL escapedUrl) {
-        // http://crbug.com/448977: If this is on the initial navigation chain we set the parameter
-        // to open any outgoing intents that come back to Chrome in a new tab as the existing one
-        // may have been closed.
-        boolean onInitialNavigationChain = isTabOnInitialNavigationChain();
-        boolean isInitialTabLaunchInBackground =
-                mClient.wasTabLaunchedFromLongPressInBackground() && onInitialNavigationChain;
-        return new ExternalNavigationParams
-                .Builder(escapedUrl, mClient.isIncognito(), navigationHandle.getReferrerUrl(),
-                        navigationHandle.pageTransition(), navigationHandle.isRedirect())
-                .setApplicationMustBeInForeground(true)
-                .setRedirectHandler(redirectHandler)
-                .setOpenInNewTab(onInitialNavigationChain)
-                .setIsBackgroundTabNavigation(mClient.isHidden() && !isInitialTabLaunchInBackground)
-                .setIntentLaunchesAllowedInBackgroundTabs(
-                        mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle))
-                .setIsMainFrame(navigationHandle.isInPrimaryMainFrame())
-                .setHasUserGesture(navigationHandle.hasUserGesture())
-                .setIsRendererInitiated(navigationHandle.isRendererInitiated())
-                .setInitiatorOrigin(navigationHandle.getInitiatorOrigin())
-                .setAsyncActionTakenInMainFrameCallback(this::onDidTakeMainFrameAsyncAction);
     }
 
     /**
@@ -299,8 +320,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void onDidTakeMainFrameAsyncAction(AsyncActionTakenParams params) {
-        onDidFinishMainFrameUrlOverriding(
-                params.canCloseTab, params.willClobberTab, params.externalNavigationParams);
+        onDidFinishMainFrameUrlOverriding(params.canCloseTab, params.willClobberTab,
+                params.externalNavigationParams.getUrl());
     }
 
     /**
@@ -308,7 +329,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      * action.
      */
     private void onDidFinishMainFrameUrlOverriding(
-            boolean canCloseTab, boolean willClobberTab, ExternalNavigationParams params) {
+            boolean canCloseTab, boolean willClobberTab, GURL escapedUrl) {
         if (mClient.getWebContents() == null) return;
 
         boolean shouldCloseTab = canCloseTab && isTabOnInitialNavigationChain();
@@ -316,11 +337,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         @MainFrameIntentLaunch
         int mainFrameLaunchType;
         boolean fromApp = mClient.wasTabLaunchedFromExternalApp();
-        if (UrlUtilities.hasIntentScheme(params.getUrl())) {
+        if (UrlUtilities.hasIntentScheme(escapedUrl)) {
             mainFrameLaunchType = fromApp
                     ? MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_INTENT_SCHEME
                     : MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_INTENT_SCHEME;
-        } else if (UrlUtilities.isAcceptedScheme(params.getUrl())) {
+        } else if (UrlUtilities.isAcceptedScheme(escapedUrl)) {
             mainFrameLaunchType = fromApp
                     ? MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME
                     : MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME;

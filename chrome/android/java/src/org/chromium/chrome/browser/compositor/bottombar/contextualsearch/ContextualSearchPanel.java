@@ -1229,4 +1229,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public boolean getCanHideAndroidBrowserControls() {
         return super.getCanHideAndroidBrowserControls();
     }
+
+    @Override
+    @VisibleForTesting
+    public OverlayPanelContent getOverlayPanelContent() {
+        return super.getOverlayPanelContent();
+    }
 }

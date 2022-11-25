@@ -37,7 +37,9 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +85,7 @@ public class InterceptNavigationDelegateTest {
     private List<NavigationHandle> mNavParamHistory = new ArrayList<>();
     private List<ExternalNavigationParams> mExternalNavParamHistory = new ArrayList<>();
     private EmbeddedTestServer mTestServer;
+    private boolean mSubframeExternalProtocolCalled;
 
     class TestExternalNavigationHandler extends ExternalNavigationHandler {
         public TestExternalNavigationHandler() {
@@ -115,6 +118,15 @@ public class InterceptNavigationDelegateTest {
                         NavigationHandle navigationHandle, GURL escapedUrl) {
                     mNavParamHistory.add(navigationHandle);
                     return super.shouldIgnoreNavigation(navigationHandle, escapedUrl);
+                }
+
+                @Override
+                public GURL handleSubframeExternalProtocol(GURL escapedUrl,
+                        @PageTransition int transition, boolean hasUserGesture,
+                        Origin initiatorOrigin) {
+                    mSubframeExternalProtocolCalled = true;
+                    return super.handleSubframeExternalProtocol(
+                            escapedUrl, transition, hasUserGesture, initiatorOrigin);
                 }
             };
             client.initializeWithDelegate(delegate);
@@ -206,11 +218,9 @@ public class InterceptNavigationDelegateTest {
         Assert.assertEquals(1, mNavParamHistory.size());
 
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
-        waitTillExpectedCallsComplete(3, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
-        Assert.assertEquals(3, mExternalNavParamHistory.size());
+        waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        Assert.assertTrue(mNavParamHistory.get(2).isExternalProtocol());
-        Assert.assertFalse(mNavParamHistory.get(2).isInPrimaryMainFrame());
+        CriteriaHelper.pollUiThread(() -> mSubframeExternalProtocolCalled);
     }
 
     @Test

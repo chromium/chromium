@@ -35,9 +35,11 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * Content container for an OverlayPanel. This class is responsible for the management of the
@@ -165,10 +167,21 @@ public class OverlayPanelContent {
             // If either of the required params for the delegate are null, do not call the
             // delegate and ignore the navigation.
             if (mExternalNavHandler == null || navigationHandle == null) return true;
-            // TODO(mdjones): Rather than passing the two navigation params, instead consider
-            // passing a boolean to make this API simpler.
-            return !mContentDelegate.shouldInterceptNavigation(
-                    mExternalNavHandler, navigationHandle, escapedUrl);
+            return !mContentDelegate.shouldInterceptNavigation(mExternalNavHandler, escapedUrl,
+                    navigationHandle.pageTransition(), navigationHandle.isRedirect(),
+                    navigationHandle.hasUserGesture(), navigationHandle.isRendererInitiated(),
+                    navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
+                    navigationHandle.isExternalProtocol());
+        }
+
+        @Override
+        public GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
+                boolean hasUserGesture, Origin initiatorOrigin) {
+            mContentDelegate.shouldInterceptNavigation(mExternalNavHandler, escapedUrl, transition,
+                    false /* isRedirect */, hasUserGesture, true /* isRendererInitiated */,
+                    GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
+                    true /* isExternalProtocol */);
+            return null;
         }
     }
 
@@ -590,6 +603,10 @@ public class OverlayPanelContent {
             OverlayPanelContentJni.get().destroy(
                     mNativeOverlayPanelContentPtr, OverlayPanelContent.this);
         }
+    }
+
+    public InterceptNavigationDelegate getInterceptNavigationDelegateForTesting() {
+        return mInterceptNavigationDelegate;
     }
 
     @NativeMethods

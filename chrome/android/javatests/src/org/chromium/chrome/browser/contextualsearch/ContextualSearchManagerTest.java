@@ -49,7 +49,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchQuickActionControl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -73,7 +71,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -326,64 +323,16 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an external
-     * navigation has a user gesture.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    @DisabledTest(message = "crbug.com/1037667 crbug.com/1316518")
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testExternalNavigationWithUserGesture(@EnabledFeature int enabledFeature) {
-        final ExternalNavigationDelegateImpl delegate =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        ()
-                                -> new ExternalNavigationDelegateImpl(
-                                        sActivityTestRule.getActivity().getActivityTab()));
-        final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(delegate);
-        GURL url = new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
-        final NavigationHandle navigationHandle = new NavigationHandle(
-                0 /* nativeNavigationHandleProxy*/,
-                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
-                GURL.emptyGURL() /* referrerUrl */, GURL.emptyGURL() /* baseUrlForDataUrl */,
-                true /* isInPrimaryMainFrame */, false /* isSameDocument*/,
-                true /* isRendererInitiated */, null /* initiatorOrigin */, PageTransition.LINK,
-                false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
-                false /* isReload */);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                sActivityTestRule.getActivity().onUserInteraction();
-                Assert.assertFalse(mManager.getOverlayContentDelegate().shouldInterceptNavigation(
-                        externalNavHandler, navigationHandle, url));
-            }
-        });
-        Assert.assertEquals(1, mActivityMonitor.getHits());
-    }
-
-    /**
      * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an initial
      * navigation has a user gesture but the redirected external navigation doesn't.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "crbug.com/1037667 crbug.com/1316518")
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testRedirectedExternalNavigationWithUserGesture(
-            @EnabledFeature int enabledFeature) {
-        final ExternalNavigationDelegateImpl delegate =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        ()
-                                -> new ExternalNavigationDelegateImpl(
-                                        sActivityTestRule.getActivity().getActivityTab()));
-        final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(delegate);
-
+    public void testRedirectedExternalNavigationWithUserGesture() throws Exception {
+        simulateResolveSearch("intelligence");
         GURL initialUrl = new GURL("http://test.com");
-        final NavigationHandle initialNavigationHandle = new NavigationHandle(
+        final NavigationHandle navigationHandle = new NavigationHandle(
                 0 /* nativeNavigationHandleProxy*/, initialUrl, GURL.emptyGURL() /* referrerUrl */,
                 GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
                 false /* isSameDocument*/, true /* isRendererInitiated */,
@@ -391,28 +340,34 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 true /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
                 0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
 
-        GURL redirectUrl =
-                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
-        final NavigationHandle redirectedNavigationHandle = new NavigationHandle(
-                0 /* nativeNavigationHandleProxy*/, redirectUrl, GURL.emptyGURL() /* referrerUrl */,
-                GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
-                false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
-                false /* hasUserGesture */, true /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
+        GURL redirectUrl = new GURL(EXTERNAL_APP_URL);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                sActivityTestRule.getActivity().onUserInteraction();
-                OverlayContentDelegate delegate = mManager.getOverlayContentDelegate();
-                Assert.assertTrue(delegate.shouldInterceptNavigation(
-                        externalNavHandler, initialNavigationHandle, initialUrl));
-                Assert.assertFalse(delegate.shouldInterceptNavigation(
-                        externalNavHandler, redirectedNavigationHandle, redirectUrl));
+                Assert.assertFalse(mPanel.getOverlayPanelContent()
+                                           .getInterceptNavigationDelegateForTesting()
+                                           .shouldIgnoreNavigation(navigationHandle, initialUrl));
+                Assert.assertEquals(0, mActivityMonitor.getHits());
+
+                navigationHandle.didRedirect(redirectUrl, true);
+                Assert.assertTrue(mPanel.getOverlayPanelContent()
+                                          .getInterceptNavigationDelegateForTesting()
+                                          .shouldIgnoreNavigation(navigationHandle, redirectUrl));
+                Assert.assertEquals(1, mActivityMonitor.getHits());
             }
         });
-        Assert.assertEquals(1, mActivityMonitor.getHits());
+    }
+
+    /**
+     * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an external
+     * navigation has a user gesture.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testExternalNavigationWithUserGesture() throws Exception {
+        testExternalNavigationImpl(true);
     }
 
     /**
@@ -422,33 +377,31 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testExternalNavigationWithoutUserGesture(@EnabledFeature int enabledFeature) {
-        final ExternalNavigationDelegateImpl delegate =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        ()
-                                -> new ExternalNavigationDelegateImpl(
-                                        sActivityTestRule.getActivity().getActivityTab()));
-        final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(delegate);
-        GURL url = new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
+    public void testExternalNavigationWithoutUserGesture() throws Exception {
+        testExternalNavigationImpl(false);
+    }
+
+    private void testExternalNavigationImpl(boolean hasGesture) throws Exception {
+        simulateResolveSearch("intelligence");
+        GURL url = new GURL(EXTERNAL_APP_URL);
         final NavigationHandle navigationHandle = new NavigationHandle(
                 0 /* nativeNavigationHandleProxy*/, url, GURL.emptyGURL() /* referrerUrl */,
                 GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
-                false /* hasUserGesture */, false /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
+                hasGesture /* hasUserGesture */, false /* isRedirect */,
+                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
+                false /* isReload */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                sActivityTestRule.getActivity().onUserInteraction();
-                Assert.assertFalse(mManager.getOverlayContentDelegate().shouldInterceptNavigation(
-                        externalNavHandler, navigationHandle, url));
+                Assert.assertTrue(mPanel.getOverlayPanelContent()
+                                          .getInterceptNavigationDelegateForTesting()
+                                          .shouldIgnoreNavigation(navigationHandle, url));
             }
         });
-        Assert.assertEquals(0, mActivityMonitor.getHits());
+        Assert.assertEquals(hasGesture ? 1 : 0, mActivityMonitor.getHits());
     }
 
     //============================================================================================
