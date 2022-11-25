@@ -44,19 +44,6 @@
 #include "url/gurl.h"
 
 namespace autofill_assistant {
-namespace {
-
-bool ShouldSendModelVersionInContext(const TriggerContext& trigger_context) {
-  return base::FeatureList::IsEnabled(
-             autofill_assistant::features::
-                 kAutofillAssistantSendModelVersionInClientContext) ||
-         trigger_context.GetScriptParameters()
-             .GetSendAnnotateDomModelVersion() ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kAutofillAssistantAnnotateDom);
-}
-
-}  // namespace
 
 Controller::Controller(content::WebContents* web_contents,
                        Client* client,
@@ -64,8 +51,7 @@ Controller::Controller(content::WebContents* web_contents,
                        base::WeakPtr<RuntimeManager> runtime_manager,
                        std::unique_ptr<Service> service,
                        std::unique_ptr<WebController> web_controller,
-                       ukm::UkmRecorder* ukm_recorder,
-                       AnnotateDomModelService* annotate_dom_model_service)
+                       ukm::UkmRecorder* ukm_recorder)
     : content::WebContentsObserver(web_contents),
       client_(client),
       tick_clock_(tick_clock),
@@ -75,8 +61,7 @@ Controller::Controller(content::WebContents* web_contents,
                                              client_)),
       web_controller_(std::move(web_controller)),
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
-      ukm_recorder_(ukm_recorder),
-      annotate_dom_model_service_(annotate_dom_model_service) {}
+      ukm_recorder_(ukm_recorder) {}
 
 Controller::~Controller() {
   // Record failure, iff an earlier call didn't already record.
@@ -106,7 +91,7 @@ const GURL& Controller::GetScriptURL() {
 WebController* Controller::GetWebController() {
   if (!web_controller_) {
     web_controller_ = WebController::CreateForWebContents(
-        web_contents(), &user_data_, &log_info_, annotate_dom_model_service_,
+        web_contents(), &user_data_, &log_info_,
         base::FeatureList::IsEnabled(
             autofill_assistant::features::
                 kAutofillAssistantFullJsSnippetStackTraces));
@@ -443,23 +428,6 @@ void Controller::GetOrCheckScripts() {
 
 void Controller::MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url) {
   DCHECK(trigger_context_);
-  if (!ShouldSendModelVersionInContext(*trigger_context_)) {
-    GetScriptsForUrl(url);
-    return;
-  }
-
-  DCHECK(client_);
-  client_->GetAnnotateDomModelVersion(
-      base::BindOnce(&Controller::OnGetAnnotateDomModelVersionForGetScripts,
-                     weak_ptr_factory_.GetWeakPtr(), url));
-}
-
-void Controller::OnGetAnnotateDomModelVersionForGetScripts(
-    const GURL& url,
-    absl::optional<int64_t> model_version) {
-  if (model_version) {
-    service_->UpdateAnnotateDomModelContext(*model_version);
-  }
   GetScriptsForUrl(url);
 }
 
@@ -564,13 +532,6 @@ void Controller::OnGetScripts(
     return;
   }
 
-  if (response_proto.has_semantic_selector_policy()) {
-    // TODO(b/228987849): A semantic policy is set unconditionally. It may be
-    // more appropriate to only set one if there are actual eligible scripts for
-    // the given domain.
-    SetSemanticSelectorPolicy(
-        std::move(response_proto.semantic_selector_policy()));
-  }
   if (response_proto.has_client_settings()) {
     SetClientSettings(response_proto.client_settings());
   }
@@ -942,13 +903,6 @@ void Controller::OnNoRunnableScriptsForPage() {
       // Always having a set of scripts to potentially run is not required in
       // other states, for example in BROWSE state.
       break;
-  }
-}
-
-void Controller::SetSemanticSelectorPolicy(SemanticSelectorPolicy policy) {
-  DCHECK(annotate_dom_model_service_);
-  if (!annotate_dom_model_service_->SetOverridesPolicy(std::move(policy))) {
-    NOTREACHED() << "Setting overrides policy failed!";
   }
 }
 

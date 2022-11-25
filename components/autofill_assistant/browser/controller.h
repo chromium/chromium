@@ -31,7 +31,6 @@
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -71,8 +70,7 @@ class Controller : public ScriptExecutorDelegate,
              base::WeakPtr<RuntimeManager> runtime_manager,
              std::unique_ptr<Service> service,
              std::unique_ptr<WebController> web_controller,
-             ukm::UkmRecorder* ukm_recorder,
-             AnnotateDomModelService* annotate_dom_model_service);
+             ukm::UkmRecorder* ukm_recorder);
 
   Controller(const Controller&) = delete;
   Controller& operator=(const Controller&) = delete;
@@ -288,13 +286,7 @@ class Controller : public ScriptExecutorDelegate,
   // only record the first impression for each flow.
   void MaybeRecordFlowFinishedMetrics(Metrics::FlowFinishedState state);
 
-  // Sets the semantic selector in the DOM annotation service.
-  void SetSemanticSelectorPolicy(SemanticSelectorPolicy policy);
-
   void MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url);
-  void OnGetAnnotateDomModelVersionForGetScripts(
-      const GURL& url,
-      absl::optional<int64_t> model_version);
   void GetScriptsForUrl(const GURL& url);
 
   bool NeedsUI() const;
@@ -403,10 +395,6 @@ class Controller : public ScriptExecutorDelegate,
   ProcessedActionStatusDetailsProto log_info_;
 
   raw_ptr<ukm::UkmRecorder> ukm_recorder_;
-
-  // If instantiated, will start delivering the required model for annotating
-  // DOM nodes. May be nullptr.
-  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 
   // The accumulated network stats of an entire flow. Used for metrics upon
   // flow completion.

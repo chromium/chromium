@@ -48,10 +48,6 @@ class MockCommonDependencies : public CommonDependencies {
               (const override));
   MOCK_METHOD(bool, IsSupervisedUser, (), (const override));
   MOCK_METHOD(bool, IsAllowedForMachineLearning, (), (const override));
-  MOCK_METHOD(AnnotateDomModelService*,
-              GetOrCreateAnnotateDomModelService,
-              (),
-              (const override));
   MOCK_METHOD(signin::IdentityManager*,
               GetIdentityManager,
               (),

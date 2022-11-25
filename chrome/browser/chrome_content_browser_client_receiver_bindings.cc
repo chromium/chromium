@@ -24,8 +24,6 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
-#include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/metrics/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -442,16 +440,6 @@ void ChromeContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
-  associated_registry.AddInterface<
-      autofill_assistant::mojom::AutofillAssistantDriver>(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             autofill_assistant::mojom::AutofillAssistantDriver> receiver) {
-        autofill_assistant::ContentAutofillAssistantDriver::BindDriver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,

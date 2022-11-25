@@ -124,9 +124,6 @@ class ClientAndroid : public Client,
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
   bool MustUseBackendData() const override;
-  void GetAnnotateDomModelVersion(
-      base::OnceCallback<void(absl::optional<int64_t>)> callback)
-      const override;
   bool IsXmlSigned(const std::string& xml_string) const override;
   const std::vector<std::string> ExtractValuesFromSingleTagXml(
       const std::string& xml_string,
@@ -153,15 +150,10 @@ class ClientAndroid : public Client,
   void AttachUI(const base::android::JavaRef<jobject>& joverlay_coordinator);
   void SafeDestroyControllerAndUI(Metrics::DropOutReason reason);
 
-  void OnAnnotateDomModelFileAvailable(
-      base::OnceCallback<void(absl::optional<int64_t>)> callback,
-      bool available);
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const DependenciesAndroid> dependencies_;
-  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   // Can change based on activity attachment.
   const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 

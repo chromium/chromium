@@ -134,10 +134,6 @@ class Client {
   // backend endpoint to query data.
   virtual bool MustUseBackendData() const = 0;
 
-  // Return the annotate DOM model version, if available.
-  virtual void GetAnnotateDomModelVersion(
-      base::OnceCallback<void(absl::optional<int64_t>)> callback) const = 0;
-
   // Checks if given XML is signed or not.
   virtual bool IsXmlSigned(const std::string& xml_string) const = 0;
 

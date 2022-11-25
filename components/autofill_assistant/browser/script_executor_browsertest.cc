@@ -53,7 +53,7 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
     BaseBrowserTest::SetUpOnMainThread();
 
     web_controller_ = WebController::CreateForWebContents(
-        shell()->web_contents(), &user_data_, &log_info_, nullptr,
+        shell()->web_contents(), &user_data_, &log_info_,
         /*enable_full_stack_traces= */ true);
 
     fake_script_executor_delegate_.SetWebController(web_controller_.get());

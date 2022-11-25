@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/autofill_assistant/assistant_field_trial_util_chrome.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -22,7 +21,6 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
@@ -121,11 +119,6 @@ bool CommonDependenciesChrome::IsAllowedForMachineLearning() const {
   return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
              .capabilities.is_allowed_for_machine_learning() !=
          signin::Tribool::kFalse;
-}
-
-AnnotateDomModelService*
-CommonDependenciesChrome::GetOrCreateAnnotateDomModelService() const {
-  return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context_);
 }
 
 signin::IdentityManager* CommonDependenciesChrome::GetIdentityManager() const {

@@ -135,15 +135,6 @@ TEST_F(ClientContextTest, UpdatesToClientContext) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::LANDSCAPE);
-  EXPECT_FALSE(actual_client_context.has_annotate_dom_model_context());
-
-  client_context.UpdateAnnotateDomModelContext(123456);
-  actual_client_context = client_context.AsProto();
-  EXPECT_THAT(
-      actual_client_context.annotate_dom_model_context().model_version(),
-      Eq(123456));
-  EXPECT_FALSE(actual_client_context.annotate_dom_model_context()
-                   .force_semantic_selection());
 }
 
 TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
@@ -236,18 +227,6 @@ TEST_F(ClientContextTest, UpdateJsFlowLibraryLoaded) {
   EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), true);
   client_context.UpdateJsFlowLibraryLoaded(false);
   EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
-}
-
-TEST_F(ClientContextTest, AnnotateDomSwitchForcesSemanticSelection) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kAutofillAssistantAnnotateDom);
-
-  ClientContextImpl client_context(&mock_client_);
-  client_context.UpdateAnnotateDomModelContext(123456);
-
-  auto model_context = client_context.AsProto().annotate_dom_model_context();
-  EXPECT_THAT(model_context.model_version(), Eq(123456));
-  EXPECT_TRUE(model_context.force_semantic_selection());
 }
 
 TEST(GetPlatformType, ReturnsCorrectPlatform) {

@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementChecked;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
@@ -28,7 +27,6 @@ import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.
 import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
-import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import androidx.test.filters.MediumTest;
 
@@ -413,120 +411,6 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
-    }
-
-    @Test
-    @MediumTest
-    public void fillTextFieldWithNativeMethod() throws Exception {
-        ArrayList<ActionProto> list = new ArrayList<>();
-
-        SelectorProto inputInIFrame = toIFrameCssSelector("#iframe", "#input");
-        SelectorProto input = toCssSelector("#input2");
-
-        MiniActionTestUtil.addSetNativeValueSteps(inputInIFrame, "Value 2", list);
-        MiniActionTestUtil.addSetNativeValueSteps(input, "Value 1", list);
-        list.add(createWaitForValuePrompt("#input2", "Value 1", "script done"));
-
-        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is(""));
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
-        runScript(script);
-
-        waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is("Value 2"));
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Value 1"));
-    }
-
-    @Test
-    @MediumTest
-    public void fillTextareaWithNativeMethod() throws Exception {
-        ArrayList<ActionProto> list = new ArrayList<>();
-        SelectorProto selector = toCssSelector("#textarea1");
-
-        MiniActionTestUtil.addSetNativeValueSteps(selector, "new value", list);
-        list.add(createWaitForValuePrompt("#textarea1", "new value", "script done"));
-
-        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"),
-                is("Initial textarea value."));
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
-        runScript(script);
-
-        waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"), is("new value"));
-    }
-
-    @Test
-    @MediumTest
-    public void fillDropdownWithNativeMethod() throws Exception {
-        ArrayList<ActionProto> list = new ArrayList<>();
-
-        SelectorProto selector = toCssSelector("#select");
-        MiniActionTestUtil.addSetNativeValueSteps(selector, "three", list);
-        list.add(createWaitForValuePrompt("#select", "three", "script done"));
-
-        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
-        runScript(script);
-
-        waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
-    }
-
-    @Test
-    @MediumTest
-    public void fillCheckboxWithNativeMethod() throws Exception {
-        ArrayList<ActionProto> list = new ArrayList<>();
-
-        SelectorProto selectorOption2 = toCssSelector("#option2");
-        SelectorProto selectorOption3 = toCssSelector("#option3");
-
-        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption2, true, list);
-        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption3, false, list);
-        list.add(createWaitForSelectorPrompt(
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#option3:not(:checked)"))
-                        .build(),
-                "script done"));
-
-        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(false));
-        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(true));
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
-        runScript(script);
-        waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
-
-        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(true));
-        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(false));
-    }
-
-    @Test
-    @MediumTest
-    public void fillRadioButtonWithNativeMethod() throws Exception {
-        ArrayList<ActionProto> list = new ArrayList<>();
-
-        SelectorProto selectorRed = toCssSelector("#radio_red");
-
-        MiniActionTestUtil.addSetNativeCheckedSteps(selectorRed, true, list);
-        list.add(createWaitForSelectorPrompt(
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#radio_red:checked"))
-                        .build(),
-                "script done"));
-
-        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(false));
-        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
-        runScript(script);
-        waitUntilViewMatchesCondition(withText("script done"), isCompletelyDisplayed());
-
-        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(true));
-        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

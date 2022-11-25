@@ -38,7 +38,6 @@ enum class Channel;
 
 namespace autofill_assistant {
 
-class AnnotateDomModelService;
 class AssistantFieldTrialUtil;
 
 // Interface for platform delegates that provide dependencies to the starter.
@@ -73,9 +72,6 @@ class CommonDependencies {
   virtual bool IsSupervisedUser() const = 0;
 
   virtual bool IsAllowedForMachineLearning() const;
-
-  virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService()
-      const = 0;
 
   virtual signin::IdentityManager* GetIdentityManager() const = 0;
 

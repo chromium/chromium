@@ -127,7 +127,7 @@ class HeadlessScriptControllerImplTest : public testing::Test {
         web_contents_.get(), starter_->GetCommonDependencies(),
         mock_external_action_delegate_.get(), nullptr,
         task_environment_.GetMockTickClock(),
-        mock_runtime_manager_->GetWeakPtr(), &ukm_recorder_, nullptr);
+        mock_runtime_manager_->GetWeakPtr(), &ukm_recorder_);
     headless_script_controller_ =
         std::make_unique<HeadlessScriptControllerImpl>(
             web_contents_.get(), starter_.get(), std::move(client));

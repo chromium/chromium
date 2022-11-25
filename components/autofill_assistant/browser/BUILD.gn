@@ -20,10 +20,7 @@ proto_library("proto") {
     "service.proto",
     "view_layout.proto",
   ]
-  link_deps = [
-    "//components/autofill_assistant/browser/public:proto",
-    "//components/autofill_assistant/content/common/proto:proto",
-  ]
+  link_deps = [ "//components/autofill_assistant/browser/public:proto" ]
 }
 
 proto_library("test_proto") {
@@ -366,8 +363,6 @@ static_library("browser") {
     "web/selector_observer.cc",
     "web/selector_observer.h",
     "web/selector_observer_script.h",
-    "web/semantic_element_finder.cc",
-    "web/semantic_element_finder.h",
     "web/send_keyboard_input_worker.cc",
     "web/send_keyboard_input_worker.h",
     "web/web_controller.cc",
@@ -387,9 +382,6 @@ static_library("browser") {
     "//components/autofill_assistant/browser/devtools",
     "//components/autofill_assistant/browser/public:password_change",
     "//components/autofill_assistant/browser/public:public",
-    "//components/autofill_assistant/content/browser",
-    "//components/autofill_assistant/content/common",
-    "//components/autofill_assistant/content/common:mojo_interfaces",
     "//components/autofill_assistant/core/public:public",
     "//components/client_update_protocol",
     "//components/consent_auditor",
@@ -669,10 +661,7 @@ if (is_android) {
       "service.proto",
       "view_layout.proto",
     ]
-    deps = [
-      "//components/autofill_assistant/browser/public:proto_java",
-      "//components/autofill_assistant/content/common/proto:proto_java",
-    ]
+    deps = [ "//components/autofill_assistant/browser/public:proto_java" ]
   }
 
   java_cpp_enum("autofill_assistant_enums_java") {

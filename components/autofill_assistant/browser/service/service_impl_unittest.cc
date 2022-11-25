@@ -256,11 +256,6 @@ TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
                         mock_response_callback_.Get());
 }
 
-TEST_F(ServiceImplTest, UpdateAnnotateDomModelService) {
-  EXPECT_CALL(*mock_client_context_, UpdateAnnotateDomModelContext(123456));
-  service_->UpdateAnnotateDomModelContext(123456);
-}
-
 TEST_F(ServiceImplTest, UpdateJsFlowLibraryLoaded) {
   EXPECT_CALL(*mock_client_context_, UpdateJsFlowLibraryLoaded(true));
   service_->UpdateJsFlowLibraryLoaded(true);

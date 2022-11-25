@@ -10,8 +10,7 @@ MockWebController::MockWebController()
     : WebController(/* web_contents= */ nullptr,
                     /* devtools_client= */ nullptr,
                     /* user_data= */ nullptr,
-                    /* log_info= */ nullptr,
-                    /* annotate_dom_model_service= */ nullptr) {}
+                    /* log_info= */ nullptr) {}
 MockWebController::~MockWebController() {}
 
 }  // namespace autofill_assistant

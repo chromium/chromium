@@ -670,7 +670,6 @@ void Starter::StartTriggerScript() {
           web_contents(),
           /* user_data= */ nullptr,
           /* log_info= */ nullptr,
-          /* annotate_dom_model_service= */ nullptr,
           /* enable_full_stack_traces= */ false),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),

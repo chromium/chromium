@@ -23,10 +23,6 @@ class MockClientContext : public ClientContext {
               (const TriggerContext& trigger_context),
               (override));
   MOCK_METHOD(void,
-              UpdateAnnotateDomModelContext,
-              (int64_t model_version),
-              (override));
-  MOCK_METHOD(void,
               UpdateJsFlowLibraryLoaded,
               (bool js_flow_library_loaded),
               (override));

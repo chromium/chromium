@@ -48,8 +48,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
                           WebsiteLoginManager* website_login_manager,
                           const base::TickClock* tick_clock,
                           base::WeakPtr<RuntimeManager> runtime_manager,
-                          ukm::UkmRecorder* ukm_recorder,
-                          AnnotateDomModelService* annotate_dom_model_service);
+                          ukm::UkmRecorder* ukm_recorder);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 
@@ -92,9 +91,6 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
   bool MustUseBackendData() const override;
-  void GetAnnotateDomModelVersion(
-      base::OnceCallback<void(absl::optional<int64_t>)> callback)
-      const override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetMetricsReportingEnabled() const override;
 
@@ -130,7 +126,6 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   const raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtr<RuntimeManager> runtime_manager_;
   const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
-  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 
   // Only set while a script is running.
   base::OnceCallback<void(Metrics::DropOutReason reason)>

@@ -63,11 +63,7 @@ StarterDelegateAndroid::StarterDelegateAndroid(
       preference_manager_(GetCommonDependencies()->GetPrefs()),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           GetCommonDependencies()->GetPasswordManagerClient(web_contents),
-          web_contents)) {
-  // Create the AnnotateDomModelService when the browser starts, such that it
-  // starts listening to model changes early enough.
-  GetCommonDependencies()->GetOrCreateAnnotateDomModelService();
-}
+          web_contents)) {}
 
 StarterDelegateAndroid::~StarterDelegateAndroid() = default;
 
@@ -325,9 +321,7 @@ void StarterDelegateAndroid::Start(
         /* action_extension_delegate= */ nullptr, GetWebsiteLoginManager(),
         base::DefaultTickClock::GetInstance(),
         RuntimeManager::GetForWebContents(&GetWebContents())->GetWeakPtr(),
-        ukm::UkmRecorder::Get(),
-        starter_->GetCommonDependencies()
-            ->GetOrCreateAnnotateDomModelService());
+        ukm::UkmRecorder::Get());
     headless_script_controller_ =
         std::make_unique<HeadlessScriptControllerImpl>(
             &GetWebContents(), starter_.get(), std::move(client));

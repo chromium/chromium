@@ -12,7 +12,6 @@
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/platform_dependencies.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

@@ -80,14 +80,6 @@ using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
-class MockAnnotateDomModelService : public AnnotateDomModelService {
- public:
-  MockAnnotateDomModelService() : AnnotateDomModelService(nullptr, nullptr) {}
-  ~MockAnnotateDomModelService() override = default;
-
-  MOCK_METHOD1(SetOverridesPolicy, bool(SemanticSelectorPolicy));
-};
-
 class ControllerTest : public testing::Test {
  public:
   ControllerTest() {
@@ -117,8 +109,7 @@ class ControllerTest : public testing::Test {
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
         mock_runtime_manager_->GetWeakPtr(), std::move(service),
-        std::move(web_controller), &ukm_recorder_,
-        &mock_annotate_dom_model_service_);
+        std::move(web_controller), &ukm_recorder_);
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
       controller_->SetUiShown(true);
@@ -277,7 +268,6 @@ class ControllerTest : public testing::Test {
       mock_password_change_success_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<Controller> controller_;
-  NiceMock<MockAnnotateDomModelService> mock_annotate_dom_model_service_;
   std::vector<ukm::SourceId> navigation_ids_;
 };
 
@@ -1736,8 +1726,7 @@ TEST_F(ControllerTest, FlowFinishedMetricControllerDestroyedMidFlow) {
   auto controller = std::make_unique<Controller>(
       web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
       mock_runtime_manager_->GetWeakPtr(), std::move(service),
-      std::move(web_controller), &ukm_recorder_,
-      /* annotate_dom_model_service= */ nullptr);
+      std::move(web_controller), &ukm_recorder_);
   SetWebControllerForTest(controller.get(),
                           std::make_unique<NiceMock<MockWebController>>());
 
@@ -1968,109 +1957,6 @@ TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
   controller_->RemoveNavigationListener(&listener);
 
   EXPECT_THAT(listener.events, IsEmpty());
-}
-
-TEST_F(ControllerTest, SemanticOverridesSetInService) {
-  EXPECT_CALL(mock_annotate_dom_model_service_, SetOverridesPolicy)
-      .WillOnce(Return(true));
-
-  SupportsScriptResponseProto script_response;
-  script_response.mutable_semantic_selector_policy()
-      ->mutable_bag_of_words()
-      ->add_data_point_map();
-  *AddRunnableScript(&script_response, "runnable")
-       ->mutable_presentation()
-       ->mutable_precondition()
-       ->mutable_element_condition()
-       ->mutable_match() = ToSelectorProto("#element");
-  SetNextScriptResponse(script_response);
-
-  EXPECT_CALL(mock_client_, AttachUI());
-  Start("http://a.example.com/path");
-  EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
-}
-
-TEST_F(ControllerTest, SkipModelVersionIfParameterNotSpecified) {
-  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion).Times(0);
-  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
-  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  controller_->Start(GURL("https://www.example.com"),
-                     std::make_unique<TriggerContext>(
-                         /* parameters = */ std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{{}}),
-                         TriggerContext::Options()));
-}
-
-TEST_F(ControllerTest, AttachesAvailableModelVersionOnStart) {
-  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
-      .WillOnce(RunOnceCallback<0>(123456));
-  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
-  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  controller_->Start(GURL("https://www.example.com"),
-                     std::make_unique<TriggerContext>(
-                         /* parameters = */ std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{
-                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
-                         TriggerContext::Options()));
-}
-
-TEST_F(ControllerTest, DoesNotAttachUnavailableModelVersionOnStart) {
-  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
-      .WillOnce(RunOnceCallback<0>(absl::nullopt));
-  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
-  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  controller_->Start(GURL("https://www.example.com"),
-                     std::make_unique<TriggerContext>(
-                         /* parameters = */ std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{
-                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
-                         TriggerContext::Options()));
-}
-
-TEST_F(ControllerTest, AttachesAvailableModelVersionForCommandLineSwitch) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kAutofillAssistantAnnotateDom, "true");
-
-  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
-      .WillOnce(RunOnceCallback<0>(123456));
-  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
-  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  controller_->Start(GURL("https://www.example.com"),
-                     std::make_unique<TriggerContext>(
-                         /* parameters = */ std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{}),
-                         TriggerContext::Options()));
-}
-
-TEST_F(ControllerTest, AttachesAvailableModelVersionWhenFeatureEnabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillAssistantSendModelVersionInClientContext);
-
-  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
-      .WillOnce(RunOnceCallback<0>(123456));
-  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
-  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  controller_->Start(GURL("https://www.example.com"),
-                     std::make_unique<TriggerContext>(
-                         /* parameters = */ std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{}),
-                         TriggerContext::Options()));
 }
 
 TEST_F(ControllerTest, UpdatesJsFlowLibraryLoaded) {

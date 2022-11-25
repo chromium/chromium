@@ -65,11 +65,6 @@ bool FakeCommonDependencies::IsAllowedForMachineLearning() const {
   return is_allowed_for_machine_learning_;
 }
 
-AnnotateDomModelService*
-FakeCommonDependencies::GetOrCreateAnnotateDomModelService() const {
-  return nullptr;
-}
-
 signin::IdentityManager* FakeCommonDependencies::GetIdentityManager() const {
   return identity_manager_;
 }

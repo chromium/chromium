@@ -13,7 +13,6 @@
 #include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
-#include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -214,13 +213,6 @@ void CssElementFinder::ExecuteNextTask() {
   }
 
   current_filter_index_range_start_ = next_filter_index_;
-  if (filters.Get(next_filter_index_).filter_case() ==
-      SelectorProto::Filter::kSemantic) {
-    // TODO(b/233340267): By convention the semantic filter must be the first.
-    // Skip it.
-    DCHECK_EQ(next_filter_index_, 0);
-    ++next_filter_index_;
-  }
   const auto& filter = filters.Get(next_filter_index_);
   switch (filter.filter_case()) {
     case SelectorProto::Filter::kEnterFrame: {
@@ -287,7 +279,6 @@ void CssElementFinder::ExecuteNextTask() {
       return;
     }
 
-    case SelectorProto::Filter::kSemantic:
     case SelectorProto::Filter::FILTER_NOT_SET:
       VLOG(1) << __func__ << " Unexpected filter in " << filter << " in "
               << selector_;

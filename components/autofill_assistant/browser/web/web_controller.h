@@ -32,7 +32,6 @@
 #include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/send_keyboard_input_worker.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
@@ -53,7 +52,6 @@ class WebContents;
 }  // namespace content
 
 namespace autofill_assistant {
-class ContentAutofillAssistantDriver;
 class ElementFinderResult;
 enum class ElementFinderResultType;
 
@@ -68,8 +66,8 @@ enum class ElementFinderResultType;
 // multiple operations, whether in sequence or in parallel.
 class WebController {
  public:
-  // Create web controller for a given |web_contents|. |user_data|, |log_info|
-  // and |annotate_dom_model_service| (if not nullptr) must be valid
+  // Create web controller for a given |web_contents|. |user_data|, and
+  // |log_info| (if not nullptr) must be valid
   // for the lifetime of the controller. |enable_full_stack_traces| should only
   // be enabled if the thrown exceptions will be caught and handled, otherwise
   // this will unnecessarily decrease performance.
@@ -77,16 +75,14 @@ class WebController {
       content::WebContents* web_contents,
       const UserData* user_data,
       ProcessedActionStatusDetailsProto* log_info,
-      AnnotateDomModelService* annotate_dom_model_service,
       bool enable_full_stack_traces);
 
-  // |web_contents|, |user_data|, |log_info| and |annotate_dom_model_service|
+  // |web_contents|, |user_data| and |log_info|
   // (if not nullptr) must outlive this web controller.
   WebController(content::WebContents* web_contents,
                 std::unique_ptr<DevtoolsClient> devtools_client,
                 const UserData* user_data,
-                ProcessedActionStatusDetailsProto* log_info,
-                AnnotateDomModelService* annotate_dom_model_service);
+                ProcessedActionStatusDetailsProto* log_info);
 
   WebController(const WebController&) = delete;
   WebController& operator=(const WebController&) = delete;
@@ -391,16 +387,6 @@ class WebController {
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  virtual void SetNativeValue(
-      const std::string& value,
-      const ElementFinderResult& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
-  virtual void SetNativeChecked(
-      bool checked,
-      const ElementFinderResult& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   virtual base::WeakPtr<WebController> GetWeakPtr();
 
  private:
@@ -545,14 +531,6 @@ class WebController {
   void OnDispatchJsEvent(base::OnceCallback<void(const ClientStatus&)> callback,
                          const DevtoolsClient::ReplyStatus& reply_status,
                          std::unique_ptr<runtime::EvaluateResult> result) const;
-  void OnSetNativeExecution(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      bool success) const;
-  // Get the driver for the given element finder results. Will return a nullptr
-  // if the driver is not available. Requires that the element has a backend
-  // node id.
-  autofill_assistant::ContentAutofillAssistantDriver* GetDriverForElement(
-      const ElementFinderResult& element) const;
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
@@ -562,10 +540,6 @@ class WebController {
   // Must not be |nullptr| and outlive this web controller.
   const raw_ptr<const UserData, DanglingUntriaged> user_data_;
   const raw_ptr<ProcessedActionStatusDetailsProto, DanglingUntriaged> log_info_;
-  // Can be |nullptr|, if not must outlive this web controller.
-  const raw_ptr<AnnotateDomModelService, DanglingUntriaged>
-      annotate_dom_model_service_;
-
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;
 

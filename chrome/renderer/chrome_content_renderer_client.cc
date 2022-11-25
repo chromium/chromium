@@ -71,7 +71,6 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
@@ -681,11 +680,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
                       password_generation_agent, autofill_assistant_agent,
                       associated_interfaces);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  new autofill_assistant::AutofillAssistantAgent(render_frame,
-                                                 associated_interfaces);
-#endif
 
   if (content_capture::features::IsContentCaptureEnabled()) {
     new content_capture::ContentCaptureSender(render_frame,

@@ -132,7 +132,6 @@ static_library("renderer") {
     "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
-    "//components/autofill_assistant/content/renderer",
     "//components/base32",
     "//components/cdm/renderer",
     "//components/commerce/core:commerce_heuristics_data",

@@ -17,7 +17,6 @@ import "components/autofill_assistant/browser/dom_action.proto";
 import "components/autofill_assistant/browser/generic_ui.proto";
 import "components/autofill_assistant/browser/model.proto";
 import "components/autofill_assistant/browser/view_layout.proto";
-import "components/autofill_assistant/content/common/proto/semantic_feature_overrides.proto";
 import "components/autofill_assistant/browser/public/external_action.proto";
 
 // A field trial containing the name of the trial and the name of the
@@ -139,21 +138,10 @@ message ClientContextProto {
   }
   optional PlatformType platform_type = 20;
 
-  // The model for semantic dom annotation.
-  message AnnotateDomModelContextProto {
-    optional int64 model_version = 1;
-
-    // If set to true, serve semantic selectors even if a user is not part of
-    // an official server side experiment. This is used for emulator use cases
-    // that do not necessarily have a signed in user or an account.
-    optional bool force_semantic_selection = 2;
-  }
-  optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
-
   // Set if the client has the JS flow library needed for JS flow execution.
   optional bool js_flow_library_loaded = 23;
 
-  reserved 19, 21;
+  reserved 19, 21, 22;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -197,10 +185,7 @@ message SupportsScriptResponseProto {
   // The ScriptStoreConfig to use with the initial GetActions request.
   optional ScriptStoreConfig script_store_config = 6;
 
-  // Semantic selector related policy configuration.
-  optional SemanticSelectorPolicy semantic_selector_policy = 7;
-
-  reserved 4, 5;
+  reserved 4, 5, 7;
 }
 
 // A privacy sensitive way to look up Capabilities. Allows querying for
@@ -1606,39 +1591,7 @@ message ElementFinderInfoProto {
   // If set, the document could not be resolved.
   optional bool get_document_failed = 5;
 
-  enum SemanticInferenceStatus {
-    // Unknown error. Should not occur.
-    UNKNOWN = 0;
-    // The model was run successfully.
-    SUCCESS = 1;
-    // An unexpected error happened when the model was run. E.g. the frame
-    // was not available where it was expected to be.
-    UNEXPECTED_ERROR = 2;
-    // The model was successfully loaded but could not initialize the executor.
-    INITIALIZATION_ERROR = 3;
-    // The model could not be loaded. This is unexpected and should not occur.
-    MODEL_LOAD_ERROR = 4;
-    // The model loading timed out.
-    MODEL_LOAD_TIMEOUT = 5;
-  }
-  message PredictedElement {
-    // The predicted objective and predicted role of this element.
-    optional SelectorProto.SemanticFilter semantic_filter = 4;
-    // The element's backend node id.
-    optional int32 backend_node_id = 3;
-    // Whether this element was found using a feature override.
-    optional bool used_override = 5;
-
-    reserved 1, 2;
-  }
-  message SemanticInferenceResult {
-    // If this is empty, the model inference did not find any results.
-    repeated PredictedElement predicted_elements = 1;
-    // Status per frame. The order is not predictable, the results are
-    // collected async and arrive in random order.
-    repeated SemanticInferenceStatus status_per_frame = 2;
-  }
-  optional SemanticInferenceResult semantic_inference_result = 6;
+  reserved 6;
 }
 
 // The pseudo type values come from
@@ -1791,19 +1744,9 @@ message SelectorProto {
 
       // Retrieve parent of current elements.
       EmptyFilter parent = 15;
-
-      // Run the ML model over extracted node signals and retrieve a matching
-      // result.
-      // TODO(b/233340267): By convention this must be the first filter in the
-      // list. It can be followed by any set of other filters.
-      // TODO(b/233340267): The filter only supports returning a single element,
-      // although that element can have any number of children. Should it find
-      // multiple elements, the Selector will return a |TOO_MANY_ELEMENTS|
-      // error.
-      SemanticFilter semantic = 16;
     }
 
-    reserved 10;
+    reserved 10, 16;
   }
 
   // A regular expression value for filtering.
@@ -1887,21 +1830,6 @@ message SelectorProto {
   message NthMatchFilter {
     // Take the match at the given |index|.
     optional int32 index = 1;
-  }
-
-  message SemanticFilter {
-    // The objective we expect this Selector to have.
-    optional int32 objective = 1;
-    // The role we expect this Selector to have.
-    optional int32 role = 2;
-    // Timeout, defaults to 5s.
-    // TODO(b/218482826): Consider moving this to settings.
-    optional int32 model_timeout_ms = 3 [default = 5000];
-    // If true, ignore the objective and treat it as a wildcard '*' when
-    // matching.
-    optional bool ignore_objective = 4;
-
-    reserved 5;
   }
 
   reserved 1 to 8, 11;

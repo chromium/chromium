@@ -57,12 +57,6 @@ bool operator<(const SelectorProto::PropertyFilter& a,
   }
 }
 
-bool operator<(const SelectorProto::SemanticFilter& a,
-               const SelectorProto::SemanticFilter& b) {
-  return std::make_tuple(a.objective(), a.role(), a.ignore_objective()) <
-         std::make_tuple(b.objective(), b.role(), b.ignore_objective());
-}
-
 // Used by operator<(RepeatedPtrField<Filter>, RepeatedPtrField<Filter>)
 bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b);
 
@@ -129,9 +123,6 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kProperty:
       return a.property() < b.property();
-
-    case SelectorProto::Filter::kSemantic:
-      return a.semantic() < b.semantic();
 
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
@@ -235,15 +226,6 @@ bool Selector::empty() const {
     return true;
   }
 
-  int semantic_selector_count = base::ranges::count_if(
-      proto.filters(), [](const SelectorProto::Filter& filter) {
-        return filter.filter_case() == SelectorProto::Filter::kSemantic;
-      });
-  if (semantic_selector_count > 0) {
-    return semantic_selector_count > 1 ||
-           proto.filters(0).filter_case() != SelectorProto::Filter::kSemantic;
-  }
-
   return !base::ranges::any_of(
       proto.filters(), [](const SelectorProto::Filter& filter) {
         return filter.filter_case() == SelectorProto::Filter::kCssSelector;
@@ -295,18 +277,6 @@ std::ostream& operator<<(std::ostream& out,
       out << "/<unknown>/";
       break;
   }
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const SelectorProto::SemanticFilter& c) {
-  out << "Semantic { role: " << c.role() << ", objective: ";
-  if (c.ignore_objective()) {
-    out << "ignored";
-  } else {
-    out << c.objective();
-  }
-  out << " }";
   return out;
 }
 
@@ -409,10 +379,6 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kParent:
       out << "parent";
-      return out;
-
-    case SelectorProto::Filter::kSemantic:
-      out << f.semantic();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

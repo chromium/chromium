@@ -101,8 +101,6 @@ ClientAndroid::ClientAndroid(content::WebContents* web_contents,
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)),
-      annotate_dom_model_service_(dependencies_->GetCommonDependencies()
-                                      ->GetOrCreateAnnotateDomModelService()),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -464,24 +462,6 @@ bool ClientAndroid::MustUseBackendData() const {
   return false;
 }
 
-void ClientAndroid::GetAnnotateDomModelVersion(
-    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
-  if (!annotate_dom_model_service_) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  auto model_version = annotate_dom_model_service_->GetModelVersion();
-  if (model_version.has_value()) {
-    std::move(callback).Run(model_version);
-    return;
-  }
-
-  annotate_dom_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
-      &ClientAndroid::OnAnnotateDomModelFileAvailable,
-      weak_ptr_factory_.GetMutableWeakPtr(), std::move(callback)));
-}
-
 bool ClientAndroid::IsXmlSigned(const std::string& xml_string) const {
   JNIEnv* env = AttachCurrentThread();
   jboolean j_output = Java_AssistantParseSingleTagXmlUtilWrapper_isXmlSigned(
@@ -502,13 +482,6 @@ const std::vector<std::string> ClientAndroid::ExtractValuesFromSingleTagXml(
   std::vector<std::string> output_values;
   AppendJavaStringArrayToStringVector(env, j_output_values, &output_values);
   return output_values;
-}
-
-void ClientAndroid::OnAnnotateDomModelFileAvailable(
-    base::OnceCallback<void(absl::optional<int64_t>)> callback,
-    bool available) {
-  DCHECK(annotate_dom_model_service_);
-  std::move(callback).Run(annotate_dom_model_service_->GetModelVersion());
 }
 
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
@@ -585,7 +558,7 @@ void ClientAndroid::CreateController(
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), /* web_controller= */ nullptr,
-      ukm::UkmRecorder::Get(), annotate_dom_model_service_);
+      ukm::UkmRecorder::Get());
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));
   ui_controller_->StartListening();

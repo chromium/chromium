@@ -55,15 +55,13 @@ ClientHeadless::ClientHeadless(
     WebsiteLoginManager* website_login_manager,
     const base::TickClock* tick_clock,
     base::WeakPtr<RuntimeManager> runtime_manager,
-    ukm::UkmRecorder* ukm_recorder,
-    AnnotateDomModelService* annotate_dom_model_service)
+    ukm::UkmRecorder* ukm_recorder)
     : web_contents_(web_contents),
       common_dependencies_(common_dependencies),
       website_login_manager_(website_login_manager),
       tick_clock_(tick_clock),
       runtime_manager_(runtime_manager),
-      ukm_recorder_(ukm_recorder),
-      annotate_dom_model_service_(annotate_dom_model_service) {
+      ukm_recorder_(ukm_recorder) {
   headless_ui_controller_ =
       std::make_unique<HeadlessUiController>(action_extension_delegate);
 }
@@ -89,8 +87,7 @@ void ClientHeadless::Start(
   }
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, tick_clock_, runtime_manager_,
-      std::move(service), std::move(web_controller), ukm_recorder_,
-      annotate_dom_model_service_);
+      std::move(service), std::move(web_controller), ukm_recorder_);
   controller_->AddObserver(headless_ui_controller_.get());
   controller_->Start(url, std::move(trigger_context));
 }
@@ -206,11 +203,6 @@ ScriptExecutorUiDelegate* ClientHeadless::GetScriptExecutorUiDelegate() {
 
 bool ClientHeadless::MustUseBackendData() const {
   return false;
-}
-
-void ClientHeadless::GetAnnotateDomModelVersion(
-    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
-  std::move(callback).Run(absl::nullopt);
 }
 
 void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {

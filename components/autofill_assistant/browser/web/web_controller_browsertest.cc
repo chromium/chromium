@@ -58,7 +58,6 @@
 #include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_finder_result_type.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
-#include "components/autofill_assistant/browser/web/mock_autofill_assistant_agent.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -97,12 +96,8 @@ class WebControllerBrowserTest : public BaseBrowserTest,
   void SetUpOnMainThread() override {
     BaseBrowserTest::SetUpOnMainThread();
 
-    MockAutofillAssistantAgent::RegisterForAllFrames(
-        shell()->web_contents(), &autofill_assistant_agent_);
-
     web_controller_ = WebController::CreateForWebContents(
         shell()->web_contents(), &user_data_, &log_info_,
-        /* annotate_dom_model_service= */ nullptr,
         /*enable_full_stack_traces= */ true);
 
     Observe(shell()->web_contents());
@@ -1031,7 +1026,6 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   UserData user_data_;
   UserModel user_model_;
   ProcessedActionStatusDetailsProto log_info_;
-  MockAutofillAssistantAgent autofill_assistant_agent_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementExistenceCheck) {
@@ -3603,61 +3597,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WebpageZoom) {
           R"(document.querySelector("#select").getBoundingClientRect().width)")
           .ExtractDouble();
   EXPECT_NEAR(after_reset_width, initial_width, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SetFieldValueThroughNative) {
-  ClientStatus element_status;
-  ElementFinderResult input;
-  FindElement(Selector({"#input1"}), &element_status, &input);
-  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
-
-  int backend_node_id;
-  ASSERT_EQ(ACTION_APPLIED,
-            GetBackendNodeId(input, &backend_node_id).proto_status());
-  std::u16string expected_value = u"native";
-  EXPECT_CALL(autofill_assistant_agent_,
-              SetElementValue(backend_node_id, expected_value,
-                              /* send_events= */ true, _))
-      .WillOnce(RunOnceCallback<3>(true));
-
-  ClientStatus fill_status;
-  base::RunLoop run_loop;
-  web_controller_->SetNativeValue(
-      "native", input,
-      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
-                     base::Unretained(this), run_loop.QuitClosure(),
-                     &fill_status));
-  run_loop.Run();
-
-  EXPECT_EQ(ACTION_APPLIED, fill_status.proto_status());
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       SetElementCheckedThroughNative) {
-  ClientStatus element_status;
-  ElementFinderResult input;
-  FindElement(Selector({"#option1"}), &element_status, &input);
-  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
-
-  int backend_node_id;
-  ASSERT_EQ(ACTION_APPLIED,
-            GetBackendNodeId(input, &backend_node_id).proto_status());
-
-  EXPECT_CALL(autofill_assistant_agent_,
-              SetElementChecked(backend_node_id, true,
-                                /* send_events= */ true, _))
-      .WillOnce(RunOnceCallback<3>(true));
-
-  ClientStatus fill_status;
-  base::RunLoop run_loop;
-  web_controller_->SetNativeChecked(
-      true, input,
-      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
-                     base::Unretained(this), run_loop.QuitClosure(),
-                     &fill_status));
-  run_loop.Run();
-
-  EXPECT_EQ(ACTION_APPLIED, fill_status.proto_status());
 }
 
 }  // namespace autofill_assistant

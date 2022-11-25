@@ -18,7 +18,6 @@
 #include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_finder_result_type.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 
 namespace content {
 class WebContents;
@@ -36,13 +35,11 @@ class UserData;
 class ElementFinder : public WebControllerWorker {
  public:
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
-  // lifetime of the instance. If |annotate_dom_model_service| is not nullptr,
-  // must be valid for the lifetime of the instance.
+  // lifetime of the instance.
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
                 const UserData* user_data,
                 ProcessedActionStatusDetailsProto* log_info,
-                AnnotateDomModelService* annotate_dom_model_service,
                 const Selector& selector,
                 ElementFinderResultType result_type);
   ~ElementFinder() override;
@@ -73,7 +70,6 @@ class ElementFinder : public WebControllerWorker {
   const raw_ptr<DevtoolsClient> devtools_client_;
   const raw_ptr<const UserData> user_data_;
   const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
-  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   const Selector selector_;
   const ElementFinderResultType result_type_;
   Callback callback_;

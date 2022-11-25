@@ -182,8 +182,7 @@ AutofillAssistantImpl::CreateHeadlessScriptController(
       web_contents, starter->GetCommonDependencies(), action_extension_delegate,
       website_login_manager, base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(web_contents)->GetWeakPtr(),
-      ukm::UkmRecorder::Get(),
-      starter->GetCommonDependencies()->GetOrCreateAnnotateDomModelService());
+      ukm::UkmRecorder::Get());
   return std::make_unique<HeadlessScriptControllerImpl>(web_contents, starter,
                                                         std::move(client));
 }

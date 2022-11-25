@@ -526,17 +526,11 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
     case ActionProto::ActionInfoCase::kSetNativeValue:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.set_native_value().client_id(),
-          base::BindOnce(
-              &action_delegate_util::PerformWithTextValue, delegate,
-              action.set_native_value().value(),
-              base::BindOnce(&WebController::SetNativeValue,
-                             delegate->GetWebController()->GetWeakPtr())));
+          base::DoNothing());
     case ActionProto::ActionInfoCase::kSetNativeChecked:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.set_native_checked().client_id(),
-          base::BindOnce(&WebController::SetNativeChecked,
-                         delegate->GetWebController()->GetWeakPtr(),
-                         action.set_native_checked().checked()));
+          base::DoNothing());
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       return std::make_unique<PromptQrCodeScanAction>(delegate, action);
     case ActionProto::ActionInfoCase::kParseSingleTagXml:
