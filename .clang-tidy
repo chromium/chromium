@@ -8,6 +8,7 @@
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
+                    bugprone-undefined-memory-manipulation,
                     bugprone-unused-raii,
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
