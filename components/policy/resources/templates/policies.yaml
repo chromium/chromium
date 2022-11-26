@@ -1035,6 +1035,7 @@ policies:
   1034: DnsOverHttpsSalt
   1035: DnsOverHttpsTemplatesWithIdentifiers
   1036: IdleTimeoutActions
+  1037: ThrottleNonVisibleCrossOriginIframesAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

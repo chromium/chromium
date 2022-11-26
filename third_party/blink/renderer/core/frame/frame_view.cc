@@ -243,8 +243,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   bool zero_viewport_intersection = viewport_intersection.IsEmpty();
   bool is_display_none = !owner_layout_object;
   bool has_zero_area = FrameRect().IsEmpty();
-  bool has_flag = RuntimeEnabledFeatures::
-      ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
+  bool has_flag = features::
+      IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
 
   bool should_throttle =
       has_flag

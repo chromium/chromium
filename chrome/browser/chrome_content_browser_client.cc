@@ -1517,6 +1517,8 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kSitePerProcess, false);
   registry->RegisterBooleanPref(prefs::kTabFreezingEnabled, true);
   registry->RegisterIntegerPref(prefs::kSCTAuditingHashdanceReportCount, 0);
+  registry->RegisterBooleanPref(
+      prefs::kThrottleNonVisibleCrossOriginIframesAllowed, true);
 }
 
 // static

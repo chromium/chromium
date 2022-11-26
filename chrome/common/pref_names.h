@@ -1300,6 +1300,8 @@ extern const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[];
 
 extern const char kDIPSTimerLastUpdate[];
 
+extern const char kThrottleNonVisibleCrossOriginIframesAllowed[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

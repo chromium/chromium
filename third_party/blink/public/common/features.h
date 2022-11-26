@@ -939,6 +939,20 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseThreadPoolForMediaStreamVideoTaskRunner);
 
+// Forces same-process display:none cross-origin iframes to be throttled in the
+// same manner that OOPIFs are.
+// Note: this feature should never be accessed directly. Instead, use
+// IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled defined
+// below.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
+
+// Use to determine if iframe throttling is enabled via the feature
+// kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes and not disabled
+// via enterprise policy.
+BLINK_COMMON_EXPORT bool
+IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
+
 }  // namespace features
 }  // namespace blink
 

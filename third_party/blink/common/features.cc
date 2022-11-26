@@ -1658,5 +1658,20 @@ BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
              "UseThreadPoolForMediaStreamVideoTaskRunner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,
+             "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled() {
+  static bool throttling_disabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableThrottleNonVisibleCrossOriginIframes);
+
+  return !throttling_disabled &&
+         base::FeatureList::IsEnabled(
+             features::
+                 kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
+}
+
 }  // namespace features
 }  // namespace blink

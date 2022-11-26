@@ -3677,4 +3677,10 @@ const char kPrintingOAuth2AuthorizationServers[] =
     "printing.oauth2_authorization_servers";
 #endif
 
+// If true, the feature ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes
+// will be allowed, otherwise attempts to enable the feature will be
+// disallowed.
+const char kThrottleNonVisibleCrossOriginIframesAllowed[] =
+    "throttle_non_visible_cross_origin_iframes_allowed";
+
 }  // namespace prefs

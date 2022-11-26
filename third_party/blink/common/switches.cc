@@ -125,6 +125,11 @@ const char kShowLayoutShiftRegions[] = "show-layout-shift-regions";
 // and study painting behavior.
 const char kShowPaintRects[] = "show-paint-rects";
 
+// Used to override the ThrottleDisplayNoneAndVisibilityHiddenCrossOrigin
+// feature from an enterprise policy.
+const char kDisableThrottleNonVisibleCrossOriginIframes[] =
+    "disable-throttle-non-visible-cross-origin-iframes";
+
 // Controls how text selection granularity changes when touch text selection
 // handles are dragged. Should be "character" or "direction". If not specified,
 // the platform default is used.

@@ -188,6 +188,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1066,6 +1067,14 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
         switches::kDisableSiteIsolationForPolicy);
   }
 #endif
+
+  if (local_state->IsManagedPreference(
+          prefs::kThrottleNonVisibleCrossOriginIframesAllowed) &&
+      !local_state->GetBoolean(
+          prefs::kThrottleNonVisibleCrossOriginIframesAllowed)) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        blink::switches::kDisableThrottleNonVisibleCrossOriginIframes);
+  }
 
   // ChromeOS needs ui::ResourceBundle::InitSharedInstance to be called before
   // this.

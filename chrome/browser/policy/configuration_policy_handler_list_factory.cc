@@ -272,6 +272,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowWebAuthnWithBrokenTlsCerts,
     webauthn::pref_names::kAllowWithBrokenCerts,
     base::Value::Type::BOOLEAN },
+  { key::kThrottleNonVisibleCrossOriginIframesAllowed,
+    prefs::kThrottleNonVisibleCrossOriginIframesAllowed,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

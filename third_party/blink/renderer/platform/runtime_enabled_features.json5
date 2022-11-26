@@ -2742,13 +2742,6 @@
       browser_process_read_write_access: true,
     },
     {
-      // Forces same-process display:none cross-origin iframes to be throttled
-      // in the same manner that OOPIFs are.
-      name: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
-      status: "experimental",
-      base_feature: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
-    },
-    {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,
       status: "stable",
