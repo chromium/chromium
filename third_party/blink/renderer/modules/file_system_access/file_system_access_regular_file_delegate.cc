@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -133,14 +134,14 @@ void FileSystemAccessRegularFileDelegate::GetLengthAsync(
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoGetLength,
-                          WrapCrossThreadPersistent(this),
+                          MakeCrossThreadHandle(this),
                           std::move(wrapped_callback), std::move(backing_file_),
                           task_runner_));
 }
 
 // static
 void FileSystemAccessRegularFileDelegate::DoGetLength(
-    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
     CrossThreadOnceFunction<void(base::FileErrorOr<int64_t>)> callback,
     base::File file,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -156,8 +157,9 @@ void FileSystemAccessRegularFileDelegate::DoGetLength(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DidGetLength,
-                          std::move(delegate), std::move(callback),
-                          std::move(file), std::move(result)));
+                          MakeUnwrappingCrossThreadHandle(std::move(delegate)),
+                          std::move(callback), std::move(file),
+                          std::move(result)));
 }
 
 void FileSystemAccessRegularFileDelegate::DidGetLength(
@@ -271,14 +273,14 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoSetLength,
-                          WrapCrossThreadPersistent(this),
+                          MakeCrossThreadHandle(this),
                           std::move(wrapped_callback), std::move(backing_file_),
                           task_runner_, new_length));
 }
 
 // static
 void FileSystemAccessRegularFileDelegate::DoSetLength(
-    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
     CrossThreadOnceFunction<void(base::File::Error)> callback,
     base::File file,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -293,8 +295,8 @@ void FileSystemAccessRegularFileDelegate::DoSetLength(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DidSetLength,
-                          std::move(delegate), std::move(callback), length,
-                          std::move(file), error));
+                          MakeUnwrappingCrossThreadHandle(std::move(delegate)),
+                          std::move(callback), length, std::move(file), error));
 }
 
 void FileSystemAccessRegularFileDelegate::DidSetLength(
@@ -330,14 +332,14 @@ void FileSystemAccessRegularFileDelegate::FlushAsync(
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoFlush,
-                          WrapCrossThreadPersistent(this),
+                          MakeCrossThreadHandle(this),
                           std::move(wrapped_callback), std::move(backing_file_),
                           task_runner_));
 }
 
 // static
 void FileSystemAccessRegularFileDelegate::DoFlush(
-    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
     CrossThreadOnceFunction<void(bool)> callback,
     base::File file,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -347,8 +349,8 @@ void FileSystemAccessRegularFileDelegate::DoFlush(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DidFlush,
-                          std::move(delegate), std::move(callback),
-                          std::move(file), success));
+                          MakeUnwrappingCrossThreadHandle(std::move(delegate)),
+                          std::move(callback), std::move(file), success));
 }
 
 void FileSystemAccessRegularFileDelegate::DidFlush(
@@ -375,14 +377,14 @@ void FileSystemAccessRegularFileDelegate::CloseAsync(
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoClose,
-                          WrapCrossThreadPersistent(this),
+                          MakeCrossThreadHandle(this),
                           std::move(wrapped_callback), std::move(backing_file_),
                           task_runner_));
 }
 
 // static
 void FileSystemAccessRegularFileDelegate::DoClose(
-    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
     CrossThreadOnceClosure callback,
     base::File file,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -392,8 +394,8 @@ void FileSystemAccessRegularFileDelegate::DoClose(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DidClose,
-                          std::move(delegate), std::move(callback),
-                          std::move(file)));
+                          MakeUnwrappingCrossThreadHandle(std::move(delegate)),
+                          std::move(callback), std::move(file)));
 }
 
 void FileSystemAccessRegularFileDelegate::DidClose(

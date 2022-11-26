@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -86,7 +86,7 @@ class FileSystemAccessRegularFileDelegate final
 
   // Performs the file I/O part of getSize(), off the main thread.
   static void DoGetLength(
-      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceFunction<void(base::FileErrorOr<int64_t>)> callback,
       base::File file,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
@@ -98,7 +98,7 @@ class FileSystemAccessRegularFileDelegate final
 
   // Performs the file I/O part of truncate(), off the main thread.
   static void DoSetLength(
-      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceFunction<void(base::File::Error)> callback,
       base::File file,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -111,7 +111,7 @@ class FileSystemAccessRegularFileDelegate final
 
   // Performs the file I/O part of flush(), off the main thread.
   static void DoFlush(
-      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceFunction<void(bool)> callback,
       base::File file,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -122,7 +122,7 @@ class FileSystemAccessRegularFileDelegate final
 
   // Performs the file I/O part of close(), off the main thread.
   static void DoClose(
-      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadHandle<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceClosure callback,
       base::File file,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
