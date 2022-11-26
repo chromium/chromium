@@ -51,7 +51,7 @@ Display ScreenBase::GetDisplayNearestPoint(const gfx::Point& point) const {
 }
 
 int ScreenBase::GetNumDisplays() const {
-  return static_cast<int>(display_list_.displays().size());
+  return static_cast<int>(GetAllDisplays().size());
 }
 
 const std::vector<Display>& ScreenBase::GetAllDisplays() const {

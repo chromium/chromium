@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "ui/base/wayland/wayland_display_util.h"
+#include "ui/display/screen.h"
 
 namespace ui {
 
@@ -74,6 +75,13 @@ void WaylandZAuraOutput::OnDisplayId(void* data,
 }
 
 void WaylandZAuraOutput::OnActivated(void* data,
-                                     struct zaura_output* zaura_output) {}
+                                     struct zaura_output* zaura_output) {
+  auto* aura_output = static_cast<WaylandZAuraOutput*>(data);
+  if (aura_output && aura_output->IsReady()) {
+    DCHECK(display::Screen::GetScreen());
+    display::Screen::GetScreen()->SetDisplayForNewWindows(
+        aura_output->display_id_.value());
+  }
+}
 
 }  // namespace ui
