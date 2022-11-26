@@ -9,7 +9,7 @@ import subprocess
 from argparse import Namespace
 from typing import Optional
 
-from common import DIR_SRC_ROOT, resolve_packages
+from common import DIR_SRC_ROOT
 from test_runner import TestRunner
 
 _BLINK_TEST_SCRIPT = os.path.join(DIR_SRC_ROOT, 'third_party', 'blink',
@@ -29,7 +29,6 @@ class BlinkTestRunner(TestRunner):
         return False
 
     def run_test(self):
-        resolve_packages(self.packages, self._target_id)
         test_cmd = [_BLINK_TEST_SCRIPT]
         test_cmd.append('--platform=fuchsia')
         if self._test_args:

@@ -27,6 +27,14 @@ _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 # |FFX_ISOLATE_DIR| when running ffx commands in E2E testing scripts.
 _FFX_ISOLATE_DIR = None
 
+# TODO(crbug.com/1280705): Remove each entry when they are migrated to v2.
+_V1_PACKAGE_LIST = [
+    'chrome_v1',
+    'web_engine',
+    'web_engine_with_webui',
+    'web_runner',
+]
+
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
     """Overwrites |_FFX_ISOLATE_DIR|."""
@@ -232,7 +240,10 @@ def get_component_uri(package: str) -> str:
 
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
+
     for package in packages:
+        if package in _V1_PACKAGE_LIST:
+            resolve_v1_packages([package], target_id)
         run_ffx_command(
             ['component', 'reload', f'/core/ffx-laboratory:{package}'],
             target_id,

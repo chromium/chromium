@@ -29,11 +29,11 @@ class TelemetryTestRunner(TestRunner):
         args, _ = parser.parse_known_args(test_args)
 
         if args.browser == 'web-engine-shell':
-            packages = ['web_engine_with_webui', 'web_engine_shell']
+            packages = ['web_engine_shell']
         elif args.browser == 'fuchsia-chrome':
             packages = ['chrome']
         elif args.browser == 'cast-streaming-shell':
-            packages = ['web_engine_with_webui', 'cast_streaming_shell']
+            packages = ['cast_streaming_shell']
         else:
             raise Exception('Unknown browser %s' % args.browser)
 

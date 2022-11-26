@@ -92,32 +92,32 @@ def main():
         test_connection(runner_args.target_id)
 
         test_runner = _get_test_runner(runner_args, test_args)
-        package_paths = test_runner.get_package_paths()
+        package_deps = test_runner.package_deps
 
         if not runner_args.repo:
             # Create a directory that serves as a temporary repository.
             runner_args.repo = stack.enter_context(
                 tempfile.TemporaryDirectory())
 
-        publish_packages(package_paths, runner_args.repo,
+        publish_packages(package_deps.values(), runner_args.repo,
                          not runner_args.no_repo_init)
 
         stack.enter_context(serve_repository(runner_args))
 
         # Start system logging, after all possible restarts of the ffx daemon
         # so that logging will not be interrupted.
-        start_system_log(log_manager, False, package_paths, ('--since', 'now'),
-                         runner_args.target_id)
+        start_system_log(log_manager, False, package_deps.values(),
+                         ('--since', 'now'), runner_args.target_id)
 
         ermine = ErmineCtl(runner_args.target_id)
         if ermine.exists:
             ermine.take_to_shell()
 
         if test_runner.is_cfv2():
-            resolve_packages(test_runner.packages, runner_args.target_id)
+            resolve_packages(package_deps.keys(), runner_args.target_id)
         else:
             # TODO(crbug.com/1256503): Remove when all packages are CFv2.
-            resolve_v1_packages(test_runner.packages, runner_args.target_id)
+            resolve_v1_packages(package_deps.keys(), runner_args.target_id)
         return test_runner.run_test().returncode
 
 

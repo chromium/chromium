@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 """Provides a base class for test running."""
 
+import os
 import subprocess
 
 from abc import ABC, abstractmethod
 from argparse import Namespace
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from common import read_package_paths
 
@@ -24,7 +25,7 @@ class TestRunner(ABC):
         self._out_dir = out_dir
         self._test_args = test_args
         self._packages = packages
-        self._package_paths = None
+        self._package_deps = None
 
     # TODO(crbug.com/1256503): Remove when all tests are converted to CFv2.
     @staticmethod
@@ -37,29 +38,33 @@ class TestRunner(ABC):
         return True
 
     @property
-    def packages(self) -> List[str]:
+    def package_deps(self) -> Dict[str, str]:
         """
         Returns:
-            A list of package names needed for the test.
+            A dictionary of packages that |self._packages| depend on, with
+            mapping from the package name to the local path to its far file.
         """
 
-        return self._packages
+        if not self._package_deps:
+            self._populate_package_deps()
+        return self._package_deps
 
-    def get_package_paths(self) -> List[str]:
-        """Retrieve the path to the .far files for packages.
-
-        Returns:
-            A list of the path to all .far files that need to be updated on the
-            device.
+    def _populate_package_deps(self) -> None:
+        """Retrieve information for all packages |self._packages| depend on.
         """
 
-        if self._package_paths:
-            return self._package_paths
-        self._package_paths = []
+        package_deps = {}
+
+        package_paths = []
         for package in self._packages:
-            self._package_paths.extend(
-                read_package_paths(self._out_dir, package))
-        return self._package_paths
+            package_paths.extend(read_package_paths(self._out_dir, package))
+
+        for path in package_paths:
+            package_name = os.path.basename(path).replace('.far', '')
+            if package_name in package_deps:
+                assert path == package_deps[package_name]
+            package_deps[package_name] = path
+        self._package_deps = package_deps
 
     @abstractmethod
     def run_test(self) -> subprocess.Popen:

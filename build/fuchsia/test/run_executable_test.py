@@ -191,7 +191,7 @@ class ExecutableTestRunner(TestRunner):
 
             # Symbolize output from test process and print to terminal.
             symbolize_cmd = ['debug', 'symbolize', '--']
-            for pkg_path in self._package_paths:
+            for pkg_path in self._package_deps.values():
                 symbol_path = os.path.join(os.path.dirname(pkg_path),
                                            'ids.txt')
                 symbolize_cmd.extend(('--ids-txt', symbol_path))
