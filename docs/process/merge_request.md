@@ -194,6 +194,7 @@ $ git fetch
 $ git checkout -b BRANCH_NAME refs/remotes/branch-heads/####
 $ git cl upstream branch-heads/####
 $ git cherry-pick -x COMMIT_HASH_MAIN
+$ gclient sync
 ```
 
 From here, your environment should be ready to adjust the change as required;
