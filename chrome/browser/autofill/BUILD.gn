@@ -87,6 +87,7 @@ static_library("autofill") {
     deps += [
       "//chrome/android:jni_headers",
       "//chrome/app:generated_resources",
+      "//chrome/browser/autofill/android:jni_headers",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/core/common/mojom:mojo_types",
       "//components/messages/android:feature_flags",
