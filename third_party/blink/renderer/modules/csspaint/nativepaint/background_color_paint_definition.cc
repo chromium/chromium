@@ -123,10 +123,10 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         keyframe->GetValue()->Value().interpolable_value.get();
 
     const auto& list = To<InterpolableList>(*value);
-    DCHECK(CSSColorInterpolationType::IsRGBA(*(list.Get(0))));
+    DCHECK(CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0))));
 
-    Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
-    animated_colors->push_back(rgba);
+    Color color = CSSColorInterpolationType::GetColor(*(list.Get(0)));
+    animated_colors->push_back(color);
   }
   return true;
 }
@@ -176,7 +176,7 @@ bool ValidateColorValue(const Element* element,
       return false;
 
     const InterpolableList& list = To<InterpolableList>(*interpolable_value);
-    return CSSColorInterpolationType::IsRGBA(*(list.Get(0)));
+    return CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0)));
   }
   return false;
 }
@@ -280,9 +280,9 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
       CSSColorInterpolationType::CreateInterpolableColor(
           animated_colors[result_index + 1]);
   from->Interpolate(*to, adjusted_progress, *result);
-  Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
+  Color color = CSSColorInterpolationType::GetColor(*(result.get()));
   // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
-  SkColor4f current_color = rgba.toSkColor4f();
+  SkColor4f current_color = color.toSkColor4f();
 
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.

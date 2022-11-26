@@ -176,6 +176,8 @@ blink_core_sources("animation") {
     "inert_effect.h",
     "interpolable_aspect_ratio.cc",
     "interpolable_aspect_ratio.h",
+    "interpolable_color.cc",
+    "interpolable_color.h",
     "interpolable_filter.cc",
     "interpolable_filter.h",
     "interpolable_grid_length.cc",

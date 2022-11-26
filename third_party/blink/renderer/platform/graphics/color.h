@@ -276,6 +276,11 @@ class PLATFORM_EXPORT Color {
   // Returns true if the color is transparent.
   bool IsTransparent() const { return Alpha() == 0; }
 
+  float Param0() const { return param0_; }
+  float Param1() const { return param1_; }
+  float Param2() const { return param2_; }
+  float FloatAlpha() const { return alpha_; }
+
   // Access the color as though it were created using rgba syntax. This will
   // clamp all colors to an 8-bit sRGB representation. All callers of these
   // functions should be audited. The function Rgb(), despite the name, does
@@ -347,6 +352,8 @@ class PLATFORM_EXPORT Color {
   ColorSpace GetColorSpace() const { return color_space_; }
   static ColorSpace ColorInterpolationSpaceToColorSpace(
       Color::ColorInterpolationSpace color_interpolation_space);
+  void ConvertToColorInterpolationSpace(
+      ColorInterpolationSpace interpolation_space);
 
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorMixNone);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorInterpolation);
@@ -381,8 +388,6 @@ class PLATFORM_EXPORT Color {
   void GetHueMaxMin(double&, double&, double&) const;
 
   std::tuple<float, float, float> ExportAsXYZD50Floats() const;
-  void ConvertToColorInterpolationSpace(
-      ColorInterpolationSpace interpolation_space);
 
   // For testing purposes and for serializer.
   static String ColorSpaceToString(Color::ColorSpace color_space);

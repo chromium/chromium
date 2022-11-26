@@ -36,6 +36,7 @@ class CORE_EXPORT InterpolableValue {
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsBool() const { return false; }
+  virtual bool IsColor() const { return false; }
   virtual bool IsList() const { return false; }
   virtual bool IsLength() const { return false; }
   virtual bool IsAspectRatio() const { return false; }
@@ -96,6 +97,13 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  std::unique_ptr<InterpolableNumber> Clone() const {
+    return std::unique_ptr<InterpolableNumber>(RawClone());
+  }
+  std::unique_ptr<InterpolableNumber> CloneAndZero() const {
+    return std::unique_ptr<InterpolableNumber>(RawCloneAndZero());
+  }
+
  private:
   InterpolableNumber* RawClone() const final {
     return new InterpolableNumber(value_);
@@ -126,6 +134,13 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   wtf_size_t length() const { return values_.size(); }
   void Set(wtf_size_t position, std::unique_ptr<InterpolableValue> value) {
     values_[position] = std::move(value);
+  }
+
+  std::unique_ptr<InterpolableList> Clone() const {
+    return std::unique_ptr<InterpolableList>(RawClone());
+  }
+  std::unique_ptr<InterpolableList> CloneAndZero() const {
+    return std::unique_ptr<InterpolableList>(RawCloneAndZero());
   }
 
   // InterpolableValue

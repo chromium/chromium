@@ -1753,7 +1753,6 @@ crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-
 # lab color space not yet implemented
 # color() function not implemented
 crbug.com/1068610 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Failure ]
-crbug.com/1068610 [ Linux ] external/wpt/css/css-color/t422-rgba-a0.6-a.xht [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/t32-opacity-basic-0.6-a.xht [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
 

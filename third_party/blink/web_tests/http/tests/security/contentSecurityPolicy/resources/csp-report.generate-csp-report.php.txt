@@ -1,0 +1,5 @@
+CONTENT_TYPE: application/csp-report
+HTTP_REFERER: http://127.0.0.1:8000/security/contentSecurityPolicy/resources/generate-csp-report.php
+REQUEST_METHOD: POST
+=== POST DATA ===
+{"csp-report":{"document-uri":"http://127.0.0.1:8000/security/contentSecurityPolicy/resources/generate-csp-report.php","referrer":"","violated-directive":"script-src-elem","effective-directive":"script-src-elem","original-policy":"script-src 'self'; report-uri save-report.php?test=generate-csp-report.php","disposition":"enforce","blocked-uri":"inline","line-number":1,"source-file":"http://127.0.0.1:8000/security/contentSecurityPolicy/resources/generate-csp-report.php","status-code":200,"script-sample":""}}
