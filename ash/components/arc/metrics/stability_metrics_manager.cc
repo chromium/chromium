@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 
+#include <ostream>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
