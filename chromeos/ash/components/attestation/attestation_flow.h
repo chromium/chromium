@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   using CertProfileSpecificData =
       absl::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
 
-  // Returns the attestation key type for a given |certificate_profile|.
+  // Returns the attestation key type for a given `certificate_profile`.
   //
   // Parameters
   //   certificate_profile - Specifies what kind of certificate the key is for.
@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // Gets an attestation certificate for a hardware-protected key.  If a key for
   // the given profile does not exist, it will be generated and a certificate
   // request will be made to the Chrome OS Privacy CA to issue a certificate for
-  // the key.  If the key already exists and |force_new_key| is false, the
+  // the key.  If the key already exists and `force_new_key` is false, the
   // existing certificate is returned.
   //
   // Parameters
@@ -122,12 +122,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //                   already exists for the profile.  The new key will replace
   //                   the existing key on success.
   //   key_crypto_type - The crypto type of the key.
-  //   key_name - The name of the key. If left empty, a default name derived
-  //              from the |certificate_profile| and |account_id| will be used.
+  //   key_name - The name of the key. If left empty, a default name will be
+  //              generated.
   //   profile_specific_data - Optional certificate profile specific data. The
   //                           type must correspond to `certificate_profile`.
   //   callback - A callback which will be called when the operation completes.
-  //              On success |result| will be true and |data| will contain the
+  //              On success `result` will be true and `data` will contain the
   //              PCA-issued certificate chain in PEM format.
   virtual void GetCertificate(
       AttestationCertificateProfile certificate_profile,
@@ -160,7 +160,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
                                   base::OnceCallback<void(bool)> callback);
 
   // Handles the result of a call to GetEnrollmentPreparations. Starts
-  // enrollment on success and retries after |retry_delay_| if not.
+  // enrollment on success and retries after `retry_delay_` if not.
   //
   // Parameters
   //   end_time - Time after which preparation should time out.
@@ -213,8 +213,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   request_origin - An identifier for the origin of this request.
   //   generate_new_key - If set to true a new key is generated.
   //   key_crypto_type - The crypto type of the key.
-  //   key_name - The name of the key. If left empty, a default name derived
-  //              from the |certificate_profile| and |account_id| will be used.
+  //   key_name - The name of the key. If left empty, a default name will be
+  //              generated.
   //   profile_specific_data - Optional certificate profile specific data. The
   //                           type must correspond to `certificate_profile`.
   //   callback - Called when the operation completes.
@@ -239,8 +239,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   account_id - Identifies the active user.
   //   request_origin - An identifier for the origin of this request.
   //   key_crypto_type - The crypto type of the key.
-  //   key_name - The name of the key. If left empty, a default name derived
-  //              from the |certificate_profile| and |account_id| will be used.
+  //   key_name - The name of the key. If left empty, a default name will be
+  //              generated.
   //   profile_specific_data - Optional certificate profile specific data. The
   //                           type must correspond to `certificate_profile`.
   //   callback - Called when the operation completes.
@@ -265,7 +265,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   account_id - Identifies the active user.
   //   key_name - The name of the key for which a certificate is requested.
   //   callback - Called when the operation completes.
-  //   reply - the result returned by |AttestationClient|.
+  //   reply - the result returned by `AttestationClient`.
   void SendCertificateRequestToPCA(
       AttestationKeyType key_type,
       const AccountId& account_id,
