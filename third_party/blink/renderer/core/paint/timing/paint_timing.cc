@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -268,7 +269,7 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
   RegisterNotifyPresentationTime(
       CrossThreadBindOnce(&PaintTiming::ReportPresentationTime,
-                          WrapCrossThreadWeakPersistent(this), event));
+                          MakeUnwrappingCrossThreadWeakHandle(this), event));
 }
 
 void PaintTiming::
@@ -277,7 +278,7 @@ void PaintTiming::
   RegisterNotifyPresentationTime(CrossThreadBindOnce(
       &PaintTiming::
           ReportFirstPaintAfterBackForwardCacheRestorePresentationTime,
-      WrapCrossThreadWeakPersistent(this), index));
+      MakeUnwrappingCrossThreadWeakHandle(this), index));
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
