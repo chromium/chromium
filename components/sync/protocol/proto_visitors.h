@@ -27,10 +27,12 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/note_entity.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
 #include "components/sync/protocol/printers_authorization_server_specifics.pb.h"
@@ -562,6 +564,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(os_preference);
   VISIT(os_priority_preference);
   VISIT(password);
+  VISIT(power_bookmark);
   VISIT(preference);
   VISIT(printer);
   VISIT(printers_authorization_server);
@@ -882,6 +885,26 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes_Note& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsMetadata& proto) {
   VISIT(url);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PowerBookmarkSpecifics& proto) {
+  VISIT(guid);
+  VISIT(url);
+  VISIT_ENUM(power_type);
+  VISIT(creation_time_usec);
+  VISIT(update_time_usec);
+  VISIT(power_entity);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PowerEntity& proto) {
+  VISIT(note_entity);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::NoteEntity& proto) {
+  VISIT(plain_text);
+  VISIT(rich_text);
+  VISIT_ENUM(target_type);
+  VISIT(current_note_version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PersistedEntityData& proto) {

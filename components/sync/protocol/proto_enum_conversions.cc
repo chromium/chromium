@@ -160,6 +160,30 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
 }
 
 const char* ProtoEnumToString(
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::PowerBookmarkSpecifics, PowerType,
+                     POWER_TYPE_UNSPECIFIED, POWER_TYPE_NOTE);
+  switch (power_type) {
+    ENUM_CASE(sync_pb::PowerBookmarkSpecifics, POWER_TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::PowerBookmarkSpecifics, POWER_TYPE_MOCK);
+    ENUM_CASE(sync_pb::PowerBookmarkSpecifics, POWER_TYPE_NOTE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(sync_pb::NoteEntity::TargetType target_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::NoteEntity, TargetType, TARGET_TYPE_UNSPECIFIED,
+                     TARGET_TYPE_PAGE);
+  switch (target_type) {
+    ENUM_CASE(sync_pb::NoteEntity, TARGET_TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::NoteEntity, TARGET_TYPE_PAGE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status) {
   ASSERT_ENUM_BOUNDS(sync_pb::ReadingListSpecifics, ReadingListEntryStatus,
                      UNREAD, UNSEEN);

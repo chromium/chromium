@@ -109,5 +109,13 @@ TEST(ProtoEnumConversionsTest, GetIssuerString) {
   TestEnumStringsNonEmpty(sync_pb::CardIssuer::Issuer);
 }
 
+TEST(ProtoEnumConversionsTest, GetPowerBookmakrPowerTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::PowerBookmarkSpecifics::PowerType);
+}
+
+TEST(ProtoEnumConversionsTest, GetNoteTargetTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::NoteEntity::TargetType);
+}
+
 }  // namespace
 }  // namespace syncer

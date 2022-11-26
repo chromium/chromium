@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message NoteEntity {
+  enum TargetType {
+    TARGET_TYPE_UNSPECIFIED = 0;
+
+    // Page target type makes the note global to the page. It does not associate
+    // with any user selection.
+    TARGET_TYPE_PAGE = 1;
+  }
+
+  // Plain text of the note.
+  optional string plain_text = 1;
+
+  // Rich text of the note. It will be used when plain_text is empty and the UI
+  // supports rich text.
+  optional string rich_text = 2;
+
+  // The type of the note target. Currently only PAGE target type is supported.
+  /* required */ optional TargetType target_type = 3;
+
+  // The current version of the note. If this version is newer than the note
+  // version of the browser the note won't be displayed.
+  /* required */ optional int32 current_note_version = 4;
+}

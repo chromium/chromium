@@ -44,6 +44,7 @@ class OsPriorityPreferenceSpecifics;
 class PasswordSpecifics;
 class PasswordSpecificsData;
 class PaymentsCustomerData;
+class PowerBookmarkSpecifics;
 class PreferenceSpecifics;
 class PrinterPPDReference;
 class PrinterSpecifics;
@@ -173,6 +174,9 @@ base::Value PasswordSpecificsToValue(
 
 base::Value PasswordSpecificsDataToValue(
     const sync_pb::PasswordSpecificsData& password_specifics_data);
+
+base::Value PowerBookmarkSpecificsToValue(
+    const sync_pb::PowerBookmarkSpecifics& power_bookmark_specifics);
 
 base::Value PaymentsCustomerDataToValue(
     const sync_pb::PaymentsCustomerData& payments_customer_data);

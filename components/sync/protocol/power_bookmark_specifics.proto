@@ -1,0 +1,57 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/note_entity.proto";
+
+// Data structure dedicated to each power type.
+// Should keep the field numbers of specifics in sync with the ones in PowerType
+// below.
+message PowerEntity {
+  oneof entity {
+    // Used for notes.
+    NoteEntity note_entity = 2;
+  }
+}
+
+message PowerBookmarkSpecifics {
+  // PowerType is persisted to disk and therefore shouldn't be reoderered or
+  // changed.
+  // Should keep the field numbers of PowerType in sync with the ones in
+  // entity above.
+  enum PowerType {
+    // All powers should have type so this should be unused.
+    POWER_TYPE_UNSPECIFIED = 0;
+    // Used for testing.
+    POWER_TYPE_MOCK = 1;
+    // Used for notes.
+    POWER_TYPE_NOTE = 2;
+  }
+
+  // The primary key for local storage.
+  /* required */ optional string guid = 1;
+
+  // Powers associated with a URL.
+  /* required */ optional string url = 2;
+
+  // Tracks the type of the power.
+  /* required */ optional PowerType power_type = 3;
+
+  // Tracks when this was added.
+  /* required */ optional int64 creation_time_usec = 4;
+
+  // Tracks when this was last modified.
+  /* required */ optional int64 update_time_usec = 5;
+
+  // Power entity.
+  /* required */ optional PowerEntity power_entity = 100;
+}

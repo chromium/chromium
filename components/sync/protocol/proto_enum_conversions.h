@@ -12,6 +12,8 @@
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/note_entity.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/segmentation_specifics.pb.h"
@@ -54,6 +56,11 @@ const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
+
+const char* ProtoEnumToString(
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type);
+
+const char* ProtoEnumToString(sync_pb::NoteEntity::TargetType target_type);
 
 const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
