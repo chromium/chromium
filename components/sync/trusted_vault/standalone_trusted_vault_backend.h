@@ -273,23 +273,27 @@ class StandaloneTrustedVaultBackend
 
   bool device_registration_state_recorded_to_uma_ = false;
 
-  // This is the account passed on the last call to
-  // `GetIsRecoverabilityDegraded()`. `degraded_recoverability_handler_`
-  // should start sending the requests iff it's created for the actual trusted
-  // vault account, `GetIsRecoverabilityDegraded()` being called for the
-  // a certain account indicates that this is an actual trusted vault account
-  // and used as a heuristic to start `degraded_recoverability_handler_`. The
-  // `degraded_recoverability_handler_` should be started for some account x
-  // if x was the current primary account when
-  // `GetIsRecoverabilityDegraded(x)` is called, unfortunately sometimes
-  // `GetIsRecoverabilityDegraded(x)` is called before `SetPrimaryAccount(x)`
-  // is called, in this case the `degraded_recoverability_handler_` should be
-  // started on `setPrimaryAccount()`. Finally, If the primary account is an
-  // actual trusted vault account, `GetIsRecoverabilityDegraded()` will be
-  // called for this account either before or after `SetPrimaryAccount()`
-  // without `GetIsRecoverabilityDegraded()` calls for some other account in
-  // between.
-  absl::optional<CoreAccountInfo> last_recoverability_degraded_queried_account_;
+  // If GetIsRecoverabilityDegraded() gets invoked before
+  // SetPrimaryAccount(), the execution gets deferred until
+  // SetPrimaryAccount() is invoked. This is possible because
+  // SetPrimaryAccount() is called only once refresh token are loaded and
+  // GetIsRecoverabilityDegraded() could be invoked before that.
+  struct PendingGetIsRecoverabilityDegraded {
+    PendingGetIsRecoverabilityDegraded();
+    PendingGetIsRecoverabilityDegraded(PendingGetIsRecoverabilityDegraded&) =
+        delete;
+    PendingGetIsRecoverabilityDegraded& operator=(
+        PendingGetIsRecoverabilityDegraded&) = delete;
+    PendingGetIsRecoverabilityDegraded(PendingGetIsRecoverabilityDegraded&&);
+    PendingGetIsRecoverabilityDegraded& operator=(
+        PendingGetIsRecoverabilityDegraded&&);
+    ~PendingGetIsRecoverabilityDegraded();
+
+    CoreAccountInfo account_info;
+    base::OnceCallback<void(bool)> completion_callback;
+  };
+  absl::optional<PendingGetIsRecoverabilityDegraded>
+      pending_get_is_recoverability_degraded_;
 };
 
 }  // namespace syncer

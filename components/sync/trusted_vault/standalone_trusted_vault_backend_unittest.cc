@@ -316,7 +316,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
               DegradedRecoverabilityStateEq(degraded_recoverability_state));
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldFindTheRecoverabilityDegraded) {
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldInvokeGetIsRecoverabilityDegradedCallbackImmediately) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
@@ -324,17 +325,88 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFindTheRecoverabilityDegraded) {
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
-  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
-      degraded_recoverability_state;
-  degraded_recoverability_state.set_degraded_recoverability_value(
-      sync_pb::DegradedRecoverabilityValue::kDegraded);
-  backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
+  EXPECT_CALL(*connection(), DownloadIsRecoverabilityDegraded)
+      .WillOnce([](const CoreAccountInfo&,
+                   TrustedVaultConnection::IsRecoverabilityDegradedCallback
+                       callback) {
+        std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  // The callback should be invoked because GetIsRecoverabilityDegraded() is
+  // called with the current primary account.
   EXPECT_CALL(cb, Run(true));
   backend()->GetIsRecoverabilityDegraded(account_info, cb.Get());
+  environment.FastForwardBy(base::Milliseconds(1));
+}
+
+TEST_F(
+    StandaloneTrustedVaultBackendTest,
+    ShouldDeferGetIsRecoverabilityDegradedCallbackUntilSetPrimaryAccountIsInvoked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+  // The TaskEnvironment is needed because this test initializes the handler,
+  // which works with time.
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  backend()->SetPrimaryAccount(MakeAccountInfoWithGaiaId("user1"),
+                               /*has_persistent_auth_error=*/false);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  // The callback should not be invoked because GetIsRecoverabilityDegraded()
+  // and SetPrimaryAccount() are invoked with different accounts.
+  EXPECT_CALL(cb, Run(_)).Times(0);
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user2");
+  // This GetIsRecoverabilityDegraded() is corresponding to a late
+  // SetPrimaryAccount(), in this case the callback should be deferred and
+  // invoked when SetPrimaryAccount() is called.
+  backend()->GetIsRecoverabilityDegraded(account_info, cb.Get());
+
+  Mock::VerifyAndClearExpectations(&cb);
+
+  ON_CALL(*connection(), DownloadIsRecoverabilityDegraded(Eq(account_info), _))
+      .WillByDefault([](const CoreAccountInfo&,
+                        TrustedVaultConnection::IsRecoverabilityDegradedCallback
+                            callback) {
+        std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // The callback should be invoked on SetPrimaryAccount() since the last
+  // GetIsRecoverabilityDegraded() was called with the same account.
+  EXPECT_CALL(cb, Run(true));
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  environment.FastForwardBy(base::Milliseconds(1));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotInvokeGetIsRecoverabilityDegradedCallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+  // The TaskEnvironment is needed because this test initializes the handler,
+  // which works with time.
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  EXPECT_CALL(*connection(), DownloadIsRecoverabilityDegraded).Times(0);
+  base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  // The callback should not be invoked because GetIsRecoverabilityDegraded()
+  // and SetPrimaryAccount() are invoked with different accounts.
+  EXPECT_CALL(cb, Run(_)).Times(0);
+  backend()->GetIsRecoverabilityDegraded(MakeAccountInfoWithGaiaId("user1"),
+                                         cb.Get());
+
+  backend()->SetPrimaryAccount(MakeAccountInfoWithGaiaId("user2"),
+                               /*has_persistent_auth_error=*/false);
+  environment.FastForwardBy(base::Milliseconds(1));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
