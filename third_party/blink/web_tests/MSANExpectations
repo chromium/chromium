@@ -38,7 +38,6 @@ crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/729136 [ Linux ] fast/css/css-selector-deeply-nested.html [ Timeout ]
 
 # Tests timing out on WebKit Linux Trusty MSAN
-crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Pass Timeout ]
@@ -81,7 +80,6 @@ crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass T
 crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
 
 # Sheriff 2021-03-22
-crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
 
 # Sheriff 2021-05-31
 crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Pass Timeout ]
