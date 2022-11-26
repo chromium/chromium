@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
@@ -227,7 +228,8 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
     frame->GetChromeClient().RequestDecode(
         frame, image->PaintImageForCurrentFrame(),
         WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
-                      WrapCrossThreadPersistent(this), request->request_id()));
+                      MakeUnwrappingCrossThreadHandle(this),
+                      request->request_id()));
     request->NotifyDecodeDispatched();
     ++it;
   }
