@@ -671,6 +671,15 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, EnterpriseOverride) {
       main_rfh(), url::Origin::Create(url)));
 }
 
+TEST_F(DisableWebAuthnWithBrokenCertsTest, Localhost) {
+  GURL url("http://localhost");
+  ChromeWebAuthenticationDelegate delegate;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
 TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
   GURL url("https://owca.org");
   ChromeWebAuthenticationDelegate delegate;
