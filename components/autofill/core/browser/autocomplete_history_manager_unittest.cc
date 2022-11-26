@@ -1050,8 +1050,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mocked_db_query_id_one, std::move(mocked_results_one));
 }
 
-// Verify that no autocomplete suggestion is returned for textarea and UMA is
-// logged correctly.
+// Verify that no autocomplete suggestion is returned for a textarea.
 TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   FormData form;
   form.name = u"MyForm";
@@ -1066,88 +1065,9 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
               OnSuggestionsReturned(0, AutoselectFirstSuggestion(false),
                                     testing::Truly(IsEmptySuggestionVector)));
 
-  base::HistogramTester histogram_tester;
-
   EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, AutoselectFirstSuggestion(false), field, autofill_client_,
       suggestions_handler->GetWeakPtr(), SuggestionsContext()));
-
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 1);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 0);
-}
-
-// Verify that autocomplete suggestion is returned and suggestions is logged
-// correctly.
-TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
-  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-  FormFieldData field;
-  test::CreateTestFormField("Address", "address", "", "text", &field);
-
-  // Mock returned handle to match it in OnWebDataServiceRequestDone().
-  WebDataServiceBase::Handle mock_handle = 1;
-
-  EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(field.name, field.value, _,
-                                          autocomplete_manager_.get()))
-      .Times(2)
-      .WillRepeatedly(Return(mock_handle));
-
-  // Verify that the query has been created.
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(0, AutoselectFirstSuggestion(false),
-                                    testing::Truly(IsEmptySuggestionVector)));
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      0, AutoselectFirstSuggestion(false), field, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
-
-  // Mock no suggestion returned and verify that the suggestion UMA is correct.
-  std::unique_ptr<WDTypedResult> result =
-      std::make_unique<WDResult<std::vector<AutofillEntry>>>(
-          AUTOFILL_VALUE_RESULT, std::vector<AutofillEntry>());
-  autocomplete_manager_->OnWebDataServiceRequestDone(mock_handle,
-                                                     std::move(result));
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 0, 1);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 1, 0);
-
-  // Verify that querying autocomplete suggestions twice for the same field does
-  // not log the corresponding metrics twice.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      0, AutoselectFirstSuggestion(false), field, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
-
-  // Changed the returned handle
-  // Created a new field, which will have a new global id to trigger UMA again.
-  mock_handle = 2;
-  test::CreateTestFormField("Address", "address1", "", "text", &field);
-
-  EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(field.name, field.value, _,
-                                          autocomplete_manager_.get()))
-      .WillOnce(Return(mock_handle));
-
-  EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(0, AutoselectFirstSuggestion(false),
-                                    testing::Truly(NonEmptySuggestionVector)));
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      0, AutoselectFirstSuggestion(false), field, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 2);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
-
-  // Mock one suggestion returned and verify that the suggestion UMA is correct.
-  std::vector<AutofillEntry> values;
-  values.push_back(GetAutofillEntry(field.name, u"value"));
-  result = GetMockedDbResults(values);
-  autocomplete_manager_->OnWebDataServiceRequestDone(mock_handle,
-                                                     std::move(result));
-
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 0, 1);
-  histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 1, 1);
 }
 
 TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
@@ -1189,8 +1109,7 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
 }
 
 // Tests that a successful Autocomplete Retention Policy cleanup will
-// overwrite the last cleaned major version preference, and will also
-// log a Autocomplete.Cleanup metric.
+// overwrite the last cleaned major version preference.
 TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
   // Set Pref major version to some impossible number.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy, -1);
@@ -1207,7 +1126,6 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
 
   EXPECT_EQ(CHROME_VERSION_MAJOR,
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
-  histogram_tester.ExpectBucketCount("Autocomplete.Cleanup", cleanup_result, 1);
 }
 
 // Tests that AutocompleteHistoryManager::OnWebDataServiceRequestDone does not

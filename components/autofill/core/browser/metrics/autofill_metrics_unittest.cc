@@ -9309,14 +9309,6 @@ TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
       /*expected_count=*/1);
 }
 
-TEST_F(AutofillMetricsTest, LogNumberOfAutocompleteEntriesCleanedUp) {
-  base::HistogramTester histogram_tester;
-  const int kNbEntries = 10;
-  AutofillMetrics::LogNumberOfAutocompleteEntriesCleanedUp(kNbEntries);
-  histogram_tester.ExpectBucketCount("Autocomplete.Cleanup", kNbEntries,
-                                     /*expected_count=*/1);
-}
-
 // Verify that we correctly log FormEvent metrics with the appropriate sync
 // state.
 TEST_F(AutofillMetricsTest, FormEventMetrics_BySyncState) {

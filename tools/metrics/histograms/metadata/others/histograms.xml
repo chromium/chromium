@@ -1049,37 +1049,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autocomplete.Cleanup" units="entries" expires_after="M85">
-  <owner>seblalancette@chromium.org</owner>
-  <summary>
-    Logged when the Autocomplete Retention Policy cleaned up expired entries.
-    Expired entries are entries that haven't been used in the last 14 months.
-  </summary>
-</histogram>
-
-<histogram name="Autocomplete.DaysSinceLastUse" units="days"
-    expires_after="M85">
-  <owner>seblalancette@chromium.org</owner>
-  <summary>
-    Logged when users select Autocomplete entries in the dropdown, this
-    histogram captures the number of days that have passed since the selected
-    autocomplete entry was last used. I.e., the distribution of time between
-    uses of an &quot;active&quot; autocomplete entry.
-  </summary>
-</histogram>
-
-<histogram name="Autocomplete.Events" enum="AutocompleteEvents"
-    expires_after="2023-04-16">
-  <owner>seblalancette@chromium.org</owner>
-  <summary>
-    Autocomplete events recorded when the user interacts with suggestions served
-    from Autocomplete.
-
-    Note that this histogram was disabled after M85 and was only reenabled on
-    25.02.2021.
-  </summary>
-</histogram>
-
 <histogram name="Autocomplete.MatchType" enum="AutocompleteMatchType"
     expires_after="2021-10-04">
   <owner>tbansal@chromium.org</owner>

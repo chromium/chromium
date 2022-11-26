@@ -2426,22 +2426,8 @@ void AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(int index) {
 }
 
 // static
-void AutofillMetrics::LogAutocompleteQuery(bool created) {
-  UMA_HISTOGRAM_BOOLEAN("Autofill.AutocompleteQuery", created);
-}
-
-// static
-void AutofillMetrics::LogAutocompleteSuggestions(bool has_suggestions) {
-  UMA_HISTOGRAM_BOOLEAN("Autofill.AutocompleteSuggestions", has_suggestions);
-}
-
-// static
 void AutofillMetrics::OnAutocompleteSuggestionsShown() {
   AutofillMetrics::Log(AutocompleteEvent::AUTOCOMPLETE_SUGGESTIONS_SHOWN);
-}
-
-void AutofillMetrics::LogNumberOfAutocompleteEntriesCleanedUp(int nb_entries) {
-  UMA_HISTOGRAM_COUNTS_1000("Autocomplete.Cleanup", nb_entries);
 }
 
 // static

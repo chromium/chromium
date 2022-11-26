@@ -253,6 +253,38 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
+<histogram name="Autocomplete.Cleanup" units="entries" expires_after="M85">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the number of autocomplete entries removed when the Autocomplete
+    Retention Policy cleaned up expired entries (after a major Chrome version
+    update). An entry is expired when it hasn't been used in the last 14 months.
+  </summary>
+</histogram>
+
+<histogram name="Autocomplete.DaysSinceLastUse" units="days"
+    expires_after="2023-04-16">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logged when users select Autocomplete entries in the dropdown, this
+    histogram captures the number of days that have passed since the selected
+    autocomplete entry was last submitted on a website. I.e., the distribution
+    of time between uses of an &quot;active&quot; autocomplete entry.
+  </summary>
+</histogram>
+
+<histogram name="Autocomplete.Events" enum="AutocompleteEvents"
+    expires_after="2023-04-16">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Autocomplete events which are recorded when the user interacts with
+    suggestions served from Autocomplete.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="M108">
@@ -562,13 +594,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.AutocompleteQuery" enum="BooleanCreated"
     expires_after="M85">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
   <summary>Whether an autocomplete query is created for a field.</summary>
 </histogram>
 
 <histogram name="Autofill.AutocompleteSuggestions" enum="BooleanHadSuggestions"
     expires_after="M85">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
   <summary>Whether there is any suggestions for an autocomplete query.</summary>
 </histogram>
 

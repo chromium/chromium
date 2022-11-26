@@ -1411,10 +1411,6 @@ class AutofillMetrics {
   // Log the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
 
-  // Log the number of autocomplete entries that were cleaned-up as a result
-  // of the Autocomplete Retention Policy.
-  static void LogNumberOfAutocompleteEntriesCleanedUp(int nb_entries);
-
   // Log how many autofilled fields in a given form were edited before the
   // submission or when the user unfocused the form (depending on
   // |observed_submission|).
@@ -1507,9 +1503,6 @@ class AutofillMetrics {
   // This should be called when the user selects the Form-Not-Secure warning
   // suggestion to show an explanation of the warning.
   static void LogShowedHttpNotSecureExplanation();
-
-  // Logs if an autocomplete query was created for a field.
-  static void LogAutocompleteQuery(bool created);
 
   // Logs if there is any suggestions for an autocomplete query.
   static void LogAutocompleteSuggestions(bool has_suggestions);

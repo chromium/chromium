@@ -96,15 +96,12 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
                                      field.value, handler));
-    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(),
-                                               0 /* pending_query_handle */);
     return true;
   }
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
         field.name, field.value, kMaxAutocompleteMenuItems, this);
-    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(), query_handle);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
@@ -235,39 +232,6 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   request_callbacks_iter->second.Run(current_handle, std::move(result));
 }
 
-void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
-    const FieldGlobalId& field_global_id,
-    WebDataServiceBase::Handle pending_query_handle) {
-  // Log only if the current field is different than the latest one that has
-  // been logged. We determine this by comparing the global ID of the current
-  // field against `measuring_field_global_id_`.
-  bool should_log_query = measuring_field_global_id_ != field_global_id;
-
-  if (should_log_query) {
-    AutofillMetrics::LogAutocompleteQuery(pending_query_handle /* created */);
-    measuring_field_global_id_ = field_global_id;
-  }
-  // We should track the query and log the suggestions, only if
-  // - query has been logged, or
-  // - the query we previously tracked has been cancelled
-  // The previous query must be cancelled if `measuring_query_handle_` isn't
-  // reset.
-  if (should_log_query || measuring_query_handle_)
-    measuring_query_handle_ = pending_query_handle;
-}
-
-void AutocompleteHistoryManager::UMARecorder::OnWebDataServiceRequestDone(
-    WebDataServiceBase::Handle pending_query_handle,
-    bool has_suggestion) {
-  // If handle of completed query does not match the query we're currently
-  // measuring then we've already logged a query for this name.
-  bool was_already_logged = (pending_query_handle != measuring_query_handle_);
-  measuring_query_handle_ = 0;
-  if (was_already_logged)
-    return;
-  AutofillMetrics::LogAutocompleteSuggestions(has_suggestion);
-}
-
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutofillEntry>& entries,
     const QueryHandler& query_handler) {
@@ -336,8 +300,6 @@ void AutocompleteHistoryManager::OnAutofillValuesReturned(
       static_cast<const WDResult<std::vector<AutofillEntry>>*>(result.get());
   std::vector<AutofillEntry> entries = autofill_result->GetValue();
   SendSuggestions(entries, query_handler);
-  uma_recorder_.OnWebDataServiceRequestDone(
-      current_handle, !entries.empty() /* has_suggestion */);
 }
 
 void AutocompleteHistoryManager::OnAutofillCleanupReturned(
@@ -345,12 +307,6 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
     std::unique_ptr<WDTypedResult> result) {
   DCHECK(result);
   DCHECK_EQ(AUTOFILL_CLEANUP_RESULT, result->GetType());
-
-  const WDResult<size_t>* cleanup_wdresult =
-      static_cast<const WDResult<size_t>*>(result.get());
-
-  AutofillMetrics::LogNumberOfAutocompleteEntriesCleanedUp(
-      cleanup_wdresult->GetValue());
 
   // Cleanup was successful, update the latest run milestone.
   pref_service_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,

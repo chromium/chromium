@@ -79,38 +79,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
  private:
   friend class AutocompleteHistoryManagerTest;
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteHistoryManagerTest,
-                           AutocompleteUMAQueryCreated);
-
-  // The class measure the percentage field that triggers the query and the
-  // percentage field that has the suggestion.
-  // TODO(crbug.com/908562): Move this to AutofillMetrics with the other
-  // Autocomplete metrics for better consistency.
-  class UMARecorder {
-   public:
-    UMARecorder() = default;
-
-    UMARecorder(const UMARecorder&) = delete;
-    UMARecorder& operator=(const UMARecorder&) = delete;
-
-    ~UMARecorder() = default;
-
-    void OnGetAutocompleteSuggestions(
-        const FieldGlobalId& global_id,
-        WebDataServiceBase::Handle pending_query_handle);
-    void OnWebDataServiceRequestDone(
-        WebDataServiceBase::Handle pending_query_handle,
-        bool has_suggestion);
-
-   private:
-    // The query handle should be measured for UMA.
-    WebDataServiceBase::Handle measuring_query_handle_ = 0;
-
-    // The global id of the field that is currently being measured, saved so
-    // that we don't repeatedly measure the query of the same field while the
-    // user is filling the field.
-    FieldGlobalId measuring_field_global_id_;
-  };
 
   // Sends the autocomplete |suggestions| to the |query_handler|'s handler for
   // display in the associated Autofill popup. The parameter may be empty if
@@ -172,8 +140,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;
-
-  UMARecorder uma_recorder_;
 
   base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
 };
