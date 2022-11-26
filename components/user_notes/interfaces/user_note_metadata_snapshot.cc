@@ -4,6 +4,8 @@
 
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 
+#include <ostream>
+
 #include "components/user_notes/model/user_note_metadata.h"
 
 namespace user_notes {
