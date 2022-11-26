@@ -4,6 +4,8 @@
 
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 
+#include <ostream>
+
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/notreached.h"
