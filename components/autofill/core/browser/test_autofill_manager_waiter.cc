@@ -121,6 +121,14 @@ void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue() {
       &AutofillManager::Observer::OnAfterJavaScriptChangedAutofilledValue);
 }
 
+void TestAutofillManagerWaiter::OnBeforeFormSubmitted() {
+  Increment(&AutofillManager::Observer::OnAfterFormSubmitted);
+}
+
+void TestAutofillManagerWaiter::OnAfterFormSubmitted() {
+  Decrement(&AutofillManager::Observer::OnAfterFormSubmitted);
+}
+
 void TestAutofillManagerWaiter::Reset() {
   // The declaration order ensures that `lock` is destroyed before `state`, so
   // that `state_->lock` has been released at its own destruction time.
@@ -194,12 +202,87 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
   if (state_->num_pending_calls() > 0 || num_awaiting_calls > 0) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
         FROM_HERE, timeout_,
-        base::BindRepeating(&State::Describe, base::Unretained(state_.get())));
+        base::BindRepeating(
+            [](State* state) {
+              state->timed_out = true;
+              return state->Describe();
+            },
+            base::Unretained(state_.get())));
     state_->num_awaiting_total_calls = num_awaiting_calls;
     lock.Release();
     state_->run_loop.Run();
   }
-  return testing::AssertionSuccess();
+  return !state_->timed_out ? testing::AssertionSuccess()
+                            : testing::AssertionFailure() << "Waiter timed out";
+}
+
+const FormStructure* WaitForMatchingForm(
+    AutofillManager* manager,
+    base::RepeatingCallback<bool(const FormStructure&)> pred,
+    base::TimeDelta timeout) {
+  class Waiter : public AutofillManager::Observer {
+   public:
+    explicit Waiter(AutofillManager* manager,
+                    base::RepeatingCallback<bool(const FormStructure&)> pred)
+        : manager_(*manager), pred_(std::move(pred)) {
+      observation_.Observe(manager);
+    }
+
+    const FormStructure* Wait(base::TimeDelta timeout) {
+      DCHECK(observation_.IsObserving());
+      DCHECK(!matching_form_);
+      matching_form_ = FindForm();
+      if (!matching_form_) {
+        base::test::ScopedRunLoopTimeout run_loop_timeout(
+            FROM_HERE, timeout,
+            base::BindRepeating(
+                [](const Waiter* self) {
+                  return std::string("Didn't see a matching form ") +
+                         (self->observation_.IsObserving()
+                              ? "within the timeout"
+                              : "before the AutofillManager was reset or "
+                                "destroyed");
+                },
+                base::Unretained(this)));
+        run_loop_.Run();
+      }
+      return std::exchange(matching_form_, nullptr);
+    }
+
+   private:
+    void OnAutofillManagerDestroyed() override {
+      run_loop_.Quit();
+      observation_.Reset();
+    }
+
+    void OnAutofillManagerReset() override {
+      run_loop_.Quit();
+      observation_.Reset();
+    }
+
+    void OnAfterFormsSeen() override {
+      if (const auto* form = FindForm()) {
+        matching_form_ = form;
+        run_loop_.Quit();
+      }
+    }
+
+    FormStructure* FindForm() const {
+      auto it = base::ranges::find_if(
+          manager_.form_structures(),
+          [&](const auto& p) { return pred_.Run(*p.second); });
+      return it != manager_.form_structures().end() ? it->second.get()
+                                                    : nullptr;
+    }
+
+    base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+        observation_{this};
+    AutofillManager& manager_;
+    base::RepeatingCallback<bool(const FormStructure&)> pred_;
+    base::RunLoop run_loop_;
+    const FormStructure* matching_form_ = nullptr;
+  };
+  return Waiter(manager, std::move(pred)).Wait(timeout);
 }
 
 }  // namespace autofill

@@ -154,6 +154,7 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "autofill_across_iframes_browsertest.cc",
       "autofill_autocomplete_browsertest.cc",
       "autofill_browsertest.cc",
       "autofill_metrics_browsertest.cc",

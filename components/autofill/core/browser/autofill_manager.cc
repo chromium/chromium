@@ -301,8 +301,10 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
   if (!IsValidFormData(form))
     return;
 
+  NotifyObservers(&Observer::OnBeforeFormSubmitted);
   NotifyObservers(&Observer::OnFormSubmitted);
   OnFormSubmittedImpl(form, known_success, source);
+  NotifyObservers(&Observer::OnAfterFormSubmitted);
 }
 
 void AutofillManager::OnFormsSeen(

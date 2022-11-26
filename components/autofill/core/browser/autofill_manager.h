@@ -90,6 +90,9 @@ class AutofillManager
     virtual void OnBeforeJavaScriptChangedAutofilledValue() {}
     virtual void OnAfterJavaScriptChangedAutofilledValue() {}
 
+    virtual void OnBeforeFormSubmitted() {}
+    virtual void OnAfterFormSubmitted() {}
+
     // TODO(crbug.com/1330105): Clean up API: delete the events that don't
     // follow the OnBeforeFoo() / OnAfterFoo() pattern.
     virtual void OnFormParsed() {}

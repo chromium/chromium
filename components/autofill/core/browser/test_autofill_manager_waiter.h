@@ -71,6 +71,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   explicit TestAutofillManagerWaiter(
       AutofillManager& manager,
       std::initializer_list<AfterEvent> relevant_events = {});
+  TestAutofillManagerWaiter(const TestAutofillManagerWaiter&) = delete;
+  TestAutofillManagerWaiter& operator=(const TestAutofillManagerWaiter&) =
+      delete;
   ~TestAutofillManagerWaiter() override;
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
@@ -122,6 +125,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     size_t num_awaiting_total_calls = std::numeric_limits<size_t>::max();
     // Running iff there are no awaited and no pending calls.
     base::RunLoop run_loop = base::RunLoop();
+    // True iff the `run_loop` ran and timed out.
+    bool timed_out = false;
     // Functions that access the state should be mutually exclusive.
     base::Lock lock;
   };
@@ -153,12 +158,23 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void OnBeforeJavaScriptChangedAutofilledValue() override;
   void OnAfterJavaScriptChangedAutofilledValue() override;
 
+  void OnBeforeFormSubmitted() override;
+  void OnAfterFormSubmitted() override;
+
   std::vector<AfterEvent> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
   base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       observation_{this};
 };
+
+// Returns a FormStructure that satisfies `pred` if such a form exists at call
+// time or appears within a RunLoop's timeout. Returns nullptr if no such form
+// exists.
+const FormStructure* WaitForMatchingForm(
+    AutofillManager* manager,
+    base::RepeatingCallback<bool(const FormStructure&)> pred,
+    base::TimeDelta timeout = base::Seconds(30));
 
 }  // namespace autofill
 
