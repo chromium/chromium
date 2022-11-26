@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -46,8 +47,7 @@ TEST(ChunkedByteBufferTest, BasicTest) {
   chunk = buffer.PopChunk();
   EXPECT_TRUE(chunk != nullptr);
   EXPECT_EQ(4U, chunk->size());
-  EXPECT_EQ(0, std::char_traits<uint8_t>::compare(kChunks + 4, &(*chunk)[0],
-                                                  chunk->size()));
+  EXPECT_EQ(0, std::memcmp(kChunks + 4, chunk->data(), chunk->size()));
   EXPECT_EQ(6U, buffer.GetTotalLength());
   EXPECT_TRUE(buffer.HasChunks());
 
@@ -55,8 +55,7 @@ TEST(ChunkedByteBufferTest, BasicTest) {
   chunk = buffer.PopChunk();
   EXPECT_TRUE(chunk != nullptr);
   EXPECT_EQ(2U, chunk->size());
-  EXPECT_EQ(0, std::char_traits<uint8_t>::compare(kChunks + 12, &(*chunk)[0],
-                                                  chunk->size()));
+  EXPECT_EQ(0, std::memcmp(kChunks + 12, chunk->data(), chunk->size()));
   EXPECT_EQ(0U, buffer.GetTotalLength());
   EXPECT_FALSE(buffer.HasChunks());
 
