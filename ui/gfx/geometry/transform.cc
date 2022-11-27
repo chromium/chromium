@@ -4,6 +4,8 @@
 
 #include "ui/gfx/geometry/transform.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
