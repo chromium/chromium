@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
+#include <ostream>
+
 namespace blink {
 
 std::ostream& operator<<(std::ostream& ostream,

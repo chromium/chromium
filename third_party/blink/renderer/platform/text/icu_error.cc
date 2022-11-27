@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 
+#include <ostream>
+
 #include "base/allocator/partition_allocator/oom.h"
 
 namespace blink {
