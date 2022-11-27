@@ -4,6 +4,8 @@
 
 #include "tools/mac/power/power_sampler/json_exporter.h"
 
+#include <ostream>
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
