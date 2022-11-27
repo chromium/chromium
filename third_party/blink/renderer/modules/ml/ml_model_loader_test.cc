@@ -57,17 +57,6 @@ class FakeMLService : public blink_mojom::MLService {
     create_model_loader_ = std::move(fn);
   }
 
-  void SetUpBinder(const V8TestingScope& scope) {
-    scope.GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .SetBinderForTesting(
-            blink_mojom::MLService::Name_,
-            WTF::BindRepeating(&FakeMLService::BindFakeService,
-                               // Safe to WTF::Unretained, this method won't be
-                               // called after the test finishes.
-                               WTF::Unretained(this)));
-  }
-
   void BindFakeService(mojo::ScopedMessagePipeHandle pipe) {
     receiver_.reset();
     receiver_.Bind(
@@ -77,6 +66,29 @@ class FakeMLService : public blink_mojom::MLService {
  private:
   CreateModelLoaderFn create_model_loader_;
   mojo::Receiver<blink_mojom::MLService> receiver_{this};
+};
+
+class ScopedSetMLServiceBinder {
+ public:
+  ScopedSetMLServiceBinder(FakeMLService* ml_service,
+                           const V8TestingScope& scope)
+      : interface_broker_(
+            scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
+    interface_broker_.SetBinderForTesting(
+        blink_mojom::MLService::Name_,
+        WTF::BindRepeating(&FakeMLService::BindFakeService,
+                           // Safe to WTF::Unretained, we unregister the
+                           // binder when the test finishes.
+                           WTF::Unretained(ml_service)));
+  }
+
+  ~ScopedSetMLServiceBinder() {
+    interface_broker_.SetBinderForTesting(blink_mojom::MLService::Name_,
+                                          base::NullCallback());
+  }
+
+ private:
+  const BrowserInterfaceBrokerProxy& interface_broker_;
 };
 
 // A fake MLModelLoader Mojo interface implementation that backs a Blink
@@ -270,7 +282,7 @@ class MLModelLoaderTest : public testing::Test {
 
 TEST_F(MLModelLoaderTest, UnsupportedContextOptions) {
   V8TestingScope scope;
-  service_.SetUpBinder(scope);
+  ScopedSetMLServiceBinder scoped_setup_binder(&service_, scope);
   service_.SetCreateModelLoader(loader_.CreateForUnsupportedContext());
 
   auto* ml_model_loader = CreateTestLoader(scope);
@@ -290,7 +302,7 @@ TEST_F(MLModelLoaderTest, UnsupportedContextOptions) {
 
 TEST_F(MLModelLoaderTest, LoadModelAndCompute) {
   V8TestingScope scope;
-  service_.SetUpBinder(scope);
+  ScopedSetMLServiceBinder scoped_setup_binder(&service_, scope);
   service_.SetCreateModelLoader(loader_.CreateFromThis());
   loader_.SetLoad(model_.CreateFromInfo(
       {{"in",
@@ -361,7 +373,7 @@ TEST_F(MLModelLoaderTest, LoadModelAndCompute) {
 
 TEST_F(MLModelLoaderTest, InputMismatch) {
   V8TestingScope scope;
-  service_.SetUpBinder(scope);
+  ScopedSetMLServiceBinder scoped_setup_binder(&service_, scope);
   service_.SetCreateModelLoader(loader_.CreateFromThis());
   loader_.SetLoad(model_.CreateFromInfo(
       {{"in",
