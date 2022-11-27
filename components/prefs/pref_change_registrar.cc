@@ -4,6 +4,8 @@
 
 #include "components/prefs/pref_change_registrar.h"
 
+#include <ostream>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
