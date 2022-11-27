@@ -4,6 +4,8 @@
 
 #include "base/metrics/sample_vector.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
