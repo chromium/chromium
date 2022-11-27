@@ -5071,10 +5071,6 @@ void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
 void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
   NOT_DESTROYED();
 
-  // TODO(crbug.com/1381623): Currently invalidating the whole document. Could
-  // use a more targeted invalidation when tree-scoped @position-fallback rules
-  // are supported.
-
   bool invalidate = StyleRef().PositionFallback() != nullptr;
   if (invalidate) {
     // Invalidate layout as @position-fallback styles are applied during layout.

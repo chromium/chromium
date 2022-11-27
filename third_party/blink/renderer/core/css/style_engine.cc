@@ -540,6 +540,13 @@ void StyleEngine::UpdateCounterStyles() {
 }
 
 void StyleEngine::MarkPositionFallbackStylesDirty() {
+  // TODO(crbug.com/1381623): Currently invalidating all elements in the
+  // document with a position-fallback, regardless of where the
+  // @position-fallback rules are added. In order to make invalidation more
+  // targeted we would need to add per tree-scope dirtiness, but
+  // also adding at-rules in one tree-scope may affect multiple other tree
+  // scopes through :host, ::slotted, ::part, exportparts, and inheritance.
+  // Doing that is going to be a lot more complicated.
   position_fallback_styles_dirty_ = true;
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
@@ -2432,8 +2439,6 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   if (changed_rule_flags & kPositionFallbackRules) {
-    // TODO(crbug.com/1381623): Use more targeted invalidation when
-    // @position-fallback is supported in shadow DOM.
     MarkPositionFallbackStylesDirty();
   }
 
