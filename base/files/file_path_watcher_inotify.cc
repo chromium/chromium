@@ -208,6 +208,11 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
              Type type,
              const FilePathWatcher::Callback& callback) override;
 
+  // A generalized version. It extends |Type|.
+  bool WatchWithOptions(const FilePath& path,
+                        const WatchOptions& flags,
+                        const FilePathWatcher::Callback& callback) override;
+
   // Cancel the watch. This unregisters the instance with InotifyReader.
   void Cancel() override;
 
@@ -269,6 +274,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   FilePath target_;
 
   Type type_ = Type::kNonRecursive;
+  bool report_modified_path_ = false;
 
   // The vector of watches and next component names for all path components,
   // starting at the root directory. The last entry corresponds to the watch for
@@ -510,7 +516,12 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
         }
         did_update = true;
       }
-      callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
+      if (report_modified_path_ && !change_on_target_path) {
+        callback_.Run(target_.Append(child),
+                      /*error=*/false);  // `this` may be deleted.
+      } else {
+        callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
+      }
       return;
     }
   }
@@ -521,7 +532,12 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
         exceeded_limit = true;
     }
     if (!exceeded_limit) {
-      callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
+      if (report_modified_path_) {
+        callback_.Run(recursive_paths_by_watch_[fired_watch].Append(child),
+                      /*error=*/false);  // `this` may be deleted.
+      } else {
+        callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
+      }
       return;
     }
   }
@@ -582,6 +598,14 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
   }
 
   return true;
+}
+
+bool FilePathWatcherImpl::WatchWithOptions(
+    const FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::Callback& callback) {
+  report_modified_path_ = options.report_modified_path;
+  return Watch(path, options.type, callback);
 }
 
 void FilePathWatcherImpl::Cancel() {

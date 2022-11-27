@@ -44,4 +44,19 @@ bool FilePathWatcher::Watch(const FilePath& path,
   return impl_->Watch(path, type, callback);
 }
 
+bool FilePathWatcher::WatchWithOptions(const FilePath& path,
+                                       const WatchOptions& options,
+                                       const Callback& callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(path.IsAbsolute());
+  return impl_->WatchWithOptions(path, options, callback);
+}
+
+bool FilePathWatcher::PlatformDelegate::WatchWithOptions(
+    const FilePath& path,
+    const WatchOptions& options,
+    const Callback& callback) {
+  return Watch(path, options.type, callback);
+}
+
 }  // namespace base

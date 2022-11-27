@@ -53,6 +53,22 @@ class BASE_EXPORT FilePathWatcher {
 #endif  // BUILDFLAG(IS_MAC)
   };
 
+  // Flags are a generalization of |Type|. They are used in the new
+  // PlatformDelegate::WatchWithFlags.
+  struct WatchOptions {
+    Type type = Type::kNonRecursive;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
+    // The callback will return the full path to a changed file instead of
+    // the watched path supplied as |path| when Watch is called.
+    // So the full path can be different from the watched path when a folder is
+    // watched. In case of any error, it behaves as the original Watch.
+    bool report_modified_path = false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  };
+
   // Callback type for Watch(). |path| points to the file that was updated,
   // and |error| is true if the platform specific code detected an error. In
   // that case, the callback won't be invoked again.
@@ -63,6 +79,7 @@ class BASE_EXPORT FilePathWatcher {
   class PlatformDelegate {
    public:
     using Type = FilePathWatcher::Type;
+    using WatchOptions = FilePathWatcher::WatchOptions;
 
     PlatformDelegate();
     PlatformDelegate(const PlatformDelegate&) = delete;
@@ -73,6 +90,11 @@ class BASE_EXPORT FilePathWatcher {
     [[nodiscard]] virtual bool Watch(const FilePath& path,
                                      Type type,
                                      const Callback& callback) = 0;
+
+    // A new, more general API. It can deal with multiple options.
+    [[nodiscard]] virtual bool WatchWithOptions(const FilePath& path,
+                                                const WatchOptions& options,
+                                                const Callback& callback);
 
     // Stop watching. This is called from FilePathWatcher's dtor in order to
     // allow to shut down properly while the object is still alive.
@@ -90,13 +112,9 @@ class BASE_EXPORT FilePathWatcher {
     }
 
     // Must be called before the PlatformDelegate is deleted.
-    void set_cancelled() {
-      cancelled_ = true;
-    }
+    void set_cancelled() { cancelled_ = true; }
 
-    bool is_cancelled() const {
-      return cancelled_;
-    }
+    bool is_cancelled() const { return cancelled_; }
 
    private:
     scoped_refptr<SequencedTaskRunner> task_runner_;
@@ -125,6 +143,11 @@ class BASE_EXPORT FilePathWatcher {
   // On POSIX, this must be called from a thread that supports
   // FileDescriptorWatcher.
   bool Watch(const FilePath& path, Type type, const Callback& callback);
+
+  // A new, more general API. It can deal with multiple options.
+  bool WatchWithOptions(const FilePath& path,
+                        const WatchOptions& options,
+                        const Callback& callback);
 
  private:
   std::unique_ptr<PlatformDelegate> impl_;
