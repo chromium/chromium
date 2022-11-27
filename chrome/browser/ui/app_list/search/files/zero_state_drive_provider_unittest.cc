@@ -14,18 +14,23 @@
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
 namespace {
+
+using ::ash::holding_space::ScopedTestMountPoint;
+using ::testing::DoubleNear;
+
+constexpr double kEpsilon = 0.000001;
 
 class TestFileSuggestKeyedService : public FileSuggestKeyedService {
  public:
@@ -45,7 +50,47 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
     update_count_++;
   }
 
+  void GetSuggestFileData(app_list::FileSuggestionType type,
+                          GetSuggestFileDataCallback callback) override {
+    if (!IsProtoInitialized()) {
+      std::move(callback).Run(/*suggestions=*/absl::nullopt);
+      return;
+    }
+
+    // Emulate `FileSuggestKeyedService` that returns data asynchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &TestFileSuggestKeyedService::RunGetSuggestFileDataCallback,
+            weak_factory_.GetWeakPtr(), type, std::move(callback)));
+  }
+
+  void SetSuggestionsForType(
+      app_list::FileSuggestionType type,
+      const absl::optional<std::vector<app_list::FileSuggestData>>&
+          suggestions) {
+    type_suggestion_mappings_[type] = suggestions;
+    OnSuggestionProviderUpdated(type);
+  }
+
   int update_count_ = 0;
+
+ private:
+  void RunGetSuggestFileDataCallback(app_list::FileSuggestionType type,
+                                     GetSuggestFileDataCallback callback) {
+    absl::optional<std::vector<FileSuggestData>> suggestions;
+    auto iter = type_suggestion_mappings_.find(type);
+    if (iter != type_suggestion_mappings_.end())
+      suggestions = iter->second;
+    FilterRemovedSuggestions(std::move(callback), suggestions);
+  }
+
+  // Caches file suggestions.
+  std::map<app_list::FileSuggestionType,
+           absl::optional<std::vector<app_list::FileSuggestData>>>
+      type_suggestion_mappings_;
+
+  base::WeakPtrFactory<TestFileSuggestKeyedService> weak_factory_{this};
 };
 
 std::unique_ptr<KeyedService> BuildTestFileSuggestKeyedService(
@@ -79,6 +124,12 @@ class ZeroStateDriveProviderTest : public testing::Test {
         session_manager_.get());
     provider_ = provider.get();
     search_controller_.AddProvider(std::move(provider));
+
+    // Initialize the drive file mount point.
+    drive_fs_mount_point_ = std::make_unique<ScopedTestMountPoint>(
+        /*name=*/"drivefs-delayed_mount", storage::kFileSystemTypeDriveFs,
+        file_manager::VOLUME_TYPE_GOOGLE_DRIVE);
+    drive_fs_mount_point_->Mount(profile_);
   }
 
   void FastForwardByMinutes(int minutes) {
@@ -100,6 +151,8 @@ class ZeroStateDriveProviderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   TestFileSuggestKeyedService* file_suggest_service_ = nullptr;
+  // The mount point for drive files.
+  std::unique_ptr<ScopedTestMountPoint> drive_fs_mount_point_;
 };
 
 // TODO(crbug.com/1348339): Add a test for a file mount-triggered update at
@@ -181,6 +234,44 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnDriveFailure) {
   // initialized - the provider is expected to return empty set of results.
   EXPECT_EQ(1u, results_update_count);
   EXPECT_TRUE(search_controller_.last_results().empty());
+}
+
+TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
+  // Fast forward past the construction delay.
+  FastForwardByMinutes(1);
+
+  // Creates files and suggests these files through the file suggest keyed
+  // service. Returns paths to these files.
+  size_t suggestion_size = 3;
+  std::vector<app_list::FileSuggestData> suggestions;
+  for (size_t i = 0; i < suggestion_size; ++i) {
+    base::FilePath suggested_file_path =
+        drive_fs_mount_point_.get()->CreateArbitraryFile();
+    suggestions.emplace_back(FileSuggestionType::kDriveFile,
+                             suggested_file_path,
+                             /*new_prediction_reason=*/absl::nullopt,
+                             /*new_score=*/absl::nullopt);
+  }
+
+  // Only test this logic if the `file_suggest_service_` is ready for test.
+  if (file_suggest_service_->IsReadyForTest()) {
+    file_suggest_service_->SetSuggestionsForType(FileSuggestionType::kDriveFile,
+                                                 suggestions);
+    Wait();
+
+    EXPECT_EQ(search_controller_.last_results().size(), suggestion_size);
+    // Check the scores to results are assigned by using their position in the
+    // results list.
+    for (size_t i = 0; i < suggestion_size; ++i) {
+      EXPECT_THAT(
+          search_controller_.last_results()[i]->relevance(),
+          DoubleNear(1.0 - i / static_cast<double>(suggestion_size), kEpsilon));
+    }
+
+    // Check the latency is logged.
+    const std::string histogram("Apps.AppList.DriveZeroStateProvider.Latency");
+    histogram_tester_.ExpectTotalCount(histogram, 1);
+  }
 }
 
 }  // namespace app_list
