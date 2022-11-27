@@ -8,6 +8,8 @@
 #include <limits.h>
 #include <unistd.h>
 
+#include <ostream>
+
 #include "base/android/jni_android.h"
 #include "base/android/path_utils.h"
 #include "base/base_paths.h"
