@@ -4,6 +4,8 @@
 
 #include "components/viz/common/surfaces/surface_info.h"
 
+#include <ostream>
+
 #include "base/strings/stringprintf.h"
 
 namespace viz {

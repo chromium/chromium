@@ -5,6 +5,7 @@
 #include "components/viz/test/begin_frame_args_test.h"
 
 #include <stdint.h>
+#include <ostream>
 
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

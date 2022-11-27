@@ -5,6 +5,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 
 #include <cinttypes>
+#include <ostream>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
