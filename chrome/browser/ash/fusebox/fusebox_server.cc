@@ -1167,20 +1167,21 @@ void Server::ListStorages(const ListStoragesRequestProto& request,
 void Server::MakeTempDir(MakeTempDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  constexpr auto make_temp_dir_on_worker_thread =
+      [](base::WeakPtr<Server> weak_ptr_server, MakeTempDirCallback callback) {
+        base::ScopedTempDir scoped_temp_dir;
+        bool create_succeeded = scoped_temp_dir.CreateUniqueTempDir();
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&Server::ReplyToMakeTempDir,
+                                      std::move(weak_ptr_server),
+                                      std::move(scoped_temp_dir),
+                                      create_succeeded, std::move(callback)));
+      };
+
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&Server::MakeTempDirOnWorkerThread,
+      base::BindOnce(make_temp_dir_on_worker_thread,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void Server::MakeTempDirOnWorkerThread(MakeTempDirCallback callback) {
-  base::ScopedTempDir scoped_temp_dir;
-  bool create_succeeded = scoped_temp_dir.CreateUniqueTempDir();
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Server::ReplyToMakeTempDir,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(scoped_temp_dir),
-                     create_succeeded, std::move(callback)));
 }
 
 void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,

@@ -345,7 +345,6 @@ class Server {
   // ----
 
  private:
-  void MakeTempDirOnWorkerThread(MakeTempDirCallback callback);
   void ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
                           bool create_succeeded,
                           MakeTempDirCallback callback);
