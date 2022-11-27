@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Hætta við prentverk</translation>
 <translation id="2163937499206714165">Kveikja á dökku þema</translation>
 <translation id="2180197493692062006">Eitthvað fór úrskeiðis. Prófaðu að opna forritið aftur.</translation>
+<translation id="2184005227776731758">Aðgangsstaður</translation>
 <translation id="2209788852729124853">Endurstilla talningu umferðar</translation>
 <translation id="2212733584906323460">Sundurgreining heita</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
 <translation id="361575905210396100">Takk fyrir ábendinguna</translation>
-<translation id="3621202678540785336">Inntak</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
@@ -715,7 +715,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
 <translation id="7882501334836096755">Opinber lykill</translation>
-<translation id="7890841768028788197">Innbyggður snertiskjár</translation>
 <translation id="7915220255123750251">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið.</translation>
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="7942349550061667556">Rauður</translation>
@@ -763,7 +762,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
 <translation id="8420955526972171689">Keyra prófanir og úrræðaleit fyrir vandamál í vélbúnaði</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Innbyggt lyklaborð</translation>
 <translation id="8431300646573772016">Nýjungar í ChromeOS</translation>
 <translation id="843568408673868420">Nettenging</translation>
 <translation id="844521431886043384">Ekki er búið að setja upp DNS</translation>
@@ -820,7 +818,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8930521118335213258">Samanburður</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>
 <translation id="8936793075252196307">IP-tala biðlara</translation>
-<translation id="8945750210906526975">Innbyggður snertiflötur</translation>
 <translation id="894617464444543719">Tækið er sími.</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
@@ -838,6 +835,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="9087578468327036362">Tilkynna þessa fyrirspurn</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
 <translation id="9095775724867566971">VM-viðbót</translation>
+<translation id="9100765901046053179">Ítarlegar stillingar</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>

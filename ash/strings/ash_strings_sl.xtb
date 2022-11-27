@@ -52,6 +52,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija Trgovina Play</translation>
 <translation id="1225748608451425081">Chromebook je zaklenjen zaradi znane težave. Prijavili se boste lahko čez toliko časa: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ustavi izbiranje</translation>
+<translation id="1235458158152011030">Znana omrežja</translation>
 <translation id="1239161794459865856">Povezava s funkcijo <ph name="FEATURE_NAME" /> je vzpostavljena.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
 <translation id="1246890715821376239">Nepodprte aplikacije</translation>
@@ -386,7 +387,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3120421559657122717">Želite zaustaviti napravo?</translation>
 <translation id="3126026824346185272">CTRL</translation>
 <translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
-<translation id="3139382871451988441">Izklopite dostop do kamere.</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3151786313568798007">Usmerjenost</translation>
@@ -519,7 +519,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="385300504083504382">Začetek</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
-<translation id="3885531177412808398">Omogoča dostop do mikrofona za vse aplikacije in spletna mesta z dovoljenjem za mikrofon</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
@@ -648,11 +647,8 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4573176682887762361">»Natipkaj [beseda/besedna zveza]«</translation>
 <translation id="4577274620589681794">Čas je potekel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaz predogledov</translation>
-<translation id="4578196883126898996">Mikrofon je izklopljen. Vklopite gumb mikrofona v napravi.</translation>
 <translation id="4578906031062871102">Meni z nastavitvami je odprt</translation>
-<translation id="4581047786858252841">Mikrofon je vklopljen.</translation>
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
-<translation id="4587299710837179226">Mikrofon je izklopljen.</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="4623167406982293031">Preveri račun</translation>
@@ -1024,6 +1020,7 @@ Nova namestitev</translation>
 <translation id="6670153871843998651">Namizje 3</translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6671661918848783005">Chromebooka ni mogoče odkleniti.</translation>
+<translation id="6683022854667115063">Slušalke</translation>
 <translation id="6696025732084565524">Snemljiva tipkovnica potrebuje nujno posodobitev</translation>
 <translation id="6700713906295497288">Menijski gumb UNV-ja</translation>
 <translation id="6707693040195709527">Rok za spremembo naprave na prejšnjo različico je potekel.</translation>
@@ -1381,7 +1378,6 @@ Nova namestitev</translation>
 <translation id="8666856788528804727">Odprite aplikacijo <ph name="NAME" /> za nastavitev naprave</translation>
 <translation id="8676770494376880701">Priključen je nizkoenergijski polnilnik</translation>
 <translation id="8683506306463609433">Sledenje učinkovitosti delovanja je aktivno</translation>
-<translation id="8684405646663021166">Omogoča dostop do mikrofona za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za mikrofon</translation>
 <translation id="8685326675965865247">Iščite v napravi, aplikacijah, nastavitvah in spletu. S puščičnimi tipkami se pomikajte po aplikacijah.</translation>
 <translation id="8703634754197148428">Začetek snemanja. Ko se snemanje začne, pritisnite Alt + Shift + L, da se pomaknete na polico, in poiščite gumb za ustavitev snemanja.</translation>
 <translation id="8721053961083920564">Preklop glasnosti. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Nova namestitev</translation>
 <translation id="8819728065740986820">Prilagodljivo polnjenje je vklopljeno</translation>
 <translation id="8825863694328519386">Povlecite z leve, če se želite vrniti</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
-<translation id="8834657930627018205">Omogočite dostop do kamere.</translation>
 <translation id="8841375032071747811">Gumb za nazaj</translation>
 <translation id="8843682306134542540">Preklop zaklepanja zasuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>

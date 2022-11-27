@@ -1175,7 +1175,6 @@
 <translation id="2076672359661571384">Орташа (ұсынылады)</translation>
 <translation id="2077129598763517140">Қолжетімді болғанда, жабдық жылдамдатуды пайдалану</translation>
 <translation id="2078019350989722914">Шығудан бұрын ескертілсін (<ph name="KEY_EQUIVALENT" />)</translation>
-<translation id="2078550849857211390">Бұл сайттар соңғы кезде көп хабарландыру жіберді. Олардың болашақта жіберуін тоқтатуға болады.</translation>
 <translation id="2079053412993822885">Жеке сертификаттарыңыздың бірін жойсаңыз, оны бұдан былай өзіңізді анықтау үшін пайдалана алмайсыз.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
@@ -1892,6 +1891,7 @@
 <translation id="2712207122921938368">Кіру кілтін басқа құрылғыда жасаңыз</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2713444072780614174">Ақ</translation>
+<translation id="2714180132046334502">Қараңғы фон</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">Қауіпсіздік кілтін сұрау</translation>
 <translation id="2715751256863167692">Бұл жаңартуда Chromebook құрылғысы бастапқы күйіне қайтарылып, ағымдағы пайдаланушы деректері өшіріледі.</translation>
@@ -1921,6 +1921,7 @@
 <translation id="2731971182069536520">Құрылғы келесіде қосылған кезде, әкімші жергілікті деректерді жоятын бір реттік жаңарту әрекетін жасайды.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />-картадағы қосымша мазмұн</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> тобына жататын сайттар да бастапқы күйіне қайтарылады.</translation>
+<translation id="27349076983469322">Жарық фон</translation>
 <translation id="2735712963799620190">Кесте</translation>
 <translation id="2737363922397526254">Жию…</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> қолданбасы экраныңыздағы мазмұнды <ph name="TARGET_NAME" /> сайтымен бөліскісі келеді.</translation>
@@ -3801,7 +3802,6 @@
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> технологиясы</translation>
 <translation id="4514610446763173167">Бейнені ойнату/кідірту</translation>
 <translation id="451515744433878153">Өшіру</translation>
-<translation id="4515799157838123044">Фондағы мазмұнға қошқыл реңк беру</translation>
 <translation id="4515872537870654449">Dell қолдау қызметіне хабарласыңыз. Желдеткіш жұмыс істемесе, қондыру станциясы өшіп қалады.</translation>
 <translation id="4518840066030486079">Shift пернесі режимінің стилі</translation>
 <translation id="4519331665958994620">Сайттар камераңызды пайдалануға рұқсат сұрай алады.</translation>
@@ -6053,6 +6053,7 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659213950629089752">Бұл бет "<ph name="NAME" />" кеңейтімі арқылы масштабталды</translation>
 <translation id="6659594942844771486">Қойынды</translation>
+<translation id="6660819301598582123">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
 <translation id="666099631117081440">Баспа серверлері</translation>
 <translation id="6662931079349804328">Корпоративтік саясат өзгертілді. "Эксперименттер" түймесі құралдар тақтасынан өшірілді.</translation>
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> құрылғыңызда Powerwash функциясын іске қосып, алдыңғы нұсқаға қайтыңыз.</translation>
@@ -6097,7 +6098,6 @@
 <translation id="6702639462873609204">&amp;Өзгерту…</translation>
 <translation id="6703212423117969852">Кейінірек Chrome браузерінде қайталап көріңіз.</translation>
 <translation id="6703254819490889819">Сақтық көшірмені қалпына келтіру</translation>
-<translation id="6706210727756204531">Қолданыс аясы</translation>
 <translation id="6707122714992751648">ChromeOS диагностикалық сынақтарын жүргізу</translation>
 <translation id="6707389671160270963">SSL клиент сертификаты</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> және тағы 1 қойынды}other{<ph name="PAGE_TITLE" /> және тағы # қойынды}}</translation>
@@ -7639,7 +7639,6 @@
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" /> KБ</translation>
 <translation id="8136269678443988272">Енгізген PIN кодтарыңыз сәйкес келмейді.</translation>
 <translation id="8137559199583651773">Кеңейтімдерді басқару</translation>
-<translation id="8138082791834443598">Қосымша – осы құрылғымен байланыстырылатын жаңа ақпаратты енгізіңіз немесе бұрыннан бар ақпаратты жаңартыңыз.</translation>
 <translation id="8138217203226449454">Іздеу провайдерін өзгерткіңіз келе ме?</translation>
 <translation id="8138997515734480534">"<ph name="VM_NAME" />" күйі</translation>
 <translation id="8139447493436036221">Google Drive файлдары</translation>
@@ -8837,7 +8836,6 @@
 <translation id="964790508619473209">Экранды реттеу</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> құрылғысына мәтіндік хабарлар жіберіңіз және одан мәтіндік хабарлар алыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast мәселесі туралы хабарлау</translation>
-<translation id="965470117154635268">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген 1 сайтты қарап шығу}other{Жақында көп хабарландыру жіберген {NUM_SITES} сайтты қарап шығу}}</translation>
 <translation id="967398046773905967">Ешқандай сайтқа HID құрылғыларын пайдалануға рұқсат етпеу</translation>
 <translation id="967624055006145463">Сақталған деректер</translation>
 <translation id="96774243435178359">Басқарылатын принтерлер</translation>

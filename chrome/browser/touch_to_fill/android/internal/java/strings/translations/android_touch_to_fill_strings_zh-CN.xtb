@@ -7,7 +7,6 @@
 <translation id="207576718733492531">轻触即可填充的凭据的列表已关闭。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2364266287022099258">使用已保存的通行密钥？</translation>
-<translation id="2410754283952462441">选择帐号</translation>
 <translation id="3399357656427473483">轻触即可填充的凭据的列表。</translation>
 <translation id="3653689374478248324">您将登录 <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">登录</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">使用已保存的密码或通行密钥？</translation>
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="7736236483645733578"><ph name="USERNAME" />的通行密钥，请使用您的屏幕锁定设置。</translation>
-<translation id="804577341878669140">请登录帐号以继续访问</translation>
 </translationbundle>

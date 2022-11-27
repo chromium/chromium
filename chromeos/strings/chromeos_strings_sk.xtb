@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
 <translation id="2217935453350629363">Aktuálna rýchlosť</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2276999893457278469">Najlepší pomocný obsah</translation>
 <translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">Rozšírené nastavenia</translation>
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
 <translation id="2320295602967756579">Zapnúť svetlý motív</translation>
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latencia na weboch HTTPS</translation>
 <translation id="361575905210396100">Ďakujeme vám za spätnú väzbu</translation>
-<translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
 <translation id="3651050199673793219">Výber jednotky teploty</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">Zdroj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> je vybraný, stlačením klávesa Enter vyberte albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Preklad DNS</translation>
 <translation id="4848429997038228357">PREBIEHA</translation>
+<translation id="4854586501323951986">Vstavaná dotyková obrazovka</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov}}</translation>
 <translation id="4873827928179867585">Algoritmus overenia</translation>
 <translation id="4880328057631981605">Názov prístupového bodu</translation>
@@ -570,6 +570,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6394634179843537518">Pridajte súbor</translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
+<translation id="6412715219990689313">Vstavaná klávesnica</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabé (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Prejsť do nastavení účtu</translation>
@@ -668,6 +669,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="73631062356239394">Zdieľanie diagnostických údajov</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Vstavaný touchpad</translation>
 <translation id="7397270852490618635">Vypnúť svetlý motív</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
@@ -716,7 +718,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovateľa</translation>
 <translation id="7882501334836096755">Verejný kľúč</translation>
-<translation id="7890841768028788197">Interná dotyková obrazovka</translation>
 <translation id="7915220255123750251">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom.</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="7942349550061667556">Červená</translation>
@@ -764,7 +765,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
 <translation id="8420955526972171689">Testujte a riešte problémy s hardvérom</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Interná klávesnica</translation>
 <translation id="8431300646573772016">Chrome OS – novinky</translation>
 <translation id="843568408673868420">Internetové pripojenie</translation>
 <translation id="844521431886043384">Systém DNS nie je nastavený</translation>
@@ -821,7 +821,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
 <translation id="8936793075252196307">Adresa IP klienta</translation>
-<translation id="8945750210906526975">Interný touchpad</translation>
 <translation id="894617464444543719">Zariadenie je telefón.</translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
@@ -839,6 +838,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Rozšírené nastavenia</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>
 <translation id="9111102763498581341">Odomknúť</translation>

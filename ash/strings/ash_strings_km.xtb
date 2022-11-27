@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, កម្មវិធី​នៅលើ Play Store</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
+<translation id="1235458158152011030">បណ្តាញដែលស្គាល់</translation>
 <translation id="1239161794459865856">បានភ្ជាប់ <ph name="FEATURE_NAME" />។</translation>
 <translation id="1240638468526743569">កម្មវិធី​មួយ</translation>
 <translation id="1246890715821376239">កម្មវិធីដែលមិនអាចប្រើបាន</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">បិទឧបករណ៍ឬ?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ចាប់ផ្តើមធ្វើបច្ចុប្បន្នភាពឡើងវិញ</translation>
-<translation id="3139382871451988441">បិទ​ការចូលប្រើប្រាស់​កាមេរ៉ា។</translation>
 <translation id="3139942575505304791">តុទី 1</translation>
 <translation id="315116470104423982">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="3151786313568798007">ទិសដៅ</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="385300504083504382">ផ្នែកចាប់ផ្តើម</translation>
 <translation id="3861651314799684201">ចុច enter ដើម្បីថតអេក្រង់ពេញ</translation>
-<translation id="3885531177412808398">អនុញ្ញាត​ឱ្យចូលប្រើប្រាស់​មីក្រូហ្វូន​សម្រាប់​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យប្រើមីក្រូហ្វូន</translation>
 <translation id="3886872229787704059">បានបើក​នៅថ្ងៃនេះ</translation>
 <translation id="3891340733213178823">ចុច Ctrl+Shift+Q ពីរដងដើម្បីចាកចេញ។</translation>
 <translation id="3893630138897523026">ChromeVox (មតិនិយាយ)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">"វាយបញ្ចូល [word / phrase]"</translation>
 <translation id="4577274620589681794">ដល់​ម៉ោងហើយ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">បង្ហាញ​ការមើល​សាកល្បង</translation>
-<translation id="4578196883126898996">មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ។ សូមបើក​ប៊ូតុង​មីក្រូហ្វូន​របស់ឧបករណ៍អ្នក។</translation>
 <translation id="4578906031062871102">បានបើកម៉ឺនុយការ​កំណត់</translation>
-<translation id="4581047786858252841">មីក្រូហ្វូន​ត្រូវ​បាន​បើក</translation>
 <translation id="4585337515783392668">ឈប់បញ្ជូន​​ទៅឧបករណ៍ទទួលដែល​មិនស្គាល់</translation>
-<translation id="4587299710837179226">មីក្រូហ្វូន​ត្រូវបានបិទ</translation>
 <translation id="4596144739579517758">​រចនាប័ទ្ម​ងងឹតបានបិទ</translation>
 <translation id="4611292653554630842">ចូល</translation>
 <translation id="4623167406982293031">ផ្ទៀងផ្ទាត់​គណនី</translation>
@@ -1024,6 +1020,7 @@
 <translation id="6670153871843998651">តុទី 3</translation>
 <translation id="6671495933530132209">ចម្លងរូបភាព</translation>
 <translation id="6671661918848783005">មិនអាច​ដោះសោ Chromebook របស់អ្នកបានទេ</translation>
+<translation id="6683022854667115063">កាស</translation>
 <translation id="6696025732084565524">ក្ដារចុច​ដែល​អាច​ផ្ដាច់ចេញបាន​របស់អ្នក​ត្រូវ​ការ​កំណែថ្មីជា​ចាំបាច់</translation>
 <translation id="6700713906295497288">ប៊ូតុងម៉ឺនុយ IME</translation>
 <translation id="6707693040195709527">ការប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​គឺផុតកំណត់ហើយ</translation>
@@ -1210,6 +1207,7 @@
 <translation id="7720410380936703141">ព្យាយាមម្ដងទៀត</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1}other{ការ​ជូន​ដំណឹង #}}</translation>
 <translation id="7724603315864178912">កាត់</translation>
+<translation id="7742327441377685481">គ្មាន​ការជូន​ដំណឹងទេ</translation>
 <translation id="7745560842763881396">បង្ហាញកម្មវិធីនៅក្នុងធ្នើរ</translation>
 <translation id="7749443890790263709">ចំនួនតុ​បាន​ឈានដល់កម្រិតអតិបរមាហើយ។</translation>
 <translation id="776344839111254542">ចុចដើម្បី​មើល​ព័ត៌មាន​លម្អិត​អំពីកំណែថ្មី</translation>
@@ -1381,7 +1379,6 @@
 <translation id="8666856788528804727">បើក <ph name="NAME" /> ដើម្បីរៀបចំឧបករណ៍របស់អ្នក</translation>
 <translation id="8676770494376880701">ឆ្នាំងសាកដែលមានថាមពលទាបត្រូវបានភ្ជាប់</translation>
 <translation id="8683506306463609433">ការតាមដាន​ប្រតិបត្តិការ​កំពុងបើក​ដំណើរការ</translation>
-<translation id="8684405646663021166">អនុញ្ញាត​ឱ្យចូលប្រើប្រាស់​មីក្រូហ្វូន​សម្រាប់ <ph name="APP_NAME" /> និង​គេហទំព័រ​ទាំងអស់​ដែលមាន​ការអនុញ្ញាត​ឱ្យប្រើមីក្រូហ្វូន</translation>
 <translation id="8685326675965865247">ស្វែងរក​ឧបករណ៍ កម្មវិធី ការកំណត់ និង​បណ្ដាញ​របស់អ្នក។ សូមប្រើ​គ្រាប់ចុច​ព្រួញ ដើម្បីរុករក​កម្មវិធី​របស់អ្នក។</translation>
 <translation id="8703634754197148428">ចាប់​ផ្តើម​ថត។ នៅពេលការថតបានចាប់ផ្ដើម សូមប្រើ Alt + Shift + L ដើម្បីចូលទៅកាន់ធ្នើរ ហើយរកមើលប៊ូតុងឈប់ថត</translation>
 <translation id="8721053961083920564">បិទ/បើកកម្រិតសំឡេង។ <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1403,6 @@
 <translation id="8819728065740986820">ការសាកថ្ម​ដែលមាន​ភាពបត់បែន​ត្រូវបានបើក</translation>
 <translation id="8825863694328519386">អូសពីឆ្វេងដើម្បីថយក្រោយ</translation>
 <translation id="8834539327799336565">កំពុងភ្ជាប់​បច្ចុប្បន្ននេះ</translation>
-<translation id="8834657930627018205">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា។</translation>
 <translation id="8841375032071747811">ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="8843682306134542540">បិទ/បើកការចាក់​សោការ​បង្វិល។ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

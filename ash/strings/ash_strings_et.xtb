@@ -52,6 +52,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play poe rakendus</translation>
 <translation id="1225748608451425081">Teie Chromebook on teadaoleva probleemi tõttu lukustatud. Saate sisse logida pärast <ph name="TIME_LEFT" /> möödumist.</translation>
 <translation id="1229194443904279055">Valimise peatamine</translation>
+<translation id="1235458158152011030">Teadaolevad võrgud</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on ühendatud.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
 <translation id="1246890715821376239">Toetamata rakendused</translation>
@@ -386,7 +387,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3120421559657122717">Kas lülitada seade välja?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Taaskäivitage värskendamiseks</translation>
-<translation id="3139382871451988441">Lülita kaamerale juurdepääs välja</translation>
 <translation id="3139942575505304791">Töölaud 1</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3151786313568798007">Suund</translation>
@@ -520,7 +520,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="385300504083504382">Algus</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
-<translation id="3885531177412808398">Kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel lubatakse mikrofonile juurde pääseda</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -649,11 +648,8 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4573176682887762361">„Sisesta [sõna / fraas]“</translation>
 <translation id="4577274620589681794">Aeg on läbi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Kuva eelvaated</translation>
-<translation id="4578196883126898996">Mikrofon on välja lülitatud. Lülitage seadme mikrofoninupp sisse.</translation>
 <translation id="4578906031062871102">Seadete menüü on avatud</translation>
-<translation id="4581047786858252841">Mikrofon on sisse lülitatud</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
-<translation id="4587299710837179226">Mikrofon on välja lülitatud</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
@@ -1025,6 +1021,7 @@ Uus installimine</translation>
 <translation id="6670153871843998651">Töölaud 3</translation>
 <translation id="6671495933530132209">Kopeeri kujutis</translation>
 <translation id="6671661918848783005">Teie Chromebooki ei õnnestu avada</translation>
+<translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
 <translation id="6700713906295497288">IME menüünupp</translation>
 <translation id="6707693040195709527">Seadme operatsioonisüsteemi eelmisele versioonile ülemineku tähtaeg on möödunud</translation>
@@ -1382,7 +1379,6 @@ Uus installimine</translation>
 <translation id="8666856788528804727">Avage <ph name="NAME" />, et oma seade seadistada</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8683506306463609433">Toimivuse jälgimine on aktiivne</translation>
-<translation id="8684405646663021166">Rakendusel <ph name="APP_NAME" /> ning kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel lubatakse mikrofonile juurde pääseda</translation>
 <translation id="8685326675965865247">Otsige oma seadmest, rakendustest, seadetest ja veebist. Rakendustes navigeerimiseks kasutage nooleklahve.</translation>
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
 <translation id="8721053961083920564">Lülitage helitugevus sisse. <ph name="STATE_TEXT" /></translation>
@@ -1407,7 +1403,6 @@ Uus installimine</translation>
 <translation id="8819728065740986820">Adaptiivne laadimine on sisse lülitatud</translation>
 <translation id="8825863694328519386">Tagasiliikumiseks pühkige vasakult paremale</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
-<translation id="8834657930627018205">Lülita juurdepääs kaamerale sisse</translation>
 <translation id="8841375032071747811">Nupp Tagasi</translation>
 <translation id="8843682306134542540">Lülitab pööramisluku sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Otsing + ESC</translation>

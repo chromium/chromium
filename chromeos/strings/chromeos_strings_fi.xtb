@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
 <translation id="2217935453350629363">Nykyinen nopeus</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2276999893457278469">Suosituin ohjesisältö</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Lisäasetukset</translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
 <translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="361575905210396100">Kiitos palautteestasi</translation>
-<translation id="3621202678540785336">Äänitulo:</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
@@ -716,7 +715,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7882501334836096755">Julkinen avain</translation>
-<translation id="7890841768028788197">Sisäinen kosketusnäyttö</translation>
 <translation id="7915220255123750251">Muuta verkon APN-asetuksia. APN:t luovat yhteyden mobiiliverkkon ja internetin välille.</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="7942349550061667556">Punainen</translation>
@@ -764,7 +762,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8420955526972171689">Testaa ja korjaa laitteisto-ongelmia</translation>
 <translation id="8422748173858722634">IMEI-koodi</translation>
-<translation id="8428073762635678092">Sisäinen näppäimistö</translation>
 <translation id="8431300646573772016">Chrome OS: uutta</translation>
 <translation id="843568408673868420">Internetyhteydet</translation>
 <translation id="844521431886043384">DNS:ää ei ole määritetty</translation>
@@ -821,7 +818,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8930521118335213258">Vertaisominaisuudet</translation>
 <translation id="8930622219860340959">Langaton</translation>
 <translation id="8936793075252196307">Asiakkaan IP-osoite</translation>
-<translation id="8945750210906526975">Sisäinen kosketuslevy</translation>
 <translation id="894617464444543719">Laite on puhelin.</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
@@ -839,6 +835,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9087578468327036362">Ilmoita tästä kyselystä</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Lisäasetukset</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>

@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1446450296470737166">Повний контроль пристроїв MIDI</translation>
+<translation id="1448064542941920355">Зменшити масштаб</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1633720957382884102">Пов’язані сайти</translation>
 <translation id="1644574205037202324">Історія</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2107397443965016585">Запитувати, перш ніж дозволяти сайтам відтворювати захищений вміст (рекомендовано)</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
+<translation id="216989819110952009">Навіть попри захист зелених окулярів Дороті та її друзі були приголомшені сяйвом</translation>
 <translation id="2182457891543959921">Запитувати, перш ніж дозволяти сайтам створювати 3D-карту вашого оточення або відстежувати положення камери (рекомендовано)</translation>
 <translation id="2212565012507486665">Дозволити файли cookie</translation>
 <translation id="2228071138934252756">Щоб надати додатку <ph name="APP_NAME" /> доступ до камери, також увімкніть її в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2379925928934107488">Якщо у веб-перекладачі Chrome активовано темну тему, вона використовуватиметься для сайтів, коли це можливо.</translation>
 <translation id="2387895666653383613">Масштаб тексту</translation>
+<translation id="2390272837142897736">Збільшити масштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Завантажено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Цей сайт визначає інтереси, які можуть використовувати інші сайти для показу оголошень. Цей сайт також використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу.</translation>
 <translation id="3277252321222022663">Надати сайтам доступ до датчиків (рекомендовано)</translation>
 <translation id="3285500645985761267">Дозволити пов’язаним сайтам переглядати ваші дії в групі</translation>
+<translation id="3295019059349372795">Глава 11. Смарагдове місто країни Оз</translation>
 <translation id="3295602654194328831">Сховати інформацію</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3333961966071413176">Усі контакти</translation>
 <translation id="3362437373201486687">Пошук пристроїв із Bluetooth…</translation>
 <translation id="3386292677130313581">Запитувати, перш ніж дозволити сайтам визначати ваше місцезнаходження (рекомендується)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="3521663503435878242">Сайти домену <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
 <translation id="3544058026430919413">Компанія може визначити групу сайтів, які використовуватимуть файли cookie, щоб показувати дані про ваші дії іншим сайтам-користувачам. В анонімному режимі цю функцію вимкнено.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Надати сайтам доступ до датчиків руху (рекомендовано)</translation>
 <translation id="5050380848339752099">Цей сайт збирається надіслати інформацію зовнішньому додатку, поки ви в режимі анонімного перегляду.</translation>
 <translation id="5063480226653192405">Використання</translation>
-<translation id="5082281938627763039">Буде видалено файли cookie й інші дані сайту <ph name="FPS_MEMBER" /> і сайтів у групі сайту-власника <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Мобільний сайт</translation>
 <translation id="509133520954049755">Запит на версію для ПК</translation>
 <translation id="5100237604440890931">Згорнуто – натисніть, щоб розгорнути.</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
+<translation id="6453641458248223456">Змінюйте масштаб на сторінці з головного меню</translation>
 <translation id="6467852467360539617">Очистити дані та скинути дозволи</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Очистити історію…</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7667547420449112975">Чарівник країни Оз</translation>
+<translation id="7690549345586282764">Показувати масштаб</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Блокувати файли cookie з конкретного сайту.</translation>
 <translation id="8959122750345127698">Веб-сторінка <ph name="URL" /> недоступна</translation>
 <translation id="8986362086234534611">Забути</translation>
+<translation id="900095568014372589">Зменшуйте або збільшуйте стандартний розмір тексту й зображень на сайтах</translation>
 <translation id="9019902583201351841">Керується батьками</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Цей сайт належить до групи, учасники якої можуть бачити ваші дії. Групу визначив сайт-власник <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Видалити файли cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Увімкніть дозволи для додатка <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Поточний масштаб: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ця сторінка небезпечна</translation>
 <translation id="930525582205581608">Забути цей сайт?</translation>
 <translation id="967624055006145463">Збережені дані</translation>

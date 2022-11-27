@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ტრაფიკის მთვლელების გადაყენება</translation>
 <translation id="2212733584906323460">სახელის გამორკვევა</translation>
 <translation id="2217935453350629363">ამჟამინდელი სიჩქარე</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="361575905210396100">გმადლობთ გამოხმაურებისთვის</translation>
-<translation id="3621202678540785336">შეყვანა</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
@@ -715,7 +715,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
 <translation id="7882501334836096755">საჯარო გასაღები</translation>
-<translation id="7890841768028788197">შიდა სენსორული ეკრანი</translation>
 <translation id="7915220255123750251">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის.</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7942349550061667556">წითელი</translation>
@@ -763,7 +762,6 @@
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
 <translation id="8420955526972171689">შეასრულეთ ტესტები და დეფექტების აღმოფხვრა აპარატურის პრობლემების შემთხვევაში</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">შიდა კლავიატურა</translation>
 <translation id="8431300646573772016">სიახლეები ChromeOS-ში</translation>
 <translation id="843568408673868420">ინტერნეტ-კავშირი</translation>
 <translation id="844521431886043384">DNS არ არის დაყენებული</translation>
@@ -820,7 +818,6 @@
 <translation id="8930521118335213258">მსგავსი</translation>
 <translation id="8930622219860340959">უსადენო</translation>
 <translation id="8936793075252196307">კლიენტის IP მისამართი</translation>
-<translation id="8945750210906526975">შიდა სენსორული პანელი</translation>
 <translation id="894617464444543719">მოწყობილობა არის ტელეფონი.</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
@@ -838,6 +835,7 @@
 <translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">გაფართოებული პარამეტრები</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">განბლოკვა</translation>

@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL కుదించబడింది</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1446450296470737166">MIDI పరికరాల పూర్తి నియం. అనుమ.</translation>
+<translation id="1448064542941920355">జూమ్ స్థాయిని తగ్గించండి</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1633720957382884102">సంబంధిత సైట్‌లు</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">ధ్వని</translation>
 <translation id="2107397443965016585">సైట్‌లు రక్షిత కంటెంట్‌ను ప్లే చేయడానికి ముందు అనుమతి కోసం అడుగుతాయి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
+<translation id="216989819110952009">డోర్తీ, ఆమె స్నేహితులు తమ కళ్ళ రక్షణ కోసం ఆకు పచ్చ కళ్ళజోళ్ళు పెట్టుకున్నారు అయినా కూడా, కళ్లు మిరిమిట్లు గొలిపే ఆ అద్భుతం వారి కళ్లను కట్టిపడేసింది</translation>
 <translation id="2182457891543959921">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి సైట్‌లను అనుమతించే ముందు అడగాలి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="2212565012507486665">కుక్కీలను అనుమతించండి</translation>
 <translation id="2228071138934252756">మీ కెమెరాను యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2379925928934107488">Chrome ముదురు రంగు రూపాన్ని ఉపయోగించినప్పుడు, వీలైతే, సైట్‌లకు ముదురు రంగు రూపాన్ని వర్తింపజేయండి</translation>
 <translation id="2387895666653383613">వచన ప్రమాణం</translation>
+<translation id="2390272837142897736">జూమ్ స్థాయిని పెంచండి</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">మీకు యాడ్‌లను చూపడానికి ఇతర సైట్‌లు ఉపయోగించగల ఆసక్తులను ఈ సైట్ నిర్వచిస్తుంది. మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ ఆసక్తులను Chrome నుండి కూడా పొందుతుంది.</translation>
 <translation id="3277252321222022663">సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="3285500645985761267">గ్రూప్‌లో మీ యాక్టివిటీని చూడటానికి సంబంధిత సైట్‌లను అనుమతించండి</translation>
+<translation id="3295019059349372795">చాప్టర్ 11: ది వండర్‌ఫుల్ ఎమరాల్డ్ సిటీ ఆఫ్ ఆజ్</translation>
 <translation id="3295602654194328831">సమాచారాన్ని దాచు</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
 <translation id="3333961966071413176">మొత్తం కాంటాక్ట్‌లు</translation>
 <translation id="3362437373201486687">బ్లూటూత్ పరికరాల కోసం స్కాన్ చేస్తోంది</translation>
 <translation id="3386292677130313581">మీ స్థానాన్ని సైట్‌లు తెలుసుకునేలా వాటిని అనుమతించే ముందు, మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />‌లో ఉన్న సైట్‌లు</translation>
 <translation id="3538390592868664640">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించకుండా లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="3544058026430919413">గ్రూప్‌లో మీ యాక్టివిటీని షేర్ చేయడానికి కుక్కీలను ఉపయోగించగల సైట్‌ల గ్రూప్‌ను కంపెనీ నిర్వచించగలదు. అజ్ఞాతంలో ఇది ఆఫ్‌లో ఉంది.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">మోషన్ సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతించండి (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="5050380848339752099">ఈ సైట్ అజ్ఞాత మోడ్ వెలుపల ఉన్న ఒక యాప్‌తో సమాచారాన్ని షేర్ చేయబోతోంది.</translation>
 <translation id="5063480226653192405">నిల్వ వినియోగం</translation>
-<translation id="5082281938627763039"><ph name="FPS_MEMBER" />‌కు, <ph name="FPS_OWNER" /> యొక్క సైట్‌ల గ్రూప్‌లోని సైట్‌లకు సంబంధించిన కుక్కీలు, సైట్ డేటాను ఇది తొలగిస్తుంది</translation>
 <translation id="5091013926750941408">మొబైల్ సైట్</translation>
 <translation id="509133520954049755">డెస్క్‌టాప్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="5100237604440890931">కుదించబడింది - విస్తరింపజేయడానికి క్లిక్ చేయండి.</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
+<translation id="6453641458248223456">ప్రధాన మెనూ నుండి పేజీలో జూమ్ - ఇన్ లేదా జూమ్ అవుట్ చేయండి</translation>
 <translation id="6467852467360539617">డేటాను క్లియర్ చేయండి &amp; అనుమతులను రీసెట్ చేయండి</translation>
 <translation id="6527303717912515753">షేర్ చేయండి</translation>
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయండి…</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
+<translation id="7667547420449112975">ది వండర్‌ఫుల్ విజర్డ్ ఆఫ్ ఆజ్</translation>
+<translation id="7690549345586282764">జూమ్‌లో చూపండి</translation>
 <translation id="7719367874908701697">పేజీ జూమ్</translation>
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7791543448312431591">జోడించు</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">ఏదైనా ఒక నిర్దిష్ట సైట్‌లో కుక్కీలను బ్లాక్ చేయండి.</translation>
 <translation id="8959122750345127698">దీనికి నావిగేట్ చేయడం సాధ్యపడదు: <ph name="URL" /></translation>
 <translation id="8986362086234534611">మరిచిపోయారా</translation>
+<translation id="900095568014372589">ఆటోమేటిక్ టెక్స్ట్, ఇమేజ్‌లను సైట్‌లలో పెద్దగా లేదా చిన్నగా కనిపించేలా చేయండి</translation>
 <translation id="9019902583201351841">మీ తల్లిదండ్రుల ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9090268041676521955">మీ యాక్టివిటీని చూడగలిగే గ్రూప్‌లో ఈ సైట్ ఉంది. ఈ గ్రూప్ <ph name="FPS_OWNER" /> ద్వారా నిర్వచించబడింది.</translation>
 <translation id="9106233582039520022">కుక్కీలను తొలగించాలా?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో <ph name="APP_NAME" /> కోసం అనుమతులను ఆన్ చేయండి.</translation>
+<translation id="9138217887606523162">ప్రస్తుత జూమ్ స్థాయి <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ఈ పేజీ ప్రమాదకరం</translation>
 <translation id="930525582205581608">ఈ సైట్‌ను విస్మరించాలా?</translation>
 <translation id="967624055006145463">నిల్వ చేయబడిన డేటా</translation>

@@ -89,6 +89,7 @@
 <translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
 <translation id="1552525382687785070">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="1554477036522844996">نافذة جديدة</translation>
+<translation id="1565371473877914088">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="1580715474678097352">الحماية من المواقع الإلكترونية الضارّة</translation>
 <translation id="1580783302095112590">تم إرسال البريد.</translation>
 <translation id="1582732959743469162">سيؤدي ذلك إلى إيقاف تقدّم جميع عمليات التنزيل الحالية.</translation>
@@ -135,6 +136,7 @@
 <translation id="1981118202195772574">الجهاز الجوّال</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="199425419756152024">عرض كلمة المرور</translation>
+<translation id="2010008505735295285">إعادة التحميل</translation>
 <translation id="2015722694326466240">للاطلاع على كلمات المرور، يجب عليك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="2021670401941426298">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="202292859882676807">الوصول إلى الميكروفون مسموح به.</translation>
@@ -301,6 +303,7 @@
 <translation id="3272527697863656322">إلغاء</translation>
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
 <translation id="3285962946108803577">مشاركة الصفحة...</translation>
+<translation id="3289505634533552500">البحث الصوتي</translation>
 <translation id="3290875554372353449">اختيار حساب</translation>
 <translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3311748811247479259">غير مفعَّل</translation>
@@ -559,6 +562,7 @@
 <translation id="5295239312320826323">هل تريد إزالة الحساب <ph name="USER_EMAIL" />؟</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5317780077021120954">حفظ</translation>
+<translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
 <translation id="5339316356165661760">تفعيل المزامنة</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
 <translation id="5360976571138293719">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
@@ -622,6 +626,7 @@
 <translation id="581659025233126501">تفعيل المزامنة</translation>
 <translation id="5819208479324046259">تتم إدارة المتصفِّح من خلال <ph name="MANAGER" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">‏يمكنك حفظ كلمات المرور وطُرق الدفع والعناوين لكي تعمل ميزة "الملء التلقائي" لاحقًا في Chrome.</translation>
+<translation id="5834415013958049700">‏البحث باستخدام "عدسة Google" عن الصورة المنسوخة</translation>
 <translation id="5846482154967366008">محرك بحث</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
 <translation id="5857090052475505287">مجلد جديد</translation>
@@ -649,6 +654,7 @@
 <translation id="5984222099446776634">تم الانتقال إليها مؤخرًا</translation>
 <translation id="5988097621740394599">يمكنك الاطّلاع على الأسعار المخفَّضة في علامات التبويب.</translation>
 <translation id="5988851877894965432">‏فتح عناوين URL في Chrome</translation>
+<translation id="6006672969046233841">علامة تبويب جديدة</translation>
 <translation id="6012140227487808125">جارٍ التشفير...</translation>
 <translation id="6021332621416007159">فتح في...</translation>
 <translation id="6027945736510816438">هل كنت تقصد <ph name="WEBSITE" />؟</translation>
@@ -835,6 +841,7 @@
 <translation id="7207023858769244910">يمكنك تفعيل المزامنة للحصول على محتوى استنادًا إلى اهتماماتك.</translation>
 <translation id="721597782417389033">لقب البطاقة غير صالح</translation>
 <translation id="7221173315674413369">تعرَّف على ميزات ومعلومات جديدة في صفحة "الميزات الجديدة".</translation>
+<translation id="7223102419539744003">إغلاق علامة التبويب</translation>
 <translation id="722454870747268814">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="7265758999917665941">عدم حفظ كلمة المرور لهذا الموقع الإلكتروني</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
@@ -906,6 +913,7 @@
 <translation id="7856733331829174190">تعذّر التنزيل.</translation>
 <translation id="785938070103630874">افتح صفحة كلمات المرور أو طُرق الدفع أو العنوان وغير ذلك.</translation>
 <translation id="7859704718976024901">سجلّ التصفّح</translation>
+<translation id="7870750252270996949">‏البحث باستخدام "عدسة Google" عن الصورة المنسوخة</translation>
 <translation id="7879275349003161544">عرض مجلد عمليات التنزيل</translation>
 <translation id="7884694604461143138">سجلّ البحث (عدد النتائج المطابقة: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">‏لحماية خصوصيتك، لن يجري Chrome الملء التلقائي لهذا الحقل.</translation>
@@ -1030,6 +1038,7 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">طريقة العرض التلقائية للمواقع الإلكترونية</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
+<translation id="882557203579758546">البحث في الصفحة…</translation>
 <translation id="8840513115188359703">‏لن يتم تسجيل خروجك من حساب Google.</translation>
 <translation id="8843129975935593190">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك مزامنتها.</translation>
 <translation id="8849001918648564819">مخفي</translation>

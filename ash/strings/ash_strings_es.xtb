@@ -52,6 +52,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicación de Play Store</translation>
 <translation id="1225748608451425081">Se ha bloqueado tu Chromebook debido a un problema conocido. Podrás volver a iniciar sesión dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
+<translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> se ha conectado.</translation>
 <translation id="1240638468526743569">Una aplicación</translation>
 <translation id="1246890715821376239">Aplicaciones no admitidas</translation>
@@ -386,7 +387,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3120421559657122717">¿Apagar el dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para actualizar</translation>
-<translation id="3139382871451988441">Desactiva el acceso a la cámara.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -520,7 +520,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="385300504083504382">Principio</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
-<translation id="3885531177412808398">Permite que accedan al micrófono todos los sitios web y aplicaciones con el permiso de micrófono</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (conversión de texto a voz)</translation>
@@ -649,11 +648,8 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4573176682887762361">"Escribir [palabra/frase]"</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
-<translation id="4578196883126898996">Tu micrófono está apagado. Activa el botón del micrófono de tu dispositivo.</translation>
 <translation id="4578906031062871102">Menú Ajustes abierto</translation>
-<translation id="4581047786858252841">El micrófono está activado</translation>
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
-<translation id="4587299710837179226">El micrófono está desactivado</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -1382,7 +1378,6 @@ Nueva instalación</translation>
 <translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar tu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
-<translation id="8684405646663021166">Permite que accedan al micrófono <ph name="APP_NAME" /> y todos los sitios web y aplicaciones con el permiso de micrófono</translation>
 <translation id="8685326675965865247">Busca en el dispositivo, en las aplicaciones, en los ajustes y en la Web. Usa las teclas de flecha para desplazarte por las aplicaciones.</translation>
 <translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt + Mayús + L para ir a la estantería donde se encuentra el botón para pararla.</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>
@@ -1407,7 +1402,6 @@ Nueva instalación</translation>
 <translation id="8819728065740986820">La función Carga inteligente está activada</translation>
 <translation id="8825863694328519386">Desliza el dedo desde la izquierda para volver</translation>
 <translation id="8834539327799336565">Conectado ahora</translation>
-<translation id="8834657930627018205">Activa el acceso a la cámara.</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Buscar+Esc</translation>

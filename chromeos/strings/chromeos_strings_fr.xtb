@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide populaire</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Paramètres avancés</translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="361575905210396100">Merci pour vos commentaires</translation>
-<translation id="3621202678540785336">Entrée</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
 <translation id="3651050199673793219">Sélectionner une unité de température</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
@@ -716,7 +715,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
-<translation id="7890841768028788197">Écran tactile intégré</translation>
 <translation id="7915220255123750251">Gérer les paramètres APN du réseau. Les APN établissent une connexion entre un réseau mobile et Internet.</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
@@ -764,7 +762,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8398927464629426868">Taux auquel l'appareil se recharge ou se décharge actuellement</translation>
 <translation id="8420955526972171689">Effectuez des tests et résolvez les problèmes matériels</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Clavier intégré</translation>
 <translation id="8431300646573772016">Nouveautés de Chrome OS</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">DNS non configuré</translation>
@@ -821,7 +818,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
-<translation id="8945750210906526975">Pavé tactile intégré</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
@@ -839,6 +835,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="9087578468327036362">Signaler cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>

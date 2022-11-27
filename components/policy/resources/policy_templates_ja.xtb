@@ -1250,6 +1250,7 @@
       このポリシーを false に設定した場合、デバイスのユーザーは誰も <ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="2246621891161157804">サンドボックス化された iframe 内で外部プロトコルへの移動を Chrome がブロックできるようにする</translation>
 <translation id="224750967938323855">ログイン時に同期の同意メッセージを表示しない</translation>
+<translation id="2252400912879027343">セキュアでないコンテキストの WebSQL を M109 まで使用可能にして、M110 以降は使用できないようにする。</translation>
 <translation id="225340736558643885">安全でないフォームの警告を有効にする</translation>
 <translation id="2258126710006312594">リモート アクセスのユーザーにホストとのファイルの転送を許可します</translation>
 <translation id="225830954785359083">アンロード中にページでポップアップを表示することを許可しない</translation>
@@ -1308,15 +1309,6 @@
 <translation id="2326031114717677574">オーディオ データをサンプリングして収集する間隔です。指定できる最小値は 1 分です。
 
       設定しない場合は、デフォルトの 15 分が適用されます。</translation>
-<translation id="2331354174913096226">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定します。複数の DNS-over-HTTPS リゾルバを指定するには、対応する URI テンプレートをスペースで区切ります。
-
-      DnsOverHttpsMode が <ph name="SECURE_DNS_MODE_SECURE" /> に設定されている場合、このポリシーの設定は必須で、空にはできません。
-
-      DnsOverHttpsMode が <ph name="SECURE_DNS_MODE_AUTOMATIC" /> に設定されているときにこのポリシーを設定した場合は、指定の URI テンプレートが使用されます。同じ DnsOverHttpsMode の設定でこのポリシーを設定しない場合は、ハードコードされたマッピングが使用され、ユーザーの現在の DNS リゾルバを同じプロバイダの DoH リゾルバにアップグレードしようとする処理が行われます。
-
-      URI テンプレートに <ph name="HTTP_VARIABLE_DNS" /> 変数が含まれている場合、リゾルバのリクエストでは <ph name="HTTP_METHOD_GET" /> が使用されます。それ以外の場合、リクエストでは <ph name="HTTP_METHOD_POST" /> が使用されます。
-
-      不適切な形式のテンプレートは無視されます。</translation>
 <translation id="2333228572393176330">このポリシーでは、ダウングレード攻撃から接続を保護する TLS 1.3 のセキュリティ機能を管理します。このポリシーには下位互換性があり、TLS 1.2 準拠のサーバーまたはプロキシへの接続には影響しません。一部の古い TLS インターセプト プロキシには実装上の問題があり、互換性がない場合があります。
 
       このポリシーを True に設定した場合や未設定の場合、<ph name="PRODUCT_NAME" /> はすべての接続で TLS 1.3 のセキュリティ保護を有効にします。
@@ -1606,8 +1598,6 @@
 <translation id="2623014935069176671">最初のユーザー操作を待機する</translation>
 <translation id="2625026032335150744">既存の閲覧データを保持するオプションをデフォルトでオンにする</translation>
 <translation id="2625398797484317969">クイック アンサーの設定を管理します。</translation>
-<translation id="2626748638108838507">現在の OS が対象バージョンより新しい場合は、デバイスを対象バージョンにロールバックします。デバイスは出荷時設定にリセットされますが、証明書以外のデバイス全体のネットワーク構成は保持され、自動的に再登録されます。
-          このポリシーは、<ph name="PRODUCT_OS_NAME" /> バージョン 106 以降へのロールバックでサポートされます。これより古いバージョンのクライアントでは、ネットワーク構成が保持されない可能性があり、デバイスは自動的に再登録されません。</translation>
 <translation id="262740370354162807"><ph name="CLOUD_PRINT_NAME" /> へのドキュメントの送信を有効にします。</translation>
 <translation id="2633084400146331575">音声フィードバックを有効にする</translation>
 <translation id="2633907568797306353">スマートフォン ハブの通知の有効化を許可する</translation>
@@ -2068,6 +2058,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> と同じように動作します。ただし、新しく作成したプロファイルで予備のアカウントを設定することはできません。</translation>
 <translation id="3083259245974004342">パスワード保護</translation>
+<translation id="308356121098374167">セキュアでないコンテキストの WebSQL を使用可能にする。</translation>
 <translation id="3086995894968271156"><ph name="PRODUCT_NAME" /> で Cast Receiver を設定します。</translation>
 <translation id="3087346703976541109">クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定する</translation>
 <translation id="3088557424854005813">認証</translation>
@@ -3451,6 +3442,15 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="4492287494009043413">スクリーンショットの使用を無効にする</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> に関連するポリシーを設定します。</translation>
+<translation id="4495390552861857186"><ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> を有効にする URL のリストを指定します。
+
+このポリシーでは、<ph name="PRODUCT_NAME" /> で認証フローを開始するよう提案する URL を指定できます。指定したウェブサイトでは、認証済みのコンテキストアウェア シグナルのセットをデバイスから取得できます。
+
+このポリシーを未設定のままにするか空白にした場合は、どのウェブサイトも、認証フローを開始したり、デバイスからシグナルを取得したりできません。
+
+<ph name="PRODUCT_OS_NAME" /> では、このポリシーはリモート認証に関連付けられ、証明書が自動的に生成されてサーバーにアップロードされます。デバイスのログイン画面での認証フローの使用については、<ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> ポリシーで管理できます。
+
+有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="449561952193478261">青色のキーボード バックライト</translation>
 <translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
 <translation id="4499376951770369935">ChromeOS の更新が、キオスクアプリ マニフェストで定義されているバージョンに設定される</translation>
@@ -3696,6 +3696,15 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを無効に設定するか未設定のままにした場合、証明書は生成されず、<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> の呼び出しは失敗します。</translation>
 <translation id="4742973303930120836">背景のグラフィックの印刷モードを制限する</translation>
 <translation id="4745232963710538589">分析情報の拡張機能を有効にすると使用状況の指標が報告されます</translation>
+<translation id="4749670563834935149">ログイン画面とロック画面で <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> を有効にする URL のリストを指定します。
+
+このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で認証フローを開始するよう提案する URL を指定できます。指定したウェブサイトでは、認証済みのコンテキストアウェア シグナルのセットをデバイスから取得できます。
+
+このポリシーを未設定のままにするか空白にした場合は、どのウェブサイトも、認証フローを開始したり、デバイスからシグナルを取得したりできません。
+
+このポリシーは、ログイン画面とロック画面の認証フローにのみ影響します。セッション中の認証フローを変更するには、<ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
+
+有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="4752880493649142945">RemoteAccessHostTokenValidationUrl への接続用のクライアント証明書</translation>
 <translation id="475479145997699293">このポリシーを <ph name="ASK_FILE_HANDLING" /> に設定した場合、ウェブアプリは File Handling API を通じたファイル形式へのアクセスを求めることができます。このポリシーを <ph name="BLOCK_FILE_HANDLING" /> に設定した場合、ファイル形式へのアクセスは許可されません。
 
@@ -3835,6 +3844,9 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
           このポリシーを設定しない場合、モノラル音声は初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4933301190614090397">ブラウザのシャットダウン時のキープアライブ リクエストに許可される継続時間（秒単位）を制御します。指定されている場合、ブラウザのシャットダウンを指定された秒数までの間ブロックして、キープアライブ（https://fetch.spec.whatwg.org/#request-keepalive-flag）リクエストを処理できます。デフォルト値（0）はこの機能が無効になっていることを表します。</translation>
+<translation id="4934869540807953882">M110 以降、非標準の window.webkitStorageInfo API は削除されます。このポリシーにより、この API は再度有効になります。
+このポリシーを有効にすると、window.webkitStorageInfo API が使用可能になります。
+このポリシーを無効にするか未設定のままにすると、window.webkitStorageInfo API は使用できなくなります。</translation>
 <translation id="4937423591320233496">コンテンツの提案を無効にする</translation>
 <translation id="4940810901775798837">安全でないウェブサイトにネットワーク エンドポイントへのリクエストの実行を許可</translation>
 <translation id="4942096314850617489">ユーザーのリモート認証を無効にする</translation>
@@ -4797,6 +4809,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="6050796253724099706">ログイン画面で音声フィードバックを有効にする</translation>
 <translation id="605132676434455096">新しいプロフィールの追加を許可しない</translation>
 <translation id="6053681087509103368">WebRTC に TLD / DTLS プロトコルの廃止されたバージョンの使用を許可する</translation>
+<translation id="6056517174496942473"><ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> の認証フローを有効にする URL のリストを指定する</translation>
 <translation id="6058879286588763839"><ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> が指定されていない場合に（指定されていれば <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> はオーバーライドされます）、<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ではバッテリー充電モードの電力管理ポリシーを指定できます（デバイスが対応している場合）。このポリシーでは、バッテリー充電を動的に制御して負荷と消耗を最小限に抑えることで、電池を長持ちさせます。
 
       このポリシーを未設定のままにした場合、デバイスが対応していれば標準のバッテリー充電モードが適用され、ユーザーはこの設定を変更できません。
@@ -4817,6 +4830,9 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       設定しない場合、<ph name="PRODUCT_NAME" /> ではデフォルトのキャッシュ ディレクトリが使用されますが、ユーザーは「--disk-cache-dir」コマンドライン フラグを使って設定を変更できます。
 
       <ph name="PRODUCT_NAME" /> では、ボリュームのルート ディレクトリのコンテンツが管理されます。したがって、データの消失やその他のエラーを避けるため、ルート ディレクトリや他の用途で使用されてるディレクトリは指定しないでください。使用できる変数については、https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables をご覧ください。</translation>
+<translation id="6083356110032622782">セキュアでないコンテキストの WebSQL は、M110 以降削除される予定です。このポリシーにより、この API は再度有効になります。
+          このポリシーを true に設定すると、セキュアでないコンテキストの WebSQL が使用可能になります。
+          このポリシーを false に設定するか未設定のままにすると、セキュアでないコンテキストの WebSQL は M109 まで使用可能ですが、M110 以降は使用できなくなります。</translation>
 <translation id="6083631234867522991">Windows（Windows クライアント）:</translation>
 <translation id="608788685013546076">電力ピークシフトのバッテリーのしきい値をパーセントで設定する</translation>
 <translation id="6089679180657323464">Wilco の診断およびテレメトリー用コントローラの設定を制御します。</translation>
@@ -5271,7 +5287,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="6520802717075138474">初回実行時にデフォルトのブラウザから検索エンジンをインポートする</translation>
 <translation id="6521971538031711337">管理対象ユーザーにデバイスのホスト名の設定を許可しない</translation>
 <translation id="6523079496775454310">管理対象外デバイスのデバイス シグナルについて、管理対象ユーザーの同意を有効にする</translation>
-<translation id="652593254122955308">アイドル状態のプロフィールが閉じられるまでのタイムアウト</translation>
 <translation id="6527674993612811419">安全でないフォームで警告の表示や自動入力の無効化を行う</translation>
 <translation id="6532026122543921610"><ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> ポリシーによってタイムゾーンの自動検出がオフになっている場合を除き、このポリシーを設定するとタイムゾーンの自動検出方法を指定できます。ユーザーはこの設定を変更することはできません。
 
@@ -5455,6 +5470,13 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを False に設定した場合、デフォルトの URL 表示が適用されます。
       このポリシーを未設定のままにした場合、デフォルトの URL 表示が適用され、ユーザーはコンテキスト メニューを使ってデフォルトの URL 表示と URL 全体の表示を切り替えることができます。
       </translation>
+<translation id="6670716303606644752"><ph name="JS_ALERT" />、<ph name="JS_CONFIRM" />、<ph name="JS_PROMPT" /> によってトリガーされた JavaScript モード ダイアログは、トリガーしたサブフレームの生成元がメインフレームの生成元とは異なる場合に <ph name="PRODUCT_NAME" /> でブロックされます（参照: https://www.chromestatus.com/feature/5148698084376576）。
+
+このポリシーは前述の変更を許可します。
+このポリシーが有効に設定されている、または未設定の場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされます。
+ポリシーが無効に設定されている場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされません。
+
+このポリシーは将来的には <ph name="PRODUCT_NAME" /> から削除されます。</translation>
 <translation id="6670794785040100077"><ph name="CLOUD_PRINT_NAME" /> へのドキュメントの送信を無効にする</translation>
 <translation id="6672070613706645316">ユーザーに新しいタブページの背景のカスタマイズを許可する</translation>
 <translation id="6672630473862787247">通常セッション、シークレット モード、ゲスト セッションでアンビエント認証を有効にします。</translation>
@@ -5989,15 +6011,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       Chrome リモート デスクトップ ホストがインストールされていない場合、これらのポリシーは無視されます。</translation>
 <translation id="7202925763179776247">ダウンロードの制限を許可する</translation>
 <translation id="7207095846245296855">Google セーフサーチを強制する</translation>
-<translation id="7208483746373960784">この設定により、<ph name="LACROS_NAME" /> が無効になった後、どれだけのユーザーデータが保持されるかが決まります。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> に設定した場合、後方へのデータ移行は行われません。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> に設定した場合は、すべてのユーザーデータが削除されます。これは最も安全な設定です。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> に設定した場合は、ほとんどのユーザーデータが削除され、ブラウザに依存しないファイルのみ（例: 「ダウンロード」）が保存されます。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> に設定した場合、ユーザーデータはすべて保持されます。この設定ではエラーが発生するリスクが高く、復旧するには Powerwash が必要になります。</translation>
 <translation id="7211368186050418507">タイムゾーンを自動検出しない</translation>
 <translation id="7216442368414164495">セーフ ブラウジングの詳細レポートを有効にすることをユーザーに許可する</translation>
 <translation id="721970071627370558">デバイスの電源ステータス レポートを無効にする</translation>
@@ -6675,6 +6688,16 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
           このポリシーの値はミリ秒単位とし、画面オフ（設定されている場合）およびアイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
 <translation id="7974114691960514888">このポリシーは現在サポートされていません。リモート クライアントに接続するときの STUN とリレー サーバーの使用を有効にします。この設定が有効になっている場合は、間にファイアウォールがあるかどうかにかかわらず、このコンピュータがリモート ホスト コンピュータを検出して接続することができます。この設定が無効であり、かつ発信 UDP 接続がファイアウォールによってフィルタリングされている場合は、このコンピュータから接続できるのはローカル ネットワーク内のホスト コンピュータのみとなります。</translation>
+<translation id="7976103461034266553">このポリシーを有効にすると、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトは含められません。
+          このポリシーを無効にすると、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトが含められます。
+          このポリシーを未設定のままにすると、setTimeout() 関数のタイムアウト処理にブラウザのデフォルトの動作が使用されます。
+
+          これはウェブ標準に準拠した機能ですが、ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
+
+          このポリシーを未設定のままにすると、Chorme の Stable チャンネルで変更が段階的に適用されます。
+
+          このポリシーは Chrome 110 で削除されました。
+                                        </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> のレシーバー名</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Android のレポート機能を有効にする</translation>
@@ -6870,6 +6893,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       セーフ ブラウジングについて詳しくは、https://developers.google.com/safe-browsing をご覧ください。</translation>
 <translation id="8199823751103472868">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でヒンディー語（字母）レイアウトが有効になります。false に設定するか未設定のままにした場合、このレイアウトは使用できません。</translation>
+<translation id="8202834945144737726">ログイン画面で <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> の認証フローを有効にする URL のリストを指定する</translation>
 <translation id="8212900161626657849">このポリシーを設定しない場合または有効に設定した場合、<ph name="PRODUCT_NAME" /> ではデフォルトのプロセスで CECPQ2（TLS のポスト量子鍵交換アルゴリズム）が導入されます。
 
       大きい TLS メッセージの場合はまれに、CECPQ2 により一部のネットワーキング ハードウェアに問題が生じる場合があります。ネットワーキングの問題を解決している間、このポリシーを False に設定して、CECPQ2 を無効にできます。
@@ -7523,13 +7547,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを設定しない場合は、ネットワークのサンドボックス化に関するデフォルトの設定が使用されます。デフォルトの設定は、<ph name="PRODUCT_NAME" /> のリリース（現在フィールド テストを実施中）およびプラットフォームごとに異なる場合があります。
       このポリシーは、企業でネットワーク サービスのサンドボックス化の妨げとなるサードパーティ ソフトウェアを使用している場合に、ネットワークのサンドボックス化を無効にできるようにするためのものです。</translation>
 <translation id="8842208363354615697">HTTPS 専用モードの有効化を許可する</translation>
-<translation id="8850156309475162935">パソコンがアイドル状態になってから動作をトリガーするまでの時間を設定します。
-
-        このポリシーを正の数値に設定した場合、タイムアウトの時間（分単位）を指定したことになります。ユーザー入力なしで、指定した時間（分単位）が経過すると、<ph name="PRODUCT_NAME" /> のすべてのブラウザ ウィンドウが閉じられ、プロフィール選択画面が表示されます。
-
-        このポリシーを 5 未満に設定するか、未設定のままにした場合、パソコンがアイドル状態のときに何の動作も行いません。
-
-        「ユーザー入力」はオペレーティング システムの API によって定義され、マウスの移動やキーボード入力などが該当します。</translation>
 <translation id="885147810817138322">おすすめメディアをユーザーに表示する</translation>
 <translation id="8852579753940989645">レンダラコードの整合性チェックを有効にする</translation>
 <translation id="8854571659927427063">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザからブックマークが読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時にブックマークは読み込まれません。

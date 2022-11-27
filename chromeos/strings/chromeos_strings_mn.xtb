@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3606583719724308068">HTTPS вебсайтууд руу өндөр хоцролттой</translation>
 <translation id="361575905210396100">Санал хүсэлт өгсөнд баярлалаа</translation>
-<translation id="3621202678540785336">Оролт</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />-г сонгосон, <ph name="TOPIC_SOURCE" /> цомгуудыг сонгохын тулд Enter дарна уу</translation>
 <translation id="484790837831576105">(Android) DNS нягтрал</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
+<translation id="4854586501323951986">Суурилуулсан мэдрэмтгий дэлгэц</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
 <translation id="4873827928179867585">Баталгаажуулалтын алгоритм</translation>
 <translation id="4880328057631981605">Нэвтрэх цэгийн нэр</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">Файл нэмэх</translation>
 <translation id="6410257289063177456">Зургийн файлууд</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
+<translation id="6412715219990689313">Суурилуулсан гар</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="73631062356239394">Оношилгооны өгөгдлийг хуваалцах</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Суурилуулсан мэдрэгч самбар</translation>
 <translation id="7397270852490618635">Цайвар загварыг унтраах</translation>
 <translation id="741244894080940828">хөрвүүлэлт</translation>
 <translation id="7415801143053185905">HTTP-н маш өндөр хоцролт</translation>
@@ -715,7 +718,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7882501334836096755">Нийтийн түлхүүр</translation>
-<translation id="7890841768028788197">Дотоод мэдрэмтгий дэлгэц</translation>
 <translation id="7915220255123750251">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог.</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7942349550061667556">Улаан</translation>
@@ -763,7 +765,6 @@
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8420955526972171689">Техник хангамжийн асуудлуудыг шалгах, алдааг олж засварлаарай</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Дотоод гар</translation>
 <translation id="8431300646573772016">ChromeOS-н шинэ зүйлс</translation>
 <translation id="843568408673868420">Интернэт холболт</translation>
 <translation id="844521431886043384">DNS-г тохируулаагүй байна</translation>
@@ -820,7 +821,6 @@
 <translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
-<translation id="8945750210906526975">Дотоод мэдрэгч самбар</translation>
 <translation id="894617464444543719">Төхөөрөмж нь утас байна.</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
@@ -838,6 +838,7 @@
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Сайжруулсан тохиргоонууд</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>

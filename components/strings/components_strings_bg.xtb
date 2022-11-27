@@ -1231,6 +1231,7 @@
 <translation id="4132448310531350254">Приложенията <ph name="POLICY_IDS_LIST" /> съдържат препратки към дублиращи се манипулатори за файловото разширение <ph name="FILE_EXTENSION" />.</translation>
 <translation id="4134123981501319574">Създаване на документ</translation>
 <translation id="413544239732274901">Научете повече</translation>
+<translation id="4140905530744469899">ID на потребителския профил:</translation>
 <translation id="4142935452406587478">Тава 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Плик, китайски №4</translation>
@@ -1354,6 +1355,7 @@
 <translation id="4407755609041463909">Пожар</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Потребителска електроника</translation>
+<translation id="4412074349188076601">Тази конфигурация е означена като такава с възможност за инсталиране, но не може да се инсталира, тъй като не е предоставен образ за съответната архитектура.</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
 <translation id="4424024547088906515">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; Chrome няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
@@ -3203,6 +3205,7 @@
 <translation id="9179907736442194268">Получаване на сигнали по имейл при понижение на цената в който и да е сайт</translation>
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> използва неподдържан протокол.</translation>
+<translation id="918454845714257218">Проверете кода на <ph name="SIDE_OF_CARD" /> и опитайте отново</translation>
 <translation id="9187461866967718678">Екстремни спортове</translation>
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>

@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Cancelar el trabajo de impresión</translation>
 <translation id="2163937499206714165">Activar el modo oscuro</translation>
 <translation id="2180197493692062006">Se produjo un error. Intenta volver a abrir la app.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Programación del modo oscuro</translation>
 <translation id="2276999893457278469">Contenido de ayuda principal</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para agregar fotos, ve a <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">Configuración avanzada</translation>
 <translation id="2307344026739914387">Usar el par de claves actual</translation>
 <translation id="2320295602967756579">Habilitar el tema claro</translation>
 <translation id="2323506179655536734">OMITIDO</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3606583719724308068">Alta latencia de los sitios web HTTPS</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
-<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar la Pantalla de privacidad</translation>
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
@@ -716,7 +715,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
-<translation id="7890841768028788197">Pantalla táctil interna</translation>
 <translation id="7915220255123750251">Administra la configuración del APN de red. Los APNs establecen una conexión entre Internet y una red móvil.</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="7942349550061667556">Rojo</translation>
@@ -764,7 +762,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
 <translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware.</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Teclado interno</translation>
 <translation id="8431300646573772016">Novedades de Chrome OS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se configuró el DNS</translation>
@@ -821,7 +818,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8930521118335213258">Unidad</translation>
 <translation id="8930622219860340959">Inalámbrico</translation>
 <translation id="8936793075252196307">Dirección IP de cliente</translation>
-<translation id="8945750210906526975">Panel táctil interno</translation>
 <translation id="894617464444543719">El dispositivo es un teléfono.</translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
@@ -839,6 +835,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

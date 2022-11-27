@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін аккаунтқа кіре аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
+<translation id="1235458158152011030">Сақталған желілер</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> қосылды.</translation>
 <translation id="1240638468526743569">Қолданба</translation>
 <translation id="1246890715821376239">Қолдау көрсетілмейтін қолданбалар</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Жаңарту үшін қайта іске қосу</translation>
-<translation id="3139382871451988441">Камера пайдалану рұқсатын өшіру.</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3151786313568798007">Бағдары</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">Артқа</translation>
 <translation id="385300504083504382">Басына өту</translation>
 <translation id="3861651314799684201">Толық экранды жазу үшін "Enter" пернесін басыңыз</translation>
-<translation id="3885531177412808398">Микрофон рұқсаты бар барлық қолданба мен веб-сайт үшін микрофонды пайдалануға мүмкіндік береді</translation>
 <translation id="3886872229787704059">Бүгін ашылды.</translation>
 <translation id="3891340733213178823">Шығу үшін Ctrl+Shift+Q тіркесімін екі рет басыңыз.</translation>
 <translation id="3893630138897523026">ChromeVox (дауыстық көмек)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">"[Cөз немесе фраза] теру"</translation>
 <translation id="4577274620589681794">Уақыт бітті · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көріністерді көрсету</translation>
-<translation id="4578196883126898996">Микрофон өшірулі. Құрылғыңыздың микрофон түймесін басыңыз.</translation>
 <translation id="4578906031062871102">Параметрлер мәзірі ашық.</translation>
-<translation id="4581047786858252841">Микрофон қосулы.</translation>
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
-<translation id="4587299710837179226">Микрофон өшірулі.</translation>
 <translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
 <translation id="4623167406982293031">Аккаунтты растау</translation>
@@ -1381,7 +1377,6 @@
 <translation id="8666856788528804727">Құрылғыны орнату үшін <ph name="NAME" /> қолданбасын ашыңыз</translation>
 <translation id="8676770494376880701">Төмен қуат зарядтағышы қосылды</translation>
 <translation id="8683506306463609433">Жұмыс өнімділігін қадағалау функциясы іске қосылды</translation>
-<translation id="8684405646663021166">Микрофон рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP_NAME" /> қолданбасы үшін микрофонды пайдалануға мүмкіндік береді</translation>
 <translation id="8685326675965865247">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз. Қолданбадан қолданбаға өту үшін көрсеткі пернелерін пайдаланыңыз.</translation>
 <translation id="8703634754197148428">Жазуды бастаңыз. Бейне жазу басталған кезде, Alt + Shift + L пернелер тіркесімін басып, сөреге өтіңіз, онда жазуды тоқтатуға арналған түймені таба аласыз</translation>
 <translation id="8721053961083920564">Дыбыс деңгейін ауыстыру. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1401,6 @@
 <translation id="8819728065740986820">Бейімдеп зарядтау функциясы қосулы</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
-<translation id="8834657930627018205">Камера рұқсатын қосыңыз.</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

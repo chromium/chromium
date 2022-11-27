@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
 <translation id="2212733584906323460">Перетворення імені</translation>
 <translation id="2217935453350629363">Поточна швидкість</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
 <translation id="2276999893457278469">Найпопулярніший довідковий контент</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Розширені налаштування</translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
 <translation id="2320295602967756579">Увімкнути світлу тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="361575905210396100">Дякуємо за відгук</translation>
-<translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">Вибрано тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />". Натисніть Enter, щоб вибрати альбоми для теми "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
+<translation id="4854586501323951986">Вбудований сенсорний екран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
 <translation id="4873827928179867585">Алгоритм автентифікації</translation>
 <translation id="4880328057631981605">Ім’я точки доступу</translation>
@@ -570,6 +570,7 @@
 <translation id="6394634179843537518">Додати файл</translation>
 <translation id="6410257289063177456">Файли зображень</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>
+<translation id="6412715219990689313">Вбудована клавіатура</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти до налаштувань облікового запису</translation>
@@ -668,6 +669,7 @@
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="73631062356239394">Поділитися даними діагностики</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Вбудована сенсорна панель</translation>
 <translation id="7397270852490618635">Вимкнути світлу тему</translation>
 <translation id="741244894080940828">конвертація</translation>
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
@@ -716,7 +718,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7882501334836096755">Відкритий ключ</translation>
-<translation id="7890841768028788197">Вбудований сенсорний екран</translation>
 <translation id="7915220255123750251">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом.</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7942349550061667556">Червоний</translation>
@@ -764,7 +765,6 @@
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
 <translation id="8420955526972171689">Проводьте тести й вирішуйте проблеми з апаратним забезпеченням</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Вбудована клавіатура</translation>
 <translation id="8431300646573772016">Нові функції ОС Chrome</translation>
 <translation id="843568408673868420">Інтернет-з’єднання</translation>
 <translation id="844521431886043384">DNS не налаштовано</translation>
@@ -821,7 +821,6 @@
 <translation id="8930521118335213258">Аналог</translation>
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
-<translation id="8945750210906526975">Вбудована сенсорна панель</translation>
 <translation id="894617464444543719">Це телефон.</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
@@ -839,6 +838,7 @@
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="9100765901046053179">Розширені налаштування</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>

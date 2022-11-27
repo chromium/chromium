@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
 <translation id="2276999893457278469">Najlepsze materiały pomocy</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Ustawienia zaawansowane</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2320295602967756579">Włącz jasny motyw</translation>
 <translation id="2323506179655536734">POMINIĘTO</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="361575905210396100">Dziękujemy za opinię</translation>
-<translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
 <translation id="3651050199673793219">Wybierz jednostkę temperatury</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
@@ -716,7 +715,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
-<translation id="7890841768028788197">Wbudowany ekran dotykowy</translation>
 <translation id="7915220255123750251">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem.</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>
@@ -764,7 +762,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
 <translation id="8420955526972171689">Uruchamianie testów i rozwiązywanie problemów ze sprzętem</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Klawiatura wbudowana</translation>
 <translation id="8431300646573772016">Co nowego w Chrome OS</translation>
 <translation id="843568408673868420">Połączenie z internetem</translation>
 <translation id="844521431886043384">Nie skonfigurowano DNS</translation>
@@ -821,7 +818,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
 <translation id="8936793075252196307">Adres IP klienta</translation>
-<translation id="8945750210906526975">Touchpad wbudowany</translation>
 <translation id="894617464444543719">Urządzenie to telefon.</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
@@ -839,6 +835,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9087578468327036362">Zgłoś to zapytanie</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Ustawienia zaawansowane</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>

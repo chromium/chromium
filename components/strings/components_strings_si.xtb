@@ -1231,6 +1231,7 @@
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" යෙදුම් මගින් යොමු කරන ලද "<ph name="FILE_EXTENSION" />" file_extension සඳහා අනුපත් හසුරු.</translation>
 <translation id="4134123981501319574">ලේඛනය තනන්න</translation>
 <translation id="413544239732274901">තව දැන ගන්න</translation>
+<translation id="4140905530744469899">පැතිකඩ ID:</translation>
 <translation id="4142935452406587478">බඳුන 10</translation>
 <translation id="4148925816941278100">ඇමරිකන් එක්ස්ප්‍රස්</translation>
 <translation id="4150099059797363385">ලියුම් කවරය චීන #4</translation>
@@ -1354,6 +1355,7 @@
 <translation id="4407755609041463909">ගින්න</translation>
 <translation id="4408413947728134509">කුකීස් <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">පාරිභෝගික ඉලෙක්ට්‍රොනික උපාංග</translation>
+<translation id="4412074349188076601">මෙම වින්‍යාසය ස්ථාපනය කළ හැකි ලෙස සලකුණු කර ඇති නමුත්, මෙම නිර්මාණ ශිල්පය සඳහා කිසිදු රූපයක් සපයා නැති බැවින්, එය ස්ථාපනය කළ නොහැක.</translation>
 <translation id="4414515549596849729">කුකී සහ අඩවි දත්ත</translation>
 <translation id="4415426530740016218">නංවා ගැනීමේ ලිපිනය</translation>
 <translation id="4424024547088906515">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය Chrome මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
@@ -3203,6 +3205,7 @@
 <translation id="9179907736442194268">කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඉ-තැපැල් ඇඟවීම් ලබා ගන්න</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> සහාය නොදක්වන ප්‍රොටොකෝලයක් භාවිත කරයි.</translation>
+<translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> මත ඇති කේතය පරීක්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="9187461866967718678">අවදානම් ක්‍රීඩා</translation>
 <translation id="9191834167571392248">පහළ වමට අනින්න</translation>
 <translation id="9199905725844810519">මුද්‍රණය කිරීම අවහිර කර ඇත</translation>

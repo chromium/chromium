@@ -1369,15 +1369,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2326031114717677574">Intervalo con el que los datos de audio se muestrean y recogen. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
-<translation id="2331354174913096226">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios.
-
-      Si se asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a DnsOverHttpsMode, esta política debe definirse y no dejarse vacía.
-
-      Si se asigna el valor <ph name="SECURE_DNS_MODE_AUTOMATIC" /> a DnsOverHttpsMode y se define esta política, se utilizarán las plantillas URI especificadas; si no se define esta política, se utilizarán las asignaciones codificadas para intentar cambiar la resolución de DNS actual del usuario a una resolución de DNS-over-HTTPS operada por el mismo proveedor.
-
-      Si la plantilla URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes para la resolución utilizarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes utilizarán <ph name="HTTP_METHOD_POST" />.
-
-      Las plantillas con formato incorrecto se ignorarán.</translation>
 <translation id="2333228572393176330">Esta política controla una función de seguridad de TLS 1.3 que protege las conexiones frente a ataques de cambio a versión inferior. Es retrocompatible y no afectará a las conexiones de servidores y proxies que cumplan con el protocolo TLS 1.2. Sin embargo, las versiones anteriores de algunos proxies que interceptan TLS tienen un error de implementación que provoca que los proxies sean incompatibles.
 
       Si se asigna el valor "True" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> habilitará estas protecciones de seguridad en todas las conexiones.
@@ -1688,8 +1679,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
 <translation id="2625026032335150744">Marcar la opción de conservar los datos de navegación previos de forma predeterminada</translation>
 <translation id="2625398797484317969">Controla los ajustes de Respuestas rápidas.</translation>
-<translation id="2626748638108838507">Restaura el dispositivo a la versión de destino si la versión actual del SO es más reciente que la versión de destino. Se usará la función Powerwash en el dispositivo, pero se conservarán las configuraciones de red del dispositivo que no tienen certificados y se volverá a registrar automáticamente.
-          Estas opciones de restauración están disponibles para la versión 106 de <ph name="PRODUCT_OS_NAME" /> y versiones posteriores. En clientes anteriores, es posible que no se conserven las redes y que el dispositivo no se vuelva a registrar automáticamente.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar mensajes de voz</translation>
 <translation id="2633907568797306353">Permitir que se habiliten las notificaciones de Mi teléfono</translation>
@@ -5595,7 +5584,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6520802717075138474">Importa los motores de búsqueda desde el navegador predeterminado en la primera ejecución.</translation>
 <translation id="6521971538031711337">Impedir que el usuario administrado configure el nombre de host del dispositivo</translation>
 <translation id="6523079496775454310">Habilitar el consentimiento de señales de dispositivo para usuarios gestionados en dispositivos no gestionados</translation>
-<translation id="652593254122955308">Tiempo de espera hasta que se cierre el perfil inactivo</translation>
 <translation id="6527674993612811419">Mostrar advertencias e inhabilitar Autocompletar en formularios no seguros</translation>
 <translation id="6532026122543921610">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, el cual los usuarios no pueden cambiar.
 
@@ -6353,15 +6341,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       esté instalado el host de Escritorio Remoto de Chrome.</translation>
 <translation id="7202925763179776247">Permitir restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
-<translation id="7208483746373960784">Esta opción determina cuántos datos de usuario se conservarán después de inhabilitar <ph name="LACROS_NAME" />.
-
-      Si se asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> a esta política, no se realizará la retromigración de datos.
-
-      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, se eliminarán todos los datos de usuario. Esta es la opción más segura.
-
-      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se eliminarán la mayoría de los datos de usuario. Solo se conservarán los archivos que sean independientes del navegador (como las descargas).
-
-      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos de usuario. Esta opción tiene un alto riesgo de fallo. Si se produce un error, será necesario hacer un Powerwash para recuperar el dispositivo.</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
 <translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación segura</translation>
 <translation id="721970071627370558">Inhabilitar los informes sobre el estado de la energía del dispositivo</translation>
@@ -7996,13 +7975,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se define esta política, se usará la configuración predeterminada del entorno aislado de la red. Esta configuración puede variar en función de la versión de <ph name="PRODUCT_NAME" />, de las pruebas de campo que se estén ejecutando en ese momento y de la plataforma.
       El objetivo de esta política es dar a las empresas la opción de inhabilitar el entorno aislado de la red si usan software de terceros que interfiere en el entorno aislado del servicio de red.</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo‑HTTPS</translation>
-<translation id="8850156309475162935">Activa una acción cuando el ordenador está inactivo.
-
-        Si se asigna un número positivo a esta política, el número equivaldrá a los minutos. Si pasa ese tiempo y el usuario no ha realizado ninguna acción, <ph name="PRODUCT_NAME" /> cierra todas las ventanas del navegador y muestra el selector de perfil.
-
-        Si se asigna un número menor que 5 a esta política o no se establece, no ocurrirá nada cuando el ordenador esté inactivo.
-
-        Las APIs Operating System definen la función "Entrada del usuario", que incluye acciones como mover el ratón o escribir con el teclado.</translation>
 <translation id="885147810817138322">Mostrar recomendaciones de contenido multimedia al usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.

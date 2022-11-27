@@ -7,7 +7,6 @@
 <translation id="207576718733492531">터치 시 작성되는 사용자 인증 정보 목록이 닫혔습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2364266287022099258">저장된 패스키를 사용하시겠습니까?</translation>
-<translation id="2410754283952462441">계정 선택</translation>
 <translation id="3399357656427473483">터치 시 작성되는 사용자 인증 정보 목록입니다.</translation>
 <translation id="3653689374478248324"><ph name="SITE_NAME" />에 로그인합니다</translation>
 <translation id="3950820424414687140">로그인</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">저장된 비밀번호 또는 패스키를 사용하시겠습니까?</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
 <translation id="7736236483645733578"><ph name="USERNAME" />의 패스키입니다. 화면 잠금을 사용하세요.</translation>
-<translation id="804577341878669140">계정을 사용하여 로그인</translation>
 </translationbundle>

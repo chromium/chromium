@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
+<translation id="1448064542941920355">تصغير</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1633720957382884102">مواقع إلكترونية ذات صلة</translation>
 <translation id="1644574205037202324">السجل</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2107397443965016585">السؤال أولاً قبل السماح للمواقع الإلكترونية بتشغيل المحتوى المَحمي (موصى به)</translation>
 <translation id="2148716181193084225">اليوم</translation>
+<translation id="216989819110952009">على الرغم من احتماء "دورثي" ورفاقها خلف نظارات خضراء، انبهرت عيونهم للوهلة الأولى بسبب</translation>
 <translation id="2182457891543959921">طلب الإذن قبل السماح لموقع إلكتروني بإنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا (مقترَح)</translation>
 <translation id="2212565012507486665">السماح بملفات تعريف الارتباط</translation>
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2379925928934107488">‏يمكنك تطبيق "المظهر الداكن" على المواقع الإلكترونية عندما يستخدم Chrome "المظهر الداكن"، إن أمكن ذلك.</translation>
 <translation id="2387895666653383613">تغيير حجم النص</translation>
+<translation id="2390272837142897736">تكبير</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ميغابايت</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="2434158240863470628">اكتمل التنزيل <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,11 +115,13 @@
 <translation id="3248611290851046188">‏يحدِّد هذا الموقع الإلكتروني الاهتمامات التي يمكن أن تستخدمها المواقع الإلكترونية الأخرى لعرض الإعلانات التي تهمّك، كما يتعرّف هذا الموقع الإلكتروني على اهتماماتك من خلال متصفِّح Chrome ويعرض لك إعلانات تناسبك أكثر.</translation>
 <translation id="3277252321222022663">يمكنك السماح للمواقع بالوصول إلى أجهزة الاستشعار (مُقترَح).</translation>
 <translation id="3285500645985761267">السماح للمواقع الإلكترونية ذات الصلة بالاطّلاع على نشاطك في المجموعة</translation>
+<translation id="3295019059349372795">الفصل 11: مدينة "أوز" الزمرّدية العجيبة</translation>
 <translation id="3295602654194328831">إخفاء المعلومات</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="3333961966071413176">جميع جهات الاتصال</translation>
 <translation id="3362437373201486687">جارٍ البحث عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="3386292677130313581">السؤال قبل السماح للمواقع الإلكترونية بمعرفة الموقع الجغرافي (موصى به)</translation>
+<translation id="3403537308306431953">المستوى الحالي لميزة "تكبير/تصغير": %% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="3521663503435878242">المواقع الإلكترونية ضِمن <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">منع المواقع الإلكترونية من إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="3544058026430919413">يمكن للشركة تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
@@ -189,7 +194,6 @@
 <translation id="5048398596102334565">السماح للمواقع الإلكترونية بالوصول إلى مستشعرات الحركة (مُقترَح)</translation>
 <translation id="5050380848339752099">هذا الموقع الإلكتروني على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفُّح المتخفي.</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
-<translation id="5082281938627763039">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="FPS_MEMBER" />" ولمواقع إلكترونية مدرَجة في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية.</translation>
 <translation id="5091013926750941408">موقع إلكتروني متوافق مع الأجهزة الجوّالة</translation>
 <translation id="509133520954049755">طلب العرض المخصَّص للكمبيوتر المكتبي</translation>
 <translation id="5100237604440890931">تم التصغير - انقر للتوسيع.</translation>
@@ -236,6 +240,7 @@
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
 <translation id="5922967540311291836">حظر ملفات تعريف الارتباط التابعة لجهات خارجية:</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
+<translation id="5968921426641056619">أدخِل عنوان الويب.</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
@@ -261,6 +266,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">منع المواقع الإلكترونية من استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
+<translation id="6453641458248223456">التكبير أو التصغير في صفحة من القائمة الرئيسية</translation>
 <translation id="6467852467360539617">محو البيانات وإعادة ضبط الأذونات</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
@@ -315,6 +321,8 @@
 <translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7667547420449112975">ساحر "أوز" العجيب</translation>
+<translation id="7690549345586282764">إظهار ميزة "تكبير/تصغير"</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7791543448312431591">إضافة</translation>
@@ -392,12 +400,14 @@
 <translation id="8958424370300090006">حظر ملفات تعريف الارتباط لموقع إلكتروني مُحدَّد.</translation>
 <translation id="8959122750345127698">التنقل غير قابل للوصول: <ph name="URL" /></translation>
 <translation id="8986362086234534611">حذف</translation>
+<translation id="900095568014372589">تكبير النصوص والصور التلقائية على المواقع الإلكترونية أو تصغيرها</translation>
 <translation id="9019902583201351841">يديره والداك</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9090268041676521955">يندرج هذا الموقع الإلكتروني ضمن مجموعة يمكنها الاطّلاع على نشاطك. وهذه المجموعة تم تحديدها بواسطة "<ph name="FPS_OWNER" />".</translation>
 <translation id="9106233582039520022">هل تريد حذف ملفات تعريف الارتباط؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">المستوى الحالي لميزة "تكبير/تصغير" هو %% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>
 <translation id="930525582205581608">هل تريد محو سجلّ هذا الموقع الإلكتروني؟</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>

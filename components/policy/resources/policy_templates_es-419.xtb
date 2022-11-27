@@ -168,6 +168,19 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
             * ntlm
             Si no completas esta opción, se usarán los tres esquemas.</translation>
 <translation id="1153306961094113710">Permitir la depuración remota</translation>
+<translation id="1156636278540386588">Controla si el navegador puede usar extensiones de Manifest v2.
+
+La compatibilidad con extensiones de Manifest v2 dejará de estar disponible y todas las extensiones deberán
+migrar a v3 en el futuro. Para obtener más información y el cronograma de
+migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el navegador determinará las cargas de las extensiones de v2, de acuerdo con el cronograma que se indica más arriba.
+Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de v2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con v2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de v2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de v2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de v2 están inhabilitadas. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
+
+
+La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="115699958189272121">Informar los eventos de <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1157003104143964656">Esta configuración habilita o inhabilita la intercepción de acceso.
 
@@ -298,6 +311,7 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, estén inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecuten en Windows 10 Pro.</translation>
 <translation id="1285819498003746288">La API de Event.path no estará disponible.</translation>
 <translation id="129206366270737897">Inhabilitar cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /></translation>
+<translation id="129392056654547767">La imagen de firmware UEFI que usa la VM. Esto existe como una medida temporal mientras se empaqueta como un DLC de ChromeOS.</translation>
 <translation id="1294263471858445589">Permite la autenticación ambiental en sesiones comunes y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita la función de dictado en la pantalla de acceso</translation>
 <translation id="1297182715641689552">Usar un script para proxy .pac</translation>
@@ -1369,15 +1383,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2326031114717677574">Es la tasa a la que se toman muestras de los datos del audio y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos.</translation>
-<translation id="2331354174913096226">La plantilla de URI del agente de resolución de DNS sobre HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS sobre HTTPS, separa las plantillas de URI correspondientes mediante espacios.
-
-      Si se configuró DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_SECURE" />, se debe establecer esta política y no puede estar vacía.
-
-      Si se configuró DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> y se establece esta política, se usarán las plantillas de URI especificadas. Si no se establece, se usarán las asignaciones codificadas para intentar actualizar el agente de resolución de DNS actual del usuario a un agente de resolución de DoH que opere el mismo proveedor.
-
-      Si la plantilla de URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes al agente de resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
-
-      Se omitirán las plantillas con formato incorrecto.</translation>
 <translation id="2333228572393176330">Esta política controla una función de seguridad en TLS 1.3 que protege las conexiones contra ataques de cambio a una versión inferior. La función es retrocompatible y no afecta las conexiones a proxies o servidores que admiten el protocolo TLS 1.2. Sin embargo, las versiones anteriores de algunos proxies de intercepción de TLS tienen una falla de implementación que genera la incompatibilidad.
 
       Si estableces esta política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> habilitará estas protecciones para todas las conexiones.
@@ -1688,8 +1693,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
 <translation id="2625026032335150744">Marcar la opción para conservar los datos de navegación existentes de forma predeterminada</translation>
 <translation id="2625398797484317969">Configuración de los controles de Respuestas rápidas.</translation>
-<translation id="2626748638108838507">Revertir el dispositivo a la versión de destino si la versión actual del SO es más reciente que la de destino El dispositivo usa Powerwash, pero las configuraciones de red de todo el dispositivo sin certificados se conservan y este se vuelve a inscribir automáticamente.
-          Compatible con la reversión de <ph name="PRODUCT_OS_NAME" /> 106 y versiones posteriores. En el caso de los clientes más antiguos, es posible que la preservación de las redes no funcione y que el dispositivo no se vuelva a inscribir automáticamente.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar los comentarios de voz</translation>
 <translation id="2633907568797306353">Permitir que se habiliten las notificaciones de Phone Hub</translation>
@@ -2178,6 +2181,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 <translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo debe bloquearse cuando se suspende o se cierra la tapa</translation>
 <translation id="3070119171976169951">Impedir que las imágenes de terceros muestren una solicitud de autenticación</translation>
 <translation id="3072045631333522102">Protector de pantalla que se utilizará en la pantalla de inicio de sesión del modo de venta</translation>
+<translation id="3072205795519163619">Los datos iniciales de UEFI no volátiles que utiliza el firmware de la VM</translation>
 <translation id="3072788420987305247">Si habilitas la política o no la estableces, se mostrarán los controles multimedia en la pantalla de bloqueo cuando los usuarios bloqueen el dispositivo y se esté reproduciendo contenido multimedia.
 
       Si la inhabilitas, se desactivarán los controles multimedia en la pantalla de bloqueo.</translation>
@@ -2449,6 +2453,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Si desactivas esta configuración o no la estableces, el servicio de protección de contraseñas solo capturará los hash con sal de las contraseñas que se encuentren en https://accounts.google.com.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+<translation id="3259506006965153552">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es falso.</translation>
 <translation id="3261592499545947104">La cantidad de segundos restantes para que caduque un certificado y se active la renovación.</translation>
 <translation id="3262080895269946462">Permitir que se inhabilite de forma predeterminada WebSQL en contextos de terceros</translation>
 <translation id="3263892501786842604">Permitir que el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se muestre en el cuadro de búsqueda de la página Nueva pestaña si es compatible</translation>
@@ -3547,6 +3552,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios administren todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la atestación remota con el mecanismo de TPM.</translation>
+<translation id="4394840953265135019">La URL del objeto comprimido que se descargará. Los objetos se pueden comprimir con gzip, bzip2, lzma o zstd, que se detectarán de forma automática después de la descarga. Los objetos no se pueden descomprimir, ya que no se pueden detectar de forma automática.</translation>
 <translation id="439661169333921592">Inhabilitar la función para destacar el cursor del teclado en la pantalla de acceso</translation>
 <translation id="4397045637922200204">Desactivar la recuperación de la cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de Ubicación de ventanas</translation>
@@ -3887,6 +3893,7 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 <translation id="4725691087141147920">Mostrar el consentimiento de sincronización durante el acceso</translation>
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar powerwash</translation>
+<translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
 <translation id="4735099388031364207">Si habilitas la política, se permite la certificación remota para el dispositivo y se generará un certificado de forma automática, el cual se subirá al servidor de administración de dispositivos.
 
@@ -4184,6 +4191,7 @@ Si inhabilitas esta política o no la estableces, la API de window.webkitStorage
       Si no la estableces o la inhabilitas, webkitRequestFileSystem con tipo persistente funcionará con cuota temporal.
       </translation>
 <translation id="5105313908130842249">Demora de bloqueo de pantalla con batería</translation>
+<translation id="5106077438006122286">Controla cómo tratar las VMs en ejecución que no coinciden con esta configuración de política. El valor predeterminado es <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /></translation>
 <translation id="5108031557082757679">Impresoras empresariales inhabilitadas asociadas a dispositivos</translation>
 <translation id="5109383437323376357">Determina la disponibilidad de las variantes</translation>
 <translation id="5118635822783657217">Inhabilitar las actualizaciones para los componentes no críticos</translation>
@@ -4386,6 +4394,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de resaltar el cursor estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="528302483493794684">Una configuración de VM. Indica un tipo de VM que el usuario puede instalar, la cual se asociará de manera persistente con el ID de esta configuración y los controles que se aplican a este tipo de VM.</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
 <translation id="5286579716704722323">Permitir que los usuarios hagan clic para omitir páginas de advertencia de SSL</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
@@ -4501,6 +4510,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si inhabilitas la política, no podrán borrarse los historiales de navegación ni de descargas. Incluso con la política desactivada, no se garantiza la conservación de los historiales de navegación y de descarga. Es posible que los usuarios puedan editar o borrar los archivos de la base de datos del historial directamente, y que el propio navegador pueda caducar o archivar algunos o todos los elementos del historial en cualquier momento.</translation>
 <translation id="5420245232720940848">Inhabilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4, lo que limita las capacidades de los dispositivos</translation>
+<translation id="5420774177427557782">Controla si las VM que usan esta configuración se pueden instalar y ejecutar (<ph name="INSTALL_ALLOWED" />), ejecutar, pero no instalar (<ph name="RUN_ALLOWED" />) o si no se pueden ejecutar (<ph name="BLOCKED" />). Ten en cuenta que, para instalar una VM, también se debe configurar la clave installer_image_x86_64. Si quitas una configuración, se la establece de forma implícita en <ph name="BLOCKED" />, lo que evita que las VMs se ejecuten sin una política.</translation>
 <translation id="5422643441807528365">Clave de licencia de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nombre de restricción de WebView de Android:</translation>
 <translation id="5424147596523390018">Permitir todos los modos de color</translation>
@@ -4566,6 +4576,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       </translation>
 <translation id="5448022937220253000">Elegir qué sucede con los datos del usuario después de inhabilitar <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API de Event.path estará disponible.</translation>
+<translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es falso y <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si no se establece.</translation>
 <translation id="5455609857202311243">Ignorar la aprobación de la política de KDC durante la autenticación de HTTP</translation>
 <translation id="5455888515928026628">Durante el acceso mediante la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o de una contraseña almacenada en caché (sin conexión).
 
@@ -4783,6 +4794,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Solo se aplica el valor de la política cuando habilitas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, y no se aplica en caso contrario.</translation>
 <translation id="5697306356229823047">Informa sobre los usuarios de dispositivos.</translation>
 <translation id="569777361305162263">Inhabilitar la presentación del contenido promocional en la pestaña completa</translation>
+<translation id="569834442020549908">La imagen de disco de arranque UEFI que se usa para instalar la VM en dispositivos x86_64</translation>
 <translation id="5698923148503075597">Si habilitas la política, la política de la nube tendrá prioridad en el caso de que entre en conflicto con la política de la plataforma.
 
       Si inhabilitas la política o no la estableces, la política de la plataforma tendrá prioridad en el caso de que entre en conflicto con la política de la nube.
@@ -5608,7 +5620,6 @@ principal del string usuario-agente en 99.
 <translation id="6520802717075138474">Importar los motores de búsqueda desde el navegador predeterminado en la primera ejecución</translation>
 <translation id="6521971538031711337">Impedir que el usuario administrado configure el nombre de host del dispositivo</translation>
 <translation id="6523079496775454310">Habilitar el consentimiento de la señal del dispositivo para usuarios administrados en dispositivos no administrados</translation>
-<translation id="652593254122955308">Tiempo de espera para cerrar el perfil inactivo</translation>
 <translation id="6527674993612811419">Mostrar advertencias e inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="6532026122543921610">Si estableces la política, se definirá el método de detección automática de la zona horaria, a menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive esta opción. Los usuarios no podrán cambiar esta configuración.
 
@@ -5909,6 +5920,7 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
+<translation id="6780028483481123221">Hash SHA-256 con codificación hexadecimal del objeto comprimido</translation>
 <translation id="6782331708811245959">Habilitar los informes del modo de inicio del dispositivo</translation>
 <translation id="6782977971207381602">Si habilitas la política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas para poder usar <ph name="PRODUCT_CROSTINI_NAME" />. Si inhabilitas la política, el dispositivo no podrá ejecutar máquinas virtuales. En ese caso, se comenzará a aplicar la política en las máquinas virtuales que se inicien a partir de ese momento, pero no en aquellas que ya estén en ejecución.
 
@@ -6366,15 +6378,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Estas políticas se ignoran, a menos que el host del Escritorio remoto de Chrome esté instalado.</translation>
 <translation id="7202925763179776247">Permitir las restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google SafeSearch</translation>
-<translation id="7208483746373960784">Esta configuración determina cuántos datos del usuario se conservan después de inhabilitar <ph name="LACROS_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, no se llevará a cabo la migración de datos inversa.
-
-      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, se quitarán todos los datos del usuario. Esta es la opción más segura.
-
-      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se quitarán la mayoría de los datos del usuario. Solo se conservan los archivos independientes del navegador (como las descargas).
-
-      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos del usuario. Esta opción tiene un alto riesgo de falla, por lo tanto requiere usar Powerwash para recuperar los datos.</translation>
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="7216442368414164495">Permitir que los usuarios acepten informes extendidos de navegación segura</translation>
 <translation id="721970071627370558">Inhabilitar los informes de estado de energía del dispositivo</translation>
@@ -7169,6 +7172,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8044720778481009876">Destinos: <ph name="CLOUD_PRINT_NAME" /> y "Guardar en Google Drive" (obsoleta)</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>
+<translation id="8047600674992048328">Nombre visible del usuario para esta configuración</translation>
 <translation id="8049769137921877885">Esta política controla el envío de los datos sobre la política y su marca de tiempo de recuperación.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -7872,6 +7876,14 @@ del dispositivo durante el acceso del usuario.</translation>
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
 <translation id="867708016260789630">Forzar que el modo restringido de YouTube sea, al menos, moderado</translation>
 <translation id="8677853537025397834">Permitir la API de WebHID en estos sitios</translation>
+<translation id="8684000025871334499">Configura las políticas de instalación y tiempo de ejecución para las VMs de Bruschetta en
+<ph name="PRODUCT_OS_NAME" />. Esto permite que
+los usuarios instalen VMs de terceros. Esta función se inhabilita de forma predeterminada.
+
+Esta política asigna los IDs de configuración a las opciones de configuración de VM. Cuando una VM se
+instala desde una configuración, se asocia de forma persistente con ese
+ID de configuración y cualquier política de tiempo de ejecución en esa configuración se aplica a esa
+VM. Se pueden instalar varias VMs desde la misma configuración en el mismo dispositivo.</translation>
 <translation id="8685018726115727387">Inhabilitar la importación del historial de navegación en la primera ejecución</translation>
 <translation id="8685024486845674965">La advertencia de la protección de la contraseña se activa cuando se vuelve a usar la contraseña</translation>
 <translation id="8685680544554917389">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> podrá reproducir contenido multimedia de forma automática. Si estableces la política como falsa, <ph name="PRODUCT_NAME" /> dejará de reproducir contenido multimedia de forma automática.
@@ -8020,13 +8032,6 @@ del dispositivo durante el acceso del usuario.</translation>
       Si no estableces esta política, se utilizará la configuración predeterminada para la zona de pruebas de la red. Esta configuración predeterminada puede variar según la versión de <ph name="PRODUCT_NAME" />, las pruebas de campo actualmente en ejecución y la plataforma.
       Esta política permite que las empresas inhabiliten la zona de pruebas de la red si utilizan software de terceros que interfiere con la zona de pruebas del servicio de red.</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo HTTPS</translation>
-<translation id="8850156309475162935">Activa una acción cuando la computadora está inactiva.
-
-        Establecer esta política con un número positivo equivale a una cantidad de minutos. Si no hay entradas del usuario después de ese período, <ph name="PRODUCT_NAME" /> cierra todas las ventanas del navegador y muestra el selector de perfiles.
-
-        Si estableces esta política con un valor inferior a 5, no sucede nada cuando la computadora está inactiva.
-
-        La "Entrada del usuario" se define mediante las APIs del sistema operativo y comprende acciones como mover el mouse o usar el teclado.</translation>
 <translation id="885147810817138322">Muestra recomendaciones de contenido multimedia para el usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
 <translation id="8854571659927427063">Si habilitas la política, se importarán los favoritos del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún favorito en la primera ejecución.
@@ -8163,6 +8168,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Si se inhabilita esta política o no se establece, no se activará un Powerwash de dispositivo remoto, independientemente del estado de carga de la ID de inscripción.
 
       Cada vez que carga la pantalla de acceso, se activa esta verificación y, luego, se vuelve a activar cada una hora (si el dispositivo sigue en la pantalla de acceso). Esto impide que la migración comience durante una sesión de usuario, lo que puede causar problemas para los usuarios finales.</translation>
+<translation id="9003823644527627017">Configurar las VMs de Bruschetta en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9007632512838819703">Esta política es obsoleta; usa la política <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
       Permite forzar la habilitación del corrector ortográfico de idiomas. Se omitirán los idiomas que no se reconozcan en esa lista.
@@ -8293,6 +8299,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="9117826695152538214">Si estableces el valor "True" para la política, se activarán las teclas especiales. Si estableces el valor "False", se desactivarán estas teclas.
 
       Si configuras la política, los usuarios no podrán cambiarla. Si no la estableces, las teclas especiales estarán desactivadas al principio, pero los usuarios podrán activarlas en cualquier momento.</translation>
+<translation id="91206085111961438">Controlar la disponibilidad de la extensión de Manifest v2</translation>
 <translation id="9121178963309901985">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" />, lo que permite que los usuarios envíen las solicitudes a la consola del Administrador de Google para obtener su aprobación.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará, y no se crearán ni cargarán las solicitudes de instalación de extensiones.

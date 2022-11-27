@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ट्रॅफिक काउंटर रीसेट करा</translation>
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
 <translation id="2217935453350629363">सध्याचा वेग</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">गडद मोडचे शेड्युल</translation>
 <translation id="2276999893457278469">सर्वोत्तम मदत आशय</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
-<translation id="2304783958703511257">प्रगत सेटिंग्ज</translation>
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2323506179655536734">वगळली</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="361575905210396100">तुमच्या फीडबॅकबद्दल धन्यवाद</translation>
-<translation id="3621202678540785336">इनपुट</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
@@ -716,7 +715,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदाता प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
-<translation id="7890841768028788197">अंतर्गत टचस्क्रीन</translation>
 <translation id="7915220255123750251">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात.</translation>
 <translation id="7936303884198020182">नेम सर्व्हर आढळले नाहीत</translation>
 <translation id="7942349550061667556">लाल</translation>
@@ -764,7 +762,6 @@
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8420955526972171689">हार्डवेअरशी संबंधित समस्यांसाठी चाचण्या आणि ट्रबलशूटिंग रन करा</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">अंतर्गत कीबोर्ड</translation>
 <translation id="8431300646573772016">ChromeOS मध्ये नवीन</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
 <translation id="844521431886043384">DNS सेट केलेली नाही</translation>
@@ -821,7 +818,6 @@
 <translation id="8930521118335213258">पीअर</translation>
 <translation id="8930622219860340959">बिनतारी</translation>
 <translation id="8936793075252196307">क्लायंटचा आयपी अ‍ॅड्रेस</translation>
-<translation id="8945750210906526975">अंतर्गत टचपॅड</translation>
 <translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
@@ -839,6 +835,7 @@
 <translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">प्रगत सेटिंग्ज</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>

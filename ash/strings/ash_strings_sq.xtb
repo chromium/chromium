@@ -52,6 +52,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacioni "Dyqani i Play"</translation>
 <translation id="1225748608451425081">Pajisja jote Chromebook është kyçur për shkak të një problemi të njohur. Ti do të mund të identifikohesh pas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ndalo zgjedhjen</translation>
+<translation id="1235458158152011030">Rrjetet e njohura</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> është lidhur.</translation>
 <translation id="1240638468526743569">Një aplikacion</translation>
 <translation id="1246890715821376239">Aplikacionet e pambështetura</translation>
@@ -386,7 +387,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3120421559657122717">Të fiket pajisja?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
-<translation id="3139382871451988441">Çaktivizo qasjen te kamera</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3151786313568798007">Orientimi</translation>
@@ -519,7 +519,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="385300504083504382">Fillimi</translation>
 <translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
-<translation id="3885531177412808398">Lejon qasjen te mikrofoni për të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
@@ -648,11 +647,8 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4573176682887762361">"Shkruaj [fjalë/frazë]"</translation>
 <translation id="4577274620589681794">Koha mbaroi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Shfaq paraafishimet</translation>
-<translation id="4578196883126898996">Mikrofoni yt është i fikur. Ndize te butoni i mikrofonit të pajisjes.</translation>
 <translation id="4578906031062871102">Menyja e "Cilësimeve" u hap</translation>
-<translation id="4581047786858252841">Mikrofoni është aktiv</translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
-<translation id="4587299710837179226">Mikrofoni është joaktiv</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
@@ -1024,6 +1020,7 @@ Instalim i ri</translation>
 <translation id="6670153871843998651">Tavolina e punës 3</translation>
 <translation id="6671495933530132209">Kopjo imazhin</translation>
 <translation id="6671661918848783005">Nuk mund të shkyçet Chromebook-u yt</translation>
+<translation id="6683022854667115063">Kufje</translation>
 <translation id="6696025732084565524">Tastiera jote e shkëputshme ka nevojë për një përditësim me rëndësi</translation>
 <translation id="6700713906295497288">Butoni i menysë IME</translation>
 <translation id="6707693040195709527">Kalimit të pajisjes në versionin e mëparshëm i ka kaluar afati</translation>
@@ -1381,7 +1378,6 @@ Instalim i ri</translation>
 <translation id="8666856788528804727">Hap <ph name="NAME" /> për të konfiguruar pajisjen tënde</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
-<translation id="8684405646663021166">Lejon qasjen te mikrofoni për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="8685326675965865247">Kërko në pajisjen tënde, aplikacione, cilësime dhe ueb. Përdor tastet e shigjetave për të naviguar nëpër aplikacione.</translation>
 <translation id="8703634754197148428">Nis regjistrimin. Pasi të ketë filluar regjistrimi, përdor Alt + Shift + L për të shkuar te rafti dhe gjej butonin e ndalimit të regjistrimit</translation>
 <translation id="8721053961083920564">Ndërro volumin. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Instalim i ri</translation>
 <translation id="8819728065740986820">"Karikimi me përshtatje" është aktiv</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
-<translation id="8834657930627018205">Aktivizo qasjen te kamera</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>
 <translation id="8843682306134542540">Aktivizo/çaktivizo kyçjen e rrotullimit. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>

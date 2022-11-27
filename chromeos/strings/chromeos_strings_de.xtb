@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
-<translation id="2304783958703511257">Erweiterte Einstellungen</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
 <translation id="361575905210396100">Vielen Dank für dein Feedback</translation>
-<translation id="3621202678540785336">Eingang</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
@@ -509,6 +507,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903200662178656908">Das Gerät ist eine Kombination aus Maus und Tastatur.</translation>
+<translation id="5904994456462260490">Neuen APN hinzufügen</translation>
 <translation id="5907649332524363701">Tastenfarbe</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
@@ -715,7 +714,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
 <translation id="7882501334836096755">Öffentlicher Schlüssel</translation>
-<translation id="7890841768028788197">Interner Touchscreen</translation>
 <translation id="7915220255123750251">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her.</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7942349550061667556">Rot</translation>
@@ -763,7 +761,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
 <translation id="8420955526972171689">Tests und Fehlerbehebungsschritte bei Hardwareproblemen</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Interne Tastatur</translation>
 <translation id="8431300646573772016">Neues bei Chrome OS</translation>
 <translation id="843568408673868420">Internetverbindung</translation>
 <translation id="844521431886043384">DNS ist nicht eingerichtet</translation>
@@ -820,7 +817,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Drahtlos</translation>
 <translation id="8936793075252196307">IP-Adresse des Clients</translation>
-<translation id="8945750210906526975">Internes Touchpad</translation>
 <translation id="894617464444543719">Das Gerät ist ein Smartphone.</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
@@ -838,6 +834,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9087578468327036362">Diese Anfrage melden</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="9100765901046053179">Erweiterte Einstellungen</translation>
 <translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>

@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение Google Play Магазин</translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
+<translation id="1235458158152011030">Известни мрежи</translation>
 <translation id="1239161794459865856">Функцията „<ph name="FEATURE_NAME" />“ е свързана.</translation>
 <translation id="1240638468526743569">приложение</translation>
 <translation id="1246890715821376239">Неподдържани приложения</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">Да се изключи ли устройството?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
-<translation id="3139382871451988441">Забранете достъпа до камерата.</translation>
 <translation id="3139942575505304791">Работен кът 1</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3151786313568798007">Ориентация</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Началото</translation>
 <translation id="3861651314799684201">Натиснете Enter за записване на целия екран</translation>
-<translation id="3885531177412808398">Разрешава достъп до микрофона за всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="3886872229787704059">Отваряно днес</translation>
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">„Type [word/phrase]“</translation>
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Показване на визуализации</translation>
-<translation id="4578196883126898996">Микрофонът е изключен. Включете го от съответния бутон на устройството си.</translation>
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
-<translation id="4581047786858252841">Микрофонът е включен</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
-<translation id="4587299710837179226">Микрофонът е изключен</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4611292653554630842">Вход</translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
@@ -1024,6 +1020,7 @@
 <translation id="6670153871843998651">Работен кът 3</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6671661918848783005">Chromebook не може да се отключи</translation>
+<translation id="6683022854667115063">Слушалки</translation>
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>
 <translation id="6707693040195709527">Срокът за връщане на устройството към предишна версия е изтекъл</translation>
@@ -1381,7 +1378,6 @@
 <translation id="8666856788528804727">За да настроите устройството си, отворете <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
-<translation id="8684405646663021166">Разрешава достъп до микрофона за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="8685326675965865247">Търсете в устройството, приложенията, настройките и мрежата. Използвайте клавишите със стрелки, за да се придвижвате в приложенията.</translation>
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@
 <translation id="8819728065740986820">Функцията за адаптивно зареждане е включена</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
-<translation id="8834657930627018205">Разрешаване на достъпа до камерата.</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">търсене + Esc</translation>

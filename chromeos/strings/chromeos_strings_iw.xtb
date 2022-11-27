@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
 <translation id="2276999893457278469">תוכן עזרה מוביל</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
-<translation id="2304783958703511257">הגדרות מתקדמות</translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="361575905210396100">תודה על המשוב</translation>
-<translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
@@ -716,7 +714,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7882501334836096755">מפתח ציבורי</translation>
-<translation id="7890841768028788197">מסך מגע פנימי</translation>
 <translation id="7915220255123750251">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט.</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
@@ -764,7 +761,6 @@
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8420955526972171689">הרצת בדיקות ופתרון בעיות בחומרה</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">מקלדת פנימית</translation>
 <translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>
@@ -821,7 +817,6 @@
 <translation id="8930521118335213258">קצה</translation>
 <translation id="8930622219860340959">אלחוטי</translation>
 <translation id="8936793075252196307">‏כתובת ה-IP של הלקוח</translation>
-<translation id="8945750210906526975">לוח מגע פנימי</translation>
 <translation id="894617464444543719">המכשיר הוא טלפון.</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
@@ -839,6 +834,7 @@
 <translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">הגדרות מתקדמות</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>

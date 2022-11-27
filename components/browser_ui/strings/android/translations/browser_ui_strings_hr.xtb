@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1446450296470737166">Omogući potpuni nadzor za MIDI</translation>
+<translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1633720957382884102">Povezane web-lokacije</translation>
 <translation id="1644574205037202324">Povijest</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2107397443965016585">Web-lokacije moraju tražiti dopuštenje za reprodukciju zaštićenog sadržaja (preporučeno)</translation>
 <translation id="2148716181193084225">Danas</translation>
+<translation id="216989819110952009">Iako su im oči bile zaštićene zelenim naočalama, Dorothy i njezine prijatelje u početku su zadivili</translation>
 <translation id="2182457891543959921">Prikaži upit prije omogućivanja web-lokacijama da izrađuju 3D kartu vašeg okruženja i prate položaj kamere (preporučeno)</translation>
 <translation id="2212565012507486665">Dopusti kolačiće</translation>
 <translation id="2228071138934252756">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj kameri, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Primijeni tamnu temu na web-lokacije kad Chrome koristi tamnu temu, kad je moguće</translation>
 <translation id="2387895666653383613">Skaliranje teksta</translation>
+<translation id="2390272837142897736">Povećajte zumiranje</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Preuzimanje je dovršeno: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Ova web-lokacija definira interese koje druge web-lokacije mogu koristiti da bi vam prikazivale oglase. Ova web-lokacija također prima podatke o vašim interesima iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="3277252321222022663">Dopuštanje pristupa senzorima za web-lokacije (preporučeno)</translation>
 <translation id="3285500645985761267">Dopustite povezanim web-lokacijama da vide vaše aktivnosti u grupi</translation>
+<translation id="3295019059349372795">11. poglavlje: Čudesni Smaragdni Grad čarobnjaka Oza</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
 <translation id="3362437373201486687">Traženje Bluetooth uređaja</translation>
 <translation id="3386292677130313581">Web-lokacije moraju tražiti dopuštenje za pristup lokaciji (preporučeno)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="3521663503435878242">Web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Blokirajte web-lokacije da izrađuju 3D kartu vašeg okruženja ili prate položaj kamere</translation>
 <translation id="3544058026430919413">Tvrtka može definirati grupu web-lokacija koje mogu upotrebljavati kolačiće za dijeljenje vaših aktivnosti u grupi. To je isključeno u anonimnom načinu.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Dopuštanje pristupa senzorima kretanja za web-lokacije (preporučeno)</translation>
 <translation id="5050380848339752099">Ova će web-lokacija dijeliti podatke s aplikacijom izvan anonimnog načina.</translation>
 <translation id="5063480226653192405">Upotreba</translation>
-<translation id="5082281938627763039">Time se brišu kolačići i ostali podaci web-lokacije za člana <ph name="FPS_MEMBER" /> i za web-lokacije u grupi web-lokacija vlasnika <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Web-lokacija za mobilne uređaje</translation>
 <translation id="509133520954049755">Zahtijevaj prikaz na računalu</translation>
 <translation id="5100237604440890931">Sažeto – kliknite za proširivanje.</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Onemogući web-lokacijama da koriste uređaj i podatke virtualne stvarnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
+<translation id="6453641458248223456">Povećanje ili smanjenje zumiranja na stranici putem glavnog izbornika</translation>
 <translation id="6467852467360539617">Izbriši podatke i poništi dopuštenja</translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Izbriši podatke o pregledavanju…</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Odustani</translation>
+<translation id="7667547420449112975">Čarobnjak iz Oza</translation>
+<translation id="7690549345586282764">Prikaži zumiranje</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7791543448312431591">Dodavanje</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Blokiraj kolačiće za određenu web-lokaciju.</translation>
 <translation id="8959122750345127698">Otvaranje je nedostupno: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zaboravi</translation>
+<translation id="900095568014372589">Povećajte ili smanjite zadani tekst i slike na web-lokacijama</translation>
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ova je web-lokacija u grupi koja može vidjeti vaše aktivnosti. Grupu je definirao <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Obrisati kolačiće?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Uključite dopuštenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Trenutačno je zumiranje <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ova je stranica opasna</translation>
 <translation id="930525582205581608">Zaboraviti web-lokaciju?</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>

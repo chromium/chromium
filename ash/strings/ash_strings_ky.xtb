@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store колдонмосу</translation>
 <translation id="1225748608451425081">Белгилүү бир себептен улам сиздин Chromebook кулпуланды. Төмөнкү убакыттан кийин кире аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Тандоону токтотуу</translation>
+<translation id="1235458158152011030">Белгилүү тармактар</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> туташты.</translation>
 <translation id="1240638468526743569">Колдонмо</translation>
 <translation id="1246890715821376239">Колдоого алынбаган колдонмолор</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">Түзмөк өчүрүлсүнбү?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Жаңыртуу үчүн өчүрүп күйгүзүңүз</translation>
-<translation id="3139382871451988441">Камерага кирүү мүмкүнчүлүгүн өчүрүү.</translation>
 <translation id="3139942575505304791">1-иш такта</translation>
 <translation id="315116470104423982">Мобилдик Интернет</translation>
 <translation id="3151786313568798007">Багыты</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="385300504083504382">Киришүү</translation>
 <translation id="3861651314799684201">Толук экранды жаздыруу үчүн "Enter" баскычын басыңыз</translation>
-<translation id="3885531177412808398">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="3886872229787704059">Бүгүн ачылды</translation>
 <translation id="3891340733213178823">Чыгуу үчүн эки ирет Ctrl+Shift+Q басыңыз.</translation>
 <translation id="3893630138897523026">ChromeVox (айтылуучу жооп пикир)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">"[Сөз / сөз айкашын] терүү"</translation>
 <translation id="4577274620589681794">Убакыт бүттү · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көрүүнү жашыруу</translation>
-<translation id="4578196883126898996">Микрофонуңуз өчүк. Түзмөгүңүздүн микрофон баскычын күйгүзүңүз.</translation>
 <translation id="4578906031062871102">Жөндөөлөр менюсу ачылды</translation>
-<translation id="4581047786858252841">Микрофон күйүк</translation>
 <translation id="4585337515783392668">Белгисиз алуучуга чыгарууну токтотуу</translation>
-<translation id="4587299710837179226">Микрофон өчүк</translation>
 <translation id="4596144739579517758">Караңгы тема өчүк</translation>
 <translation id="4611292653554630842">Кирүү</translation>
 <translation id="4623167406982293031">Аккаунтту ырастоо</translation>
@@ -1381,7 +1377,6 @@
 <translation id="8666856788528804727">Түзмөгүңүздү жөндөө үчүн <ph name="NAME" /> колдонмосун ачыңыз</translation>
 <translation id="8676770494376880701">Кубаты төмөн кубаттагыч туташтырылды</translation>
 <translation id="8683506306463609433">Майнаптуулукка көз салуу жигердүү</translation>
-<translation id="8684405646663021166">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="8685326675965865247">Түзмөктөн, колдонмолордон, жөндөөлөрдөн жана Интернеттен издеңиз. Колдонмолоруңузда чабыттоо үчүн жебе баскычтарын пайдаланыңыз.</translation>
 <translation id="8703634754197148428">Жаздырып баштаңыз. Жаздыруу башталгандан кийин Alt + Shift + L баскычтарынын айкалышын колдонуп, текчеге өтүп, жаздырууну токтотуу баскычын издеңиз</translation>
 <translation id="8721053961083920564">Үндү өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1401,6 @@
 <translation id="8819728065740986820">Ыңгайлашып кубаттоо күйүк</translation>
 <translation id="8825863694328519386">Артка кайтуу үчүн экраныңыздын сол четинен сүрүп коюңуз</translation>
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
-<translation id="8834657930627018205">Камераны колдонууга уруксат бериңиз.</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8843682306134542540">Буруу кулпусун өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

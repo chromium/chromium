@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Sötét mód ütemezése</translation>
 <translation id="2276999893457278469">Legnépszerűbb súgótartalmak</translation>
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">Speciális beállítások</translation>
 <translation id="2307344026739914387">Jelenlegi kulcspár használata</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="361575905210396100">Köszönjük visszajelzését!</translation>
-<translation id="3621202678540785336">Bemenet</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztva, nyomja le az Enter billentyűt a következő albumok kiválasztásához: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-felbontás</translation>
 <translation id="4848429997038228357">FUT</translation>
+<translation id="4854586501323951986">Beépített érintőképernyő</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}other{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}}</translation>
 <translation id="4873827928179867585">Hitelesítési algoritmus</translation>
 <translation id="4880328057631981605">Hozzáférési pont neve</translation>
@@ -570,6 +570,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6394634179843537518">Fájl hozzáadása</translation>
 <translation id="6410257289063177456">Képfájlok</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
+<translation id="6412715219990689313">Beépített billentyűzet</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
@@ -668,6 +669,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="73631062356239394">Diagnosztikai adatok megosztása</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Beépített érintőpad</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
@@ -716,7 +718,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Szolgáltató típusa</translation>
 <translation id="7882501334836096755">Nyilvános kulcs</translation>
-<translation id="7890841768028788197">Belső érintőképernyő</translation>
 <translation id="7915220255123750251">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között.</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
 <translation id="7942349550061667556">Piros</translation>
@@ -764,7 +765,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
 <translation id="8420955526972171689">Tesztek futtatása és problémamegoldás hardveres problémák esetén</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Belső billentyűzet</translation>
 <translation id="8431300646573772016">A ChromeOS újdonságai</translation>
 <translation id="843568408673868420">Internetkapcsolat</translation>
 <translation id="844521431886043384">A DNS nincs beállítva</translation>
@@ -821,7 +821,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>
 <translation id="8936793075252196307">Ügyfél IP-címe</translation>
-<translation id="8945750210906526975">Belső érintőpad</translation>
 <translation id="894617464444543719">Az eszköz egy telefon.</translation>
 <translation id="8968751544471797276">Töltési sebesség</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
@@ -839,6 +838,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Speciális beállítások</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="9111102763498581341">Feloldás</translation>

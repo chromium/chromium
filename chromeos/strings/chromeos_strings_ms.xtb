@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
 <translation id="2163937499206714165">Hidupkan mod gelap</translation>
 <translation id="2180197493692062006">Kesilapan telah berlaku. Cuba buka semula apl.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Tetapkan Semula Pembilang Trafik</translation>
 <translation id="2212733584906323460">Namakan Peleraian</translation>
 <translation id="2217935453350629363">Kelajuan semasa</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Jadual mod gelap</translation>
 <translation id="2276999893457278469">Kandungan bantuan paling popular</translation>
 <translation id="2287186687001756809">Tiada imej tersedia. Untuk menambah foto, lawati <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Tetapan Lanjutan</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci semasa</translation>
 <translation id="2320295602967756579">Dayakan tema cerah</translation>
 <translation id="2323506179655536734">DILANGKAU</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas maklum balas anda</translation>
-<translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
@@ -716,7 +715,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci awam</translation>
-<translation id="7890841768028788197">Skrin sentuh dalaman</translation>
 <translation id="7915220255123750251">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet.</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
@@ -764,7 +762,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8398927464629426868">Kadar pengecasan atau penyahcasan semasa peranti</translation>
 <translation id="8420955526972171689">Jalankan ujian dan penyelesaian masalah bagi isu perkakasan</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Papan kekunci dalaman</translation>
 <translation id="8431300646573772016">Item Baharu Chrome OS</translation>
 <translation id="843568408673868420">Sambungan Internet</translation>
 <translation id="844521431886043384">DNS tidak disediakan</translation>
@@ -821,7 +818,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8930521118335213258">Setara</translation>
 <translation id="8930622219860340959">Wayarles</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
-<translation id="8945750210906526975">Pad sentuh dalaman</translation>
 <translation id="894617464444543719">Peranti ialah telefon.</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
 <translation id="8970109610781093811">Jalankan sekali lagi</translation>
@@ -839,6 +835,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9087578468327036362">Laporkan pertanyaan ini</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Tetapan terperinci</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>

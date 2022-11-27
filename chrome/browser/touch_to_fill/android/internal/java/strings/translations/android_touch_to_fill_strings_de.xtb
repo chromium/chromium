@@ -7,7 +7,6 @@
 <translation id="207576718733492531">Die Liste der Anmeldedaten, die bei Berührung ausgefüllt werden, ist geschlossen.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2364266287022099258">Gespeicherten Passkey verwenden?</translation>
-<translation id="2410754283952462441">Konto auswählen</translation>
 <translation id="3399357656427473483">Die Liste der Anmeldedaten, die bei Berührung ausgefüllt werden, ist geöffnet.</translation>
 <translation id="3653689374478248324">Du meldest dich bei <ph name="SITE_NAME" /> an</translation>
 <translation id="3950820424414687140">Anmelden</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Gespeichertes Passwort oder gespeicherten Passkey verwenden?</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="7736236483645733578">Passkey für <ph name="USERNAME" />, verwende die Displaysperre.</translation>
-<translation id="804577341878669140">Mit Konto fortfahren</translation>
 </translationbundle>

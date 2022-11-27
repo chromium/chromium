@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
+<translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
 <translation id="1240638468526743569">ॲप</translation>
 <translation id="1246890715821376239">सपोर्ट नसलेली ॲप्स</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
-<translation id="3139382871451988441">कॅमेराचा ॲक्सेस बंद करा.</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3151786313568798007">अभिमुखता</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="385300504083504382">सुरुवातीला</translation>
 <translation id="3861651314799684201">फुल स्क्रीन रेकॉर्ड करण्यासाठी एंटर दाबा</translation>
-<translation id="3885531177412808398">मायक्रोफोनच्या परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना मायक्रोफोनच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="3886872229787704059">आज उघडलेली</translation>
 <translation id="3891340733213178823">साइन आउट करण्यासाठी Ctrl+Shift+Q दोनदा दाबा.</translation>
 <translation id="3893630138897523026">ChromeVox (वाचिक अभिप्राय)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">"[शब्द / वाक्य] टाइप करा"</translation>
 <translation id="4577274620589681794">वेळ संपली · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
-<translation id="4578196883126898996">तुमचा मायक्रोफोन बंद आहे. तुमच्या डिव्हाइसचे मायक्रोफोन बटण सुरू करा.</translation>
 <translation id="4578906031062871102">सेटिंग्ज मेनू उघडला आहे</translation>
-<translation id="4581047786858252841">मायक्रोफोन सुरू आहे</translation>
 <translation id="4585337515783392668">एखाद्या अज्ञात मिळवणाऱ्यावर कास्ट करणे थांबवा</translation>
-<translation id="4587299710837179226">मायक्रोफोन बंद आहे</translation>
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4611292653554630842">लॉग इन करा</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
@@ -1024,6 +1020,7 @@
 <translation id="6670153871843998651">डेस्‍क ३</translation>
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6671661918848783005">तुमचे Chromebook अनलॉक करू शकत नाही</translation>
+<translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6696025732084565524">तुमच्या वेगळ्या करण्यायोग्य कीबोर्डला गंभीर अपडेटची आवश्यकता आहे</translation>
 <translation id="6700713906295497288">IME मेनू बटण</translation>
 <translation id="6707693040195709527">डिव्हाइस मागील आवृत्तीवर बदलण्याची मुदत संपली आहे</translation>
@@ -1381,7 +1378,6 @@
 <translation id="8666856788528804727">तुमचे डिव्हाइस सेट करण्यासाठी <ph name="NAME" /> उघडा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8683506306463609433">परफॉर्मंस ट्रेसिंग ॲक्टिव्ह आहे</translation>
-<translation id="8684405646663021166">मायक्रोफोनच्या परवानगीसह<ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना मायक्रोफोनच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="8685326675965865247">तुमच्या डिव्हाइस, अ‍ॅप्स आणि वेबवर शोधा. तुमची अ‍ॅप्स नेव्हिगेट करण्यासाठी ॲरो की वापरा.</translation>
 <translation id="8703634754197148428">रेकॉर्डिंग सुरू करा. रेकॉर्डिंग सुरू झाल्यानंतर शेल्फवर नेव्हिगेट करण्यासाठी Alt + Shift + L वापरा आणि रेकॉर्डिंग थांबवा बटण शोधा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@
 <translation id="8819728065740986820">अडॅप्टिव्ह चार्जिंग सुरू आहे</translation>
 <translation id="8825863694328519386">मागे जाण्यासाठी डावीकडून स्वाइप करा</translation>
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
-<translation id="8834657930627018205">कॅमेराचा अ‍ॅक्सेस सुरू करा.</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

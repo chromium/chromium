@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店应用</translation>
 <translation id="1225748608451425081">由于发生了一个已知问题，您的 Chromebook 已被锁定。您可以在 <ph name="TIME_LEFT" />后重新登录。</translation>
 <translation id="1229194443904279055">停止选择</translation>
+<translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
 <translation id="1246890715821376239">不支持的应用</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">要关机吗？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
-<translation id="3139382871451988441">关闭摄像头使用权限。</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
-<translation id="3885531177412808398">允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">“输入 [字词/短语]”</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
-<translation id="4578196883126898996">您设备的麦克风处于关闭状态。请使用相应按钮开启它。</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
-<translation id="4581047786858252841">麦克风已开启</translation>
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
-<translation id="4587299710837179226">麦克风已关闭</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="4623167406982293031">验证帐号</translation>
@@ -1024,6 +1020,7 @@
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">复制图片</translation>
 <translation id="6671661918848783005">无法解锁 Chromebook</translation>
+<translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
 <translation id="6707693040195709527">将设备回滚到上一个版本的截止日期已过</translation>
@@ -1378,7 +1375,6 @@
 <translation id="8666856788528804727">请打开“<ph name="NAME" />”以设置您的设备</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8683506306463609433">正在跟踪性能</translation>
-<translation id="8684405646663021166">允许“<ph name="APP_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="8685326675965865247">搜索您的设备、应用、设置和网站。使用箭头键可浏览各个应用。</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
@@ -1403,7 +1399,6 @@
 <translation id="8819728065740986820">已开启“自动调节充电”功能</translation>
 <translation id="8825863694328519386">从左侧向右滑动手指即可返回</translation>
 <translation id="8834539327799336565">目前已连接</translation>
-<translation id="8834657930627018205">开启摄像头使用权限。</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

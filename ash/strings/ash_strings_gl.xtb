@@ -52,6 +52,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicación de Play Store</translation>
 <translation id="1225748608451425081">Bloqueouse o teu Chromebook por un problema coñecido. Poderás iniciar sesión despois de: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixar de seleccionar</translation>
+<translation id="1235458158152011030">Redes coñecidas</translation>
 <translation id="1239161794459865856">A función <ph name="FEATURE_NAME" /> está conectada.</translation>
 <translation id="1240638468526743569">Unha aplicación</translation>
 <translation id="1246890715821376239">Aplicacións non compatibles</translation>
@@ -386,7 +387,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3120421559657122717">Queres apagar o dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
-<translation id="3139382871451988441">Desactivar acceso ás cámaras.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -520,7 +520,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Comezo</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
-<translation id="3885531177412808398">Permite que todas as aplicacións e sitios web autorizados teñan acceso ao micrófono</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
@@ -649,11 +648,8 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
-<translation id="4578196883126898996">Tes o micrófono apagado. Activa o botón do micrófono do dispositivo.</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
-<translation id="4581047786858252841">O micrófono está activado</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
-<translation id="4587299710837179226">O micrófono está desactivado</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="4623167406982293031">Verificar conta</translation>
@@ -1025,6 +1021,7 @@ Nova instalación</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6671661918848783005">Non se puido desbloquear o Chromebook</translation>
+<translation id="6683022854667115063">Auriculares</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
 <translation id="6707693040195709527">Está pendente o cambio do dispositivo a unha versión anterior</translation>
@@ -1382,7 +1379,6 @@ Nova instalación</translation>
 <translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar o teu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8683506306463609433">O rastrexo do seguimento está activo</translation>
-<translation id="8684405646663021166">Permite que <ph name="APP_NAME" /> e todas as aplicacións e sitios web autorizados teñan acceso ao micrófono</translation>
 <translation id="8685326675965865247">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración e na Web. Utiliza as teclas das frechas para navegar polas aplicacións.</translation>
 <translation id="8703634754197148428">Iniciar gravación. Unha vez iniciada a gravación, utilizar Alt + Maiúsculas + L para ir ao estante e buscar o botón Deter gravación</translation>
 <translation id="8721053961083920564">Activar ou desactivar o volume. <ph name="STATE_TEXT" /></translation>
@@ -1407,7 +1403,6 @@ Nova instalación</translation>
 <translation id="8819728065740986820">A función Carga intelixente está activada</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
-<translation id="8834657930627018205">Activar acceso á cámara.</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Busca+Esc</translation>

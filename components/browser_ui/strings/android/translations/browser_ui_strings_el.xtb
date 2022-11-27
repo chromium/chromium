@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">Περικομμένο URL</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
+<translation id="1448064542941920355">Σμίκρυνση</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1633720957382884102">Σχετικοί ιστότοποι</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Ήχος</translation>
 <translation id="2107397443965016585">Να γίνεται ερώτηση προτού επιτραπεί στους ιστοτόπους η αναπαραγωγή προστατευόμενου περιεχομένου (συνιστάται)</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
+<translation id="216989819110952009">Ακόμα και με την προστασία που πρόσφεραν στα μάτια τους τα πράσινα γυαλιά, η Ντόροθι και οι φίλοι της στην αρχή θαμπώθηκαν από</translation>
 <translation id="2182457891543959921">Να γίνεται ερώτηση προτού επιτραπεί σε ιστοτόπους η δημιουργία τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας και η παρακολούθηση της θέσης της κάμερας (συνιστάται)</translation>
 <translation id="2212565012507486665">Αποδοχή cookie</translation>
 <translation id="2228071138934252756">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην κάμερά σας, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2379925928934107488">Εφαρμογή σκούρου θέματος σε ιστοτόπους όταν το Chrome χρησιμοποιεί σκούρο θέμα, όταν υπάρχει αυτή η δυνατότητα</translation>
 <translation id="2387895666653383613">Κλιμάκωση κειμένου</translation>
+<translation id="2390272837142897736">Μεγέθυνση</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
 <translation id="2434158240863470628">Η λήψη ολοκληρώθηκε <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Αυτός ο ιστότοπος ορίζει ενδιαφέροντα που άλλοι ιστότοποι μπορούν να χρησιμοποιούν για να σας εμφανίζουν διαφημίσεις. Αυτός ο ιστότοπος λαμβάνει επίσης τα ενδιαφέροντά σας από το Chrome για να εμφανίζει πιο συναφείς διαφημίσεις.</translation>
 <translation id="3277252321222022663">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες (συνιστάται)</translation>
 <translation id="3285500645985761267">Να επιτρέπεται σε σχετικούς ιστοτόπους να βλέπουν τη δραστηριότητά σας στην ομάδα</translation>
+<translation id="3295019059349372795">Κεφάλαιο 11: Η Θαυμάσια Σμαραγδένια Πολιτεία του Οζ</translation>
 <translation id="3295602654194328831">Απόκρυψη πληροφοριών</translation>
 <translation id="3328801116991980348">Πληροφορίες ιστοτόπου</translation>
 <translation id="3333961966071413176">Όλες οι επαφές</translation>
 <translation id="3362437373201486687">Σάρωση για συσκευές Bluetooth</translation>
 <translation id="3386292677130313581">Να γίνεται ερώτηση προτού επιτραπεί η κοινοποίηση της τοποθεσίας σας σε ιστότοπους (συνιστάται)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="3521663503435878242">Ιστότοποι του τομέα <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Αποκλείστε ιστοτόπους από τη δημιουργία ενός τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας ή την παρακολούθηση της θέσης της κάμερας.</translation>
 <translation id="3544058026430919413">Μια εταιρεία μπορεί να ορίσει μια ομάδα ιστοτόπων που μπορούν να χρησιμοποιούν cookie για την κοινοποίηση της δραστηριότητάς σας στην ομάδα. Αυτή η επιλογή είναι απενεργοποιημένη στην Ανώνυμη περιήγηση.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες κίνησης (συνιστάται)</translation>
 <translation id="5050380848339752099">Αυτός ο ιστότοπος πρόκειται να κοινοποιήσει πληροφορίες σε μια εφαρμογή εκτός της κατάστασης ανώνυμης περιήγησης.</translation>
 <translation id="5063480226653192405">Χρήση</translation>
-<translation id="5082281938627763039">Αυτή η ενέργεια διαγράφει τα cookie και άλλα δεδομένα ιστοτόπου για το <ph name="FPS_MEMBER" /> και τους ιστοτόπους που περιλαμβάνονται στην ομάδα ιστοτόπων του <ph name="FPS_OWNER" />.</translation>
 <translation id="5091013926750941408">Ιστότοπος για κινητά</translation>
 <translation id="509133520954049755">Αίτημα για προβολή για υπολογιστές</translation>
 <translation id="5100237604440890931">Συμπτυγμένη - Κάντε κλικ για ανάπτυξη</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Αποκλείστε τη χρήση της συσκευής και των δεδομένων εικονικής πραγματικότητας από ιστοτόπους.</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6453641458248223456">Μεγέθυνση ή σμίκρυνση σε μια σελίδα από το κύριο μενού</translation>
 <translation id="6467852467360539617">Διαγραφή δεδομένων και επαναφορά αδειών</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6545864417968258051">Σάρωση Bluetooth</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7667547420449112975">Ο Θαυμάσιος Μάγος του Οζ</translation>
+<translation id="7690549345586282764">Εμφάνιση εστίασης</translation>
 <translation id="7719367874908701697">Εστίαση σελίδας</translation>
 <translation id="7781829728241885113">Χθες</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
+<translation id="900095568014372589">Σμίκρυνση ή μεγέθυνση προεπιλεγμένου κειμένου και εικόνων σε ιστοτόπους</translation>
 <translation id="9019902583201351841">Διαχειρίζεται από τους γονείς σου</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που μπορεί να δει τη δραστηριότητά σας. Η ομάδα ορίζεται από το <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Διαγραφή cookie;</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}}</translation>
 <translation id="913657688200966289">Ενεργοποιήστε τις άδειες για την εφαρμογή <ph name="APP_NAME" /> στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Η τρέχουσα εστίαση είναι <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Αυτή η σελίδα είναι επικίνδυνη</translation>
 <translation id="930525582205581608">Κατάργηση απομνημόνευσης αυτού του ιστοτόπου;</translation>
 <translation id="967624055006145463">Αποθηκευμένα δεδομένα</translation>

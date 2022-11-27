@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">الإعدادات المتقدمة</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
 <translation id="361575905210396100">شكرًا على ملاحظاتك</translation>
-<translation id="3621202678540785336">الإدخال</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
@@ -474,6 +472,7 @@
 <translation id="5499114900554609492">تعذّر إكمال عمليّة المسح الضوئي</translation>
 <translation id="5499762266711462226">يستند لون لوحة المفاتيح إلى الخلفية.</translation>
 <translation id="5502931783115429516">‏Android لا يعمل.</translation>
+<translation id="551689408806449779">انقطع اتصال الجهاز. يُرجى إعادة توصيل الجهاز لاختباره.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">التبديل تلقائيًا إلى المظهر الداكن عند الغروب</translation>
@@ -503,6 +502,7 @@
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5866840822086176774">قوية جدًا</translation>
+<translation id="5876385649737594562">يُرجى تفعيل "وضع الاستراحة" لتحديد الخيارات.</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5901630391730855834">أصفر</translation>
@@ -713,7 +713,6 @@
 <translation id="7881066108824108340">نظام أسماء النطاقات</translation>
 <translation id="7882358943899516840">نوع مقدم الخدمة</translation>
 <translation id="7882501334836096755">مفتاح عام</translation>
-<translation id="7890841768028788197">شاشة تعمل باللمس مدمَجة</translation>
 <translation id="7915220255123750251">‏يمكنك إدارة إعدادات اسم نقطة الوصول (APN) للشبكة. تنشئ أسماء APN اتصالاً بين شبكة الجوّال والإنترنت.</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7942349550061667556">أحمر</translation>
@@ -761,7 +760,6 @@
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
 <translation id="8420955526972171689">يمكنك إجراء اختبارات وتحديد مشاكل الجهاز وحلّها.</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">لوحة مفاتيح مدمَجة</translation>
 <translation id="8431300646573772016">‏الجديد في نظام Chrome</translation>
 <translation id="843568408673868420">اتصال الإنترنت</translation>
 <translation id="844521431886043384">لم يتم ضبط إعدادات نظام أسماء النطاقات.</translation>
@@ -818,7 +816,6 @@
 <translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
 <translation id="8936793075252196307">‏عنوان IP للعميل</translation>
-<translation id="8945750210906526975">لوحة لمس مدمَجة</translation>
 <translation id="894617464444543719">الجهاز هو هاتف.</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
@@ -836,6 +833,7 @@
 <translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">الإعدادات المتقدمة</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
 <translation id="9111102763498581341">فتح القفل</translation>

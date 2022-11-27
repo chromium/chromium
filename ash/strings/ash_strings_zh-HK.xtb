@@ -52,6 +52,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />，「Play 商店」應用程式</translation>
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
+<translation id="1235458158152011030">已知網絡</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">有應用程式</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">要將裝置關機嗎？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
-<translation id="3139382871451988441">關閉相機存取權。</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">流動數據</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
-<translation id="3885531177412808398">允許所有具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
-<translation id="4578196883126898996">麥克風已關閉。請開啟裝置的麥克風按鈕。</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>
-<translation id="4581047786858252841">麥克風已開啟</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
-<translation id="4587299710837179226">麥克風已關閉</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -1022,6 +1018,7 @@
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6671661918848783005">無法解鎖 Chromebook</translation>
+<translation id="6683022854667115063">耳罩式耳機</translation>
 <translation id="6696025732084565524">您的拆除式鍵盤需執行重要更新</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
 <translation id="6707693040195709527">未在期限內將裝置回復為先前的版本</translation>
@@ -1208,6 +1205,7 @@
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7742327441377685481">沒有通知</translation>
 <translation id="7745560842763881396">在捷徑列中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
@@ -1379,7 +1377,6 @@
 <translation id="8666856788528804727">開啟 <ph name="NAME" /> 以設定裝置</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8683506306463609433">效能追蹤使用中</translation>
-<translation id="8684405646663021166">允許「<ph name="APP_NAME" />」和所有具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="8685326675965865247">搜尋您的裝置、應用程式、設定及網絡。使用箭咀鍵可瀏覽應用程式。</translation>
 <translation id="8703634754197148428">開始錄影。如果喺開始之後想停止錄影，請㩒 Alt + Shift + L 鍵去捷徑列，然後搵停止錄影掣</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
@@ -1404,7 +1401,6 @@
 <translation id="8819728065740986820">自動調節充電速度功能已開啟</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8834539327799336565">目前已連接的裝置</translation>
-<translation id="8834657930627018205">開啟相機存取權。</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>

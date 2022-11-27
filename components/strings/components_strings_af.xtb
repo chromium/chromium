@@ -1231,6 +1231,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4132448310531350254">Duplikaathanteerders vir file_extension "<ph name="FILE_EXTENSION" />" waarna programme "<ph name="POLICY_IDS_LIST" />" verwys.</translation>
 <translation id="4134123981501319574">Skep dokument</translation>
 <translation id="413544239732274901">Kom meer te wete</translation>
+<translation id="4140905530744469899">Profiel-ID:</translation>
 <translation id="4142935452406587478">Laai 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Koevert Chinees #4</translation>
@@ -1354,6 +1355,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4407755609041463909">Vuur</translation>
 <translation id="4408413947728134509">Webkoekies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Verbruikerselektronika</translation>
+<translation id="4412074349188076601">Hierdie opstelling is as installeerbaar gemerk, maar geen prent is vir hierdie argitektuur verskaf nie en daarom kan dit nie geïnstalleer word nie.</translation>
 <translation id="4414515549596849729">webkoekies en werfdata</translation>
 <translation id="4415426530740016218">Oplaaiadres</translation>
 <translation id="4424024547088906515">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur Chrome vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
@@ -3203,6 +3205,7 @@ Bykomende besonderhede:
 <translation id="9179907736442194268">Kry e-poskennisgewings as die prys op enige werf daal</translation>
 <translation id="9183302530794969518">Google Dokumente</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> gebruik 'n ongesteunde protokol.</translation>
+<translation id="918454845714257218">Gaan die kode op die <ph name="SIDE_OF_CARD" /> na en probeer weer</translation>
 <translation id="9187461866967718678">Ekstreemsport</translation>
 <translation id="9191834167571392248">Pons links onder</translation>
 <translation id="9199905725844810519">Druk word geblokkeer</translation>

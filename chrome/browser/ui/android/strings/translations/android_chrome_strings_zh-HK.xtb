@@ -261,7 +261,6 @@
 <translation id="2472163211318554013">登入以充分運用 Chrome 的所有功能</translation>
 <translation id="247737702124049222">圖片描述功能已開啟</translation>
 <translation id="2482878487686419369">通知</translation>
-<translation id="2485422356828889247">解除安裝</translation>
 <translation id="2494974097748878569">Chrome 的「Google 助理」</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497852260688568942">您的管理員已停用同步功能</translation>
@@ -284,6 +283,11 @@
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2573452357057307036">瞭解如何將 Chrome 設定為預設瀏覽器</translation>
+<translation id="2580436639406015883">網站可透過私密狀態權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。
+
+網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發私密狀態權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的私密狀態權杖，這些網站就較有可能會判斷你是真人，而非機器人。
+
+私密狀態權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
 <translation id="2593272815202181319">等寬</translation>
@@ -319,7 +323,6 @@
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2788468313014644040">群組號碼</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
-<translation id="2805756323405976993">應用程式</translation>
 <translation id="2806840421670364300">群組聯合學習 : FLoC</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
@@ -573,8 +576,10 @@
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
 <translation id="4141536112466364990">瞭解 Chrome</translation>
+<translation id="4147131678541801076">在試用期間，網站會使用私密狀態權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發私密狀態權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的私密狀態權杖，這些網站就較有可能會判斷你是真人，而非機器人。
+
+私密狀態權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
 <translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
-<translation id="4165986682804962316">網站設定</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -682,6 +687,7 @@
 <translation id="4766313118839197559">密碼會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
 <translation id="4769095993849849966">新檔案名稱</translation>
+<translation id="4778653490315793244">目前還沒有內容</translation>
 <translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1298,6 +1304,7 @@
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
+<translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
@@ -1506,6 +1513,7 @@
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 部影片}other{# 部影片}}</translation>
+<translation id="9042827002460091668">請檢查你的網際網路連線，然後再試一次</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9063523880881406963">關閉「切換為電腦版網站」</translation>

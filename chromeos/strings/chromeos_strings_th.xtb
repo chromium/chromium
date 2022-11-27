@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2212733584906323460">การจำแนกชื่อ</translation>
 <translation id="2217935453350629363">ความเร็วในปัจจุบัน</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
 <translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
-<translation id="2304783958703511257">การตั้งค่าขั้นสูง</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
 <translation id="361575905210396100">ขอขอบคุณสำหรับความคิดเห็นของคุณ</translation>
-<translation id="3621202678540785336">อินพุต</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="3651050199673793219">เลือกหน่วยวัดอุณหภูมิ</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> อยู่ กด Enter เพื่อเลือกอัลบั้ม <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) การแปลง DNS</translation>
 <translation id="4848429997038228357">กำลังดำเนินการ</translation>
+<translation id="4854586501323951986">หน้าจอสัมผัสในตัว</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="4873827928179867585">อัลกอริทึมการตรวจสอบสิทธิ์</translation>
 <translation id="4880328057631981605">ชื่อจุดเข้าใช้งาน</translation>
@@ -570,6 +570,7 @@
 <translation id="6394634179843537518">เพิ่มไฟล์</translation>
 <translation id="6410257289063177456">ไฟล์ภาพ</translation>
 <translation id="641081527798843608">หัวเรื่องที่ตรงกัน</translation>
+<translation id="6412715219990689313">แป้นพิมพ์ในตัว</translation>
 <translation id="6423239382391657905">เปิด VPN</translation>
 <translation id="6439505561246192797">อ่อน (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>
@@ -668,6 +669,7 @@
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="73631062356239394">แชร์ข้อมูลการวินิจฉัย</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">ทัชแพดในตัว</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
 <translation id="741244894080940828">การแปลง</translation>
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
@@ -716,7 +718,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7882501334836096755">คีย์สาธารณะ</translation>
-<translation id="7890841768028788197">หน้าจอสัมผัสภายใน</translation>
 <translation id="7915220255123750251">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7942349550061667556">สีแดง</translation>
@@ -764,7 +765,6 @@
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">แป้นพิมพ์ภายใน</translation>
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>
 <translation id="843568408673868420">การเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>
@@ -821,7 +821,6 @@
 <translation id="8930521118335213258">รายการเทียบเท่า</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>
 <translation id="8936793075252196307">ที่อยู่ IP ของไคลเอ็นต์</translation>
-<translation id="8945750210906526975">ทัชแพดภายใน</translation>
 <translation id="894617464444543719">อุปกรณ์เป็นโทรศัพท์</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
@@ -839,6 +838,7 @@
 <translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>

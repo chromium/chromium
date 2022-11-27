@@ -268,7 +268,6 @@
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
 <translation id="3606583719724308068">HTTPS вебсайттары үчүн күтүү убакыты жогору</translation>
 <translation id="361575905210396100">Пикириңиз үчүн рахмат</translation>
-<translation id="3621202678540785336">Киргизүү</translation>
 <translation id="3632579075709132555">Купуялык экранын өчүрүү/күйгүзүү</translation>
 <translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
@@ -715,7 +714,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Жабдуучунун түрү</translation>
 <translation id="7882501334836096755">Жалпыга ачык ачкыч</translation>
-<translation id="7890841768028788197">Ички сенсордук экран</translation>
 <translation id="7915220255123750251">Тармактын APN параметрлерин тескеңиз. APN'дер мобилдик тармак менен Интернеттин ортосундагы байланышты түзүшөт.</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
 <translation id="7942349550061667556">Кызыл</translation>
@@ -763,7 +761,6 @@
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
 <translation id="8420955526972171689">Аппараттык камсыздоону сынап, бузулууларды аныктап оңдоо</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Ички баскычтоп</translation>
 <translation id="8431300646573772016">ChromeOS жаңылыктары</translation>
 <translation id="843568408673868420">Интернет байланышы</translation>
 <translation id="844521431886043384">DNS туураланган жок</translation>
@@ -820,7 +817,6 @@
 <translation id="8930521118335213258">Жупташкан түзмөк</translation>
 <translation id="8930622219860340959">Зымсыз</translation>
 <translation id="8936793075252196307">Кардардын IP-дареги</translation>
-<translation id="8945750210906526975">Ички сенсордук такта</translation>
 <translation id="894617464444543719">Түзмөк — телефон.</translation>
 <translation id="8968751544471797276">Батареянын кубатталышы көрсөткүчү</translation>
 <translation id="8970109610781093811">Кайра сыноо</translation>
@@ -838,6 +834,7 @@
 <translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Өркүндөтүлгөн жөндөөлөр</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>

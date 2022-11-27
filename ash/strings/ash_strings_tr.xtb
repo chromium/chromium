@@ -52,6 +52,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> Play Store uygulaması</translation>
 <translation id="1225748608451425081">Chromebook'unuz, bilinen bir sorun yüzünden kilitlendi. Tekrar oturum açabilmenize <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="1229194443904279055">Seçmeyi durdur</translation>
+<translation id="1235458158152011030">Bilinen ağlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> bağlı.</translation>
 <translation id="1240638468526743569">Uygulama</translation>
 <translation id="1246890715821376239">Desteklenmeyen uygulamalar</translation>
@@ -386,7 +387,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3120421559657122717">Cihaz kapatılsın mı?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
-<translation id="3139382871451988441">Kamera erişimini kapat.</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3151786313568798007">Yön</translation>
@@ -519,7 +519,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
-<translation id="3885531177412808398">Mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -648,11 +647,8 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4573176682887762361">"[Kelime/kelime öbeği] yaz"</translation>
 <translation id="4577274620589681794">Süre doldu · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önizlemeleri göster</translation>
-<translation id="4578196883126898996">Mikrofonunuz kapalı. Cihazınızın mikrofon düğmesini açın.</translation>
 <translation id="4578906031062871102">Ayarlar menüsü açıldı</translation>
-<translation id="4581047786858252841">Mikrofon açık</translation>
 <translation id="4585337515783392668">Bilinmeyen bir alıcıya yayını durdur</translation>
-<translation id="4587299710837179226">Mikrofon kapalı</translation>
 <translation id="4596144739579517758">Koyu tema kapalı</translation>
 <translation id="4611292653554630842">Giriş yap</translation>
 <translation id="4623167406982293031">Hesabı doğrulama</translation>
@@ -1024,6 +1020,7 @@ Yeni yüklenmiş</translation>
 <translation id="6670153871843998651">Çalışma Masası 3</translation>
 <translation id="6671495933530132209">Resmi kopyala</translation>
 <translation id="6671661918848783005">Chromebook'unuzun kilidi açılamıyor</translation>
+<translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>
 <translation id="6707693040195709527">Cihazın önceki sürüme geçiş işlemi gecikti</translation>
@@ -1381,7 +1378,6 @@ Yeni yüklenmiş</translation>
 <translation id="8666856788528804727">Cihazınızı kurmak için <ph name="NAME" /> uygulamasını açın</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
-<translation id="8684405646663021166"><ph name="APP_NAME" /> adlı uygulamanın yanı sıra mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="8685326675965865247">Cihazınızda, uygulamalarınızda, ayarlarınızda ve web'de arama yapın. Uygulamalarınız arasında gezinmek için ok tuşlarını kullanın.</translation>
 <translation id="8703634754197148428">Kaydı başlat. Kayıt başladıktan sonra Alt+Üst Karakter+L tuşlarını kullanarak rafta bulunan kaydı durdur düğmesine gidebilirsiniz</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Yeni yüklenmiş</translation>
 <translation id="8819728065740986820">Uyarlanabilir Şarj açık</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
-<translation id="8834657930627018205">Kamera erişimini etkinleştirin.</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>

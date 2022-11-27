@@ -52,6 +52,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Butik-app</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
+<translation id="1235458158152011030">Kendte netværk</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1246890715821376239">Apps, der ikke understøttes</translation>
@@ -386,7 +387,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3120421559657122717">Vil du slukke enheden?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Genstart for at opdatere</translation>
-<translation id="3139382871451988441">Deaktiver kameraadgang.</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Retning</translation>
@@ -519,7 +519,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="385300504083504382">Begyndelsen</translation>
 <translation id="3861651314799684201">Tryk på Enter for at optage fuld skærm</translation>
-<translation id="3885531177412808398">Giver alle apps og websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="3886872229787704059">Åbnet i dag</translation>
 <translation id="3891340733213178823">Tryk på Ctrl+Shift+Q to gange for at logge ud.</translation>
 <translation id="3893630138897523026">ChromeVox (talefeedback)</translation>
@@ -648,11 +647,8 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4573176682887762361">"Angiv [ord/sætning]"</translation>
 <translation id="4577274620589681794">Tiden er gået · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
-<translation id="4578196883126898996">Din mikrofon er slået fra. Slå mikrofonen til på din enhed.</translation>
 <translation id="4578906031062871102">Indstillingsmenuen er åben</translation>
-<translation id="4581047786858252841">Mikrofonen er slået til</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
-<translation id="4587299710837179226">Mikrofonen er slået fra</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4611292653554630842">Log ind</translation>
 <translation id="4623167406982293031">Bekræft konto</translation>
@@ -1024,6 +1020,7 @@ Installeret for nylig</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
 <translation id="6671661918848783005">Din Chromebook kan ikke låses op</translation>
+<translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6696025732084565524">Dit aftagelige tastatur kræver en vigtig opdatering</translation>
 <translation id="6700713906295497288">IME-menuknap</translation>
 <translation id="6707693040195709527">Der skal skiftes til en tidligere version af enheden</translation>
@@ -1381,7 +1378,6 @@ Installeret for nylig</translation>
 <translation id="8666856788528804727">Åbn <ph name="NAME" /> for at konfigurere din enhed</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8683506306463609433">Sporing af effektivitet er aktiv</translation>
-<translation id="8684405646663021166">Giver <ph name="APP_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="8685326675965865247">Søg på din enhed, i dine apps, i indstillingerne og på nettet. Brug piletasterne til at navigere i dine apps.</translation>
 <translation id="8703634754197148428">Start optagelse. Når optagelsen er startet, kan du bruge Alt+Shift+L til at gå til hylden, hvor du finder den knap, der stopper optagelsen</translation>
 <translation id="8721053961083920564">Slå lyden til/fra. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Installeret for nylig</translation>
 <translation id="8819728065740986820">Adaptiv opladning er aktiveret</translation>
 <translation id="8825863694328519386">Stryg fra venstre for at gå tilbage</translation>
 <translation id="8834539327799336565">Forbundet lige nu</translation>
-<translation id="8834657930627018205">Aktivér kameraadgang.</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8843682306134542540">Slå Lås rotation til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søg+Esc</translation>

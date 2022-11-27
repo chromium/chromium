@@ -7,7 +7,6 @@
 <translation id="207576718733492531">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалт хаалттай байна.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2364266287022099258">Хадгалсан passkey-г ашиглах уу?</translation>
-<translation id="2410754283952462441">Бүртгэл сонгох</translation>
 <translation id="3399357656427473483">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалт.</translation>
 <translation id="3653689374478248324">Та <ph name="SITE_NAME" />-д нэвтэрнэ</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Хадгалсан нууц үг эсвэл passkey-г ашиглах уу?</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
 <translation id="7736236483645733578"><ph name="USERNAME" />-н passkey, дэлгэцийн түгжээгээ ашиглана уу.</translation>
-<translation id="804577341878669140">Дараах бүртгэлээр үргэлжлүүлэх</translation>
 </translationbundle>

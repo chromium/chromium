@@ -7,7 +7,6 @@
 <translation id="207576718733492531">タップ操作で入力する認証情報のリストは閉じています。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2364266287022099258">保存したパスキーを使用しますか？</translation>
-<translation id="2410754283952462441">アカウントの選択</translation>
 <translation id="3399357656427473483">タップ操作で入力する認証情報のリスト。</translation>
 <translation id="3653689374478248324"><ph name="SITE_NAME" /> にログインします</translation>
 <translation id="3950820424414687140">ログイン</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">保存したパスワードまたはパスキーを使用しますか？</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="7736236483645733578"><ph name="USERNAME" /> のパスキーです、画面ロックを使用してください。</translation>
-<translation id="804577341878669140">次のアカウントで続行</translation>
 </translationbundle>

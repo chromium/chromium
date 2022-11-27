@@ -7,7 +7,6 @@
 <translation id="207576718733492531">Listen over legitimasjon som kan fylles ut ved å trykke, er lukket.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2364266287022099258">Vil du bruke den lagrede tilgangsnøkkelen?</translation>
-<translation id="2410754283952462441">Velg en konto</translation>
 <translation id="3399357656427473483">Listen over legitimasjon som kan fylles ut ved å trykke.</translation>
 <translation id="3653689374478248324">Du er i ferd med å logge på <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Logg på</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Vil du bruke et lagret passord eller en lagret tilgangsnøkkel?</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
 <translation id="7736236483645733578">Tilgangsnøkkel for <ph name="USERNAME" /> – bruk skjermlåsen.</translation>
-<translation id="804577341878669140">Fortsett med konto</translation>
 </translationbundle>

@@ -1227,6 +1227,7 @@
 <translation id="4132448310531350254"><ph name="POLICY_IDS_LIST" /> ஆப்ஸ் மூலம் குறிப்பிடப்படும் "<ph name="FILE_EXTENSION" />" file_extensionனுக்கு நகல் ஹேண்ட்லர்கள் உள்ளன.</translation>
 <translation id="4134123981501319574">ஆவணத்தை உருவாக்கு</translation>
 <translation id="413544239732274901">மேலும் அறிக</translation>
+<translation id="4140905530744469899">சுயவிவர ஐடி:</translation>
 <translation id="4142935452406587478">தட்டு 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">என்வெலப் சைனீஸ் #4</translation>
@@ -1350,6 +1351,7 @@
 <translation id="4407755609041463909">தீ ஈமோஜி</translation>
 <translation id="4408413947728134509">குக்கீகள் (<ph name="NUM_COOKIES" />)</translation>
 <translation id="4411435778612100394">நுகர்வோர் எலக்ட்ரானிக் சாதனங்கள்</translation>
+<translation id="4412074349188076601">இந்த உள்ளமைவு நிறுவக்கூடியது எனக் குறிக்கப்பட்டுள்ளது. ஆனால் இந்த வடிவமைப்பிற்குப் படம் எதுவும் வழங்கப்படவில்லை என்பதால் இதை நிறுவ முடியாது.</translation>
 <translation id="4414515549596849729">குக்கீகள் &amp; தளத்தின் தரவு</translation>
 <translation id="4415426530740016218">பிக்அப் முகவரி</translation>
 <translation id="4424024547088906515">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழை Chrome நம்பவில்லை. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
@@ -3199,6 +3201,7 @@
 <translation id="9179907736442194268">எந்தத் தளத்தில் விலை குறைந்தாலும் அதுகுறித்து மின்னஞ்சல் விழிப்பூட்டல்களைப் பெறலாம்</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ஆதரிக்கப்படாத நெறிமுறையைப் பயன்படுத்துகிறது.</translation>
+<translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> உள்ள குறியீட்டைச் சரிபார்க்கவும்</translation>
 <translation id="9187461866967718678">அசாதாரணமான விளையாட்டுகள்</translation>
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>
 <translation id="9199905725844810519">பிரிண்ட் செய்வது தடுக்கப்பட்டுள்ளது</translation>

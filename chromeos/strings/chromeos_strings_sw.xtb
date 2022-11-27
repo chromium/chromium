@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
 <translation id="2163937499206714165">Washa hali nyeusi</translation>
 <translation id="2180197493692062006">Hitilafu fulani imetokea. Jaribu kufungua programu upya.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Badilisha Hesabu za Trafiki</translation>
 <translation id="2212733584906323460">Upe Usuluhishaji huu Jina</translation>
 <translation id="2217935453350629363">Kasi ya sasa</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
 <translation id="3606583719724308068">Muda mwingi wa kusubiri maombi ya tovuti za HTTPS</translation>
 <translation id="361575905210396100">Asante kwa maoni yako</translation>
-<translation id="3621202678540785336">Ingizo</translation>
 <translation id="3632579075709132555">Kugeuza skrini ya faragha</translation>
 <translation id="3651050199673793219">Chagua kizio cha halijoto</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> imechaguliwa, bonyeza 'Enter' ili uchague albamu za <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Usuluhishaji wa DNS (Android)</translation>
 <translation id="4848429997038228357">LINATEKELEZWA</translation>
+<translation id="4854586501323951986">Skrini ya kugusa iliyojumuishwa ndani ya kifaa</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} ya kujaribu}other{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} za kujaribu}}</translation>
 <translation id="4873827928179867585">Algorithi ya uthibitishaji</translation>
 <translation id="4880328057631981605">Jina la lango la mtandao</translation>
@@ -568,6 +569,7 @@
 <translation id="6394634179843537518">Weka faili</translation>
 <translation id="6410257289063177456">Faili za Picha</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
+<translation id="6412715219990689313">Kibodi iliyojumuishwa ndani ya kifaa</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>
@@ -666,6 +668,7 @@
 <translation id="7359657277149375382">Aina ya faili</translation>
 <translation id="73631062356239394">Shiriki data ya uchunguzi</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Padi ya kugusa iliyojumuishwa ndani ya kifaa</translation>
 <translation id="7397270852490618635">Zima mandhari meupe</translation>
 <translation id="741244894080940828">ubadilishaji</translation>
 <translation id="7415801143053185905">Muda mwingi sana wa kusubiri maombi ya HTTP</translation>
@@ -714,7 +717,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Aina ya mtoa huduma</translation>
 <translation id="7882501334836096755">Ufunguo wa umma</translation>
-<translation id="7890841768028788197">Skrini ya kugusa ya ndani</translation>
 <translation id="7915220255123750251">Dhibiti mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na Intaneti.</translation>
 <translation id="7936303884198020182">Hakuna seva za majina zilizopatikana</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
@@ -762,7 +764,6 @@
 <translation id="8398927464629426868">Kiwango cha sasa cha kifaa cha kuchaji au kutumia chaji</translation>
 <translation id="8420955526972171689">Tekeleza majaribio na utatuzi wa hitilafu za maunzi</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Kibodi ya ndani</translation>
 <translation id="8431300646573772016">Mapya katika ChromeOS</translation>
 <translation id="843568408673868420">Muunganisho wa Intaneti</translation>
 <translation id="844521431886043384">Mipangilio ya DNS haijawekwa</translation>
@@ -819,7 +820,6 @@
 <translation id="8930521118335213258">Programu nyingine</translation>
 <translation id="8930622219860340959">Bila Waya</translation>
 <translation id="8936793075252196307">Anwani ya IP ya programu teja</translation>
-<translation id="8945750210906526975">Padi ya kugusa ya ndani</translation>
 <translation id="894617464444543719">Kifaa hiki ni simu.</translation>
 <translation id="8968751544471797276">Kasi ya kuchaji</translation>
 <translation id="8970109610781093811">Endesha tena</translation>
@@ -837,6 +837,7 @@
 <translation id="9087578468327036362">Ripoti hoja hii</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Mipangilio ya kina</translation>
 <translation id="910415269708673980">Onyesha upya tiketi ya <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Fungua</translation>

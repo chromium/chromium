@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1446450296470737166">Leisti visiškai valdyti MIDI įr.</translation>
+<translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Susijusios svetainės</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Garsas</translation>
 <translation id="2107397443965016585">Paklausti prieš leidžiant svetainėms leisti saugomą turinį (rekomenduojama)</translation>
 <translation id="2148716181193084225">Šiandien</translation>
+<translation id="216989819110952009">Netgi žaliais akiniais apsaugoję akis Dorotė ir jos draugai iš pradžių buvo apstulbinti</translation>
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
 <translation id="2212565012507486665">Leisti slapukus</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2379925928934107488">Kai galima, taikyti tamsiąją temą svetainėse, kai „Chrome“ naudoja tamsiąją temą</translation>
 <translation id="2387895666653383613">Teksto mastelio keitimas</translation>
+<translation id="2390272837142897736">Padidinti mastelį</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus. Ši svetainė taip pat gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3285500645985761267">Leisti susijusioms svetainėms peržiūrėti jūsų veiklą grupėje</translation>
+<translation id="3295019059349372795">11 skyrius. Nuostabusis Smaragdo miestas</translation>
 <translation id="3295602654194328831">Slėpti informaciją</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
 <translation id="3333961966071413176">Visi kontaktai</translation>
 <translation id="3362437373201486687">Nuskaitoma ieškant „Bluetooth“ įrenginių</translation>
 <translation id="3386292677130313581">Klausti prieš leidžiant svetainėms žinoti vietą (rekomenduojama)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242">Svetainės, priklausančios <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Blokuoti, kad svetainės nekurtų jūsų aplinkos 3D žemėlapio ir nestebėtų kameros padėties</translation>
 <translation id="3544058026430919413">Įmonė gali nustatyti svetainių, kurios gali naudoti slapukus jūsų veiklai grupėje bendrinti, grupę. Ši funkcija inkognito režimu išjungta.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Leidžiama svetainėms pasiekti judesio jutiklius (rekomenduojama)</translation>
 <translation id="5050380848339752099">Šioje svetainėje ketinama bendrinti informaciją su programa ne inkognito režimu.</translation>
 <translation id="5063480226653192405">Naudojimas</translation>
-<translation id="5082281938627763039">Bus ištrinti <ph name="FPS_MEMBER" /> ir <ph name="FPS_OWNER" /> svetainių grupei priklausančių svetainių slapukai bei kiti svetainių duomenys</translation>
 <translation id="5091013926750941408">Svetainė mobiliesiems</translation>
 <translation id="509133520954049755">Pateikti užklausą dėl rodinio versijos staliniams kompiuteriams</translation>
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Neleisti svetainėms naudoti virtualiosios realybės įrenginio ir duomenų</translation>
 <translation id="6447842834002726250">Slapukai</translation>
+<translation id="6453641458248223456">Puslapio artinimas arba tolinimas pagrindiniame meniu</translation>
 <translation id="6467852467360539617">Išvalyti duomenis ir iš naujo nustatyti leidimus</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Valyti naršymo duomenis...</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7667547420449112975">Nuostabusis Ozo šalies burtininkas</translation>
+<translation id="7690549345586282764">Rodyti mastelį</translation>
 <translation id="7719367874908701697">Puslapio mastelis</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pridėti</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Blokuoti konkrečios svetainės slapukus.</translation>
 <translation id="8959122750345127698">Naršymas nepasiekiamas: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Pamiršti</translation>
+<translation id="900095568014372589">Nustatykite, kad numatytasis tekstas ir vaizdai svetainėse būtų mažesni ar didesni</translation>
 <translation id="9019902583201351841">Tvarko jūsų tėvai</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ši svetainė yra grupėje, kuri gali peržiūrėti jūsų veiklą. Grupę nustato <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Ištrinti slapukus?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="930525582205581608">Pamiršti šią svetainę?</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>

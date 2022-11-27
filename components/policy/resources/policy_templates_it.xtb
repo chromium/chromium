@@ -1361,15 +1361,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
-<translation id="2331354174913096226">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi.
-
-      Se il criterio DnsOverHttpsMode viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, questo criterio deve essere impostato e non può essere vuoto.
-
-      Se il criterio DnsOverHttpsMode viene impostato su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questo criterio viene impostato, verranno usati i modelli URI specificati; se questo criterio non viene impostato, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
-
-      Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
-
-      I modelli con formato errato verranno ignorati.</translation>
 <translation id="2333228572393176330">Questo criterio consente di controllare una funzionalità di sicurezza nel protocollo TLS 1.3, che protegge le connessioni da attacchi di downgrade. È compatibile con le versioni precedenti e non interessa le connessioni a server o proxy TLS 1.2 conformi. Tuttavia, un difetto di implementazione nelle versioni precedenti di alcuni proxy che intercettano connessioni TLS li rende incompatibili.
 
       Se questo criterio viene impostato su Vero o se non viene configurato, <ph name="PRODUCT_NAME" /> attiva queste protezioni di sicurezza per tutte le connessioni.
@@ -1680,8 +1671,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2623014935069176671">Attesa dell'attività iniziale dell'utente</translation>
 <translation id="2625026032335150744">Seleziona l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="2625398797484317969">Controlla le impostazioni di Risposte rapide.</translation>
-<translation id="2626748638108838507">Consente di eseguire il rollback del dispositivo alla versione target se la versione attuale del sistema operativo è più recente di quella target. Viene eseguito il Powerwash del dispositivo, ma le configurazioni di rete a livello di dispositivo senza certificati vengono mantenute e il dispositivo viene registrato di nuovo automaticamente.
-          È supportato il rollback alla versione 106 e versioni successive di <ph name="PRODUCT_OS_NAME" />. Per i client meno recenti, la conservazione delle reti potrebbe non funzionare e il dispositivo non verrà registrato di nuovo automaticamente.</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Attiva la funzione di lettura vocale</translation>
 <translation id="2633907568797306353">Consenti l'attivazione delle notifiche Phone Hub</translation>
@@ -5528,7 +5517,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6520802717075138474">Importa motori di ricerca dal browser predefinito alla prima esecuzione</translation>
 <translation id="6521971538031711337">Evita che un utente gestito configuri il nome host del dispositivo</translation>
 <translation id="6523079496775454310">Attiva il consenso degli indicatori dei dispositivi per gli utenti gestiti su dispositivi non gestiti</translation>
-<translation id="652593254122955308">Timeout fino alla chiusura del profilo inattivo</translation>
 <translation id="6527674993612811419">Mostra avvisi e disattiva la compilazione automatica sui moduli non sicuri</translation>
 <translation id="6532026122543921610">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
 
@@ -6286,15 +6274,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       non sia installato l'host Chrome Remote Desktop.</translation>
 <translation id="7202925763179776247">Consenti limitazioni dei download</translation>
 <translation id="7207095846245296855">Forza il filtro SafeSearch di Google</translation>
-<translation id="7208483746373960784">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, la migrazione dei dati a ritroso non viene eseguita.
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, tutti i dati utente vengono rimossi. Questa è l'opzione più sicura.
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la maggior parte dei dati utente viene rimossa. Vengono conservati solo i file indipendenti dal browser (come i download).
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, tutti i dati utente vengono conservati. Questa opzione presenta un rischio elevato di errore, che richiede il Powerwash per il ripristino.</translation>
 <translation id="7211368186050418507">Non rilevare mai automaticamente il fuso orario</translation>
 <translation id="7216442368414164495">Consenti agli utenti di attivare i rapporti estesi di Navigazione sicura</translation>
 <translation id="721970071627370558">Disattiva i report sullo stato di alimentazione del dispositivo</translation>
@@ -7904,13 +7883,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se questo criterio non viene configurato, verrà usata la configurazione predefinita della sandbox della rete. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.
       Questo criterio è pensato per offrire alle aziende la possibilità di disattivare la sandbox della rete se usano software di terze parti che interferisce con la sandbox del servizio di rete.</translation>
 <translation id="8842208363354615697">Consenti l'attivazione della Modalità solo HTTPS</translation>
-<translation id="8850156309475162935">Consente di attivare un'azione quando il computer è inattivo.
-
-        Se questo criterio viene impostato su un numero positivo indica un numero di minuti. Una volta trascorsi i minuti impostati senza alcun input utente, <ph name="PRODUCT_NAME" /> chiude tutte le finestre del browser e mostra il selettore profilo.
-
-        Se questo criterio viene impostato su un valore minore di 5 o se non viene configurato non accade nulla quando il computer è inattivo.
-
-        "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="885147810817138322">Mostra all'utente consigli di contenuti multimediali</translation>
 <translation id="8852579753940989645">Attiva l'integrità del codice del renderer</translation>
 <translation id="8854571659927427063">Se il criterio viene impostato su Attivato, i preferiti del precedente browser predefinito verranno importati alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, i preferiti non verranno importati alla prima esecuzione.

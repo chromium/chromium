@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
 <translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
+<translation id="2184005227776731758">APNa</translation>
 <translation id="2209788852729124853">Berrezarri trafiko-kontagailuak</translation>
 <translation id="2212733584906323460">Izenen ebazpena</translation>
 <translation id="2217935453350629363">Une honetako abiadura</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3606583719724308068">Latentzia handia HTTPS darabilten webguneak kargatzeko</translation>
 <translation id="361575905210396100">Mila esker oharrak bidaltzeagatik</translation>
-<translation id="3621202678540785336">Idazketa</translation>
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3651050199673793219">Hautatu tenperatura-unitatea</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
@@ -715,7 +715,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7882501334836096755">Gako publikoa</translation>
-<translation id="7890841768028788197">Ukipen-pantaila integratua</translation>
 <translation id="7915220255123750251">Kudeatu sarearen APNaren ezarpenak. Sare mugikorren eta Interneten arteko konexioak ezartzen dituzte APNek.</translation>
 <translation id="7936303884198020182">Ez da aurkitu izenen zerbitzaririk</translation>
 <translation id="7942349550061667556">Gorria</translation>
@@ -763,7 +762,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
 <translation id="8420955526972171689">Egin probak eta konpondu hardwarearekin erlazionatutako arazoak</translation>
 <translation id="8422748173858722634">IMEIa</translation>
-<translation id="8428073762635678092">Teklatu integratua</translation>
 <translation id="8431300646573772016">Chrome OS-ren berritasunak</translation>
 <translation id="843568408673868420">Interneteko konexioa</translation>
 <translation id="844521431886043384">Ez dago DNSrik konfiguratuta</translation>
@@ -820,7 +818,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8930521118335213258">Parekoa</translation>
 <translation id="8930622219860340959">Hari gabekoa</translation>
 <translation id="8936793075252196307">Bezeroaren IP helbidea</translation>
-<translation id="8945750210906526975">Ukipen-panel integratua</translation>
 <translation id="894617464444543719">Gailua telefono bat da.</translation>
 <translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
@@ -838,6 +835,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="9087578468327036362">Salatu kontsulta</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Ezarpen aurreratuak</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>

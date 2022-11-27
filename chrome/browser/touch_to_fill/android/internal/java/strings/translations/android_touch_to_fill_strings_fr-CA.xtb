@@ -7,7 +7,6 @@
 <translation id="207576718733492531">La liste d'authentifiants à remplir au toucher est fermée.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2364266287022099258">Utiliser la clé d'accès enregistrée?</translation>
-<translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="3399357656427473483">Liste d'authentifiants à remplir au toucher.</translation>
 <translation id="3653689374478248324">Vous serez connecté à <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Connexion</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Utiliser une clé d'accès ou un mot de passe enregistré?</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
 <translation id="7736236483645733578">Clé d'accès pour <ph name="USERNAME" />, utilisez votre verrouillage d'écran.</translation>
-<translation id="804577341878669140">Continuer avec le compte</translation>
 </translationbundle>

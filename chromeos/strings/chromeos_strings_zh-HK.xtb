@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2163937499206714165">開啟暗光模式</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">暗光模式時間表</translation>
 <translation id="2276999893457278469">熱門說明內容</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
-<translation id="2304783958703511257">進階設定</translation>
 <translation id="2307344026739914387">使用目前的配對金鑰</translation>
 <translation id="2320295602967756579">啟用淺色主題背景</translation>
 <translation id="2323506179655536734">已略過</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="361575905210396100">多謝您的意見</translation>
-<translation id="3621202678540785336">輸入</translation>
 <translation id="3632579075709132555">私隱保護畫面切換</translation>
 <translation id="3651050199673793219">揀溫度單位</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">揀咗「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」，㩒一下 [Enter] 鍵就可以揀「<ph name="TOPIC_SOURCE" />」相簿</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">執行中</translation>
+<translation id="4854586501323951986">內置觸控螢幕</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="4873827928179867585">驗證演算法</translation>
 <translation id="4880328057631981605">接入點名稱 (APN)</translation>
@@ -570,6 +570,7 @@
 <translation id="6394634179843537518">新增檔案</translation>
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="641081527798843608">主題比對</translation>
+<translation id="6412715219990689313">內置鍵盤</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">去帳戶設定</translation>
@@ -668,6 +669,7 @@
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="73631062356239394">分享診斷資料</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">內置觸控板</translation>
 <translation id="7397270852490618635">關閉淺色主題背景</translation>
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
@@ -716,7 +718,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
-<translation id="7890841768028788197">內置觸控螢幕</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
@@ -764,7 +765,6 @@
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
 <translation id="8420955526972171689">為硬件問題執行測試和解決疑難</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">內置鍵盤</translation>
 <translation id="8431300646573772016">Chrome OS 的新功能</translation>
 <translation id="843568408673868420">互聯網連線</translation>
 <translation id="844521431886043384">DNS 未設定</translation>
@@ -821,7 +821,6 @@
 <translation id="8930521118335213258">對等</translation>
 <translation id="8930622219860340959">無線</translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
-<translation id="8945750210906526975">內部觸控板</translation>
 <translation id="894617464444543719">裝置類型係手機。</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再執行一次</translation>
@@ -839,6 +838,7 @@
 <translation id="9087578468327036362">報告此查詢</translation>
 <translation id="9088306295921699330">目前使用量</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">進階設定</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解鎖</translation>

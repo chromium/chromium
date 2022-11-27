@@ -1232,6 +1232,7 @@
 <translation id="4132448310531350254">Διπλότυποι δείκτες χειρισμού για το file_extension <ph name="FILE_EXTENSION" /> που αναφέρεται από τις εφαρμογές <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Δημιουργία εγγράφου</translation>
 <translation id="413544239732274901">Μάθετε περισσότερα</translation>
+<translation id="4140905530744469899">Αναγνωριστικό προφίλ:</translation>
 <translation id="4142935452406587478">Δίσκος 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Κινεζικός φάκελος #4</translation>
@@ -1356,6 +1357,7 @@
 <translation id="4407755609041463909">Φωτιά</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Ηλεκτρονικές συσκευές</translation>
+<translation id="4412074349188076601">Αυτή η διαμόρφωση έχει επισημανθεί ότι διαθέτει δυνατότητα εγκατάστασης, αλλά δεν παρέχεται εικόνα για αυτήν την αρχιτεκτονική. Συνεπώς, η εγκατάστασή της δεν είναι δυνατή.</translation>
 <translation id="4414515549596849729">cookie και δεδομένα ιστοτόπου</translation>
 <translation id="4415426530740016218">Διεύθυνση παραλαβής</translation>
 <translation id="4424024547088906515">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν θεωρείται έμπιστο από τον Chrome. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
@@ -3210,6 +3212,7 @@
 <translation id="9179907736442194268">Λάβετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="9183302530794969518">Έγγραφα Google</translation>
 <translation id="9183425211371246419">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> χρησιμοποιεί μη υποστηριζόμενο πρωτόκολλο.</translation>
+<translation id="918454845714257218">Ελέγξτε τον κωδικό στο <ph name="SIDE_OF_CARD" /> και δοκιμάστε ξανά</translation>
 <translation id="9187461866967718678">Επικίνδυνα σπορ</translation>
 <translation id="9191834167571392248">Τρύπημα κάτω αριστερά</translation>
 <translation id="9199905725844810519">Η εκτύπωση αποκλείστηκε</translation>

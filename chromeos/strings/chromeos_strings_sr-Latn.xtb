@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
+<translation id="2184005227776731758">Naziv pristupne tačke</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrešavanje imena</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Raspored tamnog režima</translation>
 <translation id="2276999893457278469">Najpopularniji sadržaj pomoći</translation>
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali slike, idite na <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Napredna podešavanja</translation>
 <translation id="2307344026739914387">Koristite aktuelni par ključeva</translation>
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Veliko kašnjenje do HTTPS veb-sajtova</translation>
 <translation id="361575905210396100">Hvala vam na povratnim informacijama</translation>
-<translation id="3621202678540785336">Ulaz</translation>
 <translation id="3632579075709132555">Uključite/isključite ekran za privatnost</translation>
 <translation id="3651050199673793219">Izaberite jedinicu temperature</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">Izabrali ste uslugu <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter da biste izabrali albume usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS razrešavanje</translation>
 <translation id="4848429997038228357">U TOKU</translation>
+<translation id="4854586501323951986">Ugrađeni dodirni ekran</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="4873827928179867585">Algoritam potvrde identiteta</translation>
 <translation id="4880328057631981605">Naziv pristupne tačke</translation>
@@ -570,6 +570,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6394634179843537518">Dodajte fajl</translation>
 <translation id="6410257289063177456">Datoteke slika</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
+<translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otvorite podešavanja naloga</translation>
@@ -668,6 +669,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
 <translation id="73631062356239394">Deli dijagnostičke podatke</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Ugrađeni tačped</translation>
 <translation id="7397270852490618635">Isključite svetlu temu</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
@@ -716,7 +718,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip dobavljača</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
-<translation id="7890841768028788197">Interni dodirni ekran</translation>
 <translation id="7915220255123750251">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7942349550061667556">Crvena</translation>
@@ -764,7 +765,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8398927464629426868">Stopa po kojoj se uređaj trenutno puni ili prazni</translation>
 <translation id="8420955526972171689">Pokretanje testova i rešavanje problema sa hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Interna tastatura</translation>
 <translation id="8431300646573772016">Novosti u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje na internet</translation>
 <translation id="844521431886043384">DNS nije podešen</translation>
@@ -821,7 +821,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8930521118335213258">Relevantna aplikacija</translation>
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
-<translation id="8945750210906526975">Interni tačped</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
@@ -839,6 +838,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Napredna podešavanja</translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>

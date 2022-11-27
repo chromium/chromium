@@ -52,6 +52,7 @@
 <translation id="1218444235442067213">Праграма Крамы Play (<ph name="APP_NAME" />)</translation>
 <translation id="1225748608451425081">Chromebook заблакіраваны з-за вядомай праблемы. Вы зможаце ўвайсці праз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спыніць выбар</translation>
+<translation id="1235458158152011030">Вядомыя сеткі</translation>
 <translation id="1239161794459865856">Функцыя "<ph name="FEATURE_NAME" />" падключана.</translation>
 <translation id="1240638468526743569">адна з праграм</translation>
 <translation id="1246890715821376239">Праграмы, якія не падтрымліваюцца</translation>
@@ -386,7 +387,6 @@
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перазапусціце для абнаўлення</translation>
-<translation id="3139382871451988441">Адключыць доступ да камеры.</translation>
 <translation id="3139942575505304791">Стол 1</translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
 <translation id="3151786313568798007">Арыентацыя</translation>
@@ -519,7 +519,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
-<translation id="3885531177412808398">Дае доступ да мікрафона ўсім праграмам і сайтам, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
 <translation id="3891340733213178823">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
@@ -648,11 +647,8 @@
 <translation id="4573176682887762361">"Увесці [слова або фразу]"</translation>
 <translation id="4577274620589681794">Час выйшаў · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Уключыць перадпрагляд</translation>
-<translation id="4578196883126898996">Мікрафон выключаны. Уключыце яго з дапамогай кнопкі мікрафона на прыладзе.</translation>
 <translation id="4578906031062871102">Меню налад адкрыта</translation>
-<translation id="4581047786858252841">Мікрафон уключаны</translation>
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
-<translation id="4587299710837179226">Мікрафон выключаны</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4611292653554630842">Увайсці</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
@@ -1024,6 +1020,7 @@
 <translation id="6670153871843998651">Стол 3</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6671661918848783005">Не ўдалося разблакіраваць Chromebook</translation>
+<translation id="6683022854667115063">Навушнікі</translation>
 <translation id="6696025732084565524">Патрабуецца крытычнае абнаўленне для здымнай клавіятуры</translation>
 <translation id="6700713906295497288">Кнопка меню рэдактара метадаў уводу</translation>
 <translation id="6707693040195709527">Час на вяртанне да ранейшай версіі АС мінуў</translation>
@@ -1381,7 +1378,6 @@
 <translation id="8666856788528804727">Каб наладзіць прыладу, адкрыйце <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Падключана зарадная прылада малой магутнасці</translation>
 <translation id="8683506306463609433">Ажыццяўляецца трасіроўка прадукцыйнасці</translation>
-<translation id="8684405646663021166">Дае доступ да мікрафона праграме "<ph name="APP_NAME" />" і ўсім праграмам і сайтам, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="8685326675965865247">Пошук на прыладзе, у праграмах, наладах і інтэрнэце. Для пераходу паміж праграмамі выкарыстоўвайце клавішы са стрэлкамі.</translation>
 <translation id="8703634754197148428">Пачаць запіс. Каб пасля пачатку запісу перайсці на паліцу, дзе знаходзіцца кнопка спынення запісу, націсніце Alt + Shift + L</translation>
 <translation id="8721053961083920564">Уключыць або выключыць гук. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@
 <translation id="8819728065740986820">Адаптыўная зарадка ўключана</translation>
 <translation id="8825863694328519386">Каб вярнуцца назад, правядзіце пальцам з левага краю</translation>
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
-<translation id="8834657930627018205">Даць доступ да камеры.</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Уключыць або выключыць блакіроўку павароту. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Клавіша пошуку + Esc</translation>

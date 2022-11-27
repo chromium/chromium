@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">Horario del modo Oscuro</translation>
 <translation id="2276999893457278469">Contenido de ayuda destacado</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para añadir fotos, accede a <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Configuración avanzada</translation>
 <translation id="2307344026739914387">Usar par de claves actual</translation>
 <translation id="2320295602967756579">Habilitar tema claro</translation>
 <translation id="2323506179655536734">SALTADA</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
-<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
@@ -715,7 +713,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
-<translation id="7890841768028788197">Pantalla táctil interna</translation>
 <translation id="7915220255123750251">Gestiona los ajustes de APN de la red. Los APNs establecen una conexión entre una red móvil e Internet.</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="7942349550061667556">Rojo</translation>
@@ -763,7 +760,6 @@
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Teclado interno</translation>
 <translation id="8431300646573772016">Novedades de ChromeOS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se ha configurado el DNS</translation>
@@ -820,7 +816,6 @@
 <translation id="8930521118335213258">Emparejamiento</translation>
 <translation id="8930622219860340959">Conexión inalámbrica</translation>
 <translation id="8936793075252196307">Dirección IP de cliente</translation>
-<translation id="8945750210906526975">Panel táctil interno</translation>
 <translation id="894617464444543719">El dispositivo es un teléfono.</translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
@@ -838,6 +833,7 @@
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

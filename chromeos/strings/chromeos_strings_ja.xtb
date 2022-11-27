@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">ダークモードのスケジュールを設定する</translation>
 <translation id="2276999893457278469">関連するヘルプ コンテンツ</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
-<translation id="2304783958703511257">詳細設定</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
 <translation id="2320295602967756579">ライトモードを有効にする</translation>
 <translation id="2323506179655536734">スキップ</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
 <translation id="361575905210396100">ありがとうございました</translation>
-<translation id="3621202678540785336">入力</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
@@ -307,6 +305,7 @@
 <translation id="4044093238444069296">ゲートウェイにアクセスできません</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4060260348856573701">新しい APN</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
@@ -473,6 +472,7 @@
 <translation id="5499114900554609492">スキャンを完了できませんでした</translation>
 <translation id="5499762266711462226">キーボードのバックライトの色は壁紙に基づいています</translation>
 <translation id="5502931783115429516">Android は実行されていません</translation>
+<translation id="551689408806449779">デバイスの接続が解除されました。テストするには再接続してください</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日の入り時にダークテーマへ自動的に切り替える</translation>
@@ -502,10 +502,12 @@
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5866840822086176774">非常に強い</translation>
+<translation id="5876385649737594562">オプションを選択するにはオンにしてください</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903200662178656908">デバイスはキーボードとマウスの一体型です。</translation>
+<translation id="5904994456462260490">新しい APN の追加</translation>
 <translation id="5907649332524363701">キーの色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">オン</translation>
@@ -610,6 +612,7 @@
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6791471867139427246">キーボード ライトの色</translation>
+<translation id="6793680441750437230">キーボードで任意のキーを押します。同時に最大 4 個のキーを押すことができます。Alt+Esc キーを押してダイアログを閉じます。</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6853312040151791195">放電率</translation>
@@ -711,7 +714,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7882501334836096755">公開鍵</translation>
-<translation id="7890841768028788197">内部タッチスクリーン</translation>
 <translation id="7915220255123750251">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
 <translation id="7942349550061667556">赤</translation>
@@ -759,7 +761,6 @@
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8420955526972171689">ハードウェアの問題に関するテストとトラブルシューティングを行う</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">内部キーボード</translation>
 <translation id="8431300646573772016">Chrome OS の最新情報</translation>
 <translation id="843568408673868420">インターネット接続</translation>
 <translation id="844521431886043384">DNS が設定されていません</translation>
@@ -816,7 +817,6 @@
 <translation id="8930521118335213258">ピア</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8936793075252196307">クライアント IP アドレス</translation>
-<translation id="8945750210906526975">内部タッチパッド</translation>
 <translation id="894617464444543719">デバイスの種類はスマートフォンです。</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
@@ -834,6 +834,7 @@
 <translation id="9087578468327036362">このクエリを報告</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">詳細設定</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>

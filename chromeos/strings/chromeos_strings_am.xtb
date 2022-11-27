@@ -268,7 +268,6 @@
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="361575905210396100">ለግብረመልስዎ እናመሰግናለን</translation>
-<translation id="3621202678540785336">ግብዓት</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገጽ መቀየሪያ</translation>
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
@@ -473,6 +472,7 @@
 <translation id="5499114900554609492">ቅኝቱን ማጠናቀቅ አልተቻለም</translation>
 <translation id="5499762266711462226">የቁልፍ ሰሌዳ ቀለም በልጣፍ ላይ የተመሠረተ ነው</translation>
 <translation id="5502931783115429516">Android እያሄደ አይደለም</translation>
+<translation id="551689408806449779">መሣሪያው ግንኙነቱ ተቋርጧል። ለመሞከር ዳግም ማገናኘትን ይሞክሩ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ፀሐይ ስትጠልቅ በራስ-ሰር ወደ ጠቆር ያለ ገጽታ ቀይር</translation>
@@ -502,10 +502,12 @@
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5866840822086176774">በጣም ጠንካራ</translation>
+<translation id="5876385649737594562">አማራጮችን ለመምረጥ ያብሩ</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5903200662178656908">መሣሪያ የቁልፍ ሰሌዳ እና የመዳፊት ጥምር ነው።</translation>
+<translation id="5904994456462260490">አዲስ ኤፒኤን ያክሉ</translation>
 <translation id="5907649332524363701">የቁልፍ ቀለም</translation>
 <translation id="5916084858004523819">የተከለከሉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
@@ -712,7 +714,6 @@
 <translation id="7881066108824108340">ዲኤንኤስ</translation>
 <translation id="7882358943899516840">የአቅራቢ አይነት</translation>
 <translation id="7882501334836096755">ይፋዊ ቁልፍ</translation>
-<translation id="7890841768028788197">የውስጥ መነካት የሚችል ማያ</translation>
 <translation id="7915220255123750251">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤኖች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ።</translation>
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7942349550061667556">ቀይ</translation>
@@ -760,7 +761,6 @@
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
 <translation id="8420955526972171689">ለሃርድዌር ችግሮች ሙከራዎችን እና መላ ፍለጋን ያሂዱ</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">የውስጥ የቁልፍ ሰሌዳ</translation>
 <translation id="8431300646573772016">በChromeOS ምን አዲስ ነገር አለ</translation>
 <translation id="843568408673868420">የበይነመረብ ተገናኝነት</translation>
 <translation id="844521431886043384">ዲኤንኤስ አልተዋቀረም</translation>
@@ -817,7 +817,6 @@
 <translation id="8930521118335213258">አቻ</translation>
 <translation id="8930622219860340959">ገመድአልባ</translation>
 <translation id="8936793075252196307">የደንበኛ አይፒ አድራሻ</translation>
-<translation id="8945750210906526975">ውስጣዊ የመዳሰሻ ሰሌዳ</translation>
 <translation id="894617464444543719">መሣሪያ ስልክ ነው።</translation>
 <translation id="8968751544471797276">ኃይል መሙላት መጠን</translation>
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
@@ -835,6 +834,7 @@
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="9100765901046053179">የላቁ ቅንብሮች</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>
 <translation id="9111102763498581341">ክፈት</translation>

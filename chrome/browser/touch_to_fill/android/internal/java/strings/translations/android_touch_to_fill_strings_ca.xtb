@@ -7,7 +7,6 @@
 <translation id="207576718733492531">La llista de credencials que s'emplenaran amb un toc està tancada.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364266287022099258">Vols utilitzar la clau d'accés desada?</translation>
-<translation id="2410754283952462441">Tria un compte</translation>
 <translation id="3399357656427473483">Llista de credencials que s'emplenaran amb un toc.</translation>
 <translation id="3653689374478248324">Iniciaràs la sessió a <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Vols utilitzar la contrasenya o la clau d'accés desades?</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
 <translation id="7736236483645733578">Clau d'accés per a <ph name="USERNAME" />; utilitza el bloqueig de pantalla.</translation>
-<translation id="804577341878669140">Continua amb el compte</translation>
 </translationbundle>

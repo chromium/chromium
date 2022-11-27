@@ -700,6 +700,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でお支払いとクレジット カードの情報を管理します</translation>
 <translation id="2715808615350965923">スーパー A</translation>
 <translation id="271663710482723385">全画面表示を終了するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
+<translation id="2718207025093645426">管理対象のユーザーまたはデバイスにポリシーが読み込まれていません。</translation>
 <translation id="2721148159707890343">リクエストを正常に送信しました</translation>
 <translation id="2723669454293168317">Chrome の設定で安全確認を実行します</translation>
 <translation id="2726001110728089263">サイドトレイ</translation>
@@ -2844,6 +2845,7 @@
 <translation id="8233773197406738106">ファイルを準備しています</translation>
 <translation id="8235754723616617175">カントリー ミュージック</translation>
 <translation id="8237519162179154808">趣味、レジャー</translation>
+<translation id="8238188918340945316">28x40 インチ</translation>
 <translation id="8238581221633243064">ページを新しいシークレット タブで開く</translation>
 <translation id="8241707690549784388">検索しているページは、入力した情報を使用しています。このページに戻った場合、操作のやり直しが発生する可能性があります。続行しますか？</translation>
 <translation id="8241712895048303527">このサイトでブロック</translation>

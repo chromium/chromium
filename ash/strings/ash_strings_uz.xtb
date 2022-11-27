@@ -52,6 +52,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Market ilovasi</translation>
 <translation id="1225748608451425081">Chromebook qurilmangiz tanish xatolik tufayli qulflanib qoldi. Hisobingizga vaqtincha kira olmaysiz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Matnni tanlashni toʻxtatish</translation>
+<translation id="1235458158152011030">Tanish tarmoqlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ulandi.</translation>
 <translation id="1240638468526743569">Ilova</translation>
 <translation id="1246890715821376239">Ishlamaydigan ilovalar</translation>
@@ -386,7 +387,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3120421559657122717">Qurilma oʻchirilsinmi?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Yangilash uchun qayta ishga tushiring</translation>
-<translation id="3139382871451988441">Kameraga ruxsatni faolsizlantirish.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3151786313568798007">Joylashuv</translation>
@@ -519,7 +519,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="385300504083504382">Boshi</translation>
 <translation id="3861651314799684201">Butun ekranni yozib olish uchun Enter tugmasini bosing</translation>
-<translation id="3885531177412808398">Mikrofonga ruxsat bersangiz, barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3891340733213178823">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
@@ -648,11 +647,8 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4573176682887762361">“[soʻz yoki iborani] yozing”</translation>
 <translation id="4577274620589681794">Vaqt tugadi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Razm solishni yoqish</translation>
-<translation id="4578196883126898996">Mikrofon oʻchiq. Uni qurilma tugmasi orqali yoqing.</translation>
 <translation id="4578906031062871102">Sozlamalar menyusi ochildi</translation>
-<translation id="4581047786858252841">Mikrofon yoniq</translation>
 <translation id="4585337515783392668">Ekranni notanish qurilmaga translatsiya qilinishi to‘xtatilsin</translation>
-<translation id="4587299710837179226">Mikrofon yoqilmagan</translation>
 <translation id="4596144739579517758">Tungi mavzu yoqilmagan</translation>
 <translation id="4611292653554630842">Kirish</translation>
 <translation id="4623167406982293031">Hisobni tasdiqlang</translation>
@@ -1024,6 +1020,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Rasmni nusxalash</translation>
 <translation id="6671661918848783005">Chromebook qulfi ochilmadi</translation>
+<translation id="6683022854667115063">Quloqliklar</translation>
 <translation id="6696025732084565524">Tashqi klaviatura yangilanishi zarur</translation>
 <translation id="6700713906295497288">IME menyusi tugmasi</translation>
 <translation id="6707693040195709527">Qurilma tizimini eski versiyasiga qaytarish muddati oʻtib ketdi</translation>
@@ -1210,6 +1207,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7720410380936703141">QAYTADAN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ta bildirishnoma}other{# ta bildirishnoma}}</translation>
 <translation id="7724603315864178912">Qirqish</translation>
+<translation id="7742327441377685481">Bildirishnomalar yoʻq</translation>
 <translation id="7745560842763881396">Ilovalarni ishga tushirish panelida chiqarish</translation>
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
 <translation id="776344839111254542">Yangilanish tafsilotlarini ko‘rish uchun bosing</translation>
@@ -1381,7 +1379,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8666856788528804727">Qurilmani sozlash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8683506306463609433">Unumdorlik kuzatilmoqda</translation>
-<translation id="8684405646663021166">Mikrofonga ruxsat bersangiz, <ph name="APP_NAME" />, barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="8685326675965865247">Qurilma, ilovalar, sozlamalar va internetdan qidiring. Ilovalaringiz boʻylab strelkalar yordamida kezing.</translation>
 <translation id="8703634754197148428">Yozib olish. Yozib olish jarayoni boshlansa, javonga oʻtish va yozib olishni toʻxtatish tugmasini topish uchun Alt + Shift + L tugmalaridan foydalaning</translation>
 <translation id="8721053961083920564">Tovushlar: <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1403,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8819728065740986820">Moslashuvchan quvvatlash yoniq</translation>
 <translation id="8825863694328519386">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
-<translation id="8834657930627018205">Kamera ruxsatini yoqing</translation>
 <translation id="8841375032071747811">Orqaga tugmasi</translation>
 <translation id="8843682306134542540">Burishni qulflash/qulfdan chiqarish. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search + Esc</translation>

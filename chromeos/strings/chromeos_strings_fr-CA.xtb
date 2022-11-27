@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Essayer les étapes de dépannage</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Veuillez vous connecter à un réseau et actualiser la page pour afficher l'écran de veille.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2085089206770112532">Diminuer la luminosité de l'écran</translation>
 <translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
@@ -139,6 +140,7 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
+<translation id="2184005227776731758">Nom du point d'accès</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -268,7 +270,6 @@
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
-<translation id="3621202678540785336">Entrée</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
 <translation id="4800589996161293643">Communauté Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Thème clair</translation>
 <translation id="4813136279048157860">Mes images</translation>
@@ -396,6 +398,7 @@
 <translation id="4847902821209177679">Source sélectionnée : <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />), appuyez sur la touche Entrée pour sélectionner des albums de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
+<translation id="4854586501323951986">Écran tactile intégré</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
 <translation id="4873827928179867585">Algorithme d'authentification</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>
@@ -404,6 +407,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Le niveau de la pile de l'écouteur gauche est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activez la fonctionnalité pour sélectionner les options de l'écran de veille</translation>
+<translation id="4910858703033903787">Types de noms de points d'accès</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
 <translation id="491791267030419270">Conseils pour rédiger des commentaires</translation>
@@ -459,6 +463,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5358174242040570474">Un problème est survenu. Essayez de nouveau de choisir un fond d'écran ou rouvrez l'application.</translation>
 <translation id="5372659122375744710">Le réseau Wi-Fi n'est pas sécurisé</translation>
 <translation id="5376354385557966694">Mode clair automatique</translation>
+<translation id="5378184552853359930">Type d'IP</translation>
 <translation id="5389159777326897627">Fond d'écran et style</translation>
 <translation id="5389224261615877010">Arc-en-ciel</translation>
 <translation id="5400907029458559844">L'appareil se connecte.</translation>
@@ -569,6 +574,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6394634179843537518">Ajouter un fichier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
+<translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
@@ -667,6 +673,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="73631062356239394">Partager les données de diagnostics</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Pavé tactile intégré</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
@@ -715,7 +722,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
-<translation id="7890841768028788197">Écran tactile interne</translation>
 <translation id="7915220255123750251">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet.</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
@@ -741,6 +747,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8179976553408161302">Entrée</translation>
+<translation id="8183974620058026102">Joindre</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
@@ -763,7 +770,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8420955526972171689">Réalisez des tests et des étapes de dépannage en cas de problèmes matériels</translation>
 <translation id="8422748173858722634">IIEM</translation>
-<translation id="8428073762635678092">Clavier interne</translation>
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">Le DNS n'est pas configuré</translation>
@@ -820,7 +826,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
-<translation id="8945750210906526975">Pavé tactile interne</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
@@ -831,6 +836,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9025198690966128418">Utiliser comme un appareil personnel</translation>
 <translation id="9028832514430399253">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -838,6 +844,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>

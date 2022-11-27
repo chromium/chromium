@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2276999893457278469">Populært hjelpeinnhold</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Avanserte innstillinger</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">Wifi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="361575905210396100">Takk for tilbakemeldingen</translation>
-<translation id="3621202678540785336">Inndata</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
@@ -397,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt – trykk på Enter for å velge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="484790837831576105">(Android) DNS-oppslag</translation>
 <translation id="4848429997038228357">KJØRER</translation>
+<translation id="4854586501323951986">Innebygd berøringsskjerm</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
 <translation id="4873827928179867585">Algoritme for autentisering</translation>
 <translation id="4880328057631981605">Navn på tilgangspunkt</translation>
@@ -570,6 +569,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6394634179843537518">Legg til fil</translation>
 <translation id="6410257289063177456">Bildefiler</translation>
 <translation id="641081527798843608">Emnetreff</translation>
+<translation id="6412715219990689313">Innebygd tastatur</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
@@ -668,6 +668,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="73631062356239394">Del diagnostikkdata</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Innebygd styreflate</translation>
 <translation id="7397270852490618635">Slå av lyst tema</translation>
 <translation id="741244894080940828">omregning</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
@@ -716,7 +717,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
 <translation id="7882501334836096755">Offentlig nøkkel</translation>
-<translation id="7890841768028788197">Intern berøringsskjerm</translation>
 <translation id="7915220255123750251">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett.</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7942349550061667556">Rød</translation>
@@ -764,7 +764,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Internt tastatur</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
 <translation id="843568408673868420">Internettilkobling</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
@@ -821,7 +820,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8930521118335213258">Motpart</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
-<translation id="8945750210906526975">Intern styreflate</translation>
 <translation id="894617464444543719">Enheten er en telefon.</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
@@ -839,6 +837,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Avanserte innstillinger</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>

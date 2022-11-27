@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Please connect to a network and reload the page to view screen saver.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2085089206770112532">Display brightness down</translation>
 <translation id="2105810540595158374">Device is a game controller.</translation>
@@ -139,6 +140,7 @@
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
@@ -152,7 +154,6 @@
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2276999893457278469">Top help content</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Advanced Settings</translation>
 <translation id="2307344026739914387">Use current keypair</translation>
 <translation id="2320295602967756579">Enable Light theme</translation>
 <translation id="2323506179655536734">SKIPPED</translation>
@@ -269,7 +270,6 @@
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="361575905210396100">Thanks for your feedback</translation>
-<translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
@@ -386,6 +386,7 @@
 <translation id="4793756956024303490">Compression algorithm</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
 <translation id="4800589996161293643">Chromebook community</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Light theme</translation>
 <translation id="4813136279048157860">My Images</translation>
@@ -397,6 +398,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selected, press Enter to select <ph name="TOPIC_SOURCE" /> albums</translation>
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">RUNNING</translation>
+<translation id="4854586501323951986">Built-in touchscreen</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="4873827928179867585">Authentication algorithm</translation>
 <translation id="4880328057631981605">Access point name</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Device has <ph name="BATTERY_PERCENTAGE" />% left bud battery.</translation>
 <translation id="4905998861748258752">Turn the feature on to select screen saver options</translation>
+<translation id="4910858703033903787">APN types</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="491791267030419270">Tips on writing feedback</translation>
@@ -460,6 +463,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5358174242040570474">Something went wrong. Try choosing a wallpaper again or reopen the app.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
+<translation id="5378184552853359930">IP type</translation>
 <translation id="5389159777326897627">Wallpaper and style</translation>
 <translation id="5389224261615877010">Rainbow</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
@@ -570,6 +574,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6394634179843537518">Add file</translation>
 <translation id="6410257289063177456">Image Files</translation>
 <translation id="641081527798843608">Subject match</translation>
+<translation id="6412715219990689313">Built-in keyboard</translation>
 <translation id="6423239382391657905">Open VPN</translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Go to account settings</translation>
@@ -668,6 +673,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="73631062356239394">Share diagnostic data</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Built-in touchpad</translation>
 <translation id="7397270852490618635">Turn Light theme off</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
@@ -716,7 +722,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
-<translation id="7890841768028788197">Internal touchscreen</translation>
 <translation id="7915220255123750251">Manage network APN settings. APNs establish a connection between a mobile network and the Internet.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
@@ -742,6 +747,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
@@ -764,7 +770,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8420955526972171689">Run tests and troubleshooting for hardware issues</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Internal keyboard</translation>
 <translation id="8431300646573772016">What's new with Chrome OS</translation>
 <translation id="843568408673868420">Internet connectivity</translation>
 <translation id="844521431886043384">DNS isn't set up</translation>
@@ -821,7 +826,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">Client IP address</translation>
-<translation id="8945750210906526975">Internal touchpad</translation>
 <translation id="894617464444543719">Device is a phone.</translation>
 <translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
@@ -832,6 +836,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9025198690966128418">Use as a personal device</translation>
 <translation id="9028832514430399253">Turn on the toggle to select the screen saver options</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS resolution has high latency</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -839,6 +844,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="9100765901046053179">Advanced settings</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Unlock</translation>

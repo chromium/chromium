@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
+<translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1633720957382884102">متعلقہ سائٹس</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">آواز</translation>
 <translation id="2107397443965016585">سائٹس کو محفوظ مواد چلانے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="2148716181193084225">آج</translation>
+<translation id="216989819110952009">یہاں تک کہ سبز چشموں سے محفوظ آنکھوں کے ساتھ ڈوروتھی اور اس کے دوست شروعات میں اسے دیکھ کر حیران رہ گئے</translation>
 <translation id="2182457891543959921">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
 <translation id="2228071138934252756">‏<ph name="APP_NAME" /> کو اپنے کیمرے تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2379925928934107488">‏ممکن ہو تو سائٹس پر گہری تھیم لاگو ہوتی ہے جب Chrome کو گہری تھیم استعمال کرنے کیلئے سیٹ کیا جاتا ہے</translation>
 <translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
+<translation id="2390272837142897736">زوم ان کریں</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">‏یہ سائٹ ان دلچسپیوں کا تعین کرتی ہے جو دوسری سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کر سکتی ہیں۔ یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں بھی موصول کرتی ہے۔</translation>
 <translation id="3277252321222022663">سائٹس کو سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
+<translation id="3295019059349372795">گیارھواں باب: اوز کا شاندار زمردی شہر</translation>
 <translation id="3295602654194328831">معلومات چھپائیں</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="3333961966071413176">تمام رابطے</translation>
 <translation id="3362437373201486687">بلوٹوتھ آلات کے لیے اسکین کی جا رہی ہیں</translation>
 <translation id="3386292677130313581">سائٹس کو آپ کا مقام جاننے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="3403537308306431953">%%‎ ‎<ph name="ZOOM_LEVEL" /></translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> کے تحت سائٹس</translation>
 <translation id="3538390592868664640">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے سے مسدود کریں</translation>
 <translation id="3544058026430919413">ایک کمپنی سائٹس کے ایک گروپ کی وضاحت کر سکتی ہے جو گروپ میں آپ کی سرگرمی کا اشتراک کرنے کے لیے کوکیز کا استعمال کر سکتی ہے۔ یہ پوشیدگی میں آف ہے۔</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">سائٹس کو موشن سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="5050380848339752099">یہ سائٹ پوشیدگی وضع سے باہر ایک ایپ کے ساتھ معلومات کا اشتراک کرنے والی ہے۔</translation>
 <translation id="5063480226653192405">استعمال</translation>
-<translation id="5082281938627763039">یہ <ph name="FPS_MEMBER" /> کے لیے اور <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں موجود سائٹس کے لیے کوکیز اور دیگر سائٹ کے ڈیٹا کو حذف کر دیتا ہے</translation>
 <translation id="5091013926750941408">موبائل سائٹ</translation>
 <translation id="509133520954049755">ڈیسک ٹاپ منظر کی درخواست کریں</translation>
 <translation id="5100237604440890931">سکیڑ دیا گیا - پھیلانے کیلئے کلک کریں۔</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے سے مسدود کریں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
+<translation id="6453641458248223456">اصل مینو سے کسی صفحے پر زوم ان یا آؤٹ کریں</translation>
 <translation id="6467852467360539617">ڈیٹا صاف کریں اور اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7667547420449112975">اوز کا شاندار جادوگر</translation>
+<translation id="7690549345586282764">زوم کے لیے مینو آئٹم دکھائیں</translation>
 <translation id="7719367874908701697">صفحہ کا زوم</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">کسی مخصوص سائٹ کے لیے کوکیز مسدود کریں۔</translation>
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
 <translation id="8986362086234534611">بھول جائیں</translation>
+<translation id="900095568014372589">سائٹس پر بطور ڈیفالٹ ٹیکسٹ اور تصاویر کو چھوٹی یا بڑی کریں</translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9090268041676521955">یہ سائٹ ایک گروپ میں موجود ہے، جو آپ کی سرگرمی دیکھ سکتا ہے۔ گروپ کی وضاحت <ph name="FPS_OWNER" /> نے کی ہے</translation>
 <translation id="9106233582039520022">کوکیز حذف کریں؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
+<translation id="9138217887606523162">موجودہ زوم %% <ph name="ZOOM_LEVEL" /> ہے</translation>
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
 <translation id="930525582205581608">اس سائٹ کو بھول جائیں؟</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>

@@ -52,6 +52,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store app</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
+<translation id="1235458158152011030">Known networks</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1240638468526743569">An app</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
@@ -386,7 +387,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Restart to update</translation>
-<translation id="3139382871451988441">Turn off camera access.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3151786313568798007">Orientation</translation>
@@ -519,7 +519,6 @@ Connect your device to power.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
-<translation id="3885531177412808398">Allows microphone access for all apps and websites with the microphone permission</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -555,6 +554,7 @@ Connect your device to power.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off for an app}other{Off for # apps}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Medium signal</translation>
+<translation id="4086921558679520050">Turn on physical mic switch on your device</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,6 +607,7 @@ Connect your device to power.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
+<translation id="4381031910344220229">This allows microphone access for <ph name="APP_NAME" /> and all apps and websites with the microphone permission</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
 <translation id="439598569299422042">Paused, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Can't save screencast</translation>
@@ -648,11 +649,8 @@ Connect your device to power.</translation>
 <translation id="4573176682887762361">'Type [word / phrase]'</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
-<translation id="4578196883126898996">Your microphone is off. Turn on your device’s microphone button.</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
-<translation id="4581047786858252841">Microphone is on</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
-<translation id="4587299710837179226">Microphone is off</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>
 <translation id="4623167406982293031">Verify account</translation>
@@ -963,6 +961,7 @@ Connect your device to power.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connected</translation>
 <translation id="6351032674660237738">APP SUGGESTIONS</translation>
+<translation id="6352082849089527770">Unknown networks</translation>
 <translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
@@ -1024,6 +1023,7 @@ New install</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6671661918848783005">Can't unlock your Chromebook</translation>
+<translation id="6683022854667115063">Headphones</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
 <translation id="6700713906295497288">IME menu button</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
@@ -1136,6 +1136,7 @@ New install</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
 <translation id="736045644501761622">Set wallpaper and style</translation>
 <translation id="7371404428569700291">Record window</translation>
+<translation id="737315737514430195">This allows microphone access for all apps and websites with the microphone permission</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7377481913241237033">Connect with a code</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
@@ -1204,12 +1205,14 @@ New install</translation>
 <translation id="7671610481353807627">Apps are sorted by colour</translation>
 <translation id="7672095158465655885">Connected to <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">This allows microphone access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the microphone permission</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
 <translation id="7720400844887872976">On until <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7742327441377685481">No notifications</translation>
 <translation id="7745560842763881396">Show apps in shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="776344839111254542">Click to view update details</translation>
@@ -1381,7 +1384,6 @@ New install</translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> to set up your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
-<translation id="8684405646663021166">Allows microphone access for <ph name="APP_NAME" /> and all apps and websites with the microphone permission</translation>
 <translation id="8685326675965865247">Search your device, apps, settings and web. Use the arrow keys to navigate your apps.</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1408,6 @@ New install</translation>
 <translation id="8819728065740986820">Adaptive charging is on</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8834539327799336565">Currently connected</translation>
-<translation id="8834657930627018205">Turn on camera access.</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

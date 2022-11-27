@@ -166,6 +166,17 @@
             * ntlm
             如果將這個選項留空，就表示上述三種機制皆可使用。</translation>
 <translation id="1153306961094113710">允許遠端偵錯</translation>
+<translation id="1156636278540386588">控制瀏覽器可否使用資訊清單 v2 擴充功能。
+
+資訊清單 v2 擴充功能支援將遭淘汰，日後所有擴充功能都必須遷移至 v3。如要進一步瞭解遷移的資訊和時間表，請前往 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
+
+如果將這項政策設為「<ph name="DEFAULT" />」(0) 或不設定，瀏覽器會依據上述時間表決定是否載入 v2 擴充功能。
+如果將這項政策設為「<ph name="DISABLE" />」(1)，系統將禁止安裝 v2 擴充功能，並停用現有的 v2 擴充功能。在根據預設關閉 v2 支援後，這個選項將比照不設定這項政策時的做法處理。
+如果將這項政策設為「<ph name="ENABLE" />」(2)，系統將允許使用 v2 擴充功能。在根據預設關閉 v2 支援前，這個選項將比照不設定這項政策時的做法處理。
+如果將這項政策設為 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系統將允許強制安裝的 v2 擴充功能。這包括 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出，且 <ph name="INSTALLATION_MODE" /> 為「force_installed」或「normal_installed」的擴充功能。系統會停用所有其他 v2 擴充功能。在根據預設關閉 v2 支援前，這個選項將比照不設定這項政策時的做法處理。
+
+
+擴充功能可用性仍會受其他政策控制。</translation>
 <translation id="115699958189272121">回報 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />事件</translation>
 <translation id="1157003104143964656">你可以透過這項政策啟用或停用登入攔截功能。
 
@@ -293,6 +304,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域、在 Windows 10 專業版上執行，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。</translation>
 <translation id="1285819498003746288">Event.path API 將無法使用。</translation>
 <translation id="129206366270737897">停用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 的任何非同步方法。</translation>
+<translation id="129392056654547767">VM 使用的 UEFI 韌體映像檔。這只是暫時性的措施，我們正在將這個映像檔封裝為 ChromeOS 的可下載內容。</translation>
 <translation id="1294263471858445589">在無痕模式工作階段和一般工作階段中啟用背景驗證。</translation>
 <translation id="1295737447968372331">在登入畫面上啟用語音輸入功能</translation>
 <translation id="1297182715641689552">使用 .pac Proxy 指令碼</translation>
@@ -1354,15 +1366,6 @@
 <translation id="2326031114717677574">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 15 分鐘的預設頻率。</translation>
-<translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
-
-      如果你將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" />，就必須設定這項政策，不可將其保持空白。
-
-      如果你將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_AUTOMATIC" />，且設定了這項政策，系統就會使用指定的 URI 範本；如果不設定這項政策，則系統會使用硬式編碼對應，嘗試將使用者目前的 DNS 解析器升級為相同供應商所提供的 DoH 解析器。
-
-      如果 URI 範本包含 <ph name="HTTP_VARIABLE_DNS" /> 變數，則對解析器的要求會使用 <ph name="HTTP_METHOD_GET" />；否則這些要求會使用 <ph name="HTTP_METHOD_POST" />。
-
-      系統會忽略格式不正確的範本。</translation>
 <translation id="2333228572393176330">這項政策可控管傳輸層安全標準 (TLS) 1.3 中的一項安全防護功能，其作用在於防範降級攻擊，以保護連線的安全性。這項政策與舊版相容，且不會影響與傳輸層安全標準 (TLS) 1.2 伺服器或 Proxy 相容的連線。但是，部分舊版的傳輸層安全標準 (TLS) 攔截 Proxy 具有實作瑕疵，因此會造成無法相容的情形。
 
       如果將這項政策設為 True 或不予設定，<ph name="PRODUCT_NAME" /> 會針對所有連線啟用這些安全保護措施。
@@ -1675,8 +1678,6 @@
 <translation id="2623014935069176671">等待初始使用者活動</translation>
 <translation id="2625026032335150744">勾選保留現有瀏覽資料的預設選項</translation>
 <translation id="2625398797484317969">控管快速解答功能的設定。</translation>
-<translation id="2626748638108838507">如果目前的 OS 版本比目標版本新，則將裝置復原至目標版本。系統會將裝置恢復原廠設定，但保留裝置通用的網路設定 (不含憑證)，並自動重新註冊。
-          這個選項適用於將裝置復原至 <ph name="PRODUCT_OS_NAME" /> 106 以上版本的作業。如果是舊版用戶端，系統可能無法保留網路設定，裝置也無法自動重新註冊。</translation>
 <translation id="262740370354162807">啟用「<ph name="CLOUD_PRINT_NAME" />」文件提交功能</translation>
 <translation id="2633084400146331575">啟用互動朗讀</translation>
 <translation id="2633907568797306353">允許啟用 Phone Hub 通知</translation>
@@ -2139,6 +2140,7 @@
 <translation id="3067462824622454143">允許使用者決定是否在裝置暫停或機蓋蓋上時鎖定裝置</translation>
 <translation id="3070119171976169951">禁止第三方映像檔顯示驗證提示</translation>
 <translation id="3072045631333522102">在零售模式下登入畫面所使用的螢幕保護程式</translation>
+<translation id="3072205795519163619">VM 韌體使用的初始不變性 UEFI 資料</translation>
 <translation id="3072788420987305247">將這項政策設為啟用或不設定時，如果使用者在媒體播放時鎖定裝置，系統會在螢幕鎖定畫面上顯示媒體控制項。
 
       如果將這項政策設為停用，系統會關閉螢幕鎖定畫面上的媒體控制項。</translation>
@@ -2398,6 +2400,7 @@
       如果關閉這項設定或不設定，密碼保護服務只會在 https://accounts.google.com 上擷取密碼的加鹽雜湊值。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="3259506006965153552">控制使用這項設定的 VM 是否可存取 vTPM，預設為 False</translation>
 <translation id="3261592499545947104">憑證過期之前提早觸發更新程序的秒數</translation>
 <translation id="3262080895269946462">允許將第三方內容中的 WebSQL 預設為停用。</translation>
 <translation id="3263892501786842604">允許在「新分頁」頁面的搜尋框中顯示 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按鈕 (如果支援)。</translation>
@@ -3460,6 +3463,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
+<translation id="4394840953265135019">壓縮物件的下載網址。物件可能採用 gzip、bzip2、lzma 或 zstd 方法進行壓縮，系統會在下載後自動偵測。如果無法自動偵測出壓縮方法，物件可能無法解壓縮。</translation>
 <translation id="439661169333921592">在登入畫面上停用鍵盤焦點醒目顯示功能</translation>
 <translation id="4397045637922200204">停用帳戶救援服務</translation>
 <translation id="4397464099112037398">預設的視窗放置權限設定</translation>
@@ -3786,6 +3790,7 @@
 <translation id="4725691087141147920">登入時顯示同步同意聲明</translation>
 <translation id="4725801978265372736">要求比對本機使用者和遠端存取主機擁有者的名稱</translation>
 <translation id="4726228171190098009">不允許裝置要求恢復原廠設定</translation>
+<translation id="4726895359147376813">從永久 ID 對應至 VM 設定</translation>
 <translation id="4733471537137819387">與整合 HTTP 驗證相關的政策。</translation>
 <translation id="4735099388031364207">如果將這項政策設為啟用，裝置將可使用遠端認證。系統會自動產生憑證並上傳到裝置管理伺服器。
 
@@ -4064,6 +4069,15 @@
 
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
+<translation id="5069522005630249098">這項設定會決定系統在 <ph name="LACROS_NAME" /> 停用後保留的使用者資料量。
+
+      如果將這項政策設為「<ph name="LACROS_BACKWARD_MIGRATION_NONE" />」或不設定，系統就不會執行反向資料遷移作業。
+
+      如果將這項政策設為「<ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />」，系統將移除所有使用者資料。這是最安全的選項。
+
+      如果將這項政策設為「<ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />」，系統將移除大部分的使用者資料，只保留與瀏覽器無關的檔案，例如下載內容。
+
+      如果將這項政策設為「<ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />」，系統將保留所有使用者資料。這個選項的失敗風險很高，必須恢復原廠設定才能復原。</translation>
 <translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -4083,6 +4097,7 @@
       如果不設定或停用這項政策，永久類型的 webkitRequestFileSystem 將採用暫時配額運作。
       </translation>
 <translation id="5105313908130842249">在電池供電環境下執行時的螢幕鎖定延遲時間</translation>
+<translation id="5106077438006122286">控制當執行中的 VM 不符合這項政策設定時該如何處置，預設為 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /></translation>
 <translation id="5108031557082757679">已停用企業裝置印表機</translation>
 <translation id="5109383437323376357">指定變化版本的可用性</translation>
 <translation id="5118635822783657217">停用非重大元件的更新</translation>
@@ -4279,6 +4294,7 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用游標醒目提示功能，但使用者隨時可以啟用。</translation>
+<translation id="528302483493794684">這是 VM 設定，代表使用者可安裝的 VM 類型 (會永久關聯至這個設定的 ID)，以及適用於這類 VM 的控制項。</translation>
 <translation id="5283457834853986457">停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5286579716704722323">允許使用者點閱安全資料傳輸層警告網頁</translation>
 <translation id="5288772341821359899">如果設定這項政策，系統會將 WebRTC 所使用的 UDP 連接埠範圍限於指定的連接埠區間 (包括端點)。
@@ -4394,6 +4410,7 @@
 
       如果將這項政策設為停用，則系統無法刪除瀏覽記錄和下載記錄。即使關閉這項政策，瀏覽及下載記錄也不一定會保留。使用者或許可以直接編輯或刪除記錄資料庫檔案，而瀏覽器本身也可能隨時清除或封存部分或所有記錄項目。</translation>
 <translation id="5420245232720940848">為 Thunderbolt/USB4 周邊裝置停用 PCIe 通道，限制裝置功能</translation>
+<translation id="5420774177427557782">控制使用這項設定的 VM 是可安裝並執行 (<ph name="INSTALL_ALLOWED" />)、可執行但不允許安裝 (<ph name="RUN_ALLOWED" />)，或不允許執行 (<ph name="BLOCKED" />)。請注意，如要安裝 VM，必須同時設定 installer_image_x86_64 金鑰。如果完全移除設定，系統會以隱含方式將這個 VM 設為「<ph name="BLOCKED" />」，進而導致 VM 無法在沒有政策的情況下執行。</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> 授權金鑰</translation>
 <translation id="5423197884968724595">Android WebView 限制名稱：</translation>
 <translation id="5424147596523390018">允許所有色彩模式</translation>
@@ -4458,6 +4475,7 @@
       </translation>
 <translation id="5448022937220253000">選擇系統在 <ph name="LACROS_NAME" /> 停用後要如何處理使用者資料</translation>
 <translation id="5449690328792750354">Event.path API 將可供使用。</translation>
+<translation id="5452024130413254050">控制使用這項設定的 VM 是否可存取 vTPM。如未設定，預設為 False，如果不設定，則預設為 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />。</translation>
 <translation id="5455609857202311243">在 HTTP 驗證期間忽略 KDC 政策的核准結果</translation>
 <translation id="5455888515928026628">透過螢幕鎖定畫面登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
 
@@ -4674,6 +4692,7 @@
           這項政策的值只有在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策啟用時才適用，在其他情況下一概不適用。</translation>
 <translation id="5697306356229823047">回報裝置使用者</translation>
 <translation id="569777361305162263">停用以整個分頁顯示促銷內容</translation>
+<translation id="569834442020549908">用於在 x86_64 裝置上安裝 VM 的 UEFI 開機磁碟映像檔</translation>
 <translation id="5698923148503075597">如果將這項政策設為啟用，當雲端政策與平台政策發生衝突時，系統會優先採用雲端政策。
 
       如果將這項政策設為停用或不設定，當平台政策與雲端政策發生衝突時，系統會優先採用平台政策。
@@ -5457,7 +5476,6 @@
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
 <translation id="6521971538031711337">禁止受管理的使用者設定裝置主機名稱</translation>
 <translation id="6523079496775454310">在非受管裝置上詢問受管理使用者是否同意分享裝置信號</translation>
-<translation id="652593254122955308">逾時直到閒置的設定檔關閉為止</translation>
 <translation id="6527674993612811419">在不安全的表單上顯示警告並停用自動填入功能</translation>
 <translation id="6532026122543921610">除非 <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> 政策停用了自動偵測時區的功能，否則你可以透過這項政策概括設定自動偵測時區的方法，且使用者無法變更這項設定。
 
@@ -5756,6 +5774,7 @@
 <translation id="6766216162565713893">允許網站要求使用者授權存取附近的藍牙裝置</translation>
 <translation id="6770454900105963262">回報運作中資訊站工作階段相關資訊</translation>
 <translation id="6774132787348495175">不允許使用者透過虛擬機器執行 Linux 應用程式</translation>
+<translation id="6780028483481123221">壓縮物件的十六進位編碼 SHA-256 雜湊</translation>
 <translation id="6782331708811245959">啟用裝置啟動模式回報功能</translation>
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
@@ -6212,15 +6231,6 @@
       你必須已安裝 Chrome 遠端桌面主機，否則系統將忽略這些政策。</translation>
 <translation id="7202925763179776247">允許下載限制</translation>
 <translation id="7207095846245296855">強制啟用 Google 安全搜尋模式</translation>
-<translation id="7208483746373960784">這項設定會決定系統在 <ph name="LACROS_NAME" /> 停用後保留的使用者資料量。
-
-      如果這項政策設為 <ph name="LACROS_BACKWARD_MIGRATION_NONE" />，系統不會執行反向資料遷移作業。
-
-      如果這項政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />，系統將會移除所有使用者資料。這是最安全的選項。
-
-      如果這項政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />，系統將會移除大部分的使用者資料，只保留與瀏覽器無關的檔案，例如下載的檔案。
-
-      如果這項政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />，系統會保留所有使用者資料。這個選項的失敗風險很高，必須恢復原廠設定才能復原。</translation>
 <translation id="7211368186050418507">一律不自動偵測時區</translation>
 <translation id="7216442368414164495">允許使用者採用安全瀏覽模式的進階回報功能</translation>
 <translation id="721970071627370558">停用裝置電源狀態回報功能</translation>
@@ -6999,6 +7009,7 @@
 <translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />與「儲存至 Google 雲端硬碟」目的地 (已淘汰)</translation>
 <translation id="80453040817068401">將 <ph name="LACROS_NAME" /> 設為可用瀏覽器</translation>
 <translation id="804619600634661088">允許使用遠端偵錯功能</translation>
+<translation id="8047600674992048328">這項設定的公開名稱</translation>
 <translation id="8049769137921877885">這項政策可控管系統是否要回報政策資料和擷取政策的時間。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。
@@ -7665,6 +7676,9 @@
       如果將這項政策設為停用或不設定，遠端存取主機即可與任何本機使用者建立關聯。</translation>
 <translation id="867708016260789630">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="8677853537025397834">允許這些網站上的 WebHID API</translation>
+<translation id="8684000025871334499">在 <ph name="PRODUCT_OS_NAME" /> 上設定 Bruschetta VM 的安裝和執行階段政策。這樣做可以讓使用者安裝第三方 VM。這項功能預設為停用。
+
+這項政策是設定 ID 與 VM 設定的對應關係。透過設定安裝 VM 時，VM 會永久關聯至該設定 ID，且該設定中的任何執行階段政策都會套用至 VM。系統可能會在相同裝置上以相同設定安裝多個 VM。</translation>
 <translation id="8685018726115727387">不允許在第一次執行時匯入瀏覽記錄</translation>
 <translation id="8685024486845674965">密碼遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8685680544554917389">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 即可自動播放媒體。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 不會自動播放媒體。
@@ -7809,13 +7823,6 @@
       如果不設定這項政策，系統會使用網路沙箱的預設設定。這可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。
       設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
-<translation id="8850156309475162935">在電腦閒置時觸發動作。
-
-        如果這項政策設為正數：這個數值代表的是分鐘數。如果使用者在上述時間內沒有輸入內容，<ph name="PRODUCT_NAME" /> 將關閉所有瀏覽器視窗，然後顯示設定檔選擇畫面。
-
-        如果這個政策的值小於 5 或不設定：電腦進入閒置狀態後不會觸發任何動作。
-
-        「使用者輸入內容」是由 Operating System API 定義，其中包含移動滑鼠或鍵盤輸入等內容。</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
@@ -7950,6 +7957,7 @@
       如果停用這項政策設或不設定，無論註冊 ID 的上傳狀態為何，系統都不會觸發遠端裝置的 Powerwash 功能。
 
       每次載入登入畫面時，系統都會觸發這項檢查作業。如果裝置持續停留在登入畫面上，系統會每小時觸發一次。這樣可以避免遷移作業在使用者工作階段期間啟動，進而造成使用者遇到潛在問題。</translation>
+<translation id="9003823644527627017">在 <ph name="PRODUCT_OS_NAME" /> 上設定 Bruschetta VM</translation>
 <translation id="9007632512838819703">這項政策已遭淘汰，請改用 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />。
 
       這項政策會強制停用語言拼字檢查功能。系統會忽略該清單中無法辨識的語言。
@@ -8079,6 +8087,7 @@
 <translation id="9117826695152538214">將這項政策設為 True 時，系統會讓相黏鍵保持在啟用狀態。將這項政策設為 False 時，系統會讓相黏鍵保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用相黏鍵，但使用者隨時可以啟用。</translation>
+<translation id="91206085111961438">控制資訊清單 v2 擴充功能的可用性</translation>
 <translation id="9121178963309901985">這項政策控管 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求，能讓使用者傳送要求至 Google 管理控制台以取得核准。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策，且不會建立或上傳擴充功能安裝要求。

@@ -52,6 +52,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-app</translation>
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
+<translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1240638468526743569">Een app</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
@@ -386,7 +387,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3120421559657122717">Apparaat uitzetten?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
-<translation id="3139382871451988441">Cameratoegang uitzetten</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3151786313568798007">Stand</translation>
@@ -519,7 +519,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
-<translation id="3885531177412808398">Microfoontoegang toestaan voor alle apps en websites met microfoonrechten</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -648,11 +647,8 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4573176682887762361">'Typ [woord/woordgroep]'</translation>
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
-<translation id="4578196883126898996">Je microfoon staat uit. Zet de microfoonknop van je apparaat aan.</translation>
 <translation id="4578906031062871102">Menu Instellingen geopend</translation>
-<translation id="4581047786858252841">Microfoon staat aan</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
-<translation id="4587299710837179226">Microfoon staat uit</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4611292653554630842">Inloggen</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
@@ -1024,6 +1020,7 @@ Nieuwe installatie</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6671661918848783005">Kan je Chromebook niet ontgrendelen</translation>
+<translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
 <translation id="6707693040195709527">Het apparaat had al moeten zijn teruggezet naar een oudere versie</translation>
@@ -1378,7 +1375,6 @@ Nieuwe installatie</translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> om je apparaat in te stellen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8683506306463609433">Bijhouden van prestaties is actief</translation>
-<translation id="8684405646663021166">Microfoontoegang toestaan voor <ph name="APP_NAME" /> en alle apps en websites met microfoonrechten</translation>
 <translation id="8685326675965865247">Zoek op je apparaat, in apps en instellingen en op internet. Gebruik de pijltoetsen om te navigeren in je apps.</translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
@@ -1403,7 +1399,6 @@ Nieuwe installatie</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
-<translation id="8834657930627018205">Cameratoegang aanzetten</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Zoeken+Esc</translation>

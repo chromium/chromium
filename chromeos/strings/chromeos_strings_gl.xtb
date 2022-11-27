@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nomes</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="361575905210396100">Grazas polos teus comentarios</translation>
-<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
@@ -715,7 +715,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
-<translation id="7890841768028788197">Pantalla táctil integrada</translation>
 <translation id="7915220255123750251">Xestiona a configuración do APN da rede. Os APN establecen unha conexión entre unha rede de telefonía móbil e Internet.</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7942349550061667556">Vermello</translation>
@@ -763,7 +762,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
 <translation id="8420955526972171689">Fai probas e soluciona problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Teclado integrado</translation>
 <translation id="8431300646573772016">Novidades de Chrome OS</translation>
 <translation id="843568408673868420">Conectividade de Internet</translation>
 <translation id="844521431886043384">O DNS non está configurado</translation>
@@ -820,7 +818,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8930521118335213258">Semellante</translation>
 <translation id="8930622219860340959">Sen fíos</translation>
 <translation id="8936793075252196307">Enderezo IP do cliente</translation>
-<translation id="8945750210906526975">Panel táctil integrado</translation>
 <translation id="894617464444543719">O dispositivo é un teléfono.</translation>
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
@@ -838,6 +835,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

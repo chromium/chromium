@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
+<translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1633720957382884102">Seotud saidid</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Heli</translation>
 <translation id="2107397443965016585">Küsi enne saidile kaitstud sisu esitamiseks loa andmist (soovitatav)</translation>
 <translation id="2148716181193084225">Täna</translation>
+<translation id="216989819110952009">Kuigi rohelised prillid olid silmade kaitseks ninale asetatud, olid Dorothy ja tema sõbrad esialgu</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2379925928934107488">Kui Chrome kasutab tumedat teemat, rakendatakse saitidele võimaluse korral tume teema</translation>
 <translation id="2387895666653383613">Teksti skaleerimine</translation>
+<translation id="2390272837142897736">Suumi suurendamine</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}}</translation>
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">See sait defineerib huvid, mida muud saidid saavad teile reklaamide kuvamiseks kasutada. Samuti hangib see sait Chrome'ist teie huvid, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="3277252321222022663">Luba saitide jaoks juurdepääs anduritele (soovitatav)</translation>
 <translation id="3285500645985761267">Luba seotud saitidel näha minu tegevusi grupis</translation>
+<translation id="3295019059349372795">11. peatükk: Ozi imeline smaragdlinn</translation>
 <translation id="3295602654194328831">Peida teave</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="3333961966071413176">Kõik kontaktid</translation>
 <translation id="3362437373201486687">Bluetooth-seadmete otsimine</translation>
 <translation id="3386292677130313581">Küsi enne saitidele minu asukoha avaldamist (soovitatav)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="3521663503435878242">Saidid domeenil <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Saitide jaoks blokeeritakse teid ümbritsevast 3D-kaardi loomine või kaamera asendi jälgimine</translation>
 <translation id="3544058026430919413">Ettevõte saab määratleda saitide grupi, mis saavad kasutada küpsisefaile, et teie tegevusi grupis jagada. See on inkognito režiimis välja lülitatud.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Luba saitide jaoks juurdepääs liikumisanduritele (soovitatav)</translation>
 <translation id="5050380848339752099">See sait jagab teavet väljaspool inkognito režiimi oleva rakendusega.</translation>
 <translation id="5063480226653192405">Kasutus</translation>
-<translation id="5082281938627763039">See kustutab saidi <ph name="FPS_MEMBER" /> ning muude domeeni <ph name="FPS_OWNER" /> saidigrupi saitide puhul küpsisefailid ja saidiandmed</translation>
 <translation id="5091013926750941408">Mobiilisait</translation>
 <translation id="509133520954049755">Taotle arvutivaadet</translation>
 <translation id="5100237604440890931">Ahendatud – laiendamiseks klõpsake.</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokeeri saitidel virtuaalreaalsuse seadme ja andmete kasutamine</translation>
 <translation id="6447842834002726250">Küpsised</translation>
+<translation id="6453641458248223456">Suumige peamenüüs lehel sisse või välja</translation>
 <translation id="6467852467360539617">Kustuta andmed ja lähtesta load</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6545864417968258051">Bluetoothi otsimine</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Sirvimisandmete kustutamine …</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
+<translation id="7667547420449112975">Võlur Oz</translation>
+<translation id="7690549345586282764">Kuva suum</translation>
 <translation id="7719367874908701697">Lehe suum</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7791543448312431591">Lisa</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Blokeerige konkreetse saidi küpsisefailid.</translation>
 <translation id="8959122750345127698">Navigeerimine ei ole saadaval: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unusta</translation>
+<translation id="900095568014372589">Saitidel vaiketeksti ja piltide väiksemaks või suuremaks muutmine</translation>
 <translation id="9019902583201351841">Vanemate hallatud</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Kas kustutada küpsisefailid?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>
+<translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="930525582205581608">Kas unustada see sait?</translation>
 <translation id="967624055006145463">Salvestatud andmete maht</translation>

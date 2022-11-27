@@ -705,6 +705,7 @@
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ် အချက်အလက်ကို စီမံရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2715808615350965923">စူပါ A</translation>
 <translation id="271663710482723385">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| နှိပ်ပါ</translation>
+<translation id="2718207025093645426">ကြီးကြပ်ထားသော အသုံးပြုသူ (သို့) စက်တွင် မူဝါဒ ထည့်မထားပါ။</translation>
 <translation id="2721148159707890343">တောင်းဆိုချက် အောင်မြင်ပါသည်</translation>
 <translation id="2723669454293168317">Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ပါ</translation>
 <translation id="2726001110728089263">ဘေးဗန်း</translation>
@@ -1230,6 +1231,7 @@
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />” အက်ပ်များမှ ညွှန်းထားသော file_extension “<ph name="FILE_EXTENSION" />” အတွက် စီမံသူများ ထပ်နေသည်။</translation>
 <translation id="4134123981501319574">Doc ပြုလုပ်ရန်</translation>
 <translation id="413544239732274901">ပိုမိုလေ့လာရန်</translation>
+<translation id="4140905530744469899">ပရိုဖိုင် ID-</translation>
 <translation id="4142935452406587478">ဗန်း ၁၀</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Chinese #4 စာအိတ်</translation>
@@ -1354,6 +1356,7 @@
 <translation id="4407755609041463909">မီး</translation>
 <translation id="4408413947728134509">ကွတ်ကီးများ <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">လူသုံးကုန် လျှပ်စစ်ပစ္စည်းများ</translation>
+<translation id="4412074349188076601">ဤစီစဉ်သတ်မှတ်ချက်ကို ထည့်သွင်းနိုင်သည်ဟု မှတ်သားထားသော်လည်း ယခုတည်ဆောက်ပုံအတွက် ရုပ်ပုံပေးမထားသဖြင့် ၎င်းကို ထည့်သွင်း၍မရပါ။</translation>
 <translation id="4414515549596849729">ကွတ်ကီးများနှင့် ဝဘ်ဆိုက်ဒေတာ</translation>
 <translation id="4415426530740016218">လာယူရန် လိပ်စာ</translation>
 <translation id="4424024547088906515">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို Chrome ဘက်မှ မယုံကြည်ပါ။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
@@ -3204,6 +3207,7 @@
 <translation id="9179907736442194268">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> သည်ထောက်ပံ့မှုမရှိသည့် ပရိုတိုကောကို အသုံးပြုထားသည်။</translation>
+<translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ရှိ ကုဒ်ကို ကြည့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9187461866967718678">ပြင်းထန်သော အားကစား</translation>
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>

@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
 <translation id="2217935453350629363">Моментална брзина</translation>
@@ -268,7 +269,6 @@
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Висока латенција кон веб-сајтовите со HTTPS</translation>
 <translation id="361575905210396100">Фала за повратните информации</translation>
-<translation id="3621202678540785336">Внесување</translation>
 <translation id="3632579075709132555">Вклучи/исклучи заштита на приватноста</translation>
 <translation id="3651050199673793219">Изберете температурна единица</translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Избрано е <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, притиснете Enter за да изберете албуми од <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Одредување со DNS</translation>
 <translation id="4848429997038228357">СЕ ИЗВРШУВА</translation>
+<translation id="4854586501323951986">Вграден допирен екран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обид}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
 <translation id="4873827928179867585">Алгоритам за проверка</translation>
 <translation id="4880328057631981605">Име на пристапна точка</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
+<translation id="6412715219990689313">Вградена тастатура</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="73631062356239394">Споделувај дијагностички податоци</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Вградена подлога за допир</translation>
 <translation id="7397270852490618635">Исклучи ја светлата тема</translation>
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
@@ -715,7 +718,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип оператор</translation>
 <translation id="7882501334836096755">Јавен клуч</translation>
-<translation id="7890841768028788197">Вграден допирен екран</translation>
 <translation id="7915220255123750251">Управувајте со поставките за APN на мрежата. APN воспоставуваат врска помеѓу мобилната мрежа и интернетот.</translation>
 <translation id="7936303884198020182">Не се најдени сервери за име</translation>
 <translation id="7942349550061667556">Црвена</translation>
@@ -763,7 +765,6 @@
 <translation id="8398927464629426868">Брзината со која уредот се полни или празни во моментов</translation>
 <translation id="8420955526972171689">Извршува тестови и решава проблеми во врска со хардверот</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Вградена тастатура</translation>
 <translation id="8431300646573772016">Што е ново во Chrome OS</translation>
 <translation id="843568408673868420">Поврзливост на интернет</translation>
 <translation id="844521431886043384">DNS не е поставен</translation>
@@ -820,7 +821,6 @@
 <translation id="8930521118335213258">Споредба</translation>
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8936793075252196307">IP адреса на клиент</translation>
-<translation id="8945750210906526975">Вградена подлога за допир</translation>
 <translation id="894617464444543719">Уредот е телефон.</translation>
 <translation id="8968751544471797276">Брзина на полнење</translation>
 <translation id="8970109610781093811">Изврши повторно</translation>
@@ -838,6 +838,7 @@
 <translation id="9087578468327036362">Пријавете го барањево</translation>
 <translation id="9088306295921699330">Моментално користење</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="9100765901046053179">Напредни поставки</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Се скенира страницата <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>

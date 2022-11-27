@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL tam deyil</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1446450296470737166">MIDI cihazlar üzərində tam nəzarətə icazə verin</translation>
+<translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Əlaqəli saytlar</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">Səs</translation>
 <translation id="2107397443965016585">Saytlar qorunan kontenti oxutmazdan əvvəl icazə tələb edilsin (tövsiyyə edilir)</translation>
 <translation id="2148716181193084225">Bu gün</translation>
+<translation id="216989819110952009">Doroti və dostları gözlərini yaşıl eynəklə qoruduğu halda, əvvəlcə gözləri qamaşdı</translation>
 <translation id="2182457891543959921">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməzdən əvvəl icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="2212565012507486665">Kukilərə icazə verin</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2379925928934107488">Mümkün olduqda, Chrome tünd temadan istifadə edərkən saytlara tünd tema tətbiq edin</translation>
 <translation id="2387895666653383613">Mətn miqyası</translation>
+<translation id="2390272837142897736">Zoom'u artırın</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
 <translation id="2434158240863470628">Endirmə tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">Bu sayt digər saytların sizə reklam göstərmək üçün istifadə edə biləcəyi maraqları müəyyən edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan maraqlarınızı da əldə edir.</translation>
 <translation id="3277252321222022663">Saytların sensorlara daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
+<translation id="3295019059349372795">Fəsil 11: Məftunedici Zümrüd Şəhəri Oz</translation>
 <translation id="3295602654194328831">Məlumatı gizlədin</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="3333961966071413176">Bütün kontaktar</translation>
 <translation id="3362437373201486687">Bluetooth cihazları skan edilir</translation>
 <translation id="3386292677130313581">Saytlara məkanınızı bilmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domenindəki saytlar</translation>
 <translation id="3538390592868664640">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə qarşı blok qoyun</translation>
 <translation id="3544058026430919413">Şirkət qrupda fəaliyyətinizi paylaşmaq üçün kukilərdən istifadə edə biləcək saytlar qrupu təyin edə bilər. Bu, Anonim rejimdə deaktivdir.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">Saytların hərəkət sensorlarınıza daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="5050380848339752099">Bu sayt Anonim rejimdə olmayan tətbiqlə məlumat paylaşmaq üzrədir.</translation>
 <translation id="5063480226653192405">Istifadə</translation>
-<translation id="5082281938627763039">Bu, <ph name="FPS_MEMBER" /> və <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundakı saytlar üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5091013926750941408">Mobil sayt</translation>
 <translation id="509133520954049755">Masaüstü görünüş tələb edin</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytların virtual reallıq cihazınızı və datanızı istifadə etməsinin qarşısını alın</translation>
 <translation id="6447842834002726250">Kukilər</translation>
+<translation id="6453641458248223456">Əsas menyudan səhifəni böyüdün və ya kiçildin</translation>
 <translation id="6467852467360539617">Datanı silin və icazələri sıfırlayın</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">Brauzinq datasını təmizləyin...</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7667547420449112975">Ozlu Heyrətamiz Sehrbaz</translation>
+<translation id="7690549345586282764">Zoom'u göstərin</translation>
 <translation id="7719367874908701697">Səhifə yaxınlaşdırması</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">Xüsusi sayt üçün kukiləri blok edin.</translation>
 <translation id="8959122750345127698">Naviqasiya əlçatmazdır: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unudun</translation>
+<translation id="900095568014372589">Saytlardakı standart mətn və şəkilləri kiçildin və ya böyüdün</translation>
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="FPS_OWNER" /> tərəfindən təyin edilib.</translation>
 <translation id="9106233582039520022">Kukilər silinsin?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
+<translation id="9138217887606523162">Cari zoom: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
 <translation id="930525582205581608">Bu sayt unudulsun?</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>

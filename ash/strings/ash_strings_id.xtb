@@ -52,6 +52,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Aplikasi Play Store</translation>
 <translation id="1225748608451425081">Chromebook Anda terkunci karena masalah umum. Anda akan dapat login setelah: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
+<translation id="1235458158152011030">Jaringan yang dikenal</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> terhubung.</translation>
 <translation id="1240638468526743569">Aplikasi</translation>
 <translation id="1246890715821376239">Aplikasi yang tidak didukung</translation>
@@ -386,7 +387,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3120421559657122717">Matikan perangkat?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Mulai ulang untuk memperbarui</translation>
-<translation id="3139382871451988441">Nonaktifkan akses kamera.</translation>
 <translation id="3139942575505304791">Halaman kerja 1</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3151786313568798007">Orientasi</translation>
@@ -519,7 +519,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
-<translation id="3885531177412808398">Mengizinkan akses mikrofon untuk semua aplikasi dan situs yang memiliki izin mikrofon</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
@@ -648,11 +647,8 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4573176682887762361">"Ketik [kata/frasa]"</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
-<translation id="4578196883126898996">Mikrofon Anda nonaktif. Aktifkan tombol mikrofon perangkat.</translation>
 <translation id="4578906031062871102">Menu setelan dibuka</translation>
-<translation id="4581047786858252841">Mikrofon aktif</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
-<translation id="4587299710837179226">Mikrofon nonaktif</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4611292653554630842">Login</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
@@ -1024,6 +1020,7 @@ Baru diinstal</translation>
 <translation id="6670153871843998651">Halaman kerja 3</translation>
 <translation id="6671495933530132209">Salin gambar</translation>
 <translation id="6671661918848783005">Tidak dapat membuka kunci Chromebook</translation>
+<translation id="6683022854667115063">Headphone</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>
 <translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
@@ -1381,7 +1378,6 @@ Baru diinstal</translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyiapkan perangkat Anda</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
-<translation id="8684405646663021166">Mengizinkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="8685326675965865247">Telusuri perangkat, aplikasi, setelan, dan web Anda. Gunakan tombol panah untuk membuka berbagai bagian aplikasi.</translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Baru diinstal</translation>
 <translation id="8819728065740986820">Pengisian daya adaptif aktif</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
-<translation id="8834657930627018205">Aktifkan akses kamera.</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

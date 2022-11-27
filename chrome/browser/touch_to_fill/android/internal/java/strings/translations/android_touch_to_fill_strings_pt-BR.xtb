@@ -7,7 +7,6 @@
 <translation id="207576718733492531">A lista de credenciais a serem preenchidas por toque está fechada.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364266287022099258">Usar chave de acesso salva?</translation>
-<translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="3399357656427473483">Lista de credenciais a serem preenchidas por toque.</translation>
 <translation id="3653689374478248324">Você vai fazer login em <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Fazer login</translation>
@@ -18,5 +17,4 @@
 <translation id="5591247451101092906">Usar senha ou chave de acesso salva?</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
 <translation id="7736236483645733578">Chave de acesso de <ph name="USERNAME" />. Usar o bloqueio de tela.</translation>
-<translation id="804577341878669140">Continuar com a conta</translation>
 </translationbundle>

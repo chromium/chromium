@@ -52,6 +52,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app från Play Butik</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
+<translation id="1235458158152011030">Kända nätverk</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1246890715821376239">Appar som inte stöds</translation>
@@ -386,7 +387,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3120421559657122717">Vill du stänga av enheten?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
-<translation id="3139382871451988441">Inaktivera kameraåtkomst.</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Orientering</translation>
@@ -519,7 +519,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
-<translation id="3885531177412808398">Tillåter mikrofonåtkomst för alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>
@@ -648,11 +647,8 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4573176682887762361">”Skriv [ord/fras]”</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
-<translation id="4578196883126898996">Mikrofonen är inaktiverad. Aktivera enhetens mikrofonknapp.</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
-<translation id="4581047786858252841">Mikrofonen är på</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
-<translation id="4587299710837179226">Mikrofonen är av</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4611292653554630842">Logga in</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
@@ -1024,6 +1020,7 @@ Nyligen installerad</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6671661918848783005">Det går inte att låsa upp Chromebook</translation>
+<translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
 <translation id="6707693040195709527">Bytet till en tidigare version av enheten är försenat</translation>
@@ -1381,7 +1378,6 @@ Nyligen installerad</translation>
 <translation id="8666856788528804727">Öppna <ph name="NAME" /> och konfigurera enheten där</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
-<translation id="8684405646663021166">Tillåter mikrofonåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="8685326675965865247">Sök på enheten, i appar, inställningar och på webben. Flytta mellan apparna med piltangenterna.</translation>
 <translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
@@ -1406,7 +1402,6 @@ Nyligen installerad</translation>
 <translation id="8819728065740986820">Smart laddning har aktiverats</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
-<translation id="8834657930627018205">Aktivera kameraåtkomst.</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>

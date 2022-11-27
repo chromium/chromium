@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
+<translation id="2184005227776731758">Точка доступа</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2276999893457278469">Самый популярный справочный контент</translation>
 <translation id="2287186687001756809">Изображений нет. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">Дополнительные настройки</translation>
 <translation id="2307344026739914387">Использовать текущую пару ключей</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
 <translation id="361575905210396100">Благодарим за отзыв!</translation>
-<translation id="3621202678540785336">Вход</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
@@ -716,7 +715,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7882501334836096755">Открытый ключ</translation>
-<translation id="7890841768028788197">Встроенный сенсорный экран</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7942349550061667556">Красный</translation>
@@ -764,7 +762,6 @@
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8420955526972171689">Запускайте тесты и устраняйте неполадки аппаратного обеспечения.</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Встроенная клавиатура</translation>
 <translation id="8431300646573772016">Что нового в Chrome OS</translation>
 <translation id="843568408673868420">Подключение к интернету</translation>
 <translation id="844521431886043384">DNS-сервер не настроен.</translation>
@@ -821,7 +818,6 @@
 <translation id="8930521118335213258">Пользователь</translation>
 <translation id="8930622219860340959">Беспроводная связь</translation>
 <translation id="8936793075252196307">IP-адрес клиента</translation>
-<translation id="8945750210906526975">Встроенная сенсорная панель</translation>
 <translation id="894617464444543719">Это телефон.</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
@@ -839,6 +835,7 @@
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Дополнительные настройки</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>

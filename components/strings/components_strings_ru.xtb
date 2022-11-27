@@ -1230,6 +1230,7 @@
 <translation id="4132448310531350254">Для расширения <ph name="FILE_EXTENSION" /> обнаружено несколько обработчиков по умолчанию: <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Создать документ</translation>
 <translation id="413544239732274901">Подробнее</translation>
+<translation id="4140905530744469899">Идентификатор профиля:</translation>
 <translation id="4142935452406587478">Лоток 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Конверт Chinese 4</translation>
@@ -1353,6 +1354,7 @@
 <translation id="4407755609041463909">Огонь</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Бытовая электроника</translation>
+<translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415426530740016218">Адрес получения</translation>
 <translation id="4424024547088906515">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chrome не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -3202,6 +3204,7 @@
 <translation id="9179907736442194268">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте.</translation>
 <translation id="9183302530794969518">Google Документы</translation>
 <translation id="9183425211371246419">На сайте <ph name="HOST_NAME" /> используется неподдерживаемый протокол.</translation>
+<translation id="918454845714257218">Проверьте код <ph name="SIDE_OF_CARD" /> и повторите попытку</translation>
 <translation id="9187461866967718678">Экстремальные виды спорта</translation>
 <translation id="9191834167571392248">Отверстие в левом нижнем углу</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>

@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
 <translation id="2163937499206714165">Ativar o modo escuro</translation>
 <translation id="2180197493692062006">Algo deu errado. Tente abrir o app novamente.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Redefinir contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nome</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Programação do modo escuro</translation>
 <translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, acesse <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Configurações avançadas</translation>
 <translation id="2307344026739914387">Usar par de chaves atual</translation>
 <translation id="2320295602967756579">Ativar o tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
 <translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="361575905210396100">Agradecemos seu feedback</translation>
-<translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> Opção "<ph name="TOPIC_SOURCE_DESC" />" selecionada. Pressione "Enter" para selecionar álbuns do <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
+<translation id="4854586501323951986">Tela touchscreen integrada</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticação</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
@@ -570,6 +570,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6394634179843537518">Adicionar arquivo</translation>
 <translation id="6410257289063177456">Arquivos de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
+<translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
@@ -668,6 +669,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7359657277149375382">Tipo de arquivo</translation>
 <translation id="73631062356239394">Dados de compartilhamento de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Touchpad integrado</translation>
 <translation id="7397270852490618635">Desativar o tema claro</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
@@ -716,7 +718,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de provedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
-<translation id="7890841768028788197">Tela touchscreen interna</translation>
 <translation id="7915220255123750251">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet.</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7942349550061667556">Vermelho</translation>
@@ -764,7 +765,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8398927464629426868">A velocidade em que o dispositivo carrega ou descarrega atualmente</translation>
 <translation id="8420955526972171689">Execute testes e resolva problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Teclado interno</translation>
 <translation id="8431300646573772016">Novidades do ChromeOS</translation>
 <translation id="843568408673868420">Conectividade com a Internet</translation>
 <translation id="844521431886043384">O DNS não foi definido</translation>
@@ -821,7 +821,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8930521118335213258">Ponto</translation>
 <translation id="8930622219860340959">Rede sem fio</translation>
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
-<translation id="8945750210906526975">Touchpad interno</translation>
 <translation id="894617464444543719">Este dispositivo é um smartphone.</translation>
 <translation id="8968751544471797276">Taxa de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
@@ -839,6 +838,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Configurações avançadas</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

@@ -268,7 +268,6 @@
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="361575905210396100">Пікіріңіз үшін рақмет!</translation>
-<translation id="3621202678540785336">Енгізу</translation>
 <translation id="3632579075709132555">Құпиялылық экранын қосу/өшіру</translation>
 <translation id="3651050199673793219">Температураның өлшем бірлігін таңдау</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
@@ -714,7 +713,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7882501334836096755">Ашық кілт</translation>
-<translation id="7890841768028788197">Ендірілген сенсорлық экран</translation>
 <translation id="7915220255123750251">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланыс орнатады.</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7942349550061667556">Қызыл</translation>
@@ -762,7 +760,6 @@
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8420955526972171689">Сынақтар жүргізіп, жабдық ақауларын жойыңыз.</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Ендірілген пернетақта</translation>
 <translation id="8431300646573772016">ChromeOS жаңалықтары</translation>
 <translation id="843568408673868420">Интернет байланысы</translation>
 <translation id="844521431886043384">DNS реттелмеген.</translation>
@@ -819,7 +816,6 @@
 <translation id="8930521118335213258">құрылғы</translation>
 <translation id="8930622219860340959">Сымсыз</translation>
 <translation id="8936793075252196307">Клиенттің IP мекенжайы</translation>
-<translation id="8945750210906526975">Ішкі сенсорлық тақта</translation>
 <translation id="894617464444543719">Бұл — телефон.</translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
@@ -837,6 +833,7 @@
 <translation id="9087578468327036362">Осы сұрау туралы хабарлау</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Кеңейтілген параметрлер</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>

@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
 <translation id="2212733584906323460">Rozlišení názvu</translation>
 <translation id="2217935453350629363">Aktuální rychlost</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2276999893457278469">Nejnavštěvovanější obsah nápovědy</translation>
 <translation id="2287186687001756809">Žádné snímky. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
-<translation id="2304783958703511257">Pokročilá nastavení</translation>
 <translation id="2307344026739914387">Použít aktuální dvojici klíčů</translation>
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
 <translation id="361575905210396100">Děkujeme vám za zpětnou vazbu</translation>
-<translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -397,6 +396,7 @@
 <translation id="4847902821209177679">Je vybrána možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, stisknutím klávesy Enter vyberete alba z: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Překlad záznamu DNS</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
+<translation id="4854586501323951986">Vestavěná dotyková obrazovka</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="4873827928179867585">Ověřovací algoritmus</translation>
 <translation id="4880328057631981605">Název přístupového bodu</translation>
@@ -570,6 +570,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6394634179843537518">Přidat soubor</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="641081527798843608">Shoda předmětu</translation>
+<translation id="6412715219990689313">Vestavěná klávesnice</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Přejít na nastavení účtu</translation>
@@ -668,6 +669,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="73631062356239394">Sdílení diagnostických dat</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Vestavěný touchpad</translation>
 <translation id="7397270852490618635">Vypnout světlý motiv</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
@@ -716,7 +718,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7882501334836096755">Veřejný klíč</translation>
-<translation id="7890841768028788197">Interní dotyková obrazovka</translation>
 <translation id="7915220255123750251">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem.</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7942349550061667556">Červená</translation>
@@ -764,7 +765,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8420955526972171689">Testování a odstraňování problémů s hardwarem</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Interní klávesnice</translation>
 <translation id="8431300646573772016">Novinky v ChromeOS</translation>
 <translation id="843568408673868420">Připojení k internetu</translation>
 <translation id="844521431886043384">Není nastaven server DNS</translation>
@@ -821,7 +821,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Bezdrátové připojení</translation>
 <translation id="8936793075252196307">IP adresa klienta</translation>
-<translation id="8945750210906526975">Interní touchpad</translation>
 <translation id="894617464444543719">Zařízení je telefon.</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
@@ -839,6 +838,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="9087578468327036362">Nahlaste tento dotaz</translation>
 <translation id="9088306295921699330">Současné využití</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Rozšířená nastavení</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>

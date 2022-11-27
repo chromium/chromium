@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Never saved</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Desktop Bookmarks</translation>
+<translation id="1067561478268651872">The <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> policy is not used unless the <ph name="SECURE_DNS_SALT" /> policy is set.</translation>
 <translation id="1068672505746868501">Never translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Hybrid and alternative vehicles</translation>
 <translation id="1070901266639972381">Night</translation>
@@ -1231,6 +1232,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4132448310531350254">Duplicate handlers for file_extension <ph name="FILE_EXTENSION" />' referenced by apps '<ph name="POLICY_IDS_LIST" />'.</translation>
 <translation id="4134123981501319574">Create doc</translation>
 <translation id="413544239732274901">Learn more</translation>
+<translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">Tray 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese no.4</translation>
@@ -1354,6 +1356,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4407755609041463909">Fire</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Consumer electronics</translation>
+<translation id="4412074349188076601">This configuration is marked as installable, but no image is provided for this architecture, so it cannot be installed.</translation>
 <translation id="4414515549596849729">cookies and site data</translation>
 <translation id="4415426530740016218">Pickup Address</translation>
 <translation id="4424024547088906515">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chrome. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -2097,6 +2100,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6328786501058569169">This site is deceptive</translation>
 <translation id="6337133576188860026">Frees up less than <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6337534724793800597">Filter policies by name</translation>
+<translation id="633770708279464947">The <ph name="SECURE_DNS_SALT" /> value is invalid and will not be used.</translation>
 <translation id="6340739886198108203">Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Active variations</translation>
@@ -2992,6 +2996,7 @@ Additional details:
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="8666678546361132282">English</translation>
+<translation id="8671519637524426245">The <ph name="SECURE_DNS_SALT" /> value does not meet the size requirements.</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8672264262457010862">Business and industrial</translation>
 <translation id="8676424191133491403">No delay</translation>
@@ -3091,6 +3096,7 @@ Additional details:
 <translation id="8913778647360618320">Manage payment methods button; press enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="8922013791253848639">Always allow ads on this site</translation>
 <translation id="892588693504540538">Punch top right</translation>
+<translation id="8930098617363288380">The <ph name="SECURE_DNS_SALT" /> value is not relevant, and will not be used unless the <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> policy is set.</translation>
 <translation id="8930330541574156305">Property</translation>
 <translation id="8931333241327730545">Do you want to save this card to your Google Account?</translation>
 <translation id="8932102934695377596">Your clock is behind</translation>
@@ -3203,6 +3209,7 @@ Additional details:
 <translation id="9179907736442194268">Get email alerts if the price drops on any site</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> uses an unsupported protocol.</translation>
+<translation id="918454845714257218">Check the code on the <ph name="SIDE_OF_CARD" /> and try again</translation>
 <translation id="9187461866967718678">Extreme sports</translation>
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9199905725844810519">Printing is blocked</translation>

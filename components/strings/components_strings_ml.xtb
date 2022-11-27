@@ -1230,6 +1230,7 @@
 <translation id="4132448310531350254">"<ph name="FILE_EXTENSION" />" എന്ന file_extension -ന് ഡ്യൂപ്ലിക്കേറ്റ് ഹാൻഡ്‌ലറുകളുണ്ടെന്ന് "<ph name="POLICY_IDS_LIST" />" ആപ്പുകൾ പരാമർശിക്കുന്നു.</translation>
 <translation id="4134123981501319574">ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="413544239732274901">കൂടുതലറിയുക</translation>
+<translation id="4140905530744469899">പ്രൊഫൈൽ ഐഡി:</translation>
 <translation id="4142935452406587478">ട്രേ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
@@ -1353,6 +1354,7 @@
 <translation id="4407755609041463909">തീ</translation>
 <translation id="4408413947728134509">കുക്കികൾ <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">കൺസ്യൂമർ ഇലക്ട്രോണിക്‌സ്</translation>
+<translation id="4412074349188076601">ഈ കോൺഫിഗറേഷൻ ഇൻസ്റ്റാൾ ചെയ്യാവുന്നത് എന്ന് അടയാളപ്പെടുത്തിയിരിക്കുന്നു, എന്നാൽ ഈ ആർക്കിടെക്ച്ചർ സംബന്ധിച്ച ചിത്രങ്ങളൊന്നും നൽകാത്തതിനാൽ ഇത് ഇൻസ്റ്റാൾ ചെയ്യാനാകില്ല.</translation>
 <translation id="4414515549596849729">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="4415426530740016218">പിക്കപ്പ് വിലാസം</translation>
 <translation id="4424024547088906515">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് Chrome-ന് പരിചയമില്ലാത്തതാണ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
@@ -3200,6 +3202,7 @@
 <translation id="9179907736442194268">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ ഇമെയിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> പിന്തുണയ്‌ക്കാത്ത ഒരു പ്രോട്ടോക്കോളാണ് ഉപയോഗിക്കുന്നത്.</translation>
+<translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ഉള്ള കോഡ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="9187461866967718678">എക്‌സ്‌ട്രീം സ്‌പോർട്‌സ്</translation>
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>

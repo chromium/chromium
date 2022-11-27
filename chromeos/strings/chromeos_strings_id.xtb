@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Reset Penghitung Traffic</translation>
 <translation id="2212733584906323460">Resolusi Nama</translation>
 <translation id="2217935453350629363">Kecepatan saat ini</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2276999893457278469">Konten bantuan teratas</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Setelan Lanjutan</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
-<translation id="3621202678540785336">Masukan</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
@@ -716,7 +715,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci publik</translation>
-<translation id="7890841768028788197">Layar sentuh internal</translation>
 <translation id="7915220255123750251">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet.</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
@@ -764,7 +762,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8420955526972171689">Jalankan pengujian dan pemecahan masalah untuk masalah hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Keyboard internal</translation>
 <translation id="8431300646573772016">Yang baru di ChromeOS</translation>
 <translation id="843568408673868420">Konektivitas Internet</translation>
 <translation id="844521431886043384">DNS tidak disiapkan</translation>
@@ -821,7 +818,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
-<translation id="8945750210906526975">Touchpad internal</translation>
 <translation id="894617464444543719">Perangkat adalah ponsel.</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
@@ -839,6 +835,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9087578468327036362">Laporkan kueri ini</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Setelan lanjutan</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>

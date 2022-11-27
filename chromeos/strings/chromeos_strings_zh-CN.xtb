@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
 <translation id="2217935453350629363">当前速度</translation>
@@ -152,7 +153,6 @@
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
-<translation id="2304783958703511257">高级设置</translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
@@ -269,7 +269,6 @@
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="361575905210396100">感谢您的反馈</translation>
-<translation id="3621202678540785336">输入</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
@@ -716,7 +715,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7882501334836096755">公钥</translation>
-<translation id="7890841768028788197">内部触摸屏</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7942349550061667556">红色</translation>
@@ -764,7 +762,6 @@
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">内部键盘</translation>
 <translation id="8431300646573772016">Chrome 操作系统的新变化</translation>
 <translation id="843568408673868420">互联网连接</translation>
 <translation id="844521431886043384">未设置 DNS</translation>
@@ -821,7 +818,6 @@
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>
 <translation id="8936793075252196307">客户端 IP 地址</translation>
-<translation id="8945750210906526975">内部触控板</translation>
 <translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
@@ -839,6 +835,7 @@
 <translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">高级设置</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="9111102763498581341">解锁</translation>

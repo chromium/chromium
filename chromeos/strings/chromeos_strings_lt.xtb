@@ -152,7 +152,6 @@
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
 <translation id="2276999893457278469">Geriausias pagalbos centro turinys</translation>
 <translation id="2287186687001756809">Nėra jokių vaizdų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
-<translation id="2304783958703511257">Išplėstiniai nustatymai</translation>
 <translation id="2307344026739914387">Naudoti dabartinę raktų porą</translation>
 <translation id="2320295602967756579">Įgalinti šviesiąją temą</translation>
 <translation id="2323506179655536734">PRALEISTA</translation>
@@ -269,7 +268,6 @@
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="361575905210396100">Dėkojame už atsiliepimą</translation>
-<translation id="3621202678540785336">Įvestis</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
@@ -716,7 +714,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teikėjo tipas</translation>
 <translation id="7882501334836096755">Viešasis raktas</translation>
-<translation id="7890841768028788197">Vidinis jutiklinis ekranas</translation>
 <translation id="7915220255123750251">Tvarkyti tinklo APN nustatymus. APN užmezga ryšį tarp mobiliojo ryšio tinklo ir interneto.</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="7942349550061667556">Raudona</translation>
@@ -764,7 +761,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8420955526972171689">Atllikti aparatinės įrangos problemų bandymus ir trikčių šalinimą</translation>
 <translation id="8422748173858722634">IMEI</translation>
-<translation id="8428073762635678092">Vidinė klaviatūra</translation>
 <translation id="8431300646573772016">„Chrome“ OS naujienos</translation>
 <translation id="843568408673868420">Interneto ryšys</translation>
 <translation id="844521431886043384">DNS nenustatyta</translation>
@@ -821,7 +817,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8930521118335213258">Lygiavertis tinklo mazgas</translation>
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8936793075252196307">Kliento IP adresas</translation>
-<translation id="8945750210906526975">Vidinė jutiklinė dalis</translation>
 <translation id="894617464444543719">Įrenginys yra telefonas.</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
@@ -839,6 +834,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="9087578468327036362">Pranešti apie šią užklausą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="9100765901046053179">Išplėstiniai nustatymai</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>

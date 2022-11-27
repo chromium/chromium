@@ -20,6 +20,7 @@
 <translation id="1415402041810619267">URL ಕಿರಿದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
 <translation id="1446450296470737166">MIDI ಸಾಧನಗಳ ಪೂರ್ಣ ನಿಯಂತ್ರಣ ಅನುಮತಿಸಿ</translation>
+<translation id="1448064542941920355">ಝೂಮ್ ಅನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1633720957382884102">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳು</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
@@ -50,6 +51,7 @@
 <translation id="2091887806945687916">ಶಬ್ಧ</translation>
 <translation id="2107397443965016585">ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
+<translation id="216989819110952009">ಡೋರೊಥಿ ಮತ್ತು ಅವಳ ಸ್ನೇಹಿತರು ತಮ್ಮ ಕಣ್ಣುಗಳ ರಕ್ಷಣೆಗಾಗಿ ಹಸಿರು ಕನ್ನಡಕಗಳನ್ನು ತೊಟ್ಟಿದ್ದರೂ ಸಹ ಆ ಅದ್ಭುತ ನಗರದ ವೈಭವ ಮೊದಲ ನೋಟದಲ್ಲೇ ಅವರ ಕಣ್ಣುಗಳನ್ನು ಕೋರೈಸಿತು.</translation>
 <translation id="2182457891543959921">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
 <translation id="2212565012507486665">ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -63,6 +65,7 @@
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2379925928934107488">ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು Chrome ಬಳಸುವಾಗ, ಸಾಧ್ಯವಾದರೆ ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು ಸೈಟ್‌ಗಳಿಗೆ ಅನ್ವಯಿಸಿ</translation>
 <translation id="2387895666653383613">ಪಠ್ಯ ಸ್ಕೇಲಿಂಗ್</translation>
+<translation id="2390272837142897736">ಝೂಮ್ ಅನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}}</translation>
 <translation id="2434158240863470628">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -111,11 +114,13 @@
 <translation id="3248611290851046188">ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಇತರ ಸೈಟ್‌ಗಳು ಬಳಸಬಹುದಾದ ಆಸಕ್ತಿಗಳನ್ನು ಈ ಸೈಟ್ ವ್ಯಾಖ್ಯಾನಿಸುತ್ತದೆ. ನಿಮಗೆ ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು, ಈ ಸೈಟ್ Chrome ನಿಂದ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಕುರಿತಾದ ಮಾಹಿತಿ ಕೂಡ ಪಡೆಯುತ್ತದೆ.</translation>
 <translation id="3277252321222022663">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ (ಶಿಫಾರಸು ಮಾಡಿರುವುದು)</translation>
 <translation id="3285500645985761267">ಗುಂಪಿನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
+<translation id="3295019059349372795">ಅಧ್ಯಾಯ 11: ದಿ ವಂಡರ್ಫುಲ್ ಎಮರಾಲ್ಡ್ ಸಿಟಿ ಆಫ್ ಓಝ್</translation>
 <translation id="3295602654194328831">ಮಾಹಿತಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3328801116991980348">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="3333961966071413176">ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳು</translation>
 <translation id="3362437373201486687">ಬ್ಲೂಟೂತ್ ಸಾಧನಳನ್ನು ಹುಡುಕುವುದಕ್ಕಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3386292677130313581">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ತಿಳಿಯಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
+<translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> ನಲ್ಲಿನ ಸೈಟ್‌ಗಳು</translation>
 <translation id="3538390592868664640">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸುವುದರಿಂದ ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದರಿಂದ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3544058026430919413">ಗುಂಪಿನಲ್ಲಿರುವ ಇತರರ ಜೊತೆ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದಕ್ಕಾಗಿ ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದಾದ ಸೈಟ್‌ಗಳ ಗುಂಪನ್ನು ಸಂಸ್ಥೆಯು ವ್ಯಾಖ್ಯಾನಿಸಬಹುದು. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
@@ -188,7 +193,6 @@
 <translation id="5048398596102334565">ಚಲನಾ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ (ಶಿಫಾರಸು ಮಾಡಿರುವುದು)</translation>
 <translation id="5050380848339752099">ಈ ಸೈಟ್, ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಸಂಬಂಧಿಸದ ಆ್ಯಪ್ ಜೊತೆಗೆ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲಿದೆ.</translation>
 <translation id="5063480226653192405">ಬಳಕೆ</translation>
-<translation id="5082281938627763039">ಇದು <ph name="FPS_MEMBER" /> ಗಾಗಿ ಮತ್ತು <ph name="FPS_OWNER" /> ನ ಸೈಟ್‌ಗಳ ಗುಂಪಿನಲ್ಲಿರುವ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ</translation>
 <translation id="5091013926750941408">ಮೊಬೈಲ್ ಸೈಟ್</translation>
 <translation id="509133520954049755">ಡೆಸ್ಕ್‌ಟಾಪ್ ವೀಕ್ಷಣೆಯನ್ನು ವಿನಂತಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="5100237604440890931">ಕುಗ್ಗಿಸಲಾಗಿದೆ - ವಿಸ್ತರಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
@@ -261,6 +265,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನ ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸದ ಹಾಗೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6447842834002726250">ಕುಕೀಸ್</translation>
+<translation id="6453641458248223456">ಮುಖ್ಯ ಮೆನುವಿನಿಂದ ಪುಟವನ್ನು ಜೂಮ್ ಇನ್ ಮಾಡಿ ಅಥವಾ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="6467852467360539617">ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
 <translation id="6545864417968258051">ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
@@ -315,6 +320,8 @@
 <translation id="7641339528570811325">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ…</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7667547420449112975">ದಿ ವಂಡರ್ಫುಲ್ ವಿಜಾರ್ಡ್ ಆಫ್ ಓಝ್</translation>
+<translation id="7690549345586282764">ಝೂಮ್ ಮೆನುವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7719367874908701697">ಪುಟ ಝೂಮ್</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
@@ -391,12 +398,14 @@
 <translation id="8958424370300090006">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ ಒಂದಕ್ಕೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="8959122750345127698">ನ್ಯಾವಿಗೇಶನ್‌ ತಲುಪಲಾಗುವುದಿಲ್ಲ: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
+<translation id="900095568014372589">ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿನ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳ ಡೀಫಾಲ್ಟ್ ಗಾತ್ರವನ್ನು ಕಡಿಮೆ ಮಾಡಿ ಅಥವಾ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="9019902583201351841">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9090268041676521955">ಈ ಸೈಟ್ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದಾದ ಗುಂಪಿನಲ್ಲಿದೆ. <ph name="FPS_OWNER" /> ನಿಂದ ಗುಂಪನ್ನು ವ್ಯಾಖ್ಯಾನಿಸಲಾಗಿದೆ</translation>
 <translation id="9106233582039520022">ಕುಕೀಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> <ph name="APP_NAME" /> ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>
+<translation id="9138217887606523162">ಪ್ರಸ್ತುತ ಝೂಮ್ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ಈ ಪುಟವು ಅಪಾಯಕಾರಿಯಾಗಿದೆ</translation>
 <translation id="930525582205581608">ಈ ಸೈಟ್ ಅನ್ನು ಮರೆಯಬೇಕೇ?</translation>
 <translation id="967624055006145463">ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಡೇಟಾ</translation>
