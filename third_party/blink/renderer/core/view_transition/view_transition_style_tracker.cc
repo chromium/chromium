@@ -278,6 +278,62 @@ void ViewTransitionStyleTracker::AddSharedElement(Element* element,
   ++set_element_sequence_id_;
 }
 
+bool ViewTransitionStyleTracker::MatchForOnlyChild(
+    PseudoId pseudo_id,
+    AtomicString view_transition_name) const {
+  DCHECK(view_transition_name);
+
+  switch (pseudo_id) {
+    case kPseudoIdViewTransitionGroup: {
+      const bool has_root = old_root_data_ || new_root_data_;
+      if (has_root) {
+        return element_data_map_.empty();
+      } else {
+        DCHECK(!element_data_map_.empty());
+        return element_data_map_.size() == 1;
+      }
+    }
+    case kPseudoIdViewTransitionImagePair:
+      return true;
+    case kPseudoIdViewTransitionOld: {
+      if (new_root_data_ &&
+          new_root_data_->names.Contains(view_transition_name)) {
+        return false;
+      }
+
+      auto it = element_data_map_.find(view_transition_name);
+      if (it == element_data_map_.end()) {
+        DCHECK(old_root_data_ &&
+               old_root_data_->names.Contains(view_transition_name));
+        return true;
+      }
+
+      const auto& element_data = it->value;
+      return !element_data->new_snapshot_id.IsValid();
+    }
+    case kPseudoIdViewTransitionNew: {
+      if (old_root_data_ &&
+          old_root_data_->names.Contains(view_transition_name)) {
+        return false;
+      }
+
+      auto it = element_data_map_.find(view_transition_name);
+      if (it == element_data_map_.end()) {
+        DCHECK(new_root_data_ &&
+               new_root_data_->names.Contains(view_transition_name));
+        return true;
+      }
+
+      const auto& element_data = it->value;
+      return !element_data->old_snapshot_id.IsValid();
+    }
+    default:
+      NOTREACHED();
+  }
+
+  return false;
+}
+
 void ViewTransitionStyleTracker::AddSharedElementsFromCSS() {
   DCHECK(document_ && document_->View());
 

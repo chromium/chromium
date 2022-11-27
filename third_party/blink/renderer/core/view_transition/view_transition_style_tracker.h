@@ -67,6 +67,11 @@ class ViewTransitionStyleTracker
 
   void AddSharedElementsFromCSS();
 
+  // Returns true if the pseudo element corresponding to the given id and name
+  // is the only child.
+  bool MatchForOnlyChild(PseudoId pseudo_id,
+                         AtomicString view_transition_name) const;
+
   // Indicate that capture was requested. This verifies that the combination of
   // set elements and names is valid. Returns true if capture phase started, and
   // false if the transition should be aborted.

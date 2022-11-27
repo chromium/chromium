@@ -850,6 +850,11 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoBlinkInternalElement:
     case CSSSelector::kPseudoFileSelectorButton:
       return IsUserActionPseudoClass(pseudo_class);
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoViewTransitionNew:
+      return pseudo_class == CSSSelector::kPseudoOnlyChild;
     default:
       return false;
   }

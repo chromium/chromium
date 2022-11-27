@@ -94,6 +94,11 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // GC functionality.
   void Trace(Visitor* visitor) const override;
 
+  // Returns true if the pseudo element corresponding to the given id and name
+  // is the only child.
+  bool MatchForOnlyChild(PseudoId pseudo_id,
+                         AtomicString view_transition_name) const;
+
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override;
 
