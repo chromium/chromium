@@ -171,6 +171,20 @@ config("absl_test_cflags_cc") {
   }
 }
 
+config("absl_test_config") {
+  cflags_cc = []
+  if (is_win && !is_clang) {
+    cflags_cc += [ "/wd4996" ]
+  }
+  if (is_clang) {
+    cflags_cc += [
+      "-Wno-deprecated-declarations",
+      "-Wno-unused-private-field",
+      "-Wno-unused-function",
+    ]
+  }
+}
+
 if (build_with_chromium) {
   import("//testing/test.gni")
 

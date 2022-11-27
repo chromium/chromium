@@ -165,14 +165,9 @@ absl_source_set("common_policy_traits") {
   deps = [ "//third_party/abseil-cpp/absl/meta:type_traits" ]
 }
 
-absl_source_set("common_policy_traits_test") {
-  testonly = true
+absl_test("common_policy_traits_test") {
   sources = [ "internal/common_policy_traits_test.cc" ]
-  deps = [
-    ":common_policy_traits",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-  ]
+  deps = [ ":common_policy_traits" ]
 }
 
 absl_source_set("hashtable_debug") {
@@ -209,14 +204,11 @@ absl_source_set("node_slot_policy") {
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
-absl_source_set("node_slot_policy_test") {
-  testonly = true
+absl_test("node_slot_policy_test") {
   sources = [ "internal/node_slot_policy_test.cc" ]
   deps = [
     ":hash_policy_traits",
     ":node_slot_policy",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
   ]
 }
 
@@ -355,15 +347,13 @@ absl_source_set("unordered_set_modifiers_test") {
   ]
 }
 
-absl_source_set("sample_element_size_test") {
-  testonly = true
+absl_test("sample_element_size_test") {
   public = [ "sample_element_size_test.cc" ]
   deps = [
     ":flat_hash_map",
     ":flat_hash_set",
     ":node_hash_map",
     ":node_hash_set",
-    "//third_party/googletest:gtest",
   ]
 }
 
@@ -394,14 +384,8 @@ absl_source_set("btree") {
   ]
 }
 
-absl_source_set("inlined_vector_test") {
-  testonly = true
+absl_test("inlined_vector_test") {
   sources = [ "inlined_vector_test.cc" ]
-  if (is_win && !is_clang) {
-    cflags_cc = [ "/wd4996" ]
-  } else {
-    cflags_cc = [ "-Wno-deprecated-declarations" ]
-  }
   deps = [
     ":counting_allocator",
     ":inlined_vector",
@@ -413,7 +397,5 @@ absl_source_set("inlined_vector_test") {
     "//third_party/abseil-cpp/absl/hash:hash_testing",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
   ]
 }

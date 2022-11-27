@@ -23,13 +23,11 @@ absl_source_set("cleanup") {
   ]
 }
 
-absl_source_set("cleanup_test") {
-  testonly = true
+absl_test("cleanup_test") {
   sources = [ "cleanup_test.cc" ]
   deps = [
     ":cleanup",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/utility",
-    "//third_party/googletest:gtest",
   ]
 }

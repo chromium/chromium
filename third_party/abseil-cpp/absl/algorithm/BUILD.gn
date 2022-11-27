@@ -18,19 +18,15 @@ absl_source_set("container") {
   ]
 }
 
-absl_source_set("algorithm_test") {
-  testonly = true
+absl_test("algorithm_test") {
   sources = [ "algorithm_test.cc" ]
   deps = [
     ":algorithm",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gmock",
   ]
 }
 
-absl_source_set("container_test") {
-  testonly = true
+absl_test("container_test") {
   sources = [ "container_test.cc" ]
   deps = [
     ":container",
@@ -38,7 +34,5 @@ absl_source_set("container_test") {
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/types:span",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gmock",
   ]
 }

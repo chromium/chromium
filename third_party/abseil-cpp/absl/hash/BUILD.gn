@@ -40,8 +40,7 @@ absl_source_set("hash_testing") {
   ]
 }
 
-absl_source_set("hash_test") {
-  testonly = true
+absl_test("hash_test") {
   sources = [ "hash_test.cc" ]
   deps = [
     ":hash",
@@ -56,8 +55,6 @@ absl_source_set("hash_test") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/strings:cord_test_helpers",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gmock",
   ]
 }
 
@@ -94,13 +91,10 @@ absl_source_set("low_level_hash") {
   visibility = [ ":*" ]
 }
 
-absl_source_set("low_level_hash_test") {
-  testonly = true
+absl_test("low_level_hash_test") {
   sources = [ "internal/low_level_hash_test.cc" ]
   deps = [
     ":low_level_hash",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gmock",
   ]
 }

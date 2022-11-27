@@ -48,8 +48,7 @@ absl_source_set("statusor") {
   ]
 }
 
-absl_source_set("statusor_test") {
-  testonly = true
+absl_test("statusor_test") {
   sources = [ "statusor_test.cc" ]
   deps = [
     ":status",
@@ -59,7 +58,5 @@ absl_source_set("statusor_test") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:any",
     "//third_party/abseil-cpp/absl/utility",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
   ]
 }

@@ -277,21 +277,15 @@ absl_source_set("prefetch") {
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
 
-absl_source_set("prefetch_test") {
-  testonly = true
+absl_test("prefetch_test") {
   sources = [ "internal/prefetch_test.cc" ]
-  deps = [
-    ":prefetch",
-    "//third_party/googletest:gtest",
-  ]
+  deps = [ ":prefetch" ]
 }
 
-absl_source_set("config_test") {
-  testonly = true
+absl_test("config_test") {
   sources = [ "config_test.cc" ]
   deps = [
     ":config",
     "//third_party/abseil-cpp/absl/synchronization:thread_pool",
-    "//third_party/googletest:gtest",
   ]
 }

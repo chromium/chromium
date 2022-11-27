@@ -19,23 +19,15 @@ absl_source_set("any") {
 
 absl_source_set("bad_any_cast") {
   public = [ "bad_any_cast.h" ]
-  deps = [
-    ":bad_any_cast_impl",
-  ]
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
+  deps = [ ":bad_any_cast_impl" ]
+  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
 absl_source_set("bad_any_cast_impl") {
   sources = [ "bad_any_cast.cc" ]
   public = [ "bad_any_cast.h" ]
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
-  deps = [
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-  ]
+  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:raw_logging_internal" ]
   visibility = [ ":*" ]
 }
 
@@ -67,23 +59,15 @@ absl_source_set("optional") {
 absl_source_set("bad_optional_access") {
   sources = [ "bad_optional_access.cc" ]
   public = [ "bad_optional_access.h" ]
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
-  deps = [
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-  ]
+  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:raw_logging_internal" ]
 }
 
 absl_source_set("bad_variant_access") {
   sources = [ "bad_variant_access.cc" ]
   public = [ "bad_variant_access.h" ]
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
-  deps = [
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-  ]
+  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:raw_logging_internal" ]
 }
 
 absl_source_set("variant") {
@@ -107,8 +91,7 @@ absl_source_set("compare") {
   ]
 }
 
-absl_source_set("optional_test") {
-  testonly = true
+absl_test("optional_test") {
   sources = [ "optional_test.cc" ]
   deps = [
     ":optional",
@@ -116,16 +99,11 @@ absl_source_set("optional_test") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/googletest:gtest",
   ]
 }
 
-absl_source_set("variant_test") {
-  testonly = true
+absl_test("variant_test") {
   sources = [ "variant_test.cc" ]
-  if (is_clang) {
-    cflags_cc = [ "-Wno-unused-function" ]
-  }
   deps = [
     ":variant",
     "//third_party/abseil-cpp/absl/base:config",
@@ -133,7 +111,5 @@ absl_source_set("variant_test") {
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gmock",
   ]
 }

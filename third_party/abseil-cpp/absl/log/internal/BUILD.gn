@@ -4,8 +4,6 @@
 
 import("//third_party/abseil-cpp/absl.gni")
 
-visibility = [ "//third_party/abseil-cpp/absl/log/*" ]
-
 absl_source_set("check_op") {
   sources = [ "check_op.cc" ]
   public = [ "check_op.h" ]
@@ -206,11 +204,7 @@ absl_source_set("voidify") {
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
-# Test targets
-absl_source_set("stderr_log_sink_test") {
-  visibility = []
-  visibility = [ "//third_party/abseil-cpp/:*" ]
-  testonly = true
+absl_test("stderr_log_sink_test") {
   sources = [ "stderr_log_sink_test.cc" ]
   if (is_apple || is_android) {
     sources = []
@@ -221,7 +215,5 @@ absl_source_set("stderr_log_sink_test") {
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/log:globals",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
   ]
 }

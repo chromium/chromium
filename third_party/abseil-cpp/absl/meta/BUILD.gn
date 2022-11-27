@@ -9,15 +9,10 @@ absl_source_set("type_traits") {
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
-absl_source_set("type_traits_test") {
-  testonly = true
+absl_test("type_traits_test") {
   sources = [ "type_traits_test.cc" ]
-  if (is_clang) {
-    cflags_cc = [ "-Wno-unused-private-field" ]
-  }
   deps = [
     ":type_traits",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/googletest:gtest",
   ]
 }
