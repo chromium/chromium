@@ -441,6 +441,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
      * Resets all auth states
      */
     reset() {
+      console.info('SamlHandler.reset: resets all auth states');
       this.isSamlPage_ = this.startsOnSamlPage_;
       this.pendingIsSamlPage_ = this.startsOnSamlPage_;
       this.passwordStore_ = {};
@@ -785,8 +786,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
         if (headerName === SAML_HEADER) {
           const action = header.value.toLowerCase();
           if (action === 'start') {
+            console.info('SamlHandler.onHeadersReceived_: SAML flow start');
             this.pendingIsSamlPage_ = true;
           } else if (action === 'end') {
+            console.info('SamlHandler.onHeadersReceived_: SAML flow end');
             this.pendingIsSamlPage_ = false;
           }
         }
@@ -853,6 +856,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
      */
     onAPICall_(channel, msg) {
       const call = msg.call;
+      console.info('SamlHandler.onAPICall_: call.method = ' + call.method);
       if (call.method === 'initialize') {
         if (!Number.isInteger(call.requestedVersion) ||
             call.requestedVersion < MIN_API_VERSION_VERSION) {
@@ -863,6 +867,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
         this.apiVersion_ =
             Math.min(call.requestedVersion, MAX_API_VERSION_VERSION);
         this.apiInitialized_ = true;
+        console.info('SamlHandler.onAPICall_ is initialized successfully');
         this.sendInitializationSuccess_(channel);
         return;
       }
@@ -877,12 +882,14 @@ import {WebviewEventManager} from './webview_event_manager.js';
         this.apiTokenStore_[call.token] = call;
         this.lastApiPasswordBytes_ = call.passwordBytes;
 
+        console.info('SamlHandler.onAPICall_: password added');
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
       } else if (call.method === 'confirm') {
         if (!(call.token in this.apiTokenStore_)) {
           console.error('SamlHandler.onAPICall_: token mismatch');
         } else {
           this.confirmToken_ = call.token;
+          console.info('SamlHandler.onAPICall_: password confirmed');
           this.dispatchEvent(new CustomEvent('apiPasswordConfirmed'));
         }
       } else {
