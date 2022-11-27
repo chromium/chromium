@@ -2476,6 +2476,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
   if (storing_in_bfcache) {
+    // TODO(https://crbug.com/1378279): Consider moving this to happen earlier
+    // and together with other page state updates so that the ordering is clear.
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
   }
 
@@ -2487,6 +2489,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       }
     }
 
+    // TODO(https://crbug.com/1378279): Consider moving this to happen earlier
+    // and together with other page state updates so that the ordering is clear.
     SetPageFrozen(true);
   }
 
@@ -2500,8 +2504,11 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   }
   if (eviction_changed)
     HookBackForwardCacheEviction(new_state->eviction_enabled);
-  if (resuming_page)
+  if (resuming_page) {
+    // TODO(https://crbug.com/1378279): Consider moving this to happen earlier
+    // and together with other page state updates so that the ordering is clear.
     SetPageFrozen(false);
+  }
   if (showing_page) {
     SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
@@ -2524,6 +2531,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
 
     DispatchPersistedPageshow(page_restore_params->navigation_start);
 
+    // TODO(https://crbug.com/1378279): Consider moving this to happen earlier
+    // and together with other page state updates so that the ordering is clear.
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
     if (MainFrame()->IsWebLocalFrame()) {
       LocalFrame* local_frame = To<LocalFrame>(page->MainFrame());
@@ -2537,6 +2546,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   // move SchedulerTrackedFeatures to core/ and remove the back and forth.
   ReportActiveSchedulerTrackedFeatures();
 
+  // TODO(https://crbug.com/1378279): Consider moving this to happen earlier
+  // and together with other page state updates so that the ordering is clear.
   GetPage()->SetPageLifecycleState(std::move(new_state));
 
   // Notify all local frames that we've updated the page lifecycle state.
