@@ -3,37 +3,23 @@
 // found in the LICENSE file.
 import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
-
-import {Feature, PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
+import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
 
 /** @interface */
-export class EmojiPickerApiProxy {
-  showUI() {}
-  /**
-   *
-   * @param {string} emoji
-   * @param {boolean} isVariant
-   * @param {number} searchLength
-   */
-  insertEmoji(emoji, isVariant, searchLength) {}
+export interface EmojiPickerApiProxy {
+  showUI(): void;
 
-  /**
-   * @returns {Promise<{incognito:boolean}>}
-   */
-  isIncognitoTextField() {}
+  insertEmoji(emoji: string, isVariant: boolean, searchLength: number): void;
 
-  /**
-   * @returns {Promise<{featureList:!Array<!Feature>}>}
-   */
-  getFeatureList() {}
+  isIncognitoTextField(): Promise<{incognito: boolean}>;
+
+  getFeatureList(): Promise<{featureList: boolean[]}>;
 }
 
 /** @implements {EmojiPickerApiProxy} */
 export class EmojiPickerApiProxyImpl {
+  handler = new PageHandlerRemote();
   constructor() {
-    /** @type {!PageHandlerRemote} */
-    this.handler = new PageHandlerRemote();
-
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(this.handler.$.bindNewPipeAndPassReceiver());
   }
@@ -43,7 +29,7 @@ export class EmojiPickerApiProxyImpl {
     this.handler.showUI();
   }
   /** @override */
-  insertEmoji(emoji, isVariant, searchLength) {
+  insertEmoji(emoji: string, isVariant: boolean, searchLength: number) {
     this.handler.insertEmoji(emoji, isVariant, searchLength);
   }
 

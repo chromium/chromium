@@ -31,13 +31,13 @@ foreach(f, html_files) {
 }
 
 non_component_js_files = [
-  "constants.js",
-  "emoji_picker_api_proxy.js",
-  "events.js",
-  "metadata_extension.js",
+  "constants.ts",
+  "emoji_picker_api_proxy.ts",
+  "events.ts",
+  "metadata_extension.ts",
   "prefix_search.js",
   "store.js",
-  "structs/trie.js",
+  "structs/trie.ts",
   "types.js",
 ]
 

@@ -18,16 +18,14 @@ const RECENTLY_USED_NAME = 'Recently used';
  * Creates a list of tabs with all required information for rendering given
  * category orders and basic info of each tab. It also adds tabs for "Recently
  * used" group as the first tab of each category.
- *
- * @param {!Array<string>} categories List of categories. The order in the
- *    list determines the order of the tabs in the output.
- * @param {!Object<string, Array<{name: !string, pagination: ?number,
- *    icon: ?string}>>} categoryBaseEmojis A mapping from each category to
- *    its list of basic tabs info.
- * @returns {!Array<!SubcategoryData>} List of tabs.
  */
-function _MakeGroupTabs(categories, categoryBaseEmojis) {
-  const groupTabs = [];
+function makeGroupTabs(
+    categories: string[], categoryBaseEmojis: Record<string, Array<{
+                                                       name: string,
+                                                       pagination?: number,
+                                                       icon?: string,
+                                                     }>>) {
+  const groupTabs: SubcategoryData[] = [];
   let groupId = 0;
 
   // TODO(b/216190190): Change groupId to number type.
@@ -45,7 +43,7 @@ function _MakeGroupTabs(categories, categoryBaseEmojis) {
         },
     );
     let pagination = 1;
-    categoryBaseEmojis[category].forEach(
+    categoryBaseEmojis[category]?.forEach(
         tab => {
           // Update pagination if provided.
           pagination = tab.pagination || pagination;
@@ -53,7 +51,7 @@ function _MakeGroupTabs(categories, categoryBaseEmojis) {
           groupTabs.push(
               {
                 name: tab.name,
-                icon: tab.icon,
+                icon: tab.icon ?? null,
                 category: category,
                 pagination: pagination,
                 groupId: groupId.toString(),
@@ -158,18 +156,17 @@ const CATEGORY_TABS = {
  * The list of tabs based on the order of category buttons and basic tab info
  * of each category.
  */
-export const V2_SUBCATEGORY_TABS = _MakeGroupTabs(
-  CATEGORY_METADATA.map(item => item.name),
-  CATEGORY_TABS,
+export const V2_SUBCATEGORY_TABS = makeGroupTabs(
+    CATEGORY_METADATA.map(item => item.name),
+    CATEGORY_TABS,
 );
 
 // A mapping from each category to the index of their first tab.
 export const V2_TABS_CATEGORY_START_INDEX = Object.fromEntries(
-    new Map(
-        V2_SUBCATEGORY_TABS.map((item, index) => [item.category, index])
-            .reverse(),
-        )
+    new Map(V2_SUBCATEGORY_TABS
+                .map((item, index) => [item.category, index] as const)
+                .reverse())
         .entries(),
 );
 
-export const EMOJI_GROUP_TABS = _MakeGroupTabs(['emoji'], CATEGORY_TABS);
+export const EMOJI_GROUP_TABS = makeGroupTabs(['emoji'], CATEGORY_TABS);

@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @typedef {!CustomEvent<{categoryName: string}>}
- */
-export let CategoryButtonClickEvent;
+
+export type CategoryButtonClickEvent = CustomEvent<{categoryName: string}>;
 
 export const CATEGORY_BUTTON_CLICK = 'category-button-click';
 
-/**
- * @typedef {!CustomEvent<{group: string}>}
- */
-export let GroupButtonClickEvent;
+export type GroupButtonClickEvent = CustomEvent<{group: string}>;
 
 export const GROUP_BUTTON_CLICK = 'group-button-click';
 
-/**
- * @typedef {!CustomEvent<{emoji: string, isVariant: boolean, baseEmoji: string,
- * allVariants:!Array<!string>, name:!string}>}
- */
-export let EmojiButtonClickEvent;
+export type EmojiButtonClickEvent = CustomEvent<{
+  emoji: string,
+  isVariant: boolean,
+  baseEmoji: string,
+  allVariants: string[],
+  name: string,
+}>;
 
 export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
 
@@ -31,18 +28,12 @@ export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
  * keeping variants events for both emoji-button and emoji-group valid at the
  * same time. It will be be improved after removing emoji-button.
  */
-/**
- * @typedef {!CustomEvent<{owner: ?Element,
- *            variants: ?Element, baseEmoji: String}>}
- */
-export let EmojiVariantsShownEvent;
+export type EmojiVariantsShownEvent =
+    CustomEvent<{owner?: Element, variants?: Element, baseEmoji: string}>;
 
 export const EMOJI_VARIANTS_SHOWN = 'emoji-variants-shown';
 
-/**
- * @typedef {!CustomEvent<{category: string}>}
- */
-export let CategoryDataLoadEvent;
+export type CategoryDataLoadEvent = CustomEvent<{category: string}>;
 
 /**
  * The event that data of a category is fetched and processed for rendering.
@@ -51,10 +42,7 @@ export let CategoryDataLoadEvent;
  */
 export const CATEGORY_DATA_LOADED = 'category-data-loaded';
 
-/**
- * @typedef {!CustomEvent<{v2Enabled: boolean}>}
- */
-export let EmojiPickerReadyEvent;
+export type EmojiPickerReadyEvent = CustomEvent<{v2Enabled: boolean}>;
 
 /**
  * The event that all the data are loaded and rendered and all the
@@ -62,10 +50,7 @@ export let EmojiPickerReadyEvent;
  */
 export const EMOJI_PICKER_READY = 'emoji-picker-ready';
 
-/**
- * @typedef {!CustomEvent}
- */
-export let EmojiClearRecentClickEvent;
+export type EmojiClearRecentClickEvent = CustomEvent;
 
 export const EMOJI_CLEAR_RECENTS_CLICK = 'emoji-clear-recents-click';
 
@@ -78,6 +63,6 @@ export const EMOJI_CLEAR_RECENTS_CLICK = 'emoji-clear-recents-click';
  * @return {!CustomEvent<T>} custom event
  * @template T event detail type
  */
-export function createCustomEvent(type, detail) {
+export function createCustomEvent<T>(type: string, detail: T) {
   return new CustomEvent(type, {bubbles: true, composed: true, detail});
 }
