@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 
+#include <ostream>
+
 namespace ui {
 
 WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
