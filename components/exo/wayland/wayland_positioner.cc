@@ -4,6 +4,8 @@
 
 #include "components/exo/wayland/wayland_positioner.h"
 
+#include <ostream>
+
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
 namespace exo::wayland {
