@@ -101,6 +101,7 @@ action("precompile_templates") {
     "$target_gen_dir/java_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
     "$target_gen_dir/js_templates.zip",
+    "$target_gen_dir/ts_templates.zip",
   ]
   args = [
     "-o",
