@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/style/style_difference.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 
 namespace blink {
