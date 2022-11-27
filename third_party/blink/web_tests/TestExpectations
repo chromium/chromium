@@ -1961,7 +1961,6 @@ crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll.html [ Fail
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-x-in-scrolling-page.html [ Failure Pass Timeout ]
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-y-in-scrolling-page.html [ Failure Pass Timeout ]
 # Sheriff: 2020-05-18
-crbug.com/1083820 [ Mac ] fast/scrolling/document-level-wheel-event-listener-passive-by-default.html [ Failure Pass ]
 
 # In external/wpt/html/, we prefer checking in failure
 # expectation files. The following tests with [ Failure ] don't have failure
@@ -5665,7 +5664,6 @@ crbug.com/1080997 fast/scrolling/events/scrollend-event-fired-to-scrolled-elemen
 
 # Failing tests because of enabling scroll unification flag
 
-crbug.com/1098383 [ Mac ] fast/events/scrollbar-double-click.html [ Failure Pass ]
 
 # DevTools roll
 crbug.com/1006759 http/tests/devtools/elements/styles-1/edit-value-url-with-color.js [ Crash Failure Pass Timeout ]
