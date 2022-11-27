@@ -101,9 +101,28 @@ export class TestCallRecorder {
   /**
    * @param {number} index Index of which args to return.
    * @return {?Arguments} Returns the {@code Arguments} for the call specified
-   *    by indexd.
+   *    by indexed.
    */
   getArguments(index) {
     return (index < this.calls_.length) ? this.calls_[index] : null;
   }
+}
+
+/**
+ * Wait for the update (render/re-render) of the `element` to be finished
+ * in unit test.
+ *
+ * @param {!HTMLElement} element
+ * @return {!Promise}
+ */
+export async function waitForElementUpdate(element) {
+  // For LitElement we explicitly await the internal updateComplete promise.
+  if (element.updateComplete && element.updateComplete.then) {
+    await element.updateComplete;
+    // Wait for nested LitElements to finish rendering. Assumes that all nested
+    // elements' render() complete in microtasks.
+    return new Promise(resolve => setTimeout(resolve, 0));
+  }
+  // For others, wait for the next animation frame.
+  return new Promise(resolve => window.requestAnimationFrame(resolve));
 }
