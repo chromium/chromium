@@ -5,6 +5,7 @@
 #include "net/base/backoff_entry_serializer.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 
 #include "base/notreached.h"

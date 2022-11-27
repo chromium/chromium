@@ -4,6 +4,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/check.h"
