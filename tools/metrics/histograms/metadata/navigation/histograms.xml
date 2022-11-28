@@ -1112,31 +1112,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadDelay"
-    units="ms" expires_after="2023-01-02">
-  <owner>ydago@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    The time spent waiting for policies to load before checking a navigation
-    against url blocking policies. Gathered when policies have finished loading
-    after a navigation requests has been already issued.
-  </summary>
-</histogram>
-
-<histogram
-    name="Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadTimeout"
-    enum="Boolean" expires_after="2023-01-02">
-  <owner>ydago@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records if the policy load delay before PolicyBlocklistNavigationThrottle
-    checks a navigation against url blocking policies timed out. In case of a
-    timeout, the navigation resumes ignoring potential policy restrictions.
-    Gathered when policies have not finished loading in time for a navigation
-    request to be checked against the blocklist policy.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.Preconnect.PreresolveJobQueueingTime" units="ms"
     expires_after="2023-03-19">
   <owner>alexilin@chromium.org</owner>
