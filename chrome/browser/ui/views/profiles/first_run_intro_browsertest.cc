@@ -31,6 +31,7 @@ struct TestParam {
   bool use_dark_theme = false;
   bool use_fixed_size = false;
   bool use_longer_strings = false;
+  bool use_right_to_left_language = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -49,6 +50,11 @@ const TestParam kTestParams[] = {
     {.test_suffix = "LongerStringsFixedSize",
      .use_fixed_size = true,
      .use_longer_strings = true},
+
+    // This test will only be reproducible on Windows. You will need to change
+    // the language using LANGUAGE=ar (i.e LANGUAGE=ar out/Default/chrome)
+    // to be able to debug on Linux.
+    {.test_suffix = "RightToLeftLanguage", .use_right_to_left_language = true},
 };
 
 const char kMakeCardDescriptionLongerJsString[] =
@@ -78,6 +84,9 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().use_dark_theme) {
       command_line->AppendSwitch(switches::kForceDarkMode);
+    }
+    if (GetParam().use_right_to_left_language) {
+      command_line->AppendSwitchASCII(switches::kLang, "ar");
     }
   }
 
