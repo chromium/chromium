@@ -8,7 +8,7 @@ import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {util} from '../common/js/util.js';
 import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, SearchStatus, State} from '../externs/ts/state.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
-import {searchAction} from '../state/actions.js';
+import {updateSearch} from '../state/actions.js';
 import {getStore, Store} from '../state/store.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
 
@@ -327,8 +327,13 @@ export class SearchContainer extends EventTarget {
    * Updates the store state.
    */
   private updateState_() {
-    // TODO(majewski): Update the store.
-    console.debug('Search options event', JSON.stringify(this.currentOptions_));
+    if (util.isSearchV2Enabled()) {
+      this.store_.dispatch(updateSearch({
+        query: undefined,   // do not change
+        status: undefined,  // do not change
+        options: this.currentOptions_,
+      }));
+    }
   }
 
   /**
@@ -422,7 +427,11 @@ export class SearchContainer extends EventTarget {
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
       if (util.isSearchV2Enabled()) {
-        this.store_.dispatch(searchAction({status: SearchStatus.INACTIVE}));
+        this.store_.dispatch(updateSearch({
+          query: undefined,  // do not change
+          status: SearchStatus.INACTIVE,
+          options: undefined,  // do not change
+        }));
       }
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;

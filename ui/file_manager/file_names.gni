@@ -311,6 +311,7 @@ ts_test_files = [
   "file_manager/state/for_tests.ts",
   "file_manager/state/reducers/all_entries_unittest.ts",
   "file_manager/state/reducers/current_directory_unittest.ts",
+  "file_manager/state/reducers/search_unittest.ts",
 
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",

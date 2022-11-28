@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PropStatus, SearchOptions} from '../externs/ts/state.js';
+import {SearchData} from '../externs/ts/state.js';
 import {BaseAction} from '../lib/base_store.js';
 
 import {ClearStaleCachedEntriesAction} from './actions/all_entries.js';
@@ -31,23 +31,34 @@ export const enum ActionType {
 /** Action to update the search state. */
 export interface SearchAction extends BaseAction {
   type: ActionType.SEARCH;
-  payload: {
-    query?: string,
-    status?: PropStatus,
-    options?: SearchOptions,
-  };
+  payload: SearchData;
 }
 
-export function searchAction(
-    {query, status, options}:
-        {query?: string, status?: PropStatus, options?: SearchOptions}):
-    SearchAction {
+/**
+ * Generates a search action based on the supplied data.
+ * Query, status and options can be adjusted independently of each other.
+ */
+export function updateSearch(data: SearchData): SearchAction {
   return {
     type: ActionType.SEARCH,
     payload: {
-      query: query,
-      status,
-      options,
+      query: data.query,
+      status: data.status,
+      options: data.options,
+    },
+  };
+}
+
+/**
+ * Clears all search settings.
+ */
+export function clearSearch(): SearchAction {
+  return {
+    type: ActionType.SEARCH,
+    payload: {
+      query: undefined,
+      status: undefined,
+      options: undefined,
     },
   };
 }
