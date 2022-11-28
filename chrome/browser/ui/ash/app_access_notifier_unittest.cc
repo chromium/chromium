@@ -310,7 +310,7 @@ TEST_P(AppAccessNotifierParameterizedTest, AppLaunchedUsingMicrophone) {
 
   // Returned list of application names should only contain "name_rose".
   std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_rose");
 }
 
@@ -328,7 +328,7 @@ TEST_P(AppAccessNotifierParameterizedTest,
   // Most recently launched mic-using app should be in front of the returned
   // list.
   std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 3);
+  EXPECT_EQ(app_names.size(), 3u);
   EXPECT_EQ(app_names[0], u"name_zara");
 
   // Oscar starts using the mic, Oscar should be the front element of the
@@ -336,7 +336,7 @@ TEST_P(AppAccessNotifierParameterizedTest,
   LaunchAppUsingCameraOrMicrophone(
       "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/true);
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 4);
+  EXPECT_EQ(app_names.size(), 4u);
   EXPECT_EQ(app_names[0], u"name_oscar");
 
   // If we "kill" Oscar (set to no longer be using the mic or camera), Oscar
@@ -344,7 +344,7 @@ TEST_P(AppAccessNotifierParameterizedTest,
   LaunchAppUsingCameraOrMicrophone(
       "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/false);
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 3);
+  EXPECT_EQ(app_names.size(), 3u);
   EXPECT_TRUE(std::find(app_names.begin(), app_names.end(), u"name_oscar") ==
               app_names.end());
   EXPECT_EQ(app_names[0], u"name_zara");
@@ -365,7 +365,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   // App we just launched should be the front and only element of the returned
   // list.
   std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_primary_user");
 
   // Secondary user is now the primary user.
@@ -379,7 +379,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   // App we just launched should be the front and only element of the returned
   // list.
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_secondary_user");
 
   // Switch back to the primary user and "kill" the app it was running, no app
@@ -395,7 +395,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   // shows up at the front of the returned list.
   SetActiveUserAccountId(/*is_primary=*/false);
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_secondary_user");
 
   // Now "kill" our secondary user's app and verify that there's no name to
@@ -422,7 +422,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // App we just launched should be the front and only element of the returned
   // list.
   std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_primary_user");
 
   // Primary user launches a second mic-using app.
@@ -434,7 +434,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // The returned list should contain two application names ordered by most
   // recently launched.
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 2);
+  EXPECT_EQ(app_names.size(), 2u);
   EXPECT_EQ(app_names[0], u"name_primary_user_another_app");
   EXPECT_EQ(app_names[1], u"name_primary_user");
 
@@ -449,7 +449,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // App we just launched should be the front and only element of the returned
   // list.
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 1);
+  EXPECT_EQ(app_names.size(), 1u);
   EXPECT_EQ(app_names[0], u"name_secondary_user");
 
   // Secondary user launches a second mic-using app.
@@ -460,7 +460,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // The returned list should contain two application names ordered by most
   // recently launched.
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 2);
+  EXPECT_EQ(app_names.size(), 2u);
   EXPECT_EQ(app_names[0], u"name_secondary_user_another_app");
   EXPECT_EQ(app_names[1], u"name_secondary_user");
 
@@ -470,7 +470,7 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // Both of the apps we launced for the primary user should be in the list
   // ordered by most recently launched.
   app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ((int)app_names.size(), 2);
+  EXPECT_EQ(app_names.size(), 2u);
   EXPECT_EQ(app_names[0], u"name_primary_user_another_app");
   EXPECT_EQ(app_names[1], u"name_primary_user");
 }
