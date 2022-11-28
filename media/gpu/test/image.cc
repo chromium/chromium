@@ -139,44 +139,41 @@ bool Image::LoadMetadata() {
              << metadata_result.error().message;
     return false;
   }
-  base::Value& metadata = *metadata_result;
+  const base::Value::Dict& metadata = metadata_result->GetDict();
 
   // Get the pixel format from the json data.
-  const base::Value* pixel_format =
-      metadata.FindKeyOfType("pixel_format", base::Value::Type::STRING);
+  const std::string* pixel_format = metadata.FindString("pixel_format");
   if (!pixel_format) {
     VLOGF(1) << "Key \"pixel_format\" is not found in " << json_path;
     return false;
   }
-  pixel_format_ = ConvertStringtoPixelFormat(pixel_format->GetString());
+  pixel_format_ = ConvertStringtoPixelFormat(*pixel_format);
   if (pixel_format_ == PIXEL_FORMAT_UNKNOWN) {
-    VLOGF(1) << pixel_format->GetString() << " is not supported";
+    VLOGF(1) << *pixel_format << " is not supported";
     return false;
   }
 
   // Get the image dimensions from the json data.
-  const base::Value* width =
-      metadata.FindKeyOfType("width", base::Value::Type::INTEGER);
-  if (!width) {
+  absl::optional<int> width = metadata.FindInt("width");
+  if (!width.has_value()) {
     VLOGF(1) << "Key \"width\" is not found in " << json_path;
     return false;
   }
-  const base::Value* height =
-      metadata.FindKeyOfType("height", base::Value::Type::INTEGER);
+  absl::optional<int> height = metadata.FindInt("height");
   if (!height) {
     VLOGF(1) << "Key \"height\" is not found in " << json_path;
     return false;
   }
-  size_ = gfx::Size(width->GetInt(), height->GetInt());
+  size_ = gfx::Size(*width, *height);
 
   // Try to get the visible rectangle of the image from the json data.
   // These values are not in json data if all the image data is in the visible
   // area.
   visible_rect_ = gfx::Rect(size_);
-  const base::Value* visible_rect_info =
-      metadata.FindKeyOfType("visible_rect", base::Value::Type::LIST);
+  const base::Value::List* visible_rect_info =
+      metadata.FindList("visible_rect");
   if (visible_rect_info) {
-    base::Value::ConstListView values = visible_rect_info->GetListDeprecated();
+    const base::Value::List& values = *visible_rect_info;
     if (values.size() != 4) {
       VLOGF(1) << "unexpected json format for visible rectangle";
       return false;
@@ -190,13 +187,12 @@ bool Image::LoadMetadata() {
   }
 
   // Get the image rotation info from the json data.
-  const base::Value* rotation =
-      metadata.FindKeyOfType("rotation", base::Value::Type::INTEGER);
-  if (!rotation) {
+  absl::optional<int> rotation = metadata.FindInt("rotation");
+  if (!rotation.has_value()) {
     // Default rotation value is VIDEO_ROTATION_0
     rotation_ = VIDEO_ROTATION_0;
   } else {
-    switch (rotation->GetInt()) {
+    switch (*rotation) {
       case 0:
         rotation_ = VIDEO_ROTATION_0;
         break;
@@ -210,19 +206,18 @@ bool Image::LoadMetadata() {
         rotation_ = VIDEO_ROTATION_270;
         break;
       default:
-        VLOGF(1) << "Invalid rotation value: " << rotation->GetInt();
+        VLOGF(1) << "Invalid rotation value: " << *rotation;
         return false;
     };
   }
 
   // Get the image checksum from the json data.
-  const base::Value* checksum =
-      metadata.FindKeyOfType("checksum", base::Value::Type::STRING);
+  const std::string* checksum = metadata.FindString("checksum");
   if (!checksum) {
     VLOGF(1) << "Key \"checksum\" is not found in " << json_path;
     return false;
   }
-  checksum_ = checksum->GetString();
+  checksum_ = *checksum;
 
   return true;
 }

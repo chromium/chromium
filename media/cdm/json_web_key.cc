@@ -244,7 +244,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   }
 
   // Locate the set from the dictionary.
-  const base::Value* list_val = root->FindListKey(kKeyIdsTag);
+  const base::Value::List* list_val = root->GetDict().FindList(kKeyIdsTag);
   if (!list_val) {
     error_message->assign("Missing '");
     error_message->append(kKeyIdsTag);
@@ -255,9 +255,8 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   // Create a local list of key ids, so that |key_ids| only gets updated on
   // success.
   KeyIdList local_key_ids;
-  base::Value::ConstListView list_val_view = list_val->GetListDeprecated();
-  for (size_t i = 0; i < list_val_view.size(); ++i) {
-    const std::string* encoded_key_id = list_val_view[i].GetIfString();
+  for (size_t i = 0; i < list_val->size(); ++i) {
+    const std::string* encoded_key_id = (*list_val)[i].GetIfString();
     if (!encoded_key_id) {
       error_message->assign("'");
       error_message->append(kKeyIdsTag);
@@ -393,20 +392,19 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   // Locate the set from the dictionary.
-  const base::Value* list_val = root->FindListKey(kKeyIdsTag);
+  const base::Value::List* list_val = root->GetDict().FindList(kKeyIdsTag);
   if (!list_val) {
     DVLOG(1) << "Missing '" << kKeyIdsTag << "' parameter or not a list";
     return false;
   }
 
   // Get the first key.
-  if (list_val->GetListDeprecated().size() < 1) {
+  if (list_val->size() < 1) {
     DVLOG(1) << "Empty '" << kKeyIdsTag << "' list";
     return false;
   }
 
-  const std::string* encoded_key =
-      list_val->GetListDeprecated()[0].GetIfString();
+  const std::string* encoded_key = (*list_val)[0].GetIfString();
   if (!encoded_key) {
     DVLOG(1) << "First entry in '" << kKeyIdsTag << "' not a string";
     return false;

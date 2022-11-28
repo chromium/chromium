@@ -369,23 +369,22 @@ bool Video::LoadMetadata() {
                << ": " << metadata_result.error().message;
     return false;
   }
-  base::Value& metadata = *metadata_result;
+  base::Value::Dict& metadata = metadata_result->GetDict();
 
   // Find the video's profile, only required for encoded video streams.
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  const base::Value* profile =
-      metadata.FindKeyOfType("profile", base::Value::Type::STRING);
+  const std::string* profile = metadata.FindString("profile");
   if (profile) {
-    auto converted_profile = ConvertStringtoProfile(profile->GetString());
+    auto converted_profile = ConvertStringtoProfile(*profile);
     if (!converted_profile) {
-      LOG(ERROR) << profile->GetString() << " is not supported";
+      LOG(ERROR) << *profile << " is not supported";
       return false;
     }
     profile_ = converted_profile.value();
 
     auto converted_codec = ConvertProfileToCodec(profile_);
     if (!converted_codec) {
-      LOG(ERROR) << profile->GetString() << " is not supported";
+      LOG(ERROR) << *profile << " is not supported";
       return false;
     }
     codec_ = converted_codec.value();
@@ -393,10 +392,9 @@ bool Video::LoadMetadata() {
 
   // Find the video's bit depth. This is optional and only required for encoded
   // video streams.
-  const base::Value* bit_depth =
-      metadata.FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
-  if (bit_depth) {
-    bit_depth_ = base::checked_cast<uint8_t>(bit_depth->GetInt());
+  absl::optional<int> bit_depth = metadata.FindInt("bit_depth");
+  if (bit_depth.has_value()) {
+    bit_depth_ = base::checked_cast<uint8_t>(*bit_depth);
   } else {
     if (profile_ == VP9PROFILE_PROFILE2) {
       LOG(ERROR) << "Bit depth is unspecified for VP9 profile 2";
@@ -408,13 +406,11 @@ bool Video::LoadMetadata() {
 
   // Find the video's pixel format, only required for raw video streams.
   pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
-  const base::Value* pixel_format =
-      metadata.FindKeyOfType("pixel_format", base::Value::Type::STRING);
+  const std::string* pixel_format = metadata.FindString("pixel_format");
   if (pixel_format) {
-    auto converted_pixel_format =
-        ConvertStringtoPixelFormat(pixel_format->GetString());
+    auto converted_pixel_format = ConvertStringtoPixelFormat(*pixel_format);
     if (!converted_pixel_format) {
-      LOG(ERROR) << pixel_format->GetString() << " is not supported";
+      LOG(ERROR) << *pixel_format << " is not supported";
       return false;
     }
     pixel_format_ = converted_pixel_format.value();
@@ -433,61 +429,55 @@ bool Video::LoadMetadata() {
     return false;
   }
 
-  const base::Value* frame_rate =
-      metadata.FindKeyOfType("frame_rate", base::Value::Type::INTEGER);
-  if (!frame_rate) {
+  absl::optional<int> frame_rate = metadata.FindInt("frame_rate");
+  if (!frame_rate.has_value()) {
     LOG(ERROR) << "Key \"frame_rate\" is not found in " << metadata_file_path_;
     return false;
   }
-  frame_rate_ = static_cast<uint32_t>(frame_rate->GetInt());
+  frame_rate_ = static_cast<uint32_t>(*frame_rate);
 
-  const base::Value* num_frames =
-      metadata.FindKeyOfType("num_frames", base::Value::Type::INTEGER);
-  if (!num_frames) {
+  absl::optional<int> num_frames = metadata.FindInt("num_frames");
+  if (!num_frames.has_value()) {
     LOG(ERROR) << "Key \"num_frames\" is not found in " << metadata_file_path_;
     return false;
   }
-  num_frames_ = static_cast<uint32_t>(num_frames->GetInt());
+  num_frames_ = static_cast<uint32_t>(*num_frames);
 
   // Find the number of fragments, only required for H.264/HEVC video streams.
   num_fragments_ = num_frames_;
   if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
       (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX)) {
-    const base::Value* num_fragments =
-        metadata.FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
-    if (!num_fragments) {
+    absl::optional<int> num_fragments = metadata.FindInt("num_fragments");
+    if (!num_fragments.has_value()) {
       LOG(ERROR) << "Key \"num_fragments\" is required for H.264/HEVC video "
                     "streams but could not be found in "
                  << metadata_file_path_;
       return false;
     }
-    num_fragments_ = static_cast<uint32_t>(num_fragments->GetInt());
+    num_fragments_ = static_cast<uint32_t>(*num_fragments);
   }
 
-  const base::Value* width =
-      metadata.FindKeyOfType("width", base::Value::Type::INTEGER);
-  if (!width) {
+  absl::optional<int> width = metadata.FindInt("width");
+  if (!width.has_value()) {
     LOG(ERROR) << "Key \"width\" is not found in " << metadata_file_path_;
     return false;
   }
-  const base::Value* height =
-      metadata.FindKeyOfType("height", base::Value::Type::INTEGER);
+  absl::optional<int> height = metadata.FindInt("height");
   if (!height) {
     LOG(ERROR) << "Key \"height\" is not found in " << metadata_file_path_;
     return false;
   }
-  resolution_ = gfx::Size(static_cast<uint32_t>(width->GetInt()),
-                          static_cast<uint32_t>(height->GetInt()));
+  resolution_ =
+      gfx::Size(static_cast<uint32_t>(*width), static_cast<uint32_t>(*height));
   // The default visible rectangle is (0, 0, |resolution_|). Expand() needs to
   // be called to change the visible rectangle.
   visible_rect_ = gfx::Rect(resolution_);
 
   // Find optional frame checksums. These are only required when using the frame
   // validator.
-  const base::Value* md5_checksums =
-      metadata.FindKeyOfType("md5_checksums", base::Value::Type::LIST);
+  const base::Value::List* md5_checksums = metadata.FindList("md5_checksums");
   if (md5_checksums) {
-    for (const base::Value& checksum : md5_checksums->GetListDeprecated()) {
+    for (const base::Value& checksum : *md5_checksums) {
       frame_checksums_.push_back(checksum.GetString());
     }
   }
