@@ -508,8 +508,7 @@ public class LibraryLoader {
     private Linker getLinker() {
         // This is only called if LibraryLoader.useChromiumLinker() returns true.
         synchronized (mLock) {
-            // TODO(pasko): Fold the ModernLinker into Linker.
-            if (mLinker == null) mLinker = new ModernLinker();
+            if (mLinker == null) mLinker = new Linker();
             return mLinker;
         }
     }

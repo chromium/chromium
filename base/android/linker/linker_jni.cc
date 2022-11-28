@@ -238,15 +238,11 @@ JNI_GENERATOR_EXPORT void
 Java_org_chromium_base_library_1loader_LinkerJni_nativeFindMemoryRegionAtRandomAddress(
     JNIEnv* env,
     jclass clazz,
-    jobject lib_info_obj,
-    jboolean keep_reserved) {
+    jobject lib_info_obj) {
   LOG_INFO("Entering");
   uintptr_t address;
   size_t size;
   ReserveAddressWithHint(0, &address, &size);
-  if (!keep_reserved && address != 0) {
-    munmap(reinterpret_cast<void*>(address), size);
-  }
   s_lib_info_fields.SetLoadInfo(env, lib_info_obj, address, size);
 }
 

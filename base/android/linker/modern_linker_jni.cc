@@ -582,7 +582,7 @@ bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
 }
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeLoadLibrary(
+Java_org_chromium_base_library_1loader_LinkerJni_nativeLoadLibrary(
     JNIEnv* env,
     jclass clazz,
     jstring jdlopen_ext_path,
@@ -604,7 +604,7 @@ Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeLoadLibrary(
 }
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
+Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
     jlong local_load_address,
@@ -630,7 +630,7 @@ Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
 }
 
 JNI_GENERATOR_EXPORT jint
-Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeGetRelroSharingResult(
+Java_org_chromium_base_library_1loader_LinkerJni_nativeGetRelroSharingResult(
     JNIEnv* env,
     jclass clazz) {
   return static_cast<jint>(s_relro_sharing_status);
