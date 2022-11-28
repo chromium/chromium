@@ -1334,16 +1334,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandbox.InitializedSuccessfully" enum="BooleanSuccess"
-    expires_after="2020-08-30">
-  <owner>vmiura@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Whether or not the GPU sandbox properly initialized. Failures are typically
-    platform- and driver-specific (e.g. driver creating threads on Linux).
-  </summary>
-</histogram>
-
 <histogram name="GPU.Scheduler.TaskDependencyTime" units="microseconds"
     expires_after="2022-08-07">
   <owner>berlu@chromium.org</owner>
