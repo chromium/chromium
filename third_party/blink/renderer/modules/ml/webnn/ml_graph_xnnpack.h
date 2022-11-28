@@ -81,6 +81,11 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver) override;
 
+  // Invoke the XNNPACK Runtime object in the caller's thread.
+  void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+                       const MLNamedArrayBufferViews& outputs,
+                       ExceptionState& exception_state) override;
+
   // The SharedXnnpackContext is shared and reference-counted by all instances
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK
   // library for graph building and execution.

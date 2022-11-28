@@ -101,6 +101,16 @@ class MLGraphTestBase : public ::testing::Test,
   BuildResult BuildGraph(V8TestingScope& scope,
                          MLGraphBuilder* builder,
                          const MLNamedOperands& named_operands);
+
+  // Helper method for testinh both ComputeAsync() and ComputeSync() with the
+  // same input/output buffers and expected results. If the graph computes
+  // successfully, it returns nullptr and the results are produced into the
+  // output buffers. Otherwise, it returns the pointer to the DOMException
+  // thrown by the graph computing.
+  DOMException* ComputeGraph(V8TestingScope& scope,
+                             MLGraph* graph,
+                             const MLNamedArrayBufferViews& inputs,
+                             const MLNamedArrayBufferViews& outputs);
 };
 
 }  // namespace blink

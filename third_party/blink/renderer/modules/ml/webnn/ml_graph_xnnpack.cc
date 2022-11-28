@@ -308,8 +308,20 @@ void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
   // TODO(ningxin.hu@intel.com): Implement this method by posting the inputs and
   // outputs to a background thread and invoking XNNPACK Runtime object in the
   // background thread.
+
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Not implemented."));
+}
+
+void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+                                     const MLNamedArrayBufferViews& outputs,
+                                     ExceptionState& exception_state) {
+  // TODO(ningxin.hu@intel.com): Setup the external values of the XNNPACK
+  // Runtime object by input and output buffers, and invoke the XNNPACK Runtime
+  // object for accelerated execution in the caller's thread.
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented.");
 }
 
 }  // namespace blink

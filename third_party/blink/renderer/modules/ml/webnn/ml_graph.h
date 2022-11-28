@@ -66,6 +66,15 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
                     const MLNamedArrayBufferViews& outputs,
                     ScriptPromiseResolver* resolver);
 
+  // ComputeSync() has the similar function as ComputeAsync(). The difference is
+  // if there are no validation errors, it calls ComputeSyncImpl() implemented
+  // by an MLGraph backend that binds the array buffer views and executes the
+  // compiled platform graph synchronously in the caller's thread. This method
+  // is called by MLContext to implement MLContext.computeSync() method.
+  void ComputeSync(const MLNamedArrayBufferViews& inputs,
+                   const MLNamedArrayBufferViews& outputs,
+                   ExceptionState& exception_state);
+
  protected:
   explicit MLGraph(MLContext* context);
 
@@ -102,14 +111,22 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
                                  ExceptionState& exception_state) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled
-  // platform graph asynchronously. The actual graph execution work
-  // should be handled by a worker thread without blocking the main thread. Once
-  // the execution of the platform graph is completed, the results should be
-  // produeced into the output buffers and the resolver should be resolved.
-  // Otherwise, the resolver should be rejected with a DOMException accordingly.
+  // platform graph asynchronously. The actual graph execution work should be
+  // handled by a worker thread without blocking the main thread. If no errors
+  // occurred, the resolver will be resolved and results will be stored in
+  // output buffers. Otherwise, the resolver will be rejected with a
+  // DOMException accordingly.
   virtual void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                 const MLNamedArrayBufferViews& outputs,
                                 ScriptPromiseResolver* resolver) = 0;
+
+  // An MLGraph backend should implement this method to execute the compiled
+  // platform graph synchronously in the caller's thread. Results will be stored
+  // in output buffers if no errors occurred. Otherwise, this method will throw
+  // a DOMException accordingly.
+  virtual void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+                               const MLNamedArrayBufferViews& outputs,
+                               ExceptionState& exception_state) = 0;
 
   Member<MLContext> ml_context_;
   bool resources_info_initialized_{false};

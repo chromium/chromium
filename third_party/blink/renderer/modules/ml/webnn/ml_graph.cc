@@ -114,6 +114,31 @@ void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
   ComputeAsyncImpl(inputs, outputs, resolver);
 }
 
+void MLGraph::ComputeSync(const MLNamedArrayBufferViews& inputs,
+                          const MLNamedArrayBufferViews& outputs,
+                          ExceptionState& exception_state) {
+  // The MLGraph object should be initialized before computing.
+  DCHECK(resources_info_initialized_);
+
+  // Validate the input and output MLNamedArrayBufferViews.
+  String error_message;
+  if (!ValidateNamedArrayBufferViews(inputs, input_resources_info_,
+                                     error_message)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Invalid inputs: " + error_message);
+    return;
+  }
+  if (!ValidateNamedArrayBufferViews(outputs, output_resources_info_,
+                                     error_message)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Invalid outputs: " + error_message);
+    return;
+  }
+
+  // Call ComputeSyncImpl() implemented by an MLGraph backend.
+  ComputeSyncImpl(inputs, outputs, exception_state);
+}
+
 void MLGraph::BuildAsync(const MLNamedOperands& named_outputs,
                          ScriptPromiseResolver* resolver) {
   String error_message;
