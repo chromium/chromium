@@ -3332,9 +3332,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2022-05-01">
+    enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially above the fold becomes visible before it finishes loading.
@@ -3342,9 +3343,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2023-04-16">
+    enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially below the fold becomes visible before it finishes loading.
