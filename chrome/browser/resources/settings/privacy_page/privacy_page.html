@@ -61,9 +61,9 @@
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <template is="dom-if" if=
             "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
-          <!-- TODO(crbug.com/1378703): Replace strings and icons. -->
+          <!-- TODO(crbug.com/1378703): Replace strings. -->
           <cr-link-row id="privacySandboxLinkRow"
-              start-icon="settings20:experiment"
+              start-icon="settings20:privacy-sandbox"
               class="hr"
               label="$i18n{privacySandboxTitle}"
               sub-label="[[computePrivacySandboxSublabel_(
