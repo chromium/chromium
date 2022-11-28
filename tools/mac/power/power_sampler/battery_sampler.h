@@ -6,6 +6,7 @@
 #define TOOLS_MAC_POWER_POWER_SAMPLER_BATTERY_SAMPLER_H_
 
 #include <stdint.h>
+#include <cstdint>
 #include <memory>
 
 #include "base/mac/scoped_ioobject.h"
@@ -57,9 +58,11 @@ class BatterySampler : public Sampler {
     int64_t voltage_mv;
     int64_t current_capacity_mah;
     int64_t max_capacity_mah;
+    int64_t update_time_seconds_since_epoch;
   };
   using MaybeGetBatteryDataFn =
       absl::optional<BatteryData> (*)(io_service_t power_source);
+  using GetSecondsSinceEpochFn = int64_t (*)();
 
   // TODO(siggi): It'd be possible to test the data extraction part of this
   //     function by splitting it in two and passing it a dictionary to
@@ -76,9 +79,11 @@ class BatterySampler : public Sampler {
 
   static std::unique_ptr<BatterySampler> CreateImpl(
       MaybeGetBatteryDataFn maybe_get_battery_data_fn,
+      GetSecondsSinceEpochFn get_seconds_since_epoch_fn,
       base::mac::ScopedIOObject<io_service_t> power_source);
 
   BatterySampler(MaybeGetBatteryDataFn maybe_get_battery_data_fn,
+                 GetSecondsSinceEpochFn get_seconds_since_epoch_fn,
                  base::mac::ScopedIOObject<io_service_t> power_source,
                  BatteryData initial_battery_data);
 
@@ -87,6 +92,7 @@ class BatterySampler : public Sampler {
                         const BatteryData& battery_data);
 
   const MaybeGetBatteryDataFn maybe_get_battery_data_fn_;
+  const GetSecondsSinceEpochFn get_seconds_since_epoch_fn_;
   const base::mac::ScopedIOObject<io_service_t> power_source_;
 
   // To compute the average power consumed between non-identical

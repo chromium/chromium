@@ -4,6 +4,7 @@
 
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 
+#include <cstdint>
 #include <memory>
 
 #include <IOKit/IOKitLib.h>
@@ -36,6 +37,10 @@ class BatterySamplerTest : public testing::Test {
     battery_data_ = battery_data;
   }
 
+  static void set_seconds_since_epoch(int64_t seconds_since_epoch) {
+    seconds_since_epoch_ = seconds_since_epoch;
+  }
+
   // The gmock *ElementsAre* matchers are too exacting for the double values
   // in our samples, but this poor man's substitute will do for our needs.
   template <size_t N>
@@ -62,15 +67,21 @@ class BatterySamplerTest : public testing::Test {
     return battery_data_;
   }
 
+  static int64_t GetSecondsSinceEpoch() { return seconds_since_epoch_; }
+
   static absl::optional<BatteryData> battery_data_;
+  static int64_t seconds_since_epoch_;
 };
 
 absl::optional<BatterySamplerTest::BatteryData>
     BatterySamplerTest::battery_data_;
 
+int64_t BatterySamplerTest::seconds_since_epoch_;
+
 // static
 std::unique_ptr<BatterySampler> TestBatterySampler::CreateForTesting() {
   return BatterySampler::CreateImpl(BatterySamplerTest::GetStaticBatteryData,
+                                    BatterySamplerTest::GetSecondsSinceEpoch,
                                     base::mac::ScopedIOObject<io_service_t>());
 }
 
@@ -99,7 +110,8 @@ TEST_F(BatterySamplerTest, NameAndGetDatumNameUnits) {
                                    std::make_pair("voltage", "V"),
                                    std::make_pair("current_capacity", "Ah"),
                                    std::make_pair("max_capacity", "Ah"),
-                                   std::make_pair("avg_power", "W")));
+                                   std::make_pair("avg_power", "W"),
+                                   std::make_pair("sample_age", "s")));
 }
 
 TEST_F(BatterySamplerTest, MaybeComputeAvgPowerConsumption) {
@@ -152,9 +164,10 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
       .external_connected = true,
       .voltage_mv = 11100,           // 11.1V.
       .current_capacity_mah = 2001,  // 2.001 Ah remaining.
-      .max_capacity_mah = 5225       // Corresponds to 58Wh/11.1V in mAh.
-  };
+      .max_capacity_mah = 5225,      // Corresponds to 58Wh/11.1V in mAh.
+      .update_time_seconds_since_epoch = 42};
   set_battery_data(battery_data);
+  set_seconds_since_epoch(43);
   std::unique_ptr<BatterySampler> sampler(
       TestBatterySampler::CreateForTesting());
 
@@ -168,10 +181,13 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
   ExpectSampleMatchesArray(datums, {std::make_pair("external_connected", true),
                                     std::make_pair("voltage", 11.1),
                                     std::make_pair("current_capacity", 2.001),
-                                    std::make_pair("max_capacity", 5.225)});
+                                    std::make_pair("max_capacity", 5.225),
+                                    std::make_pair("sample_age", 1)});
 
   battery_data.current_capacity_mah -= 1;
+  battery_data.update_time_seconds_since_epoch = 44;
   set_battery_data(battery_data);
+  set_seconds_since_epoch(46);
   constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
   now += kOneMinute;
@@ -180,23 +196,29 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
   // sample is identical to the initial state. Since the consumed capacity in
   // this sample is different than the initial state, it will be considered for
   // a power estimate in a future sample.
-  ExpectSampleMatchesArray(datums, {std::make_pair("external_connected", true),
-                                    std::make_pair("voltage", 11.1),
-                                    std::make_pair("current_capacity", 2),
-                                    std::make_pair("max_capacity", 5.225)});
+  ExpectSampleMatchesArray(
+      datums,
+      {std::make_pair("external_connected", true),
+       std::make_pair("voltage", 11.1), std::make_pair("current_capacity", 2),
+       std::make_pair("max_capacity", 5.225), std::make_pair("sample_age", 2)});
 
   battery_data.voltage_mv = 11200;  // 11.2V.
+  battery_data.update_time_seconds_since_epoch = 47;
   set_battery_data(battery_data);
+  set_seconds_since_epoch(48);
   now += kOneMinute;
   datums = sampler->GetSample(now);
   // So long as there's no current consumption, there's no power estimate.
-  ExpectSampleMatchesArray(datums, {std::make_pair("external_connected", true),
-                                    std::make_pair("voltage", 11.2),
-                                    std::make_pair("current_capacity", 2),
-                                    std::make_pair("max_capacity", 5.225)});
+  ExpectSampleMatchesArray(
+      datums,
+      {std::make_pair("external_connected", true),
+       std::make_pair("voltage", 11.2), std::make_pair("current_capacity", 2),
+       std::make_pair("max_capacity", 5.225), std::make_pair("sample_age", 1)});
 
   battery_data.current_capacity_mah -= 1;
+  battery_data.update_time_seconds_since_epoch = 49;
   set_battery_data(battery_data);
+  set_seconds_since_epoch(49);
   now += kOneMinute;
   datums = sampler->GetSample(now);
 
@@ -211,7 +233,8 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
                             std::make_pair("voltage", 11.2),
                             std::make_pair("current_capacity", 1.999),
                             std::make_pair("max_capacity", 5.225),
-                            std::make_pair("avg_power", expected_power_w)});
+                            std::make_pair("avg_power", expected_power_w),
+                            std::make_pair("sample_age", 0)});
 }
 
 }  // namespace power_sampler
