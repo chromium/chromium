@@ -182,6 +182,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // If not all data are received, it continues to download from network.
   void OnCacheWriterResumed(net::Error error);
 
+  const int request_id_;
+
   const GURL request_url_;
 
   const bool is_main_script_;
