@@ -388,6 +388,50 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, CompleteFailed) {
             LookupResourceId(kScriptURL));
 }
 
+// Regression test for https://crbug.com/1312995.
+TEST_P(ServiceWorkerUpdatedScriptLoaderTest, ClientConsumeNetworkLater) {
+  const std::string kNewHeaders =
+      "HTTP/1.1 200 OK\0Content-Type: text/javascript\0\0";
+  const std::string kSameBlock = kOldData;
+  const std::string kDiffBlock = "|diff-block|";
+  const std::string kNetworkBlock(
+      ServiceWorkerUpdatedScriptLoader::kReadBufferSize, 'a');
+  std::string new_data = kSameBlock + kDiffBlock;
+
+  SetUpComparedScriptInfo(
+      kSameBlock.length(), kNewHeaders, kDiffBlock,
+      ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingBody,
+      ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
+
+  DoRequest(kScriptURL, &client_, &loader_);
+
+  // Keep writing body until ServiceWorkerUpdatedScriptLoader's client producer
+  // data pipe becomes full.
+  while (true) {
+    uint32_t bytes_written = kNetworkBlock.size();
+    MojoResult result = network_producer_->WriteData(
+        kNetworkBlock.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
+    if (result != MOJO_RESULT_OK) {
+      ASSERT_EQ(result, MOJO_RESULT_SHOULD_WAIT);
+      break;
+    }
+    new_data += kNetworkBlock.substr(0, bytes_written);
+    // Make sure ServiceWorkerUpdatedScriptLoader have a chance to write data to
+    // the client's producer data pipe. This should not enter an infinite loop.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Notify the completion of network loader.
+  network_producer_.reset();
+  NotifyLoaderCompletion(net::OK);
+
+  std::string response = ReadDataPipe(client_->response_body_release());
+  ASSERT_EQ(response, new_data);
+
+  client_->RunUntilComplete();
+  ASSERT_EQ(net::OK, client_->completion_status().error_code);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerUpdatedScriptLoaderTest,
                          testing::Values(blink::mojom::ScriptType::kClassic,

@@ -22,6 +22,7 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
@@ -30,8 +31,11 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -359,6 +363,125 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_LargeBody) {
   // success and the end of the body.
   histogram_tester.ExpectUniqueSample(kHistogramWriteResponseResult,
                                       ServiceWorkerMetrics::WRITE_OK, 3);
+}
+
+namespace {
+
+// A URLLoaderFactory that provides access to a mojo data pipe for sending a
+// response body. Can only handle one URLLoader, i.e, CreateLoaderAndStart()
+// can be called only once.
+class BodyDataPipeTestURLLoaderFactory final
+    : public network::mojom::URLLoaderFactory {
+ public:
+  BodyDataPipeTestURLLoaderFactory() = default;
+
+  mojo::ScopedDataPipeProducerHandle TakeBody() {
+    DCHECK(body_producer_);
+    return std::move(body_producer_);
+  }
+
+ private:
+  // mojom::URLLoaderFactory implementation.
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& url_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> pending_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders("HTTP/1.1 200 OK\n"
+                                          "Content-Type: text/javascript\r\n"));
+    response_head->headers->GetMimeType(&response_head->mime_type);
+    response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+
+    mojo::ScopedDataPipeConsumerHandle body_consumer;
+    CHECK_EQ(MOJO_RESULT_OK,
+             mojo::CreateDataPipe(nullptr, body_producer_, body_consumer));
+
+    mojo::Remote<network::mojom::URLLoaderClient> client(
+        std::move(pending_client));
+
+    client->OnReceiveResponse(std::move(response_head),
+                              std::move(body_consumer),
+                              /*cached_metadata=*/absl::nullopt);
+
+    network::URLLoaderCompletionStatus status;
+    status.error_code = net::OK;
+    client->OnComplete(status);
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override {
+    NOTREACHED();
+  }
+
+  mojo::ScopedDataPipeProducerHandle body_producer_;
+};
+
+}  // namespace
+
+// Regression test for https://crbug.com/1312995.
+TEST_F(ServiceWorkerNewScriptLoaderTest, Success_ClientConsumeBodyLater) {
+  const GURL kScriptURL("https://example.com/large-body.js");
+  const std::string kBody(ServiceWorkerNewScriptLoader::kReadBufferSize, 'a');
+
+  SetUpRegistration(kScriptURL);
+  ASSERT_TRUE(registration_);
+  ASSERT_TRUE(version_);
+
+  network::ResourceRequest request;
+  request.url = kScriptURL;
+  request.method = "GET";
+  request.destination = network::mojom::RequestDestination::kServiceWorker;
+  request.mode = network::mojom::RequestMode::kSameOrigin;
+
+  BodyDataPipeTestURLLoaderFactory loader_factory;
+  auto shared_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory);
+
+  network::TestURLLoaderClient client = network::TestURLLoaderClient();
+  auto loader = ServiceWorkerNewScriptLoader::CreateAndStart(
+      /*request_id=*/10, /*options=*/0, request, client.CreateRemote(),
+      version_, shared_loader_factory,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      /*cache_resource_id=*/5,
+      /*is_throttle_needed=*/false,
+      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+
+  client.RunUntilResponseReceived();
+  ASSERT_TRUE(client.has_received_response());
+  ASSERT_TRUE(client.response_body().is_valid());
+
+  // Keep writing body until ServiceWorkerNewScriptLoader's client producer
+  // data pipe becomes full.
+  mojo::ScopedDataPipeProducerHandle body_producer = loader_factory.TakeBody();
+  uint32_t total_bytes_written = 0;
+  while (true) {
+    uint32_t bytes_written = ServiceWorkerNewScriptLoader::kReadBufferSize;
+    MojoResult result = body_producer->WriteData(kBody.data(), &bytes_written,
+                                                 MOJO_WRITE_DATA_FLAG_NONE);
+    if (result != MOJO_RESULT_OK) {
+      ASSERT_EQ(result, MOJO_RESULT_SHOULD_WAIT);
+      break;
+    }
+    total_bytes_written += bytes_written;
+    // Make sure ServiceWorkerNewScriptLoader have a chance to write data to the
+    // client's producer data pipe. This should not enter an infinite loop.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Close the body data pipe so that ReadDataPipe() can finish.
+  body_producer.reset();
+
+  std::string response = ReadDataPipe(client.response_body_release());
+  ASSERT_EQ(response.size(), total_bytes_written);
+
+  client.RunUntilComplete();
+  ASSERT_EQ(net::OK, client.completion_status().error_code);
 }
 
 TEST_F(ServiceWorkerNewScriptLoaderTest, Error_404) {
