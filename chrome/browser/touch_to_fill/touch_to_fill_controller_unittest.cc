@@ -226,10 +226,6 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {
 }
 
 TEST_F(TouchToFillControllerTest, Show_Fill_And_Submit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kTouchToFillPasswordSubmission);
-
   std::unique_ptr<MockTouchToFillView> mock_view =
       std::make_unique<MockTouchToFillView>();
   MockTouchToFillView* weak_view = mock_view.get();
@@ -258,10 +254,6 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Submit) {
 }
 
 TEST_F(TouchToFillControllerTest, Show_Fill_And_Dont_Submit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kTouchToFillPasswordSubmission);
-
   std::unique_ptr<MockTouchToFillView> mock_view =
       std::make_unique<MockTouchToFillView>();
   MockTouchToFillView* weak_view = mock_view.get();
@@ -291,10 +283,6 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Dont_Submit) {
 }
 
 TEST_F(TouchToFillControllerTest, Dont_Submit_With_Empty_Username) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kTouchToFillPasswordSubmission);
-
   std::unique_ptr<MockTouchToFillView> mock_view =
       std::make_unique<MockTouchToFillView>();
   MockTouchToFillView* weak_view = mock_view.get();
@@ -327,10 +315,6 @@ TEST_F(TouchToFillControllerTest, Dont_Submit_With_Empty_Username) {
 }
 
 TEST_F(TouchToFillControllerTest, Single_Credential_With_Empty_Username) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kTouchToFillPasswordSubmission);
-
   std::unique_ptr<MockTouchToFillView> mock_view =
       std::make_unique<MockTouchToFillView>();
   MockTouchToFillView* weak_view = mock_view.get();
@@ -701,9 +685,6 @@ class TouchToFillControllerTestWithSubmissionReadinessVariationTest
 
 TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
        SubmissionReadiness) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kTouchToFillPasswordSubmission);
   SubmissionReadinessState submission_readiness = GetParam();
 
   UiCredential credentials[] = {
@@ -712,36 +693,6 @@ TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
   // If there is no field after the password, then submit the form.
   bool submission_expected =
       submission_readiness > SubmissionReadinessState::kFieldAfterPasswordField;
-  EXPECT_CALL(
-      view(),
-      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-           ElementsAreArray(credentials),
-           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
-           /*trigger_submission=*/submission_expected));
-  touch_to_fill_controller().Show(credentials, {}, driver().AsWeakPtr(),
-                                  submission_readiness);
-
-  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
-  touch_to_fill_controller().OnDismiss();
-}
-
-TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
-       SubmissionReadiness_ConservativeHeuristics) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      password_manager::features::kTouchToFillPasswordSubmission,
-      {{password_manager::features::
-            kTouchToFillPasswordSubmissionWithConservativeHeuristics,
-        "true"}});
-  SubmissionReadinessState submission_readiness = GetParam();
-
-  UiCredential credentials[] = {
-      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
-
-  // Submit the form iff there is only two fields.
-  bool submission_expected =
-      submission_readiness == SubmissionReadinessState::kTwoFields;
-
   EXPECT_CALL(
       view(),
       Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),

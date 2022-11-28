@@ -22,7 +22,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -57,16 +56,6 @@ std::vector<UiCredential> SortCredentials(
 // the form's structure (submission_readiness).
 bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness,
                              bool* ready_for_submission) {
-  bool submission_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::kTouchToFillPasswordSubmission);
-  bool allow_non_conservative_heuristics =
-      submission_enabled &&
-      !base::GetFieldTrialParamByFeatureAsBool(
-          password_manager::features::kTouchToFillPasswordSubmission,
-          password_manager::features::
-              kTouchToFillPasswordSubmissionWithConservativeHeuristics,
-          false);
-
   switch (submission_readiness) {
     case SubmissionReadinessState::kNoInformation:
     case SubmissionReadinessState::kError:
@@ -78,12 +67,9 @@ bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness,
 
     case SubmissionReadinessState::kEmptyFields:
     case SubmissionReadinessState::kMoreThanTwoFields:
-      *ready_for_submission = true;
-      return allow_non_conservative_heuristics;
-
     case SubmissionReadinessState::kTwoFields:
       *ready_for_submission = true;
-      return submission_enabled;
+      return true;
   }
 }
 

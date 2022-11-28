@@ -251,14 +251,6 @@ BASE_FEATURE(kShowUPMErrorNotification,
              "ShowUpmErrorNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the experiment to automatically submit a form after filling by
-// TouchToFill
-// TODO(crbug/1283004): Clean up the flag once the feature is completely landed
-// in Stable.
-BASE_FEATURE(kTouchToFillPasswordSubmission,
-             "TouchToFillPasswordSubmission",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.
 BASE_FEATURE(kUnifiedCredentialManagerDryRun,
@@ -368,12 +360,6 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 // settings.
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
-
-#if BUILDFLAG(IS_ANDROID)
-// Enables using conservative heuristics to calculate submission readiness.
-const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[] =
-    "should_use_conservative_heuristics";
-#endif  // IS_ANDROID
 
 bool IsPasswordScriptsFetchingEnabled() {
   return base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);

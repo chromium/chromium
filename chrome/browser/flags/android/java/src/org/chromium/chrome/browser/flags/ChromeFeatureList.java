@@ -552,7 +552,6 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_PHONE_OPTIMIZATIONS = "ToolbarPhoneOptimizations";
     public static final String TOOLBAR_SCROLL_ABLATION_ANDROID = "ToolbarScrollAblationAndroid";
     public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
-    public static final String TOUCH_TO_FILL_PASSWORD_SUBMISSION = "TouchToFillPasswordSubmission";
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
     public static final String TRANSLATE_INTENT = "TranslateIntent";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";

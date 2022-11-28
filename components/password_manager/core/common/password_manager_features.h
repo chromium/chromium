@@ -73,7 +73,6 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
 BASE_DECLARE_FEATURE(kShowUPMErrorNotification);
-BASE_DECLARE_FEATURE(kTouchToFillPasswordSubmission);
 BASE_DECLARE_FEATURE(kUnifiedCredentialManagerDryRun);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);

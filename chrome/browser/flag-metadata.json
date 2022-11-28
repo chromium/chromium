@@ -6567,11 +6567,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "touch-to-fill-password-submission",
-    "owners": [ "kolos", "fhorschig" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "traffic-counters",
     "owners": ["khorimoto", "cros-connectivity@google.com"],
     "expiry_milestone": 120

@@ -134,9 +134,9 @@ class TouchToFillController {
 
   // Whether a form is ready for submission. Similar to |trigger_submission_|,
   // but doesn't depend on flags. Used for dark launch metrics (e.g. time
-  // between filling and successful login with and without
-  // kTouchToFillPasswordSubmission enabled). TODO(crbug.com/1299394): remove
-  // after the launch.
+  // between filling and successful login with and without flags enabled).
+  // TODO(crbug.com/1299394): remove the field and the metrics if we are not
+  // going to use them for new launches, e.g. crbug.com/1393043.
   bool ready_for_submission_ = false;
 
   // Authenticator used to trigger a biometric auth before filling.
