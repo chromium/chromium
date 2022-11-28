@@ -79,7 +79,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kPassThrough = 7,
     kSwapChain = 8,
     kSkiaDawnSharedImage [[deprecated]] = 9,
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     kMaxValue = kSkiaDawnSharedImage,
+#pragma GCC diagnostic pop
   };
 
   // The following parameters attempt to reach a compromise between not flushing
