@@ -183,6 +183,8 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
 }
 
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
+  DlpBooleanHistogram(dlp::kErrorsFilesPolicySetup,
+                      response.has_error_message());
   if (response.has_error_message()) {
     DlpScopedFileAccessDelegate::DeleteInstance();
     LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
