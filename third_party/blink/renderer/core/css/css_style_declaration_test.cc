@@ -5,11 +5,18 @@
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -51,6 +58,49 @@ TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureEnabled) {
   EXPECT_EQ("revert", style->getPropertyValue("left"));
   EXPECT_EQ("revert", style->getPropertyValue("--y"));
   EXPECT_FALSE(exception_state.HadException());
+}
+
+// CSSStyleDeclaration has a cache which maps e.g. backgroundPositionY to
+// its associated CSSPropertyID.
+//
+// See CssPropertyInfo in css_style_declaration.cc.
+TEST(CSSStyleDeclarationTest, ExposureCacheLeak) {
+  V8TestingScope v8_testing_scope;
+
+  auto* property_value_set = MakeGarbageCollected<MutableCSSPropertyValueSet>(
+      CSSParserMode::kHTMLStandardMode);
+  auto* style = MakeGarbageCollected<PropertySetCSSStyleDeclaration>(
+      v8_testing_scope.GetExecutionContext(), *property_value_set);
+
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  v8::Isolate* isolate = v8_testing_scope.GetIsolate();
+
+  ScriptValue normal(isolate, V8String(isolate, "normal"));
+
+  DummyExceptionStateForTesting exception_state;
+
+  {
+    ScopedOriginTrialsSampleAPIForTest scoped_feature(true);
+    EXPECT_TRUE(
+        style->NamedPropertyQuery("originTrialTestProperty", exception_state));
+    EXPECT_EQ(NamedPropertySetterResult::kIntercepted,
+              style->AnonymousNamedSetter(script_state,
+                                          "originTrialTestProperty", normal));
+    EXPECT_EQ("normal", style->AnonymousNamedGetter("originTrialTestProperty"));
+  }
+
+  {
+    ScopedOriginTrialsSampleAPIForTest scoped_feature(false);
+    // Now that the feature is disabled, 'originTrialTestProperty' must not
+    // be usable just because it was enabled and accessed previously.
+    EXPECT_FALSE(
+        style->NamedPropertyQuery("originTrialTestProperty", exception_state));
+    EXPECT_EQ(NamedPropertySetterResult::kDidNotIntercept,
+              style->AnonymousNamedSetter(script_state,
+                                          "originTrialTestProperty", normal));
+    EXPECT_EQ(g_null_atom,
+              style->AnonymousNamedGetter("originTrialTestProperty"));
+  }
 }
 
 }  // namespace blink
