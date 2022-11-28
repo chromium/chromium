@@ -4,6 +4,7 @@
 
 #include "base/task/common/checked_lock_impl.h"
 
+#include <ostream>
 #include <unordered_map>
 #include <vector>
 
