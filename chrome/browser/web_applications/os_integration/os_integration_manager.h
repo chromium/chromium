@@ -206,7 +206,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void UpdateShortcuts(const AppId& app_id,
                                base::StringPiece old_name,
-                               base::OnceClosure callback);
+                               ResultCallback callback);
 
   // AppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;

@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -305,8 +306,7 @@ void OsIntegrationManager::UpdateOsHooks(
                          OsHookType::kFileHandlers)));
   UpdateShortcuts(app_id, old_name,
                   base::BindOnce(barrier->CreateBarrierCallbackForType(
-                                     OsHookType::kShortcuts),
-                                 Result::kOk));
+                      OsHookType::kShortcuts)));
   UpdateShortcutsMenu(app_id, web_app_info,
                       base::BindOnce(barrier->CreateBarrierCallbackForType(
                           OsHookType::kShortcutsMenu)));
@@ -627,9 +627,22 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
 
 void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
                                            base::StringPiece old_name,
-                                           base::OnceClosure callback) {
+                                           ResultCallback callback) {
   DCHECK(shortcut_manager_);
-  shortcut_manager_->UpdateShortcuts(app_id, old_name, std::move(callback));
+  if (!shortcut_manager_->CanCreateShortcuts()) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.Shortcuts.Update.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
+  shortcut_manager_->UpdateShortcuts(app_id, old_name,
+                                     std::move(metrics_callback));
 }
 
 void OsIntegrationManager::UpdateShortcutsMenu(
@@ -723,7 +736,8 @@ void OsIntegrationManager::UpdateProtocolHandlers(
   // `UpdateOSHooks`, which also recreates the shortcuts, only do it if
   // required.
   if (force_shortcut_updates_if_needed) {
-    UpdateShortcuts(app_id, "", std::move(shortcuts_callback));
+    UpdateShortcuts(app_id, "",
+                    base::IgnoreArgs<Result>(std::move(shortcuts_callback)));
     return;
   }
 #endif

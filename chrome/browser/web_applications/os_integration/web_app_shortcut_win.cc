@@ -288,19 +288,20 @@ void UpdateIconFileForShortcut(const base::FilePath& web_app_path,
   }
 }
 
-void UpdateShortcuts(const base::FilePath& web_app_path,
-                     const base::FilePath& profile_path,
-                     const std::u16string& old_app_title,
-                     const ShortcutInfo& shortcut_info) {
+Result UpdateShortcuts(const base::FilePath& web_app_path,
+                       const base::FilePath& profile_path,
+                       const std::u16string& old_app_title,
+                       const ShortcutInfo& shortcut_info) {
   // Empty titles match all shortcuts, which we don't want, so if we somehow
   // get an empty app title, ignore the update.
   if (old_app_title.empty())
-    return;
+    return Result::kOk;
 
   const std::vector<base::FilePath> all_shortcuts =
       FindMatchingShortcuts(web_app_path, profile_path, old_app_title);
 
   const bool title_change = old_app_title != shortcut_info.title;
+  Result result = Result::kOk;
   for (const auto& shortcut : all_shortcuts) {
     const base::FilePath new_shortcut =
         shortcut.DirName()
@@ -328,6 +329,7 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
     } else {
       DVLOG(1) << "Error renaming shortcut " << shortcut_info.title
                << " error code " << std::hex << error;
+      result = Result::kError;
     }
   }
 
@@ -358,7 +360,7 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
     }
   }
   if (pinned_shortcuts.empty())
-    return;
+    return result;
 
   // Rename the pinned shortcuts. The shortcut filename is used to determine the
   // display name for a pinned icon, so renaming the shortcut file in the
@@ -387,6 +389,7 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
     } else {
       DVLOG(1) << "Error renaming shortcut " << shortcut_info.title
                << " error code " << std::hex << error;
+      result = Result::kError;
     }
   }
   // SHCNE_ALLEVENTS prevents the WebApp icon on the taskbar from becoming a
@@ -397,6 +400,7 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
   SHChangeNotify(SHCNE_ASSOCCHANGED,
                  SHCNF_IDLIST | SHCNE_ALLEVENTS | SHCNF_FLUSHNOWAIT, nullptr,
                  nullptr);
+  return result;
 }
 
 // Gets the directories with shortcuts for an app, and deletes the shortcuts.
@@ -595,9 +599,9 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   return true;
 }
 
-void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
-                             const std::u16string& old_app_title,
-                             const ShortcutInfo& shortcut_info) {
+Result UpdatePlatformShortcuts(const base::FilePath& web_app_path,
+                               const std::u16string& old_app_title,
+                               const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
@@ -608,12 +612,15 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
   // Update the icon if necessary.
   const base::FilePath icon_file =
       GetIconFilePath(web_app_path, shortcut_info.title);
-  CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
+  bool success_updating_icon =
+      CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
 
   if (old_app_title != shortcut_info.title) {
     // The app's title has changed. Rename existing shortcuts.
-    UpdateShortcuts(web_app_path, shortcut_info.profile_path, old_app_title,
-                    shortcut_info);
+    if (UpdateShortcuts(web_app_path, shortcut_info.profile_path, old_app_title,
+                        shortcut_info) == Result::kError) {
+      success_updating_icon = false;
+    }
 
     // Also delete the old icon file and checksum file, to avoid leaving
     // orphaned files on disk. The new one was recreated above.
@@ -624,6 +631,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
     base::DeleteFile(old_icon_file);
     base::DeleteFile(old_checksum_file);
   }
+  return (success_updating_icon ? Result::kOk : Result::kError);
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(

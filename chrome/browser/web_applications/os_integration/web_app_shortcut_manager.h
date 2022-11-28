@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -65,7 +66,7 @@ class WebAppShortcutManager {
   // Fetch already-updated shortcut data and deploy to OS integration.
   void UpdateShortcuts(const AppId& app_id,
                        base::StringPiece old_name,
-                       base::OnceClosure update_finished_callback);
+                       ResultCallback update_finished_callback);
   void DeleteShortcuts(const AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,
                        std::unique_ptr<ShortcutInfo> shortcut_info,
@@ -149,7 +150,7 @@ class WebAppShortcutManager {
 
   void OnShortcutInfoRetrievedUpdateShortcuts(
       std::u16string old_name,
-      base::OnceClosure update_finished_callback,
+      ResultCallback update_finished_callback,
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(
