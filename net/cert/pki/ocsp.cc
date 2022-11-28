@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/pki/cert_errors.h"
@@ -591,8 +590,12 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(std::string_view der) {
   if (!responder_certificate->has_extended_key_usage())
     return false;
 
-  return base::Contains(responder_certificate->extended_key_usage(),
-                        der::Input(kOCSPSigning));
+  for (const auto& key_purpose_oid :
+       responder_certificate->extended_key_usage()) {
+    if (key_purpose_oid == der::Input(kOCSPSigning))
+      return true;
+  }
+  return false;
 }
 
 [[nodiscard]] bool VerifyOCSPResponseSignatureGivenCert(
