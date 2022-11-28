@@ -280,7 +280,7 @@ bool ReadTargetColorParams(
   reader.Read(&target_color_params->hdr_max_luminance_relative);
   reader.Read(&target_color_params->enable_tone_mapping);
 
-  uint32_t has_hdr_metadata;
+  uint32_t has_hdr_metadata = 0;
   reader.Read(&has_hdr_metadata);
   if (has_hdr_metadata) {
     gfx::HDRMetadata hdr_metadata;
@@ -289,7 +289,7 @@ bool ReadTargetColorParams(
     reader.Read(&max_content_light_level);
     reader.Read(&max_frame_average_light_level);
 
-    SkColorSpacePrimaries primaries;
+    SkColorSpacePrimaries primaries = SkNamedPrimariesExt::kInvalid;
     float luminance_max = 0;
     float luminance_min = 0;
     reader.Read(&primaries.fRX);
