@@ -10,12 +10,14 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
@@ -58,6 +60,8 @@ class GuestOsSharePath : public KeyedService,
                                            const base::FilePath& path) = 0;
     virtual void OnUnshare(const std::string& vm_name,
                            const base::FilePath& path) = 0;
+    virtual void OnGuestRegistered(const guest_os::GuestId& guest) = 0;
+    virtual void OnGuestUnregistered(const guest_os::GuestId& guest) = 0;
   };
 
   static GuestOsSharePath* GetForProfile(Profile* profile);
@@ -145,6 +149,18 @@ class GuestOsSharePath : public KeyedService,
   // Visible for testing.
   void PathDeleted(const base::FilePath& path);
 
+  // Registers `guest` with this service, so methods which take a VmType will
+  // operate on it.
+  void RegisterGuest(const GuestId& guest);
+
+  // Unregisters `guest` so it no longer is included by methods taking a
+  // `VmType`.
+  void UnregisterGuest(const GuestId& guest);
+
+  // Returns the list of guests which are currently registered with this
+  // service.
+  const base::flat_set<GuestId>& ListGuests();
+
   // Allow seneschal callback to be overridden for testing.
   void set_seneschal_callback_for_testing(SeneschalCallback callback) {
     seneschal_callback_ = std::move(callback);
@@ -180,6 +196,7 @@ class GuestOsSharePath : public KeyedService,
   SeneschalCallback seneschal_callback_;
   base::ObserverList<Observer>::Unchecked observers_;
   std::map<base::FilePath, SharedPathInfo> shared_paths_;
+  base::flat_set<GuestId> guests_;
 
   base::WeakPtrFactory<GuestOsSharePath> weak_ptr_factory_{this};
 };  // class

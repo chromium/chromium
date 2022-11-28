@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -1087,11 +1088,14 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("UI_LOCALE", locale);
   dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
   base::Value::List vms;
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
-    vms.Append(crostini::kCrostiniDefaultVmName);
-  }
-  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile)) {
-    vms.Append(plugin_vm::kPluginVmName);
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  if (share_path) {
+    for (const auto& guest : share_path->ListGuests()) {
+      base::Value::Dict d;
+      d.Set("vmName", guest.vm_name);
+      d.Set("containerName", guest.container_name);
+      vms.Append(std::move(d));
+    }
   }
   dict->Set("VMS_FOR_SHARING", std::move(vms));
 }

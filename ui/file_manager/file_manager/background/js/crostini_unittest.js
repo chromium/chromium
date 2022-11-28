@@ -70,10 +70,35 @@ export function testInitCrostiniPluginVmEnabled() {
   assertFalse(crostini.isEnabled('termina'));
   assertFalse(crostini.isEnabled('PvmDefault'));
 
-  loadTimeData.overrideValues({'VMS_FOR_SHARING': ['termina', 'PvmDefault']});
+  loadTimeData.overrideValues({
+    'VMS_FOR_SHARING': [
+      {'vmName': 'termina', 'containerName': 'penguin'},
+      {'vmName': 'PvmDefault', 'containerName': ''},
+    ],
+  });
   crostini.initEnabled();
   assertTrue(crostini.isEnabled('termina'));
   assertTrue(crostini.isEnabled('PvmDefault'));
+}
+
+/**
+ * Tests setEnabled tracks enabled/disabled correctly, in particular with
+ * multiple containers in a VM.
+ */
+export function testSetEnabled() {
+  assertFalse(crostini.isEnabled('termina'));
+
+  crostini.setEnabled('termina', 'penguin', true);
+  assertTrue(crostini.isEnabled('termina'));
+
+  crostini.setEnabled('termina', 'puffin', true);
+  assertTrue(crostini.isEnabled('termina'));
+
+  crostini.setEnabled('termina', 'penguin', false);
+  assertTrue(crostini.isEnabled('termina'));
+
+  crostini.setEnabled('termina', 'puffin', false);
+  assertFalse(crostini.isEnabled('termina'));
 }
 
 /**
@@ -153,7 +178,7 @@ export function testIsPathShared() {
  * Tests disallowed and allowed shared paths.
  */
 export function testCanSharePath() {
-  crostini.setEnabled('vm', true);
+  crostini.setEnabled('vm', '', true);
 
   const mockFileSystem = new MockFileSystem('test');
   const root = MockDirectoryEntry.create(mockFileSystem, '/');

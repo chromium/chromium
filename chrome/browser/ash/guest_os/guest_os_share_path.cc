@@ -764,4 +764,21 @@ bool GuestOsSharePath::RemoveSharedPathInfo(SharedPathInfo& info,
   return false;
 }
 
+void GuestOsSharePath::RegisterGuest(const GuestId& guest) {
+  guests_.insert(guest);
+  for (auto& observer : observers_) {
+    observer.OnGuestRegistered(guest);
+  }
+}
+void GuestOsSharePath::UnregisterGuest(const GuestId& guest) {
+  guests_.erase(guest);
+  for (auto& observer : observers_) {
+    observer.OnGuestUnregistered(guest);
+  }
+}
+
+const base::flat_set<GuestId>& GuestOsSharePath::ListGuests() {
+  return guests_;
+}
+
 }  // namespace guest_os

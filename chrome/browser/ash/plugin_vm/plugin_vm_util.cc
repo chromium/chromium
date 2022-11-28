@@ -155,6 +155,10 @@ PluginVmPolicySubscription::PluginVmPolicySubscription(
       plugin_vm::prefs::kPluginVmUserId,
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      plugin_vm::prefs::kPluginVmImageExists,
+      base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
+                          base::Unretained(this)));
   device_allowed_subscription_ = cros_settings->AddSettingsObserver(
       ash::kPluginVmAllowed,
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,

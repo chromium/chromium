@@ -4045,6 +4045,9 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
           std::make_unique<CrostiniMountProvider>(profile_, container_id));
     }
   }
+
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(
+      container_id);
 }
 
 void CrostiniManager::UnregisterContainer(
@@ -4064,6 +4067,9 @@ void CrostiniManager::UnregisterContainer(
     mount_registry->Unregister(it->second);
     mount_provider_ids_.erase(it);
   }
+
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnregisterGuest(
+      container_id);
 }
 
 void CrostiniManager::UnregisterAllContainers() {
@@ -4080,6 +4086,15 @@ void CrostiniManager::UnregisterAllContainers() {
     mount_registry->Unregister(pair.second);
   }
   mount_provider_ids_.clear();
+
+  auto* share_service = guest_os::GuestOsSharePath::GetForProfile(profile_);
+  // Copy the list since we're going to iterate+mutate.
+  auto guests = base::flat_set<guest_os::GuestId>(share_service->ListGuests());
+  for (const auto& guest : guests) {
+    if (guest.vm_type == kCrostiniDefaultVmType) {
+      share_service->UnregisterGuest(guest);
+    }
+  }
 }
 
 bool CrostiniManager::RegisterCreateOptions(

@@ -169,6 +169,8 @@ class EventRouter
                                  const base::FilePath& path) override;
   void OnUnshare(const std::string& vm_name,
                  const base::FilePath& path) override;
+  void OnGuestRegistered(const guest_os::GuestId& guest) override;
+  void OnGuestUnregistered(const guest_os::GuestId& guest) override;
 
   // ash:TabletModeObserver overrides.
   void OnTabletModeStarted() override;
@@ -249,16 +251,6 @@ class EventRouter
       const std::string& mount_name,
       const std::string& file_system_name,
       const std::string& full_path);
-
-  // Called for Crostini events when the specified pref value changes.
-  void OnCrostiniChanged(
-      const std::string& vm_name,
-      const std::string& pref_name,
-      extensions::api::file_manager_private::CrostiniEventType pref_true,
-      extensions::api::file_manager_private::CrostiniEventType pref_false);
-
-  // Called when Plugin VM enabled state may have changed.
-  void OnPluginVmChanged();
 
   void NotifyDriveConnectionStatusChanged();
 

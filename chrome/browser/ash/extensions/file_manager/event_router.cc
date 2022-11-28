@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -640,27 +641,10 @@ void EventRouter::ObserveEvents() {
   pref_change_registrar_->Add(ash::prefs::kFilesAppTrashEnabled, callback);
   pref_change_registrar_->Add(prefs::kSearchSuggestEnabled, callback);
   pref_change_registrar_->Add(prefs::kUse24HourClock, callback);
-  pref_change_registrar_->Add(
-      crostini::prefs::kCrostiniEnabled,
-      base::BindRepeating(
-          &EventRouter::OnCrostiniChanged, weak_factory_.GetWeakPtr(),
-          crostini::kCrostiniDefaultVmName, crostini::prefs::kCrostiniEnabled,
-          file_manager_private::CROSTINI_EVENT_TYPE_ENABLE,
-          file_manager_private::CROSTINI_EVENT_TYPE_DISABLE));
   pref_change_registrar_->Add(arc::prefs::kArcEnabled, callback);
   pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia,
                               callback);
   pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, callback);
-
-  auto plugin_vm_callback = base::BindRepeating(&EventRouter::OnPluginVmChanged,
-                                                weak_factory_.GetWeakPtr());
-  plugin_vm_subscription_ =
-      std::make_unique<plugin_vm::PluginVmPolicySubscription>(
-          profile_, base::BindRepeating([](base::RepeatingClosure closure,
-                                           bool is_allowed) { closure.Run(); },
-                                        plugin_vm_callback));
-  pref_change_registrar_->Add(plugin_vm::prefs::kPluginVmImageExists,
-                              plugin_vm_callback);
 
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
 
@@ -1031,6 +1015,7 @@ void EventRouter::PopulateCrostiniEvent(
     const std::string& full_path) {
   event.event_type = event_type;
   event.vm_name = vm_name;
+  event.container_name = "";  // Unused for the event types handled by this.
   file_manager_private::CrostiniEvent::EntriesType entry;
   entry.additional_properties.Set(
       "fileSystemRoot",
@@ -1053,6 +1038,30 @@ void EventRouter::OnUnshare(const std::string& vm_name,
                     path);
 }
 
+void EventRouter::OnGuestRegistered(const guest_os::GuestId& guest) {
+  file_manager_private::CrostiniEvent event;
+  event.vm_name = guest.vm_name;
+  event.container_name = guest.container_name;
+  event.event_type =
+      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_ENABLE;
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+                 file_manager_private::OnCrostiniChanged::kEventName,
+                 file_manager_private::OnCrostiniChanged::Create(event));
+}
+
+void EventRouter::OnGuestUnregistered(const guest_os::GuestId& guest) {
+  file_manager_private::CrostiniEvent event;
+  event.vm_name = guest.vm_name;
+  event.container_name = guest.container_name;
+  event.event_type =
+      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_DISABLE;
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+                 file_manager_private::OnCrostiniChanged::kEventName,
+                 file_manager_private::OnCrostiniChanged::Create(event));
+}
+
 void EventRouter::OnTabletModeStarted() {
   BroadcastEvent(
       profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
@@ -1065,33 +1074,6 @@ void EventRouter::OnTabletModeEnded() {
       profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
       file_manager_private::OnTabletModeChanged::kEventName,
       file_manager_private::OnTabletModeChanged::Create(/*enabled=*/false));
-}
-
-void EventRouter::OnCrostiniChanged(
-    const std::string& vm_name,
-    const std::string& pref_name,
-    extensions::api::file_manager_private::CrostiniEventType pref_true,
-    extensions::api::file_manager_private::CrostiniEventType pref_false) {
-  file_manager_private::CrostiniEvent event;
-  event.vm_name = vm_name;
-  event.event_type =
-      profile_->GetPrefs()->GetBoolean(pref_name) ? pref_true : pref_false;
-  BroadcastEvent(profile_,
-                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-                 file_manager_private::OnCrostiniChanged::kEventName,
-                 file_manager_private::OnCrostiniChanged::Create(event));
-}
-
-void EventRouter::OnPluginVmChanged() {
-  file_manager_private::CrostiniEvent event;
-  event.vm_name = plugin_vm::kPluginVmName;
-  event.event_type = plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)
-                         ? file_manager_private::CROSTINI_EVENT_TYPE_ENABLE
-                         : file_manager_private::CROSTINI_EVENT_TYPE_DISABLE;
-  BroadcastEvent(profile_,
-                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-                 file_manager_private::OnCrostiniChanged::kEventName,
-                 file_manager_private::OnCrostiniChanged::Create(event));
 }
 
 void EventRouter::NotifyDriveConnectionStatusChanged() {

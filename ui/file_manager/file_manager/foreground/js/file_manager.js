@@ -1286,11 +1286,11 @@ export class FileManager extends EventTarget {
     // enabled status from it to determine whether 'Linux files' is shown.
     switch (event.eventType) {
       case chrome.fileManagerPrivate.CrostiniEventType.ENABLE:
-        this.crostini_.setEnabled(event.vmName, true);
+        this.crostini_.setEnabled(event.vmName, event.containerName, true);
         return this.crostiniController_.redraw();
 
       case chrome.fileManagerPrivate.CrostiniEventType.DISABLE:
-        this.crostini_.setEnabled(event.vmName, false);
+        this.crostini_.setEnabled(event.vmName, event.containerName, false);
         return this.crostiniController_.redraw();
 
       // Event is sent when a user drops an unshared file on Plugin VM.

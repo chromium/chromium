@@ -864,6 +864,9 @@ dictionary CrostiniEvent {
   // VM that this event relates to.
   DOMString vmName;
 
+  // Name of the container this event relates to.
+  DOMString containerName;
+
   // Paths that have been shared or unshared.
   [instanceOf=Entry] object[] entries;
 };

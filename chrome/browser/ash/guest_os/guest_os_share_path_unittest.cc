@@ -21,9 +21,12 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -47,6 +50,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -955,6 +959,61 @@ TEST_F(GuestOsSharePathTest, IsPathShared) {
   fake_concierge_client_->NotifyVmStopped(signal);
   EXPECT_FALSE(guest_os_share_path_->IsPathShared(
       crostini::kCrostiniDefaultVmName, shared_path_));
+}
+
+class MockSharePathObserver : public GuestOsSharePath::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnPersistedPathRegistered,
+              (const std::string& vm_name, const base::FilePath& path),
+              (override));
+  MOCK_METHOD(void,
+              OnUnshare,
+              (const std::string& vm_name, const base::FilePath& path),
+              (override));
+  MOCK_METHOD(void,
+              OnGuestRegistered,
+              (const guest_os::GuestId& guest),
+              (override));
+  MOCK_METHOD(void,
+              OnGuestUnregistered,
+              (const guest_os::GuestId& guest),
+              (override));
+};
+
+TEST_F(GuestOsSharePathTest, RegisterListAndUnregister) {
+  using testing::_;
+  using testing::InSequence;
+  using testing::UnorderedElementsAreArray;
+  GuestId termina_1{VmType::TERMINA, "termina", "first"};
+  GuestId termina_2{VmType::TERMINA, "termina", "second"};
+  GuestId other_vm{VmType::TERMINA, "not-termina", "whatever"};
+  MockSharePathObserver obs;
+  guest_os_share_path_->AddObserver(&obs);
+  std::vector guests{termina_1, termina_2, other_vm};
+
+  // We'll first register three guests...
+  EXPECT_CALL(obs, OnGuestRegistered(_)).Times(guests.size());
+
+  // ...then unregister them in a specific order, so we expect termina_2 and
+  // other_vm to be the last guests for their respective VMs.
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnGuestUnregistered(termina_1));  // termina_1;
+    EXPECT_CALL(obs, OnGuestUnregistered(termina_2));  // termina_2;
+    EXPECT_CALL(obs, OnGuestUnregistered(other_vm));   // other_vm;
+  }
+
+  for (const auto& guest : guests) {
+    guest_os_share_path_->RegisterGuest(guest);
+  }
+
+  EXPECT_THAT(guest_os_share_path_->ListGuests(),
+              UnorderedElementsAreArray(guests));
+
+  for (const auto& guest : guests) {
+    guest_os_share_path_->UnregisterGuest(guest);
+  }
 }
 
 }  // namespace guest_os

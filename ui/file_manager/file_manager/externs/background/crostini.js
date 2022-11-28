@@ -23,11 +23,12 @@ export class Crostini {
   initVolumeManager(volumeManager) {}
 
   /**
-   * Set whether the specified VM is enabled.
+   * Set whether the specified Guest is enabled.
    * @param {string} vmName
+   * @param {string} containerName
    * @param {boolean} enabled
    */
-  setEnabled(vmName, enabled) {}
+  setEnabled(vmName, containerName, enabled) {}
 
   /**
    * Returns true if the specified VM is enabled.

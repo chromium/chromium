@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -2032,10 +2033,13 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
           ->TerminalProviderRegistry();
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
+  auto* share_service =
+      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
         ASSERT_GT(terminal_registry->List().size(), 0u);
         ASSERT_GT(mount_registry->List().size(), 0u);
+        ASSERT_GT(share_service->ListGuests().size(), 0u);
         crostini_manager()->RemoveCrostini(
             kVmName,
             base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
@@ -2044,6 +2048,7 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
   run_loop()->Run();
   ASSERT_EQ(terminal_registry->List().size(), 0u);
   ASSERT_EQ(mount_registry->List().size(), 0u);
+  ASSERT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest,
@@ -2053,6 +2058,8 @@ TEST_F(CrostiniManagerRestartTest,
           ->TerminalProviderRegistry();
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
+  auto* share_service =
+      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
   vm_tools::cicerone::DeleteLxdContainerResponse response;
   response.set_status(
       vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
@@ -2061,6 +2068,7 @@ TEST_F(CrostiniManagerRestartTest,
       container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
         ASSERT_GT(terminal_registry->List().size(), 0u);
         ASSERT_GT(mount_registry->List().size(), 0u);
+        ASSERT_GT(share_service->ListGuests().size(), 0u);
         crostini_manager()->DeleteLxdContainer(
             container_id(),
             base::BindOnce(&ExpectBool, run_loop()->QuitClosure(), true));
@@ -2068,6 +2076,7 @@ TEST_F(CrostiniManagerRestartTest,
   run_loop()->Run();
   ASSERT_EQ(terminal_registry->List().size(), 0u);
   ASSERT_EQ(mount_registry->List().size(), 0u);
+  ASSERT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
@@ -2076,6 +2085,8 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
           ->TerminalProviderRegistry();
   auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
                              ->MountProviderRegistry();
+  auto* share_service =
+      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
   vm_tools::cicerone::LxdContainerDeletedSignal signal;
   signal.set_vm_name(container_id().vm_name);
   signal.set_container_name(container_id().container_name);
@@ -2088,9 +2099,11 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
   run_loop()->Run();
   ASSERT_GT(terminal_registry->List().size(), 0u);
   ASSERT_GT(mount_registry->List().size(), 0u);
+  ASSERT_GT(share_service->ListGuests().size(), 0u);
   crostini_manager()->OnLxdContainerDeleted(signal);
   ASSERT_EQ(terminal_registry->List().size(), 0u);
   ASSERT_EQ(mount_registry->List().size(), 0u);
+  ASSERT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 class CrostiniManagerEnterpriseReportingTest

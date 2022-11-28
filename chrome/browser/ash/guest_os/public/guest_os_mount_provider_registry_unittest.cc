@@ -15,7 +15,7 @@ namespace guest_os {
 
 using Id = GuestOsMountProviderRegistry::Id;
 
-class MockObserver : public GuestOsMountProviderRegistry::Observer {
+class MockMountObserver : public GuestOsMountProviderRegistry::Observer {
   using Id = GuestOsMountProviderRegistry::Id;
 
  public:
@@ -62,7 +62,7 @@ TEST_F(GuestOsMountProviderRegistryTest, TestObservation) {
   auto provider1 = std::make_unique<MockMountProvider>();
   auto provider2 = std::make_unique<MockMountProvider>();
   GuestOsMountProviderRegistry registry;
-  MockObserver obs;
+  MockMountObserver obs;
   registry.AddObserver(&obs);
   registry.Register(std::move(provider1));
   registry.Register(std::move(provider2));

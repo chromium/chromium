@@ -632,6 +632,7 @@ chrome.fileManagerPrivate.MountableGuest;
  * @typedef {{
  * eventType: chrome.fileManagerPrivate.CrostiniEventType,
  * vmName: string,
+ * containerName: string,
  * entries: !Array<!Entry>,
  * }}
  */
