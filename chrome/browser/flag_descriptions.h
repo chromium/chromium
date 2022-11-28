@@ -113,6 +113,9 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kGaiaIdCacheInAccountManagerFacadeName[];
 extern const char kGaiaIdCacheInAccountManagerFacadeDescription[];
 
+extern const char kIdentityStatusConsistencyName[];
+extern const char kIdentityStatusConsistencyDescription[];
+
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 

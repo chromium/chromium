@@ -4055,6 +4055,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "identity-status-consistency",
+    "owners": [ "triploblastic", "chrome-signin-team" ],
+    "expiry_milestone":120
+  },
+  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr", "zmo" ],
     // A debugging flag intended for end-users where there may not be any other

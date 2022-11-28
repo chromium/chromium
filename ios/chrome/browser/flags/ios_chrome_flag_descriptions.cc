@@ -363,6 +363,10 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kIdentityStatusConsistencyName[] = "Identity Status Consistency";
+const char kIdentityStatusConsistencyDescription[] =
+    "If enabled, always show identity status - even for signed-out users";
+
 const char kFullscreenPromosManagerName[] = "Fullscreen Promos Manager";
 const char kFullscreenPromosManagerDescription[] =
     "When enabled, the display of fullscreen promos will be coordinated by a "

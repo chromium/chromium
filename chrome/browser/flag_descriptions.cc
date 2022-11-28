@@ -134,6 +134,10 @@ const char kGaiaIdCacheInAccountManagerFacadeDescription[] =
     "If enabled, starts fetching gaia id from android accounts in "
     "AccountManagerFacade (AMF)";
 
+const char kIdentityStatusConsistencyName[] = "Identity Status Consistency";
+const char kIdentityStatusConsistencyDescription[] =
+    "If enabled, always show identity status - even for signed-out users";
+
 const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";

@@ -6644,6 +6644,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTangibleSync,
                                     kTangibleSyncVariations,
                                     "TangibleSyncVariations")},
+
+    {"identity-status-consistency",
+     flag_descriptions::kIdentityStatusConsistencyName,
+     flag_descriptions::kIdentityStatusConsistencyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kIdentityStatusConsistency)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",
