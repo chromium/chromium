@@ -373,13 +373,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
       BackForwardCacheCanStoreDocumentResult& result,
       RenderFrameHostImpl* render_frame_host);
 
-  // Populates `result` with the blocking reasons for this document. If
-  // "include_non_sticky" is true, it includes non-sticky reasons.
-  void PopulateReasonsForDocument(
-      BackForwardCacheCanStoreDocumentResult& result,
-      RenderFrameHostImpl* rfh,
-      bool include_non_sticky);
-
   // Populates the reasons why this |rfh| and its subframes cannot enter the
   // back/forward cache in a flat list through |flattened_result| and as a tree
   // through its return value.
@@ -389,20 +382,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
       RenderFrameHostImpl* rfh,
       BackForwardCacheCanStoreDocumentResult& flattened_result,
       bool include_non_sticky);
-
-  // Populates the sticky reasons for `rfh` without recursing into subframes.
-  // Sticky features can't be unregistered and remain active for the rest of the
-  // lifetime of the page.
-  void PopulateStickyReasonsForDocument(
-      BackForwardCacheCanStoreDocumentResult& result,
-      RenderFrameHostImpl* rfh);
-
-  // Populates the non-sticky reasons for `rfh` without recursing into
-  // subframes. Non-sticky reasons mean the reasons that may be resolved later
-  // such as when the page releases blocking resources in pagehide.
-  void PopulateNonStickyReasonsForDocument(
-      BackForwardCacheCanStoreDocumentResult& result,
-      RenderFrameHostImpl* rfh);
 
   // Updates the result to include CacheControlNoStore reasons if the flag is
   // on.
@@ -524,6 +503,27 @@ class CONTENT_EXPORT BackForwardCacheImpl
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> GetTreeResult() {
       return std::move(tree_result_);
     }
+
+    // Populates `result` with the blocking reasons for this document. If
+    // "include_non_sticky" is true, it includes non-sticky reasons.
+    void PopulateReasonsForDocument(
+        BackForwardCacheCanStoreDocumentResult& result,
+        RenderFrameHostImpl* rfh,
+        bool include_non_sticky);
+
+    // Populates the sticky reasons for `rfh` without recursing into subframes.
+    // Sticky features can't be unregistered and remain active for the rest of
+    // the lifetime of the page.
+    void PopulateStickyReasonsForDocument(
+        BackForwardCacheCanStoreDocumentResult& result,
+        RenderFrameHostImpl* rfh);
+
+    // Populates the non-sticky reasons for `rfh` without recursing into
+    // subframes. Non-sticky reasons mean the reasons that may be resolved later
+    // such as when the page releases blocking resources in pagehide.
+    void PopulateNonStickyReasonsForDocument(
+        BackForwardCacheCanStoreDocumentResult& result,
+        RenderFrameHostImpl* rfh);
 
    private:
     // Populate NotRestoredReasons for the `rfh` by

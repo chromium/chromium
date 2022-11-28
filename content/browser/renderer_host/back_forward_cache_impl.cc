@@ -854,9 +854,10 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     result.No(BackForwardCacheMetrics::NotRestoredReason::kDomainNotAllowed);
 }
 
-void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
-    BackForwardCacheCanStoreDocumentResult& result,
-    RenderFrameHostImpl* rfh) {
+void BackForwardCacheImpl::NotRestoredReasonBuilder::
+    PopulateStickyReasonsForDocument(
+        BackForwardCacheCanStoreDocumentResult& result,
+        RenderFrameHostImpl* rfh) {
   // If the rfh has ever granted media access, prevent it from entering cache.
   // TODO(crbug.com/989379): Consider only blocking when there's an active
   //                         media stream.
@@ -905,9 +906,10 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
   }
 }
 
-void BackForwardCacheImpl::PopulateNonStickyReasonsForDocument(
-    BackForwardCacheCanStoreDocumentResult& result,
-    RenderFrameHostImpl* rfh) {
+void BackForwardCacheImpl::NotRestoredReasonBuilder::
+    PopulateNonStickyReasonsForDocument(
+        BackForwardCacheCanStoreDocumentResult& result,
+        RenderFrameHostImpl* rfh) {
   if (!rfh->IsDOMContentLoaded())
     result.No(BackForwardCacheMetrics::NotRestoredReason::kLoading);
 
@@ -931,7 +933,7 @@ void BackForwardCacheImpl::PopulateNonStickyReasonsForDocument(
   }
 }
 
-void BackForwardCacheImpl::PopulateReasonsForDocument(
+void BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsForDocument(
     BackForwardCacheCanStoreDocumentResult& result,
     RenderFrameHostImpl* rfh,
     bool include_non_sticky) {
@@ -1022,8 +1024,7 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasons(
     }
   } else {
     // Populate |result_for_rfh| by checking the bfcache eligibility of |rfh|.
-    bfcache_->PopulateReasonsForDocument(result_for_rfh, rfh,
-                                         include_non_sticky_);
+    PopulateReasonsForDocument(result_for_rfh, rfh, include_non_sticky_);
   }
   bfcache_->UpdateCanStoreToIncludeCacheControlNoStore(result_for_rfh, rfh);
   flattened_result_.AddReasonsFrom(result_for_rfh);
