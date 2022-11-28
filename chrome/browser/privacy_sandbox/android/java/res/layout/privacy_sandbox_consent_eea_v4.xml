@@ -13,7 +13,29 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:id="@+id/progress_bar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="@dimen/privacy_sandbox_spinner_dimension"
+            android:layout_height="@dimen/privacy_sandbox_spinner_dimension" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/list_item_default_margin"
+            android:text="@string/privacy_sandbox_m1_consent_saving_label"
+            style="@style/TextAppearance.TextMedium.Secondary" />
+
+    </LinearLayout>
+
     <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_sandbox_consent_eea_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -136,22 +158,22 @@ found in the LICENSE file.
             android:layout_marginHorizontal="24dp">
 
             <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/ack_button"
+                android:id="@+id/no_button"
                 android:focusable="true"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
-                android:text="@string/privacy_sandbox_m1_consent_accept_button"
+                android:text="@string/privacy_sandbox_m1_consent_decline_button"
                 style="@style/OutlinedButton" />
             <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/settings_button"
+                android:id="@+id/ack_button"
                 android:focusable="true"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
-                android:text="@string/privacy_sandbox_m1_consent_decline_button"
+                android:text="@string/privacy_sandbox_m1_consent_accept_button"
                 style="@style/OutlinedButton" />
 
         </LinearLayout>

@@ -12,9 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
@@ -24,12 +25,17 @@ import org.chromium.ui.widget.CheckableImageView;
  * Dialog in the form of a consent shown for the Privacy Sandbox.
  */
 public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnClickListener {
+    private static final int SPINNER_DURATION_MS = 1500;
+
     private SettingsLauncher mSettingsLauncher;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
     private LinearLayout mDropdownContainer;
     private LinearLayout mDropdownElement;
+    private LinearLayout mProgressBarContainer;
+    private LinearLayout mConsentViewContainer;
+    private boolean mDisableAnimationForTesting;
 
     public PrivacySandboxDialogConsentEEAV4(
             Context context, @NonNull SettingsLauncher settingsLauncher) {
@@ -41,8 +47,11 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
         ackButton.setOnClickListener(this);
-        ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(this);
+        ButtonCompat noButton = mContentView.findViewById(R.id.no_button);
+        noButton.setOnClickListener(this);
+
+        mProgressBarContainer = mContentView.findViewById(R.id.progress_bar_container);
+        mConsentViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
 
         // Controls for the expanding section.
         mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
@@ -65,15 +74,11 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
         int id = view.getId();
         if (id == R.id.ack_button) {
             // TODO(b/254408752): Report consent acknowledge action.
-            dismiss();
-        } else if (id == R.id.settings_button) {
-            // TODO(b/254408752): Report open settings action.
-            dismiss();
-            // TODO(b/254408752): Update referrer.
-            PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                    getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+            showSavingConfirmationAndDismiss();
+        } else if (id == R.id.no_button) {
+            // TODO(b/254408752): Report consent declined action.
+            showSavingConfirmationAndDismiss();
         } else if (id == R.id.dropdown_element) {
-            var content = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_content);
             ScrollView scrollView =
                     mContentView.findViewById(R.id.privacy_sandbox_consent_eea_scroll_view);
 
@@ -112,7 +117,22 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
         }
     }
 
+    private void showSavingConfirmationAndDismiss() {
+        mProgressBarContainer.setVisibility(View.VISIBLE);
+        mConsentViewContainer.setVisibility(View.GONE);
+        PostTask.postDelayedTask(TaskTraits.USER_BLOCKING, this::dismiss, getSpinnerDuration());
+    }
+
     private boolean isDropdownExpanded() {
         return mDropdownContainer != null && mDropdownContainer.getVisibility() == View.VISIBLE;
+    }
+
+    private long getSpinnerDuration() {
+        return mDisableAnimationForTesting ? 0 : SPINNER_DURATION_MS;
+    }
+
+    @VisibleForTesting
+    public void disableAnimationForTesting(boolean disable) {
+        mDisableAnimationForTesting = disable;
     }
 }
