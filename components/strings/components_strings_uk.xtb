@@ -1228,6 +1228,7 @@
 <translation id="4132448310531350254">Для файлів із розширенням <ph name="FILE_EXTENSION" /> указано кілька обробників за умовчанням: <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Створити документ</translation>
 <translation id="413544239732274901">Докладніше</translation>
+<translation id="4140905530744469899">Ідентифікатор профілю:</translation>
 <translation id="4142935452406587478">Лоток 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Конверт Chinese № 4</translation>
@@ -3131,7 +3132,7 @@
 <translation id="9030265603405983977">Монохромний</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9036306139374661733">Дозволити доступ до мікрофона?</translation>
-<translation id="9038649477754266430">Користуйтеся службою передбачення, щоб сторінки завантажувалися швидше</translation>
+<translation id="9038649477754266430">Користуйтеся сервісом передбачення, щоб сторінки завантажувалися швидше</translation>
 <translation id="9039213469156557790">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати роботу сторінки.</translation>
 <translation id="9040464167025094690">Кнопка "Знайти пристрій"; натисніть Enter, щоб перейти в розділ "Знайти пристрій" в обліковому записі Google.</translation>
 <translation id="9042617223719777575">Велика місткість</translation>

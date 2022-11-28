@@ -1228,6 +1228,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4132448310531350254">Gerenciadores duplicados da extensão de arquivo "<ph name="FILE_EXTENSION" />" referenciada pelos apps "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Criar documento</translation>
 <translation id="413544239732274901">Saiba mais</translation>
+<translation id="4140905530744469899">ID do perfil:</translation>
 <translation id="4142935452406587478">Bandeja 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope chinês 4</translation>
@@ -1814,7 +1815,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5572434905385510939">22 x 28 pol.</translation>
 <translation id="557886905979275351">Lâminas de barbear e barbeadores</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
-<translation id="558420943003240152">Gerenciar senhas e senhas de acesso…</translation>
+<translation id="558420943003240152">Gerenciar senhas e chaves de acesso…</translation>
 <translation id="5586446728396275693">Nenhum endereço salvo</translation>
 <translation id="5586831831248371458">Pesquisar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Usuário da plataforma</translation>
@@ -3222,7 +3223,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="961663415146723894">Encadernação na parte inferior</translation>
 <translation id="962484866189421427">Este conteúdo pode tentar instalar apps enganosos que fingem ser outra coisa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
-<translation id="964050462028070434">Gerenciar senhas e senhas de acesso…</translation>
+<translation id="964050462028070434">Gerenciar senhas e chaves de acesso…</translation>
 <translation id="96680173638229310">Automóveis e veículos</translation>
 <translation id="969892804517981540">Versão oficial</translation>
 <translation id="973773823069644502">Adicionar endereço de entrega</translation>

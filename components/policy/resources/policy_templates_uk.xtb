@@ -177,7 +177,7 @@
 <translation id="1160479894929412407">Вмикає протокол QUIC</translation>
 <translation id="1160939557934457296">Вимикати переходи зі сторінки застереження Безпечного перегляду</translation>
 <translation id="1163080558183062209">Вимкнути типи принтерів у списку заборонених</translation>
-<translation id="1165923723751466821">Дозволити вхід у гостьовому режимі у веб-переглядачі та вхід у профілі</translation>
+<translation id="1165923723751466821">Дозволити вхід у режимі гостя у веб-переглядачі та профілі</translation>
 <translation id="117059611145966538">Зовнішні сервери друку</translation>
 <translation id="117080706484659953">Дозволити виявлення області дії правил для <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Увімкнути звіти про версії пристрою</translation>
@@ -333,7 +333,7 @@
 
       Якщо вибрано значення "Примусово ввімкнено", користувач не зможе блокувати засіб вибору профілю. Він з'являтиметься навіть тоді, коли доступний лише один профіль.</translation>
 <translation id="1339174690935954950">Заборонити користувачам надсилати відгуки</translation>
-<translation id="1340053691042184658">Заборонити вхід у гостьовому режимі у веб-переглядачі</translation>
+<translation id="1340053691042184658">Заборонити вхід у режимі гостя у веб-переглядачі</translation>
 <translation id="1342918903685430097">Налаштуйте мінімальну версію <ph name="PRODUCT_OS_NAME" /> для пристрою.</translation>
 <translation id="1343128241903870688">Вимкнути звітування щодо інформації про додатки на пристрої</translation>
 <translation id="1347198119056266798">Це правило більше не підтримується. Натомість використовуйте <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> і <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Це правило ігнорується, якщо налаштовано <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> або <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (більше не підтримується).

@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">ゲートウェイにアクセスできません</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4060260348856573701">新しい APN</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
@@ -606,6 +607,7 @@
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6791471867139427246">キーボード ライトの色</translation>
+<translation id="6793680441750437230">キーボードで任意のキーを押します。同時に最大 4 個のキーを押すことができます。Alt+Esc キーを押してダイアログを閉じます。</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6853312040151791195">放電率</translation>
