@@ -830,6 +830,8 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   DCHECK(!trace_config.IsArgumentFilterEnabled());
 
+  // TODO(khokhlov): Avoid duplication between this code and
+  // services/tracing/public/cpp/perfetto/perfetto_config.cc.
   perfetto::TraceConfig perfetto_config;
   size_t size_limit = trace_config.GetTraceBufferSizeInKb();
   if (size_limit == 0)
@@ -857,7 +859,9 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   auto* source_config = data_source->mutable_config();
   source_config->set_name("track_event");
   source_config->set_target_buffer(0);
-  source_config->mutable_chrome_config()->set_convert_to_legacy_json(true);
+  auto* source_chrome_config = source_config->mutable_chrome_config();
+  source_chrome_config->set_trace_config(trace_config.ToString());
+  source_chrome_config->set_convert_to_legacy_json(true);
 
   if (trace_config.GetTraceRecordMode() == base::trace_event::ECHO_TO_CONSOLE) {
     perfetto::ConsoleInterceptor::Register();
@@ -867,6 +871,16 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   source_config->set_track_event_config_raw(
       trace_config.ToPerfettoTrackEventConfigRaw(
           /*privacy_filtering_enabled = */ false));
+
+  if (trace_config.IsCategoryGroupEnabled("disabled-by-default-memory-infra")) {
+    data_source = perfetto_config.add_data_sources();
+    source_config = data_source->mutable_config();
+    source_config->set_name("org.chromium.memory_instrumentation");
+    source_config->set_target_buffer(0);
+    source_chrome_config = source_config->mutable_chrome_config();
+    source_chrome_config->set_trace_config(trace_config.ToString());
+    source_chrome_config->set_convert_to_legacy_json(true);
+  }
 
   // Clear incremental state every 5 seconds, so that we lose at most the first
   // 5 seconds of the trace (if we wrap around Perfetto's central buffer).
@@ -1043,8 +1057,14 @@ TraceLog::InternalTraceOptions TraceLog::GetInternalOptionsFromTraceConfig(
 }
 
 TraceConfig TraceLog::GetCurrentTraceConfig() const {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  const auto chrome_config =
+      GetCurrentTrackEventDataSourceConfig().chrome_config();
+  return TraceConfig(chrome_config.trace_config());
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   AutoLock lock(lock_);
   return trace_config_;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void TraceLog::SetDisabled() {

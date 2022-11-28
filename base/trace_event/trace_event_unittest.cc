@@ -43,6 +43,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
+#endif
+
 namespace base {
 namespace trace_event {
 
@@ -2494,6 +2498,50 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
             "Unsupported (crbug.com/1225176)");
 #endif
 }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+class ConfigObserver : public TraceLog::EnabledStateObserver {
+ public:
+  ConfigObserver() = default;
+  ~ConfigObserver() override = default;
+
+  void OnTraceLogEnabled() override {
+    observed_config = TraceLog::GetInstance()->GetCurrentTraceConfig();
+    tracing_enabled.Signal();
+  }
+
+  void OnTraceLogDisabled() override {}
+
+  TraceConfig observed_config;
+  WaitableEvent tracing_enabled{WaitableEvent::ResetPolicy::AUTOMATIC,
+                                WaitableEvent::InitialState::NOT_SIGNALED};
+};
+
+// Test that GetCurrentTraceConfig() returns the correct config when tracing
+// was started through Perfetto SDK.
+TEST_F(TraceEventTestFixture, GetCurrentTraceConfig) {
+  ConfigObserver observer;
+  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
+
+  const TraceConfig actual_config{"foo,bar", ""};
+  perfetto::TraceConfig perfetto_config;
+  perfetto_config.add_buffers()->set_size_kb(1000);
+  auto* source_config = perfetto_config.add_data_sources()->mutable_config();
+  source_config->set_name("track_event");
+  source_config->set_target_buffer(0);
+  source_config->mutable_chrome_config()->set_trace_config(
+      actual_config.ToString());
+
+  auto tracing_session = perfetto::Tracing::NewTrace();
+  tracing_session->Setup(perfetto_config);
+  tracing_session->Start();
+
+  observer.tracing_enabled.Wait();
+  tracing_session->Stop();
+
+  EXPECT_EQ(actual_config.ToString(), observer.observed_config.ToString());
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base
