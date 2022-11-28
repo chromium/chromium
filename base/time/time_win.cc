@@ -40,6 +40,7 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <ostream>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"

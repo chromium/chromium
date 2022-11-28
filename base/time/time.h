@@ -67,6 +67,7 @@
 
 #include <iosfwd>
 #include <limits>
+#include <ostream>
 
 #include "base/base_export.h"
 #include "base/check.h"
