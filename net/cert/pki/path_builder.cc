@@ -8,7 +8,6 @@
 #include <set>
 #include <unordered_set>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
