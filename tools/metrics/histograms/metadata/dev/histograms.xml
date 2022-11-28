@@ -299,6 +299,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.NetworkPanelResponsePreviewOpened"
+    enum="DevToolsMediaType" expires_after="2023-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records the media types of files opened in the DevTools Network panel
+    response preview.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
     expires_after="2022-12-01">
   <owner>changhaohan@chromium.org</owner>
