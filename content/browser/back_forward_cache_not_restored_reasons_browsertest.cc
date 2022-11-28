@@ -18,66 +18,9 @@ using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 using NotRestoredReasons =
     BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
 
+// Exists to group the tests and for test history.
 class BackForwardCacheBrowserTestWithNotRestoredReasons
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        blink::features::kBackForwardCacheSendNotRestoredReasons, "", "");
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-using ReasonsMatcher = testing::Matcher<
-    const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
-using SameOriginMatcher = testing::Matcher<
-    const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
-ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
-    const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
-    const SameOriginMatcher* same_origin_details) {
-  return testing::Pointee(testing::AllOf(
-      testing::Field("blocked",
-                     &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
-                     blocked),
-      testing::Field(
-          "same_origin_details",
-          &blink::mojom::BackForwardCacheNotRestoredReasons::
-              same_origin_details,
-          same_origin_details
-              ? *same_origin_details
-              : testing::Property(
-                    "is_null",
-                    &blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr::
-                        is_null,
-                    true))));
-}
-
-SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
-    const testing::Matcher<std::string>& id,
-    const testing::Matcher<std::string>& name,
-    const testing::Matcher<std::string>& src,
-    const testing::Matcher<std::string>& url,
-    const std::vector<testing::Matcher<std::string>>& reasons,
-    const std::vector<ReasonsMatcher>& children) {
-  return testing::Pointee(testing::AllOf(
-      testing::Field(
-          "id", &blink::mojom::SameOriginBfcacheNotRestoredDetails::id, id),
-      testing::Field("name",
-                     &blink::mojom::SameOriginBfcacheNotRestoredDetails::name,
-                     name),
-      testing::Field(
-          "src", &blink::mojom::SameOriginBfcacheNotRestoredDetails::src, src),
-      testing::Field(
-          "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
-      testing::Field(
-          "reasons",
-          &blink::mojom::SameOriginBfcacheNotRestoredDetails::reasons,
-          testing::UnorderedElementsAreArray(reasons)),
-      testing::Field(
-          "children",
-          &blink::mojom::SameOriginBfcacheNotRestoredDetails::children,
-          testing::ElementsAreArray(children))));
-}
+    : public BackForwardCacheBrowserTest {};
 
 // NotRestoredReasons are not reported when the page is successfully restored
 // from back/forward cache.

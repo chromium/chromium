@@ -31,6 +31,11 @@ using NotRestoredReasons =
     BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
+using ReasonsMatcher = testing::Matcher<
+    const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
+using SameOriginMatcher = testing::Matcher<
+    const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
+
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
 MATCHER(InBackForwardCache, "") {
   return arg->IsInBackForwardCache();
@@ -125,10 +130,6 @@ class BackForwardCacheBrowserTest
   MatchesDocumentResult(testing::Matcher<NotRestoredReasons> not_stored,
                         BlockListedFeatures block_listed);
 
-  using ReasonsMatcher = testing::Matcher<
-      const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
-  using SameOriginMatcher = testing::Matcher<
-      const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
   ReasonsMatcher MatchesNotRestoredReasons(
       const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
       const SameOriginMatcher* same_origin_details);

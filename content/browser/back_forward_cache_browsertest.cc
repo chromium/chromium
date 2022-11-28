@@ -175,6 +175,10 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
                             "grace_period_to_finish_loading_in_seconds",
                             base::NumberToString(INT_MAX));
+  // Enable capturing not-restored-reasons tree.
+  EnableFeatureAndSetParams(
+      blink::features::kBackForwardCacheSendNotRestoredReasons, "", "");
+
   // Do not trigger NotReached() for JavaScript execution.
   DisableFeature(
       blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution);
@@ -383,6 +387,53 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
   WaitForLoadStop(web_contents());
   ASSERT_EQ(current_frame_host()->GetLastCommittedURL(), url);
   ASSERT_TRUE(current_frame_host()->IsErrorDocument());
+}
+
+ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
+    const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
+    const SameOriginMatcher* same_origin_details) {
+  return testing::Pointee(testing::AllOf(
+      testing::Field("blocked",
+                     &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
+                     blocked),
+      testing::Field(
+          "same_origin_details",
+          &blink::mojom::BackForwardCacheNotRestoredReasons::
+              same_origin_details,
+          same_origin_details
+              ? *same_origin_details
+              : testing::Property(
+                    "is_null",
+                    &blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr::
+                        is_null,
+                    true))));
+}
+
+SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
+    const testing::Matcher<std::string>& id,
+    const testing::Matcher<std::string>& name,
+    const testing::Matcher<std::string>& src,
+    const testing::Matcher<std::string>& url,
+    const std::vector<testing::Matcher<std::string>>& reasons,
+    const std::vector<ReasonsMatcher>& children) {
+  return testing::Pointee(testing::AllOf(
+      testing::Field(
+          "id", &blink::mojom::SameOriginBfcacheNotRestoredDetails::id, id),
+      testing::Field("name",
+                     &blink::mojom::SameOriginBfcacheNotRestoredDetails::name,
+                     name),
+      testing::Field(
+          "src", &blink::mojom::SameOriginBfcacheNotRestoredDetails::src, src),
+      testing::Field(
+          "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
+      testing::Field(
+          "reasons",
+          &blink::mojom::SameOriginBfcacheNotRestoredDetails::reasons,
+          testing::UnorderedElementsAreArray(reasons)),
+      testing::Field(
+          "children",
+          &blink::mojom::SameOriginBfcacheNotRestoredDetails::children,
+          testing::ElementsAreArray(children))));
 }
 
 std::initializer_list<RenderFrameHostImpl*> Elements(
