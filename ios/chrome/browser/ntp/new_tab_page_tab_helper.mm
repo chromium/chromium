@@ -82,11 +82,6 @@ void NewTabPageTabHelper::Deactivate() {
   SetActive(false);
 }
 
-bool NewTabPageTabHelper::IgnoreLoadRequests() const {
-  DCHECK(active_);
-  return ignore_load_requests_;
-}
-
 bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
   // `url` can be chrome://newtab/ or about://newtab/ depending on where `url`
   // comes from (the VisibleURL chrome:// from a navigation item or the actual

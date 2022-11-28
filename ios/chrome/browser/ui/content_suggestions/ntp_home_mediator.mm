@@ -223,10 +223,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 // Opens web page for a menu item in the NTP.
 - (void)openMenuItemWebPage:(GURL)URL {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests())
-    return;
   _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
   // TODO(crbug.com/1085419): Add metrics.
 }
@@ -306,15 +302,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
   self.imageUpdater = imageUpdater;
   [self updateAccountImage];
-}
-
-- (BOOL)ignoreLoadRequests {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests()) {
-    return YES;
-  }
-  return NO;
 }
 
 #pragma mark - SearchEngineObserving

@@ -319,11 +319,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)openMostVisitedItem:(NSObject*)item
                     atIndex:(NSInteger)mostVisitedIndex {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests())
-    return;
-
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
     [self.NTPMetrics recordContentSuggestionsActionForType:
                          IOSContentSuggestionsActionType::kShortcuts];

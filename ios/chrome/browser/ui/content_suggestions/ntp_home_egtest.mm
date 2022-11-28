@@ -454,6 +454,19 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       @"Fake omnibox width did not animate properly when scrolling.");
 }
 
+// Tests that the tap gesture recognizer that dismisses the keyboard and
+// defocuses the omnibox works.
+- (void)testDefocusOmniboxTapWorks {
+  [self focusFakebox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Check the fake omnibox is displayed again at the same position.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that the app doesn't crash when opening multiple tabs.
 - (void)testOpenMultipleTabs {
   NSInteger numberOfTabs = 10;

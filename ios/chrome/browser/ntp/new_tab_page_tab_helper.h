@@ -50,13 +50,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // WebStateObserver callback.
   void Deactivate();
 
-  // Sometimes the underlying ios/web page used for the NTP (about://newtab)
-  // takes a long time to load.  Loading any page before the newtab is committed
-  // will leave ios/web in a bad state.  See: crbug.com/925304 for more context.
-  // Remove this when ios/web supports queueing multiple loads during this
-  // state.
-  bool IgnoreLoadRequests() const;
-
   // Returns true if an `url` is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
 
@@ -108,9 +101,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // `YES` if the NTP for this WebState should be configured to show the Start
   // Surface.
   BOOL show_start_surface_ = false;
-
-  // `YES` if the NTP's underlying ios/web page is still loading.
-  BOOL ignore_load_requests_ = NO;
 
   // The default feed type of the next NTP.
   FeedType next_ntp_feed_type_;

@@ -19,12 +19,6 @@
 // avatar is changed.
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater;
 
-// Returns whether calls that may trigger a URL load are allowed, such as a
-// voice search or focusing the omnibox via the fakebox.
-// See: crbug.com/925304 for more context.  Remove this when ios/web supports
-// queueing multiple loads during this state.
-- (BOOL)ignoreLoadRequests;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_DELEGATE_H_

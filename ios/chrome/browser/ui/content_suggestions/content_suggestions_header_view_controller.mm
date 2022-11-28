@@ -403,8 +403,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)loadVoiceSearch:(id)sender {
-  if ([self.delegate ignoreLoadRequests])
-    return;
   DCHECK(self.voiceSearchIsEnabled);
   base::RecordAction(UserMetricsAction("MobileNTPMostVisitedVoiceSearch"));
   UIView* voiceSearchButton = base::mac::ObjCCastStrict<UIView>(sender);
@@ -422,16 +420,12 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)fakeTapViewTapped {
-  if ([self.delegate ignoreLoadRequests])
-    return;
   base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
   [self logOmniboxAction];
   [self focusFakebox];
 }
 
 - (void)fakeboxTapped {
-  if ([self.delegate ignoreLoadRequests])
-    return;
   base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
   [self logOmniboxAction];
   [self focusFakebox];
@@ -448,8 +442,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)focusFakebox {
-  if ([self.delegate ignoreLoadRequests])
-    return;
   [self shiftTilesUp];
 }
 
