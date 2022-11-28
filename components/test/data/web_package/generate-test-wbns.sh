@@ -35,7 +35,7 @@ gen-bundle \
   -har 24_responses.har \
   -o 24_responses.wbn
 
-sign-bundle \
+sign-bundle signatures-section \
   -i hello_b2.wbn \
   -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \
   -privateKey $sxg_test_data_dir/prime256v1.key \
@@ -44,9 +44,8 @@ sign-bundle \
   -validityUrl https://test.example.org/resource.validity.msg \
   -o hello_vouched_subsets.wbn
 
-sign-bundle \
+sign-bundle integrity-block \
   -i simple_b2.wbn \
-  -signType integrityblock \
   -privateKey signed_web_bundle_private_key.pem \
   -o simple_b2_signed.swbn
 
