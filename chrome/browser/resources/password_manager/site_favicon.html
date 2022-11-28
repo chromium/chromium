@@ -1,18 +1,23 @@
-<style>
+<style include="cr-hidden-style">
   :host {
     --site-favicon-height: 16px;
     --site-favicon-width: 16px;
+    overflow: hidden;
   }
 
-  #favicon {
-    background-repeat: no-repeat;
+  #favicon,
+  #downloadedFavicon {
     background-size: contain;
-    border-radius: inherit;
-    display: block;
     height: var(--site-favicon-height);
     width: var(--site-favicon-width);
   }
+
+  #downloadedFavicon {
+    display: block;
+  }
 </style>
-<div id="favicon"
-    style="background-image: [[getBackgroundImage_(faviconUrl, url)]]">
+<div id="favicon" style="background-image: [[getBackgroundImage_(domain)]]"
+    hidden="[[showDownloadedIcon_]]">
 </div>
+<img is="cr-auto-img" id="downloadedFavicon" hidden="[[!showDownloadedIcon_]]"
+    on-load="onLoadSuccess_" on-error="onLoadError_" auto-src="[[url]]">

@@ -4,8 +4,11 @@
 
 /**
  * @fileoverview 'site-favicon' is the section to display the favicon given the
- * site URL.
+ * |url| which can be used to download favicon. If downloading fails |origin|
+ * will be used as a fallback to obtain the favicon from cache.
  */
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,7 +18,17 @@ import {getTemplate} from './site_favicon.html.js';
 export interface SiteFaviconElement {
   $: {
     favicon: HTMLElement,
+    downloadedFavicon: HTMLElement,
   };
+}
+
+/**
+ * Ensures the URL has a scheme (assumes http if omitted).
+ * @param url The URL with or without a scheme.
+ * @return The URL with a scheme, or an empty string.
+ */
+function ensureUrlHasScheme(url: string): string {
+  return url.includes('://') ? url : 'http://' + url;
 }
 
 export class SiteFaviconElement extends PolymerElement {
@@ -29,57 +42,45 @@ export class SiteFaviconElement extends PolymerElement {
 
   static get properties() {
     return {
-      faviconUrl: String,
-      url: String,
+      domain: String,
+      url: {
+        type: String,
+        observer: 'onUrlChanged_',
+      },
+
+      showDownloadedIcon_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  faviconUrl: string;
+  domain: string;
   url: string;
+  private showDownloadedIcon_: boolean;
 
   private getBackgroundImage_() {
-    let backgroundImage = getFavicon('');
-    if (this.faviconUrl) {
-      const url = this.ensureUrlHasScheme_(this.faviconUrl);
-      backgroundImage = getFavicon(url);
-    } else if (this.url) {
-      let url = this.removePatternWildcard_(this.url);
-      url = this.ensureUrlHasScheme_(url);
-      backgroundImage = getFaviconForPageURL(url || '', false);
+    if (this.domain) {
+      const url = ensureUrlHasScheme(this.domain);
+      return getFaviconForPageURL(url || '', false);
     }
-    return backgroundImage;
+    return getFavicon('');
   }
 
-  /**
-   * Removes the wildcard prefix from a pattern string.
-   * @param pattern The pattern to remove the wildcard from.
-   * @return The resulting pattern.
-   */
-  private removePatternWildcard_(pattern: string): string {
-    if (!pattern || pattern.length === 0) {
-      return pattern;
-    }
-
-    if (pattern.startsWith('http://[*.]')) {
-      return pattern.replace('http://[*.]', 'http://');
-    } else if (pattern.startsWith('https://[*.]')) {
-      return pattern.replace('https://[*.]', 'https://');
-    } else if (pattern.startsWith('[*.]')) {
-      return pattern.substring(4, pattern.length);
-    }
-    return pattern;
+  private onLoadSuccess_() {
+    this.showDownloadedIcon_ = true;
+    this.dispatchEvent(new CustomEvent(
+        'site-favicon-loaded', {bubbles: true, composed: true}));
   }
 
-  /**
-   * Ensures the URL has a scheme (assumes http if omitted).
-   * @param url The URL with or without a scheme.
-   * @return The URL with a scheme, or an empty string.
-   */
-  private ensureUrlHasScheme_(url: string): string {
-    if (!url || url.length === 0) {
-      return url;
-    }
-    return url.includes('://') ? url : 'http://' + url;
+  private onLoadError_() {
+    this.showDownloadedIcon_ = false;
+    this.dispatchEvent(
+        new CustomEvent('site-favicon-error', {bubbles: true, composed: true}));
+  }
+
+  private onUrlChanged_() {
+    this.showDownloadedIcon_ = false;
   }
 }
 
