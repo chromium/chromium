@@ -6978,6 +6978,10 @@ static_library("browser") {
     sources += [
       "signin/bound_session_credentials/bound_session_cookie_fetcher.cc",
       "signin/bound_session_credentials/bound_session_cookie_fetcher.h",
+      "signin/bound_session_credentials/bound_session_cookie_refresh_service.cc",
+      "signin/bound_session_credentials/bound_session_cookie_refresh_service.h",
+      "signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.cc",
+      "signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h",
     ]
   }
 
