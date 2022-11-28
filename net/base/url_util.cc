@@ -90,14 +90,13 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
   if (should_keep_param)
     param_value = base::EscapeQueryParamValue(value.value(), true);
 
-  const std::string input = url.query();
+  const base::StringPiece input = url.query_piece();
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
   while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
                                    &value_range)) {
-    const base::StringPiece key(
-        input.data() + key_range.begin, key_range.len);
+    const base::StringPiece key = input.substr(key_range.begin, key_range.len);
     std::string key_value_pair;
     // Check |replaced| as only the first pair should be replaced.
     if (!replaced && key == param_name) {
@@ -105,11 +104,10 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
       if (!should_keep_param)
         continue;
 
-      key_value_pair = (param_name + "=" + param_value);
-
+      key_value_pair = param_name + "=" + param_value;
     } else {
-      key_value_pair.assign(input, key_range.begin,
-                            value_range.end() - key_range.begin);
+      key_value_pair = std::string(
+          input.substr(key_range.begin, value_range.end() - key_range.begin));
     }
     if (!output.empty())
       output += "&";
@@ -147,14 +145,14 @@ QueryIterator::~QueryIterator() = default;
 base::StringPiece QueryIterator::GetKey() const {
   DCHECK(!at_end_);
   if (key_.is_nonempty())
-    return base::StringPiece(&url_->spec()[key_.begin], key_.len);
+    return base::StringPiece(url_->spec()).substr(key_.begin, key_.len);
   return base::StringPiece();
 }
 
 base::StringPiece QueryIterator::GetValue() const {
   DCHECK(!at_end_);
   if (value_.is_nonempty())
-    return base::StringPiece(&url_->spec()[value_.begin], value_.len);
+    return base::StringPiece(url_->spec()).substr(value_.begin, value_.len);
   return base::StringPiece();
 }
 
