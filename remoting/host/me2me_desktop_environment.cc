@@ -171,6 +171,10 @@ Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
   // ourselves.
   mutable_desktop_capture_options()->set_detect_updated_region(false);
 #endif
+
+#if defined(REMOTING_USE_WAYLAND)
+  mutable_desktop_capture_options()->set_prefer_cursor_embedded(false);
+#endif
 }
 
 bool Me2MeDesktopEnvironment::InitializeSecurity(

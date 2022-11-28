@@ -24,10 +24,11 @@ using webrtc::xdg_portal::SessionDetails;
 
 WaylandDesktopCapturer::WaylandDesktopCapturer(
     const DesktopCaptureOptions& options)
-    : base_capturer_pipewire_(
-          options,
-          // Note: RemoteDesktopPortal doesn't own `this`
-          std::make_unique<xdg_portal::RemoteDesktopPortal>(this)) {}
+    : base_capturer_pipewire_(options,
+                              // Note: RemoteDesktopPortal doesn't own `this`
+                              std::make_unique<xdg_portal::RemoteDesktopPortal>(
+                                  this,
+                                  options.prefer_cursor_embedded())) {}
 WaylandDesktopCapturer::~WaylandDesktopCapturer() {}
 
 void WaylandDesktopCapturer::Start(Callback* callback) {

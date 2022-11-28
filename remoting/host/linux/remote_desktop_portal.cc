@@ -40,11 +40,12 @@ void UnsubscribeSignalHandler(GDBusConnection* connection, guint& signal_id) {
 }  // namespace
 
 RemoteDesktopPortal::RemoteDesktopPortal(
-    webrtc::ScreenCastPortal::PortalNotifier* notifier)
+    webrtc::ScreenCastPortal::PortalNotifier* notifier,
+    bool prefer_cursor_embedded)
     : notifier_(notifier) {
   screencast_portal_ = std::make_unique<webrtc::ScreenCastPortal>(
       webrtc::CaptureType::kScreen, this, OnScreenCastPortalProxyRequested,
-      OnSourcesRequestResponseSignal, this);
+      OnSourcesRequestResponseSignal, this, prefer_cursor_embedded);
   clipboard_portal_ = std::make_unique<xdg_portal::ClipboardPortal>(this);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "clipboard_portal.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/portal_request_response.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screen_capture_portal_interface.h"
@@ -33,8 +34,9 @@ class RemoteDesktopPortal
  public:
   // |notifier| must outlive |RemoteDesktopPortal| instance and will be called
   // into from the capturer thread.
-  explicit RemoteDesktopPortal(
-      webrtc::ScreenCastPortal::PortalNotifier* screencast_notifier);
+  RemoteDesktopPortal(
+      webrtc::ScreenCastPortal::PortalNotifier* screencast_notifier,
+      bool prefer_cursor_embedded);
   RemoteDesktopPortal(const RemoteDesktopPortal&) = delete;
   RemoteDesktopPortal& operator=(const RemoteDesktopPortal&) = delete;
   ~RemoteDesktopPortal() override;

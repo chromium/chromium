@@ -275,6 +275,9 @@ void It2MeHost::ConnectOnNetworkThread(
 
   // Set up the desktop environment options.
   DesktopEnvironmentOptions options(DesktopEnvironmentOptions::CreateDefault());
+#if defined(REMOTING_USE_WAYLAND)
+  options.desktop_capture_options()->set_prefer_cursor_embedded(true);
+#endif
   options.set_enable_user_interface(enable_dialogs_);
   options.set_enable_notifications(enable_notifications_);
   options.set_terminate_upon_input(terminate_upon_input_);
