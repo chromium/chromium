@@ -33,6 +33,7 @@
 #include <shlobj.h>
 
 #include "base/win/windows_version.h"
+#include "chrome/updater/util/win_util.h"
 #endif
 
 namespace updater::test {
@@ -112,6 +113,11 @@ void MaybeExcludePathsFromWindowsDefender() {
 
   if (base::win::GetVersion() <= base::win::Version::WIN7) {
     VLOG(1) << "Skip changing Windows Defender settings for Win7 and below.";
+    return;
+  }
+
+  if (!IsServiceRunning(L"WinDefend")) {
+    VLOG(1) << "WinDefend is not running, no need to add exclusion paths.";
     return;
   }
 
