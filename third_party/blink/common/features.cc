@@ -879,12 +879,6 @@ BASE_FEATURE(kLoadingTasksUnfreezable,
              "LoadingTasksUnfreezable",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls how max frame rates are enforced in MediaStreamTracks.
-// TODO(crbug.com/1152307): Remove in M91.
-BASE_FEATURE(kMediaStreamTrackUseConfigMaxFrameRate,
-             "MediaStreamTrackUseConfigMaxFrameRate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the SubresourceFilter receives calls from the ResourceLoader
 // to perform additional checks against any aliases found from DNS CNAME records
 // for the requested URL.

@@ -364,9 +364,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTargetBlankImpliesNoOpener);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMediaStreamTrackUseConfigMaxFrameRate);
-
 // Performs additional SubresourceFilter checks when CNAME aliases are found
 // for the host of a requested URL.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

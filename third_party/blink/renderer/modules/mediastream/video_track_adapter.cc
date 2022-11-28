@@ -482,11 +482,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
   // Do not drop frames if max frame rate hasn't been specified.
-  if (settings_.max_frame_rate() == 0.0f ||
-      (base::FeatureList::IsEnabled(
-           features::kMediaStreamTrackUseConfigMaxFrameRate) &&
-       source_frame_rate > 0 &&
-       source_frame_rate <= settings_.max_frame_rate())) {
+  if (settings_.max_frame_rate() == 0.0f) {
     last_time_stamp_ = frame.timestamp();
     return false;
   }
