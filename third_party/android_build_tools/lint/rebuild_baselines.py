@@ -14,8 +14,8 @@ _SRC_PATH = pathlib.Path(__file__).parents[3].resolve()
 _CLANK_PATH = _SRC_PATH / 'clank'
 _OUTPUT_DIR_ROOT = _SRC_PATH / 'out'
 _AUTONINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'autoninja'
-_NINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'ninja'
-_GN_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'gn'
+_NINJA_PATH = _SRC_PATH / 'third_party' / 'ninja' / 'ninja'
+_GN_PATH = _SRC_PATH / 'buildtools' / 'linux64' / 'gn'
 
 
 def build_all_lint_targets(out_dir: pathlib.Path,
