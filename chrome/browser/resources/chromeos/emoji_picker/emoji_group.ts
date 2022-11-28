@@ -24,6 +24,7 @@ export enum EmojiGroupLayoutType {
 const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
   [CategoryEnum.EMOTICON]: EmojiGroupLayoutType.FLEX_LAYOUT,
+  [CategoryEnum.SYMBOL]: EmojiGroupLayoutType.GRID_LAYOUT,
 };
 
 export interface EmojiGroupComponent {

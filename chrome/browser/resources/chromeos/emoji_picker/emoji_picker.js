@@ -946,7 +946,7 @@ export class EmojiPicker extends PolymerElement {
     // indicators if present. 10 pixels are added for padding and the shadow.
 
     // Reset any existing left margin before calculating a new position.
-    variants.style.marginLeft = 0;
+    variants.style.marginLeft = '0';
 
     // get size of emoji picker
     const pickerRect = this.getBoundingClientRect();

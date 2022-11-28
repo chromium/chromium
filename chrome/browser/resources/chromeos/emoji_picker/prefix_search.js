@@ -5,6 +5,17 @@
 import {Trie} from './structs/trie.js';
 import {EmojiVariants} from './types.js';
 
+/**
+ * Preprocess a phrase by the following operations:
+ *  (1) remove white whitespace at both ends of the phrase.
+ *  (2) convert all letters into lowercase.
+ * @param {string} phrase
+ * @returns {string}
+ */
+function sanitize(phrase) {
+  return phrase.trim().toLowerCase();
+}
+
 export class EmojiPrefixSearch {
   constructor() {
     /** @type {!Trie} */
@@ -25,7 +36,7 @@ export class EmojiPrefixSearch {
     for (const record of collection) {
       const string = record.base.string;
       const name = record.base.name;
-      const terms = this.tokenize_(name).map(term => this.sanitize_(term));
+      const terms = this.tokenize_(name).map(term => sanitize(term));
       terms.forEach(term => {
         if (!this.wordToEmojisMap_.has(term)) {
           this.wordToEmojisMap_.set(term, new Set());
@@ -56,16 +67,7 @@ export class EmojiPrefixSearch {
     return Array.from(results);
   }
 
-  /**
-   * Preprocess a phrase by the following operations:
-   *  (1) remove white whitespace at both ends of the phrase.
-   *  (2) convert all letters into lowercase.
-   * @param {string} phrase
-   * @returns {string}
-   */
-  sanitize_(phrase) {
-    return phrase.trim().toLowerCase();
-  }
+
 
   /**
    * Clear trie and lookup table.
@@ -96,7 +98,7 @@ export class EmojiPrefixSearch {
    */
   getMatchedKeywords_(emoji, term) {
     const PRIMARY_NAME_WEIGHT = 1;
-    return this.tokenize_(this.sanitize_(emoji.base.name))
+    return this.tokenize_(sanitize(emoji.base.name))
         .map((token, pos) => ({
                pos,
                isMatched: token.startsWith(term),
@@ -135,7 +137,7 @@ export class EmojiPrefixSearch {
    */
   search(query) {
     const queryScores = new Map();
-    const sanitizedQuery = this.sanitize_(query);
+    const sanitizedQuery = sanitize(query);
     this.tokenize_(sanitizedQuery).forEach((term, idx) => {
       // For each token
       const termScores = new Map();

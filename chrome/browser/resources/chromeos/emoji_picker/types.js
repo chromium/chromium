@@ -43,7 +43,7 @@ export let SubcategoryData;
 
 /**
  * @typedef {{name: string, category: string, emoji: Array<EmojiVariants>,
- *            groupId: string, activate: boolean, disabled: boolean,
+ *            groupId: string, active: boolean, disabled: boolean,
  *            pagination: ?number, preferences: Object<string,string>,
  *            isHistory: boolean}} EmojiGroupElement
  */

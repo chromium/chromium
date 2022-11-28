@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CategoryEnum} from './types';
 
 export type CategoryButtonClickEvent = CustomEvent<{categoryName: string}>;
 
@@ -17,6 +18,8 @@ export type EmojiButtonClickEvent = CustomEvent<{
   baseEmoji: string,
   allVariants: string[],
   name: string,
+  text: string,
+  category: CategoryEnum,
 }>;
 
 export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
