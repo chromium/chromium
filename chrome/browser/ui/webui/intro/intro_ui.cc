@@ -12,7 +12,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
-#include "components/grit/components_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -58,9 +57,9 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   AddStrings(source);
 
-  source->AddResourcePath("product-logo.png", IDR_PRODUCT_LOGO_128);
+  source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
   source->AddResourcePath("product-logo-animation.svg",
-                          IDR_FIRST_RUN_PRODUCT_LOGO_ANIMATION);
+                          IDR_PRODUCT_LOGO_ANIMATION_SVG);
 
   // Unretained ok: `this` owns the handler.
   web_ui->AddMessageHandler(std::make_unique<IntroHandler>(base::BindRepeating(
