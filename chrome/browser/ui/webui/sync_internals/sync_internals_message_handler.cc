@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -30,7 +31,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 
-using base::DictionaryValue;
 using syncer::SyncInvalidationsService;
 using syncer::SyncService;
 
