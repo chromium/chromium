@@ -23,6 +23,8 @@ class CredentialLeakDialogViewAndroid;
 // detected. It is self-owned and it owns the dialog view.
 class CredentialLeakControllerAndroid {
  public:
+  // TODO(crbug.com/1386065): Remove |password_change_success_tracker| as part
+  // of APC clean up.
   CredentialLeakControllerAndroid(
       password_manager::CredentialLeakType leak_type,
       const GURL& origin,

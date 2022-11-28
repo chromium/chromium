@@ -85,6 +85,7 @@ enum class LeakDialogType {
   // The user is asked to visit the Password Checkup and change the password for
   // the current site.
   kCheckupAndChange = 2,
+  // TODO(crbug.com/1386065): Deprecate this entry as part of APC clean up.
   // The user is asked to let Chrome automatically change their password for the
   // current site.
   kChangeAutomatically = 3,
