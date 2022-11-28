@@ -97,7 +97,6 @@ android_library("java") {
     "org/chromium/weblayer/ScrollNotificationType.java",
     "org/chromium/weblayer/ScrollOffsetCallback.java",
     "org/chromium/weblayer/SettingType.java",
-    "org/chromium/weblayer/SettingsFragmentEventHandler.java",
     "org/chromium/weblayer/Tab.java",
     "org/chromium/weblayer/TabCallback.java",
     "org/chromium/weblayer/TabListCallback.java",

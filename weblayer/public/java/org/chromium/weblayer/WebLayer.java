@@ -28,7 +28,6 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IProfile;
-import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 import org.chromium.weblayer_private.interfaces.IWebLayerFactory;
@@ -514,18 +513,6 @@ class WebLayer {
     /* package */ IBrowserFragment connectFragment(Bundle fragmentArgs) {
         try {
             return mImpl.createBrowserFragmentImpl(ObjectWrapper.wrap(fragmentArgs));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Returns the remote counterpart of the SettingsFragment.
-     */
-    /* package */ ISettingsFragment connectSettingsFragment(Bundle fragmentArgs) {
-        try {
-            assert getSupportedMajorVersionInternal() >= 89;
-            return mImpl.createSettingsFragmentImpl(ObjectWrapper.wrap(fragmentArgs));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

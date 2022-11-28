@@ -21,7 +21,6 @@ jinja_template("weblayer_bundle_utils") {
 android_resources("weblayer_resources") {
   sources = [
     "res/drawable/weblayer_tab_indicator.xml",
-    "res/layout/settings_layout.xml",
     "res/layout/weblayer_infobar_translate_compact_content.xml",
     "res/values-night/styles.xml",
     "res/values/colors.xml",
@@ -191,7 +190,6 @@ android_library("java") {
     "org/chromium/weblayer_private/payments/WebLayerPaymentRequestService.java",
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
-    "org/chromium/weblayer_private/settings/SettingsFragmentImpl.java",
     "org/chromium/weblayer_private/settings/WebLayerAccessibilitySettingsDelegate.java",
     "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
     _bundle_utils_output,
@@ -556,8 +554,6 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/RestrictedAPIException.java",
     "org/chromium/weblayer_private/interfaces/ScrollNotificationType.java",
     "org/chromium/weblayer_private/interfaces/SettingType.java",
-    "org/chromium/weblayer_private/interfaces/SettingsFragmentArgs.java",
-    "org/chromium/weblayer_private/interfaces/SettingsIntentHelper.java",
     "org/chromium/weblayer_private/interfaces/WebLayerVersionConstants.java",
   ]
 
@@ -645,8 +641,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IProfile.aidl",
     "org/chromium/weblayer_private/interfaces/IProfileClient.aidl",
     "org/chromium/weblayer_private/interfaces/IRemoteFragment.aidl",
-    "org/chromium/weblayer_private/interfaces/ISettingsFragment.aidl",
-    "org/chromium/weblayer_private/interfaces/ISiteSettingsFragment.aidl",
     "org/chromium/weblayer_private/interfaces/ITab.aidl",
     "org/chromium/weblayer_private/interfaces/ITabClient.aidl",
     "org/chromium/weblayer_private/interfaces/IUserIdentityCallbackClient.aidl",

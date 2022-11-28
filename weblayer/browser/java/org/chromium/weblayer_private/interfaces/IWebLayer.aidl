@@ -12,8 +12,6 @@ import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
-import org.chromium.weblayer_private.interfaces.ISettingsFragment;
-import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 
 interface IWebLayer {
@@ -76,14 +74,6 @@ interface IWebLayer {
 
   void registerExternalExperimentIDs(in String trialName, in int[] experimentIds) = 15;
 
-  // Creates the WebLayer counterpart to a SiteSettingsFragment - a SiteSettingsFragmentImpl
-  //
-  // @param fragmentClient Representative of the Fragment on the client side through which
-  // WebLayer can call methods on Fragment.
-  // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
-  // (see Fragment#setArguments).
-  ISiteSettingsFragment createSiteSettingsFragmentImpl(in IObjectWrapper fragmentArgs) = 16;
-
   void onMediaSessionServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 17;
   void onMediaSessionServiceDestroyed() = 18;
 
@@ -97,15 +87,6 @@ interface IWebLayer {
   // Added in Version 88.
   void onRemoteMediaServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 22;
   void onRemoteMediaServiceDestroyed(int id) = 23;
-
-  // Creates the WebLayer counterpart to a SettingsFragment - a SettingsFragmentImpl
-  //
-  // @param fragmentClient Representative of the Fragment on the client side through which
-  // WebLayer can call methods on Fragment.
-  // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
-  // (see Fragment#setArguments).
-  // Added in Version 89.
-  ISettingsFragment createSettingsFragmentImpl(in IObjectWrapper fragmentArgs) = 25;
 
   // Creates an instance of GooglePayDataCallbacksService. Added in Version 92.
   IObjectWrapper createGooglePayDataCallbacksService() = 26;
