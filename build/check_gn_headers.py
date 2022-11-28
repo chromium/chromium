@@ -28,7 +28,10 @@ def GetHeadersFromNinja(out_dir, skip_obj, q):
   """Return all the header files from ninja_deps"""
 
   def NinjaSource():
-    cmd = [os.path.join(DEPOT_TOOLS_DIR, 'ninja'), '-C', out_dir, '-t', 'deps']
+    cmd = [
+        os.path.join(SRC_DIR, 'third_party', 'ninja', 'ninja'), '-C', out_dir,
+        '-t', 'deps'
+    ]
     # A negative bufsize means to use the system default, which usually
     # means fully buffered.
     popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=-1)
