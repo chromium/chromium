@@ -46,7 +46,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -204,7 +204,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
-@property(nonatomic, weak) id<GridConsumer> consumer;
+@property(nonatomic, weak) id<TabCollectionConsumer> consumer;
 // Handler for reading list command.
 @property(nonatomic, weak) id<BrowserCommands> readingListHandler;
 // The saved session window just before close all tabs is called.
@@ -230,7 +230,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       _scopedWebStateObservation;
 }
 
-- (instancetype)initWithConsumer:(id<GridConsumer>)consumer {
+- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
   if (self = [super init]) {
     _consumer = consumer;
     _webStateListObserverBridge =
@@ -739,7 +739,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       WebStateOpener());
 }
 
-#pragma mark - GridDragDropHandler
+#pragma mark - TabCollectionDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
   web::WebState* webState = GetWebStateWithId(self.browserState, itemID);

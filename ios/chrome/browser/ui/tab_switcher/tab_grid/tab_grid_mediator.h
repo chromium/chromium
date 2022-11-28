@@ -7,14 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 
 class Browser;
-@protocol GridConsumer;
+@protocol TabCollectionConsumer;
 @class TabGridMediator;
 @class URLWithTitle;
 
@@ -46,10 +46,10 @@ class TabRestoreService;
 
 // Mediates between model layer and tab grid UI layer.
 @interface TabGridMediator : NSObject <GridCommands,
-                                       GridDragDropHandler,
                                        GridImageDataSource,
                                        GridMenuActionsDataSource,
-                                       GridShareableItemsProvider>
+                                       GridShareableItemsProvider,
+                                       TabCollectionDragDropHandler>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;
@@ -59,7 +59,7 @@ class TabRestoreService;
 @property(nonatomic, weak) id<TabGridMediatorDelegate> delegate;
 
 // Initializer with `consumer` as the receiver of model layer updates.
-- (instancetype)initWithConsumer:(id<GridConsumer>)consumer
+- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

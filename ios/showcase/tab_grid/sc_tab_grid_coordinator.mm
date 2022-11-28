@@ -4,9 +4,9 @@
 
 #import "ios/showcase/tab_grid/sc_tab_grid_coordinator.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/showcase/common/protocol_alerter.h"
@@ -36,9 +36,9 @@
   self.viewController.regularTabsDelegate =
       static_cast<id<GridCommands>>(self.alerter);
   self.viewController.incognitoTabsDragDropHandler =
-      static_cast<id<GridDragDropHandler>>(self.alerter);
+      static_cast<id<TabCollectionDragDropHandler>>(self.alerter);
   self.viewController.regularTabsDragDropHandler =
-      static_cast<id<GridDragDropHandler>>(self.alerter);
+      static_cast<id<TabCollectionDragDropHandler>>(self.alerter);
   self.viewController.title = @"Full TabGrid UI";
   self.baseViewController.delegate = self;
   self.baseViewController.hidesBarsOnSwipe = YES;

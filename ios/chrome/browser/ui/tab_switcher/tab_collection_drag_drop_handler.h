@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_DRAG_DROP_HANDLER_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_DRAG_DROP_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_HANDLER_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_HANDLER_H_
 
 #import <UIKit/UIKit.h>
 
-// A protocol for objects that handle drag and drop interactions for a grid
-// involving the model layer.
-@protocol GridDragDropHandler
+// A protocol for objects that handle drag and drop interactions for a
+// collection view involving the model layer.
+@protocol TabCollectionDragDropHandler
 
 // Returns a drag item encapsulating all necessary information to perform
 // valid drop operations. Note that this drag item may be dropped anywhere,
@@ -42,4 +42,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_DRAG_DROP_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_HANDLER_H_

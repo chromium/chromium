@@ -16,9 +16,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
-@protocol GridConsumer;
 @protocol GridCommands;
-@protocol GridDragDropHandler;
 @protocol GridImageDataSource;
 @protocol PriceCardDataSource;
 @protocol GridShareableItemsProvider;
@@ -28,6 +26,8 @@ class GURL;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@protocol TabCollectionConsumer;
+@protocol TabCollectionDragDropHandler;
 @class TabGridViewController;
 @protocol ThumbStripCommands;
 @protocol ViewControllerTraitCollectionObserver;
@@ -113,9 +113,10 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
 
 // Consumers send updates from the model layer to the UI layer.
-@property(nonatomic, readonly) id<GridConsumer> regularTabsConsumer;
-@property(nonatomic, readonly) id<GridConsumer, IncognitoReauthConsumer>
-    incognitoTabsConsumer;
+@property(nonatomic, readonly) id<TabCollectionConsumer> regularTabsConsumer;
+@property(nonatomic, readonly)
+    id<TabCollectionConsumer, IncognitoReauthConsumer>
+        incognitoTabsConsumer;
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
@@ -123,8 +124,10 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
 
 // Handles drag and drop interactions that require the model layer.
-@property(nonatomic, weak) id<GridDragDropHandler> regularTabsDragDropHandler;
-@property(nonatomic, weak) id<GridDragDropHandler> incognitoTabsDragDropHandler;
+@property(nonatomic, weak) id<TabCollectionDragDropHandler>
+    regularTabsDragDropHandler;
+@property(nonatomic, weak) id<TabCollectionDragDropHandler>
+    incognitoTabsDragDropHandler;
 
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
