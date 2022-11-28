@@ -335,4 +335,73 @@ public class LocationBarModelUnitTest {
 
         regularLocationBarModel.destroy();
     }
+
+    @DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
+    @Test
+    @MediumTest
+    public void testNoCacheWhenScrollOptimizationsDisabled() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
+        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        regularLocationBarModel.initializeWithNative();
+
+        String url = "http://www.example.com/";
+        doReturn(url).when(mMockGurl).getSpec();
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        doReturn(url)
+                .when(mLocationBarModelJni)
+                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+        doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        Assert.assertTrue(regularLocationBarModel.updateVisibleGurl());
+        regularLocationBarModel.destroy();
+    }
+
+    @EnableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
+    @Test
+    @MediumTest
+    public void testCacheWhenScrollOptimizationsEnabled() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
+        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        regularLocationBarModel.initializeWithNative();
+
+        String url = "http://www.example.com/";
+        doReturn(url).when(mMockGurl).getSpec();
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        doReturn(url)
+                .when(mLocationBarModelJni)
+                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+        doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        Assert.assertTrue(regularLocationBarModel.updateVisibleGurl());
+        Assert.assertFalse(
+                "Update should be suppressed", regularLocationBarModel.updateVisibleGurl());
+
+        // URL changed, cache is invalid.
+        String url2 = "http://www.example2.com/";
+        GURL mMockGurl2 = Mockito.mock(GURL.class);
+        doReturn(url2).when(mMockGurl2).getSpec();
+        doReturn(mMockGurl2)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        doReturn(url2)
+                .when(mLocationBarModelJni)
+                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+        doReturn(url2)
+                .when(mLocationBarModelJni)
+                .getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        Assert.assertTrue("New url should notify", regularLocationBarModel.updateVisibleGurl());
+        Assert.assertFalse(
+                "Update should be suppressed again", regularLocationBarModel.updateVisibleGurl());
+        regularLocationBarModel.destroy();
+    }
 }
