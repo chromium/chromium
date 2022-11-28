@@ -37,12 +37,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
   const AppId app_id = test_web_app_id();
 
   // No item should exist in the shelf before the web app is launched.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 
   OpenTestWebApp();
 
   // Wait for item to exist in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/true));
 
   // Get the context menu.
   crosapi::mojom::TestControllerAsyncWaiter waiter(
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
   }
 
   // Wait for item to stop existing in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 }
 
 // Test that ShowSiteSettings() launches the Settings SWA.
@@ -80,15 +80,17 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
   ChromePageInfoDelegate delegate(web_contents);
 
   // Wait for item to exist in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/true));
 
   // Settings should not yet exist in the shelf.
-  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false);
+  ASSERT_TRUE(
+      browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false));
 
   delegate.ShowSiteSettings(web_contents->GetVisibleURL());
 
   // Settings should now exist in the shelf.
-  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/true);
+  ASSERT_TRUE(
+      browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/true));
 
   base::RunLoop run_loop;
   auto* const lacros_service = chromeos::LacrosService::Get();
@@ -101,13 +103,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
   run_loop.Run();
 
   // Settings should no longer exist in the shelf.
-  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false);
+  ASSERT_TRUE(
+      browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false));
 
   // Close app window.
   browser->window()->Close();
 
   // Wait for item to stop existing in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
@@ -124,19 +127,19 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
   const AppId app_id = test_web_app_id();
 
   // No item should exist in the shelf before the web app is launched.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::TestController>()
       ->LaunchAppFromAppList(app_id);
 
   // Wait for item to exist in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/true));
 
   web_app::test::UninstallWebApp(profile(), app_id);
 
   // Wait for item to stop existing in shelf.
-  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 }
 
 }  // namespace web_app

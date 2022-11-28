@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
   aura::Window* main_window = browser()->window()->GetNativeWindow();
   std::string main_id = lacros_window_utility::GetRootWindowUniqueId(
       main_window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(main_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(main_id));
 
   // Create an incognito window and make it visible.
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
       incognito_browser->window()->GetNativeWindow();
   std::string incognito_id = lacros_window_utility::GetRootWindowUniqueId(
       incognito_window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(incognito_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(incognito_id));
 
   // Enter tablet mode.
   crosapi::mojom::TestControllerAsyncWaiter waiter(
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
   // Close the incognito window by closing all tabs and wait for it to stop
   // existing in ash.
   incognito_browser->tab_strip_model()->CloseAllTabs();
-  browser_test_util::WaitForWindowDestruction(incognito_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(incognito_id));
 
   // Exit tablet mode.
   waiter.ExitTabletMode();

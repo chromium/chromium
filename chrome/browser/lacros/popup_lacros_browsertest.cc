@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   aura::Window* window = browser()->window()->GetNativeWindow();
   std::string window_id =
       lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(window_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
 
   // Wait for the window to be globally positioned at 0,0. It will eventually
   // have this position because it is maximized. We cannot assert the position

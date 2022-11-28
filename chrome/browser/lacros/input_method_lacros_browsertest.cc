@@ -66,12 +66,12 @@ bool RenderHtmlInLacros(Browser* browser, const std::string& html) {
     return false;
   }
 
-  browser_test_util::WaitForWindowCreation(
-      lacros_window_utility::GetRootWindowUniqueId(
-          BrowserView::GetBrowserViewForBrowser(browser)
-              ->frame()
-              ->GetNativeWindow()
-              ->GetRootWindow()));
+  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->frame()
+          ->GetNativeWindow()
+          ->GetRootWindow());
+  EXPECT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
   return true;
 }
 

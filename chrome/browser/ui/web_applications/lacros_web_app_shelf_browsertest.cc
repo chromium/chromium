@@ -78,25 +78,25 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
   AppReadinessWaiter(profile(), app1_id).Await();
   Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser1, app1_id));
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kActive));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
   AppReadinessWaiter(profile(), app2_id).Await();
   LaunchWebAppBrowser(profile(), app2_id);
-  browser_test_util::WaitForShelfItemState(
-      app2_id, static_cast<uint32_t>(ShelfItemState::kActive));
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kRunning));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kRunning)));
 
   CloseAndWait(app_browser1);
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kNormal));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
 
   test::UninstallWebApp(profile(), app2_id);
   AppReadinessWaiter(profile(), app2_id, apps::Readiness::kUninstalledByUser)
       .Await();
-  browser_test_util::WaitForShelfItemState(
-      app2_id, static_cast<uint32_t>(ShelfItemState::kNormal));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
 
   test::UninstallWebApp(profile(), app1_id);
 }
@@ -115,22 +115,22 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
-  browser_test_util::WaitForShelfItemState(
-      app_id, static_cast<uint32_t>(ShelfItemState::kActive));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
   ASSERT_TRUE(content::ExecuteScript(web_contents, "navigator.setAppBadge();"));
-  browser_test_util::WaitForShelfItemState(
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_id, static_cast<uint32_t>(ShelfItemState::kActive) |
-                  static_cast<uint32_t>(ShelfItemState::kNotification));
+                  static_cast<uint32_t>(ShelfItemState::kNotification)));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents, "navigator.clearAppBadge();"));
-  browser_test_util::WaitForShelfItemState(
-      app_id, static_cast<uint32_t>(ShelfItemState::kActive));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
   test::UninstallWebApp(profile(), app_id);
-  browser_test_util::WaitForShelfItemState(
-      app_id, static_cast<uint32_t>(ShelfItemState::kNormal));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
@@ -156,8 +156,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
 
     Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
-    browser_test_util::WaitForShelfItemState(
-        app1_id, static_cast<uint32_t>(ShelfItemState::kActive));
+    ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+        app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app1_id, /*pin=*/true);
     CloseAndWait(app_browser1);
     sync_bridge.SetAppUserDisplayMode(app1_id, UserDisplayMode::kBrowser,
@@ -165,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
 
     Browser* app_browser2 = LaunchWebAppBrowser(profile(), app2_id);
-    browser_test_util::WaitForShelfItemState(
-        app2_id, static_cast<uint32_t>(ShelfItemState::kActive));
+    ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+        app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app2_id, /*pin=*/true);
     CloseAndWait(app_browser2);
     sync_bridge.SetAppUserDisplayMode(app2_id, UserDisplayMode::kBrowser,
@@ -174,34 +174,34 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser).Await();
   }
 
-  browser_test_util::WaitForShelfItemState(
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_constants::kLacrosAppId,
-      static_cast<uint32_t>(ShelfItemState::kActive));
+      static_cast<uint32_t>(ShelfItemState::kActive)));
 
   test_controller->LaunchAppFromAppList(app1_id);
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kActive));
-  browser_test_util::WaitForShelfItemState(
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_constants::kLacrosAppId,
-      static_cast<uint32_t>(ShelfItemState::kRunning));
+      static_cast<uint32_t>(ShelfItemState::kRunning)));
 
   test_controller->LaunchAppFromAppList(app2_id);
-  browser_test_util::WaitForShelfItemState(
-      app2_id, static_cast<uint32_t>(ShelfItemState::kActive));
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kRunning));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kRunning)));
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
                                       TabCloseTypes::CLOSE_NONE);
-  browser_test_util::WaitForShelfItemState(
-      app2_id, static_cast<uint32_t>(ShelfItemState::kNormal));
-  browser_test_util::WaitForShelfItemState(
-      app1_id, static_cast<uint32_t>(ShelfItemState::kActive));
-  browser_test_util::WaitForShelfItemState(
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_constants::kLacrosAppId,
-      static_cast<uint32_t>(ShelfItemState::kRunning));
+      static_cast<uint32_t>(ShelfItemState::kRunning)));
 
   test::UninstallWebApp(profile(), app1_id);
   test::UninstallWebApp(profile(), app2_id);

@@ -113,7 +113,7 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Wait for item to stop existing in shelf.
-    browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+    ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 

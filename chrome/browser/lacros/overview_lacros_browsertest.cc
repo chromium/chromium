@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
   aura::Window* window = browser()->window()->GetNativeWindow();
   std::string id =
       lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
 
   // Enter overview mode.
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
   // Close the window by closing all tabs and wait for it to stop existing in
   // ash.
   browser()->tab_strip_model()->CloseAllTabs();
-  browser_test_util::WaitForWindowDestruction(id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(id));
 }
 
 // We enter overview mode with 2 windows. We delete 1 window during overview
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   aura::Window* main_window = browser()->window()->GetNativeWindow();
   std::string main_id = lacros_window_utility::GetRootWindowUniqueId(
       main_window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(main_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(main_id));
 
   // Create an incognito window and make it visible.
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
       incognito_browser->window()->GetNativeWindow();
   std::string incognito_id = lacros_window_utility::GetRootWindowUniqueId(
       incognito_window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(incognito_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(incognito_id));
 
   // Enter overview mode.
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   // Close the incognito window by closing all tabs and wait for it to stop
   // existing in ash.
   incognito_browser->tab_strip_model()->CloseAllTabs();
-  browser_test_util::WaitForWindowDestruction(incognito_id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(incognito_id));
 
   // Exit overview mode.
   waiter.ExitOverviewMode();

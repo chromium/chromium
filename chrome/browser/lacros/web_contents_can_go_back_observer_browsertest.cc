@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
                              ->GetNativeWindow();
   std::string id =
       lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
                              ->GetNativeWindow();
   std::string id =
       lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  browser_test_util::WaitForWindowCreation(id);
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
