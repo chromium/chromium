@@ -21,35 +21,38 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.webengine.CookieManager;
 import org.chromium.webengine.RestrictedAPIException;
 import org.chromium.webengine.Tab;
+import org.chromium.webengine.WebFragment;
+import org.chromium.webengine.WebSandbox;
 
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Tests executing JavaScript in a Tab.
+ * Tests the CookieManager API.
  */
 @Batch(Batch.PER_CLASS)
 @RunWith(WebEngineJUnit4ClassRunner.class)
-public class ExecuteScriptTest {
+public class CookieManagerTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
     @Rule
     public DigitalAssetLinksServerRule mDALServerRule = new DigitalAssetLinksServerRule();
 
-    private Tab mTab;
-    private String mDefaultUrl;
     private TestWebServer mServer;
+    private CookieManager mCookieManager;
 
     @Before
     public void setUp() throws Exception {
         mServer = mDALServerRule.getServer();
         mActivityTestRule.launchShell();
 
-        mDefaultUrl = mServer.setResponse("/page.html",
-                "<html><head></head><body>contents!</body><script>window.foo = 42;</script></html>",
-                null);
+        WebSandbox sandbox = mActivityTestRule.getWebSandbox();
+        WebFragment fragment = runOnUiThreadBlocking(() -> sandbox.createFragment());
+        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(fragment));
+        mCookieManager = fragment.getCookieManager().get();
     }
 
     @After
@@ -57,21 +60,13 @@ public class ExecuteScriptTest {
         mActivityTestRule.finish();
     }
 
-    private Tab navigate() throws Exception {
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(mDefaultUrl);
-        return mActivityTestRule.getFragment().getTabManager().get().getActiveTab().get();
-    }
-
     @Test
     @SmallTest
-    public void executeScriptFailsWithoutVerification() throws Exception {
-        Tab activeTab = navigate();
+    public void accessFailsWithoutVerification() throws Exception {
+        ListenableFuture<String> future =
+                runOnUiThreadBlocking(() -> mCookieManager.getCookie(mServer.getBaseUrl()));
 
         CountDownLatch executeLatch = new CountDownLatch(1);
-
-        ListenableFuture<String> future =
-                runOnUiThreadBlocking(() -> activeTab.executeScript("1+1", true));
-
         Futures.addCallback(future, new FutureCallback<String>() {
             @Override
             public void onSuccess(String result) {
@@ -94,46 +89,26 @@ public class ExecuteScriptTest {
 
     @Test
     @SmallTest
-    public void executeScriptSucceedsWithVerification() throws Exception {
+    public void setAndGetCookies() throws Exception {
         mDALServerRule.setUpDigitalAssetLinks();
-        Tab activeTab = navigate();
-
-        ListenableFuture<String> future =
-                runOnUiThreadBlocking(() -> activeTab.executeScript("1+1", true));
-        Assert.assertEquals(future.get(), "2");
+        Assert.assertEquals(mCookieManager.getCookie(mServer.getBaseUrl()).get(), "");
+        mCookieManager.setCookie(mServer.getBaseUrl(), "foo=bar");
+        Assert.assertEquals(mCookieManager.getCookie(mServer.getBaseUrl()).get(), "foo=bar");
     }
 
     @Test
     @SmallTest
-    public void useSeparateIsolate() throws Exception {
+    public void getCookieCreatedByPage() throws Exception {
         mDALServerRule.setUpDigitalAssetLinks();
-        Tab activeTab = navigate();
 
-        ListenableFuture<String> futureIsolated =
-                runOnUiThreadBlocking(() -> activeTab.executeScript("window.foo", true));
-        Assert.assertEquals(futureIsolated.get(), "null");
+        String url = mDALServerRule.getServer().setResponse("/page.html",
+                "<html><script>document.cookie='foo=bar42'</script><body>contents!</body></html>",
+                null);
 
-        ListenableFuture<String> futureUnisolated =
-                runOnUiThreadBlocking(() -> activeTab.executeScript("window.foo", false));
-        Assert.assertEquals(futureUnisolated.get(), "42");
-    }
+        Assert.assertEquals(mCookieManager.getCookie(url).get(), "");
+        Tab tab = mActivityTestRule.getFragment().getTabManager().get().getActiveTab().get();
 
-    @Test
-    @SmallTest
-    public void modifyDOMSucceeds() throws Exception {
-        mDALServerRule.setUpDigitalAssetLinks();
-        Tab activeTab = navigate();
-
-        ListenableFuture<String> future1 = runOnUiThreadBlocking(
-                () -> activeTab.executeScript("document.body.innerText", false));
-        Assert.assertEquals(future1.get(), "\"contents!\"");
-
-        runOnUiThreadBlocking(
-                () -> activeTab.executeScript("document.body.innerText = 'foo'", false))
-                .get();
-
-        ListenableFuture<String> future2 = runOnUiThreadBlocking(
-                () -> activeTab.executeScript("document.body.innerText", false));
-        Assert.assertEquals(future2.get(), "\"foo\"");
+        mActivityTestRule.navigateAndWait(tab, url);
+        Assert.assertEquals(mCookieManager.getCookie(url).get(), "foo=bar42");
     }
 }

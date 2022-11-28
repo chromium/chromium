@@ -13,7 +13,7 @@ import org.chromium.webengine.interfaces.ExceptionType;
 import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
 import org.chromium.webengine.interfaces.IStringCallback;
-import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
+import org.chromium.weblayer_private.interfaces.APICallException;
 
 /**
  * This class acts as a proxy between the embedding app's WebFragment and
@@ -31,15 +31,21 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
     public void setCookie(String uri, String value, IBooleanCallback callback) {
         mHandler.post(() -> {
             try {
-                mCookieManager.setCookie(Uri.parse(uri), value, (Boolean v) -> {
+                mCookieManager.setCookie(Uri.parse(uri), value, (Boolean result) -> {
                     try {
-                        callback.onResult(v);
+                        if (!result) {
+                            // TODO(crbug.com/1392110): Pass a useful exception message.
+                            // TODO(crbug.com/1392110): Distinguish exceptions from failures.
+                            callback.onException(ExceptionType.RESTRICTED_API, "");
+                        } else {
+                            callback.onResult(true);
+                        }
                     } catch (RemoteException e) {
                     }
                 });
-            } catch (RestrictedAPIException e) {
+            } catch (APICallException e) {
                 try {
-                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
+                    callback.onException(ExceptionType.UNKNOWN, e.getMessage());
                 } catch (RemoteException re) {
                 }
             }
@@ -52,13 +58,18 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
             try {
                 mCookieManager.getCookie(Uri.parse(uri), (String result) -> {
                     try {
-                        callback.onResult(result);
+                        if (result == null) {
+                            // TODO(crbug.com/1392110): Pass a useful exception message.
+                            callback.onException(ExceptionType.RESTRICTED_API, "");
+                        } else {
+                            callback.onResult(result);
+                        }
                     } catch (RemoteException e) {
                     }
                 });
-            } catch (RestrictedAPIException e) {
+            } catch (APICallException e) {
                 try {
-                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
+                    callback.onException(ExceptionType.UNKNOWN, e.getMessage());
                 } catch (RemoteException re) {
                 }
             }

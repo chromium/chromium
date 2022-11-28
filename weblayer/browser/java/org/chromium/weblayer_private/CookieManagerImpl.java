@@ -16,7 +16,6 @@ import org.chromium.weblayer_private.interfaces.ICookieChangedCallbackClient;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
-import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.lang.ref.WeakReference;
@@ -52,7 +51,8 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
 
         originVerifier.verify(url, mProfile, (verified) -> {
             if (!verified) {
-                throw new RestrictedAPIException();
+                // TODO(crbug.com/1392110): Pass a RestrictedAPIException.
+                valueCallback.onReceiveValue(false);
             }
             Callback<Boolean> baseCallback =
                     (Boolean result) -> valueCallback.onReceiveValue(result);
@@ -72,7 +72,8 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
 
         originVerifier.verify(url, mProfile, (verified) -> {
             if (!verified) {
-                throw new RestrictedAPIException();
+                // TODO(crbug.com/1392110): Pass a RestrictedAPIException.
+                valueCallback.onReceiveValue(null);
             }
             Callback<String> baseCallback = (String result) -> valueCallback.onReceiveValue(result);
             CookieManagerImplJni.get().getCookie(mNativeCookieManager, url, baseCallback);
