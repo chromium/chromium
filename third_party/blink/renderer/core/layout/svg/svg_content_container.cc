@@ -42,14 +42,12 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
     return false;
   if (child.IsSVGInline() || child.IsSVGInlineText())
     return false;
-  // The above IsSVG() check is not enough for foreign elements with
-  // `display: contents`. We ignore SVG descendants in a foreign element.
+  // The above IsSVG() check is not enough for a <svg> in a foreign element
+  // with `display: contents` because SVGSVGElement::LayoutObjectIsNeeded()
+  // doesn't check HasSVGParent().
   if (RuntimeEnabledFeatures::
           SvgContainersRejectSvgInDisplayContentsEnabled()) {
-    if (const Node* node = child.GetNode()) {
-      if (const Element* parent_element = node->parentElement())
-        return parent_element->IsSVGElement();
-    }
+    return !child.IsSVGRoot();
   }
   return true;
 }
