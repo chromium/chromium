@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -229,8 +230,10 @@ public class CustomTabActivityTabControllerUnitTest {
     public void attachEngagementSignalObserver() {
         env.reachNativeInit(mTabController);
 
-        ArgumentCaptor<TabObserver> tabObservers = ArgumentCaptor.forClass(TabObserver.class);
-        verify(env.tabObserverRegistrar, atLeastOnce()).registerTabObserver(tabObservers.capture());
+        ArgumentCaptor<CustomTabTabObserver> tabObservers =
+                ArgumentCaptor.forClass(CustomTabTabObserver.class);
+        verify(env.tabObserverRegistrar, atLeastOnce())
+                .registerActivityTabObserver(tabObservers.capture());
         for (TabObserver observer : tabObservers.getAllValues()) {
             if (observer instanceof RealtimeEngagementSignalObserver) {
                 return;
