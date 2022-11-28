@@ -103,6 +103,17 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       },
 
       /**
+       * Whether settings should be split per device.
+       */
+      isDeviceSettingsSplitEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
+        },
+        readOnly: true,
+      },
+
+      /**
        * Whether storage management info should be hidden.
        */
       hideStorageInfo_: {

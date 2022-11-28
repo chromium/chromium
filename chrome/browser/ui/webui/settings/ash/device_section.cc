@@ -1327,6 +1327,10 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean(
       "enableAudioSettingsPage",
       base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));
+
+  html_source->AddBoolean(
+      "enableInputDeviceSettingsSplit",
+      base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit));
 }
 
 }  // namespace ash::settings
