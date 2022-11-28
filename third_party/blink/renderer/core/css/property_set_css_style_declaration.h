@@ -32,7 +32,7 @@ namespace blink {
 
 class MutableCSSPropertyValueSet;
 
-class CORE_EXPORT PropertySetCSSStyleDeclaration
+class PropertySetCSSStyleDeclaration
     : public AbstractPropertySetCSSStyleDeclaration {
  public:
   PropertySetCSSStyleDeclaration(ExecutionContext* execution_context,

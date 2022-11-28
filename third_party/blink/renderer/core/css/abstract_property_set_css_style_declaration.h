@@ -38,8 +38,7 @@ class ExecutionContext;
 class MutableCSSPropertyValueSet;
 class StyleSheetContents;
 
-class CORE_EXPORT AbstractPropertySetCSSStyleDeclaration
-    : public CSSStyleDeclaration {
+class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
  public:
   virtual Element* ParentElement() const { return nullptr; }
   StyleSheetContents* ContextStyleSheet() const;
