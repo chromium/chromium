@@ -687,7 +687,8 @@ DriveIntegrationService::DriveIntegrationService(
 
   if (ash::features::IsDriveFsBulkPinningEnabled()) {
     pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
-        profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
+        profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
+        profile->GetPath(), GetDriveFsInterface());
   }
 }
 

@@ -5,9 +5,46 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 
+#include <vector>
+
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/drive/file_errors.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace drivefs::pinning {
+
+// Constant representing the GCache folder name.
+extern const char kGCacheFolderName[];
+
+// Errors that are returned via the completion callback that indicate either
+// which stage the failure was at or whether the initial setup was a success.
+enum class PinError {
+  kSuccess = 0,
+  kManagerDisabled = 1,
+  kErrorCalculatingFreeDiskSpace = 2,
+  kErrorRetrievingSearchResults = 3,
+  kErrorResultsReturnedInvalid = 4,
+  kErrorNotEnoughFreeSpace = 5,
+};
+
+// A delegate to aid in mocking the free disk scenarios for testing, in non-test
+// scenarios this simply calls `base::SysInfo::AmountOfFreeDiskSpace`.
+class FreeDiskSpaceDelegate {
+ public:
+  // Invokes the `base::SysInfo::AmountOfFreeDiskSpace` method on a blocking
+  // thread.
+  virtual void AmountOfFreeDiskSpace(
+      const base::FilePath& path,
+      base::OnceCallback<void(int64_t)> callback) = 0;
+
+  virtual ~FreeDiskSpaceDelegate() = default;
+};
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:
 //  - Manage batching of pin actions to avoid sending too many events at once.
@@ -17,18 +54,53 @@ namespace drivefs::pinning {
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
  public:
-  explicit DriveFsPinManager(bool enabled);
+  DriveFsPinManager(bool enabled,
+                    const base::FilePath& profile_path,
+                    mojom::DriveFs* drivefs_interface);
+  DriveFsPinManager(bool enabled,
+                    const base::FilePath& profile_path,
+                    mojom::DriveFs* drivefs_interface,
+                    std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space);
 
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
 
-  ~DriveFsPinManager() = default;
+  ~DriveFsPinManager();
 
   // Enable or disable the bulk pinning.
   void SetBulkPinningEnabled(bool enabled) { enabled_ = enabled; }
 
+  // Start up the manager, which will first search for any unpinned items and
+  // pin them (within the users My drive) then turn to a "monitoring" phase
+  // which will ensure any new files created and switched to pinned state
+  // automatically. The complete callback will be called once the initial
+  // pinning has completed.
+  void Start(base::OnceCallback<void(PinError)> complete_callback);
+
  private:
+  // Invoked on retrieval of available space in the `~/GCache` directory.
+  void OnFreeDiskSpaceRetrieved(int64_t free_space);
+
+  // Once the free disk space has been retrieved, this method will be invoked
+  // after every batch of searches to Drive complete. This is required as the
+  // user may already have files pinned (which the `GetQuotaUsage` will include
+  // in it's calculation).
+  void OnSearchResultForSizeCalculation(
+      drive::FileError error,
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+
   bool enabled_ = false;
+  int64_t size_required_ = 0;
+  int64_t free_space_ = 0;
+  base::OnceCallback<void(PinError)> complete_callback_;
+  std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space_;
+
+  base::FilePath profile_path_;
+  raw_ptr<mojom::DriveFs> drivefs_interface_;
+  mojo::Remote<mojom::SearchQuery> search_query_;
+  base::ElapsedTimer timer_;
+
+  base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };
 
 }  // namespace drivefs::pinning

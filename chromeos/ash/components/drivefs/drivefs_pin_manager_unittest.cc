@@ -1,0 +1,277 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+
+#include <memory>
+
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace drivefs::pinning {
+
+namespace {
+
+using ::base::test::RunClosure;
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Return;
+
+// Shorthand way to represent drive files with the information that is relevant
+// for the pinning manager.
+struct DriveItem {
+  int64_t size;
+  bool pinned;
+};
+
+// An action that takes a `std::vector<DriveItem>` and is used to update the
+// items that are returned via the `GetNextPage` callback. These shorthand items
+// are converted to mojo types that represent the actual types returned.
+// NOTE: `arg0` in the below represents the pointer passed via parameters to the
+// `MOCK_METHOD` of `OnGetNextPage`.
+ACTION_P(PopulateSearchItems, drive_items) {
+  std::vector<mojom::QueryItemPtr> items;
+  for (const auto& item : drive_items) {
+    items.emplace_back(mojom::QueryItem::New());
+    items.back()->metadata = mojom::FileMetadata::New();
+    items.back()->metadata->capabilities = mojom::Capabilities::New();
+    items.back()->metadata->size = item.size;
+    items.back()->metadata->pinned = item.pinned;
+  }
+  *arg0 = std::move(items);
+}
+
+// An action that populates no search results. This is required as the final
+// `GetNextPage` query will return 0 items and this ensures the `MOCK_METHOD`
+// returns the appropriate type (instead of `absl::nullopt`).
+ACTION(PopulateNoSearchItems) {
+  std::vector<mojom::QueryItemPtr> items;
+  *arg0 = std::move(items);
+}
+
+class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
+                    public mojom::SearchQuery {
+ public:
+  MockDriveFs() = default;
+
+  MockDriveFs(const MockDriveFs&) = delete;
+  MockDriveFs& operator=(const MockDriveFs&) = delete;
+
+  mojom::DriveFs* GetForwardingInterface() override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  MOCK_METHOD(void, OnStartSearchQuery, (const mojom::QueryParameters&));
+
+  void StartSearchQuery(mojo::PendingReceiver<mojom::SearchQuery> receiver,
+                        mojom::QueryParametersPtr query_params) override {
+    search_receiver_.reset();
+    OnStartSearchQuery(*query_params);
+    search_receiver_.Bind(std::move(receiver));
+  }
+
+  MOCK_METHOD(drive::FileError,
+              OnGetNextPage,
+              (absl::optional<std::vector<mojom::QueryItemPtr>> * items));
+
+  void GetNextPage(GetNextPageCallback callback) override {
+    absl::optional<std::vector<mojom::QueryItemPtr>> items;
+    auto error = OnGetNextPage(&items);
+    std::move(callback).Run(error, std::move(items));
+  }
+
+ private:
+  mojo::Receiver<mojom::SearchQuery> search_receiver_{this};
+};
+
+class MockFreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
+ public:
+  MockFreeDiskSpaceImpl() = default;
+
+  MockFreeDiskSpaceImpl(const MockFreeDiskSpaceImpl&) = delete;
+  MockFreeDiskSpaceImpl& operator=(const MockFreeDiskSpaceImpl&) = delete;
+
+  ~MockFreeDiskSpaceImpl() override = default;
+
+  MOCK_METHOD(void,
+              AmountOfFreeDiskSpace,
+              (const base::FilePath&, base::OnceCallback<void(int64_t)>),
+              (override));
+};
+
+class DriveFsPinManagerTest : public testing::Test {
+ public:
+  DriveFsPinManagerTest() = default;
+
+  DriveFsPinManagerTest(const DriveFsPinManagerTest&) = delete;
+  DriveFsPinManagerTest& operator=(const DriveFsPinManagerTest&) = delete;
+
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    gcache_dir_ = temp_dir_.GetPath().Append("GCache");
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath gcache_dir_;
+  MockDriveFs mock_drivefs_;
+};
+
+TEST_F(DriveFsPinManagerTest, DisabledPinManagerShouldNotStartSearching) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(0);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
+  EXPECT_CALL(mock_callback, Run(PinError::kManagerDisabled))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(_, _)).Times(0);
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/false, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, OnFreeDiskSpaceFailingShouldNotSearchDrive) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(0);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
+  EXPECT_CALL(mock_callback, Run(PinError::kErrorCalculatingFreeDiskSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(-1));
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(drive::FileError::FILE_ERROR_FAILED)));
+  EXPECT_CALL(mock_callback, Run(PinError::kErrorRetrievingSearchResults))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      .WillOnce(Return(drive::FileError::FILE_ERROR_OK));
+  EXPECT_CALL(mock_callback, Run(PinError::kErrorResultsReturnedInvalid))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  // Mock Drive search to return 2 unpinned files that total to 1.5 MB which
+  // exceeds the mocked available space of 1 MB.
+  std::vector<DriveItem> expected_drive_items = {{.size = 768}, {.size = 768}};
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+                      Return(drive::FileError::FILE_ERROR_OK)));
+  EXPECT_CALL(mock_callback, Run(PinError::kErrorNotEnoughFreeSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsContributeToTheRequiredSpace) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  // Mock Drive search to return 4 files of which the total will exceed the
+  // mocked available space of 1MB, however, 3 of them are pinned so this should
+  // not be a problem still pinning the remaining.
+  std::vector<DriveItem> expected_drive_items = {{.size = 768},
+                                                 {.size = 768, .pinned = true},
+                                                 {.size = 768, .pinned = true},
+                                                 {.size = 768, .pinned = true}};
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(drive::FileError::FILE_ERROR_OK)));
+  EXPECT_CALL(mock_callback, Run(PinError::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+}  // namespace
+
+}  // namespace drivefs::pinning
