@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_DELEGATE_H_
 
+#include "chrome/browser/ui/browser.h"
 #include "ui/gfx/native_widget_types.h"
 
 class ExclusiveAccessBubbleViews;
