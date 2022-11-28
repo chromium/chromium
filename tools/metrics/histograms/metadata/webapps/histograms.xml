@@ -862,7 +862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppDuplicationFixApplied" units="apps"
-    expires_after="2023-04-16">
+    expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount"
-    units="apps" expires_after="2022-04-17">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppToReplaceStillInstalledCount"
-    units="apps" expires_after="2023-04-30">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -911,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.AppToReplaceStillInstalledInShelfCount"
-    units="apps" expires_after="2023-04-30">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.ConfigErrorCount" units="apps"
-    expires_after="2023-04-16">
+    expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.CorruptUserUninstallPrefsCount"
-    units="apps" expires_after="2023-04-16">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.DisabledCount" units="apps"
-    expires_after="2023-04-30">
+    expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.DisabledReason"
-    enum="PreinstalledAppDisabledReason" expires_after="2022-12-01">
+    enum="PreinstalledAppDisabledReason" expires_after="2023-12-01">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -972,7 +972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.EnabledCount" units="apps"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -982,7 +982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"
-    units="bool" expires_after="2023-07-15">
+    units="bool" expires_after="2023-12-01">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppAbsent"
-    units="apps" expires_after="2023-03-19">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1004,7 +1004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppPresent"
-    units="apps" expires_after="2023-03-19">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1015,7 +1015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppAbsent"
-    units="apps" expires_after="2023-03-19">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppPresent"
-    units="apps" expires_after="2023-03-19">
+    units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1037,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
-    expires_after="2023-04-30">
+    expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
