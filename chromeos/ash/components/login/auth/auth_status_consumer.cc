@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 
 #include "base/notreached.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
 
@@ -14,7 +15,7 @@ void AuthStatusConsumer::OnPasswordChangeDetected(
 }
 
 void AuthStatusConsumer::OnOldEncryptionDetected(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
   NOTREACHED();
 }

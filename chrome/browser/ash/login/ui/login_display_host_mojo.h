@@ -131,7 +131,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnPasswordChangeDetected(const UserContext& user_context) override;
-  void OnOldEncryptionDetected(const UserContext& user_context,
+  void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                bool has_incomplete_migration) override;
 
   // OobeUI::Observer:

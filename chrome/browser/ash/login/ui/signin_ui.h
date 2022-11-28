@@ -58,9 +58,10 @@ class SigninUI {
   virtual void ShowNewTermsForFlexUsers() = 0;
 
   virtual void StartEncryptionMigration(
-      const UserContext& user_context,
+      std::unique_ptr<UserContext> user_context,
       EncryptionMigrationMode migration_mode,
-      base::OnceCallback<void(const UserContext&)> skip_migration_callback) = 0;
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>
+          skip_migration_callback) = 0;
 
   // Might store authentication data so that additional auth factors can be
   // added during user onboarding.

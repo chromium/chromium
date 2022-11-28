@@ -258,8 +258,8 @@ void EncryptionMigrationScreen::ShowImpl() {
 void EncryptionMigrationScreen::HideImpl() {}
 
 void EncryptionMigrationScreen::SetUserContext(
-    const UserContext& user_context) {
-  user_context_ = user_context;
+    std::unique_ptr<UserContext> user_context) {
+  user_context_ = std::move(user_context);
 }
 
 void EncryptionMigrationScreen::SetMode(EncryptionMigrationMode mode) {
@@ -361,8 +361,8 @@ void EncryptionMigrationScreen::HandleSkipMigration() {
   // In this case, the user can not launch ARC apps in the session, and will be
   // asked to do the migration again in the next log-in attempt.
   if (!skip_migration_callback_.is_null()) {
-    user_context_.SetIsForcingDircrypto(false);
-    std::move(skip_migration_callback_).Run(user_context_);
+    user_context_->SetIsForcingDircrypto(false);
+    std::move(skip_migration_callback_).Run(std::move(user_context_));
   }
 }
 
@@ -481,7 +481,7 @@ void EncryptionMigrationScreen::StartMigration() {
   // Mount the existing eCryptfs vault to a temporary location for migration.
   user_data_auth::MountRequest mount;
   *mount.mutable_account() = cryptohome::CreateAccountIdentifierFromAccountId(
-      user_context_.GetAccountId());
+      user_context_->GetAccountId());
   cryptohome::AuthorizationRequest auth_request;
   mount.set_to_migrate_from_ecryptfs(true);
   if (IsArcKiosk()) {
@@ -509,7 +509,7 @@ void EncryptionMigrationScreen::OnMountExistingVault(
   user_data_auth::StartMigrateToDircryptoRequest request;
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_.GetAccountId());
+          user_context_->GetAccountId());
   userdataauth_observer_ = std::make_unique<base::ScopedObservation<
       UserDataAuthClient, UserDataAuthClient::Observer>>(this);
   userdataauth_observer_->Observe(UserDataAuthClient::Get());
@@ -542,10 +542,10 @@ void EncryptionMigrationScreen::RemoveCryptohome() {
   // Set invalid token status so that user is forced to go through Gaia on the
   // next sign-in.
   user_manager::UserManager::Get()->SaveUserOAuthStatus(
-      user_context_.GetAccountId(),
+      user_context_->GetAccountId(),
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
 
-  const cryptohome::Identification cryptohome_id(user_context_.GetAccountId());
+  const cryptohome::Identification cryptohome_id(user_context_->GetAccountId());
 
   user_data_auth::RemoveRequest request;
   request.mutable_identifier()->set_account_id(cryptohome_id.id());
@@ -572,7 +572,7 @@ void EncryptionMigrationScreen::OnRemoveCryptohome(
 cryptohome::AuthorizationRequest
 EncryptionMigrationScreen::CreateAuthorizationRequest() {
   // |key| is created in the same manner as CryptohomeAuthenticator.
-  const Key* key = user_context_.GetKey();
+  const Key* key = user_context_->GetKey();
   // If the |key| is a plain text password, crash rather than attempting to
   // mount the cryptohome with a plain text password.
   CHECK_NE(Key::KEY_TYPE_PASSWORD_PLAIN, key->GetKeyType());
@@ -588,7 +588,7 @@ EncryptionMigrationScreen::CreateAuthorizationRequest() {
 }
 
 bool EncryptionMigrationScreen::IsArcKiosk() const {
-  return user_context_.GetUserType() == user_manager::USER_TYPE_ARC_KIOSK_APP;
+  return user_context_->GetUserType() == user_manager::USER_TYPE_ARC_KIOSK_APP;
 }
 
 void EncryptionMigrationScreen::DircryptoMigrationProgress(

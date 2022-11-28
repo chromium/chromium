@@ -672,6 +672,24 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
                     std::move(success_callback), std::move(error_callback));
 }
 
+void AuthSessionAuthenticator::LoginAuthenticated(
+    std::unique_ptr<UserContext> context) {
+  DCHECK(!is_ephemeral_mount_enforced_);
+
+  AuthErrorCallback error_callback = base::BindOnce(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(), AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+
+  AuthSuccessCallback success_callback = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+  std::vector<AuthOperation> steps;
+  steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
+                                 mount_performer_->AsWeakPtr()));
+
+  RunOperationChain(std::move(context), std::move(steps),
+                    std::move(success_callback), std::move(error_callback));
+}
+
 void AuthSessionAuthenticator::OnAuthSuccess() {
   NOTIMPLEMENTED();
 }
@@ -969,7 +987,8 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
     LOGIN_LOG(EVENT) << "Old encryption detected";
     if (!consumer_)
       return;
-    consumer_->OnOldEncryptionDetected(*context, incomplete_migration);
+    consumer_->OnOldEncryptionDetected(std::move(context),
+                                       incomplete_migration);
     return;
   }
   std::move(fallback).Run(std::move(context), std::move(error));

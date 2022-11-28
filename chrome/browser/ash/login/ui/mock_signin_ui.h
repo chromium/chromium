@@ -28,9 +28,9 @@ class MockSigninUI : public SigninUI {
   MOCK_METHOD(void, ShowNewTermsForFlexUsers, (), (override));
   MOCK_METHOD(void,
               StartEncryptionMigration,
-              (const UserContext&,
+              (std::unique_ptr<UserContext>,
                EncryptionMigrationMode,
-               base::OnceCallback<void(const UserContext&)>),
+               base::OnceCallback<void(std::unique_ptr<UserContext>)>),
               (override));
   MOCK_METHOD(void,
               SetAuthSessionForOnboarding,

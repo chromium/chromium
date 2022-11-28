@@ -515,16 +515,16 @@ void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     EncryptionMigrationMode migration_mode,
-    base::OnceCallback<void(const UserContext&)> on_skip_migration) {
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> on_skip_migration) {
   StartWizard(EncryptionMigrationScreenView::kScreenId);
 
   EncryptionMigrationScreen* migration_screen =
       GetWizardController()->GetScreen<EncryptionMigrationScreen>();
 
   DCHECK(migration_screen);
-  migration_screen->SetUserContext(user_context);
+  migration_screen->SetUserContext(std::move(user_context));
   migration_screen->SetMode(migration_mode);
   migration_screen->SetSkipMigrationCallback(std::move(on_skip_migration));
   migration_screen->SetupInitialView();

@@ -33,7 +33,8 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
    public:
     virtual void OnProfileLoaded(Profile* profile) = 0;
     virtual void OnProfileLoadFailed(KioskAppLaunchError::Error error) = 0;
-    virtual void OnOldEncryptionDetected(const UserContext& user_context) = 0;
+    virtual void OnOldEncryptionDetected(
+        std::unique_ptr<UserContext> user_context) = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -60,7 +61,7 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   void OnAuthFailure(const AuthFailure& error) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
-  void OnOldEncryptionDetected(const UserContext& user_context,
+  void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                bool has_incomplete_migration) override;
 
   // UserSessionManagerDelegate implementation:

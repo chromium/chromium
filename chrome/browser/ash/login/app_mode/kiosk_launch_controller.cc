@@ -587,7 +587,7 @@ void KioskLaunchController::OnProfileLoadFailed(
 }
 
 void KioskLaunchController::OnOldEncryptionDetected(
-    const UserContext& user_context) {
+    std::unique_ptr<UserContext> user_context) {
   if (kiosk_app_id_.type != KioskAppType::kArcApp) {
     NOTREACHED();
     return;
@@ -597,7 +597,7 @@ void KioskLaunchController::OnOldEncryptionDetected(
       static_cast<EncryptionMigrationScreen*>(
           host_->GetWizardController()->current_screen());
   DCHECK(migration_screen);
-  migration_screen->SetUserContext(user_context);
+  migration_screen->SetUserContext(std::move(user_context));
   migration_screen->SetupInitialView();
 }
 

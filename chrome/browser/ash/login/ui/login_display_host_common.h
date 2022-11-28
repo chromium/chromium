@@ -81,9 +81,10 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void ShowTosForExistingUser() final;
   void ShowNewTermsForFlexUsers() final;
   void StartEncryptionMigration(
-      const UserContext& user_context,
+      std::unique_ptr<UserContext> user_context,
       EncryptionMigrationMode migration_mode,
-      base::OnceCallback<void(const UserContext&)> on_skip_migration) final;
+      base::OnceCallback<void(std::unique_ptr<UserContext>)> on_skip_migration)
+      final;
   void ShowSigninError(SigninError error, const std::string& details) final;
   void SAMLConfirmPassword(::login::StringList scraped_passwords,
                            std::unique_ptr<UserContext> user_context) final;

@@ -197,6 +197,11 @@ void StubAuthenticator::ResyncEncryptedData(
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
 }
 
+void StubAuthenticator::LoginAuthenticated(
+    std::unique_ptr<UserContext> user_context) {
+  consumer_->OnAuthSuccess(*user_context);
+}
+
 void StubAuthenticator::SetExpectedCredentials(
     const UserContext& user_context) {
   expected_user_context_ = user_context;
@@ -233,8 +238,9 @@ void StubAuthenticator::OnPasswordChangeDetected() {
 void StubAuthenticator::OnOldEncryptionDetected() {
   // The user is expected to finish login using transformed key.
   UserContext user_context = ExpectedUserContextWithTransformedKey();
-  consumer_->OnOldEncryptionDetected(user_context,
-                                     has_incomplete_encryption_migration_);
+  consumer_->OnOldEncryptionDetected(
+      std::make_unique<UserContext>(user_context),
+      has_incomplete_encryption_migration_);
 }
 
 }  // namespace ash

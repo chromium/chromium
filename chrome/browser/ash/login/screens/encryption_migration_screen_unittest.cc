@@ -128,8 +128,9 @@ class EncryptionMigrationScreenTest : public testing::Test {
         chromeos::PowerManagerClient::Get());
 
     // Build dummy user context.
-    user_context_.SetAccountId(account_id_);
-    user_context_.SetKey(
+    auto user_context = std::make_unique<UserContext>();
+    user_context->SetAccountId(account_id_);
+    user_context->SetKey(
         Key(Key::KeyType::KEY_TYPE_SALTED_SHA256, "salt", "secret"));
 
     encryption_migration_screen_ =
@@ -139,7 +140,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
                        base::Unretained(this)));
     encryption_migration_screen_->set_free_disk_space(
         arc::kMigrationMinimumAvailableStorage);
-    encryption_migration_screen_->SetUserContext(user_context_);
+    encryption_migration_screen_->SetUserContext(std::move(user_context));
   }
 
   void TearDown() override {
@@ -168,12 +169,11 @@ class EncryptionMigrationScreenTest : public testing::Test {
 
   const AccountId account_id_ =
       AccountId::FromUserEmail(user_manager::kStubUserEmail);
-  UserContext user_context_;
 
  private:
   // This will be called by EncryptionMigrationScreen upon finished
   // minimal migration when sign-in should continue.
-  void OnContinueLogin(const UserContext& user_context) {
+  void OnContinueLogin(std::unique_ptr<UserContext> user_context) {
     EXPECT_FALSE(skip_migration_callback_called_)
         << "ContinueLogin/RestartLogin may only be called once.";
 

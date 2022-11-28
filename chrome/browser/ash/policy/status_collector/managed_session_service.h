@@ -115,7 +115,7 @@ class ManagedSessionService
 
   void OnPasswordChangeDetected(const ash::UserContext& user_context) override {
   }
-  void OnOldEncryptionDetected(const ash::UserContext& user_context,
+  void OnOldEncryptionDetected(std::unique_ptr<ash::UserContext> user_context,
                                bool has_incomplete_migration) override {}
   void OnAuthSuccess(const ash::UserContext& user_context) override {}
 

@@ -93,14 +93,16 @@ void LoginPerformer::OnPasswordChangeDetected(const UserContext& user_context) {
                                 weak_factory_.GetWeakPtr(), user_context));
 }
 
-void LoginPerformer::OnOldEncryptionDetected(const UserContext& user_context,
-                                             bool has_incomplete_migration) {
+void LoginPerformer::OnOldEncryptionDetected(
+    std::unique_ptr<UserContext> user_context,
+    bool has_incomplete_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&LoginPerformer::NotifyOldEncryptionDetected,
-                                weak_factory_.GetWeakPtr(), user_context,
-                                has_incomplete_migration));
+      FROM_HERE,
+      base::BindOnce(&LoginPerformer::NotifyOldEncryptionDetected,
+                     weak_factory_.GetWeakPtr(), std::move(user_context),
+                     has_incomplete_migration));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +193,13 @@ void LoginPerformer::LoginAsWebKioskAccount(
   authenticator_->LoginAsWebKioskAccount(web_app_account_id);
 }
 
+void LoginPerformer::LoginAuthenticated(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureAuthenticator();
+  authenticator_->LoginAuthenticated(std::move(user_context));
+}
+
 void LoginPerformer::RecoverEncryptedData(const std::string& old_password) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   authenticator_->RecoverEncryptedData(
@@ -244,11 +253,12 @@ void LoginPerformer::NotifyPasswordChangeDetected(
 }
 
 void LoginPerformer::NotifyOldEncryptionDetected(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
-  delegate_->OnOldEncryptionDetected(user_context, has_incomplete_migration);
+  delegate_->OnOldEncryptionDetected(std::move(user_context),
+                                     has_incomplete_migration);
 }
 
 void LoginPerformer::StartLoginCompletion() {

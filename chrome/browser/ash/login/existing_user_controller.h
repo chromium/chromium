@@ -172,7 +172,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
   void OnPasswordChangeDetected(const UserContext& user_context) override;
-  void OnOldEncryptionDetected(const UserContext& user_context,
+  void OnOldEncryptionDetected(std::unique_ptr<UserContext>,
                                bool has_incomplete_migration) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
@@ -208,7 +208,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void ShowKioskEnableScreen();
 
   // Shows "filesystem encryption migration" screen.
-  void ShowEncryptionMigrationScreen(const UserContext& user_context,
+  void ShowEncryptionMigrationScreen(std::unique_ptr<UserContext> user_context,
                                      EncryptionMigrationMode migration_mode);
 
   // Shows "critical TPM error" screen.
@@ -223,13 +223,13 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Calls login() on previously-used `login_performer_`.
   void ContinuePerformLogin(LoginPerformer::AuthorizationMode auth_mode,
-                            const UserContext& user_context);
+                            std::unique_ptr<UserContext> user_context);
 
   // Removes the constraint that user home mount requires ext4 encryption from
   // `user_context`, then calls login() on previously-used `login_performer`.
   void ContinuePerformLoginWithoutMigration(
       LoginPerformer::AuthorizationMode auth_mode,
-      const UserContext& user_context);
+      std::unique_ptr<UserContext> user_context);
 
   // Asks the user to enter their password again.
   void RestartLogin(const UserContext& user_context);

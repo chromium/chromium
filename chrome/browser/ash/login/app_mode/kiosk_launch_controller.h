@@ -161,7 +161,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // KioskProfileLoader::Delegate:
   void OnProfileLoaded(Profile* profile) override;
   void OnProfileLoadFailed(KioskAppLaunchError::Error error) override;
-  void OnOldEncryptionDetected(const UserContext& user_context) override;
+  void OnOldEncryptionDetected(
+      std::unique_ptr<UserContext> user_context) override;
 
   void OnOwnerSigninSuccess();
 

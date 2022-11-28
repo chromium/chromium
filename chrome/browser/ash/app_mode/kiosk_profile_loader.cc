@@ -217,9 +217,9 @@ void KioskProfileLoader::PolicyLoadFailed() {
 }
 
 void KioskProfileLoader::OnOldEncryptionDetected(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
-  delegate_->OnOldEncryptionDetected(user_context);
+  delegate_->OnOldEncryptionDetected(std::move(user_context));
 }
 
 void KioskProfileLoader::OnProfilePrepared(Profile* profile,

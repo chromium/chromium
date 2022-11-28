@@ -654,7 +654,7 @@ void LoginDisplayHostMojo::OnPasswordChangeDetected(
 }
 
 void LoginDisplayHostMojo::OnOldEncryptionDetected(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {}
 
 void LoginDisplayHostMojo::OnCurrentScreenChanged(OobeScreenId current_screen,

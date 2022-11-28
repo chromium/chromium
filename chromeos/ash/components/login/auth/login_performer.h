@@ -87,12 +87,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   // Performs a login into the Web kiosk mode account with |web_app_account_id|.
   void LoginAsWebKioskAccount(const AccountId& web_app_account_id);
 
+  // Performs final stages of the login for user already authenticated via
+  // `AuthSession`.
+  void LoginAuthenticated(std::unique_ptr<UserContext> user_context);
+
   // AuthStatusConsumer implementation:
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
   void OnPasswordChangeDetected(const UserContext& user_context) override;
-  void OnOldEncryptionDetected(const UserContext& user_context,
+  void OnOldEncryptionDetected(std::unique_ptr<UserContext>,
                                bool has_incomplete_migration) override;
 
   // Migrates cryptohome using |old_password| specified.
@@ -188,7 +192,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void NotifyAuthSuccess(const UserContext& user_context);
   void NotifyOffTheRecordAuthSuccess();
   void NotifyPasswordChangeDetected(const UserContext& user_context);
-  void NotifyOldEncryptionDetected(const UserContext& user_context,
+  void NotifyOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                    bool has_incomplete_migration);
   void NotifyAllowlistCheckFailure();
 

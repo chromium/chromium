@@ -35,7 +35,8 @@ class EncryptionMigrationScreen : public BaseScreen,
  public:
   using TView = EncryptionMigrationScreenView;
 
-  using SkipMigrationCallback = base::OnceCallback<void(const UserContext&)>;
+  using SkipMigrationCallback =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
   class EncryptionMigrationScreenTestDelegate {
    public:
@@ -55,7 +56,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   ~EncryptionMigrationScreen() override;
 
   // Sets the UserContext for a user whose cryptohome should be migrated.
-  void SetUserContext(const UserContext& user_context);
+  void SetUserContext(std::unique_ptr<UserContext> user_context);
 
   // Sets the migration mode.
   void SetMode(EncryptionMigrationMode mode);
@@ -137,7 +138,7 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   // The current user's UserContext, which is used to request the migration to
   // cryptohome.
-  UserContext user_context_;
+  std::unique_ptr<UserContext> user_context_;
 
   // The callback which is used to log in to the session from the migration UI.
   SkipMigrationCallback skip_migration_callback_;

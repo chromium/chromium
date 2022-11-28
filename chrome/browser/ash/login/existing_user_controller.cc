@@ -671,16 +671,15 @@ void ExistingUserController::PerformLogin(
 
 void ExistingUserController::ContinuePerformLogin(
     LoginPerformer::AuthorizationMode auth_mode,
-    const UserContext& user_context) {
-  login_performer_->PerformLogin(user_context, auth_mode);
+    std::unique_ptr<UserContext> user_context) {
+  login_performer_->LoginAuthenticated(std::move(user_context));
 }
 
 void ExistingUserController::ContinuePerformLoginWithoutMigration(
     LoginPerformer::AuthorizationMode auth_mode,
-    const UserContext& user_context) {
-  UserContext user_context_ecryptfs = user_context;
-  user_context_ecryptfs.SetIsForcingDircrypto(false);
-  ContinuePerformLogin(auth_mode, user_context_ecryptfs);
+    std::unique_ptr<UserContext> user_context) {
+  user_context->SetIsForcingDircrypto(false);
+  ContinuePerformLogin(auth_mode, std::move(user_context));
 }
 
 void ExistingUserController::OnGaiaScreenReady() {
@@ -741,10 +740,10 @@ void ExistingUserController::ShowKioskEnableScreen() {
 }
 
 void ExistingUserController::ShowEncryptionMigrationScreen(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     EncryptionMigrationMode migration_mode) {
   GetLoginDisplayHost()->GetSigninUI()->StartEncryptionMigration(
-      user_context, migration_mode,
+      std::move(user_context), migration_mode,
       base::BindOnce(&ExistingUserController::ContinuePerformLogin,
                      weak_factory_.GetWeakPtr(),
                      login_performer_->auth_mode()));
@@ -1077,16 +1076,16 @@ void ExistingUserController::OnPasswordChangeDetected(
 }
 
 void ExistingUserController::OnOldEncryptionDetected(
-    const UserContext& user_context,
+    std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
   absl::optional<EncryptionMigrationMode> encryption_migration_mode =
-      GetEncryptionMigrationMode(user_context, has_incomplete_migration);
+      GetEncryptionMigrationMode(*user_context, has_incomplete_migration);
   if (!encryption_migration_mode.has_value()) {
     ContinuePerformLoginWithoutMigration(login_performer_->auth_mode(),
-                                         user_context);
+                                         std::move(user_context));
     return;
   }
-  ShowEncryptionMigrationScreen(user_context,
+  ShowEncryptionMigrationScreen(std::move(user_context),
                                 encryption_migration_mode.value());
 }
 

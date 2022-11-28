@@ -62,7 +62,7 @@ class FakeKioskProfileLoaderDelegate : public KioskProfileLoader::Delegate {
  public:
   MOCK_METHOD1(OnProfileLoaded, void(Profile*));
   MOCK_METHOD1(OnProfileLoadFailed, void(KioskAppLaunchError::Error));
-  MOCK_METHOD1(OnOldEncryptionDetected, void(const UserContext&));
+  MOCK_METHOD1(OnOldEncryptionDetected, void(std::unique_ptr<UserContext>));
 };
 
 class WebKioskTest : public OobeBaseTest {

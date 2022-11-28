@@ -69,6 +69,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
   // Web kiosk mode mounts a public cryptohome.
   virtual void LoginAsWebKioskAccount(const AccountId& app_account_id) = 0;
 
+  // Continues the login of persistent user that is already authenticated via
+  // |auth_session|. This method can be used as a part of the recovery flow, or
+  // to continue login stopped to perform encryption migration.
+  virtual void LoginAuthenticated(
+      std::unique_ptr<UserContext> user_context) = 0;
+
   // Notifies caller that login was successful. Must be called on the UI thread.
   virtual void OnAuthSuccess() = 0;
 

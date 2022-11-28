@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthStatusConsumer
   // The same password didn't work both online and offline.
   virtual void OnPasswordChangeDetected(const UserContext& user_context);
   // The cryptohome is encrypted in old format and needs migration.
-  virtual void OnOldEncryptionDetected(const UserContext& user_context,
+  virtual void OnOldEncryptionDetected(std::unique_ptr<UserContext> context,
                                        bool has_incomplete_migration);
 };
 
