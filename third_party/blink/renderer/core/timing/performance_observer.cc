@@ -61,7 +61,7 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
   Vector<AtomicString> supportedEntryTypes;
   auto* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
-    if (RuntimeEnabledFeatures::NavigationIdEnabled()) {
+    if (RuntimeEnabledFeatures::NavigationIdEnabled(execution_context)) {
       supportedEntryTypes.push_back(
           performance_entry_names::kBackForwardCacheRestoration);
     }

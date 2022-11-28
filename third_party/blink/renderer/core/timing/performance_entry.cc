@@ -165,7 +165,8 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("entryType", entryType());
   builder.AddNumber("startTime", startTime());
   builder.AddNumber("duration", duration());
-  if (RuntimeEnabledFeatures::NavigationIdEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationIdEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddNumber("navigationId", navigationId());
   }
 }

@@ -22,14 +22,14 @@ namespace {
 void LogToConsole(LocalFrame* frame,
                   mojom::blink::ConsoleMessageLevel level,
                   const String& message) {
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
-    return;
-  }
   if (!frame || !frame->IsMainFrame()) {
     return;
   }
   LocalDOMWindow* window = frame->DomWindow();
   if (!window) {
+    return;
+  }
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
     return;
   }
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
@@ -210,7 +210,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
 void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
                                                    LocalDOMWindow* window) {
   if (!did_reset_paints_) {
-    if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
+    if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
       if (Document* document = window->document()) {
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
