@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_utils.h"
 
 namespace dips {
 
@@ -15,6 +16,7 @@ BASE_DECLARE_FEATURE(kFeature);
 extern const base::FeatureParam<bool> kPersistedDatabaseEnabled;
 extern const base::FeatureParam<base::TimeDelta> kGracePeriod;
 extern const base::FeatureParam<base::TimeDelta> kTimerDelay;
+extern const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction;
 
 }  // namespace dips
 

@@ -123,6 +123,8 @@ inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
                   rhs.stateful_bounce_times, rhs.stateless_bounce_times);
 }
 
+enum class DIPSTriggeringAction { kStorage, kBounce, kStatefulBounce };
+
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.
 int64_t BucketizeBounceDelay(base::TimeDelta delta);

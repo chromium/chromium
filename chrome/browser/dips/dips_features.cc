@@ -26,4 +26,16 @@ const base::FeatureParam<base::TimeDelta> kGracePeriod{
 const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
                                                       base::Hours(24)};
 
+// Sets the actions which will trigger DIPS clearing for a site. The default is
+// to set to kBounce, but can be overridden by Finch experiment groups or by
+// command-line flags.
+constexpr base::FeatureParam<DIPSTriggeringAction>::Option
+    kTriggeringActionOptions[] = {
+        {DIPSTriggeringAction::kStorage, "storage"},
+        {DIPSTriggeringAction::kBounce, "bounce"},
+        {DIPSTriggeringAction::kStatefulBounce, "stateful_bounce"}};
+const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction{
+    &kFeature, "triggering_action", DIPSTriggeringAction::kBounce,
+    &kTriggeringActionOptions};
+
 }  // namespace dips
