@@ -5400,18 +5400,39 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Full Color",
                     "enable_features": [
                         "AutofillBrandingIOS"
                     ]
                 },
                 {
-                    "name": "Enabled (Monotone)",
+                    "name": "Full Color - Profile Icon Disabled",
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ],
+                    "disable_features": [
+                        "AutofillUseConsistentPopupSettingsIcons"
+                    ]
+                },
+                {
+                    "name": "Monotone",
                     "params": {
                         "ios-autofill-branding-monotones": "true"
                     },
                     "enable_features": [
                         "AutofillBrandingIOS"
+                    ]
+                },
+                {
+                    "name": "Monotone - Profile Icon Disabled",
+                    "params": {
+                        "ios-autofill-branding-monotones": "true"
+                    },
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ],
+                    "disable_features": [
+                        "AutofillUseConsistentPopupSettingsIcons"
                     ]
                 }
             ]
