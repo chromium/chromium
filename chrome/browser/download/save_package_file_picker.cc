@@ -236,27 +236,31 @@ SavePackageFilePicker::SavePackageFilePicker(
   if (g_should_prompt_for_filename) {
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
-    select_file_dialog_->SelectFile(
-        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-        suggested_path_copy, &file_type_info, file_type_index,
-        default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
-  } else {
-    // Just use 'suggested_path_copy' instead of opening the dialog prompt.
-    // Go through FileSelected() for consistency.
-    FileSelected(suggested_path_copy, file_type_index, nullptr);
+    if (select_file_dialog_) {
+      select_file_dialog_->SelectFile(
+          ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+          suggested_path_copy, &file_type_info, file_type_index,
+          default_extension_copy,
+          platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
+      return;
+    }
   }
+
+  // If |g_should_prompt_for_filename| is unset or |select_file_dialog_| could
+  // not be instantiated for some reason, just use 'suggested_path_copy' instead
+  // of opening the dialog prompt. Go through FileSelected() for consistency.
+  FileSelected(suggested_path_copy, file_type_index, nullptr);
 }
 
-SavePackageFilePicker::~SavePackageFilePicker() {
-}
+SavePackageFilePicker::~SavePackageFilePicker() = default;
 
 void SavePackageFilePicker::SetShouldPromptUser(bool should_prompt) {
   g_should_prompt_for_filename = should_prompt;
 }
 
-void SavePackageFilePicker::FileSelected(
-    const base::FilePath& path, int index, void* unused_params) {
+void SavePackageFilePicker::FileSelected(const base::FilePath& path,
+                                         int index,
+                                         void* unused_params) {
   std::unique_ptr<SavePackageFilePicker> delete_this(this);
   RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
   if (!process)
