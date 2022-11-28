@@ -12,12 +12,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_registrar.h"
@@ -149,6 +152,10 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.push_back(features::kSidePanelJourneys);
+    enabled_features.push_back(features::kSupportTool);
+    enabled_features.push_back(
+        password_manager::features::kPasswordManagerRedesign);
 #if !BUILDFLAG(IS_CHROMEOS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
@@ -247,11 +254,14 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
     "chrome://apc-internals",
+    "chrome://app-service-internals",
     "chrome://attribution-internals",
     "chrome://autofill-internals",
     // "chrome://blob-internals",
     "chrome://bookmarks",
+    "chrome://bookmarks-side-panel.top-chrome",
     "chrome://chrome-urls",
+    "chrome://commander",
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
@@ -270,6 +280,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://gpu",
     "chrome://histograms",
     "chrome://history",
+    "chrome://history-clusters-side-panel.top-chrome",
     "chrome://identity-internals",
     "chrome://indexeddb-internals",
     "chrome://inspect",
@@ -281,6 +292,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",
+    "chrome://metrics-internals",
     // TODO(crbug.com/1217395): DCHECK failure
     // "chrome://memory-internals",
     "chrome://net-export",
@@ -291,31 +303,34 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://newtab",
     "chrome://ntp-tiles-internals",
     "chrome://omnibox",
+    "chrome://password-manager",
     "chrome://password-manager-internals",
     "chrome://policy",
     "chrome://predictors",
     "chrome://prefs-internals",
-    // "chrome://print",
+    "chrome://print",
     "chrome://process-internals",
     "chrome://quota-internals",
     "chrome://reset-password",
     "chrome://safe-browsing",
     "chrome://serviceworker-internals",
+    "chrome://segmentation-internals",
     "chrome://settings",
-    // TODO(crbug.com/1115600): DCHECK failure when opening
-    // "chrome://signin-dice-web-intercept",
     "chrome://signin-internals",
     "chrome://site-engagement",
+    "chrome://support-tool",
     // TODO(crbug.com/1099564): Navigating to chrome://sync-confirmation and
     // quickly navigating away cause DCHECK failure.
     // "chrome://sync-confirmation",
     "chrome://sync-internals",
     "chrome://syncfs-internals",
     "chrome://system",
+    "chrome://tab-search.top-chrome",
     // TODO(crbug.com/1099565): Navigating to chrome://tab-strip and quickly
     // navigating away cause DCHECK failure.
     // "chrome://tab-strip",
     "chrome://terms",
+    "chrome://topics-internals",
     // "chrome://tracing",
     "chrome://translate-internals",
     "chrome://ukm",
@@ -325,6 +340,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://web-app-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
+    "chrome://webui-gallery",
 #if BUILDFLAG(IS_ANDROID)
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
@@ -370,6 +386,7 @@ static constexpr const char* const kChromeUrls[] = {
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
     "chrome://browser-switch",
+    "chrome://profile-picker",
     // "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -388,6 +405,12 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(IS_WIN)
     "chrome://conflicts",
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    "chrome://signin-dice-web-intercept/?debug",
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    "chrome://webuijserror",
 #endif
 };
 
