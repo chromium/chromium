@@ -18,6 +18,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "download_vr_test_apks",
                   "mb"
                 ],
                 "build_config": "Release",

@@ -1151,6 +1151,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
+                "download_vr_test_apks",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,

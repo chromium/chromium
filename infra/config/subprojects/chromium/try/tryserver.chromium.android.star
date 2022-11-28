@@ -95,9 +95,8 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-arm64-rel",
     mirrors = [
-        # TODO(crbug.com/1367393): Enable mirroring pie builder.
-        #"ci/android-pie-arm64-rel",
-        "ci/Android Release (Nexus 5X)",
+        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
+        "ci/android-pie-arm64-rel",  # Pixel 2 on Pie
     ],
     description_html = "This builder may trigger tests on multiple Android versions.",
     try_settings = builder_config.try_settings(
@@ -111,7 +110,7 @@ try_.orchestrator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 50,
+        experiment_percentage = 100,
     ),
     experiments = {
         "chromium_rts.inverted_rts": 100,
