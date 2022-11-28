@@ -37,7 +37,6 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/debug/alias.h"
@@ -83,7 +82,7 @@ void Partitions::Initialize() {
 bool Partitions::InitializeOnce() {
   base::features::BackupRefPtrMode brp_mode =
       base::features::kBackupRefPtrModeParam.Get();
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   const bool process_affected_by_brp_flag =
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
@@ -95,7 +94,7 @@ bool Partitions::InitializeOnce() {
       (brp_mode == base::features::BackupRefPtrMode::kEnabled ||
        brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping) &&
       process_affected_by_brp_flag;
-#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#else
   const bool process_affected_by_brp_flag = false;
   const bool enable_brp = false;
 #endif

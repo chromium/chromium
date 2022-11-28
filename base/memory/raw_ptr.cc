@@ -7,11 +7,10 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"

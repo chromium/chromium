@@ -10,7 +10,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -228,8 +227,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   [[maybe_unused]] bool add_dummy_ref_count = false;
   [[maybe_unused]] bool process_affected_by_brp_flag = false;
 
-#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
-     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
+#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+     BUILDFLAG(USE_BACKUP_REF_PTR)) ||           \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
@@ -252,9 +251,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
-#endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
-        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (process_affected_by_brp_flag) {
@@ -273,8 +270,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
   if (process_affected_by_brp_flag) {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
       case base::features::BackupRefPtrMode::kDisabled:
@@ -318,8 +314,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::ConfigurePartitions(

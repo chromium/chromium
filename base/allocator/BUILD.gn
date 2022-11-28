@@ -18,6 +18,7 @@ buildflag_header("buildflags") {
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
 
+    "USE_BACKUP_REF_PTR=$enable_backup_ref_ptr_support",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support",
 

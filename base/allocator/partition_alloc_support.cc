@@ -261,7 +261,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // e.g. disabled-but-3-way-split, do something (hence can't be considered the
   // default behavior), but don't enable BRP protection.
   [[maybe_unused]] bool brp_truly_enabled = false;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtr))
     brp_finch_enabled = true;
   if (brp_finch_enabled && features::kBackupRefPtrModeParam.Get() !=
@@ -270,7 +270,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   if (brp_finch_enabled && features::kBackupRefPtrModeParam.Get() ==
                                features::BackupRefPtrMode::kEnabled)
     brp_truly_enabled = true;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   [[maybe_unused]] bool pcscan_enabled =
 #if defined(PA_ALLOW_PCSCAN)
       FeatureList::IsEnabled(features::kPartitionAllocPCScanBrowserOnly);
@@ -279,7 +279,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif
 
   std::string brp_group_name = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pcscan_enabled) {
     // If PCScan is enabled, just ignore the population.
     brp_group_name = "Ignore_PCScanIsOn";
@@ -340,7 +340,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       brp_group_name += ("_" + process_selector);
     }
   }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   trials.emplace("BackupRefPtr_Effective", brp_group_name);
 
   // On 32-bit architectures, PCScan is not supported and permanently disabled.

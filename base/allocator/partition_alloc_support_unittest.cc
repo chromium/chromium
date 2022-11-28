@@ -11,7 +11,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/feature_list.h"
 #include "base/test/gtest_util.h"
@@ -47,7 +46,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       brp_scope.InitWithFeatures({}, {features::kPartitionAllocBackupRefPtr});
 
       brp_expectation = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
 #endif
       pcscan_expectation = "Unavailable";
@@ -73,7 +72,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
           features::kPartitionAllocBackupRefPtr, {});
 
       brp_expectation = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn"
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
@@ -90,14 +89,14 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||
         // (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
       pcscan_expectation = "Unavailable";
 #if defined(PA_ALLOW_PCSCAN)
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
       pcscan_expectation = "Ignore_BRPIsOn";
 #else
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #endif  // defined(PA_ALLOW_PCSCAN)
 
       auto trials = ProposeSyntheticFinchTrials();
@@ -140,11 +139,11 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         [[maybe_unused]] bool brp_truly_enabled = false;
         [[maybe_unused]] bool brp_nondefault_behavior = false;
         brp_expectation = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
         brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : mode.second;
         brp_truly_enabled = (mode.first == "enabled");
         brp_nondefault_behavior = (mode.first != "disabled");
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
         if (brp_expectation[brp_expectation.length() - 1] == '_') {
           brp_expectation += process_set.second;
         }
