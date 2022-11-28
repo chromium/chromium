@@ -191,6 +191,8 @@ class ASH_EXPORT UnifiedSystemTray
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
   absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
+  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                    bool visible) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;

@@ -54,6 +54,10 @@ void NotificationCenterTray::OnSystemTrayVisibilityChanged(
   UpdateVisibility();
 }
 
+bool NotificationCenterTray::IsBubbleShown() const {
+  return !!bubble_;
+}
+
 std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
   return std::u16string();
 }
@@ -106,6 +110,22 @@ TrayBubbleView* NotificationCenterTray::GetBubbleView() {
 
 views::Widget* NotificationCenterTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
+}
+
+void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
+    views::Widget* bubble_widget,
+    bool visible) {
+  if (!IsBubbleShown())
+    return;
+
+  if (bubble_widget == GetBubbleWidget())
+    return;
+
+  if (visible) {
+    // Another bubble is becoming visible while this bubble is being shown, so
+    // hide this bubble.
+    CloseBubble();
+  }
 }
 
 void NotificationCenterTray::OnNotificationAdded(

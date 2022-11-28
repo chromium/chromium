@@ -8,11 +8,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -78,6 +80,31 @@ class UnifiedSystemTrayTest : public AshTestBase,
 
   void RemoveNotification(const std::string id) {
     MessageCenter::Get()->RemoveNotification(id, /*by_user=*/false);
+  }
+
+  // Show the notification center bubble. This assumes that there is at least
+  // one notification in the notification list. This should only be called when
+  // QsRevamp is enabled.
+  void ShowNotificationBubble() {
+    DCHECK(IsQsRevampEnabled());
+    Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->shelf()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->ShowBubble();
+  }
+
+  // Hide the notification center bubble. This assumes that it is already shown.
+  // This should only be called when QsRevamp is enabled.
+  void HideNotificationBubble() {
+    DCHECK(IsQsRevampEnabled());
+    Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->shelf()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->CloseBubble();
   }
 
   bool IsBubbleShown() {
@@ -673,5 +700,39 @@ TEST_P(UnifiedSystemTrayTest, QuietModeViewVisibility) {
 
   message_center->SetQuietMode(true);
   EXPECT_TRUE(quiet_mode_view()->GetVisible());
+}
+
+// Tests that the bubble automatically hides if it is visible when another
+// bubble becomes visible, and otherwise does not automatically show or hide.
+TEST_P(UnifiedSystemTrayTest, BubbleHideBehavior) {
+  // This hiding behavior only applies when QsRevamp is enabled.
+  if (!IsQsRevampEnabled())
+    return;
+
+  // Basic verification test that the unified system tray bubble can show/hide
+  // itself when no other bubbles are visible.
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  EXPECT_FALSE(IsBubbleShown());
+  tray->ShowBubble();
+  EXPECT_TRUE(IsBubbleShown());
+  tray->CloseBubble();
+  EXPECT_FALSE(IsBubbleShown());
+
+  // Test that the unified system tray bubble automatically hides when it is
+  // currently visible while another bubble becomes visible.
+  AddNotification();
+  tray->ShowBubble();
+  EXPECT_TRUE(IsBubbleShown());
+  ShowNotificationBubble();
+  EXPECT_FALSE(IsBubbleShown());
+
+  // Hide all currently visible bubbles.
+  HideNotificationBubble();
+  EXPECT_FALSE(IsBubbleShown());
+
+  // Test that the unified system tray bubble stays hidden when showing another
+  // bubble.
+  ShowNotificationBubble();
+  EXPECT_FALSE(IsBubbleShown());
 }
 }  // namespace ash

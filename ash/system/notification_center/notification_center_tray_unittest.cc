@@ -10,6 +10,7 @@
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -166,6 +167,35 @@ TEST_F(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
       ui::Accelerator(ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
   EXPECT_TRUE(ToastManager::Get()->IsRunning(
       kNotificationCenterTrayNoNotificationsToastId));
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+}
+
+// Tests that the bubble automatically hides if it is visible when another
+// bubble becomes visible, and otherwise does not automatically show or hide.
+TEST_F(NotificationCenterTrayTest, BubbleHideBehavior) {
+  // Basic verification test that the notification center tray bubble can
+  // show/hide itself when no other bubbles are visible.
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+  test_api()->AddNotification();
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+  test_api()->ToggleBubble();
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+
+  // Test that the notification center tray bubble automatically hides when it
+  // is currently visible while another bubble becomes visible.
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+
+  // Hide all currently visible bubbles.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+
+  // Test that the notification center tray bubble stays hidden when showing
+  // another bubble.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
   EXPECT_FALSE(test_api()->IsBubbleShown());
 }
 

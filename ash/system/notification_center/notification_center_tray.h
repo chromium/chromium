@@ -43,6 +43,9 @@ class ASH_EXPORT NotificationCenterTray
   // Called when UnifiedSystemTray's preferred visibility changes.
   void OnSystemTrayVisibilityChanged(bool system_tray_visible);
 
+  // True if the bubble is shown.
+  bool IsBubbleShown() const;
+
   // TrayBackgroundView:
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -53,6 +56,8 @@ class ASH_EXPORT NotificationCenterTray
   void UpdateAfterLoginStatusChange() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                    bool visible) override;
 
  private:
   friend class NotificationCenterTestApi;
