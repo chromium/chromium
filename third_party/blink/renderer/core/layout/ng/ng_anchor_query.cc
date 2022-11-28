@@ -21,16 +21,9 @@ AnchorValue PhysicalAnchorValueUsing(AnchorValue x,
                                      AnchorValue flipped_y,
                                      WritingDirectionMode writing_direction,
                                      bool is_y_axis) {
-  if (is_y_axis) {
-    if (writing_direction.IsHorizontal()) {
-      DCHECK(!writing_direction.IsFlippedBlocks());
-      return y;
-    }
-    return writing_direction.IsLtr() ? y : flipped_y;
-  }
-  if (writing_direction.IsHorizontal())
-    return writing_direction.IsLtr() ? x : flipped_x;
-  return writing_direction.IsFlippedBlocks() ? flipped_x : x;
+  if (is_y_axis)
+    return writing_direction.IsFlippedY() ? flipped_y : y;
+  return writing_direction.IsFlippedX() ? flipped_x : x;
 }
 
 // The logical <anchor-side> keywords map to one of the physical keywords

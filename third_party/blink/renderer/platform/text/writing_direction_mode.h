@@ -51,6 +51,10 @@ class PLATFORM_EXPORT WritingDirectionMode {
     return IsFlippedLinesWritingMode(writing_mode_);
   }
 
+  // Returns whether x/y is flipped.
+  bool IsFlippedX() const;
+  bool IsFlippedY() const;
+
   //
   // Functions for both inline and block directions.
   //
@@ -68,6 +72,20 @@ class PLATFORM_EXPORT WritingDirectionMode {
   WritingMode writing_mode_;
   TextDirection direction_;
 };
+
+inline bool WritingDirectionMode::IsFlippedX() const {
+  if (IsHorizontal())
+    return IsRtl();
+  return IsFlippedBlocks();
+}
+
+inline bool WritingDirectionMode::IsFlippedY() const {
+  if (IsHorizontal()) {
+    DCHECK(!IsFlippedBlocks());
+    return false;
+  }
+  return IsRtl();
+}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const WritingDirectionMode&);
