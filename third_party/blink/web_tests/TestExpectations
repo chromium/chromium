@@ -4272,8 +4272,6 @@ crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-na
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html [ Failure ]
-crbug.com/1393567 [ Mac ] external/wpt/screen-orientation/hidden_document.html [ Failure Pass ]
-crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-horizontal.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/color-input-appearance-none-horizontal.optional.html [ Failure ]
@@ -8152,3 +8150,6 @@ crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-clear-watch.htt
 crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-negative.https.html [ Failure ]
 crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout-zero.https.html [ Failure ]
 crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout.https.html [ Failure ]
+
+# Sheriff 2022-11-28
+crbug.com/1393567 external/wpt/screen-orientation/hidden_document.html [ Failure Pass Timeout ]
