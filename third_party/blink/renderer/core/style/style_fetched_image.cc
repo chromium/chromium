@@ -124,7 +124,7 @@ gfx::SizeF StyleFetchedImage::ImageSize(
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return ImageSizeForSVGImage(svg_image, multiplier, default_object_size);
+    return ImageSizeForSVGImage(*svg_image, multiplier, default_object_size);
   }
   respect_orientation = ForceOrientationIfNecessary(respect_orientation);
   gfx::SizeF size(image->Size(respect_orientation));

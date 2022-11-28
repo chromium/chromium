@@ -184,10 +184,10 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
 
   virtual bool IsEqual(const StyleImage&) const = 0;
 
-  gfx::SizeF ApplyZoom(const gfx::SizeF&, float multiplier) const;
-  gfx::SizeF ImageSizeForSVGImage(SVGImage*,
-                                  float multiplier,
-                                  const gfx::SizeF& default_object_size) const;
+  static gfx::SizeF ApplyZoom(const gfx::SizeF&, float multiplier);
+  static gfx::SizeF ImageSizeForSVGImage(const SVGImage&,
+                                         float multiplier,
+                                         const gfx::SizeF& default_object_size);
 };
 
 }  // namespace blink
