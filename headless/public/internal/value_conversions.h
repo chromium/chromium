@@ -179,7 +179,7 @@ struct FromValue<std::vector<T>> {
       return result;
     }
     errors->Push();
-    for (const auto& item : value.GetListDeprecated())
+    for (const auto& item : value.GetList())
       result.push_back(FromValue<T>::Parse(item, errors));
     errors->Pop();
     return result;
