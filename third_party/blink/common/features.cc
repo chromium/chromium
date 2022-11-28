@@ -805,7 +805,7 @@ BASE_FEATURE(kUseSnappyForParkableStrings,
 // the delay.
 BASE_FEATURE(kDelayFirstParkingOfStrings,
              "DelayFirstParkingOfStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ParkableStringsUseSnappy() {
   return base::FeatureList::IsEnabled(kUseSnappyForParkableStrings);
