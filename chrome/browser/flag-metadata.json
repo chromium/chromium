@@ -4173,6 +4173,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "intents-on-phone-number",
+    "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "interest-feed-notice-card-auto-dismiss",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org", "edchin@chromium.org" ],
     "expiry_milestone": 95

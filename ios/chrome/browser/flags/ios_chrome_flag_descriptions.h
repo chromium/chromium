@@ -123,6 +123,11 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kAppleCalendarExperienceKitName[];
 extern const char kAppleCalendarExperienceKitDescription[];
 
+// Title and description for the flag to enable phone numbers detection and
+// processing.
+extern const char kPhoneNumberName[];
+extern const char kPhoneNumberDescription[];
+
 // Title and description for the flag to enable text classifier entity detection
 // in experience kit calendar.
 extern const char kEnableExpKitCalendarTextClassifierName[];
