@@ -624,10 +624,6 @@ group("gn_all") {
     }
   }
 
-  if (ozone_platform_x11 && !is_castos && target_cpu != "arm") {
-    deps += [ "//gpu/tools/compositor_model_bench" ]
-  }
-
   if (is_mac) {
     deps += [
       "//third_party/breakpad:crash_inspector",
