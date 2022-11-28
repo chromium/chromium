@@ -1390,7 +1390,11 @@ void TransportClientSocketPool::InvokeUserCallbackLater(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TransportClientSocketPool::InvokeUserCallback,
                                 weak_factory_.GetWeakPtr(),
-                                base::UnsafeDanglingUntriaged(handle)));
+                                // This is safe as `handle` is checked against a
+                                // map to verify it's alive before dereference.
+                                // This code path must only be reachable by
+                                // `handle`s that have had Init called.
+                                base::UnsafeDangling(handle)));
 }
 
 void TransportClientSocketPool::InvokeUserCallback(ClientSocketHandle* handle) {
