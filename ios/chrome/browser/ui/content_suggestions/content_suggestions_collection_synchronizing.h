@@ -21,9 +21,6 @@
 - (void)shiftTilesUpWithAnimations:(ProceduralBlock)animations
                         completion:
                             (void (^)(UIViewAnimatingPosition))completion;
-// Notifies the collection that its layout has changed and should be
-// invalidated.
-- (void)invalidateLayout;
 
 @end
 

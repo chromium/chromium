@@ -94,8 +94,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     ContentSuggestionsViewController* contentSuggestionsViewController;
 @property(nonatomic, strong)
     ContentSuggestionsMediator* contentSuggestionsMediator;
-@property(nonatomic, strong)
-    ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
