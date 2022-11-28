@@ -614,6 +614,10 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     image_ = MakeYUVImageFromUploadedPlanes(
         context_, plane_images_, plane_config_, subsampling_.value(),
         yuv_color_space_.value(), decoded_color_space);
+    if (!image_) {
+      DLOG(ERROR) << "Failed to make YUV image from planes.";
+      return false;
+    }
   } else {
     if (!ReadPixmap(reader, rgba_pixmap)) {
       DLOG(ERROR) << "Failed to read pixmap";
@@ -639,19 +643,24 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       image_ = rgba_pixmap_image;
     }
   }
-  DCHECK(image_);
+  CHECK(image_);
 
   // Perform color conversion.
   if (target_color_params) {
+    auto target_color_space = target_color_params->color_space.ToSkColorSpace();
+    if (!target_color_space) {
+      DLOG(ERROR) << "Invalid target color space.";
+      return false;
+    }
+
     // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
     gfx::ColorConversionSkFilterCache cache;
-    image_ = cache.ConvertImage(
-        image_, target_color_params->color_space.ToSkColorSpace(),
-        target_color_params->hdr_metadata,
-        target_color_params->sdr_max_luminance_nits,
-        target_color_params->hdr_max_luminance_relative,
-        target_color_params->enable_tone_mapping,
-        fits_on_gpu_ ? context_ : nullptr);
+    image_ = cache.ConvertImage(image_, target_color_space,
+                                target_color_params->hdr_metadata,
+                                target_color_params->sdr_max_luminance_nits,
+                                target_color_params->hdr_max_luminance_relative,
+                                target_color_params->enable_tone_mapping,
+                                fits_on_gpu_ ? context_ : nullptr);
     if (!image_) {
       DLOG(ERROR) << "Failed image color conversion";
       return false;
