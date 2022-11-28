@@ -620,7 +620,10 @@ class InterestGroupAuction::BuyerHelper
 
     // If `new_priority` has a value and is negative, need to record the bidder
     // as no longer participating in the auction and cancel bid generation.
-    if (new_priority.has_value() && *new_priority < 0) {
+    bool bid_filtered = new_priority.has_value() && *new_priority < 0;
+    UMA_HISTOGRAM_BOOLEAN("Ads.InterestGroup.Auction.BidFiltered",
+                          bid_filtered);
+    if (bid_filtered) {
       // Record if there are other bidders, as if there are not, the next call
       // may delete `this`.
       bool other_bidders = (num_outstanding_bids_ > 1);
@@ -971,6 +974,7 @@ InterestGroupAuction::InterestGroupAuction(
       config_(config),
       parent_(parent),
       auction_start_time_(auction_start_time),
+      creation_time_(base::TimeTicks::Now()),
       subresource_url_builder_(std::make_unique<SubresourceUrlBuilder>(
           config->direct_from_seller_signals)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", trace_id_,
@@ -1002,18 +1006,18 @@ InterestGroupAuction::~InterestGroupAuction() {
     switch (*final_auction_result_) {
       case AuctionResult::kAborted:
         UMA_HISTOGRAM_MEDIUM_TIMES("Ads.InterestGroup.Auction.AbortTime",
-                                   base::Time::Now() - auction_start_time_);
+                                   base::TimeTicks::Now() - creation_time_);
         break;
       case AuctionResult::kNoBids:
       case AuctionResult::kAllBidsRejected:
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
-            base::Time::Now() - auction_start_time_);
+            base::TimeTicks::Now() - creation_time_);
         break;
       case AuctionResult::kSuccess:
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
-            base::Time::Now() - auction_start_time_);
+            base::TimeTicks::Now() - creation_time_);
         break;
       default:
         break;
@@ -1630,6 +1634,13 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
   DCHECK(!final_auction_result_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "load_groups_phase", trace_id_);
+  if (auction_result == AuctionResult::kNoInterestGroups) {
+    UMA_HISTOGRAM_TIMES("Ads.InterestGroup.Auction.LoadNoGroupsTime",
+                        base::TimeTicks::Now() - creation_time_);
+  } else {
+    UMA_HISTOGRAM_TIMES("Ads.InterestGroup.Auction.LoadGroupsTime",
+                        base::TimeTicks::Now() - creation_time_);
+  }
 
   // `final_auction_result_` should only be set to kSuccess when the entire
   // auction is complete.
