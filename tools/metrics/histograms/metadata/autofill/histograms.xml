@@ -2393,6 +2393,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.MigrateUserOptedInToWalletSync"
     enum="AutofillMigrateUserOptedInToWalletSync" expires_after="2020-11-30">
+  <obsolete>
+    Deprecated in M109 as this migration never applied to ChromeOS ASH.
+  </obsolete>
   <owner>msarda@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

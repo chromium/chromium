@@ -403,19 +403,6 @@ class PersonalDataManagerSyncTransportModeTest
   void TearDown() override { TearDownTest(); }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class PersonalDataManagerMigrationTest : public PersonalDataManagerHelper,
-                                         public testing::Test {
- public:
-  PersonalDataManagerMigrationTest()
-      : PersonalDataManagerHelper({::switches::kAccountIdMigration}) {}
-
- protected:
-  void SetUp() override { SetUpTest(); }
-  void TearDown() override { TearDownTest(); }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
                                     public testing::Test {
  protected:
@@ -5547,27 +5534,6 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   // range and therefore, the blocking should prevail.
   EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PersonalDataManagerMigrationTest,
-       MigrateUserOptedInWalletSyncTransportIfNeeded) {
-  ASSERT_EQ(
-      signin::IdentityManager::MIGRATION_DONE,
-      identity_test_env_.identity_manager()->GetAccountIdMigrationState());
-
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId::FromEmail(kPrimaryAccountEmail), true);
-  ASSERT_TRUE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId::FromEmail(kPrimaryAccountEmail)));
-
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-
-  EXPECT_FALSE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId::FromEmail(kPrimaryAccountEmail)));
-  EXPECT_TRUE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
-      prefs_.get(), sync_service_.GetAccountInfo().account_id));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerSyncTransportModeTest,

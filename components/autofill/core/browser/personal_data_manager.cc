@@ -387,10 +387,6 @@ void PersonalDataManager::OnSyncServiceInitialized(
     database_helper_->SetUseAccountStorageForServerData(
         sync_service && !sync_service_->IsSyncFeatureEnabled());
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  MigrateUserOptedInWalletSyncTransportIfNeeded();
-#endif
 }
 
 void PersonalDataManager::OnURLsDeleted(
@@ -2436,70 +2432,6 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
          pending_offer_data_query_ != 0;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
-  if (!sync_service_)
-    return;
-
-  CoreAccountInfo primary_account = sync_service_->GetAccountInfo();
-  if (primary_account.IsEmpty())
-    return;
-
-  if (identity_manager_->GetAccountIdMigrationState() ==
-      signin::IdentityManager::MIGRATION_NOT_STARTED) {
-    return;
-  }
-
-  CoreAccountId primary_account_id = primary_account.account_id;
-
-  // When migration is started or done, the primary account is created from a
-  // Gaia ID.
-  if (primary_account_id.IsEmail()) {
-    DLOG(ERROR) << "Unexpected primary account id from an email ["
-                << primary_account_id << "].";
-    base::UmaHistogramEnumeration(
-        "Autofill.MigrateUserOptedInToWalletSync",
-        MigrateUserOptedInWalletSyncType::
-            kNotMigratedUnexpectedPrimaryAccountIdWithEmail);
-    return;
-  }
-
-  CoreAccountId legacy_account_id_from_email =
-      CoreAccountId::FromEmail(gaia::CanonicalizeEmail(primary_account.email));
-
-  MigrateUserOptedInWalletSyncType migrate =
-      prefs::IsUserOptedInWalletSyncTransport(pref_service_,
-                                              legacy_account_id_from_email)
-          ? MigrateUserOptedInWalletSyncType::kMigratedFromCanonicalEmail
-          : MigrateUserOptedInWalletSyncType::kNotMigrated;
-
-  if (migrate == MigrateUserOptedInWalletSyncType::kNotMigrated &&
-      prefs::IsUserOptedInWalletSyncTransport(
-          pref_service_, CoreAccountId::FromEmail(primary_account.email))) {
-    // Only canonicalized emails should be used to create CoreAccountId objects
-    // by the IdentityManager. Be overly caution and also check whether
-    // the non-canonical email was used when the user opted in to wallet sync.
-    legacy_account_id_from_email =
-        CoreAccountId::FromEmail(primary_account.email);
-    migrate = MigrateUserOptedInWalletSyncType::kMigratedFromNonCanonicalEmail;
-  }
-
-  base::UmaHistogramEnumeration("Autofill.MigrateUserOptedInToWalletSync",
-                                migrate);
-
-  if (migrate == MigrateUserOptedInWalletSyncType::kNotMigrated)
-    return;
-
-  DCHECK(prefs::IsUserOptedInWalletSyncTransport(pref_service_,
-                                                 legacy_account_id_from_email));
-  prefs::SetUserOptedInWalletSyncTransport(pref_service_,
-                                           legacy_account_id_from_email,
-                                           /*opted_in=*/false);
-  prefs::SetUserOptedInWalletSyncTransport(pref_service_, primary_account_id,
-                                           /*opted_in=*/true);
-}
-#endif
 
 bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {
   return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
