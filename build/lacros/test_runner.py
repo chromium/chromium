@@ -499,6 +499,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     ash_process_has_started = False
     total_tries = 3
     num_tries = 0
+    ash_start_time = None
 
     # Create a log file if the user wanted to have one.
     log = None
@@ -516,6 +517,8 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
 
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
+      ash_start_time = time.monotonic()
+      logging.info('Starting ash-chrome.')
       if log is None:
         ash_process = subprocess.Popen(ash_cmd, env=ash_env)
       else:
@@ -544,6 +547,10 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     if not ash_process_has_started:
       raise RuntimeError('Timed out waiting for ash-chrome to start')
 
+    ash_elapsed_time = time.monotonic() - ash_start_time
+    logging.info('Started ash-chrome in %.3fs on try %d.', ash_elapsed_time,
+                 num_tries)
+
     # Starts tests.
     if enable_mojo_crosapi:
       forward_args.append(lacros_mojo_socket_arg)
@@ -552,6 +559,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     test_env['WAYLAND_DISPLAY'] = ash_wayland_socket_name
     test_env['EGL_PLATFORM'] = 'surfaceless'
     test_env['XDG_RUNTIME_DIR'] = tmp_xdg_dir_name
+    logging.info('Starting test process.')
     test_process = subprocess.Popen([args.command] + forward_args, env=test_env)
     return test_process.wait()
 
