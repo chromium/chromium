@@ -107,6 +107,12 @@ void PictureInPictureSession::StopInternal(StopCallback callback) {
 }
 
 void PictureInPictureSession::OnConnectionError() {
+  // There is possibility that OnConnectionError arrives between StopInternal()
+  // is called and |this| is deleted. As a result, DCHECK in StopInternal()
+  // will fail.
+  if (is_stopping_)
+    return;
+
   // StopInternal() will self destruct which will close the bindings.
   StopInternal(base::NullCallback());
 }
