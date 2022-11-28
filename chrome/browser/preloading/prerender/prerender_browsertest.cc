@@ -162,10 +162,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, UseCounter) {
       blink::mojom::WebFeature::
           kV8Document_Onprerenderingchange_AttributeSetter,
       0);
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kPageVisits, 1);
 
   // Start a prerender. The API call should be recorded.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
   prerender_helper().AddPrerender(prerender_url);
+  // kPageVisits should have been issued for kPageVisits already, but the value
+  // hasn't been updated due to the update will be delayed until the activation
+  // in the current design. The value is still expected to be one.
+  // Please refer to crrev.com/c/3856942 for implementation details.
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kPageVisits, 1);
 
   // Accessing related attributes should also be recorded.
   ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
@@ -187,6 +195,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, UseCounter) {
       blink::mojom::WebFeature::
           kV8Document_Onprerenderingchange_AttributeSetter,
       1);
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kPageVisits, 2);
 }
 
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
