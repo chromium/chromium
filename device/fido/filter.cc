@@ -53,7 +53,7 @@ bool IsListOf(const base::Value* v, bool (*predicate)(const base::Value&)) {
   if (!v->is_list()) {
     return false;
   }
-  auto contents = v->GetListDeprecated();
+  const auto& contents = v->GetList();
   return !contents.empty() && base::ranges::all_of(contents, predicate);
 }
 
@@ -63,7 +63,7 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
   }
 
   std::vector<std::string> ret;
-  for (const auto& elem : v->GetListDeprecated()) {
+  for (const auto& elem : v->GetList()) {
     ret.push_back(elem.GetString());
   }
   return ret;
@@ -76,15 +76,15 @@ absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
     return absl::nullopt;
   }
 
-  const base::Value* filters = v->FindKey("filters");
-  if (!filters || !filters->is_list()) {
+  const base::Value::List* filters = v->GetDict().FindList("filters");
+  if (!filters) {
     return absl::nullopt;
   }
 
   std::vector<FilterStep> ret;
-  const auto filter_list = filters->GetListDeprecated();
-  for (const auto& filter : filter_list) {
-    if (!filter.is_dict()) {
+  for (const auto& filter : *filters) {
+    const base::Value::Dict* filter_dict = filter.GetIfDict();
+    if (!filter_dict) {
       return absl::nullopt;
     }
 
@@ -98,8 +98,9 @@ absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
     const base::Value* id_max_size = nullptr;
     const base::Value* action = nullptr;
 
-    // DictItems is used so that unknown keys in the dictionary can be rejected.
-    for (auto pair : filter.DictItems()) {
+    // Walk through all items in the dictionary so that dictionaries with
+    // unknown keys can be rejected.
+    for (auto pair : *filter_dict) {
       if (pair.first == "operation") {
         operation = &pair.second;
       } else if (pair.first == "rp_id") {
