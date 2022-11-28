@@ -237,7 +237,7 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
                             base::Value(shill::kTetheringStateFailure));
   status_dict.GetDict().Set(
       shill::kTetheringStatusErrorProperty,
-      base::Value(shill::kTetheringErrorUpstreamNotReady));
+      base::Value(shill::kTetheringEnableResultUpstreamNotAvailable));
   helper()->manager_test()->SetManagerProperty(shill::kTetheringStatusProperty,
                                                status_dict);
   base::RunLoop().RunUntilIdle();
@@ -245,7 +245,7 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
   EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kDisabled);
   EXPECT_EQ(observer()->hotspot_info_changed_count(), 6u);
   EXPECT_EQ(observer()->hotspot_state_failed_count(), 1u);
-  EXPECT_EQ(shill::kTetheringErrorUpstreamNotReady,
+  EXPECT_EQ(shill::kTetheringEnableResultUpstreamNotAvailable,
             observer()->last_hotspot_failed_error());
 }
 

@@ -193,7 +193,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
                             base::Value(shill::kTetheringStateFailure));
   status_dict.GetDict().Set(
       shill::kTetheringStatusErrorProperty,
-      base::Value(shill::kTetheringErrorUpstreamNotReady));
+      base::Value(shill::kTetheringEnableResultUpstreamNotAvailable));
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, status_dict);
   base::RunLoop().RunUntilIdle();
@@ -202,7 +202,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
             hotspot_config::mojom::HotspotState::kDisabled);
   EXPECT_EQ(4u, observer_.hotspot_status_changed_count());
   EXPECT_EQ(1u, observer_.hotspot_state_failed_count());
-  EXPECT_EQ(shill::kTetheringErrorUpstreamNotReady,
+  EXPECT_EQ(shill::kTetheringEnableResultUpstreamNotAvailable,
             observer_.last_hotspot_failed_error());
 
   // Verify the edge case where the state is failure but error is not provided.
