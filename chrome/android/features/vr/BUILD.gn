@@ -109,17 +109,20 @@ android_library("java") {
   resources_package = "org.chromium.chrome.vr"
 }
 
-generate_jni("jni_headers") {
+generate_jni("split_jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/vr/AndroidUiGestureTarget.java",
     "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
     "java/src/org/chromium/chrome/browser/vr/VrCoreInstallUtils.java",
     "java/src/org/chromium/chrome/browser/vr/VrInputConnection.java",
-    "java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "java/src/org/chromium/chrome/browser/vr/VrShell.java",
     "java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java",
     "java/src/org/chromium/chrome/browser/vr/keyboard/GvrKeyboardLoaderClient.java",
     "java/src/org/chromium/chrome/browser/vr/keyboard/TextEditAction.java",
   ]
   split_name = "vr"
+}
+
+generate_jni("base_jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
 }
