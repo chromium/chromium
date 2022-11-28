@@ -7036,7 +7036,8 @@
       'lacros_all_tast_tests': {
         'variants': [
           'LACROS_JACUZZI',
-        ]
+        ],
+        'ci_only': True,
       },
     },
 
