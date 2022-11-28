@@ -7,8 +7,8 @@
 
 #include <cstdint>
 
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/video_conference/video_conference_state.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

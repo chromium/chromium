@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_wrapper.h"
-#include "chrome/browser/ash/video_conference/video_conference_state.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

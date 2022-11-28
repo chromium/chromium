@@ -1907,6 +1907,7 @@ component("ash") {
     "system/video_conference/fake_video_conference_tray_controller.h",
     "system/video_conference/video_conference_bubble.cc",
     "system/video_conference/video_conference_bubble.h",
+    "system/video_conference/video_conference_media_state.h",
     "system/video_conference/video_conference_tray.cc",
     "system/video_conference/video_conference_tray.h",
     "system/video_conference/video_conference_tray_controller.cc",

@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <utility>
 
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/ash/video_conference/video_conference_state.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -8,12 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/video_conference/video_conference_state.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

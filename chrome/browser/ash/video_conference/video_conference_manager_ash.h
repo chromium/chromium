@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/video_conference/video_conference_state.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,6 +22,7 @@ class UnguessableToken;
 namespace ash {
 
 class VideoConferenceClientWrapper;
+struct VideoConferenceMediaState;
 
 // VideoConferenceManagerAsh is the central hub responsible for:
 // 1. Connecting VC clients to System UI components.
