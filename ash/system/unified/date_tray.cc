@@ -28,6 +28,9 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       time_view_(tray_container()->AddChildView(
           std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
+  SetPressedCallback(
+      base::BindRepeating(&DateTray::OnButtonPressed, base::Unretained(this)));
+
   tray_container()->SetMargin(
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -36,22 +39,6 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
 }
 
 DateTray::~DateTray() = default;
-
-bool DateTray::PerformAction(const ui::Event& event) {
-  // Lets the `unified_system_tray_` decide whether to show the bubble or not,
-  // since it's the owner of the bubble view.
-  if (is_active()) {
-    unified_system_tray_->CloseBubble();
-  } else {
-    // Need to set the date tray as active before notifying the system tray of
-    // an action because we need the system tray to know that the date tray is
-    // already active when it is creating the `UnifiedSystemTrayBubble`.
-    SetIsActive(true);
-    unified_system_tray_->OnDateTrayActionPerformed(event);
-  }
-
-  return true;
-}
 
 std::u16string DateTray::GetAccessibleNameForBubble() {
   if (unified_system_tray_->IsBubbleShown())
@@ -89,6 +76,21 @@ void DateTray::OnOpeningCalendarView() {
 
 void DateTray::OnLeavingCalendarView() {
   SetIsActive(false);
+}
+
+void DateTray::OnButtonPressed(const ui::Event& event) {
+  // Lets the `unified_system_tray_` decide whether to show the bubble or not,
+  // since it's the owner of the bubble view.
+  if (is_active()) {
+    unified_system_tray_->CloseBubble();
+    return;
+  }
+
+  // Need to set the date tray as active before notifying the system tray of
+  // an action because we need the system tray to know that the date tray is
+  // already active when it is creating the `UnifiedSystemTrayBubble`.
+  SetIsActive(true);
+  unified_system_tray_->OnDateTrayActionPerformed(event);
 }
 
 BEGIN_METADATA(DateTray, ActionableView)

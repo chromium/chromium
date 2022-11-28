@@ -6,19 +6,26 @@
 #define ASH_SYSTEM_UNIFIED_DATE_TRAY_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
 
+class Shelf;
 class TimeTrayItemView;
+class TrayBubbleView;
 
-// This date tray is next to the `UnifidedSystemTray`. Activating this tray
-// results in the CalendarView showing in the UnifiedSystemTray's bubble. This
-// tray doesn't not have its own bubble.
+// This date tray is next to the `UnifiedSystemTray`. Activating this tray
+// results in the `CalendarView` showing in the `UnifiedSystemTray`'s bubble.
+// This tray doesn't have its own bubble.
 class ASH_EXPORT DateTray : public TrayBackgroundView,
                             public UnifiedSystemTray::Observer {
  public:
@@ -30,7 +37,6 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   ~DateTray() override;
 
   // TrayBackgroundView:
-  bool PerformAction(const ui::Event& event) override;
   std::u16string GetAccessibleNameForBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -44,10 +50,13 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void OnOpeningCalendarView() override;
   void OnLeavingCalendarView() override;
 
+  // Callback called when this tray is pressed.
+  void OnButtonPressed(const ui::Event& event);
+
  private:
   friend class DateTrayTest;
 
-  // Owned.
+  // Owned by the views hierarchy.
   TimeTrayItemView* time_view_ = nullptr;
 
   // Owned by `StatusAreaWidget`.

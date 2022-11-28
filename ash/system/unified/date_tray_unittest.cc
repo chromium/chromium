@@ -12,7 +12,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -27,9 +26,6 @@ class DateTrayTest : public AshTestBase {
   ~DateTrayTest() override = default;
 
   void SetUp() override {
-    // Enable calendar view feature.
-    scoped_feature_list_.InitWithFeatures({ash::features::kCalendarView}, {});
-
     // Set time override.
     base::subtle::ScopedTimeClockOverrides time_override(
         []() {
@@ -69,8 +65,8 @@ class DateTrayTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
+
   // Owned by `widget_`.
   DateTray* date_tray_ = nullptr;
 };
