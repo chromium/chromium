@@ -7711,6 +7711,21 @@
             ]
         }
     ],
+    "PageAllocatorRetryOnCommitFailure": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSiteDescriptionPlaceholder": [
         {
             "platforms": [
