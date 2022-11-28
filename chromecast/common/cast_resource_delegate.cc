@@ -4,6 +4,8 @@
 
 #include "chromecast/common/cast_resource_delegate.h"
 
+#include <ostream>
+
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
