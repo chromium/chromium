@@ -15,15 +15,16 @@ import '../strings.m.js';
 
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
-import {ReadingListItemElement} from './reading_list_item.js';
+import {MARKED_AS_READ_UI_EVENT, ReadingListItemElement} from './reading_list_item.js';
 
 const navigationKeys: Set<string> = new Set(['ArrowDown', 'ArrowUp']);
 
@@ -34,9 +35,14 @@ export interface ReadingListAppElement {
   $: {
     readingListList: HTMLElement,
     selector: IronSelectorElement,
+    unreadItemsList: DomRepeat,
   };
 }
 
+// browser_element_identifiers constants
+const ADD_CURRENT_TAB_ELEMENT_ID = 'kAddCurrentTabToReadingListElementId';
+const READING_LIST_UNREAD_ELEMENT_ID = 'kSidePanelReadingListUnreadElementId';
+const MARKED_AS_READ_NATIVE_EVENT_ID = 'kSidePanelReadingMarkedAsReadEventId';
 
 export class ReadingListAppElement extends ReadingListAppElementBase {
   static get is() {
@@ -91,6 +97,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
+  private readingListEventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
@@ -126,6 +133,9 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       this.updateReadLaterEntries_();
       this.apiProxy_.updateCurrentPageActionButtonState();
     }
+
+    this.readingListEventTracker_.add(
+        this.root!, MARKED_AS_READ_UI_EVENT, this.onMarkedAsRead.bind(this));
   }
 
   override disconnectedCallback() {
@@ -136,6 +146,27 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
     document.removeEventListener(
         'visibilitychange', this.visibilityChangedListener_);
+
+    this.unregisterHelpBubble(READING_LIST_UNREAD_ELEMENT_ID);
+
+    this.readingListEventTracker_.remove(this.root!, MARKED_AS_READ_UI_EVENT);
+  }
+
+  override ready() {
+    super.ready();
+
+    this.registerHelpBubble(
+        ADD_CURRENT_TAB_ELEMENT_ID, '#currentPageActionButton');
+
+    this.$.unreadItemsList.addEventListener(
+        'rendered-item-count-changed', () => {
+          const firstUnreadItem =
+              this.root!.querySelector('.unread-item') as HTMLElement | null;
+          if (firstUnreadItem) {
+            this.registerHelpBubble(
+                READING_LIST_UNREAD_ELEMENT_ID, firstUnreadItem);
+          }
+        });
   }
 
   /**
@@ -232,10 +263,23 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private onCurrentPageActionButtonClick_() {
     if (this.getCurrentPageActionButtonMarkAsRead_()) {
       this.apiProxy_.markCurrentTabAsRead();
+      this.sendTutorialCustomEvent();
     } else {
       this.apiProxy_.addCurrentTab();
     }
   }
+
+  private onMarkedAsRead() {
+    this.sendTutorialCustomEvent();
+  }
+
+  private sendTutorialCustomEvent() {
+    this.notifyHelpBubbleAnchorCustomEvent(
+        READING_LIST_UNREAD_ELEMENT_ID,
+        MARKED_AS_READ_NATIVE_EVENT_ID,
+    );
+  }
+
 
   private onItemKeyDown_(e: KeyboardEvent) {
     if (e.shiftKey || !navigationKeys.has(e.key)) {

@@ -155,9 +155,9 @@
       <div hidden="[[!unreadItems_.length]]" class="sub-heading">
         $i18n{unreadHeader}
       </div>
-      <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
+      <template id="unreadItemsList" is="dom-repeat" items="[[unreadItems_]]">
         <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item unread-item"
             data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
         </reading-list-item>
       </template>

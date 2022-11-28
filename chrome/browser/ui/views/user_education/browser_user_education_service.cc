@@ -54,7 +54,9 @@ namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 const char kTabGroupWithGroupTutorialMetricPrefix[] = "TabGroupWithGroup";
+const char kSidePanelReadingListTutorialMetricPrefix[] = "SidePanelReadingList";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
+constexpr char kReadingListItemElementName[] = "ReadingListItem";
 
 class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
  public:
@@ -125,6 +127,8 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
 const char kTabGroupWithExistingGroupTutorialId[] =
     "Tab Group With Existing Group Tutorial";
+const char kSidePanelReadingListTutorialId[] =
+    "Side Panel Reading List Tutorial";
 
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
   static base::NoDestructor<BrowserHelpBubbleDelegate> delegate;
@@ -460,5 +464,85 @@ void MaybeRegisterChromeTutorials(
         with_group_description.steps.size());
     tutorial_registry.AddTutorial(kTabGroupWithExistingGroupTutorialId,
                                   std::move(with_group_description));
+  }
+
+  {  // Side panel reading list tutorial
+
+    // The Description for kSidePanelReadingListTutorialId
+    TutorialDescription side_panel_description;
+
+    // Open side panel
+    TutorialDescription::Step open_side_panel_step(
+        0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL,
+        ui::InteractionSequence::StepType::kShown, kReadLaterButtonElementId,
+        std::string(), HelpBubbleArrow::kTopRight);
+    side_panel_description.steps.emplace_back(open_side_panel_step);
+
+    // Click "Add current tab"
+    TutorialDescription::Step add_current_tab_step(
+        0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_ADD_TAB,
+        ui::InteractionSequence::StepType::kShown,
+        kAddCurrentTabToReadingListElementId, std::string(),
+        HelpBubbleArrow::kTopLeft, ui::CustomElementEventType(), absl::nullopt,
+        /* transition_only_on_event =*/false,
+        user_education::TutorialDescription::NameElementsCallback(),
+        /* in_any_context =*/true);
+    side_panel_description.steps.emplace_back(add_current_tab_step);
+
+    // When shown, name the element
+    TutorialDescription::Step new_reading_list_item_step(
+        0, 0, ui::InteractionSequence::StepType::kShown,
+        kSidePanelReadingListUnreadElementId, std::string(),
+        HelpBubbleArrow::kNone, ui::CustomElementEventType(),
+        /* must_remain_visible =*/true,
+        /* transition_only_on_event =*/true,
+        base::BindRepeating(
+            [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
+              sequence->NameElement(
+                  element, base::StringPiece(kReadingListItemElementName));
+              return true;
+            }),
+        /* in_any_context =*/true);
+    side_panel_description.steps.emplace_back(new_reading_list_item_step);
+
+    // Mark as read
+    TutorialDescription::Step mark_as_read_step(
+        0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_MARK_READ,
+        ui::InteractionSequence::StepType::kShown, ui::ElementIdentifier(),
+        kReadingListItemElementName, HelpBubbleArrow::kTopLeft);
+    side_panel_description.steps.emplace_back(mark_as_read_step);
+
+    TutorialDescription::Step detect_mark_as_read_step(
+        0, 0, ui::InteractionSequence::StepType::kCustomEvent,
+        ui::ElementIdentifier(), kReadingListItemElementName,
+        HelpBubbleArrow::kNone, kSidePanelReadingMarkedAsReadEventId);
+    side_panel_description.steps.emplace_back(detect_mark_as_read_step);
+
+    // Click drop down
+    TutorialDescription::Step click_dropdown_step(
+        0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_CLICK_DROPDOWN,
+        ui::InteractionSequence::StepType::kShown, kSidePanelComboboxElementId,
+        std::string(), HelpBubbleArrow::kTopLeft);
+    side_panel_description.steps.emplace_back(click_dropdown_step);
+
+    TutorialDescription::Step detect_click_dropdown_step(
+        0, 0, ui::InteractionSequence::StepType::kCustomEvent,
+        kSidePanelComboboxElementId, std::string(), HelpBubbleArrow::kNone,
+        kSidePanelComboboxChangedCustomEventId);
+    side_panel_description.steps.emplace_back(detect_click_dropdown_step);
+
+    // Completion of the tutorial.
+    TutorialDescription::Step success_step(
+        IDS_TUTORIAL_GENERIC_SUCCESS_TITLE,
+        IDS_TUTORIAL_SIDE_PANEL_READING_LIST_SUCCESS_BODY,
+        ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
+        std::string(), HelpBubbleArrow::kNone);
+    side_panel_description.steps.emplace_back(success_step);
+
+    side_panel_description.histograms = user_education::MakeTutorialHistograms<
+        kSidePanelReadingListTutorialMetricPrefix>(
+        side_panel_description.steps.size());
+    tutorial_registry.AddTutorial(kSidePanelReadingListTutorialId,
+                                  std::move(side_panel_description));
   }
 }

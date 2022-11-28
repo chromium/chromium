@@ -19,6 +19,8 @@ import {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
 import {getTemplate} from './reading_list_item.html.js';
 
+export const MARKED_AS_READ_UI_EVENT = 'reading-list-marked-as-read';
+
 const navigationKeys: Set<string> =
     new Set([' ', 'Enter', 'ArrowRight', 'ArrowLeft']);
 
@@ -137,6 +139,10 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   private onUpdateStatusClick_(e: Event) {
     e.stopPropagation();
     this.apiProxy_.updateReadStatus(this.data.url, !this.data.read);
+    if (!this.data.read) {
+      this.dispatchEvent(new CustomEvent(
+          MARKED_AS_READ_UI_EVENT, {bubbles: true, composed: true}));
+    }
   }
 
   private onItemDeleteClick_(e: Event) {
@@ -168,6 +174,9 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
 declare global {
   interface HTMLElementTagNameMap {
     'reading-list-item': ReadingListItemElement;
+  }
+  interface HTMLElementEventMap {
+    [MARKED_AS_READ_UI_EVENT]: CustomEvent;
   }
 }
 

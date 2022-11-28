@@ -12,6 +12,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -206,7 +207,10 @@ void ReadingListUI::CreateHelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), web_ui()->GetWebContents(),
-      std::vector<ui::ElementIdentifier>{});
+      std::vector<ui::ElementIdentifier>{
+          kAddCurrentTabToReadingListElementId,
+          kSidePanelReadingListUnreadElementId,
+      });
 }
 
 void ReadingListUI::CreateShoppingListHandler(

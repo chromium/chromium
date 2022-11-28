@@ -8,6 +8,7 @@
 #include "ui/base/interaction/element_tracker.h"
 
 // Please keep this list alphabetized.
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppMenuButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
@@ -26,7 +27,9 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReadLaterButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelCloseButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelComboboxElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelOpenInNewTabButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelReadingListUnreadElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSavePasswordComboboxElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSideSearchButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabAlertIndicatorButtonElementId);
@@ -42,3 +45,5 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kTopContainerElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kWebUIIPHDemoElementIdentifier);
 
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kTabGroupedCustomEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSidePanelComboboxChangedCustomEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSidePanelReadingMarkedAsReadEventId);

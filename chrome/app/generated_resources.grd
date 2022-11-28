@@ -7725,6 +7725,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- User Education Tutorial Strings -->
+      <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">
+        Nicely Done!
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the add tab step in the tab group tutorial">
           Right-click on a tab and select "Add Tab To New Group"
@@ -7759,6 +7762,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step in the tab group tutorial">
         Try using tab groups to organize tasks, for online shopping, and more
+      </message>
+
+      <!-- Side Panel Tutorial Strings -->
+      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in side panel reading list tutorial">
+        Click the side panel icon to open it
+      </message>
+      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_ADD_TAB" desc="The description of the 'add tab' step in side panel reading list tutorial">
+        Now add the current tab to your list
+      </message>
+      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_MARK_READ" desc="The description of the 'mark as read' step in side panel reading list tutorial">
+        Select “Mark as read” to move the page to the bottom of your list
+      </message>
+      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_CLICK_DROPDOWN" desc="The description of the 'click drop down' step in side panel reading list tutorial">
+        Click the drop down to choose another panel
+      </message>
+      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_SUCCESS_BODY" desc="The description of the body text in the 'success' step in side panel reading list tutorial">
+        Try using the side panel for bookmarks, journeys, and more
       </message>
 
       <!-- Browser Hung Plugin Detector -->
