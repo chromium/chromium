@@ -36,7 +36,7 @@ js_library("active_directory_password_change") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
@@ -115,7 +115,7 @@ js_library("management_transition") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -128,7 +128,7 @@ js_library("offline_login") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
   ]
   extra_deps = [ ":web_components" ]
   externs_list =
@@ -144,7 +144,7 @@ js_library("update_required_card") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]

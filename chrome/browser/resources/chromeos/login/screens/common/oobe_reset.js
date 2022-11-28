@@ -12,7 +12,6 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_modal_dialog.m.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {announceAccessibleMessage} from '//resources/js/util.js';
@@ -22,6 +21,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 
 
 /** @enum {number} */
@@ -75,7 +75,7 @@ const ResetScreenElementBase = mixinBehaviors(
 /**
  * @typedef {{
  *   resetDialog:  OobeAdaptiveDialog,
- *   confirmationDialog:  OobeModalDialogElement,
+ *   confirmationDialog:  OobeModalDialog,
  *   tpmFirmwareUpdateCheckbox, CrCheckBox,
  * }}
  */

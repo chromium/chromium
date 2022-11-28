@@ -9,7 +9,6 @@ import '//resources/js/action_link.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/dialogs/oobe_modal_dialog.m.js';
 import '../../components/oobe_vars/oobe_shared_vars_css.m.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -18,6 +17,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {LongTouchDetector} from '../../components/long_touch_detector.m.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
@@ -31,7 +31,7 @@ const OobeWelcomeDialogBase =
 /**
  * @typedef {{
  *   title:  HTMLAnchorElement,
- *   chromeVoxHint:  OobeModalDialogElement,
+ *   chromeVoxHint:  OobeModalDialog,
  *   welcomeAnimation:  OobeCrLottie,
  * }}
  */

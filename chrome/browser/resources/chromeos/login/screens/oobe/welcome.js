@@ -14,7 +14,6 @@ import '../../components/oobe_i18n_dropdown.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
-import '../../components/dialogs/oobe_modal_dialog.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,6 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {getSelectedTitle, SelectListType} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {Oobe} from '../../cr_ui.js';
@@ -67,10 +67,10 @@ const OobeWelcomeScreenBase = mixinBehaviors(
 /**
  * @typedef {{
  *   welcomeScreen:  OobeWelcomeDialog,
- *   demoModeConfirmationDialog:  OobeModalDialogElement,
- *   editRequisitionDialog:  OobeModalDialogElement,
+ *   demoModeConfirmationDialog:  OobeModalDialog,
+ *   editRequisitionDialog:  OobeModalDialog,
  *   editRequisitionInput: CrInputElement,
- *   remoraRequisitionDialog: OobeModalDialogElement,
+ *   remoraRequisitionDialog: OobeModalDialog,
  * }}
  */
 OobeWelcomeScreenBase.$;

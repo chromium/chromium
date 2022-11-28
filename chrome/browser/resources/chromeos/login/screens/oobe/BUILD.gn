@@ -117,7 +117,7 @@ js_library("hid_detection") {
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -190,7 +190,7 @@ js_library("welcome") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -208,7 +208,7 @@ js_library("welcome_dialog") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_icon_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]

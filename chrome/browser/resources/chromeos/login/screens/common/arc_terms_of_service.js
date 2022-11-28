@@ -16,7 +16,6 @@ import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
-import '../../components/dialogs/oobe_modal_dialog.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,6 +25,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {getSelectedValue} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
@@ -59,18 +59,18 @@ const ArcTermsOfserviceBase = mixinBehaviors(
 
 /**
  * @typedef {{
- *   arcBackupRestoreChildPopup: OobeModalDialogElement,
- *   arcBackupRestorePopup: OobeModalDialogElement,
- *   arcLocationServicePopup: OobeModalDialogElement,
- *   arcMetricsPopup: OobeModalDialogElement,
+ *   arcBackupRestoreChildPopup: OobeModalDialog,
+ *   arcBackupRestorePopup: OobeModalDialog,
+ *   arcLocationServicePopup: OobeModalDialog,
+ *   arcMetricsPopup: OobeModalDialog,
  *   arcTosAcceptButton: OobeTextButton,
  *   arcTosDialog: OobeAdaptiveDialog,
  *   arcTosNextButton: OobeTextButton,
- *   arcTosOverlayPrivacyPolicy: OobeModalDialogElement,
+ *   arcTosOverlayPrivacyPolicy: OobeModalDialog,
  *   arcTosOverlayWebview: WebView,
  *   arcTosRetryButton: OobeTextButton,
  *   arcTosView: WebView,
- *   arcPaiPopup: OobeModalDialogElement,
+ *   arcPaiPopup: OobeModalDialog,
  * }}
  */
 ArcTermsOfserviceBase.$;
