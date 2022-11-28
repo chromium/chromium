@@ -28,15 +28,14 @@ class PPAPI_SHARED_EXPORT PPB_X509Certificate_Fields {
   PPB_X509Certificate_Fields(const PPB_X509Certificate_Fields& fields);
 
   // Takes ownership of |value|.
-  void SetField(PP_X509Certificate_Private_Field field,
-                std::unique_ptr<base::Value> value);
+  void SetField(PP_X509Certificate_Private_Field field, base::Value value);
   PP_Var GetFieldAsPPVar(PP_X509Certificate_Private_Field field) const;
 
  private:
   // Friend so ParamTraits can serialize us.
   friend struct IPC::ParamTraits<ppapi::PPB_X509Certificate_Fields>;
 
-  base::Value values_;
+  base::Value::List values_;
 };
 
 //------------------------------------------------------------------------------
