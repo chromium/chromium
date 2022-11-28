@@ -85,6 +85,7 @@ export class ProfilePickerMainViewElement extends
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
+  private previousRoute_: Routes|null = null;
 
   override ready() {
     super.ready();
@@ -95,6 +96,8 @@ export class ProfilePickerMainViewElement extends
     if (!isProfileCreationAllowed()) {
       this.$.addProfile.style.display = 'none';
     }
+
+    this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
   }
 
   override connectedCallback() {
@@ -110,6 +113,21 @@ export class ProfilePickerMainViewElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_!.disconnect();
+  }
+
+  override onRouteChange(route: Routes) {
+    if (route === Routes.MAIN) {
+      return;
+    }
+    this.previousRoute_ = route;
+  }
+
+  private onViewEnterFinish_() {
+    if (this.previousRoute_ !== Routes.NEW_PROFILE) {
+      return;
+    }
+    // Focus the 'Add' button if coming back from the Add Profile flow.
+    this.$.addProfile.focus();
   }
 
   private addResizeObserver_() {
