@@ -8,11 +8,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
@@ -36,7 +33,20 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kUnknown:
     case ProviderType::kInternalPrivacyInfo:
       return true;
-    default:
+    case ProviderType::kInternalApp:
+    case ProviderType::kArcAppShortcut:
+    case ProviderType::kKeyboardShortcut:
+    case ProviderType::kDriveSearch:
+    case ProviderType::kGames:
+    case ProviderType::kHelpApp:
+    case ProviderType::kZeroStateHelpApp:
+    case ProviderType::kFileSearch:
+    case ProviderType::kInstalledApp:
+    case ProviderType::kInstantApp:
+    case ProviderType::kOmnibox:
+    case ProviderType::kPersonalization:
+    case ProviderType::kOpenTab:
+    case ProviderType::kOsSettings:
       return false;
   }
 }
@@ -58,9 +68,9 @@ bool ShouldIgnoreResult(const ChromeSearchResult* result) {
 
 }  // namespace
 
-BestMatchRanker::BestMatchRanker() {}
+BestMatchRanker::BestMatchRanker() = default;
 
-BestMatchRanker::~BestMatchRanker() {}
+BestMatchRanker::~BestMatchRanker() = default;
 
 void BestMatchRanker::Start(const std::u16string& query,
                             ResultsMap& results,
