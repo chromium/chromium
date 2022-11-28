@@ -58,6 +58,9 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   // Scrolls the tabstrip towards the last tab in the tabstrip.
   void ScrollTowardsTrailingTab();
 
+  // enable or disable the scroll buttons based on the scroll position
+  void MaybeUpdateScrollButtonState();
+
   // Subscription for scrolling of content view
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 

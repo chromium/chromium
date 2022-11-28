@@ -211,6 +211,9 @@ void TabStripScrollContainer::OnContentsScrolledCallback() {
       }
     }
   }
+
+  // disable the scroll buttons if fully scrolled and re-enable them otherwise
+  MaybeUpdateScrollButtonState();
 }
 
 int TabStripScrollContainer::GetTabStripAvailableWidth() const {
@@ -228,21 +231,47 @@ void TabStripScrollContainer::ScrollTowardsTrailingTab() {
 }
 
 void TabStripScrollContainer::FrameColorsChanged() {
-  SkColor foreground_color =
+  SkColor foreground_enabled_color =
       tab_strip_->GetTabForegroundColor(TabActive::kInactive);
-  /* Use placeholder color for disabled state because these buttons should
-     never be disabled (they are hidden when the tab strip is not full) */
+  // TODO(crbug.com/1385859): Get a disabled color that is lighter
+  // and changes with the frame background color
+  SkColor foreground_disabled_color =
+      GetColorProvider()->GetColor(kColorTabForegroundInactiveFrameInactive);
+
+  /* When the buttons are fully scrolled in a direction the corresponding button
+     is disabled. They are hidden when there are not enough tabs to be in tab
+     scrolling mode. */
   if (leading_scroll_button_) {
-    views::SetImageFromVectorIconWithColor(leading_scroll_button_,
-                                           kLeadingScrollIcon, foreground_color,
-                                           gfx::kPlaceholderColor);
+    views::SetImageFromVectorIconWithColor(
+        leading_scroll_button_, kLeadingScrollIcon, foreground_enabled_color,
+        foreground_disabled_color);
   }
   if (trailing_scroll_button_) {
     views::SetImageFromVectorIconWithColor(
-        trailing_scroll_button_, kTrailingScrollIcon, foreground_color,
-        gfx::kPlaceholderColor);
+        trailing_scroll_button_, kTrailingScrollIcon, foreground_enabled_color,
+        foreground_disabled_color);
   }
   overflow_indicator_strategy_->FrameColorsChanged();
+}
+
+void TabStripScrollContainer::MaybeUpdateScrollButtonState() {
+  if (trailing_scroll_button_) {
+    if (scroll_view_->GetVisibleRect().right() ==
+        scroll_view_->contents()->GetLocalBounds().right()) {
+      trailing_scroll_button_->SetEnabled(false);
+    } else {
+      trailing_scroll_button_->SetEnabled(true);
+    }
+  }
+
+  if (leading_scroll_button_) {
+    if (scroll_view_->GetVisibleRect().x() ==
+        scroll_view_->contents()->GetLocalBounds().x()) {
+      leading_scroll_button_->SetEnabled(false);
+    } else {
+      leading_scroll_button_->SetEnabled(true);
+    }
+  }
 }
 
 bool TabStripScrollContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
