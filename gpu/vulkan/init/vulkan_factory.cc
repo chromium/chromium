@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 
 #include <memory>
+#include <ostream>
 
 #if BUILDFLAG(IS_ANDROID)
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
