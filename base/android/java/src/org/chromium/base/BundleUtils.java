@@ -344,10 +344,13 @@ public class BundleUtils {
     }
 
     private static class SplitCompatClassLoader extends ClassLoader {
+        private static final String TAG = "SplitCompatClassLoader";
+
         public SplitCompatClassLoader() {
             // The chrome split classloader if the chrome split exists, otherwise
             // the base module class loader.
             super(ContextUtils.getApplicationContext().getClassLoader());
+            Log.i(TAG, "Splits: %s", sSplitsToRestore);
         }
 
         private Class<?> checkSplitsClassLoaders(String className) throws ClassNotFoundException {
@@ -382,6 +385,7 @@ public class BundleUtils {
                     return foundClass;
                 }
             }
+            Log.w(TAG, "No class %s amongst %s", cn, sInflationClassLoaders.keySet());
             throw new ClassNotFoundException(cn);
         }
 
