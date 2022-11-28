@@ -196,13 +196,30 @@ class InteractiveTestApi {
   //    InAnyContext(PressButton(kElementIdentifier))
   //
   // Note: does not work with EnsureNotPresent; use the `in_any_context`
-  // parameter.
+  // parameter. Also does not work with all event types (yet).
   //
   // TODO(dfried): consider if we should have a version that takes variadic
   // arguments and applies "in any context" to all of them?
   [[nodiscard]] static MultiStep InAnyContext(MultiStep steps);
   template <typename T>
-  static StepBuilder InAnyContext(T&& step);
+  [[nodiscard]] static StepBuilder InAnyContext(T&& step);
+
+  // Provides syntactic sugar so you can put "inherit context from previous
+  // step" around a step or steps to ensure a sequence executes in a specific
+  // context. For example:
+  //
+  //    InAnyContext(WaitForShow(kMyElementInOtherContext)),
+  //    InSameContext(Steps(
+  //      PressButton(kMyElementInOtherContext),
+  //      WaitForHide(kMyElementInOtherContext)
+  //    )),
+  [[nodiscard]] static MultiStep InSameContext(MultiStep steps);
+  template <typename T>
+  [[nodiscard]] static StepBuilder InSameContext(T&& step);
+
+  [[nodiscard]] MultiStep InContext(ElementContext context, MultiStep steps);
+  template <typename T>
+  [[nodiscard]] StepBuilder InContext(ElementContext context, T&& step);
 
   // Used internally by methods in this class; do not call.
   internal::InteractiveTestPrivate& private_test_impl() {
@@ -343,6 +360,20 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InAnyContext(T&& step) {
   return std::move(step.SetContext(InteractionSequence::ContextMode::kAny));
+}
+
+// static
+template <typename T>
+InteractionSequence::StepBuilder InteractiveTestApi::InSameContext(T&& step) {
+  return std::move(
+      step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep));
+}
+
+template <typename T>
+InteractionSequence::StepBuilder InteractiveTestApi::InContext(
+    ElementContext context,
+    T&& step) {
+  return InContext(Steps(std::forward(step)));
 }
 
 // static

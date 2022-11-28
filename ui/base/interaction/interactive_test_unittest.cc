@@ -192,10 +192,46 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
       kTestContext2, InAnyContext(PressButton(kTestId1, InputType::kDontCare)),
       InAnyContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
       InAnyContext(DoDefaultAction(kTestId3, InputType::kMouse)),
-      InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch)),
-      InAnyContext(SelectDropdownItem(kTestId1, 2U, InputType::kDontCare)),
-      InAnyContext(EnterText(kTestId2, u"The quick brown fox.")),
-      InAnyContext(Confirm(kTestId3)));
+      InAnyContext(Steps(SelectTab(kTestId4, 3U, InputType::kTouch),
+                         SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+                         EnterText(kTestId2, u"The quick brown fox."),
+                         Confirm(kTestId3))));
+
+  EXPECT_THAT(simulator()->records(),
+              testing::ElementsAre(
+                  ActionRecord{ActionType::kPressButton, kTestId1,
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kSelectMenuItem, kTestId2,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kDoDefaultAction, kTestId3,
+                               kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
+                               InputType::kTouch},
+                  ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kEnterText, kTestId2, kTestContext1,
+                               InputType::kKeyboard},
+                  ActionRecord{ActionType::kConfirm, kTestId3, kTestContext1,
+                               InputType::kDontCare}));
+}
+
+TEST_F(InteractiveTestTest, InteractionVerbsInSameContext) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+  TestElement e3(kTestId3, kTestContext1);
+  TestElement e4(kTestId4, kTestContext1);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+  e4.Show();
+  RunTestSequenceInContext(
+      kTestContext2, InAnyContext(PressButton(kTestId1, InputType::kDontCare)),
+      InSameContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
+      InSameContext(DoDefaultAction(kTestId3, InputType::kMouse)),
+      InSameContext(Steps(
+          SelectTab(kTestId4, 3U, InputType::kTouch),
+          SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+          EnterText(kTestId2, u"The quick brown fox."), Confirm(kTestId3))));
 
   EXPECT_THAT(simulator()->records(),
               testing::ElementsAre(

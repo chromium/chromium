@@ -4,11 +4,14 @@
 
 #include "ui/base/interaction/interactive_test_internal.h"
 
+#include "base/callback_list.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_piece_forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
 
 namespace ui::test::internal {
 
@@ -19,6 +22,48 @@ InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
     : test_util_(std::move(test_util)) {}
 InteractiveTestPrivate::~InteractiveTestPrivate() = default;
+
+void InteractiveTestPrivate::Init(ElementContext initial_context) {
+  success_ = false;
+  MaybeAddPivotElement(initial_context);
+  for (ElementContext context :
+       ElementTracker::GetElementTracker()->GetAllContextsForTesting()) {
+    MaybeAddPivotElement(context);
+  }
+  context_subscription_ =
+      ElementTracker::GetElementTracker()->AddAnyElementShownCallbackForTesting(
+          base::BindRepeating(&InteractiveTestPrivate::OnElementAdded,
+                              base::Unretained(this)));
+}
+
+void InteractiveTestPrivate::Cleanup() {
+  context_subscription_ = base::CallbackListSubscription();
+  pivot_elements_.clear();
+}
+
+void InteractiveTestPrivate::OnElementAdded(TrackedElement* el) {
+  if (el->identifier() == kInteractiveTestPivotElementId)
+    return;
+  MaybeAddPivotElement(el->context());
+}
+
+void InteractiveTestPrivate::MaybeAddPivotElement(ElementContext context) {
+  if (!base::Contains(pivot_elements_, context)) {
+    auto pivot =
+        std::make_unique<TestElement>(kInteractiveTestPivotElementId, context);
+    auto* const el = pivot.get();
+    pivot_elements_.emplace(context, std::move(pivot));
+    el->Show();
+  }
+}
+
+TrackedElement* InteractiveTestPrivate::GetPivotElement(
+    ElementContext context) const {
+  const auto it = pivot_elements_.find(context);
+  CHECK(it != pivot_elements_.end())
+      << "Tried to reference non-existent context.";
+  return it->second.get();
+}
 
 void InteractiveTestPrivate::DoTestSetUp() {}
 void InteractiveTestPrivate::DoTestTearDown() {}

@@ -171,18 +171,47 @@ RunTestSequence(
 
 ### Modifiers
 
-A modifier wraps around a step and changes its behavior. Currently there is only one modifier:
-- **InAnyContext** allows the modified verb to find an element by its identifier
-  outside the test's default `ElementContext`. It has no effect on some versions of
-  `EnsureNotPresent()`, and is not compatible with named elements or with some
-  specific verbs. Use sparingly.
+A modifier wraps around a step or steps and change their behavior.
 
-Example:
+- **InAnyContext** allows the modified verb to find an element outside the test's default
+  `ElementContext`. Unlike the other modifiers, there are a number of limitations on its use:
+  - It should not be used with `FlushEvents`, `EnsureNotPresent`, or any `Activate`,
+    `Event`, or `Mouse` verbs.
+    - This is a shortcoming in the underlying framework that will be fixed in the future.
+  - It should not be used with named elements, which can already be found in any context.
+  - For unsupported verbs, it is best to either use `InSameContext()` or `InContext()` instead.
+  - Example:
+
 ```cpp
 RunTestSequence(
     // This button might be in a different window!
     InAnyContext(PressButton(kMyButton)),
     InAnyContext(CheckView(kMyButton, ensure_pressed)));
+```
+
+- **InSameContext** allows the modified verb (or verbs) to find an element in the same context
+  as the previous step.
+  - Has no effect on `EnsureNotPresent()` when the `in_any_context` parameter is set to true.
+  - Example:
+```cpp
+RunTestSequence(
+    InAnyContext(WaitForShow(kMyButton)),
+    InSameContext(PressButton(kMyButton)));
+```
+
+- **InContext** allows the modified verb (or verbs) to execute in the specified context instead of
+  the default context for the sequence.
+  - Has no effect on `EnsureNotPresent()` when the `in_any_context` parameter is set to true.
+  - Example:
+
+```cpp
+Browser* const incognito = CreateIncognitoBrowser();
+RunTestSequence(
+  /* Do stuff in primary browser context here */
+  /* ... */
+  InContext(incognito->window()->GetElementContext(), Steps(
+    PressButton(kAppMenuButton),
+    WaitForShow(kDownloadsMenuItemElementId))));
 ```
 
 ### WebContents Instrumentation

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
@@ -43,7 +44,9 @@ class InteractiveTestPrivate {
   void operator=(const InteractiveTestPrivate&) = delete;
 
   InteractionTestUtil& test_util() { return *test_util_; }
-  TrackedElement* pivot_element() { return pivot_element_.get(); }
+
+  // Gets the pivot element for the specified context, which must exist.
+  TrackedElement* GetPivotElement(ElementContext context) const;
 
   // Call this method during test SetUp(), or SetUpOnMainThread() for browser
   // tests.
@@ -79,15 +82,29 @@ class InteractiveTestPrivate {
  private:
   friend class ui::test::InteractiveTestApi;
 
+  // Prepare for a sequence to start.
+  void Init(ElementContext initial_context);
+
+  // Clean up after a sequence.
+  void Cleanup();
+
+  // Note when a new element appears; we may update the context list.
+  void OnElementAdded(TrackedElement* el);
+
+  // Maybe adds a pivot element for the given context.
+  void MaybeAddPivotElement(ElementContext context);
+
   // Tracks whether a sequence succeeded or failed.
   bool success_ = false;
 
   // Used to simulate input to UI elements.
   std::unique_ptr<InteractionTestUtil> test_util_;
 
-  // Always present during a test sequence; used to relay events to trigger
-  // follow-up steps.
-  std::unique_ptr<TrackedElement> pivot_element_;
+  // Used to keep track of valid contexts.
+  base::CallbackListSubscription context_subscription_;
+
+  // Used to relay events to trigger follow-up steps.
+  std::map<ElementContext, std::unique_ptr<TrackedElement>> pivot_elements_;
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
@@ -144,6 +161,7 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(T&& task) {
   result.emplace_back(std::move(
       InteractionSequence::StepBuilder()
           .SetElementID(kInteractiveTestPivotElementId)
+          .SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
           .SetType(InteractionSequence::StepType::kCustomEvent,
                    kInteractiveTestPivotEventType)
           .SetStartCallback(

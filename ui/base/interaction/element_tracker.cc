@@ -249,6 +249,19 @@ bool ElementTracker::IsElementVisible(ElementIdentifier id,
   return it != element_data_.end() && it->second.num_elements() > 0;
 }
 
+ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
+  Contexts result;
+  for (const auto& [key, data] : element_data_) {
+    result.insert(key.second);
+  }
+  return result;
+}
+
+ElementTracker::Subscription
+ElementTracker::AddAnyElementShownCallbackForTesting(Callback callback) {
+  return any_element_shown_callbacks_.Add(std::move(callback));
+}
+
 ElementTracker::Subscription ElementTracker::AddElementShownCallback(
     ElementIdentifier id,
     ElementContext context,
@@ -322,6 +335,10 @@ void ElementTracker::NotifyElementShown(TrackedElement* element) {
     if (it != element_data_.end())
       it->second.NotifyElementShown(safe_element);
   }
+
+  // Do the "all elements" notification:
+  if (safe_element)
+    any_element_shown_callbacks_.Notify(element);
 
   notification_elements_.pop_back();
 }

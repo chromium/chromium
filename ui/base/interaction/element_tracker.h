@@ -95,6 +95,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   using Callback = base::RepeatingCallback<void(TrackedElement*)>;
   using Subscription = base::CallbackListSubscription;
   using ElementList = std::vector<TrackedElement*>;
+  using Contexts = std::set<ElementContext>;
 
   // Identifier that should be used by each framework to create a
   // TrackedElement from an element that does not alreayd have an identifier.
@@ -178,6 +179,12 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                       ElementContext context,
                                       Callback callback);
 
+  // Returns all known contexts.
+  Contexts GetAllContextsForTesting() const;
+
+  // Adds a callback when any element is shown.
+  Subscription AddAnyElementShownCallbackForTesting(Callback callback);
+
  private:
   friend class base::NoDestructor<ElementTracker>;
   class ElementData;
@@ -208,6 +215,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   // to be memory-stable.
   std::list<TrackedElement*> notification_elements_;
   std::map<LookupKey, ElementData> element_data_;
+  base::RepeatingCallbackList<void(TrackedElement*)>
+      any_element_shown_callbacks_;
   std::unique_ptr<GarbageCollector> gc_;
 };
 

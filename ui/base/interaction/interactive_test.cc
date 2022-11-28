@@ -230,20 +230,32 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
   return steps;
 }
 
+// static
+InteractiveTestApi::MultiStep InteractiveTestApi::InSameContext(
+    MultiStep steps) {
+  for (auto& step : steps)
+    step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep);
+  return steps;
+}
+
+// static
+InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
+    ElementContext context,
+    MultiStep steps) {
+  // This context may not yet exist, but we want the pivot element to exist.
+  private_test_impl_->MaybeAddPivotElement(context);
+  for (auto& step : steps)
+    step.SetContext(context);
+  return steps;
+}
+
 bool InteractiveTestApi::RunTestSequenceImpl(
     ElementContext context,
     InteractionSequence::Builder builder) {
   builder.SetContext(context);
 
-  // Pivot element also serves as a re-entrancy guard.
-  CHECK(!private_test_impl_->pivot_element_);
-  auto pivot_element =
-      std::make_unique<TestElement>(kInteractiveTestPivotElementId, context);
-  pivot_element->Show();
-  base::AutoReset<std::unique_ptr<TrackedElement>> pivot_element_reset(
-      &private_test_impl_->pivot_element_, std::move(pivot_element));
+  private_test_impl_->Init(context);
 
-  private_test_impl_->success_ = false;
   builder.SetCompletedCallback(
       base::BindOnce(&internal::InteractiveTestPrivate::OnSequenceComplete,
                      base::Unretained(private_test_impl_.get())));
@@ -252,6 +264,9 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                      base::Unretained(private_test_impl_.get())));
   auto sequence = builder.Build();
   sequence->RunSynchronouslyForTesting();
+
+  private_test_impl_->Cleanup();
+
   return private_test_impl_->success_;
 }
 

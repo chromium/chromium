@@ -153,6 +153,77 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
       ReleaseMouse());
 }
 
+// TODO(dfried): Handle widget activation issue on Mac that makes this test
+// flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MouseToIncognitoWindowAndDoActionsInSameContext \
+  DISABLED_MouseToIncognitoWindowAndDoActionsInSameContext
+#else
+#define MAYBE_MouseToIncognitoWindowAndDoActionsInSameContext \
+  MouseToIncognitoWindowAndDoActionsInSameContext
+#endif
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTest,
+                       MAYBE_MouseToIncognitoWindowAndDoActionsInSameContext) {
+  constexpr char kIncognitoAppMenuButton[] = "AppMenu";
+  auto* const incognito = CreateIncognitoBrowser();
+
+  RunTestSequence(
+      NameView(kIncognitoAppMenuButton,
+               base::BindLambdaForTesting([incognito]() -> views::View* {
+                 return BrowserView::GetBrowserViewForBrowser(incognito)
+                     ->toolbar()
+                     ->app_menu_button();
+               })),
+      MoveMouseTo(kIncognitoAppMenuButton), InSameContext(ClickMouse()),
+      InSameContext(Steps(
+          SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+          WaitForHide(AppMenuModel::kDownloadsMenuItem),
+          // These two types of actions use PostTask() internally and bounce off
+          // the pivot element. Make sure they still work in a "InSameContext".
+          FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+          // Make sure this picks up the correct button, since it was after a
+          // string of non-element-specific actions.
+          WithElement(kAppMenuButtonElementId,
+                      base::BindOnce(base::BindLambdaForTesting(
+                          [incognito](ui::TrackedElement* el) {
+                            EXPECT_EQ(incognito->window()->GetElementContext(),
+                                      el->context());
+                          }))))));
+}
+
+// TODO(dfried): Handle widget activation issue on Mac that makes this test
+// flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MouseToIncognitoWindowAndDoActionsInSpecificContext \
+  DISABLED_MouseToIncognitoWindowAndDoActionsInSpecificContext
+#else
+#define MAYBE_MouseToIncognitoWindowAndDoActionsInSpecificContext \
+  MouseToIncognitoWindowAndDoActionsInSpecificContext
+#endif
+IN_PROC_BROWSER_TEST_F(
+    InteractiveBrowserTest,
+    MAYBE_MouseToIncognitoWindowAndDoActionsInSpecificContext) {
+  auto* const incognito = CreateIncognitoBrowser();
+
+  RunTestSequence(InContext(
+      incognito->window()->GetElementContext(),
+      Steps(
+          MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+          SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+          WaitForHide(AppMenuModel::kDownloadsMenuItem),
+          // These two types of actions use PostTask() internally and bounce off
+          // the pivot element. Make sure they still work in a "InSameContext".
+          FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+          // Make sure this picks up the correct button, since it was after a
+          // string of non-element-specific actions.
+          WithElement(kAppMenuButtonElementId,
+                      base::BindOnce(base::BindLambdaForTesting(
+                          [incognito](ui::TrackedElement* el) {
+                            EXPECT_EQ(incognito->window()->GetElementContext(),
+                                      el->context());
+                          }))))));
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        WebPageNavigateStateAndLocation) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
