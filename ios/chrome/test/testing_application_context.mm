@@ -67,6 +67,7 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
 }
 
 void TestingApplicationContext::SetLastShutdownClean(bool clean) {
+  DCHECK(thread_checker_.CalledOnValidThread());
   was_last_shutdown_clean_ = clean;
 }
 
@@ -231,6 +232,7 @@ TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
 }
 
 id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
   if (!single_sign_on_service_) {
     single_sign_on_service_ = ios::provider::CreateSSOService();
     DCHECK(single_sign_on_service_);
