@@ -1192,7 +1192,7 @@ struct PciBusInfo {
 
 // The info related to usb.
 //
-// NextMinVersion: 2, NextIndex: 7
+// NextMinVersion: 3, NextIndex: 9
 [Stable]
 struct UsbBusInfo {
   // These fields can be used to classify / identify the usb devices. See the
@@ -1209,6 +1209,11 @@ struct UsbBusInfo {
   array<UsbBusInterfaceInfo> interfaces@5;
   // The firmware version obtained from fwupd.
   [MinVersion=1] FwupdFirmwareVersionInfo? fwupd_firmware_version_info@6;
+  // The recognized usb version. It may not be the highest USB version supportrd
+  // by the hardware.
+  [MinVersion=2] UsbVersion version@7;
+  // The spec usb speed.
+  [MinVersion=2] UsbSpecSpeed spec_speed@8;
 };
 
 // The info related to firmware version obtained from fwupd.
@@ -1256,6 +1261,55 @@ enum FwupdVersionFormat {
   kDellBios = 12,
   // Hexadecimal 0xAABCCDD style.
   kHex = 13,
+};
+
+// An enumeration of the usb version.
+//
+// NextMinVersion: 1, NextIndex: 5
+[Stable, Extensible]
+enum UsbVersion {
+  // This is for mojo compatibility between two versions. It won't be used in
+  // our code base.
+  [Default] kUnmappedEnumField = 0,
+  // Can't determine the usb version.
+  kUnknown = 1,
+  // Usb 1.
+  kUsb1 = 2,
+  // Usb 2.
+  kUsb2 = 3,
+  // Usb 3.
+  kUsb3 = 4,
+};
+
+// An enumeration of the usb spec speed in Mbps.
+// Source:
+//   - https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb
+//   - https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-bus-usb
+//   - https://en.wikipedia.org/wiki/USB
+//
+// NextMinVersion: 1, NextIndex: 9
+[Stable, Extensible]
+enum UsbSpecSpeed {
+  // This is for mojo compatibility between two versions. It won't be used in
+  // our code base.
+  [Default] kUnmappedEnumField = 0,
+  // Unknown speed.
+  kUnknown = 1,
+  // Low speed.
+  k1_5Mbps = 2,
+  // Full speed.
+  k12Mbps = 3,
+  // Deprecate. Should be a typo in
+  // https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb.
+  kDeprecateSpeed = 4,
+  // High Speed.
+  k480Mbps = 5,
+  // Super Speed.
+  k5Gbps = 6,
+  // Super Speed+.
+  k10Gbps = 7,
+  // Super Speed+ Gen 2x2.
+  k20Gbps = 8,
 };
 
 // The info related to usb interfaces.
