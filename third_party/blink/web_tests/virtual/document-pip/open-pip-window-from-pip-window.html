@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Test that documentPictureInPicture.requestWindow()
+  rejects from a PiP window</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/user-gesture-utils.js"></script>
+<body>
+<script>
+async_test((t) => {
+  focusWithUserGesture(window);
+  documentPictureInPicture.requestWindow().then(t.step_func_done(
+      (pipWindow) => {
+    focusWithUserGesture(pipWindow);
+    return promise_rejects_dom(t, 'NotAllowedError', pipWindow.DOMException,
+        pipWindow.documentPictureInPicture.requestWindow());
+  }));
+});
+</script>
+</body>

@@ -504,6 +504,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   NavigationApi* navigation();
 
+  // Is this a Document Picture in Picture window?
+  bool IsPictureInPictureWindow() const;
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -528,8 +531,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void DispatchLoadEvent();
 
-  // Is this a Document Picture in Picture window?
-  bool IsPictureInPictureWindow() const;
   void SetIsPictureInPictureWindow();
 
   // Return the viewport size including scrollbars.
