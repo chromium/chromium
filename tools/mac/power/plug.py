@@ -36,11 +36,16 @@ class KasaPlugController():
     self.strip = SmartStrip(kasa_switch_ip)
     self.loop.run_until_complete(self.strip.update())
 
+    self.closed = False
+
+  def __del__(self):
+    self.close()
+
   def turn_on(self, device: str):
     """Turns the plug for |device| to the on position
     """
 
-    for plug in strip.children:
+    for plug in self.strip.children:
       if plug.alias == device:
         self.loop.run_until_complete(plug.turn_on())
         return
@@ -49,7 +54,7 @@ class KasaPlugController():
   def turn_off(self, device: str):
     """Turns the plug for |device| to the off position
     """
-    for plug in strip.children:
+    for plug in self.strip.children:
       if plug.alias == device:
         self.loop.run_until_complete(plug.turn_off())
         return
@@ -63,7 +68,7 @@ class KasaPlugController():
     device = os.uname()[1].split('.')[0]
 
     print(f"Plugging in {device}...")
-    turn_on(device)
+    self.turn_on(device)
 
     battery = psutil.sensors_battery()
     while not battery.power_plugged:
@@ -77,8 +82,8 @@ class KasaPlugController():
       battery = psutil.sensors_battery()
       time.sleep(10)
 
-    turn_off(device)
     print(f"Unplugging {device}...")
+    self.turn_off(device)
     battery = psutil.sensors_battery()
     while battery.power_plugged:
       battery = psutil.sensors_battery()
@@ -88,7 +93,14 @@ class KasaPlugController():
   def close(self):
     """Closes the message loop.
     """
+    if self.closed:
+      return
+    self.closed = True
     self.loop.close()
+
+
+def get_plug_controller(ip: str):
+  return KasaPlugController(ip)
 
 
 if __name__ == "__main__":
@@ -98,10 +110,11 @@ if __name__ == "__main__":
                       required=True,
                       help="IP address of the kasa power switch.")
   parser.add_argument("--charge_level",
+                      type=int,
                       required=True,
                       help="Desired charge level.")
   args = parser.parse_args()
 
   kasa_plug_controller = KasaPlugController(args.kasa_switch_ip)
-  kasa.plug_controller.charge_to(args.charge_level)
+  kasa_plug_controller.charge_to(args.charge_level)
   kasa_plug_controller.close()

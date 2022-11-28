@@ -13,8 +13,8 @@ import datetime
 from driver import DriverContext
 import scenarios
 import browsers
+import plug
 import utils
-
 
 def IterScenarios(
     scenario_names: typing.List[str],
@@ -79,6 +79,15 @@ def main():
                       default=False,
                       help='Print verbose output.')
 
+  # If an ip is provided for the Kasa switch it needs to be fully set up
+  # (see plug.py). It will be used to keep the machine charged between
+  # scenarios.
+  parser.add_argument(
+      "--kasa_switch_ip",
+      required=False,
+      help="IP address of the kasa power switch controlling the current device."
+  )
+
   parser.add_argument('--extra-command-line',
                       dest='extra_command_line',
                       action='store')
@@ -95,6 +104,10 @@ def main():
   if not output_dir:
     output_dir = os.path.join("output",
                               datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+
+  kasa_plug_controller = None
+  if args.kasa_switch_ip:
+    kasa_plug_controller = plug.get_plug_controller(args.kasa_switch_ip)
 
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
   with DriverContext(output_dir, args.power_sampler) as driver:
@@ -117,6 +130,9 @@ def main():
     for scenario in IterScenarios(args.scenarios,
                                   BrowserFactory,
                                   meet_meeting_id=args.meet_meeting_id):
+
+      if kasa_plug_controller:
+        kasa_plug_controller.charge_to(80)
 
       if args.tracing_mode:
         logging.info(f'Tracing scenario {scenario.name} ...')
