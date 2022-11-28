@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -121,6 +122,14 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
   web_view_->LoadInitialURL(GetDialogURL(prompt_type));
+
+  // Override the default zoom level for the Privacy Sandbox dialog. Its size
+  // should align with native UI elements, rather than web content.
+  auto* web_contents = web_view_->GetWebContents();
+  auto* rfh = web_contents->GetPrimaryMainFrame();
+  auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
+  zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
+                                  blink::PageZoomFactorToZoomLevel(1.0f));
 
   auto width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
       GetDialogWidth(prompt_type));

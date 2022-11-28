@@ -25,6 +25,8 @@ class PrivacySandboxDialogUI : public content::WebUIController {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  void InitializeForDebug();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_UI_H_

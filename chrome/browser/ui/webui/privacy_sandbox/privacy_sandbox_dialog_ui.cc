@@ -18,6 +18,7 @@
 #include "chrome/grit/google_chrome_strings.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
 #include "chrome/grit/privacy_sandbox_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -187,6 +188,13 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(kStrings);
 
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
+  if (url.query().find("debug") != std::string::npos) {
+    // Not intended to be hooked to anything. The dialog will not initialize it
+    // so we force it here.
+    InitializeForDebug();
+  }
+
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
@@ -209,6 +217,13 @@ void PrivacySandboxDialogUI::Initialize(
       std::move(close_callback), std::move(resize_callback),
       std::move(show_dialog_callback), std::move(open_settings_callback),
       prompt_type);
+  web_ui()->AddMessageHandler(std::move(handler));
+}
+
+void PrivacySandboxDialogUI::InitializeForDebug() {
+  auto handler = std::make_unique<PrivacySandboxDialogHandler>(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), PrivacySandboxService::PromptType::kNone);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

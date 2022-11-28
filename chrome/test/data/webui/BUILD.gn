@@ -109,6 +109,7 @@ if (include_js_tests) {
       "net_internals/net_internals_browsertest.js",
       "ntp4.js",
       "password_manager/password_manager_browsertest.js",
+      "privacy_sandbox/privacy_sandbox_dialog_a11y_browsertest.js",
       "privacy_sandbox/privacy_sandbox_dialog_browsertest.js",
       "sandboxstatus_browsertest.js",
       "settings/a11y/a11y_browsertest.js",
