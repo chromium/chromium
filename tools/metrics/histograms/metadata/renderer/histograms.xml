@@ -353,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.DomContentLoaded" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-05-27">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.FCP" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-05-27">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
