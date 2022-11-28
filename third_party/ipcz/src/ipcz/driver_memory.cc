@@ -54,12 +54,17 @@ DriverMemory DriverMemory::Clone() {
 }
 
 DriverMemoryMapping DriverMemory::Map() {
-  ABSL_ASSERT(is_valid());
+  if (!is_valid()) {
+    return DriverMemoryMapping();
+  }
+
   void* address;
   IpczDriverHandle mapping_handle;
   IpczResult result = memory_.driver()->MapSharedMemory(
       memory_.handle(), 0, nullptr, &address, &mapping_handle);
-  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  if (result != IPCZ_RESULT_OK) {
+    return DriverMemoryMapping();
+  }
   return DriverMemoryMapping(*memory_.driver(), mapping_handle, address, size_);
 }
 

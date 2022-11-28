@@ -44,7 +44,8 @@ class DriverMemory {
   DriverMemory Clone();
 
   // Asks the driver to map this memory object into the process's address space
-  // and returns a scoper to control the mapping's lifetime.
+  // and returns a scoper to control the mapping's lifetime. Returns an invalid
+  // mapping if mapping fails or if called on an invalid DriverMemory.
   DriverMemoryMapping Map();
 
  private:

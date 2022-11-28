@@ -397,8 +397,9 @@ bool NodeLink::OnNonBrokerReferralAccepted(
       std::min(msg::kProtocolVersion, accepted.params().protocol_version);
   auto transport = MakeRefCounted<DriverTransport>(
       accepted.TakeDriverObject(accepted.params().transport));
-  DriverMemory buffer(accepted.TakeDriverObject(accepted.params().buffer));
-  if (!transport->driver_object().is_valid() || !buffer.is_valid()) {
+  DriverMemoryMapping mapping =
+      DriverMemory(accepted.TakeDriverObject(accepted.params().buffer)).Map();
+  if (!transport->driver_object().is_valid() || !mapping.is_valid()) {
     // Not quite a validation failure if the broker simply failed to allocate
     // resources for this link. Treat it like a connection failure.
     callback(/*link=*/nullptr, /*num_initial_portals=*/0);
@@ -408,7 +409,7 @@ bool NodeLink::OnNonBrokerReferralAccepted(
   Ref<NodeLink> link_to_referree = NodeLink::CreateInactive(
       node_, LinkSide::kA, local_node_name_, accepted.params().name,
       Node::Type::kNormal, protocol_version, std::move(transport),
-      NodeLinkMemory::Create(node_, buffer.Map()));
+      NodeLinkMemory::Create(node_, std::move(mapping)));
   callback(link_to_referree, accepted.params().num_initial_portals);
   link_to_referree->Activate();
   return true;
@@ -449,12 +450,8 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
     return false;
   }
 
-  auto memory = DriverMemory(accept.TakeDriverObject(accept.params().memory));
-  if (!memory.is_valid()) {
-    return false;
-  }
-
-  auto mapping = memory.Map();
+  DriverMemoryMapping mapping =
+      DriverMemory(accept.TakeDriverObject(accept.params().memory)).Map();
   if (!mapping.is_valid()) {
     return false;
   }
@@ -491,12 +488,13 @@ bool NodeLink::OnRequestIndirectIntroduction(
 }
 
 bool NodeLink::OnAddBlockBuffer(msg::AddBlockBuffer& add) {
-  DriverMemory buffer(add.TakeDriverObject(add.params().buffer));
-  if (!buffer.is_valid()) {
+  DriverMemoryMapping mapping =
+      DriverMemory(add.TakeDriverObject(add.params().buffer)).Map();
+  if (!mapping.is_valid()) {
     return false;
   }
   return memory().AddBlockBuffer(add.params().id, add.params().block_size,
-                                 buffer.Map());
+                                 std::move(mapping));
 }
 
 bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {

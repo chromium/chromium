@@ -50,9 +50,9 @@ class DriverMemoryMapping {
   void Unmap();
 
   IpczDriver driver_;
-  IpczDriverHandle mapping_;
-  void* address_;
-  size_t size_;
+  IpczDriverHandle mapping_ = IPCZ_INVALID_DRIVER_HANDLE;
+  void* address_ = nullptr;
+  size_t size_ = 0;
 };
 
 }  // namespace ipcz
