@@ -55,6 +55,7 @@ source_set("cells") {
   ]
 
   deps = [
+    ":features",
     "resources:table_view_cell_chevron",
     "resources:table_view_cell_edit_icon",
     "resources:table_view_cell_error_icon",

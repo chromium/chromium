@@ -6,6 +6,7 @@
 
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/table_view/cells/features.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -86,6 +87,9 @@
     _textLabel = [[UILabel alloc] init];
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
+    if (IsTruncateTableViewCellTitleEnabled()) {
+      _textLabel.numberOfLines = 2;
+    }
     [_textLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
@@ -138,9 +142,11 @@
       heightConstraint,
     ]];
 
-    [self configureTextLabelForAccessibility:
-              UIContentSizeCategoryIsAccessibilityCategory(
-                  self.traitCollection.preferredContentSizeCategory)];
+    if (!IsTruncateTableViewCellTitleEnabled()) {
+      [self configureTextLabelForAccessibility:
+                UIContentSizeCategoryIsAccessibilityCategory(
+                    self.traitCollection.preferredContentSizeCategory)];
+    }
   }
   return self;
 }
@@ -149,6 +155,7 @@
 
 // Configures -TableViewImageCell.textLabel for accessibility or not.
 - (void)configureTextLabelForAccessibility:(BOOL)accessibility {
+  DCHECK(!IsTruncateTableViewCellTitleEnabled());
   if (accessibility) {
     self.textLabel.numberOfLines = 2;
   } else {
@@ -167,6 +174,9 @@
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (IsTruncateTableViewCellTitleEnabled()) {
+    return;
+  }
   BOOL isCurrentCategoryAccessibility =
       UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory);
