@@ -187,14 +187,14 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   if (browser_view()->GetIsWebAppType() &&
       (!browser->is_type_app_popup() ||
-       browser_view()->AppUsesWindowControlsOverlay())) {
+       browser_view()->AppUsesWindowControlsOverlay() ||
+       browser_view()->AppUsesBorderlessMode())) {
     // Add the container for extra web app buttons (e.g app menu button).
     set_web_app_frame_toolbar(AddChildView(
         std::make_unique<WebAppFrameToolbarView>(frame(), browser_view())));
+    if (AppIsBorderlessPwa())
+      UpdateBorderlessModeEnabled();
   }
-
-  if (AppIsBorderlessPwa())
-    UpdateBorderlessModeEnabled();
 
   browser_view()->immersive_mode_controller()->AddObserver(this);
 }
