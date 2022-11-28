@@ -1,0 +1,8 @@
+tr_suggestion={anchor: {:2, 0, down}, focus: {:2, 37, down}}
+suggestion.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_suggestion)='Suggested Insertion{
+    AXIsSuggestedInsertion = 1;
+    AXIsSuggestion = 1;
+}Suggested Deletion{
+    AXIsSuggestedDeletion = 1;
+    AXIsSuggestion = 1;
+}'

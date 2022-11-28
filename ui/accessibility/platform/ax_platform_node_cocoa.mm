@@ -198,6 +198,20 @@ bool IsAXSetter(SEL selector) {
   return [NSStringFromSelector(selector) hasPrefix:@"setAccessibility"];
 }
 
+void CollectAncestorRoles(
+    const ui::AXNode& node,
+    std::map<ui::AXNodeID, std::set<ax::mojom::Role>>& out_ancestor_roles) {
+  if (out_ancestor_roles.contains(node.id()))
+    return;
+  out_ancestor_roles[node.id()] = {node.GetRole()};
+  if (!node.GetParent())
+    return;
+  CollectAncestorRoles(*node.GetParent(), out_ancestor_roles);
+  out_ancestor_roles[node.id()].insert(
+      out_ancestor_roles[node.GetParent()->id()].begin(),
+      out_ancestor_roles[node.GetParent()->id()].end());
+}
+
 }  // namespace
 
 @interface AXPlatformNodeCocoa (Private)
@@ -711,20 +725,22 @@ bool IsAXSetter(SEL selector) {
   return has_image_semantics;
 }
 
-- (void)addMisspelledTextAttributes:(const AXRange&)axRange
-                           toString:
-                               (NSMutableAttributedString*)attributedString {
+- (void)addTextAnnotationsIn:(const AXRange*)axRange
+                          to:(NSMutableAttributedString*)attributedString {
   int anchorStartOffset = 0;
+  std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
+
   [attributedString beginEditing];
-  for (const AXRange& leafTextRange : axRange) {
+  for (const AXRange& leafTextRange : *axRange) {
     DCHECK(!leafTextRange.IsNull());
     DCHECK_EQ(leafTextRange.anchor()->GetAnchor(),
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
 
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
-
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
+
+    // Add misspelling information
     const std::vector<int32_t>& markerTypes =
         anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
     const std::vector<int>& markerStarts =
@@ -753,7 +769,36 @@ bool IsAXSetter(SEL selector) {
                  range:NSMakeRange(misspellingStart, misspellingLength)];
     }
 
-    anchorStartOffset += leafTextRange.GetText().length();
+    // Add annotation information
+    int leafTextLength = leafTextRange.GetText().length();
+    DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
+              [attributedString length]);
+    NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
+
+    CollectAncestorRoles(*anchor, ancestor_roles);
+
+    if (ancestor_roles[anchor->id()].contains(ax::mojom::Role::kMark)) {
+      [attributedString addAttribute:@"AXHighlight" value:@YES range:leafRange];
+    }
+    if (ancestor_roles[anchor->id()].contains(ax::mojom::Role::kSuggestion)) {
+      [attributedString addAttribute:@"AXIsSuggestion"
+                               value:@YES
+                               range:leafRange];
+    }
+    if (ancestor_roles[anchor->id()].contains(
+            ax::mojom::Role::kContentDeletion)) {
+      [attributedString addAttribute:@"AXIsSuggestedDeletion"
+                               value:@YES
+                               range:leafRange];
+    }
+    if (ancestor_roles[anchor->id()].contains(
+            ax::mojom::Role::kContentInsertion)) {
+      [attributedString addAttribute:@"AXIsSuggestedInsertion"
+                               value:@YES
+                               range:leafRange];
+    }
+
+    anchorStartOffset += leafTextLength;
   }
   [attributedString endEditing];
 }
@@ -1845,7 +1890,7 @@ bool IsAXSetter(SEL selector) {
     AXRange axRange(_node->GetDelegate()->CreateTextPositionAt(0),
                     _node->GetDelegate()->CreateTextPositionAt(
                         static_cast<int>(textContent.length())));
-    [self addMisspelledTextAttributes:axRange toString:attributedTextContent];
+    [self addTextAnnotationsIn:&axRange to:attributedTextContent];
   }
 
   return [attributedTextContent attributedSubstringFromRange:range];
@@ -1863,8 +1908,8 @@ bool IsAXSetter(SEL selector) {
   NSMutableAttributedString* attributedText =
       [[[NSMutableAttributedString alloc] initWithString:text] autorelease];
   // Currently, we only decorate the attributed string with misspelling
-  // information.
-  [self addMisspelledTextAttributes:axRange toString:attributedText];
+  // and annotation information.
+  [self addTextAnnotationsIn:&axRange to:attributedText];
   return attributedText;
 }
 

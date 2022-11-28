@@ -1,0 +1,4 @@
+tr_mark={anchor: {:2, 0, down}, focus: {:2, 9, down}}
+mark.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_mark)='Mark Text{
+    AXHighlight = 1;
+}'

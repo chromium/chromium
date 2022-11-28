@@ -26,6 +26,7 @@ using ui::AXTreeFormatter;
 #if BUILDFLAG(IS_MAC)
 
 constexpr const char kMacAction[]{"mac/action"};
+constexpr const char kMacAttributedString[]{"mac/attributed-string"};
 constexpr const char kMacAttributes[]{"mac/attributes"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
@@ -421,6 +422,29 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXURL) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXVisited) {
   RunTypedTest<kMacAttributes>("ax-visited.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringDeletion) {
+  RunTypedTest<kMacAttributedString>("deletion.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringInsertion) {
+  RunTypedTest<kMacAttributedString>("insertion.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringMark) {
+  RunTypedTest<kMacAttributedString>("mark.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AttributedStringNestedAnnotation) {
+  RunTypedTest<kMacAttributedString>(
+      "nested-suggestion-insertion-deletion.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AttributedStringSuggestion) {
+  RunTypedTest<kMacAttributedString>("suggestion.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
