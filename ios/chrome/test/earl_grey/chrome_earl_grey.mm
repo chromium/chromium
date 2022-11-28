@@ -502,7 +502,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                              @"The script response is not iterable.");
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
-  for (const auto& option : result.GetListDeprecated()) {
+  for (const auto& option : result.GetList()) {
     if (option.is_string()) {
       NSString* nameValuePair = base::SysUTF8ToNSString(option.GetString());
       NSMutableArray* cookieNameValue =

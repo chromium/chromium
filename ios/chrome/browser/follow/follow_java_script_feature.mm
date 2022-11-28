@@ -61,7 +61,7 @@ void FollowJavaScriptFeature::HandleResponse(const GURL& url,
                                              const base::Value* response) {
   NSMutableArray<NSURL*>* rss_urls = nil;
   if (response && response->is_list()) {
-    for (const auto& link : response->GetListDeprecated()) {
+    for (const auto& link : response->GetList()) {
       if (link.is_string()) {
         NSURL* nsurl = net::NSURLWithGURL(GURL(link.GetString()));
         if (nsurl) {

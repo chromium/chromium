@@ -82,7 +82,7 @@ bool ArePatternsValid(const base::Value* value) {
   if (!value->is_list())
     return false;
 
-  for (const base::Value& item : value->GetListDeprecated()) {
+  for (const base::Value& item : value->GetList()) {
     if (!item.is_string())
       return false;
     auto maybe_pattern = PatternFromString(item.GetString());

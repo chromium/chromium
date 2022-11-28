@@ -101,7 +101,7 @@ NSArray<NSString*>* GetMarkedText() {
   GREYAssertTrue(result.is_list(), @"Result is not iterable.");
 
   NSMutableArray<NSString*>* marked_texts = [NSMutableArray array];
-  for (const auto& element : result.GetListDeprecated()) {
+  for (const auto& element : result.GetList()) {
     if (element.is_string()) {
       NSString* ns_element = base::SysUTF8ToNSString(element.GetString());
       [marked_texts addObject:ns_element];
