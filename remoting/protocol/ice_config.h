@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace remoting {
 
@@ -35,7 +32,7 @@ struct IceConfig {
 
   // Parses JSON representation of the config. Returns null config if parsing
   // fails.
-  static IceConfig Parse(const base::DictionaryValue& dictionary);
+  static IceConfig Parse(const base::Value::Dict& dictionary);
   static IceConfig Parse(const std::string& config_json);
   static IceConfig Parse(const apis::v1::GetIceConfigResponse& config);
 

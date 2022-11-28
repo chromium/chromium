@@ -321,9 +321,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   protocol::IceConfig ice_config;
   base::Value::Dict* ice_config_dict = message.FindDict(kIceConfig);
   if (ice_config_dict) {
-    base::Value ice_config_value(std::move(*ice_config_dict));
-    ice_config = protocol::IceConfig::Parse(
-        base::Value::AsDictionaryValue(ice_config_value));
+    ice_config = protocol::IceConfig::Parse(*ice_config_dict);
   }
 
   base::Value::Dict policies = policy_watcher_->GetEffectivePolicies();
