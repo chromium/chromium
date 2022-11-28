@@ -195,7 +195,7 @@ export class StatsTable {
    * @private
    */
   filterStats(event, container) {
-    const filter =  event.target.value;
+    const filter = event.target.value;
     const filters = filter.split(',');
     container.childNodes.forEach(node => {
       if (node.nodeName !== 'DETAILS') {

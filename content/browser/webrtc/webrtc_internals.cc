@@ -311,8 +311,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
 
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia/getDisplayMedia "
-                    "requests reached "
-                    "in webrtc-internals.";
+                    "requests reached in webrtc-internals.";
     return;
   }
 
@@ -333,7 +332,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
     dict.Set("video", video_constraints);
 
   if (!observers_.empty())
-    SendUpdate("add-get-user-media", dict.Clone());
+    SendUpdate("add-media", dict.Clone());
 
   get_user_media_requests_.Append(std::move(dict));
 
@@ -355,8 +354,7 @@ void WebRTCInternals::OnGetMediaSuccess(const std::string& request_type,
 
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia/getDisplayMedia "
-                    "requests reached "
-                    "in webrtc-internals.";
+                    "requests reached in webrtc-internals.";
     return;
   }
 
@@ -373,7 +371,7 @@ void WebRTCInternals::OnGetMediaSuccess(const std::string& request_type,
     dict.Set("video_track_info", video_track_info);
 
   if (!observers_.empty())
-    SendUpdate("update-get-user-media", dict.Clone());
+    SendUpdate("update-media", dict.Clone());
 
   get_user_media_requests_.Append(std::move(dict));
 
@@ -393,9 +391,8 @@ void WebRTCInternals::OnGetMediaFailure(const std::string& request_type,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
-    LOG(WARNING)
-        << "Maximum number of tracked /getDisplayMedia requests reached "
-           "in webrtc-internals.";
+    LOG(WARNING) << "Maximum number of tracked /getDisplayMedia "
+                    "requests reached in webrtc-internals.";
     return;
   }
 
@@ -409,7 +406,7 @@ void WebRTCInternals::OnGetMediaFailure(const std::string& request_type,
   dict.Set("error_message", error_message);
 
   if (!observers_.empty())
-    SendUpdate("update-get-user-media", dict.Clone());
+    SendUpdate("update-media", dict.Clone());
 
   get_user_media_requests_.Append(std::move(dict));
 
@@ -529,9 +526,9 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
     // If there is a stream_id key or an error key this is an update.
     if (request.GetDict().FindString("stream_id") ||
         request.GetDict().FindString("error")) {
-      observer->OnUpdate("update-get-user-media", &request);
+      observer->OnUpdate("update-media", &request);
     } else {
-      observer->OnUpdate("add-get-user-media", &request);
+      observer->OnUpdate("add-media", &request);
     }
   }
 }
@@ -748,7 +745,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   if (found_any && !observers_.empty()) {
     base::Value::Dict update;
     update.Set("rid", render_process_id);
-    SendUpdate("remove-get-user-media-for-renderer", std::move(update));
+    SendUpdate("remove-media-for-renderer", std::move(update));
   }
 }
 

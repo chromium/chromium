@@ -195,24 +195,24 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
         ");"));
   }
 
-  // Execute the javascript of addGetUserMedia.
-  void ExecuteAddGetUserMediaJs(const UserMediaRequestEntry& request) {
+  // Execute the javascript of addMedia.
+  void ExecuteAddMediaJs(const UserMediaRequestEntry& request) {
     std::stringstream ss;
     ss << "{rid:" << request.rid << ", pid:" << request.pid << ", origin:'"
        << request.origin << "', audio:'" << request.audio_constraints
        << "', video:'" << request.video_constraints << "'}";
 
-    ASSERT_TRUE(ExecuteJavascript(
-        "cr.webUIListenerCallback('add-get-user-media', " + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript("cr.webUIListenerCallback('add-media', " +
+                                  ss.str() + ");"));
   }
 
-  // Execute the javascript of removeGetUserMediaForRenderer.
-  void ExecuteRemoveGetUserMediaForRendererJs(int rid) {
+  // Execute the javascript of removeMediaForRenderer.
+  void ExecuteRemoveMediaForRendererJs(int rid) {
     std::stringstream ss;
     ss << "{rid:" << rid << "}";
     ASSERT_TRUE(ExecuteJavascript(
-        "cr.webUIListenerCallback('remove-get-user-media-for-renderer', " +
-        ss.str() + ");"));
+        "cr.webUIListenerCallback('remove-media-for-renderer', " + ss.str() +
+        ");"));
   }
 
   // Verifies that the DOM element with id |id| exists.
@@ -238,8 +238,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   }
 
   // Verifies the JS Array of userMediaRequests matches |requests|.
-  void VerifyUserMediaRequest(
-      const std::vector<UserMediaRequestEntry>& requests) {
+  void VerifyMediaRequest(const std::vector<UserMediaRequestEntry>& requests) {
     string json_requests;
     ASSERT_TRUE(
         ExecuteScriptAndExtractString(shell(),
@@ -292,7 +291,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
           "    document.querySelector('#user-media-tab-id')"
           "        .childNodes.length);",
           &user_media_request_count));
-      ASSERT_EQ(requests.size(), static_cast<size_t>(user_media_request_count));
+      // The list of childnodes includes the input field and its label.
+      ASSERT_EQ(requests.size(),
+                static_cast<size_t>(user_media_request_count) - 2);
     }
   }
 
@@ -825,27 +826,27 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
   VerifyStatsDump(dump.get(), pc_0, type, id, stats);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, UpdateGetUserMedia) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, UpdateMedia) {
   GURL url("chrome://webrtc-internals");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   UserMediaRequestEntry request1(1, 1, "origin", "ac", "vc");
   UserMediaRequestEntry request2(2, 2, "origin2", "ac2", "vc2");
-  ExecuteAddGetUserMediaJs(request1);
-  ExecuteAddGetUserMediaJs(request2);
+  ExecuteAddMediaJs(request1);
+  ExecuteAddMediaJs(request2);
 
   std::vector<UserMediaRequestEntry> list;
   list.push_back(request1);
   list.push_back(request2);
-  VerifyUserMediaRequest(list);
+  VerifyMediaRequest(list);
 
-  ExecuteRemoveGetUserMediaForRendererJs(1);
+  ExecuteRemoveMediaForRendererJs(1);
   list.erase(list.begin());
-  VerifyUserMediaRequest(list);
+  VerifyMediaRequest(list);
 
-  ExecuteRemoveGetUserMediaForRendererJs(2);
+  ExecuteRemoveMediaForRendererJs(2);
   list.erase(list.begin());
-  VerifyUserMediaRequest(list);
+  VerifyMediaRequest(list);
 }
 
 // Tests that the received propagation delta values are converted and drawn

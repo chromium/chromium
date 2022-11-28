@@ -400,7 +400,7 @@ TEST_F(WebRtcInternalsTest, AddGetUserMedia) {
 
   loop.Run();
 
-  ASSERT_EQ("add-get-user-media", observer.event_name());
+  ASSERT_EQ("add-media", observer.event_name());
   VerifyGetUserMediaData("getUserMedia", observer.event_data(), kFrameId, kPid,
                          kRequestId, kAudioConstraint, kVideoConstraint);
   webrtc_internals.RemoveObserver(&observer);
@@ -421,7 +421,7 @@ TEST_F(WebRtcInternalsTest, UpdateGetUserMediaSuccess) {
 
   loop.Run();
 
-  ASSERT_EQ("update-get-user-media", observer.event_name());
+  ASSERT_EQ("update-media", observer.event_name());
   VerifyGetUserMediaSuccessData(observer.event_data(), kFrameId, kPid,
                                 kRequestId, kStreamId, kAudioTrackInfo,
                                 kVideoTrackInfo);
@@ -445,7 +445,7 @@ TEST_F(WebRtcInternalsTest, UpdateGetUserMediaError) {
 
   loop.Run();
 
-  ASSERT_EQ("update-get-user-media", observer.event_name());
+  ASSERT_EQ("update-media", observer.event_name());
   VerifyGetUserMediaFailureData(observer.event_data(), kFrameId, kPid,
                                 kRequestId, kGetUserMediaError,
                                 kGetUserMediaErrorMessage);
@@ -469,7 +469,7 @@ TEST_F(WebRtcInternalsTest, AddGetDisplayMedia) {
 
   loop.Run();
 
-  ASSERT_EQ("add-get-user-media", observer.event_name());
+  ASSERT_EQ("add-media", observer.event_name());
   VerifyGetUserMediaData("getDisplayMedia", observer.event_data(), kFrameId,
                          kPid, kRequestId, kAudioConstraint, kVideoConstraint);
   webrtc_internals.RemoveObserver(&observer);
@@ -490,7 +490,7 @@ TEST_F(WebRtcInternalsTest, UpdateGetDisplayMediaSuccess) {
 
   loop.Run();
 
-  ASSERT_EQ("update-get-user-media", observer.event_name());
+  ASSERT_EQ("update-media", observer.event_name());
   VerifyGetUserMediaSuccessData(observer.event_data(), kFrameId, kPid,
                                 kRequestId, kStreamId, kAudioTrackInfo,
                                 kVideoTrackInfo);
@@ -514,7 +514,7 @@ TEST_F(WebRtcInternalsTest, UpdateGetDisplayMediaError) {
 
   loop.Run();
 
-  ASSERT_EQ("update-get-user-media", observer.event_name());
+  ASSERT_EQ("update-media", observer.event_name());
   VerifyGetUserMediaFailureData(observer.event_data(), kFrameId, kPid,
                                 kRequestId, kGetUserMediaError,
                                 kGetUserMediaErrorMessage);
@@ -535,7 +535,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   webrtc_internals.AddObserver(&observer);
   webrtc_internals.UpdateObserver(&observer);
 
-  EXPECT_EQ("add-get-user-media", observer.event_name());
+  EXPECT_EQ("add-media", observer.event_name());
   VerifyGetUserMediaData("getUserMedia", observer.event_data(), kFrameId, kPid,
                          kRequestId, kAudioConstraint, kVideoConstraint);
 
@@ -555,7 +555,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetDisplayMedia) {
   webrtc_internals.AddObserver(&observer);
   webrtc_internals.UpdateObserver(&observer);
 
-  EXPECT_EQ("add-get-user-media", observer.event_name());
+  EXPECT_EQ("add-media", observer.event_name());
   VerifyGetUserMediaData("getDisplayMedia", observer.event_data(), kFrameId,
                          kPid, kRequestId, kAudioConstraint, kVideoConstraint);
 

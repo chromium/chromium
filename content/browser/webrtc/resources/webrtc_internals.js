@@ -14,8 +14,7 @@ import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
 import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
-
-const USER_MEDIA_TAB_ID = 'user-media-tab-id';
+import {UserMediaTable} from './user_media.js';
 
 const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
 const OPTION_GETSTATS_LEGACY =
@@ -26,6 +25,7 @@ let tabView = null;
 let ssrcInfoManager = null;
 let peerConnectionUpdateTable = null;
 let statsTable = null;
+let userMediaTable = null;
 let dumpCreator = null;
 
 // Exporting these on window since they are directly accessed by tests.
@@ -113,6 +113,7 @@ function initialize() {
   window.ssrcInfoManager = ssrcInfoManager;
   peerConnectionUpdateTable = new PeerConnectionUpdateTable();
   statsTable = new StatsTable(ssrcInfoManager);
+  userMediaTable = new UserMediaTable(tabView, userMediaRequests);
 
   // Add listeners for all the updates that get sent from webrtc_internals.cc.
   addWebUiListener('add-peer-connection', addPeerConnection);
@@ -121,10 +122,22 @@ function initialize() {
   addWebUiListener('remove-peer-connection', removePeerConnection);
   addWebUiListener('add-standard-stats', addStandardStats);
   addWebUiListener('add-legacy-stats', addLegacyStats);
-  addWebUiListener('add-get-user-media', addGetUserMedia);
-  addWebUiListener('update-get-user-media', updateGetUserMedia);
-  addWebUiListener(
-      'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
+  addWebUiListener('add-media', (data) => {
+    userMediaRequests.push(data);
+    userMediaTable.addMedia(data)
+  });
+  addWebUiListener('update-media', (data) => {
+    userMediaRequests.push(data);
+    userMediaTable.updateMedia(data);
+  });
+  addWebUiListener('remove-media-for-renderer', (data) => {
+    for (let i = userMediaRequests.length - 1; i >= 0; --i) {
+      if (userMediaRequests[i].rid === data.rid) {
+        userMediaRequests.splice(i, 1);
+      }
+    }
+    userMediaTable.removeMediaForRenderer(data);
+  });
   addWebUiListener(
       'event-log-recordings-file-selection-cancelled',
       eventLogRecordingsFileSelectionCancelled);
@@ -552,127 +565,6 @@ function addLegacyStats(data) {
     drawSingleReport(peerConnectionElement, report, true);
   }
 }
-
-/**
- * Adds a getUserMedia/getDisplayMedia request.
- *
- * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, request_id {number}, request_type {string},
- *     audio {string}, video {string}.
- */
-function addGetUserMedia(data) {
-  userMediaRequests.push(data);
-
-  if (!$(USER_MEDIA_TAB_ID)) {
-    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia/GetDisplayMedia Requests');
-  }
-
-  const requestDiv = document.createElement('div');
-  requestDiv.className = 'user-media-request-div-class';
-  requestDiv.id = ['gum', data.rid, data.pid, data.request_id].join('-');
-  requestDiv.rid = data.rid;
-  $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
-
-  appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
-  appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-
-  const el = appendChildWithText(requestDiv, 'span',
-    data.request_type + ' call');
-  el.style.fontWeight = 'bold';
-  appendChildWithText(el, 'div', 'Time: ' +
-    (new Date(data.timestamp).toTimeString()))
-    .style.fontWeight = 'normal';
-  if (data.audio !== undefined) {
-    appendChildWithText(el, 'div', 'Audio constraints: ' +
-      (data.audio || 'true'))
-      .style.fontWeight = 'normal';
-  }
-  if (data.video !== undefined) {
-    appendChildWithText(el, 'div', 'Video constraints: ' +
-      (data.video || 'true'))
-      .style.fontWeight = 'normal';
-  }
-}
-
-/**
- * Update a getUserMedia/getDisplayMedia request with a result or error.
- *
- * @param {!Object} data The object containing rid {number}, pid {number},
- *     request_id {number}, request_type {string}.
- *     For results there is also the
- *     stream_id {string}, audio_track_info {string} and
- *     video_track_info {string}.
- *     For errors the error {string} and
- *     error_message {string} fields are set.
- */
-function updateGetUserMedia(data) {
-  userMediaRequests.push(data);
-
-  if (!$(USER_MEDIA_TAB_ID)) {
-    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia/GetDisplayMedia Requests');
-  }
-
-  const requestDiv = document.getElementById(
-    ['gum', data.rid, data.pid, data.request_id].join('-'));
-  if (!requestDiv) {
-    console.error('Could not update ' + data.request_type + ' request', data);
-    return;
-  }
-
-  if (data.error) {
-    const el = appendChildWithText(requestDiv, 'span', 'Error');
-    el.style.fontWeight = 'bold';
-    appendChildWithText(el, 'div', 'Time: ' +
-      (new Date(data.timestamp).toTimeString()))
-      .style.fontWeight = 'normal';
-    appendChildWithText(el, 'div', 'Error: ' + data.error)
-      .style.fontWeight = 'normal';
-    appendChildWithText(el, 'div', 'Error message: ' + data.error_message)
-      .style.fontWeight = 'normal';
-    return;
-  }
-
-  const el = appendChildWithText(requestDiv, 'span',
-      data.request_type + ' result');
-  el.style.fontWeight = 'bold';
-  appendChildWithText(el, 'div', 'Time: ' +
-    (new Date(data.timestamp).toTimeString()))
-    .style.fontWeight = 'normal';
-  appendChildWithText(el, 'div', 'Stream id: ' + data.stream_id)
-    .style.fontWeight = 'normal';
-  if (data.audio_track_info) {
-    appendChildWithText(el, 'div', 'Audio track: ' + data.audio_track_info)
-        .style.fontWeight = 'normal';
-  }
-  if (data.video_track_info) {
-    appendChildWithText(el, 'div', 'Video track: ' + data.video_track_info)
-        .style.fontWeight = 'normal';
-  }
-}
-
-/**
- * Removes the getUserMedia requests from the specified |rid|.
- *
- * @param {!Object} data The object containing rid {number}, the render id.
- */
-function removeGetUserMediaForRenderer(data) {
-  for (let i = userMediaRequests.length - 1; i >= 0; --i) {
-    if (userMediaRequests[i].rid === data.rid) {
-      userMediaRequests.splice(i, 1);
-    }
-  }
-
-  const requests = $(USER_MEDIA_TAB_ID).childNodes;
-  for (let i = 0; i < requests.length; ++i) {
-    if (requests[i].rid === data.rid) {
-      $(USER_MEDIA_TAB_ID).removeChild(requests[i]);
-    }
-  }
-  if ($(USER_MEDIA_TAB_ID).childNodes.length === 0) {
-    tabView.removeTab(USER_MEDIA_TAB_ID);
-  }
-}
-
 
 /**
  * Notification that the audio debug recordings file selection dialog was
