@@ -54,6 +54,7 @@
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/app/content_main.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -563,6 +564,11 @@ void BrowserTestBase::SetUp() {
   content_main_params.ui_task = base::BindOnce(
       &BrowserTestBase::ProxyRunTestOnMainThreadLoop, base::Unretained(this));
 
+  ContentMainDelegate* overridden_delegate =
+      GetOptionalContentMainDelegateOverride();
+  if (overridden_delegate)
+    content_main_params.delegate = overridden_delegate;
+
 #if !BUILDFLAG(IS_ANDROID)
   // ContentMain which goes through the normal browser initialization paths
   // and will invoke `content_main_params.ui_task`, which runs the test.
@@ -580,9 +586,11 @@ void BrowserTestBase::SetUp() {
   base::i18n::AllowMultipleInitializeCallsForTesting();
   base::i18n::InitializeICU();
 
-  // The delegate should have been set by JNI_OnLoad for the test target.
+  // The ContentMainDelegate and ContentClient should have been set by
+  // JNI_OnLoad for the test target.
   ContentMainDelegate* delegate = content_main_params.delegate;
-  DCHECK(delegate);
+  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(GetContentClientForTesting());
 
   absl::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
@@ -599,14 +607,18 @@ void BrowserTestBase::SetUp() {
     ui::RegisterPathProvider();
 
     delegate->PreSandboxStartup();
+    delegate->SandboxInitialized("");
 
     const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
         .is_running_test = true};
     DCHECK(!field_trial_list_);
     if (delegate->ShouldCreateFeatureList(invoked_in_browser))
       field_trial_list_ = SetUpFieldTrialsAndFeatureList();
+    if (delegate->ShouldInitializeMojo(invoked_in_browser))
+      InitializeMojoCore();
 
-    base::ThreadPoolInstance::Create("Browser");
+    const bool has_thread_pool =
+        GetContentClientForTesting()->browser()->CreateThreadPool("Browser");
 
     absl::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
     ASSERT_FALSE(pre_browser_main_exit_code.has_value());
@@ -623,7 +635,9 @@ void BrowserTestBase::SetUp() {
         delegate->PostEarlyInitialization(invoked_in_browser);
     ASSERT_FALSE(post_early_initialization_exit_code.has_value());
 
-    StartBrowserThreadPool();
+    if (has_thread_pool)
+      StartBrowserThreadPool();
+
     BrowserTaskExecutor::PostFeatureListSetup();
     tracing::InitTracingPostThreadPoolStartAndFeatureList(
         /* enable_consumer */ true);
@@ -1114,6 +1128,10 @@ void BrowserTestBase::CreatedBrowserMainPartsImpl(
     BrowserMainParts* browser_main_parts) {
   browser_main_parts_ = browser_main_parts;
   CreatedBrowserMainParts(browser_main_parts);
+}
+
+ContentMainDelegate* BrowserTestBase::GetOptionalContentMainDelegateOverride() {
+  return nullptr;
 }
 
 }  // namespace content

@@ -49,6 +49,7 @@ class ScopedDisableCrosapiForTesting;
 
 namespace content {
 class BrowserMainParts;
+class ContentMainDelegate;
 class WebContents;
 
 class BrowserTestBase : public ::testing::Test {
@@ -128,6 +129,11 @@ class BrowserTestBase : public ::testing::Test {
   // Called after the BrowserMainParts have been created, and before
   // PreEarlyInitialization() has been called.
   virtual void CreatedBrowserMainParts(BrowserMainParts* browser_main_parts) {}
+
+  // Returns a custom ContentMainDelegate to use for the test, or nullptr to use
+  // the standard delegate. The returned object must live at least until
+  // TearDownInProcessBrowserTextFixture is called.
+  virtual ContentMainDelegate* GetOptionalContentMainDelegateOverride();
 
   // GTest assertions that the connection to `network_service_test_` did not get
   // dropped unexpectedly.
