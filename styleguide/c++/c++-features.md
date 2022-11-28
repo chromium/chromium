@@ -36,7 +36,6 @@ The current status of existing standards and Abseil features is:
 *   **C++23:** _Not yet standardized_
 *   **Abseil:** _Default allowed; see banned/TBD
     features below_
-    *   absl::Cleanup: Initially supported February 4, 2021
     *   absl::AnyInvocable: Initially supported June 20, 2022
     *   Log library: Initially supported Aug 31, 2022
 
@@ -1909,24 +1908,6 @@ absl::AnyInvocable
 **Notes:**
 *** promo
 Overlaps with `base::RepeatingCallback`, `base::OnceCallback`.
-***
-
-### Cleanup <sup>[tbd]</sup>
-
-```c++
-FILE* sink_file = fopen(sink_path, "w");
-auto sink_closer = absl::MakeCleanup([sink_file] { fclose(sink_file); });
-```
-
-**Description:** Implements the scope guard idiom, invoking the contained
-callback's `operator()() &&` on scope exit.
-
-**Documentation:**
-[cleanup.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/cleanup/cleanup.h)
-
-**Notes:**
-*** promo
-Similar to `defer` in Golang.
 ***
 
 ### Containers <sup>[tbd]</sup>
