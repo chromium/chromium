@@ -87,10 +87,9 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
           GetDelegate().GetWebContents()->GetBrowserContext()));
   DCHECK(settings_map);
 
-  const url::Origin& origin = rfh->GetLastCommittedOrigin();
+  const GURL& url = rfh->GetLastCommittedURL();
   base::Value formfill_metadata = settings_map->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
-      nullptr);
+      url, url, ContentSettingsType::FORMFILL_METADATA, nullptr);
 
   if (!formfill_metadata.is_dict()) {
     formfill_metadata = base::Value(base::Value::Type::DICTIONARY);
@@ -100,8 +99,8 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
     formfill_metadata.SetBoolKey(kUserDataFieldFilledKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
-        origin.GetURL(), origin.GetURL(),
-        ContentSettingsType::FORMFILL_METADATA, std::move(formfill_metadata));
+        url, url, ContentSettingsType::FORMFILL_METADATA,
+        std::move(formfill_metadata));
   }
 }
 
@@ -114,12 +113,11 @@ void FormfillPageLoadMetricsObserver::MaybeRecordPriorUsageOfUserData(
           GetDelegate().GetWebContents()->GetBrowserContext()));
   DCHECK(settings_map);
 
-  const url::Origin& origin =
-      navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
+  const GURL& url =
+      navigation_handle->GetRenderFrameHost()->GetLastCommittedURL();
 
   base::Value formfill_metadata = settings_map->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
-      nullptr);
+      url, url, ContentSettingsType::FORMFILL_METADATA, nullptr);
 
   // User data field was detected on this site before.
   if (formfill_metadata.is_dict() &&

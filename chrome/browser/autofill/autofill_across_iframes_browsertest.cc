@@ -491,10 +491,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Simple,
 // This test seemed flaky in one patchset due to a DCHECK in
 // content_settings::PatternPair GetPatternsFromScopingType(), but the issue
 // didn't occur afterwards.
-//
-// TODO(crbug.com/1392914): Re-enable when the flaky DCHECK is fixed.
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Simple,
-                       DISABLED_Sandboxed_FillOnlyNumber) {
+                       Sandboxed_FillOnlyNumber) {
   // Our test fixture needs allow-scripts to extract the field values.
   static constexpr char sandbox[] = "sandbox=allow-scripts";
   const FormStructure* form =
