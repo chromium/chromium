@@ -636,12 +636,6 @@ test("gl_unittests") {
     "//third_party/mesa_headers",
   ]
 
-  # TODO(https://crbug.com/789065): this must be moved to Ozone.
-  if (ozone_platform_x11) {
-    sources += [ "gl_context_glx_unittest.cc" ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_win) {
     deps += [ "//media/base/win:test_support" ]
     libs = [ "dxguid.lib" ]

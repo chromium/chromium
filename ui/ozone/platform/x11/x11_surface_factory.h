@@ -57,7 +57,6 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       gfx::NativePixmapHandle handle) override;
 
  private:
-  std::unique_ptr<GLOzone> glx_implementation_;
   std::unique_ptr<GLOzone> egl_implementation_;
 
   std::unique_ptr<x11::Connection> connection_;

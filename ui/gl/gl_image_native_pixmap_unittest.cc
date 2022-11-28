@@ -32,17 +32,6 @@ const uint8_t kImageColor[] = {0x30, 0x40, 0x10, 0xFF};
 template <gfx::BufferFormat format>
 class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
  public:
-  absl::optional<GLImplementationParts> GetPreferedGLImplementation()
-      const override {
-#if BUILDFLAG(IS_WIN)
-    return absl::optional<GLImplementationParts>(GLImplementationParts(
-        kGLImplementationEGLANGLE, ANGLEImplementation::kNone));
-#else
-    return absl::optional<GLImplementationParts>(
-        GLImplementationParts(kGLImplementationEGLGLES2));
-#endif
-  }
-
   bool SkipTest(GLDisplay* display) const override {
     GLDisplayEGL* display_egl = static_cast<GLDisplayEGL*>(display);
     if (!display_egl->ext->b_EGL_MESA_image_dma_buf_export) {
