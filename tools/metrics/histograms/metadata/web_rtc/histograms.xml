@@ -1152,15 +1152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.ICE.UdpSocketWriteErrorCode" enum="SocketErrorCode"
-    expires_after="M77">
-  <owner>zhihuang@chromium.org</owner>
-  <summary>
-    Counters on different types of UDP socket error code. Collected when we hit
-    the error code when writing.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.MediaStreamDevices.HasPanTiltZoomCamera"
     enum="BooleanAvailable" expires_after="2022-04-24">
   <obsolete>
@@ -2065,23 +2056,6 @@ chromium-metrics-reviews@google.com.
     log this result. {NatType}
   </summary>
   <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.SystemSendPacketDuration{IPProtocolType}" units="ms"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    The duration that it takes to send out a packet in system layer. This
-    includes both the queuing time (under the condition when socket returns
-    EWOULDBLOCK from system) as well as the time system takes to finish the
-    asynchronous send. For UDP, it's the time from P2PSocketHostUdp::Send to
-    P2PSocketHostUdp::HandleSendResult. Tcp part is to be implemented.
-    {IPProtocolType}
-  </summary>
-  <token key="IPProtocolType" variants="IPProtocolType">
     <variant name=""/>
   </token>
 </histogram>

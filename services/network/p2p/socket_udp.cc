@@ -361,8 +361,6 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
   TRACE_EVENT_NESTABLE_ASYNC_END0("p2p", "UdpAsyncSendTo", packet_id);
   TRACE_EVENT_NESTABLE_ASYNC_END1("p2p", "Send", packet_id, "result", result);
   if (result < 0) {
-    ReportSocketError(result, "WebRTC.ICE.UdpSocketWriteErrorCode");
-
     if (!IsTransientError(result)) {
       LOG(ERROR) << "Error when sending data in UDP socket: " << result;
       OnError();
@@ -372,11 +370,6 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
                " transient error "
             << GetTransientErrorName(result) << ". Dropping the packet.";
   }
-
-  // UMA to track the histograms from 1ms to 1 sec for how long a packet spends
-  // in the browser process.
-  UMA_HISTOGRAM_TIMES("WebRTC.SystemSendPacketDuration_UDP" /* name */,
-                      base::Milliseconds(rtc::TimeMillis() - send_time_ms));
 
   client_->SendComplete(
       P2PSendPacketMetrics(packet_id, transport_sequence_number, send_time_ms));
