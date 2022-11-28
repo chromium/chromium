@@ -34,6 +34,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
+#include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/gbm_util.h"
 #include "ui/gfx/linux/gbm_wrapper.h"
@@ -94,6 +95,7 @@ class GbmDeviceWrapper {
       gfx::BufferFormat format,
       const gfx::Size& size,
       gfx::NativePixmapHandle handle) {
+    CHECK_LE(handle.planes.size(), base::checked_cast<size_t>(GBM_MAX_PLANES));
     base::AutoLock lock(lock_);
     if (!gbm_device_)
       return nullptr;
