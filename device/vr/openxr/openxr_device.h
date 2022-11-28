@@ -13,6 +13,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device_base.h"
 #include "device/vr/vr_export.h"
+#include "device/vr/windows/compositor_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,6 +39,7 @@ class DEVICE_VR_EXPORT OpenXrDevice
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override;
+  void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
   mojo::PendingRemote<mojom::XRCompositorHost> BindCompositorHost();
 
@@ -52,6 +54,7 @@ class DEVICE_VR_EXPORT OpenXrDevice
   void EnsureRenderLoop();
 
   void OnRequestSessionResult(bool result, mojom::XRSessionPtr session);
+  void ForceEndSession(ExitXrPresentReason reason);
   void OnPresentingControllerMojoConnectionError();
   bool IsArBlendModeSupported();
 

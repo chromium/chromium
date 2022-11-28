@@ -22,6 +22,12 @@ void FakeVRDevice::RequestSession(
   std::move(callback).Run(nullptr);
 }
 
+void FakeVRDevice::ShutdownSession(
+    mojom::XRRuntime::ShutdownSessionCallback callback) {
+  OnExitPresent();
+  std::move(callback).Run();
+}
+
 void FakeVRDevice::OnPresentingControllerMojoConnectionError() {
   OnExitPresent();
 }

@@ -25,6 +25,8 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override;
+  void ShutdownSession(
+      mojom::XRRuntime::ShutdownSessionCallback callback) override;
   void SetPose(mojom::VRPosePtr pose) { pose_ = std::move(pose); }
 
   void SetFrameDataRestricted(bool restricted) override {}

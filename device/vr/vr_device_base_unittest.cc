@@ -34,6 +34,10 @@ class VRDeviceBaseForTesting : public VRDeviceBase {
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override {}
+  void ShutdownSession(
+      mojom::XRRuntime::ShutdownSessionCallback callback) override {
+    std::move(callback).Run();
+  }
 };
 
 class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {

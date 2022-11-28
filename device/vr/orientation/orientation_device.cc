@@ -177,6 +177,19 @@ void VROrientationDevice::RequestSession(
   sensor_->Resume();
 }
 
+void VROrientationDevice::ShutdownSession(
+    mojom::XRRuntime::ShutdownSessionCallback callback) {
+  // We don't actually have enough information here to figure out which session
+  // is being requested to be terminated. However, since sessions don't get
+  // exclusive control of the device and we can drive many sessions at once,
+  // there's not really anything for us to do here except to reply to the
+  // callback.
+  // The session will end up getting shutdown via other mechanisms (some of
+  // its mojom pipes getting torn down during destruction in the other
+  // processes as a result of continuing the flow here).
+  std::move(callback).Run();
+}
+
 void VROrientationDevice::EndMagicWindowSession(VROrientationSession* session) {
   DVLOG(2) << __func__;
   base::EraseIf(magic_window_sessions_,

@@ -35,7 +35,6 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
   void ListenToDeviceChanges(
       mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener> listener)
       final;
-  void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
   device::mojom::XRDeviceId GetId() const;
   device::mojom::XRDeviceDataPtr GetDeviceData() const;

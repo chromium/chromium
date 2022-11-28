@@ -34,16 +34,6 @@ void VRDeviceBase::PauseTracking() {}
 
 void VRDeviceBase::ResumeTracking() {}
 
-void VRDeviceBase::ShutdownSession(base::OnceClosure on_completed) {
-  DVLOG(2) << __func__;
-  // TODO(https://crbug.com/1015594): The default implementation of running the
-  // callback immediately is backwards compatible, but runtimes should be
-  // updated to override this, calling the callback at the appropriate time
-  // after any necessary cleanup has been completed. Once that's done, make this
-  // method abstract.
-  std::move(on_completed).Run();
-}
-
 void VRDeviceBase::OnExitPresent() {
   DVLOG(2) << __func__ << ": !!listener_=" << !!listener_;
   if (listener_)

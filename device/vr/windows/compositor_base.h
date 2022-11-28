@@ -42,6 +42,7 @@ enum class ExitXrPresentReason : int32_t {
   kXrEndFrameFailed = 5,
   kGetFrameAfterSessionEnded = 6,
   kSubmitFrameFailed = 7,
+  kBrowserShutdown = 8,
 };
 
 class XRDeviceAbstraction {
@@ -84,12 +85,7 @@ class XRCompositorCommon : public base::Thread,
 
   ~XRCompositorCommon() override;
 
-  // on_presentation_ended will be called when this the compositor stops
-  // presenting to the headset. If new session request comes in, only the new
-  // callback will be called (since we haven't yet stopped presenting to the
-  // headset).
-  void RequestSession(base::OnceCallback<void()> on_presentation_ended,
-                      base::RepeatingCallback<void(mojom::XRVisibilityState)>
+  void RequestSession(base::RepeatingCallback<void(mojom::XRVisibilityState)>
                           on_visibility_state_changed,
                       mojom::XRRuntimeSessionOptionsPtr options,
                       RequestSessionCallback callback);
@@ -149,7 +145,6 @@ class XRCompositorCommon : public base::Thread,
   void StartPendingFrame();
 
   void StartRuntimeFinish(
-      base::OnceCallback<void()> on_presentation_ended,
       base::RepeatingCallback<void(mojom::XRVisibilityState)>
           on_visibility_state_changed,
       mojom::XRRuntimeSessionOptionsPtr options,
@@ -231,7 +226,6 @@ class XRCompositorCommon : public base::Thread,
   SubmitOverlayTextureCallback overlay_submit_callback_;
   RequestNotificationOnWebXrSubmittedCallback on_webxr_submitted_;
   bool webxr_has_pose_ = false;
-  base::OnceCallback<void()> on_presentation_ended_;
   base::RepeatingCallback<void(mojom::XRVisibilityState)>
       on_visibility_state_changed_;
   mojo::Receiver<mojom::XRPresentationProvider> presentation_receiver_{this};
