@@ -20,6 +20,7 @@ namespace drivefs {
 enum SyncStatus {
   kNotFound,
   kInProgress,
+  kQueued,
   kError,
 };
 

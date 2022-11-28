@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_search.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -131,12 +133,17 @@ class DriveFsHost::MountState : public DriveFsSession,
         }
         switch (event->state) {
           case mojom::ItemEvent::State::kQueued:
+            sync_status_tracker_->AddSyncStatusForPath(path,
+                                                       SyncStatus::kQueued);
+            break;
           case mojom::ItemEvent::State::kInProgress:
             sync_status_tracker_->AddSyncStatusForPath(path,
                                                        SyncStatus::kInProgress);
             break;
           case mojom::ItemEvent::State::kFailed:
-            // TODO(msalomao): Post a delayed task to remove the path.
+            // This state only comes through for failed downloads of pinned
+            // files. Other transfer failures are reported through the OnError()
+            // event.
             sync_status_tracker_->AddSyncStatusForPath(path,
                                                        SyncStatus::kError);
             break;
@@ -172,6 +179,14 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void OnError(mojom::DriveErrorPtr error) override {
+    base::FilePath path = host_->GetMountPath();
+    if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
+                                               &path)) {
+      sync_status_tracker_->AddSyncStatusForPath(path, SyncStatus::kError);
+    } else {
+      LOG(ERROR) << "Failed to make path relative to drive root";
+    }
+
     if (!IsKnownEnumValue(error->type)) {
       return;
     }

@@ -296,3 +296,33 @@ export async function executeTask(taskDescriptor, entries) {
   return promisify(
       chrome.fileManagerPrivate.executeTask, taskDescriptor, entries);
 }
+
+/**
+ * Returns unique parent directories of provided entries. Note: this assumes
+ * all provided entries are from the same filesystem.
+ * @param {!Array<!Entry>} entries
+ * @return {!Promise<!Array<!DirectoryEntry>>}
+ */
+export async function getUniqueParents(entries) {
+  if (entries.length === 0) {
+    return [];
+  }
+  const root = entries[0].filesystem.root;
+
+  const uniquePaths = entries.reduce((paths, entry) => {
+    const parts = entry.fullPath.split('/').slice(0, -1);
+
+    while (parts.length > 1) {
+      const path = parts.join('/');
+      if (paths.has(path)) {
+        return paths;
+      }
+      paths.add(path);
+      parts.pop();
+    }
+
+    return paths;
+  }, new Set());
+
+  return Promise.all([...uniquePaths].map(path => getDirectory(root, path)));
+}

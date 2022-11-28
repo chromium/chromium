@@ -94,7 +94,7 @@ enum MountError {
 enum FormatFileSystemType { vfat, exfat, ntfs };
 
 // File transfer progress state.
-enum TransferState { in_progress, completed, failed };
+enum TransferState { in_progress, queued, completed, failed };
 
 // The response when starting installing a Linux package.
 enum InstallLinuxPackageResponse {
@@ -655,9 +655,9 @@ dictionary MountCompletedEvent {
   boolean shouldNotify;
 };
 
-// Payload data for file transfer status updates.
+// Payload data for aggregate file transfer status updates.
 dictionary FileTransferStatus {
-  // URL of file that is being transfered.
+  // URL of file that is being transferred.
   DOMString fileUrl;
 
   // File transfer progress state.
@@ -678,6 +678,21 @@ dictionary FileTransferStatus {
   // If true, hide when a job is completed when there are zero jobs in
   // progress. Otherwise, hide when one job is in progress.
   boolean hideWhenZeroJobs;
+};
+
+// Information about the transfer status of an individual file.
+dictionary IndividualFileTransferStatus {
+  // File that is being transferred.
+  [instanceOf=Entry] object entry;
+
+  // File transfer progress state.
+  TransferState transferState;
+
+  // Number of bytes transferred so far.
+  double processed;
+
+  // Total size of the file in bytes.
+  double total;
 };
 
 // Error during the drive sync.
@@ -1789,6 +1804,10 @@ interface Events {
   static void onFileTransfersUpdated(FileTransferStatus event);
 
   static void onPinTransfersUpdated(FileTransferStatus event);
+
+  static void onIndividualFileTransfersUpdated(IndividualFileTransferStatus[] event);
+
+  static void onIndividualPinTransfersUpdated(IndividualFileTransferStatus[] event);
 
   static void onDirectoryChanged(FileWatchEvent event);
 

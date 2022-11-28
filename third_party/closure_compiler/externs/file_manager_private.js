@@ -100,6 +100,7 @@ chrome.fileManagerPrivate.FormatFileSystemType = {
 /** @enum {string} */
 chrome.fileManagerPrivate.TransferState = {
   IN_PROGRESS: 'in_progress',
+  QUEUED: 'queued',
   COMPLETED: 'completed',
   FAILED: 'failed',
 };
@@ -491,6 +492,16 @@ chrome.fileManagerPrivate.MountCompletedEvent;
  * }}
  */
 chrome.fileManagerPrivate.FileTransferStatus;
+
+/**
+ * @typedef {{
+ *   entry: !Entry,
+ *   transferState: !chrome.fileManagerPrivate.TransferState,
+ *   processed: number,
+ *   total: number,
+ * }}
+ */
+chrome.fileManagerPrivate.IndividualFileTransferStatus;
 
 /**
  * @typedef {{
@@ -1548,6 +1559,12 @@ chrome.fileManagerPrivate.onFileTransfersUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onPinTransfersUpdated;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onIndividualFileTransfersUpdated;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onIndividualPinTransfersUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onDirectoryChanged;

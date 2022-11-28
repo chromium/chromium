@@ -929,6 +929,14 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
       host_->GetSyncStatusForPath(host_->GetMountPath().Append("foo/bar")),
       SyncStatus::kInProgress);
 
+  delegate_->OnError(
+      mojom::DriveError::New(mojom::DriveError::Type::kCantUploadStorageFull,
+                             base::FilePath("/foo/bar/filename.txt")));
+  delegate_.FlushForTesting();
+  EXPECT_EQ(host_->GetSyncStatusForPath(
+                host_->GetMountPath().Append("foo/bar/filename.txt")),
+            SyncStatus::kError);
+
   auto fourth_status = mojom::SyncingStatus::New();
   fourth_status->item_events.emplace_back(
       absl::in_place, 12, 34, "relative/path.txt",
