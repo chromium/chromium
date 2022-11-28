@@ -41924,6 +41924,37 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="BrowserObservedSignIn"/>
 </enum>
 
+<enum name="FederatedClientEvent">
+  <int value="0" label="kExampleReceived"/>
+  <int value="1" label="kGetExampleIteratorError"/>
+  <int value="2" label="kGetNextExampleError"/>
+  <int value="3" label="kUnsatisfiedConditionAbort"/>
+  <int value="4" label="kContributed"/>
+  <int value="5" label="kRejected"/>
+  <int value="6" label="kTaskFailedUnknownError"/>
+</enum>
+
+<enum name="FederatedServiceEvent">
+  <int value="0" label="kLibraryLoadingSuccess"/>
+  <int value="1" label="kDlcAlreadyInstalled"/>
+  <int value="2" label="kDlcInstallTriggered"/>
+  <int value="3" label="kDlcNewlyInstalled"/>
+  <int value="4" label="kDlcKnownError"/>
+  <int value="5" label="kDlcUnknownError"/>
+  <int value="6" label="kInvalidLibraryError"/>
+  <int value="7" label="kFunctionMissingError"/>
+  <int value="8" label="kTaskSkipped"/>
+</enum>
+
+<enum name="FederatedStorageEvent">
+  <int value="0" label="kConnected"/>
+  <int value="1" label="kDisconnected"/>
+  <int value="2" label="kEmptyUsernameError"/>
+  <int value="3" label="kDbInitError"/>
+  <int value="4" label="kDbIntegrityCheckError"/>
+  <int value="5" label="kDbCleanOutdatedDataError"/>
+</enum>
+
 <enum name="FeedAutoplayEvent">
   <obsolete>
     Removed as of 05/2021. Replaced by FeedVideoPlayEvent.
