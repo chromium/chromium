@@ -65,7 +65,9 @@ try_.builder(
     main_list_view = "try",
     os = os.WINDOWS_ANY,
     # TODO(crbug.com/1351569): Restore to the CQ when its machines are fixed.
-    #tryjob = try_.job(),
+    tryjob = try_.job(
+        experiment_percentage = 50,
+    ),
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
