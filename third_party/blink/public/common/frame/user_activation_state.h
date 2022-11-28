@@ -60,7 +60,7 @@ namespace blink {
 // ==========================================
 //
 // The user activation state is replicated in the browser process (in
-// |FrameTreeNode|) and in the renderer processes (in |LocalFrame| and
+// |RenderFrameHostImpl|) and in the renderer processes (in |LocalFrame| and
 // |RemoteFrame|).  The replicated states across the browser and renderer
 // processes are kept in sync as follows:
 //

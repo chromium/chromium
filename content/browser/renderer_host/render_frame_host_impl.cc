@@ -1054,7 +1054,7 @@ bool ValidateUnfencedTopNavigation(
   // User activation is required, because fenced frames use the sandbox
   // flag `allow-top-navigation-by-user-activation`.
   // It would be better to instead check
-  // `render_frame_host->frame_tree_node()->HasTransientUserActivation()`,
+  // `render_frame_host->HasTransientUserActivation()`,
   // but it has already been consumed at this point.
   // TODO(crbug.com/848778): use the browser's source of truth for user
   // activation here (and elsewhere in this file) rather than trust the
@@ -2566,11 +2566,11 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AssertNonSpeculativeFrame();
 
-  if (has_user_gesture) {
+  if (has_user_gesture && owner_) {
     // TODO(mustaq): The render-to-browser state update caused by the below
     // JavaScriptExecuteRequestsForTests call is redundant with this update. We
     // should determine if the redundancy can be removed.
-    frame_tree_node()->UpdateUserActivationState(
+    owner_->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kNotifyActivation,
         blink::mojom::UserActivationNotificationType::kTest);
   }
@@ -5763,7 +5763,7 @@ blink::FrameOwnerElementType RenderFrameHostImpl::GetFrameOwnerElementType() {
 }
 
 bool RenderFrameHostImpl::HasTransientUserActivation() {
-  return frame_tree_node_->HasTransientUserActivation();
+  return user_activation_state_.IsActive();
 }
 
 void RenderFrameHostImpl::NotifyUserActivation(
@@ -6456,6 +6456,13 @@ void RenderFrameHostImpl::EnterFullscreen(
     EnterFullscreenCallback callback) {
   const bool had_fullscreen_token = fullscreen_request_token_.IsActive();
 
+  // Frames (possibly a subframe) that are not active nor belonging to a primary
+  // page should not enter fullscreen.
+  if (!IsActive() || !GetPage().IsPrimary()) {
+    std::move(callback).Run(/*granted=*/false);
+    return;
+  }
+
   // Entering fullscreen requires a transient user activation, a fullscreen
   // capability delegation token, a user-generated screen orientation change, or
   // another feature-specific transient allowance.
@@ -6470,10 +6477,10 @@ void RenderFrameHostImpl::EnterFullscreen(
     // Reject requests made without transient user activation or a token.
     // TODO(lanwei): Investigate whether we can terminate the renderer when
     // transient user activation and the delegated token are both inactive.
-    const bool consumed_activation =
-        frame_tree_node_->UpdateUserActivationState(
-            blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-            blink::mojom::UserActivationNotificationType::kNone);
+    CHECK(owner_);
+    const bool consumed_activation = owner_->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+        blink::mojom::UserActivationNotificationType::kNone);
     const bool consumed_token = fullscreen_request_token_.ConsumeIfActive();
     if (!consumed_activation && !consumed_token) {
       DLOG(ERROR) << "Cannot enter fullscreen because there is no transient "
@@ -6484,10 +6491,7 @@ void RenderFrameHostImpl::EnterFullscreen(
     }
   }
 
-  // Frames (possibly a subframe) that are not active nor belonging to a primary
-  // page should not enter fullscreen.
-  if (!IsActive() || !GetPage().IsPrimary() ||
-      !delegate_->CanEnterFullscreenMode(this, *options)) {
+  if (!delegate_->CanEnterFullscreenMode(this, *options)) {
     std::move(callback).Run(/*granted=*/false);
     return;
   }
@@ -6705,7 +6709,8 @@ void RenderFrameHostImpl::UpdateUserActivationState(
   if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
-  frame_tree_node_->UpdateUserActivationState(update_type, notification_type);
+  CHECK(owner_);
+  owner_->UpdateUserActivationState(update_type, notification_type);
 }
 
 void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
@@ -7241,7 +7246,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool effective_transient_activation_state =
-      params->allow_popup || frame_tree_node_->HasTransientUserActivation() ||
+      params->allow_popup || HasTransientUserActivation() ||
       (transient_allow_popup_.IsActive() &&
        params->disposition == WindowOpenDisposition::NEW_POPUP);
 
@@ -7271,7 +7276,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   // NB: This call will consume activations in the browser and the remote frame
   // proxies for this frame. The initiating renderer will consume its view of
   // the activations after we return.
-  bool was_consumed = frame_tree_node_->UpdateUserActivationState(
+  CHECK(owner_);
+  bool was_consumed = owner_->UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
       blink::mojom::UserActivationNotificationType::kNone);
 

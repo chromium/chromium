@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_OWNER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_OWNER_H_
 
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
+
 namespace content {
 
 class NavigationRequest;
@@ -33,6 +35,10 @@ class RenderFrameHostOwner {
   virtual Navigator& GetCurrentNavigator() = 0;
 
   virtual void SetFocusedFrame(SiteInstanceGroup* source) = 0;
+
+  virtual bool UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType update_type,
+      blink::mojom::UserActivationNotificationType notification_type) = 0;
 };
 
 }  // namespace content

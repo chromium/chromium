@@ -694,7 +694,7 @@ bool FrameTreeNode::NotifyUserActivation(
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
     rfh->DidReceiveUserActivation();
-    rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
+    rfh->ActivateUserActivation(notification_type);
   }
 
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
@@ -709,7 +709,7 @@ bool FrameTreeNode::NotifyUserActivation(
     for (FrameTreeNode* node : frame_tree()->Nodes()) {
       if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
               current_origin)) {
-        node->user_activation_state_.Activate(notification_type);
+        node->current_frame_host()->ActivateUserActivation(notification_type);
       }
     }
   }
@@ -721,9 +721,9 @@ bool FrameTreeNode::NotifyUserActivation(
 }
 
 bool FrameTreeNode::ConsumeTransientUserActivation() {
-  bool was_active = user_activation_state_.IsActive();
+  bool was_active = current_frame_host()->IsActiveUserActivation();
   for (FrameTreeNode* node : frame_tree()->Nodes()) {
-    node->user_activation_state_.ConsumeIfActive();
+    node->current_frame_host()->ConsumeTransientUserActivation();
   }
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
       false);
@@ -732,7 +732,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
 
 bool FrameTreeNode::ClearUserActivation() {
   for (FrameTreeNode* node : frame_tree()->SubtreeNodes(this))
-    node->user_activation_state_.Clear();
+    node->current_frame_host()->ClearUserActivation();
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
       false);
   return true;

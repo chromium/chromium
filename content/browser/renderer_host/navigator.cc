@@ -483,6 +483,11 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
+  // Save the activation status of the previous page here before it gets reset
+  // in FrameTreeNode::ResetForNavigation.
+  bool previous_document_was_activated =
+      frame_tree->root()->HasStickyUserActivation();
+
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
     // BrowsingInstance swap but we're reusing the old page's process, and we
@@ -527,11 +532,6 @@ void Navigator::DidNavigate(
       params.insecure_request_policy);
   render_frame_host->browsing_context_state()->SetInsecureNavigationsSet(
       params.insecure_navigations_set);
-
-  // Save the activation status of the previous page here before it gets reset
-  // in FrameTreeNode::ResetForNavigation.
-  bool previous_document_was_activated =
-      frame_tree->root()->HasStickyUserActivation();
 
   if (!was_within_same_document) {
     // Navigating to a new location means a new, fresh set of http headers

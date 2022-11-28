@@ -108,6 +108,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/fullscreen_request_token.h"
+#include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -2742,6 +2743,26 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImplPpapiSupport& GetPpapiSupport();
 #endif
 
+  // Returns the sticky bit of the User Activation v2 state of this document.
+  bool HasStickyUserActivation() const {
+    return user_activation_state_.HasBeenActive();
+  }
+
+  bool IsActiveUserActivation() const {
+    return user_activation_state_.IsActive();
+  }
+
+  void ClearUserActivation() { user_activation_state_.Clear(); }
+
+  void ConsumeTransientUserActivation() {
+    user_activation_state_.ConsumeIfActive();
+  }
+
+  void ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType notification_type) {
+    user_activation_state_.Activate(notification_type);
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3847,7 +3868,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `has_user_gesture` is true or not. Note that this is just the cached value
   // of what happened during the last navigation, and does not reflect the
   // user activation state of this RenderFrameHost. To get the current/live user
-  // activation state, get the value from FrameTreeNode's
+  // activation state, get the value from RenderFrameHostImpl's
   // HasStickyUserActivation() or HasTransientUserActivation() instead.
   bool last_navigation_started_with_transient_activation_ = false;
 
@@ -4617,6 +4638,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Manages a transient affordance for this frame to request fullscreen.
   blink::FullscreenRequestToken fullscreen_request_token_;
+
+  // The user activation state of this document.  See |UserActivationState| for
+  // details on how this state is maintained.
+  blink::UserActivationState user_activation_state_;
 
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.
