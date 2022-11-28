@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
@@ -78,9 +79,16 @@ inline void CollectElementIdentifierHashes(
   }
 }
 
+void CollectDescendantCompoundSelectorIdentifierHashes(
+    const CSSSelector* selector,
+    CSSSelector::RelationType relation,
+    unsigned*& hash,
+    unsigned* end);
+
 inline void CollectDescendantSelectorIdentifierHashes(
     const CSSSelector& selector,
-    unsigned*& hash) {
+    unsigned*& hash,
+    unsigned* end) {
   switch (selector.Match()) {
     case CSSSelector::kId:
       if (!selector.Value().empty())
@@ -112,8 +120,67 @@ inline void CollectDescendantSelectorIdentifierHashes(
                             : attribute_name.LowerASCII();
       (*hash++) = lower_name.Impl()->ExistingHash() * kAttributeSalt;
     } break;
+    case CSSSelector::kPseudoClass:
+      switch (selector.GetPseudoType()) {
+        case CSSSelector::kPseudoIs:
+        case CSSSelector::kPseudoWhere:
+        case CSSSelector::kPseudoParent: {
+          // If we have a one-element :is(), :where() or &, treat it
+          // as if the given list was written out as a normal descendant.
+          const CSSSelector* selector_list = selector.SelectorListOrParent();
+          if (selector_list &&
+              CSSSelectorList::Next(*selector_list) == nullptr) {
+            CollectDescendantCompoundSelectorIdentifierHashes(
+                selector_list, CSSSelector::kDescendant, hash, end);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
     default:
       break;
+  }
+}
+
+void CollectDescendantCompoundSelectorIdentifierHashes(
+    const CSSSelector* selector,
+    CSSSelector::RelationType relation,
+    unsigned*& hash,
+    unsigned* end) {
+  // Skip the rightmost compound. It is handled quickly by the rule hashes.
+  bool skip_over_subselectors = true;
+  for (const CSSSelector* current = selector; current;
+       current = current->TagHistory()) {
+    // Only collect identifiers that match ancestors.
+    switch (relation) {
+      case CSSSelector::kSubSelector:
+        if (!skip_over_subselectors)
+          CollectDescendantSelectorIdentifierHashes(*current, hash, end);
+        break;
+      case CSSSelector::kDirectAdjacent:
+      case CSSSelector::kIndirectAdjacent:
+        skip_over_subselectors = true;
+        break;
+      case CSSSelector::kShadowSlot:
+      case CSSSelector::kDescendant:
+      case CSSSelector::kChild:
+      case CSSSelector::kUAShadow:
+      case CSSSelector::kShadowPart:
+        skip_over_subselectors = false;
+        CollectDescendantSelectorIdentifierHashes(*current, hash, end);
+        break;
+      case CSSSelector::kRelativeDescendant:
+      case CSSSelector::kRelativeChild:
+      case CSSSelector::kRelativeDirectAdjacent:
+      case CSSSelector::kRelativeIndirectAdjacent:
+        NOTREACHED();
+        break;
+    }
+    if (hash == end)
+      return;
+    relation = current->Relation();
   }
 }
 
@@ -184,41 +251,12 @@ void SelectorFilter::CollectIdentifierHashes(
     unsigned maximum_identifier_count) {
   unsigned* hash = identifier_hashes;
   unsigned* end = identifier_hashes + maximum_identifier_count;
-  CSSSelector::RelationType relation = selector.Relation();
-  // Skip the rightmost compound. It is handled quickly by the rule hashes.
-  bool skip_over_subselectors = true;
-  for (const CSSSelector* current = selector.TagHistory(); current;
-       current = current->TagHistory()) {
-    // Only collect identifiers that match ancestors.
-    switch (relation) {
-      case CSSSelector::kSubSelector:
-        if (!skip_over_subselectors)
-          CollectDescendantSelectorIdentifierHashes(*current, hash);
-        break;
-      case CSSSelector::kDirectAdjacent:
-      case CSSSelector::kIndirectAdjacent:
-        skip_over_subselectors = true;
-        break;
-      case CSSSelector::kShadowSlot:
-      case CSSSelector::kDescendant:
-      case CSSSelector::kChild:
-      case CSSSelector::kUAShadow:
-      case CSSSelector::kShadowPart:
-        skip_over_subselectors = false;
-        CollectDescendantSelectorIdentifierHashes(*current, hash);
-        break;
-      case CSSSelector::kRelativeDescendant:
-      case CSSSelector::kRelativeChild:
-      case CSSSelector::kRelativeDirectAdjacent:
-      case CSSSelector::kRelativeIndirectAdjacent:
-        NOTREACHED();
-        break;
-    }
-    if (hash == end)
-      return;
-    relation = current->Relation();
+
+  CollectDescendantCompoundSelectorIdentifierHashes(
+      selector.TagHistory(), selector.Relation(), hash, end);
+  if (hash != end) {
+    *hash = 0;
   }
-  *hash = 0;
 }
 
 void SelectorFilter::ParentStackFrame::Trace(Visitor* visitor) const {

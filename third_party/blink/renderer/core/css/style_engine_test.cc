@@ -4349,6 +4349,108 @@ TEST_F(StyleEngineTest, RejectSlottedSelector) {
   EXPECT_EQ(1u, stats->rules_fast_rejected);
 }
 
+TEST_F(StyleEngineTest, FastRejectForNesting) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .notfound {
+        & span {
+          color: pink;
+        }
+      }
+    </style>
+    <div>
+      <span id="child">not pink</span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // Even if the Stats() were already enabled, the following resets it to 0.
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+
+  Element* span = GetDocument().getElementById("child");
+  ASSERT_TRUE(span);
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // Should fast reject "& span"
+  EXPECT_EQ(1u, stats->rules_fast_rejected);
+}
+
+TEST_F(StyleEngineTest, FastRejectForComplexSingleIs) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :is(#parent .notfound) > span {
+        color: pink;
+      }
+    </style>
+    <div id="parent">
+      <span id="child">not pink</span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // Even if the Stats() were already enabled, the following resets it to 0.
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+
+  Element* span = GetDocument().getElementById("child");
+  ASSERT_TRUE(span);
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // Should fast reject ":is(#parent .notfound) > span", even though it is not
+  // the same as "#parent .notfound > span".
+  EXPECT_EQ(1u, stats->rules_fast_rejected);
+}
+
+TEST_F(StyleEngineTest, NoFastRejectForMultipleIs) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :is(#foo, #bar) span {
+        color: pink;
+      }
+    </style>
+    <div id="parent">
+      <span id="child">not pink</span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // Even if the Stats() were already enabled, the following resets it to 0.
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+
+  Element* span = GetDocument().getElementById("child");
+  ASSERT_TRUE(span);
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // Should not try to fast reject due to the (multiple-element) selector list.
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+}
+
 TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <audio id="html-audio"></audio>
