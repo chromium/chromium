@@ -233,8 +233,8 @@
   <div class="bookmarks" hidden="[[!shownBookmarks_.length]]">
     <template is="dom-repeat" items="[[shownBookmarks_]]">
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-          description=
-              "[[getBookmarkDescription_(item, descriptions_.*, compact_)]]"
+          description= "[[getBookmarkDescription_(item, compactDescriptions_.*,
+                          expandedDescriptions_.*, compact_)]]"
           compact="[[compact_]]"
           on-row-clicked="onRowClicked_">
         <div slot="extra-content-container">
