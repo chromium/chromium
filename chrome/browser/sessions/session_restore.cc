@@ -285,8 +285,9 @@ class SessionRestoreImpl : public BrowserListObserver {
 
       // Restore and show the browser.
       const int initial_tab_count = 0;
+      bool did_show_browser = false;
       RestoreTabsToBrowser(*(*i), browser, initial_tab_count, &created_contents,
-                           &new_group_ids);
+                           &new_group_ids, did_show_browser);
       NotifySessionServiceOfRestoredTabs(browser, initial_tab_count);
     }
 
@@ -658,8 +659,15 @@ class SessionRestoreImpl : public BrowserListObserver {
       // but unminimized.
       base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
           new_group_ids;
+      // TODO(https://crbug.com/1378744): did_show_browser is for tracking
+      // down a bug.
+      bool did_show_browser = false;
       RestoreTabsToBrowser(*(*i), browser, initial_tab_count, created_contents,
-                           &new_group_ids);
+                           &new_group_ids, did_show_browser);
+      // Newly created browsers should be shown by RestoreTabsToBrowser. If they
+      // aren't shown, they are likely to be never shown.
+      if (browser != browser_)
+        DCHECK(did_show_browser);
       (*tab_count) += (static_cast<int>(browser->tab_strip_model()->count()) -
                        initial_tab_count);
 
@@ -766,7 +774,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       int initial_tab_count,
       std::vector<RestoredTab>* created_contents,
       base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>*
-          new_group_ids) {
+          new_group_ids,
+      bool& did_show_browser) {
     DVLOG(1) << "RestoreTabsToBrowser " << window.tabs.size();
     // TODO(https://crbug.com/1032348): Change to DCHECK once we understand
     // why some browsers don't have an active tab on startup.
@@ -813,7 +822,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       // windows or when launching a hosted app from the app launcher.
       int tab_index = i + initial_tab_count;
       RestoreTab(tab, browser, created_contents, new_group_ids, tab_index,
-                 is_selected_tab, last_active_time);
+                 is_selected_tab, last_active_time, did_show_browser);
     }
   }
 
@@ -829,7 +838,8 @@ class SessionRestoreImpl : public BrowserListObserver {
                                  tab_groups::TabGroupId>* new_group_ids,
                   const int tab_index,
                   bool is_selected_tab,
-                  base::TimeTicks last_active_time) {
+                  base::TimeTicks last_active_time,
+                  bool& did_show_browser) {
     // It's possible (particularly for foreign sessions) to receive a tab
     // without valid navigations. In that case, just skip it.
     // See crbug.com/154129.
@@ -880,6 +890,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (!is_selected_tab)
       return;
 
+    if (browser != browser_)
+      did_show_browser = true;
     ShowBrowser(browser, browser->tab_strip_model()->GetIndexOfWebContents(
                              web_contents));
   }
