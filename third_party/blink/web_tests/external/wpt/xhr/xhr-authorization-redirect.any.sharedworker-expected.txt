@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS getAuthorizationHeaderValue - no redirection
+PASS getAuthorizationHeaderValue - same origin redirection
+FAIL getAuthorizationHeaderValue - cross origin redirection assert_equals: expected "none" but got "Basic dXNlcjpwYXNz"
+Harness: the test ran to completion.
+

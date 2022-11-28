@@ -226378,6 +226378,19 @@
         {}
        ]
       ],
+      "number-input-vertical-overflow.html": [
+       "dfd8100a01eb339da2b7ae1536a344ecce37f21d",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/number-input-vertical-overflow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "progress-appearance-native-horizontal.optional.html": [
        "ad7d2aa4479b3d8dfe927b2b9d08c854f721737c",
        [
@@ -274185,10 +274198,6 @@
       "ff88b1e74a951b77458340de03b91d177302543e",
       []
      ],
-     "position-fallback-tree-scoped-expected.txt": [
-      "789f12eac0eae063422bcad9ab237705e0ebb214",
-      []
-     ],
      "reference": {
       "anchor-scroll-fixedpos-ref.html": [
        "e73354df72dac33f7a94eaef445e80ec61e3976a",
@@ -317802,6 +317811,10 @@
         ]
        }
       },
+      "number-input-vertical-overflow-ref.html": [
+       "ad1ecc35ee913a2850bf42ed0e66397f30d19315",
+       []
+      ],
       "range-input-painting-ref.html": [
        "650a8139ca6cc13403957c2b68e8ef954cd80058",
        []
@@ -323739,26 +323752,6 @@
      []
     ],
     "experimental-features": {
-     "document-domain": {
-      "resources": {
-       "document-domain-disabled.html": [
-        "124ee143eee08b46b7effdb25e81cde65a1c16a8",
-        []
-       ],
-       "document-domain-disabled.html.headers": [
-        "57b46a600c0f4d5790767b74828a0ef56a34ba59",
-        []
-       ],
-       "document-domain-enabled.html": [
-        "fe03af0dbbe5dbb559b647a9fd2976b8035835b3",
-        []
-       ],
-       "document-domain-enabled.html.headers": [
-        "89ccbe756dfb39e50e8894eb791ee7626f18f59c",
-        []
-       ]
-      }
-     },
      "layout-animations-disabled-tentative.html.headers": [
       "745da550ee5162cffcdf3913a37efa6d355ca47e",
       []
@@ -329209,6 +329202,24 @@
        ]
       }
      },
+     "credentials": {
+      "authentication-redirection.any-expected.txt": [
+       "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+       []
+      ],
+      "authentication-redirection.any.serviceworker-expected.txt": [
+       "89eb9a1166f7d668a4cfb1b7f926a42b611eb6f3",
+       []
+      ],
+      "authentication-redirection.any.sharedworker-expected.txt": [
+       "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+       []
+      ],
+      "authentication-redirection.any.worker-expected.txt": [
+       "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+       []
+      ]
+     },
      "headers": {
       "headers-basic.any.js.ini": [
        "20c0ac2dfe559676f717546d157341969bfe58fd",
@@ -329604,6 +329615,10 @@
       ],
       "data.json": [
        "76519fa8cc27abe9841b35f0f428207120f098e1",
+       []
+      ],
+      "dump-authorization-header.py": [
+       "a651aeb4e8b9238383af5ec8ecb5e3820e081881",
        []
       ],
       "echo-content.h2.py": [
@@ -385306,6 +385321,22 @@
      "73108401708f3c14a757a21e2c9554a869bc120c",
      []
     ],
+    "xhr-authorization-redirect.any-expected.txt": [
+     "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+     []
+    ],
+    "xhr-authorization-redirect.any.serviceworker-expected.txt": [
+     "b1c0db934ea04dcd6f8ad9b4f5cda23364a310c8",
+     []
+    ],
+    "xhr-authorization-redirect.any.sharedworker-expected.txt": [
+     "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+     []
+    ],
+    "xhr-authorization-redirect.any.worker-expected.txt": [
+     "9fb8be1b5efe80a8fccb8de5c10f0b544ebf308e",
+     []
+    ],
     "xmlhttprequest-sync-block-defer-scripts-subframe.html": [
      "be46a12b6f716f659e702e34cef36d8f2bd8b495",
      []
@@ -419053,7 +419084,7 @@
       ]
      ],
      "position-fallback-tree-scoped.html": [
-      "5b5c25f1030113bc6a8aaf68d4e977170e0b899f",
+      "955c3a7c1bd5b5be97356ec4535ba85a075e9042",
       [
        null,
        {}
@@ -426088,6 +426119,20 @@
       ],
       "font-valid.html": [
        "896be89741bd14acd961398791f62db3ec876c8d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-variant-alternates-invalid.html": [
+       "baf35acb8a11d8d5319712b68191529f175d895b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-variant-alternates-valid.html": [
+       "43cc6f52448f3cdf745a7d241d70671b99474f6d",
        [
         null,
         {}
@@ -445975,6 +446020,15 @@
         {}
        ]
       ],
+      "text-input-vertical-overflow-no-scroll.html": [
+       "c288d6472c62e7119ce315a690cf38c639ee6828",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "textarea-rows-cols-sizing.html": [
        "8cd9c27d36cba2f6c7a1863c3d1c95d1c3b97320",
        [
@@ -451878,15 +451932,6 @@
    },
    "document-policy": {
     "experimental-features": {
-     "document-domain": {
-      "document-domain.tentative.sub.html": [
-       "65de95c9a3899a884b9ccb47a626701799950bfa",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
      "document-write.tentative.html": [
       "551703c6f56b74856e2b7b465760fc57c2fe95dc",
       [
@@ -476617,6 +476662,69 @@
         }
        ]
       ],
+      "authentication-redirection.any.js": [
+       "b6376368116e76270d489493350e4226293bb8da",
+       [
+        "fetch/api/credentials/authentication-redirection.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/authentication-redirection.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/authentication-redirection.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/authentication-redirection.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "cookies.any.js": [
        "de30e477655c2851873e75a34019f30644679ac1",
        [
@@ -493646,13 +493754,6 @@
        ],
        "document_domain_access_details.sub.html": [
         "eb02c96f1d1d1d01a73182d08d2bae7eedeff109",
-        [
-         null,
-         {}
-        ]
-       ],
-       "document_domain_feature_policy.tentative.sub.html": [
-        "e50e5e1657f11cc8484d864080e2c8e2b2a1922a",
         [
          null,
          {}
@@ -634150,6 +634251,69 @@
      [
       null,
       {}
+     ]
+    ],
+    "xhr-authorization-redirect.any.js": [
+     "e9a4db44f7238117cab3027d5d88859f83fc63fc",
+     [
+      "xhr/xhr-authorization-redirect.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "xhr/xhr-authorization-redirect.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "xhr/xhr-authorization-redirect.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "xhr/xhr-authorization-redirect.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ]
+       ]
+      }
      ]
     ],
     "xhr-timeout-longtask.any.js": [
