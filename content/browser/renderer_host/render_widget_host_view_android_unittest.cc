@@ -430,6 +430,9 @@ class RenderWidgetHostViewAndroidRotationTest
   // viz::LocalSurfaceId.
   viz::LocalSurfaceId PortraitToFullscreenLanscape();
 
+  // Fires the rotation throttle timeout.
+  void FireRotationTimeout();
+
   // RenderWidgetHostViewAndroid:
   void EnterFullscreenMode();
   void ExitFullscreenMode();
@@ -541,6 +544,10 @@ RenderWidgetHostViewAndroidRotationTest::PortraitToFullscreenLanscape() {
   OnPhysicalBackingSizeChanged(fullscreen_landscape_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   return GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::FireRotationTimeout() {
+  render_widget_host_view_android()->rotation_timeout_.FireNow();
 }
 
 void RenderWidgetHostViewAndroidRotationTest::EnterFullscreenMode() {
@@ -935,6 +942,68 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenEviction) {
   GetLocalSurfaceIdAndConfirmNewerThan(local_surface_id);
 }
 
+// Tests that when Android fakes visibility to start a rotation, before hiding
+// and completing the rotation later, that the rotation timeout and subsequent
+// actual visibility change correctly updates the viz::LocalSurfaceId and stops
+// all throttling. (https://crbug.com/1383446)
+TEST_F(RenderWidgetHostViewAndroidRotationTest, FakeVisibilityScreenRotation) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  auto local_surface_id = rwhva->GetLocalSurfaceId();
+
+  // Portrait orientation split screen. Same width, reduce height by half but
+  // keep inset for system status bar. This should not throttle, but should
+  // advance the viz::LocalSurfaceId
+  OnVisibleViewportSizeChanged(300, 195);
+  OnPhysicalBackingSizeChanged(gfx::Size(600, 390));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto split_screen_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(local_surface_id);
+
+  // Rotate device to landscape orientation
+  SetLandscapeScreenInfo(/*rotation=*/true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  OnVisibleViewportSizeChanged(200, 295);
+  OnPhysicalBackingSizeChanged(gfx::Size(400, 590));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto post_rotation_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(split_screen_local_surface_id);
+
+  // Hiding should not change throttle
+  rwhva->Hide();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // When turning off the screen some versions of Android lie. They set us
+  // visible even with the screen off, and rotate the ScreenInfo, but nothing
+  // else. Followed up by hiding us again.
+  rwhva->Show();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  SetPortraitScreenInfo(/*rotation=*/true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  rwhva->Hide();
+
+  // When off the timeout can fire. It should clear the throttling and advance
+  // the viz::LocalSurfaceId
+  FireRotationTimeout();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto post_timeout_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_rotation_local_surface_id);
+
+  // On some versions of Android the new post-rotation layout can be sent before
+  // we become visible.
+  OnVisibleViewportSizeChanged(300, 195);
+  OnPhysicalBackingSizeChanged(gfx::Size(600, 390));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto post_hidden_rotation_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_timeout_local_surface_id);
+
+  // When becoming visible we should have the correct layout already and not
+  // need to advance the viz::LocalSurfaceId. We should also not be throttling.
+  rwhva->Show();
+  auto post_show_local_surface_id = rwhva->GetLocalSurfaceId();
+  EXPECT_EQ(post_show_local_surface_id, post_hidden_rotation_local_surface_id);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+}
+
 // Tests rotation and fullscreen cases that are supported by both the visual
 // properties analysis, and the fullscreen killswitch legacy path.
 //
@@ -1009,16 +1078,10 @@ TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
   // the final state. So we advance the viz::LocalSurfaceId to have the newest
   // possible content ready.
   rwhva->Show();
-  const viz::LocalSurfaceId shown_local_surface_id =
-      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
-  // However we should still block further updates until rotation has completed.
-  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
-
-  // When rotation has completed we should begin Surface Sync again. There
-  // should also be a new viz::LocalSurfaceId.
-  OnPhysicalBackingSizeChanged(landscape_physical_backing);
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+  // We do not block synchronization, as there is no platform consistency in
+  // resize messages when becoming visible.
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
-  GetLocalSurfaceIdAndConfirmNewerThan(shown_local_surface_id);
 }
 
 // Test that when the view is hidden, and another enters Fullscreen, that we
@@ -1056,16 +1119,9 @@ TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
   // viz::LocalSurfaceId upon becoming visible, to send all visual updates to
   // the Renderer.
   rwhva->Show();
-  const viz::LocalSurfaceId shown_local_surface_id =
-      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
-  // However we should still block further updates until rotation has completed.
-  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
-
-  // When the Renderer submits the first post rotation frame we unblock further
-  // Surface Sync.
-  cc::RenderFrameMetadata metadata;
-  metadata.local_surface_id = shown_local_surface_id;
-  OnRenderFrameMetadataChangedAfterActivation(metadata, base::TimeTicks::Now());
+  GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+  // We do not block synchronization, as there is no platform consistency in
+  // resize messages when becoming visible.
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 }
 

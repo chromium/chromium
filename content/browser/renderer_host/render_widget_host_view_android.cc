@@ -513,13 +513,11 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
       // physical backing and screen info updates. So only process the pending
       // state once.
       pending_screen_state_.on_sync_display_properties_changed_received = true;
-      if (ScreenState::IsRotation(
-              pending_screen_state_.screen_info_size,
-              current_screen_state_.physical_backing_size)) {
-        start_rotation = true;
-      } else {
-        sync_needed = true;
-      }
+      // ScreenInfo explicitly lists an orientation, we always start a rotation
+      // when requested. It is possible in split-screen for
+      // `physical_backing_size` to become in a mixed orientation states, so we
+      // do not compare to them.
+      start_rotation = true;
     }
   }
 
@@ -3009,7 +3007,7 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
   // Whether evicted or not, we stop batching for rotation in order to get
   // content ready for the new orientation.
   bool rotation_override = in_rotation_;
-  base::AutoReset<bool> in_rotation(&in_rotation_, false);
+  in_rotation_ = false;
 
   view_.GetLayer()->SetHideLayerAndSubtree(false);
 
@@ -3091,6 +3089,11 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
     EndRotationBatching();
     rotation_metrics_.begin()->first = base::TimeTicks::Now();
     BeginRotationEmbed();
+  } else if (!rotation_metrics_.empty()) {
+    // If we have enqueued `rotation_metrics` but are not completing a rotation,
+    // then a timeout fired while we were hidden. As no synchronizing has
+    // previously occurred, set now to be the start of the rotation time.
+    rotation_metrics_.begin()->first = base::TimeTicks::Now();
   }
 
   // TODO(crbug.com/1385146): Ideally we would do no synchronizing at all when
@@ -3300,13 +3303,21 @@ void RenderWidgetHostViewAndroid::BeginRotationEmbed() {
 }
 
 void RenderWidgetHostViewAndroid::EndRotationAndSyncIfNecessary() {
-  if (!in_rotation_ || !is_showing_)
+  if (!in_rotation_)
     return;
   EndRotationBatching();
-  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              absl::nullopt,
-                              /*reuse_current_local_surface_id=*/false,
-                              /*ignore_ack=*/true);
+
+  if (is_showing_) {
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                absl::nullopt,
+                                /*reuse_current_local_surface_id=*/false,
+                                /*ignore_ack=*/true);
+  } else {
+    // If hidden, generate a new viz::LocalSurfaceId to represent the new set of
+    // blink::VisualProperties. However do not synchronize them to perform
+    // layout. The subsequent Show will lead to embedding (crbug.com/1383446)
+    local_surface_id_allocator_.GenerateId();
+  }
   BeginRotationEmbed();
 }
 
