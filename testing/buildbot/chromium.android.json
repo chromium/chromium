@@ -1156,6 +1156,7 @@
   },
   "Android arm Builder (dbg)": {
     "additional_compile_targets": [
+      "android_lint",
       "boundary_interface_example_apk",
       "dump_syms",
       "microdump_stackwalk"

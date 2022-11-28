@@ -92,6 +92,10 @@
     "label": "//chrome/test:android_browsertests",
     "type": "windowed_test_launcher",
   },
+  "android_lint": {
+    "label": "//chrome/android:android_lint",
+    "type": "additional_compile_target",
+  },
   "android_sync_integration_tests": {
     "label": "//chrome/test:android_sync_integration_tests",
     "type": "windowed_test_launcher",
