@@ -21,8 +21,8 @@ class IdentityManager;
 
 extern const char kSyncBenefitBookmarksStringName[];
 extern const char kSyncBenefitAutofillStringName[];
-extern const char kSyncBenefitHistoryStringName[];
-extern const char kSyncBenefitExtensionsAndMoreStringName[];
+extern const char kSyncBenefitExtensionsStringName[];
+extern const char kSyncBenefitHistoryAndMoreStringName[];
 
 // WebUI message handler for the sync confirmation dialog. IdentityManager calls
 // in this class use signin::ConsentLevel::kSignin because the user hasn't

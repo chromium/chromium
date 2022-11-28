@@ -41,9 +41,9 @@ const char kSyncBenefitIconNameKey[] = "iconName";
 
 const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
 const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
-const char kSyncBenefitHistoryStringName[] = "syncConfirmationHistory";
-const char kSyncBenefitExtensionsAndMoreStringName[] =
-    "syncConfirmationExtensionsAndMore";
+const char kSyncBenefitExtensionsStringName[] = "syncConfirmationExtensions";
+const char kSyncBenefitHistoryAndMoreStringName[] =
+    "syncConfirmationHistoryAndMore";
 
 SyncConfirmationHandler::SyncConfirmationHandler(
     Profile* profile,
@@ -153,16 +153,16 @@ void SyncConfirmationHandler::HandleGetSyncBenefitsList(
   autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
   sync_benefits_list.Append(std::move(autofill));
 
-  base::Value::Dict history;
-  history.Set(kSyncBenefitTitleKey, kSyncBenefitHistoryStringName);
-  history.Set(kSyncBenefitIconNameKey, "signin:devices");
-  sync_benefits_list.Append(std::move(history));
+  base::Value::Dict extensions;
+  extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
+  extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
+  sync_benefits_list.Append(std::move(extensions));
 
-  base::Value::Dict extensions_and_more;
-  extensions_and_more.Set(kSyncBenefitTitleKey,
-                          kSyncBenefitExtensionsAndMoreStringName);
-  extensions_and_more.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
-  sync_benefits_list.Append(std::move(extensions_and_more));
+  base::Value::Dict history_and_more;
+  history_and_more.Set(kSyncBenefitTitleKey,
+                       kSyncBenefitHistoryAndMoreStringName);
+  history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
+  sync_benefits_list.Append(std::move(history_and_more));
 
   ResolveJavascriptCallback(callback_id, sync_benefits_list);
 }

@@ -203,10 +203,10 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS);
   AddStringResource(source, kSyncBenefitAutofillStringName,
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL);
-  AddStringResource(source, kSyncBenefitHistoryStringName,
-                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY);
-  AddStringResource(source, kSyncBenefitExtensionsAndMoreStringName,
-                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS_AND_MORE);
+  AddStringResource(source, kSyncBenefitExtensionsStringName,
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS);
+  AddStringResource(source, kSyncBenefitHistoryAndMoreStringName,
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY_AND_MORE);
 
   source->AddResourcePath(illustration_path, illustration_id);
   source->AddResourcePath(illustration_dark_path, illustration_dark_id);
