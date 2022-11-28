@@ -391,12 +391,14 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       // not a triggering element, then the light dismiss code will hide the
       // popover and set focus to the previously focused element, then the
       // normal focus management code will reset focus to the clicked control.
-      bool can_show = !popover.element->popoverOpen() &&
-                      (popover.action == PopoverTriggerAction::kToggle ||
-                       popover.action == PopoverTriggerAction::kShow);
-      bool can_hide = popover.element->popoverOpen() &&
-                      (popover.action == PopoverTriggerAction::kToggle ||
-                       popover.action == PopoverTriggerAction::kHide);
+      bool can_show =
+          popover.element->IsPopoverReady(PopoverTriggerAction::kShow) &&
+          (popover.action == PopoverTriggerAction::kToggle ||
+           popover.action == PopoverTriggerAction::kShow);
+      bool can_hide =
+          popover.element->IsPopoverReady(PopoverTriggerAction::kHide) &&
+          (popover.action == PopoverTriggerAction::kToggle ||
+           popover.action == PopoverTriggerAction::kHide);
       if (event.type() == event_type_names::kDOMActivate &&
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {

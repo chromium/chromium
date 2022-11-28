@@ -1242,20 +1242,55 @@ bool HTMLElement::popoverOpen() const {
   return false;
 }
 
+const char* HTMLElement::IsPopoverNotReady(
+    PopoverTriggerAction action,
+    DOMExceptionCode& exception_code) const {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  DCHECK_NE(action, PopoverTriggerAction::kNone);
+  DCHECK_NE(action, PopoverTriggerAction::kToggle);
+  if (!HasPopoverAttribute()) {
+    exception_code = DOMExceptionCode::kNotSupportedError;
+    return "Not supported on elements that do not have a valid value for the "
+           "'popover' attribute";
+  }
+  exception_code = DOMExceptionCode::kInvalidStateError;
+  if (!isConnected()) {
+    return "Invalid on disconnected popover elements";
+  }
+  if (action == PopoverTriggerAction::kShow && popoverOpen()) {
+    return "Invalid on already-showing popover elements";
+  }
+  if (action == PopoverTriggerAction::kHide &&
+      GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
+    // Important to check that visibility is not kShowing (rather than
+    // popoverOpen()), because a hide transition might have been started on this
+    // popover already, and we don't want to allow a double-hide.
+    return "Invalid on popover elements that aren't already showing";
+  }
+  if (action == PopoverTriggerAction::kShow && IsA<HTMLDialogElement>(this) &&
+      hasAttribute(html_names::kOpenAttr)) {
+    return "The dialog is already open as a dialog, and therefore cannot be "
+           "opened as a popover.";
+  }
+  if (action == PopoverTriggerAction::kShow &&
+      Fullscreen::IsFullscreenElement(*this)) {
+    return "This element is already in fullscreen mode, and therefore cannot "
+           "be "
+           "opened as a popover.";
+  }
+  return nullptr;
+}
+
+bool HTMLElement::IsPopoverReady(PopoverTriggerAction action) const {
+  DOMExceptionCode exception_code;
+  return !IsPopoverNotReady(action, exception_code);
+}
+
 void HTMLElement::togglePopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (!HasPopoverAttribute()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Not supported on elements that do not have a valid value for the "
-        "'popover' attribute");
-  } else if (!isConnected()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid disconnected popover elements");
-  }
-  if (popoverOpen()) {
+  if (HasPopoverAttribute() && popoverOpen()) {
     hidePopover(exception_state);
   } else {
     showPopover(exception_state);
@@ -1273,28 +1308,10 @@ void HTMLElement::togglePopover(ExceptionState& exception_state) {
 void HTMLElement::showPopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (!HasPopoverAttribute()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Not supported on elements that do not have a valid value for the "
-        "'popover' attribute");
-  }
-  if (popoverOpen() || !isConnected()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid on already-showing or disconnected popover elements");
-  }
-  if (IsA<HTMLDialogElement>(this) && hasAttribute(html_names::kOpenAttr)) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The dialog is already open as a dialog, and therefore cannot be "
-        "opened as a popover.");
-  }
-  if (Fullscreen::IsFullscreenElement(*this)) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "This element is already in fullscreen mode, and therefore cannot be "
-        "opened as a popover.");
+  DOMExceptionCode exception_code;
+  if (auto* error =
+          IsPopoverNotReady(PopoverTriggerAction::kShow, exception_code)) {
+    return exception_state.ThrowDOMException(exception_code, error);
   }
 
   // Fire the popovershow event (bubbles, cancelable).
@@ -1419,19 +1436,10 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
 void HTMLElement::hidePopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (!HasPopoverAttribute()) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Not supported on elements that do not have a valid value for the "
-        "'popover' attribute");
-  } else if (GetPopoverData()->visibilityState() !=
-             PopoverVisibilityState::kShowing) {
-    // Important to check that visibility is not kShowing (rather than
-    // popoverOpen()), because a hide transition might have been started on this
-    // popover already, and we don't want to allow a double-hide.
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid on popover elements that aren't already showing");
+  DOMExceptionCode exception_code;
+  if (auto* error =
+          IsPopoverNotReady(PopoverTriggerAction::kHide, exception_code)) {
+    return exception_state.ThrowDOMException(exception_code, error);
   }
   HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
                       HidePopoverForcingLevel::kHideAfterAnimations);
