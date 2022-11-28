@@ -396,6 +396,9 @@ void FetchManager::Loader::DidReceiveResponse(
        response.CurrentRequestUrl().GetPath() == url_list_.back().GetPath() &&
        response.CurrentRequestUrl().Query() == url_list_.back().Query()));
 
+  auto response_type = response.GetType();
+  DCHECK_NE(response_type, FetchResponseType::kError);
+
   ScriptState* script_state = resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
 
@@ -416,12 +419,19 @@ void FetchManager::Loader::DidReceiveResponse(
   FetchResponseData* response_data =
       FetchResponseData::CreateWithBuffer(BodyStreamBuffer::Create(
           script_state, place_holder_body_, signal_, cached_metadata_handler_));
+  if (!execution_context_ || execution_context_->IsContextDestroyed() ||
+      response.GetType() == FetchResponseType::kError) {
+    // BodyStreamBuffer::Create() may run scripts and cancel this request.
+    // Do nothing in such a case.
+    // See crbug.com/1373785 for more details.
+    return;
+  }
 
+  DCHECK_EQ(response_type, response.GetType());
   DCHECK(!(network_utils::IsRedirectResponseCode(response_http_status_code_) &&
            HasNonEmptyLocationHeader(response_data->HeaderList()) &&
            fetch_request_data_->Redirect() != RedirectMode::kManual));
 
-  auto response_type = response.GetType();
   if (network_utils::IsRedirectResponseCode(response_http_status_code_) &&
       fetch_request_data_->Redirect() == RedirectMode::kManual) {
     response_type = network::mojom::FetchResponseType::kOpaqueRedirect;
