@@ -2631,7 +2631,12 @@ unsigned int aom_sad128x128_avg_c(const uint8_t* src_ptr,
                                   const uint8_t* ref_ptr,
                                   int ref_stride,
                                   const uint8_t* second_pred);
-#define aom_sad128x128_avg aom_sad128x128_avg_c
+unsigned int aom_sad128x128_avg_neon(const uint8_t* src_ptr,
+                                     int src_stride,
+                                     const uint8_t* ref_ptr,
+                                     int ref_stride,
+                                     const uint8_t* second_pred);
+#define aom_sad128x128_avg aom_sad128x128_avg_neon
 
 void aom_sad128x128x4d_c(const uint8_t* src_ptr,
                          int src_stride,
@@ -2668,7 +2673,12 @@ unsigned int aom_sad128x64_avg_c(const uint8_t* src_ptr,
                                  const uint8_t* ref_ptr,
                                  int ref_stride,
                                  const uint8_t* second_pred);
-#define aom_sad128x64_avg aom_sad128x64_avg_c
+unsigned int aom_sad128x64_avg_neon(const uint8_t* src_ptr,
+                                    int src_stride,
+                                    const uint8_t* ref_ptr,
+                                    int ref_stride,
+                                    const uint8_t* second_pred);
+#define aom_sad128x64_avg aom_sad128x64_avg_neon
 
 void aom_sad128x64x4d_c(const uint8_t* src_ptr,
                         int src_stride,
@@ -2713,7 +2723,12 @@ unsigned int aom_sad16x16_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad16x16_avg aom_sad16x16_avg_c
+unsigned int aom_sad16x16_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad16x16_avg aom_sad16x16_avg_neon
 
 void aom_sad16x16x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -2750,7 +2765,12 @@ unsigned int aom_sad16x32_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad16x32_avg aom_sad16x32_avg_c
+unsigned int aom_sad16x32_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad16x32_avg aom_sad16x32_avg_neon
 
 void aom_sad16x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -2787,7 +2807,12 @@ unsigned int aom_sad16x8_avg_c(const uint8_t* src_ptr,
                                const uint8_t* ref_ptr,
                                int ref_stride,
                                const uint8_t* second_pred);
-#define aom_sad16x8_avg aom_sad16x8_avg_c
+unsigned int aom_sad16x8_avg_neon(const uint8_t* src_ptr,
+                                  int src_stride,
+                                  const uint8_t* ref_ptr,
+                                  int ref_stride,
+                                  const uint8_t* second_pred);
+#define aom_sad16x8_avg aom_sad16x8_avg_neon
 
 void aom_sad16x8x4d_c(const uint8_t* src_ptr,
                       int src_stride,
@@ -2832,7 +2857,12 @@ unsigned int aom_sad32x16_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad32x16_avg aom_sad32x16_avg_c
+unsigned int aom_sad32x16_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad32x16_avg aom_sad32x16_avg_neon
 
 void aom_sad32x16x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -2869,7 +2899,12 @@ unsigned int aom_sad32x32_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad32x32_avg aom_sad32x32_avg_c
+unsigned int aom_sad32x32_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad32x32_avg aom_sad32x32_avg_neon
 
 void aom_sad32x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -2906,7 +2941,12 @@ unsigned int aom_sad32x64_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad32x64_avg aom_sad32x64_avg_c
+unsigned int aom_sad32x64_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad32x64_avg aom_sad32x64_avg_neon
 
 void aom_sad32x64x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -2951,7 +2991,12 @@ unsigned int aom_sad4x4_avg_c(const uint8_t* src_ptr,
                               const uint8_t* ref_ptr,
                               int ref_stride,
                               const uint8_t* second_pred);
-#define aom_sad4x4_avg aom_sad4x4_avg_c
+unsigned int aom_sad4x4_avg_neon(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* ref_ptr,
+                                 int ref_stride,
+                                 const uint8_t* second_pred);
+#define aom_sad4x4_avg aom_sad4x4_avg_neon
 
 void aom_sad4x4x4d_c(const uint8_t* src_ptr,
                      int src_stride,
@@ -2988,7 +3033,12 @@ unsigned int aom_sad4x8_avg_c(const uint8_t* src_ptr,
                               const uint8_t* ref_ptr,
                               int ref_stride,
                               const uint8_t* second_pred);
-#define aom_sad4x8_avg aom_sad4x8_avg_c
+unsigned int aom_sad4x8_avg_neon(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* ref_ptr,
+                                 int ref_stride,
+                                 const uint8_t* second_pred);
+#define aom_sad4x8_avg aom_sad4x8_avg_neon
 
 void aom_sad4x8x4d_c(const uint8_t* src_ptr,
                      int src_stride,
@@ -3033,7 +3083,12 @@ unsigned int aom_sad64x128_avg_c(const uint8_t* src_ptr,
                                  const uint8_t* ref_ptr,
                                  int ref_stride,
                                  const uint8_t* second_pred);
-#define aom_sad64x128_avg aom_sad64x128_avg_c
+unsigned int aom_sad64x128_avg_neon(const uint8_t* src_ptr,
+                                    int src_stride,
+                                    const uint8_t* ref_ptr,
+                                    int ref_stride,
+                                    const uint8_t* second_pred);
+#define aom_sad64x128_avg aom_sad64x128_avg_neon
 
 void aom_sad64x128x4d_c(const uint8_t* src_ptr,
                         int src_stride,
@@ -3070,7 +3125,12 @@ unsigned int aom_sad64x32_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad64x32_avg aom_sad64x32_avg_c
+unsigned int aom_sad64x32_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad64x32_avg aom_sad64x32_avg_neon
 
 void aom_sad64x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -3107,7 +3167,12 @@ unsigned int aom_sad64x64_avg_c(const uint8_t* src_ptr,
                                 const uint8_t* ref_ptr,
                                 int ref_stride,
                                 const uint8_t* second_pred);
-#define aom_sad64x64_avg aom_sad64x64_avg_c
+unsigned int aom_sad64x64_avg_neon(const uint8_t* src_ptr,
+                                   int src_stride,
+                                   const uint8_t* ref_ptr,
+                                   int ref_stride,
+                                   const uint8_t* second_pred);
+#define aom_sad64x64_avg aom_sad64x64_avg_neon
 
 void aom_sad64x64x4d_c(const uint8_t* src_ptr,
                        int src_stride,
@@ -3152,7 +3217,12 @@ unsigned int aom_sad8x16_avg_c(const uint8_t* src_ptr,
                                const uint8_t* ref_ptr,
                                int ref_stride,
                                const uint8_t* second_pred);
-#define aom_sad8x16_avg aom_sad8x16_avg_c
+unsigned int aom_sad8x16_avg_neon(const uint8_t* src_ptr,
+                                  int src_stride,
+                                  const uint8_t* ref_ptr,
+                                  int ref_stride,
+                                  const uint8_t* second_pred);
+#define aom_sad8x16_avg aom_sad8x16_avg_neon
 
 void aom_sad8x16x4d_c(const uint8_t* src_ptr,
                       int src_stride,
@@ -3189,7 +3259,12 @@ unsigned int aom_sad8x4_avg_c(const uint8_t* src_ptr,
                               const uint8_t* ref_ptr,
                               int ref_stride,
                               const uint8_t* second_pred);
-#define aom_sad8x4_avg aom_sad8x4_avg_c
+unsigned int aom_sad8x4_avg_neon(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* ref_ptr,
+                                 int ref_stride,
+                                 const uint8_t* second_pred);
+#define aom_sad8x4_avg aom_sad8x4_avg_neon
 
 void aom_sad8x4x4d_c(const uint8_t* src_ptr,
                      int src_stride,
@@ -3226,7 +3301,12 @@ unsigned int aom_sad8x8_avg_c(const uint8_t* src_ptr,
                               const uint8_t* ref_ptr,
                               int ref_stride,
                               const uint8_t* second_pred);
-#define aom_sad8x8_avg aom_sad8x8_avg_c
+unsigned int aom_sad8x8_avg_neon(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* ref_ptr,
+                                 int ref_stride,
+                                 const uint8_t* second_pred);
+#define aom_sad8x8_avg aom_sad8x8_avg_neon
 
 void aom_sad8x8x4d_c(const uint8_t* src_ptr,
                      int src_stride,
@@ -4225,7 +4305,15 @@ uint32_t aom_sub_pixel_avg_variance128x128_c(const uint8_t* src_ptr,
                                              int ref_stride,
                                              uint32_t* sse,
                                              const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance128x128 aom_sub_pixel_avg_variance128x128_c
+uint32_t aom_sub_pixel_avg_variance128x128_neon(const uint8_t* src_ptr,
+                                                int source_stride,
+                                                int xoffset,
+                                                int yoffset,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride,
+                                                uint32_t* sse,
+                                                const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance128x128 aom_sub_pixel_avg_variance128x128_neon
 
 uint32_t aom_sub_pixel_avg_variance128x64_c(const uint8_t* src_ptr,
                                             int source_stride,
@@ -4235,7 +4323,15 @@ uint32_t aom_sub_pixel_avg_variance128x64_c(const uint8_t* src_ptr,
                                             int ref_stride,
                                             uint32_t* sse,
                                             const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance128x64 aom_sub_pixel_avg_variance128x64_c
+uint32_t aom_sub_pixel_avg_variance128x64_neon(const uint8_t* src_ptr,
+                                               int source_stride,
+                                               int xoffset,
+                                               int yoffset,
+                                               const uint8_t* ref_ptr,
+                                               int ref_stride,
+                                               uint32_t* sse,
+                                               const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance128x64 aom_sub_pixel_avg_variance128x64_neon
 
 uint32_t aom_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4245,7 +4341,15 @@ uint32_t aom_sub_pixel_avg_variance16x16_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance16x16 aom_sub_pixel_avg_variance16x16_c
+uint32_t aom_sub_pixel_avg_variance16x16_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance16x16 aom_sub_pixel_avg_variance16x16_neon
 
 uint32_t aom_sub_pixel_avg_variance16x32_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4255,7 +4359,15 @@ uint32_t aom_sub_pixel_avg_variance16x32_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance16x32 aom_sub_pixel_avg_variance16x32_c
+uint32_t aom_sub_pixel_avg_variance16x32_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance16x32 aom_sub_pixel_avg_variance16x32_neon
 
 uint32_t aom_sub_pixel_avg_variance16x8_c(const uint8_t* src_ptr,
                                           int source_stride,
@@ -4265,7 +4377,15 @@ uint32_t aom_sub_pixel_avg_variance16x8_c(const uint8_t* src_ptr,
                                           int ref_stride,
                                           uint32_t* sse,
                                           const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance16x8 aom_sub_pixel_avg_variance16x8_c
+uint32_t aom_sub_pixel_avg_variance16x8_neon(const uint8_t* src_ptr,
+                                             int source_stride,
+                                             int xoffset,
+                                             int yoffset,
+                                             const uint8_t* ref_ptr,
+                                             int ref_stride,
+                                             uint32_t* sse,
+                                             const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance16x8 aom_sub_pixel_avg_variance16x8_neon
 
 uint32_t aom_sub_pixel_avg_variance32x16_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4275,7 +4395,15 @@ uint32_t aom_sub_pixel_avg_variance32x16_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance32x16 aom_sub_pixel_avg_variance32x16_c
+uint32_t aom_sub_pixel_avg_variance32x16_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance32x16 aom_sub_pixel_avg_variance32x16_neon
 
 uint32_t aom_sub_pixel_avg_variance32x32_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4285,7 +4413,15 @@ uint32_t aom_sub_pixel_avg_variance32x32_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance32x32 aom_sub_pixel_avg_variance32x32_c
+uint32_t aom_sub_pixel_avg_variance32x32_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance32x32 aom_sub_pixel_avg_variance32x32_neon
 
 uint32_t aom_sub_pixel_avg_variance32x64_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4295,7 +4431,15 @@ uint32_t aom_sub_pixel_avg_variance32x64_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance32x64 aom_sub_pixel_avg_variance32x64_c
+uint32_t aom_sub_pixel_avg_variance32x64_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance32x64 aom_sub_pixel_avg_variance32x64_neon
 
 uint32_t aom_sub_pixel_avg_variance4x4_c(const uint8_t* src_ptr,
                                          int source_stride,
@@ -4305,7 +4449,15 @@ uint32_t aom_sub_pixel_avg_variance4x4_c(const uint8_t* src_ptr,
                                          int ref_stride,
                                          uint32_t* sse,
                                          const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance4x4 aom_sub_pixel_avg_variance4x4_c
+uint32_t aom_sub_pixel_avg_variance4x4_neon(const uint8_t* src_ptr,
+                                            int source_stride,
+                                            int xoffset,
+                                            int yoffset,
+                                            const uint8_t* ref_ptr,
+                                            int ref_stride,
+                                            uint32_t* sse,
+                                            const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance4x4 aom_sub_pixel_avg_variance4x4_neon
 
 uint32_t aom_sub_pixel_avg_variance4x8_c(const uint8_t* src_ptr,
                                          int source_stride,
@@ -4315,7 +4467,15 @@ uint32_t aom_sub_pixel_avg_variance4x8_c(const uint8_t* src_ptr,
                                          int ref_stride,
                                          uint32_t* sse,
                                          const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance4x8 aom_sub_pixel_avg_variance4x8_c
+uint32_t aom_sub_pixel_avg_variance4x8_neon(const uint8_t* src_ptr,
+                                            int source_stride,
+                                            int xoffset,
+                                            int yoffset,
+                                            const uint8_t* ref_ptr,
+                                            int ref_stride,
+                                            uint32_t* sse,
+                                            const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance4x8 aom_sub_pixel_avg_variance4x8_neon
 
 uint32_t aom_sub_pixel_avg_variance64x128_c(const uint8_t* src_ptr,
                                             int source_stride,
@@ -4325,7 +4485,15 @@ uint32_t aom_sub_pixel_avg_variance64x128_c(const uint8_t* src_ptr,
                                             int ref_stride,
                                             uint32_t* sse,
                                             const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance64x128 aom_sub_pixel_avg_variance64x128_c
+uint32_t aom_sub_pixel_avg_variance64x128_neon(const uint8_t* src_ptr,
+                                               int source_stride,
+                                               int xoffset,
+                                               int yoffset,
+                                               const uint8_t* ref_ptr,
+                                               int ref_stride,
+                                               uint32_t* sse,
+                                               const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance64x128 aom_sub_pixel_avg_variance64x128_neon
 
 uint32_t aom_sub_pixel_avg_variance64x32_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4335,7 +4503,15 @@ uint32_t aom_sub_pixel_avg_variance64x32_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance64x32 aom_sub_pixel_avg_variance64x32_c
+uint32_t aom_sub_pixel_avg_variance64x32_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance64x32 aom_sub_pixel_avg_variance64x32_neon
 
 uint32_t aom_sub_pixel_avg_variance64x64_c(const uint8_t* src_ptr,
                                            int source_stride,
@@ -4345,7 +4521,15 @@ uint32_t aom_sub_pixel_avg_variance64x64_c(const uint8_t* src_ptr,
                                            int ref_stride,
                                            uint32_t* sse,
                                            const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance64x64 aom_sub_pixel_avg_variance64x64_c
+uint32_t aom_sub_pixel_avg_variance64x64_neon(const uint8_t* src_ptr,
+                                              int source_stride,
+                                              int xoffset,
+                                              int yoffset,
+                                              const uint8_t* ref_ptr,
+                                              int ref_stride,
+                                              uint32_t* sse,
+                                              const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance64x64 aom_sub_pixel_avg_variance64x64_neon
 
 uint32_t aom_sub_pixel_avg_variance8x16_c(const uint8_t* src_ptr,
                                           int source_stride,
@@ -4355,7 +4539,15 @@ uint32_t aom_sub_pixel_avg_variance8x16_c(const uint8_t* src_ptr,
                                           int ref_stride,
                                           uint32_t* sse,
                                           const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance8x16 aom_sub_pixel_avg_variance8x16_c
+uint32_t aom_sub_pixel_avg_variance8x16_neon(const uint8_t* src_ptr,
+                                             int source_stride,
+                                             int xoffset,
+                                             int yoffset,
+                                             const uint8_t* ref_ptr,
+                                             int ref_stride,
+                                             uint32_t* sse,
+                                             const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance8x16 aom_sub_pixel_avg_variance8x16_neon
 
 uint32_t aom_sub_pixel_avg_variance8x4_c(const uint8_t* src_ptr,
                                          int source_stride,
@@ -4365,7 +4557,15 @@ uint32_t aom_sub_pixel_avg_variance8x4_c(const uint8_t* src_ptr,
                                          int ref_stride,
                                          uint32_t* sse,
                                          const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance8x4 aom_sub_pixel_avg_variance8x4_c
+uint32_t aom_sub_pixel_avg_variance8x4_neon(const uint8_t* src_ptr,
+                                            int source_stride,
+                                            int xoffset,
+                                            int yoffset,
+                                            const uint8_t* ref_ptr,
+                                            int ref_stride,
+                                            uint32_t* sse,
+                                            const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance8x4 aom_sub_pixel_avg_variance8x4_neon
 
 uint32_t aom_sub_pixel_avg_variance8x8_c(const uint8_t* src_ptr,
                                          int source_stride,
@@ -4375,7 +4575,15 @@ uint32_t aom_sub_pixel_avg_variance8x8_c(const uint8_t* src_ptr,
                                          int ref_stride,
                                          uint32_t* sse,
                                          const uint8_t* second_pred);
-#define aom_sub_pixel_avg_variance8x8 aom_sub_pixel_avg_variance8x8_c
+uint32_t aom_sub_pixel_avg_variance8x8_neon(const uint8_t* src_ptr,
+                                            int source_stride,
+                                            int xoffset,
+                                            int yoffset,
+                                            const uint8_t* ref_ptr,
+                                            int ref_stride,
+                                            uint32_t* sse,
+                                            const uint8_t* second_pred);
+#define aom_sub_pixel_avg_variance8x8 aom_sub_pixel_avg_variance8x8_neon
 
 uint32_t aom_sub_pixel_variance128x128_c(const uint8_t* src_ptr,
                                          int source_stride,
