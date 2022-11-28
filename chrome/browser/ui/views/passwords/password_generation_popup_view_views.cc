@@ -35,6 +35,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -228,7 +229,9 @@ bool PasswordGenerationPopupViewViews::Show() {
 void PasswordGenerationPopupViewViews::Hide() {
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
-  password_view_->reset_controller();
+  if (password_view_) {
+    password_view_->reset_controller();
+  }
 
   DoHide();
 }
@@ -241,7 +244,9 @@ void PasswordGenerationPopupViewViews::UpdateState() {
 }
 
 void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
-  password_view_->UpdateGeneratedPassword(controller_->password());
+  if (password_view_) {
+    password_view_->UpdateGeneratedPassword(controller_->password());
+  }
   Layout();
 }
 
@@ -256,13 +261,25 @@ void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
   if (!GetWidget())
     return;
 
-  password_view_->UpdateBackground(controller_->password_selected()
-                                       ? GetSelectedBackgroundColor()
-                                       : GetBackgroundColor());
+  if (password_view_) {
+    password_view_->UpdateBackground(controller_->password_selected()
+                                         ? GetSelectedBackgroundColor()
+                                         : GetBackgroundColor());
+  }
   SchedulePaint();
 }
 
 void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
+  if (controller_->IsStateMinimized()) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    auto warning_icon = std::make_unique<views::ImageView>();
+    warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kNotificationWarningIcon, ui::kColorAlertMediumSeverity,
+        kIconSize));
+    AddChildView(std::move(warning_icon));
+    return;
+  }
+
   // Add 1px distance between views for the separator.
   views::BoxLayout* box_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -315,9 +332,11 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
 void PasswordGenerationPopupViewViews::OnThemeChanged() {
   autofill::AutofillPopupBaseView::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(GetBackgroundColor()));
-  password_view_->UpdateBackground(controller_->password_selected()
-                                       ? GetSelectedBackgroundColor()
-                                       : GetBackgroundColor());
+  if (password_view_) {
+    password_view_->UpdateBackground(controller_->password_selected()
+                                         ? GetSelectedBackgroundColor()
+                                         : GetBackgroundColor());
+  }
   if (help_styled_label_) {
     help_styled_label_->SetDisplayedOnBackgroundColor(
         GetFooterBackgroundColor());
@@ -333,10 +352,12 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
   // Divider line needs to be drawn after OnPaint() otherwise the background
   // will overwrite the divider.
-  gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
-                           password_view_->width(), 1);
-  canvas->FillRect(divider_bounds,
-                   GetColorProvider()->GetColor(GetSeparatorColorId()));
+  if (password_view_) {
+    gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
+                             password_view_->width(), 1);
+    canvas->FillRect(divider_bounds,
+                     GetColorProvider()->GetColor(GetSeparatorColorId()));
+  }
 }
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
@@ -351,6 +372,10 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
+  if (!password_view_) {
+    return GetLayoutManager()->GetPreferredSize(this);
+  }
+
   int width =
       std::max(password_view_->GetPreferredSize().width(),
                gfx::ToEnclosingRect(controller_->element_bounds()).width());

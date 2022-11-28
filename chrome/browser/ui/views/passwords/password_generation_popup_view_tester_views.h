@@ -25,6 +25,8 @@ class PasswordGenerationPopupViewTesterViews
 
   void SimulateMouseMovementAt(const gfx::Point& point) override;
 
+  bool IsPopupMinimized() const override;
+
  private:
   // Weak reference
   raw_ptr<PasswordGenerationPopupViewViews> view_;

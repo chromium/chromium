@@ -36,6 +36,12 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
 
+#if defined(UNIT_TEST)
+  // Returns true if a minimized version with just a warning icon is created
+  // instead of the whole `password_view_`.
+  bool IsPopupMinimized() const { return !password_view_; }
+#endif
+
  private:
   class GeneratedPasswordBox;
   ~PasswordGenerationPopupViewViews() override;

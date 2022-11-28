@@ -38,6 +38,21 @@ class PasswordGenerationPopupViewWithStrengthIndicatorTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class PasswordGenerationPopupViewWithMinimizedStrengthIndicatorTest
+    : public InProcessBrowserTest {
+ public:
+  PasswordGenerationPopupViewWithMinimizedStrengthIndicatorTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{password_manager::features::
+                                   kPasswordStrengthIndicator,
+                               {{"strength_indicator_minimized", "true"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the
 // editing dialog doesn't crash.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
@@ -230,6 +245,111 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewWithStrengthIndicatorTest,
   controller->UpdatePopupBasedOnTypedPasswordStrength();
   observer.WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
   EXPECT_FALSE(controller);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordGenerationPopupViewWithStrengthIndicatorTest,
+    ShowsFullPopupWithWeakPasswordTypedInNonMinimizedExperiment) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(web_contents->GetContainerBounds().x(),
+                 web_contents->GetContainerBounds().y(), 10, 10),
+      /*max_length=*/10,
+      /*generation_element=*/std::u16string(),
+      /*user_typed_password=*/std::u16string(), FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      FormData());
+
+  TestGenerationPopupObserver observer;
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data,
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(web_contents)
+                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
+                  ->AsWeakPtr(),
+          &observer, web_contents, web_contents->GetPrimaryMainFrame());
+
+  EXPECT_FALSE(controller->IsVisible());
+  controller->UpdateTypedPassword(u"weak123");
+  controller->UpdatePopupBasedOnTypedPasswordStrength();
+  observer.WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
+  EXPECT_TRUE(controller->IsVisible());
+  EXPECT_FALSE(PasswordGenerationPopupViewTester::For(controller->view())
+                   ->IsPopupMinimized());
+
+  web_contents->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordGenerationPopupViewWithMinimizedStrengthIndicatorTest,
+    ShowsFullPopupWithMoreThanFiveCharWeakPasswordTyped) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(web_contents->GetContainerBounds().x(),
+                 web_contents->GetContainerBounds().y(), 10, 10),
+      /*max_length=*/10,
+      /*generation_element=*/std::u16string(),
+      /*user_typed_password=*/std::u16string(), FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      FormData());
+
+  TestGenerationPopupObserver observer;
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data,
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(web_contents)
+                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
+                  ->AsWeakPtr(),
+          &observer, web_contents, web_contents->GetPrimaryMainFrame());
+
+  EXPECT_FALSE(controller->IsVisible());
+  controller->UpdateTypedPassword(u"weak12");
+  controller->UpdatePopupBasedOnTypedPasswordStrength();
+  observer.WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
+  EXPECT_TRUE(controller->IsVisible());
+  EXPECT_TRUE(PasswordGenerationPopupViewTester::For(controller->view())
+                  ->IsPopupMinimized());
+
+  web_contents->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordGenerationPopupViewWithMinimizedStrengthIndicatorTest,
+    ShowsFullPopupWithFiveCharWeakPasswordTyped) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(web_contents->GetContainerBounds().x(),
+                 web_contents->GetContainerBounds().y(), 10, 10),
+      /*max_length=*/10,
+      /*generation_element=*/std::u16string(),
+      /*user_typed_password=*/std::u16string(), FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      FormData());
+
+  TestGenerationPopupObserver observer;
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data,
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(web_contents)
+                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
+                  ->AsWeakPtr(),
+          &observer, web_contents, web_contents->GetPrimaryMainFrame());
+
+  EXPECT_FALSE(controller->IsVisible());
+  controller->UpdateTypedPassword(u"weak1");
+  controller->UpdatePopupBasedOnTypedPasswordStrength();
+  observer.WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
+  EXPECT_TRUE(controller->IsVisible());
+  EXPECT_FALSE(PasswordGenerationPopupViewTester::For(controller->view())
+                   ->IsPopupMinimized());
+
+  web_contents->Close();
 }
 
 }  // namespace autofill
