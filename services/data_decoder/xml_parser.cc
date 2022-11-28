@@ -63,64 +63,59 @@ bool GetTextFromNode(XmlReader* xml_reader,
   return false;
 }
 
-base::Value CreateTextNode(const std::string& text, TextNodeType node_type) {
-  base::Value element(base::Value::Type::DICTIONARY);
-  element.SetKey(mojom::XmlParser::kTypeKey,
-                 base::Value(node_type == TextNodeType::kText
-                                 ? mojom::XmlParser::kTextNodeType
-                                 : mojom::XmlParser::kCDataNodeType));
-  element.SetKey(mojom::XmlParser::kTextKey, base::Value(text));
+base::Value::Dict CreateTextNode(const std::string& text,
+                                 TextNodeType node_type) {
+  base::Value::Dict element;
+  element.Set(mojom::XmlParser::kTypeKey,
+              node_type == TextNodeType::kText
+                  ? mojom::XmlParser::kTextNodeType
+                  : mojom::XmlParser::kCDataNodeType);
+  element.Set(mojom::XmlParser::kTextKey, text);
   return element;
 }
 
 // Creates and returns new element node with the tag name |name|.
-base::Value CreateNewElement(const std::string& name) {
-  base::Value element(base::Value::Type::DICTIONARY);
-  element.SetKey(mojom::XmlParser::kTypeKey,
-                 base::Value(mojom::XmlParser::kElementType));
-  element.SetKey(mojom::XmlParser::kTagKey, base::Value(name));
+base::Value::Dict CreateNewElement(const std::string& name) {
+  base::Value::Dict element;
+  element.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kElementType);
+  element.Set(mojom::XmlParser::kTagKey, name);
   return element;
 }
 
 // Adds |child| as a child of |element|, creating the children list if
 // necessary. Returns a ponter to |child|.
-base::Value* AddChildToElement(base::Value* element, base::Value child) {
-  DCHECK(element->is_dict());
-  base::Value* children = element->FindKey(mojom::XmlParser::kChildrenKey);
-  DCHECK(!children || children->is_list());
-  if (!children)
-    children = element->SetKey(mojom::XmlParser::kChildrenKey,
-                               base::Value(base::Value::Type::LIST));
+base::Value::Dict* AddChildToElement(base::Value::Dict& element,
+                                     base::Value::Dict child) {
+  DCHECK(!element.contains(mojom::XmlParser::kChildrenKey) ||
+         element.FindList(mojom::XmlParser::kChildrenKey));
+  base::Value::List* children =
+      element.EnsureList(mojom::XmlParser::kChildrenKey);
   children->Append(std::move(child));
-  return &children->GetListDeprecated().back();
+  return &children->back().GetDict();
 }
 
-void PopulateNamespaces(base::Value* node_value, XmlReader* xml_reader) {
-  DCHECK(node_value->is_dict());
+void PopulateNamespaces(base::Value::Dict& node_value, XmlReader* xml_reader) {
   NamespaceMap namespaces;
   if (!xml_reader->GetAllDeclaredNamespaces(&namespaces) || namespaces.empty())
     return;
 
-  base::Value namespace_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict namespace_dict;
   for (auto ns : namespaces)
-    namespace_dict.SetKey(ns.first, base::Value(ns.second));
+    namespace_dict.Set(ns.first, ns.second);
 
-  node_value->SetKey(mojom::XmlParser::kNamespacesKey,
-                     std::move(namespace_dict));
+  node_value.Set(mojom::XmlParser::kNamespacesKey, std::move(namespace_dict));
 }
 
-void PopulateAttributes(base::Value* node_value, XmlReader* xml_reader) {
-  DCHECK(node_value->is_dict());
+void PopulateAttributes(base::Value::Dict& node_value, XmlReader* xml_reader) {
   AttributeMap attributes;
   if (!xml_reader->GetAllNodeAttributes(&attributes) || attributes.empty())
     return;
 
-  base::Value attribute_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict attribute_dict;
   for (auto attribute : attributes)
-    attribute_dict.SetKey(attribute.first, base::Value(attribute.second));
+    attribute_dict.Set(attribute.first, base::Value(attribute.second));
 
-  node_value->SetKey(mojom::XmlParser::kAttributesKey,
-                     std::move(attribute_dict));
+  node_value.Set(mojom::XmlParser::kAttributesKey, std::move(attribute_dict));
 }
 
 // A function to capture XML errors. Otherwise, by default, they are printed to
@@ -153,7 +148,7 @@ void XmlParser::Parse(const std::string& xml,
   }
 
   base::Value root_element;
-  std::vector<base::Value*> element_stack;
+  std::vector<base::Value::Dict*> element_stack;
   while (xml_reader.Read()) {
     if (xml_reader.IsClosingElement()) {
       if (element_stack.empty()) {
@@ -167,10 +162,10 @@ void XmlParser::Parse(const std::string& xml,
 
     std::string text;
     TextNodeType text_node_type = TextNodeType::kText;
-    base::Value* current_element =
+    base::Value::Dict* current_element =
         element_stack.empty() ? nullptr : element_stack.back();
     bool push_new_node_to_stack = false;
-    base::Value new_element;
+    base::Value::Dict new_element;
     if (GetTextFromNode(&xml_reader, &text, &text_node_type)) {
       if (!base::IsStringUTF8(text)) {
         ReportError(std::move(callback), "Invalid XML: invalid UTF8 text.",
@@ -180,8 +175,8 @@ void XmlParser::Parse(const std::string& xml,
       new_element = CreateTextNode(text, text_node_type);
     } else if (xml_reader.IsElement()) {
       new_element = CreateNewElement(xml_reader.NodeFullName());
-      PopulateNamespaces(&new_element, &xml_reader);
-      PopulateAttributes(&new_element, &xml_reader);
+      PopulateNamespaces(new_element, &xml_reader);
+      PopulateAttributes(new_element, &xml_reader);
       // Self-closing (empty) element have no close tag (or children); don't
       // push them on the element stack.
       push_new_node_to_stack = !xml_reader.IsEmptyElement();
@@ -195,16 +190,16 @@ void XmlParser::Parse(const std::string& xml,
       continue;
     }
 
-    base::Value* new_element_ptr;
+    base::Value::Dict* new_element_ptr;
     if (current_element) {
       new_element_ptr =
-          AddChildToElement(current_element, std::move(new_element));
+          AddChildToElement(*current_element, std::move(new_element));
     } else {
       // First element we are parsing, it becomes the root element.
       DCHECK(xml_reader.IsElement());
       DCHECK(root_element.is_none());
-      root_element = std::move(new_element);
-      new_element_ptr = &root_element;
+      root_element = base::Value(std::move(new_element));
+      new_element_ptr = &root_element.GetDict();
     }
     if (push_new_node_to_stack)
       element_stack.push_back(new_element_ptr);
@@ -215,7 +210,7 @@ void XmlParser::Parse(const std::string& xml,
                 errors);
     return;
   }
-  if (!root_element.is_dict() || root_element.DictEmpty()) {
+  if (!root_element.is_dict() || root_element.GetDict().empty()) {
     ReportError(std::move(callback), "Invalid XML: bad content", errors);
     return;
   }
