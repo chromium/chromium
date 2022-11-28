@@ -4,11 +4,11 @@
 
 #include "net/cert/pki/string_util.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net::string_util {
@@ -23,10 +23,10 @@ bool IsAscii(std::string_view str) {
 }
 
 bool IsEqualNoCase(std::string_view str1, std::string_view str2) {
-  return base::ranges::equal(str1, str2,
-                             [](const unsigned char a, const unsigned char b) {
-                               return OPENSSL_tolower(a) == OPENSSL_tolower(b);
-                             });
+  return std::equal(str1.begin(), str1.end(), str2.begin(), str2.end(),
+                    [](const unsigned char a, const unsigned char b) {
+                      return OPENSSL_tolower(a) == OPENSSL_tolower(b);
+                    });
 }
 
 bool EndsWithNoCase(std::string_view str, std::string_view suffix) {
