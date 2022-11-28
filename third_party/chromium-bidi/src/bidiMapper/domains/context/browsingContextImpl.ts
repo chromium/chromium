@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {BrowsingContext, Script} from '../protocol/bidiProtocolTypes';
 import {CdpClient} from '../../../cdp';
 import {IEventManager} from '../events/EventManager';
-import {Deferred} from '../../utils/deferred';
+import {Deferred} from '../../../utils/deferred';
 import {UnknownException} from '../protocol/error';
 import {LogManager} from '../log/logManager';
 import {Realm, RealmType} from '../script/realm';

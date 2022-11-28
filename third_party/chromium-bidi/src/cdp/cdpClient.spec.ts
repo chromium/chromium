@@ -16,7 +16,7 @@
  */
 
 import {CdpConnection} from './cdpConnection';
-import {StubTransport} from '../tests/stubTransport.spec';
+import {StubTransport} from './stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';

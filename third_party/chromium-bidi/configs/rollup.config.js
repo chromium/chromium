@@ -20,7 +20,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
-  input: 'lib/cjs/bidiTab/bidiTab/bidiTab.js',
+  input: 'lib/cjs/bidiTab/bidiTab.js',
   output: {
     file: 'lib/iife/mapperTab.js',
     sourcemap: true,

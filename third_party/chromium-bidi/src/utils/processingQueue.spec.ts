@@ -19,7 +19,7 @@ import * as chai from 'chai';
 
 import * as sinon from 'sinon';
 import {ProcessingQueue} from './processingQueue';
-import {Deferred} from '../bidiMapper/utils/deferred';
+import {Deferred} from './deferred';
 
 const expect = chai.expect;
 

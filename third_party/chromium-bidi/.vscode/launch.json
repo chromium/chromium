@@ -11,8 +11,8 @@
       "skipFiles": ["<node_internals>/**"],
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal",
-      "program": "${workspaceFolder}/lib/cjs/bidiServer/bidiServer/index.js",
-      "outFiles": ["${workspaceFolder}/lib/cjs/bidiServer/bidiServer/**/*.js"],
+      "program": "${workspaceFolder}/lib/cjs/bidiServer/index.js",
+      "outFiles": ["${workspaceFolder}/lib/cjs/bidiServer/**/*.js"],
       "args": ["--headless=false"],
       "env": {
         "DEBUG": "*",

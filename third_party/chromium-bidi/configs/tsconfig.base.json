@@ -20,6 +20,8 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "ESNext",
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "declaration": true,
+    "composite": true
   }
 }

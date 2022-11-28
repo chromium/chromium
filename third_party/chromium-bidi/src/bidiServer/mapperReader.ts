@@ -20,7 +20,7 @@ import path from 'path';
 
 export default async function read(): Promise<string> {
   return await fs.readFile(
-    path.join(__dirname, '../../../iife/mapperTab.js'),
+    path.join(__dirname, '../../iife/mapperTab.js'),
     'utf8'
   );
 }

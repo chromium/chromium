@@ -1,6 +1,9 @@
 {
   "extends": "../configs/tsconfig.base.json",
   "files": [],
+  "compilerOptions": {
+    "incremental": true
+  },
   "references": [
     {"path": "bidiMapper/tsconfig.json"},
     {"path": "bidiServer/tsconfig.json"},
