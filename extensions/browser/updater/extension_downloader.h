@@ -239,14 +239,8 @@ class ExtensionDownloader {
     kBadUpdateSpecification,
   };
 
-  // Updates |url_stats_| for a single extension download requests.
-  void UpdateURLStats(const GURL& update_url, Manifest::Type extension_type);
-
   // Helper for AddExtension() and AddPendingExtension().
   bool AddExtensionData(ExtensionDownloaderTask task);
-
-  // Adds all recorded stats taken so far to histogram counts.
-  void ReportStats() const;
 
   // Begins an update check.
   void StartUpdateCheck(std::unique_ptr<ManifestFetchData> fetch_data);
@@ -429,9 +423,6 @@ class ExtensionDownloader {
 
   // The profile path used to load file:// URLs. It can be invalid.
   base::FilePath profile_path_for_url_loader_factory_;
-
-  // Collects UMA samples that are reported when ReportStats() is called.
-  URLStats url_stats_;
 
   // List of update requests added to the downloader but not started yet.
   std::vector<ExtensionDownloaderTask> pending_tasks_;

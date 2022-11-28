@@ -3325,64 +3325,6 @@ chromium-metrics-reviews@google.com.
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
 </histogram>
 
-<histogram name="Extensions.UpdateCheckApp" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of legacy packaged apps and hosted apps that were checked during
-    an update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckExtension" units="units"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of extensions that were checked during an update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckGoogleUrl" units="units"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of crx's with a Google-hosted update URL that were checked during
-    an update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckNoUrl" units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of crx's with no update URL checked during an update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckOtherUrl" units="units"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of crx's with a non-Google update URL that were checked during an
-    update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckPackagedApp" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of packaged apps that were checked during an update check.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateCheckTheme" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of themes that were checked during an update check.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.UpdateOnLoad" units="units" expires_after="M85">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>

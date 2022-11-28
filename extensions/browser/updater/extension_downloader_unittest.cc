@@ -30,7 +30,6 @@ namespace {
 
 const char kTestExtensionId[] = "test_app";
 const char kTestExtensionId2[] = "test_app2";
-const char kTestExtensionId3[] = "test_app3";
 
 }  // namespace
 
@@ -64,10 +63,6 @@ class ExtensionDownloaderTest : public ExtensionsTest {
   void AddFetchDataToDownloader(ExtensionDownloaderTestHelper* helper,
                                 std::unique_ptr<ManifestFetchData> fetch) {
     helper->StartUpdateCheck(std::move(fetch));
-  }
-
-  const URLStats& GetDownloaderURLStats(ExtensionDownloaderTestHelper* helper) {
-    return helper->downloader().url_stats_;
   }
 
   const std::vector<ExtensionDownloaderTask>& GetDownloaderPendingTasks(
@@ -420,25 +415,6 @@ TEST_F(ExtensionDownloaderTest, TestCacheStatusHit) {
   content::RunAllTasksUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
-}
-
-// Tests that stats for UMA is collected correctly.
-TEST_F(ExtensionDownloaderTest, TestURLStats) {
-  ExtensionDownloaderTestHelper helper;
-  GURL kUpdateUrl("http://localhost/manifest1");
-  const URLStats& stats = GetDownloaderURLStats(&helper);
-
-  helper.downloader().AddPendingExtension(CreateDownloaderTask(
-      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl()));
-  EXPECT_EQ(1, stats.google_url_count);
-
-  helper.downloader().AddPendingExtension(
-      CreateDownloaderTask(kTestExtensionId2, GURL()));
-  EXPECT_EQ(1, stats.no_url_count);
-
-  helper.downloader().AddPendingExtension(
-      CreateDownloaderTask(kTestExtensionId3, kUpdateUrl));
-  EXPECT_EQ(1, stats.other_url_count);
 }
 
 // Tests edge-cases related to the update URL.

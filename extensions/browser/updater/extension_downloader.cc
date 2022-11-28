@@ -327,9 +327,6 @@ void ExtensionDownloader::AddToFetches(
 }
 
 void ExtensionDownloader::DoStartAllPending() {
-  ReportStats();
-  url_stats_ = URLStats();
-
   if (g_test_delegate) {
     g_test_delegate->StartUpdateCheck(this, delegate_,
                                       std::move(pending_tasks_));
@@ -375,38 +372,6 @@ ManifestFetchData* ExtensionDownloader::GetActiveManifestFetchForTesting() {
   return manifests_queue_.active_request();
 }
 
-void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
-                                         Manifest::Type extension_type) {
-  if (update_url.DomainIs(kGoogleDotCom)) {
-    url_stats_.google_url_count++;
-  } else if (update_url.is_empty()) {
-    url_stats_.no_url_count++;
-  } else {
-    url_stats_.other_url_count++;
-  }
-
-  switch (extension_type) {
-    case Manifest::TYPE_THEME:
-      ++url_stats_.theme_count;
-      break;
-    case Manifest::TYPE_EXTENSION:
-    case Manifest::TYPE_USER_SCRIPT:
-      ++url_stats_.extension_count;
-      break;
-    case Manifest::TYPE_HOSTED_APP:
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
-      ++url_stats_.app_count;
-      break;
-    case Manifest::TYPE_PLATFORM_APP:
-      ++url_stats_.platform_app_count;
-      break;
-    case Manifest::TYPE_UNKNOWN:
-    default:
-      ++url_stats_.pending_count;
-      break;
-  }
-}
-
 bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
   // Skip extensions with non-empty invalid update URLs.
   if (!task.update_url.is_empty() && !task.update_url.is_valid()) {
@@ -428,7 +393,6 @@ bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
     return false;
   }
 
-  UpdateURLStats(task.update_url, task.type);
   if (task.update_url.is_empty()) {
     // Fill in default update URL.
     task.update_url = extension_urls::GetWebstoreUpdateUrl();
@@ -440,24 +404,6 @@ bool ExtensionDownloader::AddExtensionData(ExtensionDownloaderTask task) {
   pending_tasks_.push_back(std::move(task));
 
   return true;
-}
-
-void ExtensionDownloader::ReportStats() const {
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckExtension",
-                           url_stats_.extension_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckTheme",
-                           url_stats_.theme_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckApp", url_stats_.app_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckPackagedApp",
-                           url_stats_.platform_app_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckPending",
-                           url_stats_.pending_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckGoogleUrl",
-                           url_stats_.google_url_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckOtherUrl",
-                           url_stats_.other_url_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateCheckNoUrl",
-                           url_stats_.no_url_count);
 }
 
 void ExtensionDownloader::StartUpdateCheck(
