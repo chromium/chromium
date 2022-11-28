@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -33,7 +34,8 @@ class MetricEventObserverManager {
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
-      EventDrivenTelemetrySamplerPool* sampler_pool);
+      EventDrivenTelemetrySamplerPool* sampler_pool,
+      base::TimeDelta init_delay = base::TimeDelta());
 
   MetricEventObserverManager(const MetricEventObserverManager& other) = delete;
   MetricEventObserverManager& operator=(
@@ -42,6 +44,8 @@ class MetricEventObserverManager {
   virtual ~MetricEventObserverManager();
 
  private:
+  void SetReportingControllerCb();
+
   void SetReportingEnabled(bool is_enabled);
 
   void OnEventObserved(MetricData metric_data);

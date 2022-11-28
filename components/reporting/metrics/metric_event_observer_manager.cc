@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,7 +30,8 @@ MetricEventObserverManager::MetricEventObserverManager(
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
-    EventDrivenTelemetrySamplerPool* sampler_pool)
+    EventDrivenTelemetrySamplerPool* sampler_pool,
+    base::TimeDelta init_delay)
     : event_observer_(std::move(event_observer)),
       metric_report_queue_(metric_report_queue),
       sampler_pool_(sampler_pool) {
@@ -46,6 +47,25 @@ MetricEventObserverManager::MetricEventObserverManager(
 
   reporting_controller_ = std::make_unique<MetricReportingController>(
       reporting_settings, enable_setting_path, setting_enabled_default_value);
+
+  DCHECK(!init_delay.is_negative());
+  if (init_delay.is_zero()) {
+    SetReportingControllerCb();
+    return;
+  }
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&MetricEventObserverManager::SetReportingControllerCb,
+                     weak_ptr_factory_.GetWeakPtr()),
+      init_delay);
+}
+
+MetricEventObserverManager::~MetricEventObserverManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void MetricEventObserverManager::SetReportingControllerCb() {
   reporting_controller_->SetSettingUpdateCb(
       base::BindRepeating(&MetricEventObserverManager::SetReportingEnabled,
                           base::Unretained(this),
@@ -53,10 +73,6 @@ MetricEventObserverManager::MetricEventObserverManager(
       base::BindRepeating(&MetricEventObserverManager::SetReportingEnabled,
                           base::Unretained(this),
                           /*is_enabled=*/false));
-}
-
-MetricEventObserverManager::~MetricEventObserverManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void MetricEventObserverManager::SetReportingEnabled(bool is_enabled) {

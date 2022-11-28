@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/fakes/fake_event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/fakes/fake_metric_event_observer.h"
@@ -26,6 +27,7 @@ namespace reporting {
 namespace {
 
 constexpr char kEventEnableSettingPath[] = "event_enable_path";
+constexpr base::TimeDelta init_delay = base::Minutes(1);
 
 class MetricEventObserverManagerTest : public ::testing::Test {
  public:
@@ -38,7 +40,8 @@ class MetricEventObserverManagerTest : public ::testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeMetricEventObserver> event_observer_;
@@ -77,6 +80,79 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
 
   ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+}
+
+TEST_F(MetricEventObserverManagerTest, InitiallyEnabled_Delayed) {
+  settings_->SetBoolean(kEventEnableSettingPath, true);
+  auto* event_observer_ptr = event_observer_.get();
+
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      kEventEnableSettingPath, /*setting_enabled_default_value=*/true,
+      /*sampler_pool=*/nullptr, init_delay);
+
+  MetricData metric_data;
+  metric_data.mutable_event_data();
+
+  // `init_delay` not elapsed, reporting enabled value not registered.
+  ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
+
+  event_observer_ptr->RunCallback(metric_data);
+  ASSERT_TRUE(metric_report_queue_->IsEmpty());
+
+  task_environment_.FastForwardBy(init_delay);
+
+  ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
+
+  event_observer_ptr->RunCallback(metric_data);
+  MetricData metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_event_data());
+
+  // Setting disabled, no more data should be reported even if the callback is
+  // called.
+  settings_->SetBoolean(kEventEnableSettingPath, false);
+
+  event_observer_ptr->RunCallback(metric_data);
+
+  ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
+}
+
+TEST_F(MetricEventObserverManagerTest, InitiallyDisabled_Delayed) {
+  settings_->SetBoolean(kEventEnableSettingPath, false);
+  auto* event_observer_ptr = event_observer_.get();
+
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      kEventEnableSettingPath, /*setting_enabled_default_value=*/true,
+      /*sampler_pool=*/nullptr, init_delay);
+
+  MetricData metric_data;
+  metric_data.mutable_event_data();
+
+  ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
+
+  event_observer_ptr->RunCallback(metric_data);
+  ASSERT_TRUE(metric_report_queue_->IsEmpty());
+
+  settings_->SetBoolean(kEventEnableSettingPath, true);
+
+  task_environment_.FastForwardBy(init_delay / 2);
+
+  // `init_delay` still not elapsed, reporting enabled value not registered.
+  ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
+
+  task_environment_.FastForwardBy(init_delay / 2);
+
+  ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
+
+  event_observer_ptr->RunCallback(metric_data);
+  MetricData metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_event_data());
 }
 
 TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
