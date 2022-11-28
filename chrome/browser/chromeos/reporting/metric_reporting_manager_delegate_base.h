@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -58,7 +59,8 @@ class MetricReportingManagerDelegateBase {
       bool setting_enabled_default_value,
       const std::string& rate_setting_path,
       base::TimeDelta default_rate,
-      int rate_unit_to_ms);
+      int rate_unit_to_ms,
+      base::TimeDelta init_delay = base::TimeDelta());
 
   // Creates a new collector for one shot metric collection. The rate is
   // controlled by the specified setting and we fall back to the defaults
@@ -68,7 +70,8 @@ class MetricReportingManagerDelegateBase {
       MetricReportQueue* metric_report_queue,
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
-      bool setting_enabled_default_value);
+      bool setting_enabled_default_value,
+      base::TimeDelta init_delay = base::TimeDelta());
 
   // Creates a new event observer manager to manage events reporting. The rate
   // is controlled by the specified setting and we fall back to the defaults
@@ -80,7 +83,8 @@ class MetricReportingManagerDelegateBase {
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
-      EventDrivenTelemetrySamplerPool* sampler_pool);
+      EventDrivenTelemetryCollectorPool* collector_pool,
+      base::TimeDelta init_delay = base::TimeDelta());
 
   // Checks for profile affiliation and returns true if affiliated. False
   // otherwise.

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/reporting/device_reporting_settings_lacros.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -91,7 +92,8 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
                bool setting_enabled_default_value,
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
-               int rate_unit_to_ms),
+               int rate_unit_to_ms,
+               base::TimeDelta init_delay),
               (override));
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
@@ -215,7 +217,7 @@ TEST_P(MetricReportingManagerLacrosTelemetryTest, Default) {
                           test_case.setting_data.enable_setting_path,
                           test_case.setting_data.setting_enabled_default_value,
                           test_case.setting_data.rate_setting_path, _,
-                          test_case.setting_data.rate_unit_to_ms))
+                          test_case.setting_data.rate_unit_to_ms, _))
       .WillByDefault([&periodic_collector_count]() {
         return std::make_unique<FakeCollector>(&periodic_collector_count);
       });

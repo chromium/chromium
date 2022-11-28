@@ -13,14 +13,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/configured_sampler.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/collector_base.h"
+#include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
-#include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/metrics/reporting_settings.h"
-#include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
 
@@ -30,11 +29,11 @@ MetricEventObserverManager::MetricEventObserverManager(
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
-    EventDrivenTelemetrySamplerPool* sampler_pool,
+    EventDrivenTelemetryCollectorPool* collector_pool,
     base::TimeDelta init_delay)
     : event_observer_(std::move(event_observer)),
       metric_report_queue_(metric_report_queue),
-      sampler_pool_(sampler_pool) {
+      collector_pool_(collector_pool) {
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -86,30 +85,16 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
   if (!is_reporting_enabled_) {
     return;
   }
-
+  MetricEventType event_type = metric_data.event_data().type();
   metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
-
-  std::vector<ConfiguredSampler*> telemetry_samplers;
-  if (sampler_pool_) {
-    telemetry_samplers =
-        sampler_pool_->GetTelemetrySamplers(metric_data.event_data().type());
-  }
-  auto collect_cb =
-      base::BindOnce(&MetricEventObserverManager::MergeAndReport,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(metric_data));
-  MultiSamplersCollector::CollectAll(telemetry_samplers, std::move(collect_cb));
-}
-
-void MetricEventObserverManager::MergeAndReport(
-    MetricData event_data,
-    absl::optional<MetricData> telemetry_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  MetricData metric_data = std::move(event_data);
-  if (telemetry_data.has_value()) {
-    metric_data.CheckTypeAndMergeFrom(telemetry_data.value());
-  }
-
   metric_report_queue_->Enqueue(std::move(metric_data));
+
+  if (collector_pool_) {
+    std::vector<CollectorBase*> telemetry_collectors =
+        collector_pool_->GetTelemetryCollectors(event_type);
+    for (auto* telemetry_collector : telemetry_collectors) {
+      telemetry_collector->Collect(/*is_event_driven=*/true);
+    }
+  }
 }
 }  // namespace reporting

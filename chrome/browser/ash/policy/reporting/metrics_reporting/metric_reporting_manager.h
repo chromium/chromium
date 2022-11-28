@@ -21,8 +21,7 @@
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "components/reporting/metrics/configured_sampler.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 
@@ -41,7 +40,7 @@ BASE_DECLARE_FEATURE(kEnableAppMetricsReporting);
 // reporting.
 class MetricReportingManager : public policy::ManagedSessionService::Observer,
                                public ::ash::DeviceSettingsService::Observer,
-                               public EventDrivenTelemetrySamplerPool {
+                               public EventDrivenTelemetryCollectorPool {
  public:
   // Delegate class for dependencies and behaviors that need to be overridden
   // for testing purposes.
@@ -78,8 +77,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override;
 
-  // EventDrivenTelemetrySamplerPool:
-  std::vector<ConfiguredSampler*> GetTelemetrySamplers(
+  // EventDrivenTelemetryCollectorPool:
+  std::vector<CollectorBase*> GetTelemetryCollectors(
       MetricEventType event_type) override;
 
  private:
@@ -111,28 +110,40 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                          const std::string& enable_setting_path,
                          bool setting_enabled_default_value);
 
-  void InitOneShotTelemetryCollector(const std::string& sampler_name,
-                                     MetricReportQueue* metric_report_queue);
+  void InitOneShotTelemetryCollector(const std::string& collector_name,
+                                     Sampler* sampler,
+                                     MetricReportQueue* metric_report_queue,
+                                     const std::string& enable_setting_path,
+                                     bool enable_default_value,
+                                     base::TimeDelta init_delay);
 
-  void InitPeriodicCollector(const std::string& sampler_name,
+  void InitPeriodicCollector(const std::string& collector_name,
+                             Sampler* sampler,
                              MetricReportQueue* metric_report_queue,
+                             const std::string& enable_setting_path,
+                             bool enable_default_value,
                              const std::string& rate_setting_path,
                              base::TimeDelta default_rate,
-                             int rate_unit_to_ms = 1);
+                             int rate_unit_to_ms,
+                             base::TimeDelta init_delay);
 
   void InitPeriodicEventCollector(
-      const std::string& sampler_name,
+      Sampler* sampler,
       std::unique_ptr<PeriodicEventCollector::EventDetector> event_detector,
       MetricReportQueue* metric_report_queue,
+      const std::string& enable_setting_path,
+      bool enable_default_value,
       const std::string& rate_setting_path,
       base::TimeDelta default_rate,
-      int rate_unit_to_ms = 1);
+      int rate_unit_to_ms,
+      base::TimeDelta init_delay);
 
   void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       MetricReportQueue* report_queue,
       const std::string& enable_setting_path,
-      bool setting_enabled_default_value);
+      bool setting_enabled_default_value,
+      base::TimeDelta init_delay);
 
   void UploadTelemetry();
 
@@ -141,15 +152,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       const std::string& setting_path,
       bool default_value);
 
-  void InitTelemetryConfiguredSampler(const std::string& sampler_name,
-                                      std::unique_ptr<Sampler> sampler,
-                                      const std::string& enable_setting_path,
-                                      bool default_value);
-
   void InitNetworkCollectors(Profile* profile);
 
-  void InitNetworkPeriodicCollector(const std::string& sampler_name,
-                                    MetricReportQueue* metric_report_queue);
+  void InitNetworkPeriodicCollector(const std::string& collector_name,
+                                    std::unique_ptr<Sampler> sampler);
 
   void InitNetworkConfiguredSampler(const std::string& sampler_name,
                                     std::unique_ptr<Sampler> sampler);
@@ -160,7 +166,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitDisplayCollectors();
 
-  std::vector<ConfiguredSampler*> GetTelemetrySamplersFromSetting(
+  base::TimeDelta GetUploadDelay() const;
+
+  std::vector<CollectorBase*> GetTelemetryCollectorsFromSetting(
       base::StringPiece setting_name);
 
   CrosReportingSettings reporting_settings_;
@@ -173,15 +181,17 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // enforced by destructing all of them using the `Shutdown` method if they
   // need to be deleted before the destruction of the MetricReportingManager
   // instance.
-  std::vector<std::unique_ptr<Sampler>> info_samplers_
+  std::vector<std::unique_ptr<Sampler>> samplers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_map<std::string, std::unique_ptr<ConfiguredSampler>>
-      telemetry_sampler_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::vector<std::unique_ptr<CollectorBase>> periodic_collectors_;
-  std::vector<std::unique_ptr<CollectorBase>> one_shot_collectors_;
+  base::flat_map<std::string, std::unique_ptr<CollectorBase>>
+      telemetry_collectors_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::vector<std::unique_ptr<CollectorBase>> info_collectors_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::vector<std::unique_ptr<MetricEventObserverManager>>
-      event_observer_managers_;
+      event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<MetricReportQueue> info_report_queue_;
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_;
@@ -199,16 +209,12 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                           ::ash::DeviceSettingsService::Observer>
       device_settings_observation_{this};
 
-  base::OneShotTimer delayed_init_timer_;
-
-  base::OneShotTimer delayed_init_on_login_timer_;
-
   base::OneShotTimer initial_upload_timer_;
 
-  // This sampler will be removed with lacros, so we avoid adding it to
-  // `telemetry_sampler_map_` to make sure it won't be used for event driven
+  // This collector will be removed with lacros, so we avoid adding it to
+  // `telemetry_collectors_` to make sure it won't be used for event driven
   // telemetry.
-  std::unique_ptr<Sampler> network_bandwidth_sampler_;
+  std::unique_ptr<CollectorBase> network_bandwidth_collector_;
 
   std::unique_ptr<Delegate> delegate_;
 };

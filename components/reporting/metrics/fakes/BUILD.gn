@@ -5,8 +5,8 @@
 static_library("test_support") {
   testonly = true
   sources = [
-    "fake_event_driven_telemetry_sampler_pool.cc",
-    "fake_event_driven_telemetry_sampler_pool.h",
+    "fake_event_driven_telemetry_collector_pool.cc",
+    "fake_event_driven_telemetry_collector_pool.h",
     "fake_metric_event_observer.cc",
     "fake_metric_event_observer.h",
     "fake_metric_report_queue.cc",
