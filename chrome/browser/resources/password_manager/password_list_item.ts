@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './site_favicon.js';
 import './shared_style.css.js';
 
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
@@ -30,7 +31,10 @@ export class PasswordListItemElement extends PolymerElement {
 
   static get properties() {
     return {
-      item: Object,
+      item: {
+        type: Object,
+        observer: 'onItemChanged_',
+      },
 
       first: Boolean,
 
@@ -38,11 +42,17 @@ export class PasswordListItemElement extends PolymerElement {
         type: String,
         computed: 'computeElementClass_(first)',
       },
+
+      /**
+       * The number of accounts in a group as a formatted string.
+       */
+      numberOfAccounts_: String,
     };
   }
 
   item: chrome.passwordsPrivate.CredentialGroup;
   first: boolean;
+  private numberOfAccounts_: string;
 
   private computeElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
@@ -66,6 +76,16 @@ export class PasswordListItemElement extends PolymerElement {
           Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
         })
         .catch(() => {});
+  }
+
+  private async onItemChanged_() {
+    this.numberOfAccounts_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'numberOfAccounts', this.item.entries.length);
+  }
+
+  private showNumberOfAccounts_(): boolean {
+    return this.item.entries.length > 1;
   }
 }
 

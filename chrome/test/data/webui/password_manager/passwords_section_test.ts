@@ -4,10 +4,12 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, PasswordsSectionElement, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router} from 'chrome://password-manager/password_manager.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -37,11 +39,14 @@ function validatePasswordsSubsection(
 
 suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
+  let pluralString: TestPluralStringProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    pluralString = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralString);
     return flushTasks();
   });
 
@@ -126,9 +131,50 @@ suite('PasswordsSectionTest', function() {
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
+    // Without setRequestCredentialsDetailsResponse auth is considered failed.
     assertArrayEquals(
         [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+  });
+
+  test('number of accounts is shown', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [createPasswordEntry({username: 'user', id: 0})],
+      }),
+      createCredentialGroup({
+        name: 'test2.com',
+        credentials: [
+          createPasswordEntry({username: 'user1', id: 1}),
+          createPasswordEntry({username: 'user2', id: 2}),
+        ],
+      }),
+    ];
+    pluralString.text = '2 accounts';
+
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const listEntries =
+        section.shadowRoot!.querySelectorAll<PasswordListItemElement>(
+            'password-list-item');
+    assertEquals(2, listEntries.length);
+
+    // Since there is only 1 PasswordUIEntry in the group number of accounts is
+    // missing.
+    assertFalse(
+        !!listEntries[0]!.shadowRoot!.querySelector('#numberOfAccounts'));
+    // For group with 2 PasswordUIEntries |numberOfAccounts| is visible.
+    const numberOfAccounts =
+        listEntries[1]!.shadowRoot!.querySelector('#numberOfAccounts');
+    assertTrue(!!numberOfAccounts);
+    assertTrue(isVisible(numberOfAccounts));
+    assertEquals(pluralString.text, numberOfAccounts.textContent!.trim());
   });
 });

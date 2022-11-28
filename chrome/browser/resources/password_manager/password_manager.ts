@@ -5,6 +5,7 @@
 import './password_manager_app.js';
 
 export {PasswordDetailsSectionElement} from './password_details_section.js';
+export {PasswordListItemElement} from './password_list_item.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';
 export {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 export {PasswordsSectionElement} from './passwords_section.js';
