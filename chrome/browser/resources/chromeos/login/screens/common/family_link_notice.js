@@ -6,7 +6,21 @@
  * @fileoverview Polymer element for Family Link Notice screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+
 
 /**
  * @constructor
@@ -14,9 +28,9 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const FamilyLinkScreenElementBase = Polymer.mixinBehaviors(
+const FamilyLinkScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -25,12 +39,17 @@ const FamilyLinkScreenElementBase = Polymer.mixinBehaviors(
  */
 FamilyLinkScreenElementBase.$;
 
+/**
+ * @polymer
+ */
 class FamilyLinkNotice extends FamilyLinkScreenElementBase {
   static get is() {
     return 'family-link-notice-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -39,6 +58,7 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
        */
       isNewGaiaAccount_: {
         type: Boolean,
+        value: false,
       },
 
       /**
@@ -46,6 +66,7 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
        */
       email_: {
         type: String,
+        value: '',
       },
 
       /**
@@ -53,15 +74,9 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
        */
       domain_: {
         type: String,
+        value: '',
       },
     };
-  }
-
-  constructor() {
-    super();
-    this.isNewGaiaAccount_ = false;
-    this.email_ = '';
-    this.domain_ = '';
   }
 
   /** Overridden from LoginScreenBehavior. */

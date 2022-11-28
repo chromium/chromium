@@ -4,41 +4,21 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_vars.css.html">
-<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_next_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-
-<dom-module id="family-link-notice-element">
-  <template>
-    <style include="oobe-dialog-host-styles"></style>
-    <oobe-adaptive-dialog id="familyLinkDialog" role="dialog"
-        aria-label$="[[getDialogTitle_(locale, email_, domain_)]]">
-      <iron-icon slot="icon" icon="oobe-32:family"></iron-icon>
-      <h1 slot="title">[[getDialogTitle_(locale, email_, domain_)]]</h1>
-      <div slot="subtitle">
-        [[getDialogSubtitle_(locale, isNewGaiaAccount_, email_, domain_)]]
-      </div>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <img src="images/parental_control.svg"
-            class="oobe-illustration" aria-hidden="true">
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-next-button id="continueButton"
-            text-key="familyLinkContinueButton" class="focus-on-show"
-            inverse on-click="onContinueButtonPressed_"></oobe-next-button>
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="family_link_notice.js"></script>
-</dom-module>
+<style include="oobe-dialog-host-styles"></style>
+<oobe-adaptive-dialog id="familyLinkDialog" role="dialog"
+    aria-label$="[[getDialogTitle_(locale, email_, domain_)]]">
+  <iron-icon slot="icon" icon="oobe-32:family"></iron-icon>
+  <h1 slot="title">[[getDialogTitle_(locale, email_, domain_)]]</h1>
+  <div slot="subtitle">
+    [[getDialogSubtitle_(locale, isNewGaiaAccount_, email_, domain_)]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/parental_control.svg"
+        class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="continueButton"
+        text-key="familyLinkContinueButton" class="focus-on-show"
+        inverse on-click="onContinueButtonPressed_"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
