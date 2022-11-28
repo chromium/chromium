@@ -1784,8 +1784,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears the entries in the PrefetchedSignedExchangeCache if exists.
   void ClearPrefetchedSignedExchangeCache();
 
-  // Creates a WebBundleHandleTracker from WebBundleHandles which are attached
-  // |this| or the parent frame or the opener frame.
+  // Creates a WebBundleHandleTracker from WebBundleHandles which is attached
+  // to `this`, if one exists.
   std::unique_ptr<WebBundleHandleTracker> MaybeCreateWebBundleHandleTracker();
 
   void set_did_stop_loading_callback_for_testing(base::OnceClosure callback) {

@@ -3426,7 +3426,6 @@ void RenderFrameHostImpl::Init() {
         std::move(pending_navigate_->blob_url_loader_factory),
         std::move(pending_navigate_->navigation_client),
         EnsurePrefetchedSignedExchangeCache(),
-        MaybeCreateWebBundleHandleTracker(),
         std::move(pending_navigate_->renderer_cancellation_listener));
     pending_navigate_.reset();
   }
@@ -7865,7 +7864,6 @@ void RenderFrameHostImpl::BeginNavigation(
       frame_tree_node(), std::move(validated_params), std::move(begin_params),
       std::move(blob_url_loader_factory), std::move(navigation_client),
       EnsurePrefetchedSignedExchangeCache(),
-      MaybeCreateWebBundleHandleTracker(),
       std::move(renderer_cancellation_listener));
 }
 
@@ -12438,15 +12436,7 @@ std::unique_ptr<WebBundleHandleTracker>
 RenderFrameHostImpl::MaybeCreateWebBundleHandleTracker() {
   if (web_bundle_handle_)
     return web_bundle_handle_->MaybeCreateTracker();
-  FrameTreeNode* frame_owner =
-      frame_tree_node_->parent() ? frame_tree_node_->parent()->frame_tree_node()
-                                 : frame_tree_node_->opener();
-  if (!frame_owner)
-    return nullptr;
-  RenderFrameHostImpl* frame_owner_host = frame_owner->current_frame_host();
-  if (!frame_owner_host->web_bundle_handle_)
-    return nullptr;
-  return frame_owner_host->web_bundle_handle_->MaybeCreateTracker();
+  return nullptr;
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetLocalRenderWidgetHost() const {
