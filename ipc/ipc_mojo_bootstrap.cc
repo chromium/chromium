@@ -884,13 +884,17 @@ class ChannelAssociatedGroupController
       client->NotifyError(reason);
     } else {
       endpoint->task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&ChannelAssociatedGroupController::
-                                        NotifyEndpointOfErrorOnEndpointThread,
-                                    this, endpoint->id(),
-                                    base::UnsafeDanglingUntriaged(endpoint)));
+          FROM_HERE,
+          base::BindOnce(&ChannelAssociatedGroupController::
+                             NotifyEndpointOfErrorOnEndpointThread,
+                         this, endpoint->id(),
+                         // This is safe as `endpoint` is verified to be in
+                         // `endpoints_` (a map with ownership) before use.
+                         base::UnsafeDangling(endpoint)));
     }
   }
 
+  // `endpoint` might be a dangling ptr and must be checked before dereference.
   void NotifyEndpointOfErrorOnEndpointThread(mojo::InterfaceId id,
                                              Endpoint* endpoint) {
     base::AutoLock locker(lock_);
