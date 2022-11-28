@@ -2248,12 +2248,12 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 32px;
 }
 
-.detail-pinned {
+.inline-status {
   display: none;
 }
 
 body.files-ng #list-container
-    li.pinned:not([renaming]):not(.dim-offline):not([data-sync-status]) .detail-pinned {
+    li.pinned:not([renaming]):not(.dim-offline):not([data-sync-status]) .inline-status {
   -webkit-mask-image: url(../images/files/ui/offline.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -2263,7 +2263,7 @@ body.files-ng #list-container
   width: 40px;
 }
 
-body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .detail-pinned {
+body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .inline-status {
   -webkit-mask-image: none;
   background-color: unset;
   background-position: center;
@@ -2274,11 +2274,11 @@ body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offl
   width: 32px;
 }
 
-body.files-ng #list-container li[data-sync-status=in_progress]:not([renaming]):not(.dim-offline) .detail-pinned {
+body.files-ng #list-container li[data-sync-status=in_progress]:not([renaming]):not(.dim-offline) .inline-status {
   background-image: url(../images/files/ui/in_progress_indicator.svg);
 }
 
-body.files-ng #list-container li[data-sync-status=error]:not([renaming]):not(.dim-offline) .detail-pinned {
+body.files-ng #list-container li[data-sync-status=error]:not([renaming]):not(.dim-offline) .inline-status {
   background-image: url(../images/files/ui/error.svg);
 }
 

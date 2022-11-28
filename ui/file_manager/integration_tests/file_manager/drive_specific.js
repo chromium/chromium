@@ -343,7 +343,7 @@ testcase.drivePinMultiple = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="world.ogv"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="world.ogv"] .detail-pinned');
+      appId, '#file-list .pinned[file-name="world.ogv"] .inline-status');
 
   // Select world.ogv by itself.
   await remoteCall.waitAndClickElement(
@@ -411,7 +411,7 @@ testcase.drivePinHosted = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="hello.txt"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .detail-pinned');
+      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
 
   // Test Document.gdoc should not be pinned however.
   await remoteCall.waitForElement(
@@ -468,7 +468,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   // Check: File is pinned.
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .detail-pinned');
+      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
   await waitForNotification('disabled-mobile-sync');
   await sendTestMessage({
     name: 'clickNotificationButton',

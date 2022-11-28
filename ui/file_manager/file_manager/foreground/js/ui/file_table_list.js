@@ -462,7 +462,7 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
  */
 filelist.renderPinned = (doc) => {
   const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  icon.className = 'detail-pinned';
+  icon.className = 'inline-status';
   icon.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
   return icon;
 };
