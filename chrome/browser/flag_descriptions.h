@@ -3049,6 +3049,9 @@ extern const char kAudioPeripheralVolumeGranularityDescription[];
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 
+extern const char kEcheLauncherName[];
+extern const char kEcheLauncherDescription[];
+
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 

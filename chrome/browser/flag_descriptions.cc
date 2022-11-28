@@ -5328,6 +5328,10 @@ const char kAudioPeripheralVolumeGranularityDescription[] =
 const char kEcheSWAName[] = "Enable Eche feature";
 const char kEcheSWADescription[] = "This is the main flag for enabling Eche.";
 
+const char kEcheLauncherName[] = "Enable the Eche launcher";
+const char kEcheLauncherDescription[] =
+    "Enables the launcher for all apps for Eche.";
+
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] =
     "Save console logs of Eche in the system log";
