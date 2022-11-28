@@ -4,6 +4,8 @@
 
 #include "remoting/test/cyclic_frame_generator.h"
 
+#include <ostream>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "remoting/test/frame_generator_util.h"

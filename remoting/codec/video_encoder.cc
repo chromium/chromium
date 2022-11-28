@@ -4,6 +4,8 @@
 
 #include "remoting/codec/video_encoder.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 #include "remoting/codec/video_encoder_verbatim.h"
 #include "remoting/codec/video_encoder_vpx.h"
