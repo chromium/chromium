@@ -38,6 +38,7 @@ assistant_migrated_imports = [
   # Assistant
   "chrome/browser/resources/chromeos/assistant_optin/assistant_loading.html",
   "chrome/browser/resources/chromeos/assistant_optin/assistant_related_info.html",
+  "chrome/browser/resources/chromeos/assistant_optin/assistant_value_prop.html",
   "chrome/browser/resources/chromeos/assistant_optin/setting_zippy.html",
 
   # Chrome
