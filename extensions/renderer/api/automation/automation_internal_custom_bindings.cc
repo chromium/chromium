@@ -253,19 +253,6 @@ void AutomationInternalCustomBindings::DispatchEvent(
     const base::Value::List& event_args) const {
   bindings_system_->DispatchEventInContext(event_name, event_args, nullptr,
                                            context());
-
-  if (notify_event_for_testing_.is_null() ||
-      event_name != "automationInternal.onAccessibilityEvent") {
-    return;
-  }
-  // Find the event type within the event_params for the test.
-  const base::Value::Dict* dict = event_args[0].GetIfDict();
-  DCHECK(dict);
-  const std::string* event_type_string = dict->FindString("eventType");
-  DCHECK(event_type_string);
-  api::automation::EventType event_type =
-      api::automation::ParseEventType(*event_type_string);
-  notify_event_for_testing_.Run(event_type);
 }
 
 std::string

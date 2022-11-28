@@ -17,12 +17,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "v8/include/v8-isolate.h"
 
-// TODO(crbug.com/1357889): Remove this after migrating test logic to
-// ui/accessibility.
-namespace extensions {
-class AutomationInternalCustomBindingsTest;
-}
-
 namespace ui {
 class AutomationV8Bindings;
 
@@ -170,7 +164,7 @@ class AX_EXPORT AutomationTreeManagerOwner {
   void SetDesktopTreeId(AXTreeID tree_id) { desktop_tree_id_ = tree_id; }
 
  protected:
-  friend class extensions::AutomationInternalCustomBindingsTest;
+  friend class AutomationTreeManagerOwnerTest;
 
   void OnAccessibilityEvents(const ui::AXTreeID& tree_id,
                              const std::vector<AXEvent>& events,

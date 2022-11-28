@@ -15,7 +15,6 @@
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "ipc/ipc_message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
@@ -89,8 +88,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
                      const base::Value::List& event_args) const override;
 
  private:
-  friend class AutomationInternalCustomBindingsTest;
-
   // ObjectBackedNativeHandler overrides:
   void Invalidate() override;
 
@@ -112,9 +109,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   bool should_ignore_context_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
-
-  base::RepeatingCallback<void(api::automation::EventType)>
-      notify_event_for_testing_;
 
   base::WeakPtrFactory<AutomationInternalCustomBindings> weak_ptr_factory_{
       this};

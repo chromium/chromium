@@ -318,7 +318,27 @@ test("accessibility_unittests") {
   ]
 
   if (enable_extensions) {
-    sources += [ "platform/automation/automation_api_util_unittest.cc" ]
+    sources += [
+      "platform/automation/automation_api_util_unittest.cc",
+      "platform/automation/automation_tree_manager_owner_unittest.cc",
+    ]
+    public_deps = [ "//gin" ]
+    configs += [
+      "//tools/v8_context_snapshot:use_v8_context_snapshot",
+      "//v8:external_startup_data",
+    ]
+
+    if (is_fuchsia) {
+      # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+      # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+        "//build/config/fuchsia/test/network.shard.test-cml",
+        "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+      ]
+    }
   }
 
   if (is_fuchsia) {
