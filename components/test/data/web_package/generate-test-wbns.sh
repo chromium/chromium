@@ -9,7 +9,7 @@ set -e
 for cmd in gen-bundle sign-bundle; do
     if ! command -v $cmd > /dev/null 2>&1; then
         echo "$cmd is not installed. Please run:"
-        echo "  go get -u github.com/WICG/webpackage/go/bundle/cmd/..."
+        echo "  go install github.com/WICG/webpackage/go/bundle/cmd/...@latest"
         echo '  export PATH=$PATH:$(go env GOPATH)/bin'
         exit 1
     fi
