@@ -30,10 +30,10 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
   RecorderDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "hi");
-  params.SetString("type", "prompt");
-  params.SetString("defaultPrompt", "This is a default text");
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "prompt");
+  params.Set("defaultPrompt", "This is a default text");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
@@ -49,10 +49,10 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
   RecorderDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "hi");
-  params.SetString("type", "prompt");
-  params.SetString("defaultPrompt", "");
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "prompt");
+  params.Set("defaultPrompt", "");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
@@ -65,10 +65,10 @@ TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
   RecorderDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "hi");
-  params.SetString("type", "alert");
-  params.SetString("defaultPrompt", "");
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "alert");
+  params.Set("defaultPrompt", "");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());

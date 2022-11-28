@@ -50,31 +50,31 @@ class CastTrackerTest : public testing::Test {
 
 TEST_F(CastTrackerTest, OnSinksUpdated) {
   const base::Value empty_sinks = base::Value(base::Value::List());
-  base::DictionaryValue params;
+  base::Value::Dict params;
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 
   base::Value::List sinks;
   sinks.Append(CreateSink("sink1", "1"));
   sinks.Append(CreateSink("sink2", "2"));
-  params.SetKey("sinks", base::Value(std::move(sinks)));
+  params.Set("sinks", base::Value(std::move(sinks)));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(2u, cast_tracker_->sinks().GetList().size());
 
-  params.SetKey("sinks", base::Value(base::Value::Type::LIST));
+  params.Set("sinks", base::Value(base::Value::Type::LIST));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 }
 
 TEST_F(CastTrackerTest, OnIssueUpdated) {
   const std::string issue_message = "There was an issue";
-  base::DictionaryValue params;
+  base::Value::Dict params;
   EXPECT_EQ("", cast_tracker_->issue().GetString());
 
-  params.SetKey("issueMessage", base::Value(issue_message));
+  params.Set("issueMessage", base::Value(issue_message));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.issueUpdated", params);
   EXPECT_EQ(issue_message, cast_tracker_->issue().GetString());
 
-  params.SetKey("issueMessage", base::Value(""));
+  params.Set("issueMessage", base::Value(""));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.issueUpdated", params);
   EXPECT_EQ("", cast_tracker_->issue().GetString());
 }

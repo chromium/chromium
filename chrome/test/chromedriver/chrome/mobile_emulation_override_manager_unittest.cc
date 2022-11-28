@@ -70,7 +70,7 @@ TEST(MobileEmulationOverrideManager, SendsCommandOnNavigation) {
   RecorderDevToolsClient client;
   DeviceMetrics device_metrics(1, 2, 3.0, true, true);
   MobileEmulationOverrideManager manager(&client, &device_metrics);
-  base::DictionaryValue main_frame_params;
+  base::Value::Dict main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)
                 .code());
@@ -82,8 +82,8 @@ TEST(MobileEmulationOverrideManager, SendsCommandOnNavigation) {
   ASSERT_NO_FATAL_FAILURE(
       AssertDeviceMetricsCommand(client.commands_[2], device_metrics));
 
-  base::DictionaryValue sub_frame_params;
-  sub_frame_params.SetString("frame.parentId", "id");
+  base::Value::Dict sub_frame_params;
+  sub_frame_params.SetByDottedPath("frame.parentId", "id");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.frameNavigated", sub_frame_params).code());

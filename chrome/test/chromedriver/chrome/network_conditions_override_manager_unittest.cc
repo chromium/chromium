@@ -65,7 +65,7 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnConnect) {
 TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
   RecorderDevToolsClient client;
   NetworkConditionsOverrideManager manager(&client);
-  base::DictionaryValue main_frame_params;
+  base::Value::Dict main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)
                 .code());
@@ -81,8 +81,8 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
   ASSERT_NO_FATAL_FAILURE(
       AssertNetworkConditionsCommand(client.commands_[2], network_conditions));
 
-  base::DictionaryValue sub_frame_params;
-  sub_frame_params.SetString("frame.parentId", "id");
+  base::Value::Dict sub_frame_params;
+  sub_frame_params.SetByDottedPath("frame.parentId", "id");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.frameNavigated", sub_frame_params).code());

@@ -37,8 +37,9 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   Status TriggerEvent(const std::string& method,
-                    const base::DictionaryValue& params) {
-    return listener_->OnEvent(this, method, params);
+                      const base::Value::Dict& params) {
+    return static_cast<ConsoleLogger*>(listener_)->OnEvent(this, method,
+                                                           params);
   }
 
   // Overridden from DevToolsClient:
@@ -118,23 +119,24 @@ void ValidateLogEntry(const LogEntry *entry,
   EXPECT_EQ(expected_message, entry->message);
 }
 
-void ConsoleLogParams(base::DictionaryValue* out_params,
-                      const char* source,
-                      const char* url,
-                      const char* level,
+// Log params into `out_dict`. If a string param is empty it is not set.
+void ConsoleLogParams(base::Value::Dict* out_dict,
+                      const std::string& source,
+                      const std::string& url,
+                      const std::string& level,
                       int line_number,
-                      const char* text) {
-  base::Value::Dict* out_dict = out_params->GetIfDict();
+                      const std::string& text) {
   CHECK(out_dict);
-  if (source)
+  if (!source.empty())
     out_dict->SetByDottedPath("entry.source", source);
-  if (url)
+
+  if (!url.empty())
     out_dict->SetByDottedPath("entry.url", url);
-  if (level)
+  if (!level.empty())
     out_dict->SetByDottedPath("entry.level", level);
   if (line_number != -1)
     out_dict->SetByDottedPath("entry.lineNumber", line_number);
-  if (text)
+  if (!text.empty())
     out_dict->SetByDottedPath("entry.text", text);
 }
 
@@ -151,38 +153,38 @@ TEST(ConsoleLogger, ConsoleMessages) {
   EXPECT_EQ("Runtime.enable", client.PopSentCommand());
   EXPECT_TRUE(client.PopSentCommand().empty());
 
-  base::DictionaryValue params1;  // All fields are set.
+  base::Value::Dict params1;  // All fields are set.
   ConsoleLogParams(&params1, "source1", "url1", "verbose", 10, "text1");
   ASSERT_EQ(kOk, client.TriggerEvent("Log.entryAdded", params1).code());
   // Ignored -- wrong method.
   ASSERT_EQ(kOk, client.TriggerEvent("Log.gaga", params1).code());
 
-  base::DictionaryValue params2;  // All optionals are not set.
-  ConsoleLogParams(&params2, "source2", nullptr, "log", -1, "text2");
+  base::Value::Dict params2;  // All optionals are not set.
+  ConsoleLogParams(&params2, "source2", "", "log", -1, "text2");
   ASSERT_EQ(kOk, client.TriggerEvent("Log.entryAdded", params2).code());
 
-  base::DictionaryValue params3;  // Line, no source.
-  ConsoleLogParams(&params3, nullptr, "url3", "warning", 30, "text3");
+  base::Value::Dict params3;  // Line, no source.
+  ConsoleLogParams(&params3, "", "url3", "warning", 30, "text3");
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params3).code());
 
-  base::DictionaryValue params5;  // Bad level name.
+  base::Value::Dict params5;  // Bad level name.
   ConsoleLogParams(&params5, "source5", "url5", "gaga", 50, "ulala");
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params5).code());
 
-  base::DictionaryValue params6;  // Unset level.
-  ConsoleLogParams(&params6, "source6", "url6", nullptr, 60, nullptr);
+  base::Value::Dict params6;  // Unset level.
+  ConsoleLogParams(&params6, "source6", "url6", "", 60, "");
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params6).code());
 
-  base::DictionaryValue params7;  // No text.
-  ConsoleLogParams(&params7, "source7", "url7", "log", -1, nullptr);
+  base::Value::Dict params7;  // No text.
+  ConsoleLogParams(&params7, "source7", "url7", "log", -1, "");
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params7).code());
 
-  base::DictionaryValue params8;  // No message object.
-  params8.GetDict().Set("gaga", 8);
+  base::Value::Dict params8;  // No message object.
+  params8.Set("gaga", 8);
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params8).code());
 
