@@ -20,6 +20,31 @@ namespace {
 // Base directory for saving customized data in the user profile.
 constexpr char kPath[] = "google_gio";
 
+absl::optional<base::FilePath> CreateOrGetDirectory(
+    const base::FilePath& storage_dir) {
+  if (base::PathExists(storage_dir))
+    return storage_dir;
+  if (base::CreateDirectory(storage_dir))
+    return storage_dir;
+
+  LOG(ERROR) << "Failed to create the base storage directory: "
+             << storage_dir.value();
+  return absl::nullopt;
+}
+
+bool ProtoFileExists(const base::FilePath& file_path) {
+  return base::PathExists(file_path);
+}
+
+void CreateEmptyFile(const base::FilePath& file_path) {
+  FILE* file = base::OpenFile(file_path, "wb+");
+  if (file == nullptr) {
+    LOG(ERROR) << "Failed to create file: " << file_path.value();
+    return;
+  }
+  base::CloseFile(file);
+}
+
 }  // namespace
 
 DataController::DataController(
@@ -40,12 +65,10 @@ base::FilePath DataController::GetFilePathFromPackageName(
 }
 
 std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
-    const std::string& package_name) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  auto base_path = CreateOrGetDirectory();
+    base::FilePath file_path) {
+  auto base_path = CreateOrGetDirectory(file_path.DirName());
   if (!base_path)
     return nullptr;
-  auto file_path = GetFilePathFromPackageName(package_name);
 
   if (!ProtoFileExists(file_path)) {
     CreateEmptyFile(file_path);
@@ -62,40 +85,11 @@ std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
 }
 
 bool DataController::WriteProtoToFile(std::unique_ptr<AppDataProto> proto,
-                                      const std::string& package_name) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+                                      base::FilePath file_path) {
   std::string proto_str;
   if (!proto->SerializeToString(&proto_str))
     return false;
-  return base::WriteFile(GetFilePathFromPackageName(package_name),
-                         proto_str.data(), proto_str.size()) > 0;
-}
-
-absl::optional<base::FilePath> DataController::CreateOrGetDirectory() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (base::PathExists(storage_dir_))
-    return storage_dir_;
-  if (base::CreateDirectory(storage_dir_))
-    return storage_dir_;
-
-  LOG(ERROR) << "Failed to create the base storage directory: "
-             << storage_dir_.value();
-  return absl::nullopt;
-}
-
-bool DataController::ProtoFileExists(base::FilePath file_path) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return base::PathExists(file_path);
-}
-
-void DataController::CreateEmptyFile(base::FilePath file_path) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  FILE* file = base::OpenFile(file_path, "wb+");
-  if (file == nullptr) {
-    LOG(ERROR) << "Failed to create file: " << file_path.value();
-    return;
-  }
-  base::CloseFile(file);
+  return base::WriteFile(file_path, proto_str.data(), proto_str.size()) > 0;
 }
 
 }  // namespace arc::input_overlay

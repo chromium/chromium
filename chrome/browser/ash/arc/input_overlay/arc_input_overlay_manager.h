@@ -93,7 +93,7 @@ class ArcInputOverlayManager : public KeyedService,
   class InputMethodObserver;
 
   // Read default data.
-  std::unique_ptr<TouchInjector> ReadDefaultData(
+  static std::unique_ptr<TouchInjector> ReadDefaultData(
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when finishing reading default data.
   void OnFinishReadDefaultData(std::unique_ptr<TouchInjector> touch_injector);
@@ -104,16 +104,12 @@ class ArcInputOverlayManager : public KeyedService,
   // there is any.
   void ReadCustomizedData(const std::string& package_name,
                           std::unique_ptr<TouchInjector> touch_injector);
-  // Get the Proto object from customized data.
-  std::unique_ptr<AppDataProto> GetProto(std::string package_name);
   // Apply the customized proto data.
   void OnProtoDataAvailable(std::unique_ptr<TouchInjector> touch_injector,
                             std::unique_ptr<AppDataProto> proto);
   // Callback function triggered by Save button.
   void OnSaveProtoFile(std::unique_ptr<AppDataProto> proto,
                        std::string package_name);
-  // Pass |package_name| by value because it runs on task runner.
-  void SaveFile(std::unique_ptr<AppDataProto> proto, std::string package_name);
   void NotifyTextInputState();
   void AddObserverToInputMethod();
   void RemoveObserverFromInputMethod();

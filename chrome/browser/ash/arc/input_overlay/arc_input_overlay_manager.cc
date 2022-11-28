@@ -65,6 +65,12 @@ bool IsGhostWindowLoading(aura::Window* window) {
   return shell_surface_base && shell_surface_base->HasOverlay();
 }
 
+void CheckWriteResult(std::string package_name, bool result) {
+  if (result)
+    return;
+  LOG(ERROR) << "Failed to write proto for " << package_name;
+}
+
 }  // namespace
 
 class ArcInputOverlayManager::InputMethodObserver
@@ -133,6 +139,7 @@ ArcInputOverlayManager::ArcInputOverlayManager(
 
 ArcInputOverlayManager::~ArcInputOverlayManager() = default;
 
+// static
 std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
@@ -194,10 +201,15 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
         base::BindOnce(&ArcInputOverlayManager::OnReceiveAppCategory,
                        Unretained(this), std::move(touch_injector)));
   } else {
+    if (!data_controller_) {
+      OnProtoDataAvailable(std::move(touch_injector), /*proto=*/nullptr);
+      return;
+    }
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&ArcInputOverlayManager::GetProto, Unretained(this),
-                       package_name),
+        base::BindOnce(
+            &DataController::ReadProtoFromFile,
+            data_controller_->GetFilePathFromPackageName(package_name)),
         base::BindOnce(&ArcInputOverlayManager::OnProtoDataAvailable,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(touch_injector)));
@@ -223,18 +235,10 @@ void ArcInputOverlayManager::OnReceiveAppCategory(
   RegisterFocusedWindow();
 }
 
-std::unique_ptr<AppDataProto> ArcInputOverlayManager::GetProto(
-    std::string package_name) {
-  // |data_controller_| is null for test.
-  return data_controller_ ? data_controller_->ReadProtoFromFile(package_name)
-                          : nullptr;
-}
-
 void ArcInputOverlayManager::OnProtoDataAvailable(
     std::unique_ptr<TouchInjector> touch_injector,
     std::unique_ptr<AppDataProto> proto) {
   DCHECK(touch_injector);
-
   if (proto) {
     touch_injector->OnProtoDataAvailable(*proto);
   } else {
@@ -260,16 +264,14 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
 void ArcInputOverlayManager::OnSaveProtoFile(
     std::unique_ptr<AppDataProto> proto,
     std::string package_name) {
-  task_runner_->PostTask(
+  if (!data_controller_)
+    return;
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ArcInputOverlayManager::SaveFile, base::Unretained(this),
-                     std::move(proto), package_name));
-}
-
-void ArcInputOverlayManager::SaveFile(std::unique_ptr<AppDataProto> proto,
-                                      std::string package_name) {
-  if (data_controller_)
-    data_controller_->WriteProtoToFile(std::move(proto), package_name);
+      base::BindOnce(
+          &DataController::WriteProtoToFile, std::move(proto),
+          data_controller_->GetFilePathFromPackageName(package_name)),
+      base::BindOnce(&CheckWriteResult, package_name));
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
@@ -407,13 +409,12 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
       base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
                           weak_ptr_factory_.GetWeakPtr()));
   loading_data_windows_.insert(top_level_window);
-
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ArcInputOverlayManager::ReadDefaultData, Unretained(this),
+      base::BindOnce(&ArcInputOverlayManager::ReadDefaultData,
                      std::move(touch_injector)),
       base::BindOnce(&ArcInputOverlayManager::OnFinishReadDefaultData,
-                     Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
