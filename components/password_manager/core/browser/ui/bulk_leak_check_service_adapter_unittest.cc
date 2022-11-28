@@ -125,7 +125,8 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   MockAffiliationService affiliation_service_;
-  SavedPasswordsPresenter presenter_{&affiliation_service_, store_};
+  SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
+                                     /*account_store=*/nullptr};
   BulkLeakCheckService service_{
       identity_test_env_.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>()};

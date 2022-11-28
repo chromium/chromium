@@ -101,10 +101,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
       base::OnceCallback<void(const std::vector<AddResult>&)>;
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
 
-  SavedPasswordsPresenter(
-      AffiliationService* affiliation_service,
-      scoped_refptr<PasswordStoreInterface> profile_store,
-      scoped_refptr<PasswordStoreInterface> account_store = nullptr);
+  SavedPasswordsPresenter(AffiliationService* affiliation_service,
+                          scoped_refptr<PasswordStoreInterface> profile_store,
+                          scoped_refptr<PasswordStoreInterface> account_store);
   ~SavedPasswordsPresenter() override;
 
   // Initializes the presenter and makes it issue the first request for all

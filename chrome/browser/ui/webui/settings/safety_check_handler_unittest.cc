@@ -261,10 +261,10 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
   password_manager::MockAffiliationService affiliation_service_;
-  password_manager::SavedPasswordsPresenter presenter_{&affiliation_service_,
-                                                       store_};
-  password_manager::InsecureCredentialsManager credentials_manager_{&presenter_,
-                                                                    store_};
+  password_manager::SavedPasswordsPresenter presenter_{
+      &affiliation_service_, store_, /*account_store=*/nullptr};
+  password_manager::InsecureCredentialsManager credentials_manager_{
+      &presenter_, store_, /*account_store=*/nullptr};
 };
 
 class TestSafetyCheckExtensionService : public TestExtensionService {

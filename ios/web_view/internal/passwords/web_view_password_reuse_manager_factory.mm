@@ -66,7 +66,8 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
   reuse_manager->Init(browser_state->GetPrefs(),
                       WebViewPasswordStoreFactory::GetForBrowserState(
                           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get());
+                          .get(),
+                      /*account_store=*/nullptr);
   return reuse_manager;
 }
 

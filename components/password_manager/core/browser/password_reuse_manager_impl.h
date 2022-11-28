@@ -29,7 +29,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // Implements PasswordReuseManager interface.
   void Init(PrefService* prefs,
             PasswordStoreInterface* profile_store,
-            PasswordStoreInterface* account_store = nullptr) override;
+            PasswordStoreInterface* account_store) override;
   void AccountStoreStateChanged() override;
   void ReportMetrics(const std::string& username,
                      bool is_under_advanced_protection) override;

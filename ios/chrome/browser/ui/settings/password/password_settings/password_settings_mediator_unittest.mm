@@ -76,7 +76,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     password_manager::MockAffiliationService affiliation_service_;
     store_ = CreateAndUseTestPasswordStore(browser_state_.get());
     presenter_ = std::make_unique<SavedPasswordsPresenter>(
-        &affiliation_service_, store_);
+        &affiliation_service_, store_, /*accont_store=*/nullptr);
 
     mediator_ = [[PasswordSettingsMediator alloc]
         initWithReauthenticationModule:reauth_module_

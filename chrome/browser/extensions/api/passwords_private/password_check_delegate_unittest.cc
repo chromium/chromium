@@ -1148,7 +1148,8 @@ TEST_F(PasswordCheckDelegateTest,
   // Use a local delegate instead of |delegate()| so that the Password Store can
   // be set-up prior to constructing the object.
   password_manager::MockAffiliationService affiliation_service;
-  SavedPasswordsPresenter new_presenter(&affiliation_service, &store());
+  SavedPasswordsPresenter new_presenter(&affiliation_service, &store(),
+                                        /*account_store=*/nullptr);
   PasswordCheckDelegate delegate = CreateDelegate(&new_presenter);
   new_presenter.Init();
   delegate.StartPasswordCheck(callback1.Get());

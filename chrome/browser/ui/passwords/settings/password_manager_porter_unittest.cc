@@ -295,8 +295,9 @@ TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
       static_cast<password_manager::TestPasswordStore*>(store.get());
   EXPECT_THAT(test_password_store->stored_passwords(), IsEmpty());
   password_manager::MockAffiliationService affiliation_service;
-  password_manager::SavedPasswordsPresenter presenter{&affiliation_service,
-                                                      test_password_store};
+  password_manager::SavedPasswordsPresenter presenter{
+      &affiliation_service, test_password_store,
+      /*account_store=*/nullptr};
   presenter.Init();
 
   PasswordManagerPorter porter(
@@ -380,8 +381,9 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
   ASSERT_TRUE(base::WriteFile(temp_file_path, tc.csv));
 
   password_manager::MockAffiliationService affiliation_service;
-  password_manager::SavedPasswordsPresenter presenter{&affiliation_service,
-                                                      test_password_store};
+  password_manager::SavedPasswordsPresenter presenter{
+      &affiliation_service, test_password_store,
+      /*account_store=*/nullptr};
   presenter.Init();
 
   PasswordManagerPorter porter(
