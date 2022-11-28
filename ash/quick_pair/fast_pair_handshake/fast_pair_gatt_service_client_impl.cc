@@ -134,6 +134,8 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
   adapter_observation_.Observe(adapter_.get());
 
   QP_LOG(INFO) << __func__ << ": Starting the GATT connection to device";
+  RecordGattInitializationStep(FastPairGattConnectionSteps::kConnectionStarted);
+
   device->CreateGattConnection(
       base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
@@ -227,6 +229,7 @@ void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
       service->GetDevice()->GetAddress() == device_address_) {
     QP_LOG(INFO) << __func__
                  << ": Completed discovery for Fast Pair GATT service";
+    RecordGattInitializationStep(FastPairGattConnectionSteps::kConnectionReady);
     gatt_service_ = service;
     FindGattCharacteristicsAndStartNotifySessions();
   }
@@ -257,6 +260,8 @@ void FastPairGattServiceClientImpl::
         PairFailure::kKeyBasedPairingCharacteristicDiscovery);
     return;
   }
+  RecordGattInitializationStep(
+      FastPairGattConnectionSteps::kFoundKeybasedPairingCharacteristic);
 
   std::vector<device::BluetoothRemoteGattCharacteristic*>
       passkey_characteristics = GetCharacteristicsByUUIDs(
@@ -311,6 +316,8 @@ void FastPairGattServiceClientImpl::OnNotifySession(
   if (key_based_characteristic_ &&
       session->GetCharacteristic() == key_based_characteristic_) {
     keybased_notify_session_timer_.Stop();
+    RecordGattInitializationStep(
+        FastPairGattConnectionSteps::kNotifiationsEnabledForKeybasedPairing);
   } else if (passkey_characteristic_ &&
              session->GetCharacteristic() == passkey_characteristic_) {
     passkey_notify_session_timer_.Stop();
@@ -323,6 +330,9 @@ void FastPairGattServiceClientImpl::OnNotifySession(
   // pass key characteristics to notify, thus size "2";
   if (bluetooth_gatt_notify_sessions_.size() == 2) {
     QP_LOG(INFO) << __func__ << ": Finished initializing GATT service";
+    RecordGattInitializationStep(
+        FastPairGattConnectionSteps::kConnectionEstablished);
+
     is_initialized_ = true;
 
     // This check handles the case where a timer for the characteristic's notify

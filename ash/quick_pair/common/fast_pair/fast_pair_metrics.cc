@@ -486,6 +486,7 @@ const char kFootprintsFetcherGetHttpResponseError[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.HttpResponseError";
 const char kFastPairRepositoryCacheResult[] =
     "Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result";
+const char kFastPairGattConnectionStep[] = "ChromeOS.FastPair.GattConnection";
 const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
 const char kFastPairHandshakeStepInitial[] =
     "Bluetooth.ChromeOS.FastPair.Handshake.Steps.InitialPairingProtocol";
@@ -879,6 +880,12 @@ void RecordFootprintsFetcherGetResult(const FastPairHttpResult& result) {
 
 void RecordFastPairRepositoryCacheResult(bool success) {
   base::UmaHistogramBoolean(kFastPairRepositoryCacheResult, success);
+}
+
+void RecordGattInitializationStep(
+    FastPairGattConnectionSteps initialization_step) {
+  base::UmaHistogramEnumeration(kFastPairGattConnectionStep,
+                                initialization_step);
 }
 
 void RecordHandshakeResult(bool success) {

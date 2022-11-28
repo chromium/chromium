@@ -36700,6 +36700,15 @@ Called by update_extension_permission.py.-->
   <int value="1221" label="Pairing Succeeded: Already Paired"/>
 </enum>
 
+<enum name="FastPairGattConnectionSteps">
+  <int value="0" label="Connection started"/>
+  <int value="1" label="Connection ready"/>
+  <int value="2" label="Found key-based pairing characteristic"/>
+  <int value="3"
+      label="Notifications enabled for key-bard pairing characteristic"/>
+  <int value="4" label="Connection established"/>
+</enum>
+
 <enum name="FastPairHandshakeFailureReason">
   <int value="0" label="Failed to initialize GATT connection"/>
   <int value="1" label="Failed to create FastPairDataEncryptor"/>

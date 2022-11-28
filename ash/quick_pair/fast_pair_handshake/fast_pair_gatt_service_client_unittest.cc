@@ -56,6 +56,7 @@ const char kWriteAccountKeyCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason";
 const char kWriteAccountKeyTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
+const char kFastPairGattConnectionStep[] = "ChromeOS.FastPair.GattConnection";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 
@@ -559,12 +560,14 @@ TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SuccessfulGattConnectionSetUp();
   FastForwardTimeByConnetingTimeout();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kGattServiceDiscoveryTimeout);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 1);
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
@@ -581,9 +584,11 @@ TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   FailedGattConnectionSetUp();
   EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 1);
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 1);
@@ -602,9 +607,11 @@ TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_TRUE(gatt_service_client_->IsConnected());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 5);
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
@@ -622,12 +629,14 @@ TEST_F(FastPairGattServiceClientTest, IgnoreNonFastPairServices) {
 
 TEST_F(FastPairGattServiceClientTest, FailedKeyBasedCharacteristics) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SetKeybasedCharacteristicError(true);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kKeyBasedPairingCharacteristicDiscovery);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 2);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
 }
 
@@ -642,12 +651,14 @@ TEST_F(FastPairGattServiceClientTest, FailedPasskeyCharacteristics) {
 
 TEST_F(FastPairGattServiceClientTest, SuccessfulCharacteristicsStartNotify) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SetKeybasedCharacteristicError(false);
   SetPasskeyCharacteristicError(false);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
   EXPECT_TRUE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 5);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
 }
 
@@ -664,12 +675,14 @@ TEST_F(FastPairGattServiceClientTest, StartNotifyPasskeyFailure) {
 
 TEST_F(FastPairGattServiceClientTest, StartNotifyKeybasedFailure) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SuccessfulGattConnectionSetUp();
   SetKeybasedNotifySessionError(true);
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kKeyBasedPairingCharacteristicNotifySession);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 3);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
 }
 
@@ -686,12 +699,14 @@ TEST_F(FastPairGattServiceClientTest, PasskeyStartNotifyTimeout) {
 
 TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SetKeybasedNotifySessionTimeout(true);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout);
   EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 4);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
 }
 
@@ -710,6 +725,7 @@ TEST_F(FastPairGattServiceClientTest, MultipleNotifyTimeout) {
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
@@ -717,6 +733,7 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
   WriteRequestToKeyBased();
   TriggerKeyBasedGattChanged();
   EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
+  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 5);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 1);
 }

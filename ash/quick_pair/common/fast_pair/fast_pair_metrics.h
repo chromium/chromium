@@ -119,6 +119,19 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairHandshakeSteps {
   kMaxValue = kHandshakeComplete,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the FastPairGattConnectionSteps enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairGattConnectionSteps {
+  kConnectionStarted = 0,
+  kConnectionReady = 1,
+  kFoundKeybasedPairingCharacteristic = 2,
+  kNotifiationsEnabledForKeybasedPairing = 3,
+  kConnectionEstablished = 4,
+  kMaxValue = kConnectionEstablished
+};
+
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
@@ -253,6 +266,10 @@ void RecordFootprintsFetcherGetResult(const FastPairHttpResult& result);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFastPairRepositoryCacheResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattInitializationStep(
+    FastPairGattConnectionSteps initialization_step);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeResult(bool success);
