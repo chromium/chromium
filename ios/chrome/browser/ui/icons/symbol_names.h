@@ -69,6 +69,7 @@ extern NSString* const kNewTabCircleActionSymbol;
 extern NSString* const kClipboardActionSymbol;
 extern NSString* const kDeleteActionSymbol;
 extern NSString* const kEditActionSymbol;
+extern NSString* const kMarkAsUnreadActionSymbol;
 extern NSString* const kMarkAsReadActionSymbol;
 extern NSString* const kReadLaterActionSymbol;
 extern NSString* const kAddBookmarkActionSymbol;

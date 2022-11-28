@@ -321,7 +321,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   }
   item.textFieldPlaceholder = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT);
-  item.hideIcon = NO;
   return item;
 }
 
@@ -402,6 +401,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
         l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION);
   }
   item.image = [self compromisedIcon];
+  if (UseSymbols()) {
+    item.imageViewTintColor = [UIColor colorNamed:kRedColor];
+  }
   return item;
 }
 
@@ -829,8 +831,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // Applies tint colour and resizes image.
 - (UIImage*)compromisedIcon {
   if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kWarningFillSymbol,
-                                      kCompromisedPasswordSymbolSize);
+    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+                                              kCompromisedPasswordSymbolSize);
   }
   if (base::FeatureList::IsEnabled(
           password_manager::features::

@@ -62,6 +62,7 @@ NSString* const kNewTabCircleActionSymbol = @"plus.circle";
 NSString* const kClipboardActionSymbol = @"doc.on.clipboard";
 NSString* const kDeleteActionSymbol = @"trash";
 NSString* const kEditActionSymbol = @"pencil";
+NSString* const kMarkAsUnreadActionSymbol = @"text.badge.minus";
 NSString* const kMarkAsReadActionSymbol = @"text.badge.checkmark";
 NSString* const kReadLaterActionSymbol = @"text.badge.plus";
 NSString* const kAddBookmarkActionSymbol = @"star";

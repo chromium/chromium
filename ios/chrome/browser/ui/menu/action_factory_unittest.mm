@@ -275,8 +275,8 @@ TEST_F(ActionFactoryTest, markAsUnreadAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kMarkAsUnreadActionSymbol,
+                                                      kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION);
