@@ -360,11 +360,8 @@ void BrowserFrameMac::PopulateCreateWindowParams(
     if (browser_view_->GetIsWebAppType())
       params->window_title_hidden = true;
   } else if (browser_view_->GetIsPictureInPictureType()) {
-    // Somewhat confusingly, `kDefault` is required for `NS...Borderless` to do
-    // anything.  Setting it to `kFrameless` causes it to have a frame.
-    params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
-    params->style_mask = NSWindowStyleMaskBorderless;
-    params->window_title_hidden = true;
+    params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
+    params->style_mask = NSWindowStyleMaskFullSizeContentView;
   } else {
     params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
   }
