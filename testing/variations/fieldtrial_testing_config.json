@@ -5487,6 +5487,22 @@
             ]
         }
     ],
+    "IOSExpKitCalendarTextClassifier": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableExpKitCalendarTextClassifier",
+                        "EnableExpKitTextClassifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpKitMaps": [
         {
             "platforms": [
