@@ -23,6 +23,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 
 namespace content {
@@ -132,7 +133,7 @@ class BackForwardCacheBrowserTest
 
   ReasonsMatcher MatchesNotRestoredReasons(
       const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
-      const SameOriginMatcher* same_origin_details);
+      const absl::optional<SameOriginMatcher>& same_origin_details);
   SameOriginMatcher MatchesSameOriginDetails(
       const testing::Matcher<std::string>& id,
       const testing::Matcher<std::string>& name,

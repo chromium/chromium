@@ -391,7 +391,7 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
 
 ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
     const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
-    const SameOriginMatcher* same_origin_details) {
+    const absl::optional<SameOriginMatcher>& same_origin_details) {
   return testing::Pointee(testing::AllOf(
       testing::Field("blocked",
                      &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
@@ -400,8 +400,8 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
           "same_origin_details",
           &blink::mojom::BackForwardCacheNotRestoredReasons::
               same_origin_details,
-          same_origin_details
-              ? *same_origin_details
+          same_origin_details.has_value()
+              ? same_origin_details.value()
               : testing::Property(
                     "is_null",
                     &blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr::
