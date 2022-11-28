@@ -20,10 +20,6 @@ namespace viz {
 namespace {
 
 base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
-  int target_ms = features::kAdpfTargetDurationMs.Get();
-  if (target_ms > 0 && target_ms <= 1000) {
-    return base::Milliseconds(target_ms);
-  }
   if (args.possible_deadlines) {
     const auto& deadline = args.possible_deadlines->GetPreferredDeadline();
     // Arbitrarily use 75% of the deadline for CPU work.

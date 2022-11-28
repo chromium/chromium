@@ -119,7 +119,7 @@ void VizCompositorThreadRunnerImpl::CreateHintSessionFactoryOnCompositorThread(
   auto hint_session_factory = HintSessionFactory::Create(std::move(thread_ids));
   // Written this way so finch only considers the experiment active on device
   // which supports hint session.
-  if (hint_session_factory && features::IsAdpfEnabled()) {
+  if (hint_session_factory) {
     hint_session_factory_ = std::move(hint_session_factory);
     *wake_up_closure = base::BindPostTask(
         task_runner_,
