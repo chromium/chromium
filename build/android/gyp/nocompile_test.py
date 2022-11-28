@@ -13,10 +13,10 @@ import sys
 from util import build_utils
 
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..', '..'))
-_NINJA_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'ninja')
+_NINJA_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'ninja', 'ninja')
 
 # Relative to _CHROMIUM_SRC
-_GN_SRC_REL_PATH = os.path.join('third_party', 'depot_tools', 'gn')
+_GN_SRC_REL_PATH = os.path.join('buildtools', 'linux64', 'gn')
 
 # Regex for determining whether compile failed because 'gn gen' needs to be run.
 _GN_GEN_REGEX = re.compile(r'ninja: (error|fatal):')

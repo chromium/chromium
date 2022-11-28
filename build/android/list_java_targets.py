@@ -54,17 +54,25 @@ _VALID_TYPES = (
 )
 
 
-def _resolve_ninja(cmd):
+def _resolve_ninja():
   # Prefer the version on PATH, but fallback to known version if PATH doesn't
   # have one (e.g. on bots).
-  if shutil.which(cmd) is None:
-    return os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', cmd)
-  return cmd
+  if shutil.which('ninja') is None:
+    return os.path.join(_SRC_ROOT, 'third_party', 'ninja', 'ninja')
+  return 'ninja'
+
+
+def _resolve_autoninja():
+  # Prefer the version on PATH, but fallback to known version if PATH doesn't
+  # have one (e.g. on bots).
+  if shutil.which('autoninja') is None:
+    return os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'autoninja')
+  return 'autoninja'
 
 
 def _run_ninja(output_dir, args, quiet=False):
   cmd = [
-      _resolve_ninja('autoninja'),
+      _resolve_autoninja(),
       '-C',
       output_dir,
   ]
@@ -80,7 +88,7 @@ def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
   # Use ninja rather than autoninja to avoid extra output if user has set the
   # NINJA_SUMMARIZE_BUILD environment variable.
-  cmd = [_resolve_ninja('ninja'), '-C', output_dir, '-t', 'targets']
+  cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
   logging.info('Running: %r', cmd)
   ninja_output = subprocess.run(cmd,
                                 check=True,
