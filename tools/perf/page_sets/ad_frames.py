@@ -32,8 +32,6 @@ class PageWithFrame(page_module.Page):
             '--enable-privacy-sandbox-ads-apis',
             '--expose-internals-for-testing',
             '--disk-cache-dir=/dev/null',
-            '--media-cache-size=0',
-            '--disk-cache-size=0',
         ],
         cache_temperature=cache_temperature_module.COLD)
 
