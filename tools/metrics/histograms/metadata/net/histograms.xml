@@ -100,6 +100,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
+    expires_after="2023-04-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Whether or not a response has `Cache-Control: no-store`. Recorded when a
+    HTTP transaction is finished. This histogram is for {Type}.
+  </summary>
+  <token key="Type">
+    <variant name="" summary="all request types"/>
+    <variant name=".MainFrameHTML" summary="main frame requests"/>
+  </token>
+</histogram>
+
 <histogram name="HttpCache.MaxFileSizeOnInit" units="KB"
     expires_after="2022-02-20">
   <owner>shivanisha@chromium.org</owner>
