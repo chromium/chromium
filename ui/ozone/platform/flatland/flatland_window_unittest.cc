@@ -156,20 +156,13 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
         EXPECT_EQ(event->AsTouchEvent()->location_f().y(), kLocationY);
         event_received = true;
       });
-  constexpr std::array<std::array<float, 2>, 2> kRect = {{{0, 0}, {20, 20}}};
-  constexpr std::array<float, 9> kIdentity = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-  constexpr fuchsia::ui::pointer::TouchInteractionId kIxnOne = {
-      .device_id = 1u, .pointer_id = 1u, .interaction_id = 2u};
-  std::vector<fuchsia::ui::pointer::TouchEvent> events =
+  std::vector<fuchsia::ui::pointer::TouchEvent> events;
+  events.push_back(
       TouchEventBuilder()
-          .AddTime(1111789u)
-          .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kIxnOne, fuchsia::ui::pointer::EventPhase::ADD,
-                     {kLocationX, kLocationY})
-          .AddResult(
-              {.interaction = kIxnOne,
-               .status = fuchsia::ui::pointer::TouchInteractionStatus::GRANTED})
-          .BuildAsVector();
+          .SetPosition({kLocationX, kLocationY})
+          .SetTouchInteractionStatus(
+              fuchsia::ui::pointer::TouchInteractionStatus::GRANTED)
+          .Build());
   fake_touch_source_.ScheduleCallback(std::move(events));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(event_received);
@@ -189,16 +182,13 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
         EXPECT_EQ(event->AsTouchEvent()->location_f().y(), kLocationY * kDPR);
         event_received = true;
       });
-  events =
+  events.clear();
+  events.push_back(
       TouchEventBuilder()
-          .AddTime(1111789u)
-          .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kIxnOne, fuchsia::ui::pointer::EventPhase::ADD,
-                     {kLocationX, kLocationY})
-          .AddResult(
-              {.interaction = kIxnOne,
-               .status = fuchsia::ui::pointer::TouchInteractionStatus::GRANTED})
-          .BuildAsVector();
+          .SetPosition({kLocationX, kLocationY})
+          .SetTouchInteractionStatus(
+              fuchsia::ui::pointer::TouchInteractionStatus::GRANTED)
+          .Build());
   fake_touch_source_.ScheduleCallback(std::move(events));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(event_received);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/events/fuchsia/fakes/pointer_event_utility.h"
+#include <zircon/types.h>
 #include <utility>
 
 namespace ui {
@@ -11,18 +12,18 @@ namespace fup = fuchsia::ui::pointer;
 
 namespace {
 
-fup::ViewParameters CreateViewParameters(
-    std::array<std::array<float, 2>, 2> view,
-    std::array<std::array<float, 2>, 2> viewport,
-    std::array<float, 9> transform) {
+fup::ViewParameters CreateViewParameters(gfx::RectF view,
+                                         gfx::RectF viewport,
+                                         std::array<float, 9> transform) {
   fup::ViewParameters params;
   fuchsia::ui::pointer::Rectangle view_rect;
-  view_rect.min = view[0];
-  view_rect.max = view[1];
+  view_rect.min = {view.x(), view.y()};
+  view_rect.max = {view.bottom_right().x(), view.bottom_right().y()};
   params.view = view_rect;
   fuchsia::ui::pointer::Rectangle viewport_rect;
-  viewport_rect.min = viewport[0];
-  viewport_rect.max = viewport[1];
+  viewport_rect.min = {viewport.x(), viewport.y()};
+  viewport_rect.max = {viewport.bottom_right().x(),
+                       viewport.bottom_right().y()};
   params.viewport = viewport_rect;
   params.viewport_to_view_transform = transform;
   return params;
@@ -33,138 +34,212 @@ TouchEventBuilder::TouchEventBuilder() = default;
 
 TouchEventBuilder::~TouchEventBuilder() = default;
 
-TouchEventBuilder& TouchEventBuilder::AddTime(zx_time_t time) {
+TouchEventBuilder& TouchEventBuilder::SetTime(zx::time time) {
   time_ = time;
   return *this;
 }
 
-TouchEventBuilder& TouchEventBuilder::AddSample(fup::TouchInteractionId id,
-                                                fup::EventPhase phase,
-                                                std::array<float, 2> position) {
-  sample_ = absl::make_optional<fup::TouchPointerSample>();
-  sample_->set_interaction(id);
-  sample_->set_phase(phase);
-  sample_->set_position_in_viewport(position);
+TouchEventBuilder& TouchEventBuilder::IncrementTime() {
+  static zx::time incrementing_time(0);
+  incrementing_time += zx::nsec(1111789u);
+  time_ = incrementing_time;
   return *this;
 }
 
-TouchEventBuilder& TouchEventBuilder::AddViewParameters(
-    std::array<std::array<float, 2>, 2> view,
-    std::array<std::array<float, 2>, 2> viewport,
+TouchEventBuilder& TouchEventBuilder::SetId(
+    fuchsia::ui::pointer::TouchInteractionId id) {
+  id_ = id;
+  return *this;
+}
+
+TouchEventBuilder& TouchEventBuilder::SetPhase(
+    fuchsia::ui::pointer::EventPhase phase) {
+  phase_ = phase;
+  return *this;
+}
+
+TouchEventBuilder& TouchEventBuilder::SetPosition(gfx::PointF position) {
+  position_ = position;
+  return *this;
+}
+
+TouchEventBuilder& TouchEventBuilder::SetView(gfx::RectF view) {
+  view_ = view;
+  return *this;
+}
+
+TouchEventBuilder& TouchEventBuilder::SetViewport(gfx::RectF viewport) {
+  viewport_ = viewport;
+  return *this;
+}
+
+TouchEventBuilder& TouchEventBuilder::SetTransform(
     std::array<float, 9> transform) {
-  params_ = CreateViewParameters(std::move(view), std::move(viewport),
-                                 std::move(transform));
+  transform_ = transform;
   return *this;
 }
 
-TouchEventBuilder& TouchEventBuilder::AddResult(
-    fup::TouchInteractionResult result) {
-  result_ = result;
+TouchEventBuilder& TouchEventBuilder::SetTouchInteractionStatus(
+    fup::TouchInteractionStatus touch_interaction_status) {
+  touch_interaction_status_ = touch_interaction_status;
   return *this;
 }
 
-fup::TouchEvent TouchEventBuilder::Build() {
+TouchEventBuilder& TouchEventBuilder::WithoutSample() {
+  include_sample_ = false;
+  return *this;
+}
+
+fup::TouchPointerSample TouchEventBuilder::BuildSample() const {
+  fup::TouchPointerSample sample;
+  sample.set_interaction(id_);
+  sample.set_phase(phase_);
+  sample.set_position_in_viewport({position_.x(), position_.y()});
+  return sample;
+}
+
+fup::TouchInteractionResult TouchEventBuilder::BuildResult() const {
+  return {id_, touch_interaction_status_.value()};
+}
+
+fup::TouchEvent TouchEventBuilder::Build() const {
   fup::TouchEvent event;
-  if (time_) {
-    event.set_timestamp(time_.value());
+  event.set_timestamp(time_.get());
+  event.set_view_parameters(CreateViewParameters(view_, viewport_, transform_));
+  if (include_sample_) {
+    event.set_pointer_sample(BuildSample());
   }
-  if (params_) {
-    event.set_view_parameters(std::move(params_.value()));
-  }
-  if (sample_) {
-    event.set_pointer_sample(std::move(sample_.value()));
-  }
-  if (result_) {
-    event.set_interaction_result(std::move(result_.value()));
+  if (touch_interaction_status_) {
+    event.set_interaction_result(BuildResult());
   }
   event.set_trace_flow_id(123);
   return event;
-}
-
-std::vector<fup::TouchEvent> TouchEventBuilder::BuildAsVector() {
-  std::vector<fup::TouchEvent> events;
-  events.emplace_back(Build());
-  return events;
 }
 
 MouseEventBuilder::MouseEventBuilder() = default;
 
 MouseEventBuilder::~MouseEventBuilder() = default;
 
-MouseEventBuilder& MouseEventBuilder::AddTime(zx_time_t time) {
+MouseEventBuilder& MouseEventBuilder::SetTime(zx::time time) {
   time_ = time;
   return *this;
 }
 
-MouseEventBuilder& MouseEventBuilder::AddSample(
-    uint32_t id,
-    std::array<float, 2> position,
-    std::vector<uint8_t> pressed_buttons,
-    std::array<int64_t, 2> scroll,
-    std::array<int64_t, 2> scroll_in_physical_pixel,
-    bool is_precision_scroll) {
-  sample_ = absl::make_optional<fup::MousePointerSample>();
-  sample_->set_device_id(id);
-  if (!pressed_buttons.empty()) {
-    sample_->set_pressed_buttons(pressed_buttons);
-  }
-  sample_->set_position_in_viewport(position);
-  if (scroll[0] != 0) {
-    sample_->set_scroll_h(scroll[0]);
-  }
-  if (scroll[1] != 0) {
-    sample_->set_scroll_v(scroll[1]);
-  }
-  if (scroll_in_physical_pixel[0] != 0) {
-    sample_->set_scroll_h_physical_pixel(scroll_in_physical_pixel[0]);
-  }
-  if (scroll_in_physical_pixel[1] != 0) {
-    sample_->set_scroll_v_physical_pixel(scroll_in_physical_pixel[1]);
-  }
-  sample_->set_is_precision_scroll(is_precision_scroll);
+MouseEventBuilder& MouseEventBuilder::IncrementTime() {
+  static zx::time incrementing_time(0u);
+  incrementing_time += zx::nsec(1111789u);
+  time_ = incrementing_time;
   return *this;
 }
 
-MouseEventBuilder& MouseEventBuilder::AddViewParameters(
-    std::array<std::array<float, 2>, 2> view,
-    std::array<std::array<float, 2>, 2> viewport,
+MouseEventBuilder& MouseEventBuilder::SetDeviceId(uint32_t device_id) {
+  device_id_ = device_id;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetView(gfx::RectF view) {
+  view_ = view;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetViewport(gfx::RectF viewport) {
+  viewport_ = viewport;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetTransform(
     std::array<float, 9> transform) {
-  params_ = CreateViewParameters(std::move(view), std::move(viewport),
-                                 std::move(transform));
+  transform_ = transform;
   return *this;
 }
 
-MouseEventBuilder& MouseEventBuilder::AddMouseDeviceInfo(
-    uint32_t id,
-    std::vector<uint8_t> buttons) {
-  device_info_ = absl::make_optional<fup::MouseDeviceInfo>();
-  device_info_->set_id(id);
-  device_info_->set_buttons(buttons);
+MouseEventBuilder& MouseEventBuilder::SetButtons(std::vector<uint8_t> buttons) {
+  buttons_ = buttons;
   return *this;
 }
 
-fup::MouseEvent MouseEventBuilder::Build() {
+MouseEventBuilder& MouseEventBuilder::SetPosition(gfx::PointF position) {
+  position_ = position;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetPressedButtons(
+    std::vector<uint8_t> pressed_buttons) {
+  pressed_buttons_ = pressed_buttons;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetScroll(Scroll scroll) {
+  scroll_ = scroll;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetScrollInPhysicalPixel(
+    Scroll scroll_in_physical_pixel) {
+  scroll_in_physical_pixel_ = scroll_in_physical_pixel;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::SetIsPrecisionScroll(
+    bool is_precision_scroll) {
+  is_precision_scroll_ = is_precision_scroll;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::WithoutDeviceInfo() {
+  include_device_info_ = false;
+  return *this;
+}
+
+MouseEventBuilder& MouseEventBuilder::WithoutViewParameters() {
+  include_view_parameters_ = false;
+  return *this;
+}
+
+fup::MousePointerSample MouseEventBuilder::MouseEventBuilder::BuildSample()
+    const {
+  fup::MousePointerSample sample;
+  sample.set_device_id(device_id_);
+  if (!pressed_buttons_.empty()) {
+    sample.set_pressed_buttons(pressed_buttons_);
+  }
+  sample.set_position_in_viewport({position_.x(), position_.y()});
+  if (scroll_.horizontal != 0) {
+    sample.set_scroll_h(scroll_.horizontal);
+  }
+  if (scroll_.vertical != 0) {
+    sample.set_scroll_v(scroll_.vertical);
+  }
+  if (scroll_in_physical_pixel_.horizontal != 0) {
+    sample.set_scroll_h_physical_pixel(scroll_in_physical_pixel_.horizontal);
+  }
+  if (scroll_in_physical_pixel_.vertical != 0) {
+    sample.set_scroll_v_physical_pixel(scroll_in_physical_pixel_.vertical);
+  }
+  sample.set_is_precision_scroll(is_precision_scroll_);
+  return sample;
+}
+
+fup::MouseDeviceInfo MouseEventBuilder::BuildDeviceInfo() const {
+  fup::MouseDeviceInfo device_info;
+  device_info.set_id(device_id_);
+  device_info.set_buttons(buttons_);
+  return device_info;
+}
+
+fup::MouseEvent MouseEventBuilder::Build() const {
   fup::MouseEvent event;
-  if (time_) {
-    event.set_timestamp(time_.value());
+  event.set_timestamp(time_.get());
+  if (include_view_parameters_) {
+    event.set_view_parameters(
+        CreateViewParameters(view_, viewport_, transform_));
   }
-  if (params_) {
-    event.set_view_parameters(std::move(params_.value()));
-  }
-  if (sample_) {
-    event.set_pointer_sample(std::move(sample_.value()));
-  }
-  if (device_info_) {
-    event.set_device_info(std::move(device_info_.value()));
+  event.set_pointer_sample(BuildSample());
+  if (include_device_info_) {
+    event.set_device_info(BuildDeviceInfo());
   }
   event.set_trace_flow_id(123);
   return event;
-}
-
-std::vector<fup::MouseEvent> MouseEventBuilder::BuildAsVector() {
-  std::vector<fup::MouseEvent> events;
-  events.emplace_back(Build());
-  return events;
 }
 
 }  // namespace ui
