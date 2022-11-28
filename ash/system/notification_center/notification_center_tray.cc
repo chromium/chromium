@@ -45,9 +45,6 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
-  if (GetBubbleWidget())
-    GetBubbleWidget()->RemoveObserver(this);
-
   message_center::MessageCenter::Get()->RemoveObserver(this);
 }
 
@@ -64,7 +61,10 @@ std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
 void NotificationCenterTray::HandleLocaleChange() {}
 
 void NotificationCenterTray::HideBubbleWithView(
-    const TrayBubbleView* bubble_view) {}
+    const TrayBubbleView* bubble_view) {
+  if (bubble_->GetBubbleView() == bubble_view)
+    CloseBubble();
+}
 
 void NotificationCenterTray::ClickedOutsideBubble() {
   CloseBubble();
@@ -73,9 +73,6 @@ void NotificationCenterTray::ClickedOutsideBubble() {
 void NotificationCenterTray::CloseBubble() {
   if (!bubble_)
     return;
-
-  if (GetBubbleWidget())
-    GetBubbleWidget()->RemoveObserver(this);
 
   bubble_.reset();
   SetIsActive(false);
@@ -91,13 +88,6 @@ void NotificationCenterTray::ShowBubble() {
     return;
 
   bubble_ = std::make_unique<NotificationCenterBubble>(this);
-
-  // Observe the bubble widget so that we can do proper clean up when it is
-  // being destroyed. If destruction is due to a call to `CloseBubble()` we will
-  // have already cleaned up state but there are cases where the bubble widget
-  // is destroyed independent of a call to `CloseBubble()`, e.g. ESC key press.
-  GetBubbleWidget()->AddObserver(this);
-
   SetIsActive(true);
 
   // Inform the message center that the bubble is showing so that we do not
@@ -138,13 +128,6 @@ void NotificationCenterTray::OnNotificationRemoved(
 void NotificationCenterTray::OnNotificationUpdated(
     const std::string& notification_id) {
   UpdateVisibility();
-}
-
-// We need to call `CloseBubble()` explicitly if the bubble's widget is
-// destroyed independently of `CloseBubble()` e.g. ESC key press. The bubble
-// needs to be cleaned up here since it is owned by `NotificationCenterTray`.
-void NotificationCenterTray::OnWidgetDestroying(views::Widget* widget) {
-  CloseBubble();
 }
 
 void NotificationCenterTray::UpdateVisibility() {
