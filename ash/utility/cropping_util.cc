@@ -4,6 +4,8 @@
 
 #include "ash/utility/cropping_util.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
