@@ -254,11 +254,6 @@ const char kUseCustomMessagesDomainDescription[] =
     "Use a custom URL as part of the \"Messages\" feature under "
     "\"Connected Devices\" settings.";
 
-const char kAndroidPictureInPictureAPIName[] =
-    "Picture-in-Picture Web API for Android";
-const char kAndroidPictureInPictureAPIDescription[] =
-    "Enable Picture-in-Picture Web API for Android";
-
 const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
 const char kUseDMSAAForTilesDescription[] =
     "Switches skia to use DMSAA instead of MSAA for tile raster";
