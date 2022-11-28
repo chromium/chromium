@@ -13,7 +13,7 @@ DIST=bullseye
 # It should not be incremented when adding packages.
 SYSROOT_RELEASE=0
 
-ARCHIVE_TIMESTAMP=20220331T153654Z
+ARCHIVE_TIMESTAMP=20221105T211506Z
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian/$ARCHIVE_TIMESTAMP/"
 APT_SOURCES_LIST=(
   # Debian 12 (Bookworm) is needed for GTK4.  It should be kept before bullseye
