@@ -11,6 +11,7 @@ import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {AutomationTreeWalker} from '../../../common/tree_walker.js';
+import {Earcon} from '../../common/abstract_earcons.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
@@ -903,9 +904,9 @@ export class Output {
     if (!resolvedInfo) {
       return;
     }
-    if (this.formatOptions_.speech && resolvedInfo.earconId) {
+    if (this.formatOptions_.speech && resolvedInfo.earcon) {
       options.annotation.push(
-          new outputTypes.OutputEarconAction(resolvedInfo.earconId),
+          new outputTypes.OutputEarconAction(resolvedInfo.earcon),
           node.location || undefined);
     }
     const msgId = this.formatOptions_.braille ? resolvedInfo.msgId + '_brl' :
@@ -1015,7 +1016,7 @@ export class Output {
       }
 
       options.annotation.push(new outputTypes.OutputEarconAction(
-          tree.firstChild.value, node.location || undefined));
+          Earcon[tree.firstChild.value], node.location || undefined));
       this.append_(buff, '', options);
       formatLog.writeTokenWithValue(token, tree.firstChild.value);
     }
@@ -1958,9 +1959,9 @@ export class Output {
 
       while (earconFinder = ancestors.pop()) {
         const info = OutputRoleInfo[earconFinder.role];
-        if (info && info.earconId) {
+        if (info && info.earcon) {
           return new outputTypes.OutputEarconAction(
-              info.earconId, node.location || undefined);
+              info.earcon, node.location || undefined);
           break;
         }
         earconFinder = earconFinder.parent;

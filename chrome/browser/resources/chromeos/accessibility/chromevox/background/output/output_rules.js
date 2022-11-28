@@ -243,7 +243,7 @@ OutputRule.RULES = {
           $value $state $role $description`,
     },
     [RoleType.IME_CANDIDATE]:
-        {speak: '$name $phoneticReading @describe_index($posInSet, $setSize)'},
+        {speak: `$name $phoneticReading @describe_index($posInSet, $setSize)`},
     [RoleType.INLINE_TEXT_BOX]: {speak: `$precedingBullet $name=`},
     [RoleType.INPUT_TIME]:
         {enter: `$nameFromNode $role $state $restriction $description`},

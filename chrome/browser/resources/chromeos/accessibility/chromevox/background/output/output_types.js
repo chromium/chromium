@@ -73,26 +73,26 @@ export class OutputAction {
  */
 export class OutputEarconAction extends OutputAction {
   /**
-   * @param {string} earconId
+   * @param {!Earcon} earcon
    * @param {chrome.automation.Rect=} opt_location
    */
-  constructor(earconId, opt_location) {
+  constructor(earcon, opt_location) {
     super();
 
-    /** @type {string} */
-    this.earconId = earconId;
+    /** @type {!Earcon} */
+    this.earcon = earcon;
     /** @type {chrome.automation.Rect|undefined} */
     this.location = opt_location;
   }
 
   /** @override */
   run() {
-    ChromeVox.earcons.playEarcon(Earcon[this.earconId], this.location);
+    ChromeVox.earcons.playEarcon(this.earcon, this.location);
   }
 
   /** @override */
   toJSON() {
-    return {earconId: this.earconId};
+    return {earcon: this.earcon};
   }
 }
 
@@ -169,8 +169,8 @@ export const OutputPropertyMap = {
 
 /**
  * Metadata about supported automation states.
- * @const {!Object<string, {on: {msgId: string, earconId: string},
- *                          off: {msgId: string, earconId: string},
+ * @const {!Object<string, {on: {msgId: string, earcon: !Earcon},
+ *                          off: {msgId: string, earcon: !Earcon},
  *                          isRoleSpecific: (boolean|undefined)}>}
  *     on: info used to describe a state that is set to true.
  *     off: info used to describe a state that is set to undefined.

@@ -1166,10 +1166,12 @@ export class Panel extends PanelInterface {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
     });
     $('chromevox-tutorial').addEventListener('requestearcon', evt => {
+      evt = /** @type {{detail: {earconId: string}}} */ (evt);
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
     $('chromevox-tutorial').addEventListener('cancelearcon', evt => {
+      evt = /** @type {{detail: {earconId: string}}} */ (evt);
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
     });
