@@ -99,7 +99,7 @@ export class FilesAppEntry {
    * Returns a FileSystemEntry if this instance has one, returns null if it
    * doesn't have or the entry hasn't been resolved yet. It's used to unwrap a
    * FilesAppEntry to be able to send to FileSystem API or fileManagerPrivate.
-   * @return {Entry}
+   * @return {?Entry}
    */
   getNativeEntry() {}
 }

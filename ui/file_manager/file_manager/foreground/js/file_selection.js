@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {FileType} from '../../common/js/file_type.js';
 import {util} from '../../common/js/util.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {updateSelection} from '../../state/actions.js';
+import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
@@ -181,6 +184,15 @@ export class FileSelectionHandler extends EventTarget {
     this.selectionUpdateTimer_ = 0;
 
     /**
+     * requestAnimationFrame used to debounce the calls to update the Store.
+     * @private {?number}
+     */
+    this.updateStoreRaf_ = null;
+
+    /** @private {!Store} */
+    this.store_ = getStore();
+
+    /**
      * The time, in ms since the epoch, when it is OK to post next throttled
      * selection event. Can be directly compared with Date.now().
      * @private {number}
@@ -233,6 +245,10 @@ export class FileSelectionHandler extends EventTarget {
       updateDelay = 1;
     }
 
+    if (!this.updateStoreRaf_) {
+      this.updateStoreRaf_ = requestAnimationFrame(() => this.updateStore_());
+    }
+
     const selection = this.selection;
     this.selectionUpdateTimer_ = setTimeout(() => {
       this.selectionUpdateTimer_ = null;
@@ -264,6 +280,19 @@ export class FileSelectionHandler extends EventTarget {
       dispatchSimpleEvent(
           this, FileSelectionHandler.EventType.CHANGE_THROTTLED);
     });
+  }
+
+  /**
+   * Sends the current selection to the Store.
+   * @private
+   */
+  updateStore_() {
+    this.updateStoreRaf_ = null;
+    const entries = this.selection.entries;
+    this.store_.dispatch(updateSelection({
+      selectedKeys: entries.map(e => e.toURL()),
+      entries,
+    }));
   }
 
   /**

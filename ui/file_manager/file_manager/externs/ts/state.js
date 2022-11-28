@@ -37,6 +37,7 @@ export const EntryType = {
  *   label: string,
  *   volumeType: (VolumeManagerCommon.VolumeType|null),
  *   metadata: !MetadataItem,
+ *   isDirectory: boolean,
  *   type: !EntryType,
  * }}
  */

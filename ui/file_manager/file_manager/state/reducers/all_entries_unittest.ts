@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {ActionType, changeDirectory, ClearStaleCachedEntriesAction} from '../actions.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryType, FileData} from '../../externs/ts/state.js';
+import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
+import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
+import {ActionType, ClearStaleCachedEntriesAction} from '../actions.js';
+import {cd, changeSelection} from '../for_tests.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 
 import {clearCachedEntries} from './all_entries.js';
@@ -22,25 +28,25 @@ export function setUp() {
   const volumeManager = new MockVolumeManager();
   window.fileManager = {
     volumeManager: volumeManager,
+    metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
   };
 
   store.init(getEmptyState());
 
-  fileSystem = volumeManager.getCurrentProfileVolumeInfo(
-                                'downloads')!.fileSystem as MockFileSystem;
+  fileSystem = volumeManager
+                   .getCurrentProfileVolumeInfo(
+                       VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
+      MockFileSystem;
   fileSystem.populate([
     '/dir-1/',
     '/dir-2/sub-dir/',
+    '/dir-2/file.txt',
     '/dir-3/',
   ]);
 }
 
 function allEntriesSize(): number {
   return Object.keys(store.getState().allEntries).length;
-}
-
-function cd(directory: DirectoryEntry) {
-  store.dispatch(changeDirectory({to: directory, toKey: directory.toURL()}));
 }
 
 /** Tests that entries get cached in the allEntries. */
@@ -50,13 +56,13 @@ export function testAllEntries() {
   const dir1 = fileSystem.entries['/dir-1'];
   const dir2 = fileSystem.entries['/dir-2'];
   const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
-  cd(dir1);
+  cd(store, dir1);
   assertEquals(1, allEntriesSize(), 'dir-1 should be cached');
 
-  cd(dir2);
+  cd(store, dir2);
   assertEquals(2, allEntriesSize(), 'dir-2 should be cached');
 
-  cd(dir2SubDir);
+  cd(store, dir2SubDir);
   assertEquals(3, allEntriesSize(), 'dir-2/sub-dir/ should be cached');
 }
 
@@ -66,10 +72,10 @@ export async function testClearStaleEntries(done: () => void) {
   const dir3 = fileSystem.entries['/dir-3'];
   const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
 
-  cd(dir1);
-  cd(dir2);
-  cd(dir3);
-  cd(dir2SubDir);
+  cd(store, dir1);
+  cd(store, dir2);
+  cd(store, dir3);
+  cd(store, dir2SubDir);
 
   assertEquals(4, allEntriesSize(), 'all entries should be cached');
 
@@ -95,4 +101,56 @@ export async function testClearStaleEntries(done: () => void) {
       2, allEntriesSize(), 'only dir-2 and dir-2/sub-dir should be cached');
 
   done();
+}
+
+export function testCacheEntries() {
+  const dir1 = fileSystem.entries['/dir-1'];
+  const file = fileSystem.entries['/dir-2/file.txt'];
+
+  // Cache a directory via changeDirectory.
+  cd(store, dir1);
+  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  assertTrue(!!resultEntry);
+  assertEquals(resultEntry.entry, dir1);
+  assertTrue(resultEntry.isDirectory);
+  assertEquals(resultEntry.label, dir1.name);
+  assertEquals(
+      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.type, EntryType.FS_API);
+
+  // Cache a file via changeSelection.
+  changeSelection(store, [file]);
+  resultEntry = store.getState().allEntries[file.toURL()];
+  assertTrue(!!resultEntry);
+  assertEquals(resultEntry.entry, file);
+  assertFalse(resultEntry.isDirectory);
+  assertEquals(resultEntry.label, file.name);
+  assertEquals(
+      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.type, EntryType.FS_API);
+
+  const recentRoot =
+      new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
+  cd(store, recentRoot);
+  resultEntry = store.getState().allEntries[recentRoot.toURL()];
+  assertTrue(!!resultEntry);
+  assertEquals(resultEntry.entry, recentRoot);
+  assertTrue(resultEntry.isDirectory);
+  assertEquals(resultEntry.label, recentRoot.name);
+  assertEquals(resultEntry.volumeType, null);
+  assertEquals(resultEntry.type, EntryType.RECENT);
+
+  const volumeInfo =
+      window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
+          VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const volumeEntry = new VolumeEntry(volumeInfo);
+  cd(store, volumeEntry);
+  resultEntry = store.getState().allEntries[volumeEntry.toURL()];
+  assertTrue(!!resultEntry);
+  assertEquals(resultEntry.entry, volumeEntry);
+  assertTrue(resultEntry.isDirectory);
+  assertEquals(resultEntry.label, volumeEntry.name);
+  assertEquals(
+      resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assertEquals(resultEntry.type, EntryType.VOLUME_ROOT);
 }

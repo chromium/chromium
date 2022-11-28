@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {VolumeManager} from '../externs/volume_manager.js';
+import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 
 /**
  * Type definition for foreground/js/file_manager.js:FileManager.
@@ -11,6 +12,7 @@ import {VolumeManager} from '../externs/volume_manager.js';
  */
 interface FileManager {
   volumeManager: VolumeManager;
+  metadataModel: MetadataModel;
 }
 
 /**

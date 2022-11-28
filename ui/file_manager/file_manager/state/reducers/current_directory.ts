@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentDirectory, PropStatus, State} from '../../externs/ts/state.js';
+import {CurrentDirectory, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
-import {ChangeDirectoryAction} from '../actions.js';
+import {ChangeDirectoryAction, ChangeSelectionAction} from '../actions.js';
 
 /**
  * @fileoverview
@@ -65,8 +65,80 @@ export function changeDirectory(
           key: c.url_,
         };
       });
+
+      const locationInfo = volumeManager.getLocationInfo(fileData.entry!);
+      currentDirectory.rootType = locationInfo?.rootType;
     }
   }
+
+  return {
+    ...currentState,
+    currentDirectory,
+  };
+}
+
+/**
+ * Updates the `currentDirectory.selection` state.
+ */
+export function updateSelection(
+    currentState: State, action: ChangeSelectionAction): State {
+  // TODO: When we have all the keys from current directory, we should validate
+  // that selectedKeys belongs to current directory.
+  const selection: Selection = {
+    keys: action.payload.selectedKeys,
+    dirCount: 0,
+    fileCount: 0,
+    // hostedCount might be updated to undefined in the for loop below.
+    hostedCount: 0,
+    // offlineCachedCount might be updated to undefined in the for loop below.
+    offlineCachedCount: 0,
+    fileTasks: {
+      tasks: [],
+      defaultHandlerPolicy: undefined,
+      status: PropStatus.STARTED,
+      keys: action.payload.selectedKeys,
+    },
+  };
+
+  for (const key of action.payload.selectedKeys) {
+    const fileData = currentState.allEntries[key];
+    if (!fileData) {
+      console.warn(`Missing entry: ${key}`);
+      continue;
+    }
+    if (fileData.isDirectory) {
+      selection.dirCount++;
+    } else {
+      selection.fileCount++;
+    }
+
+    // Update hostedCount to undefined if any entry doesn't have the metadata
+    // yet.
+    const isHosted = fileData.metadata?.hosted;
+    if (isHosted === undefined) {
+      selection.hostedCount = undefined;
+    } else {
+      if (selection.hostedCount !== undefined && isHosted) {
+        selection.hostedCount++;
+      }
+    }
+
+    // Update offlineCachedCount to undefined if any entry doesn't have the
+    // metadata yet.
+    const isOfflineCached = fileData.metadata?.offlineCached;
+    if (isOfflineCached === undefined) {
+      selection.offlineCachedCount = undefined;
+    } else {
+      if (selection.offlineCachedCount !== undefined && isOfflineCached) {
+        selection.offlineCachedCount++;
+      }
+    }
+  }
+
+  const currentDirectory: CurrentDirectory = {
+    ...currentState.currentDirectory,
+    selection,
+  } as CurrentDirectory;
 
   return {
     ...currentState,

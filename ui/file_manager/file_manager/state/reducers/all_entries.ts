@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {State} from '../../externs/ts/state.js';
-import {Action, ActionType, ChangeDirectoryAction, ClearStaleCachedEntriesAction} from '../actions.js';
+import {EntryType, State} from '../../externs/ts/state.js';
+import {Action, ActionType, ClearStaleCachedEntriesAction} from '../actions.js';
 import {getStore} from '../store.js';
 
 /**
@@ -44,6 +45,12 @@ export function clearCachedEntries(
       entriesToKeep.add(component.key);
     }
   }
+  const selectionKeys = state.currentDirectory?.selection.keys ?? [];
+  if (selectionKeys) {
+    for (const key of selectionKeys) {
+      entriesToKeep.add(key);
+    }
+  }
 
   for (const key of Object.keys(entries)) {
     if (entriesToKeep.has(key)) {
@@ -57,21 +64,36 @@ export function clearCachedEntries(
 }
 
 /**
- * @param action Action being currently processed.
- * @returns The entry instance from the allEntries, if it exists in the cache.
+ * Converts the entry to the Store representation of an Entry and appends the
+ * entry to the Store.
  */
-function getEntry(state: State, action: ChangeDirectoryAction): Entry|
-    FilesAppEntry|null {
-  const {newDirectory, key} = action.payload;
-  if (newDirectory) {
-    return newDirectory;
-  }
+function appendEntry(state: State, entry: Entry|FilesAppEntry) {
+  const allEntries = state.allEntries || {};
+  const key = entry.toURL();
+  const volumeManager = window.fileManager?.volumeManager;
+  const metadataModel = window.fileManager?.metadataModel;
+  const volumeInfo = volumeManager?.getVolumeInfo(entry);
+  const locationInfo = volumeManager?.getLocationInfo(entry);
+  const label = locationInfo ? util.getEntryLabel(locationInfo, entry) : '';
 
-  const entry = state.allEntries[key!] ? state.allEntries[key!]!.entry : null;
-  if (!entry) {
-    return null;
-  }
-  return entry;
+  const volumeType = volumeInfo?.volumeType || null;
+
+  const entryData = allEntries[key] || {};
+  const metadata = metadataModel ?
+      metadataModel.getCache([entry as FileEntry], [])[0] :
+      undefined;
+
+  allEntries[key] = {
+    ...entryData,
+    entry,
+    type: getEntryType(entry),
+    isDirectory: entry.isDirectory,
+    label,
+    volumeType,
+    metadata,
+  };
+
+  state.allEntries = allEntries;
 }
 
 /** Caches the Action's entry in the `allEntries` attribute. */
@@ -79,32 +101,56 @@ export function cacheEntries(currentState: State, action: Action): State {
   // Schedule to clear the cached entries from the state.
   scheduleClearCachedEntries();
 
+  if (action.type === ActionType.CHANGE_SELECTION) {
+    for (const entry of action.payload.entries) {
+      appendEntry(currentState, entry);
+    }
+  }
   if (action.type === ActionType.CHANGE_DIRECTORY) {
-    const {key} = action.payload;
-    const allEntries = currentState.allEntries || {};
-
-    const entry = getEntry(currentState, (action as ChangeDirectoryAction));
+    const entry = action.payload.newDirectory;
     if (!entry) {
       // Nothing to cache, just continue.
       return currentState;
     }
 
-    const volumeManager = window.fileManager?.volumeManager;
-    const volumeInfo = volumeManager?.getVolumeInfo(entry);
-    const locationInfo = volumeManager?.getLocationInfo(entry);
-    const label = locationInfo ? util.getEntryLabel(locationInfo, entry) : '';
-
-    const volumeType = volumeInfo?.volumeType || null;
-
-    const entryData = allEntries[key] || {};
-    allEntries[key] = Object.assign(entryData, {
-      entry,
-      label,
-      volumeType,
-    });
-
-    currentState.allEntries = allEntries;
+    appendEntry(currentState, entry);
   }
 
   return currentState;
+}
+
+function getEntryType(entry: Entry|FilesAppEntry): EntryType {
+  // Entries from FilesAppEntry have the `type_name` property.
+  if (!('type_name' in entry)) {
+    return EntryType.FS_API;
+  }
+
+  switch (entry.type_name) {
+    case 'EntryList':
+      return EntryType.ENTRY_LIST;
+    case 'VolumeEntry':
+      return EntryType.VOLUME_ROOT;
+    case 'FakeEntry':
+      switch (entry.rootType) {
+        case VolumeManagerCommon.RootType.RECENT:
+          return EntryType.RECENT;
+        case VolumeManagerCommon.RootType.TRASH:
+          return EntryType.TRASH;
+        case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
+          return EntryType.ENTRY_LIST;
+        case VolumeManagerCommon.RootType.CROSTINI:
+          return EntryType.PLACEHOLDER;
+        case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
+        case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
+          // TODO(lucmult): This isn't really Recent but it's the closest.
+          return EntryType.RECENT;
+      }
+      console.warn(`Invalid fakeEntry.rootType='${entry.rootType} rootType`);
+      return EntryType.PLACEHOLDER;
+    case 'GuestOsPlaceholder':
+      return EntryType.PLACEHOLDER;
+    default:
+      console.warn(`Invalid entry.type_name='${entry.type_name}`);
+      return EntryType.FS_API;
+  }
 }
