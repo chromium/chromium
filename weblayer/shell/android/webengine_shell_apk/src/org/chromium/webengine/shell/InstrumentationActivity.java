@@ -7,12 +7,15 @@ package org.chromium.webengine.shell;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
+
+import java.util.List;
 
 /**
  * Activity for running instrumentation tests.
@@ -43,5 +46,16 @@ public class InstrumentationActivity extends AppCompatActivity {
     public void detachFragment(WebFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().setReorderingAllowed(true).remove(fragment).commitNow();
+    }
+
+    public WebFragment getAttachedFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        if (fragments.size() != 1) {
+            throw new IllegalStateException("Expected to have exactly 1 WebFragment.");
+        }
+
+        return (WebFragment) fragments.get(0);
     }
 }

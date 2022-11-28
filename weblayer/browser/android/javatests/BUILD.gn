@@ -11,6 +11,7 @@ android_library("webengine_java_tests") {
   sources = [
     "src/org/chromium/webengine/test/CookieManagerTest.java",
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
+    "src/org/chromium/webengine/test/TabManagerTest.java",
     "src/org/chromium/webengine/test/WebFragmentTest.java",
   ]
   deps = [
@@ -34,6 +35,7 @@ android_library("webengine_java_tests") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/common:common_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit:junit",
     "//weblayer/public/java:webengine_java",
     "//weblayer/public/javatests:weblayer_public_javatests",
