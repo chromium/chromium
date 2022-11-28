@@ -117,10 +117,11 @@ size_t do_decode_padding(const char* src, size_t len, ModpDecodePolicy policy) {
 
 size_t modp_b64_decode(char* dest, const char* src, size_t len, ModpDecodePolicy policy)
 {
-    if (len == 0 ||
-        (len = do_decode_padding(src, len, policy)) == MODP_B64_ERROR) {
+    if (len != 0)
+      len = do_decode_padding(src, len, policy);
+
+    if (len == 0 || len == MODP_B64_ERROR)
       return len;
-    }
 
     size_t i;
     int leftover = len % 4;

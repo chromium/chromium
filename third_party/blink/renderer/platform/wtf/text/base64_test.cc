@@ -66,6 +66,7 @@ TEST(Base64Test, DecodeNoPaddingValidation) {
       {"abc&", {}},
       {"abcde", {}},
       {"a", {}},
+      {"=", {}},
 
       // Empty string should yield an empty result.
       {"", {}},
@@ -113,6 +114,7 @@ TEST(Base64Test, ForgivingBase64Decode) {
       {"abc&", {}},
       {"abcde", {}},
       {"a", {}},
+      {"=", {}},
 
       // Empty string should yield an empty result.
       {"", {}},
