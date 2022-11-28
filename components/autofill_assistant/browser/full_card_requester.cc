@@ -49,7 +49,8 @@ void FullCardRequester::GetFullCard(
   autofill::CreditCardCVCAuthenticator* cvc_authenticator =
       GetCVCAuthenticator(web_contents);
   if (!cvc_authenticator) {
-    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+    OnFullCardRequestFailed(card->record_type(),
+                            FullCardRequest::FailureType::GENERIC_FAILURE);
     return;
   }
   cvc_authenticator->GetFullCardRequest()->GetFullCard(
@@ -69,6 +70,7 @@ void FullCardRequester::OnFullCardRequestSucceeded(
 }
 
 void FullCardRequester::OnFullCardRequestFailed(
+    const autofill::CreditCard::RecordType card_type,
     FullCardRequest::FailureType failure_type) {
   ClientStatus status(GET_FULL_CARD_FAILED);
   AutofillErrorInfoProto::GetFullCardFailureType error_type =

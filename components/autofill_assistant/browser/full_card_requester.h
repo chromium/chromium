@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 
@@ -34,8 +35,8 @@ class FullCardRequester
       const autofill::CreditCard& card,
       const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
-      autofill::payments::FullCardRequest::FailureType /* failure_type */)
-      override;
+      autofill::CreditCard::RecordType card_type,
+      autofill::payments::FullCardRequest::FailureType failure_type) override;
 
   ActionDelegate::GetFullCardCallback callback_;
 

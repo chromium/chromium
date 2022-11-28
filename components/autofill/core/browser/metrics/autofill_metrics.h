@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -1810,6 +1811,13 @@ class AutofillMetrics {
   // heuristic precedence is disabled.
   static void LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
       bool accepted);
+
+  // Returns the histogram string for the passed in
+  // `AutofillClient::PaymentsRpcCardType` or `CreditCard::RecordType`, starting
+  // with a period.
+  static std::string GetHistogramStringForCardType(
+      absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
+          card_type);
 
   // Logs the context menu impressions based on the autofill type as well as
   // based on the autocomplete type.

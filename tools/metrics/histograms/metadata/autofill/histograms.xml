@@ -1140,6 +1140,30 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.CvcAuth.{CardType}.Result"
+    enum="AutofillCvcAuthEvent" expires_after="2023-11-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of the OTP authentication, broken down into sub-histograms
+    by card type. The different possible results can be found in the
+    AutofillCvcAuthEvent enum, with the exception of any retriable failure,
+    which is logged in a separate histogram. This histogram is 1:1 with
+    Autofill.CvcAuth.{CardType}.Attempt
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram name="Autofill.CvcAuth.{CardType}.RetryableError"
+    enum="AutofillCvcAuthEvent" expires_after="2023-11-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs any retryable failure that occurs during the CVC authentication flow.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
     expires_after="2023-04-16">
   <owner>battre@chromium.org</owner>

@@ -6607,6 +6607,24 @@ others/histograms.xml -->
   <int value="2" label="Not-Allowed error"/>
 </enum>
 
+<enum name="AutofillCvcAuthEvent">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="CVC auth succeeded"/>
+  <int value="2" label="CVC auth failed due to flow being cancelled"/>
+  <int value="3"
+      label="CVC auth failed due to auth error in UnmaskCard request"/>
+  <int value="4"
+      label="CVC auth failed due to virtual card retrieval error in
+             UnmaskCard request"/>
+  <int value="5"
+      label="CVC auth failed due to technical reason, such as closing the
+             page or lack of network connection"/>
+  <int value="6"
+      label="CVC auth temporarily failed due to the CVC being incorrect"/>
+  <int value="7"
+      label="CVC auth temporarily failed due to the card being expired"/>
+</enum>
+
 <enum name="AutofillDeveloperEngagement">
   <int value="0" label="Fillable form parsed without type hints"/>
   <int value="1" label="Fillable form parsed with type hints"/>

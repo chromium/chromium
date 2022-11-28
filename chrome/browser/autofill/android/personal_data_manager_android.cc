@@ -116,28 +116,32 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
     jdelegate_.Reset(env, jdelegate);
 
     if (!card_) {
-      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+      OnFullCardRequestFailed(card_->record_type(),
+                              FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     content::WebContents* contents =
         content::WebContents::FromJavaWebContents(jweb_contents);
     if (!contents) {
-      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+      OnFullCardRequestFailed(card_->record_type(),
+                              FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     ContentAutofillDriverFactory* factory =
         ContentAutofillDriverFactory::FromWebContents(contents);
     if (!factory) {
-      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+      OnFullCardRequestFailed(card_->record_type(),
+                              FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
     ContentAutofillDriver* driver =
         factory->DriverForFrame(contents->GetPrimaryMainFrame());
     if (!driver) {
-      OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+      OnFullCardRequestFailed(card_->record_type(),
+                              FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
@@ -166,6 +170,7 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
 
   // payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestFailed(
+      CreditCard::RecordType card_type,
       FullCardRequest::FailureType failure_type) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_FullCardRequestDelegate_onFullCardError(env, jdelegate_);

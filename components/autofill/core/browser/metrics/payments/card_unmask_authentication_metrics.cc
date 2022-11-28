@@ -7,26 +7,31 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
 
 void LogCvcAuthAttempt(CreditCard::RecordType card_type) {
-  std::string card_type_histogram_string;
-  switch (card_type) {
-    case CreditCard::FULL_SERVER_CARD:
-    case CreditCard::MASKED_SERVER_CARD:
-      card_type_histogram_string = ".ServerCard";
-      break;
-    case CreditCard::VIRTUAL_CARD:
-      card_type_histogram_string = ".VirtualCard";
-      break;
-    case CreditCard::LOCAL_CARD:
-      // We do not offer CVC auth for local cards.
-      NOTREACHED();
-      return;
-  }
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
   base::UmaHistogramBoolean(
       "Autofill.CvcAuth" + card_type_histogram_string + ".Attempt", true);
+}
+
+void LogCvcAuthResult(CreditCard::RecordType card_type, CvcAuthEvent event) {
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  base::UmaHistogramEnumeration(
+      "Autofill.CvcAuth" + card_type_histogram_string + ".Result", event);
+}
+
+void LogCvcAuthRetryableError(CreditCard::RecordType card_type,
+                              CvcAuthEvent event) {
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  base::UmaHistogramEnumeration(
+      "Autofill.CvcAuth" + card_type_histogram_string + ".RetryableError",
+      event);
 }
 
 }  // namespace autofill::autofill_metrics

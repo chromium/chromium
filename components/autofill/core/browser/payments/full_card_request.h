@@ -72,7 +72,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
         const payments::FullCardRequest& full_card_request,
         const CreditCard& card,
         const std::u16string& cvc) = 0;
-    virtual void OnFullCardRequestFailed(FailureType failure_type) = 0;
+    virtual void OnFullCardRequestFailed(CreditCard::RecordType card_type,
+                                         FailureType failure_type) = 0;
   };
 
   // The delegate responsible for displaying the unmask prompt UI.
