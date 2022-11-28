@@ -57,4 +57,13 @@ struct EffectsConfig {
 
   // Maximum number of frames allowed in flight.
   uint16 graph_max_frames_in_flight = 2;
+
+  // Whether background background blur should be enabled.
+  [MinVersion=1]  bool blur_enabled;
+
+  // Whether background replacement should be enabled.
+  [MinVersion=1]  bool replace_enabled;
+
+  // Whether portrait relighting should be enabled.
+  [MinVersion=1]  bool relight_enabled;
 };

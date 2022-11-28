@@ -1153,6 +1153,16 @@ const char kRecoveryFactorBehavior[] = "ash.recovery.recovery_factor_behavior";
 // APN Revamp feature.
 const char kApnMigratedIccids[] = "ash.cellular.apn_migrated_iccids";
 
+// An integer pref that indicates the background blur level that is applied.
+// -1 means disabled.
+const char kBackgroundBlur[] = "ash.camera.background_blur";
+
+// An boolean pref that indicates whether background replacement is applied.
+const char kBackgroundReplace[] = "ash.camera.background_replace";
+
+// An boolean pref that indicates whether portrait relighting is applied.
+const char kPortraitRelighting[] = "ash.camera.portrait_relighting";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

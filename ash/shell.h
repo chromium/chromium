@@ -107,6 +107,7 @@ class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BrightnessControlDelegate;
 class CalendarController;
+class CameraEffectsController;
 class CaptureModeController;
 class ControlVHistogramRecorder;
 class CrosDisplayConfig;
@@ -397,6 +398,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   CalendarController* calendar_controller() {
     return calendar_controller_.get();
+  }
+  CameraEffectsController* camera_effects_controller() {
+    return camera_effects_controller_.get();
   }
   CrosDisplayConfig* cros_display_config() {
     return cros_display_config_.get();
@@ -847,6 +851,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;
+  std::unique_ptr<CameraEffectsController> camera_effects_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<curtain::SecurityCurtainController>
       security_curtain_controller_;

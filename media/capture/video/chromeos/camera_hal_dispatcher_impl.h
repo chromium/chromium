@@ -42,6 +42,12 @@ class WaitableEvent;
 
 }  // namespace base
 
+namespace ash {
+
+class CameraEffectsController;
+
+}  // namespace ash
+
 namespace media {
 
 using MojoJpegEncodeAcceleratorFactoryCB = base::RepeatingCallback<void(
@@ -150,6 +156,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
       public cros::mojom::CameraHalServerCallbacks {
  public:
+  using CameraEffectsControllerCallback =
+      base::RepeatingCallback<void(cros::mojom::EffectsConfigPtr,
+                                   cros::mojom::SetEffectResult)>;
+
   static CameraHalDispatcherImpl* GetInstance();
 
   CameraHalDispatcherImpl(const CameraHalDispatcherImpl&) = delete;
@@ -252,6 +262,16 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void GetAutoFramingSupported(
       cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
+  // This function needs to be called first before `SetCameraEffects`.
+  void SetCameraEffectsControllerCallback(
+      CameraEffectsControllerCallback camera_effects__controller_callback);
+
+  // Sets camera effects through `SetCameraEffectsOnProxyThread`.
+  // This function should not be called by any client except
+  // `CameraEffectsController`. Clients should always use
+  // `CameraEffectsController` instead.
+  void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
+
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.
@@ -313,6 +333,14 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void GetAutoFramingSupportedOnProxyThread(
       cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
+  // Calls the `camera_hal_server_` to set the camera effects.
+  void SetCameraEffectsOnProxyThread(cros::mojom::EffectsConfigPtr config);
+
+  // Called when camera_hal_server_->SetCameraEffect returns.
+  void OnSetCameraEffectsCompleteOnProxyThread(
+      cros::mojom::EffectsConfigPtr config,
+      cros::mojom::SetEffectResult result);
+
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
       base::flat_set<int32_t> camera_ids);
@@ -365,6 +393,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback
       auto_framing_supported_callback_;
+
+  // Records current successfully set camera effects.
+  // Used inside RegisterServerWithToken.
+  cros::mojom::EffectsConfigPtr current_effects_;
+
+  // Called when `SetCameraEffects` succeeds or fails.
+  CameraEffectsControllerCallback camera_effects_controller_callback_;
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;

@@ -527,6 +527,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRecoveryFactorBehavior[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kApnMigratedIccids[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kBackgroundBlur[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kBackgroundReplace[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPortraitRelighting[];
+
 }  // namespace prefs
 }  // namespace ash
 
