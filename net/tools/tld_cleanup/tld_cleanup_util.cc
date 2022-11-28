@@ -23,10 +23,7 @@ const int kPrivateRule = 4;
 
 namespace net::tld_cleanup {
 
-// Writes the list of domain rules contained in the 'rules' set to the
-// 'outfile', with each rule terminated by a LF.  The file must already have
-// been created with write access.
-bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
+std::string RulesToGperf(const RuleMap& rules) {
   std::string data;
   data.append("%{\n"
               "// Copyright 2012 The Chromium Authors\n"
@@ -42,16 +39,16 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
               "};\n"
               "%%\n");
 
-  for (const auto& rule : rules) {
-    data.append(rule.first);
+  for (const auto& [domain, rule] : rules) {
+    data.append(domain);
     data.append(", ");
     int type = 0;
-    if (rule.second.exception) {
+    if (rule.exception) {
       type = kExceptionRule;
-    } else if (rule.second.wildcard) {
+    } else if (rule.wildcard) {
       type = kWildcardRule;
     }
-    if (rule.second.is_private) {
+    if (rule.is_private) {
       type += kPrivateRule;
     }
     data.append(base::NumberToString(type));
@@ -60,11 +57,7 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
 
   data.append("%%\n");
 
-  int written = base::WriteFile(outfile,
-                                     data.data(),
-                                     static_cast<int>(data.size()));
-
-  return written == static_cast<int>(data.size());
+  return data;
 }
 
 // Adjusts the rule to a standard form: removes single extraneous dots and
@@ -72,20 +65,20 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
 // valid; logs a warning and returns kWarning if it is probably invalid; and
 // logs an error and returns kError if the rule is (almost) certainly invalid.
 NormalizeResult NormalizeRule(std::string* domain, Rule* rule) {
-  NormalizeResult result = kSuccess;
+  NormalizeResult result = NormalizeResult::kSuccess;
 
   // Strip single leading and trailing dots.
   if (domain->at(0) == '.')
     domain->erase(0, 1);
   if (domain->empty()) {
     LOG(WARNING) << "Ignoring empty rule";
-    return kWarning;
+    return NormalizeResult::kWarning;
   }
   if (domain->at(domain->size() - 1) == '.')
     domain->erase(domain->size() - 1, 1);
   if (domain->empty()) {
     LOG(WARNING) << "Ignoring empty rule";
-    return kWarning;
+    return NormalizeResult::kWarning;
   }
 
   // Allow single leading '*.' or '!', saved here so it's not canonicalized.
@@ -99,14 +92,14 @@ NormalizeResult NormalizeRule(std::string* domain, Rule* rule) {
   }
   if (domain->empty()) {
     LOG(WARNING) << "Ignoring empty rule";
-    return kWarning;
+    return NormalizeResult::kWarning;
   }
 
   // Warn about additional '*.' or '!'.
   if (domain->find("*.", start_offset) != std::string::npos ||
       domain->find('!', start_offset) != std::string::npos) {
     LOG(WARNING) << "Keeping probably invalid rule: " << *domain;
-    result = kWarning;
+    result = NormalizeResult::kWarning;
   }
 
   // Make a GURL and normalize it, then get the host back out.
@@ -117,11 +110,11 @@ NormalizeResult NormalizeRule(std::string* domain, Rule* rule) {
   url::Component host = gurl.parsed_for_possibly_invalid_spec().host;
   if (!host.is_valid()) {
     LOG(ERROR) << "Ignoring rule that couldn't be normalized: " << *domain;
-    return kError;
+    return NormalizeResult::kError;
   }
   if (!gurl.is_valid()) {
     LOG(WARNING) << "Keeping rule that GURL says is invalid: " << *domain;
-    result = kWarning;
+    result = NormalizeResult::kWarning;
   }
   domain->assign(spec.substr(host.begin, host.len));
 
@@ -134,7 +127,7 @@ NormalizeResult NormalizeDataToRuleMap(const std::string data,
   // We do a lot of string assignment during parsing, but simplicity is more
   // important than performance here.
   std::string domain;
-  NormalizeResult result = kSuccess;
+  NormalizeResult result = NormalizeResult::kSuccess;
   size_t line_start = 0;
   size_t line_end = 0;
   bool is_private = false;
@@ -171,7 +164,7 @@ NormalizeResult NormalizeDataToRuleMap(const std::string data,
       rule.exception = false;
       rule.is_private = is_private;
       NormalizeResult new_result = NormalizeRule(&domain, &rule);
-      if (new_result != kError) {
+      if (new_result != NormalizeResult::kError) {
         // Check the existing rules to make sure we don't have an exception and
         // wildcard for the same rule, or that the same domain is listed as both
         // private and not private. If we did, we'd have to update our
@@ -236,14 +229,14 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
   if (!base::ReadFileToString(in_filename, &data)) {
     LOG(ERROR) << "Unable to read file";
     // We return success since we've already reported the error.
-    return kSuccess;
+    return NormalizeResult::kSuccess;
   }
 
   NormalizeResult result = NormalizeDataToRuleMap(data, &rules);
 
-  if (!WriteRules(rules, out_filename)) {
+  if (!base::WriteFile(out_filename, RulesToGperf(rules))) {
     LOG(ERROR) << "Error(s) writing output file";
-    result = kError;
+    result = NormalizeResult::kError;
   }
 
   return result;

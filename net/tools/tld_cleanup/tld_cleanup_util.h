@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <tuple>
 
 namespace base {
 class FilePath;
@@ -18,16 +19,25 @@ struct Rule {
   bool exception;
   bool wildcard;
   bool is_private;
+
+  bool operator==(const Rule& other) const {
+    return std::tie(exception, wildcard, is_private) ==
+           std::tie(other.exception, other.wildcard, other.is_private);
+  }
 };
 
 typedef std::map<std::string, Rule> RuleMap;
 
 // These result codes should be in increasing order of severity.
-typedef enum {
+enum class NormalizeResult {
   kSuccess,
   kWarning,
   kError,
-} NormalizeResult;
+};
+
+// Converts the list of domain rules contained in the `rules` map to string.
+// Rule lines all have trailing LF in the output.
+std::string RulesToGperf(const RuleMap& rules);
 
 // Loads the file described by |in_filename|, converts it to the desired format
 // (see the file comments in tld_cleanup.cc), and saves it into |out_filename|.

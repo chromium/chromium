@@ -83,12 +83,12 @@ int main(int argc, const char* argv[]) {
                                "effective_tld_names.gperf"));
   net::tld_cleanup::NormalizeResult result =
       net::tld_cleanup::NormalizeFile(input_file, output_file);
-  if (result != net::tld_cleanup::kSuccess) {
+  if (result != net::tld_cleanup::NormalizeResult::kSuccess) {
     fprintf(stderr,
             "Errors or warnings processing file.  See log in tld_cleanup.log.");
   }
 
-  if (result == net::tld_cleanup::kError)
+  if (result == net::tld_cleanup::NormalizeResult::kError)
     return 1;
   return 0;
 }
