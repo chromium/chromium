@@ -21,11 +21,10 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
       visual_rect_(visual_rect) {
   // Must check DrawingRecorder::UseCachedDrawingIfPossible before creating the
   // DrawingRecorder.
-  DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
-         context_.GetPaintController().ShouldForcePaintForBenchmark() ||
-         !UseCachedDrawingIfPossible(context_, client_, type_));
-
+#if DCHECK_IS_ON()
+  context_.GetPaintController().AssertLastCheckedCachedItem(client_, type_);
   DCHECK(DisplayItem::IsDrawingType(display_item_type));
+#endif
 
   context.SetInDrawingRecorder(true);
   context.BeginRecording();

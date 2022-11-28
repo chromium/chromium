@@ -164,6 +164,16 @@ class PLATFORM_EXPORT PaintController {
   // list and returns true. Otherwise returns false.
   bool UseCachedItemIfPossible(const DisplayItemClient&, DisplayItem::Type);
 
+#if DCHECK_IS_ON()
+  void AssertLastCheckedCachedItem(const DisplayItemClient&, DisplayItem::Type);
+#endif
+
+  // This can only be called if the previous UseCachedItemIfPossible() returned
+  // false. Returns the cached display item that was matched in the previous
+  // UseCachedItemIfPossible() for an invalidated DisplayItemClient, or nullptr
+  // if there is no matching item.
+  DisplayItem* MatchingCachedItemToBeRepainted();
+
   // Tries to find the cached subsequence corresponding to the given parameters.
   // If found, copies the cache subsequence to the new display list and returns
   // true. Otherwise returns false.
@@ -245,6 +255,8 @@ class PLATFORM_EXPORT PaintController {
   bool ShouldForcePaintForBenchmark() {
     return benchmark_mode_ >= PaintBenchmarkMode::kForcePaint;
   }
+
+  bool IsCheckingUnderInvalidationForTesting() const;
 
   void SetFirstPainted();
   void SetTextPainted();
@@ -424,6 +436,8 @@ class PLATFORM_EXPORT PaintController {
   // requests.
   wtf_size_t next_item_to_index_ = 0;
 
+  wtf_size_t last_matching_item_ = kNotFound;
+
 #if DCHECK_IS_ON()
   wtf_size_t num_indexed_items_ = 0;
   wtf_size_t num_sequential_matches_ = 0;
@@ -433,6 +447,8 @@ class PLATFORM_EXPORT PaintController {
   IdIndexMap new_display_item_id_index_map_;
   // This is used to check duplicated ids for new paint chunks.
   IdIndexMap new_paint_chunk_id_index_map_;
+
+  DisplayItem::Id::HashKey last_checked_cached_item_id_;
 #endif
 
   std::unique_ptr<PaintUnderInvalidationChecker> under_invalidation_checker_;

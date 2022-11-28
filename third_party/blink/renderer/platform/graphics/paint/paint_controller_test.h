@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 
+#include <utility>
+
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -35,22 +38,33 @@ class CommitCycleScope : public PaintControllerCycleScopeForTest {
 
 class PaintControllerTestBase : public testing::Test {
  public:
-  static void DrawNothing(GraphicsContext& context,
-                          const DisplayItemClient& client,
-                          DisplayItem::Type type) {
-    if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
-      return;
-    DrawingRecorder recorder(context, client, type, gfx::Rect());
+  enum DrawResult {
+    kCached,
+    kPaintedNew,
+    kRepaintedCachedItem,
+  };
+
+  static DrawResult Draw(GraphicsContext& context,
+                         const DisplayItemClient& client,
+                         DisplayItem::Type type,
+                         base::FunctionRef<void()> draw_function);
+
+  static DrawResult DrawNothing(GraphicsContext& context,
+                                const DisplayItemClient& client,
+                                DisplayItem::Type type) {
+    return Draw(context, client, type, [&]() {
+      DrawingRecorder recorder(context, client, type, gfx::Rect());
+    });
   }
 
-  static void DrawRect(GraphicsContext& context,
-                       const DisplayItemClient& client,
-                       DisplayItem::Type type,
-                       const gfx::Rect& bounds) {
-    if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
-      return;
-    DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(bounds, AutoDarkMode::Disabled());
+  static DrawResult DrawRect(GraphicsContext& context,
+                             const DisplayItemClient& client,
+                             DisplayItem::Type type,
+                             const gfx::Rect& bounds) {
+    return Draw(context, client, type, [&]() {
+      DrawingRecorder recorder(context, client, type, bounds);
+      context.DrawRect(bounds, AutoDarkMode::Disabled());
+    });
   }
 
  protected:
