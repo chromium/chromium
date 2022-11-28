@@ -69,10 +69,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Reload) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -131,10 +131,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Navigation) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -195,11 +195,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Abort) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
 
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
@@ -260,10 +260,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        UserAborted_Navigation) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -320,10 +320,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        DISABLED_UserAborted_CancelButton) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -380,10 +380,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        DISABLED_UserAborted_TabClosed) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -441,10 +441,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        UserAborted_Reload) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");

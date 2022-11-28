@@ -31,10 +31,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerSelectedPaymentAppTest,
                        TestSelectedPaymentMethod) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_no_shipping_test.html");
@@ -138,10 +138,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
                        ShowSameRequest) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com", "/payment_request_multiple_show_test.html");
@@ -205,10 +205,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
                        StartNewRequest) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_multiple_show_test.html");
@@ -323,11 +323,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerAllSectionStatsTest,
                        NumberOfSuggestionsShown_Completed) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
 
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com",
@@ -392,11 +392,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerAllSectionStatsTest,
                        NumberOfSuggestionsShown_UserAborted) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
 
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com",
@@ -463,10 +463,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoShippingSectionStatsTest,
                        NumberOfSuggestionsShown_Completed) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com", "/payment_request_contact_details_test.html");
@@ -531,10 +531,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoShippingSectionStatsTest,
                        NumberOfSuggestionsShown_UserAborted) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com", "/payment_request_contact_details_test.html");
@@ -602,10 +602,10 @@ IN_PROC_BROWSER_TEST_F(
     NumberOfSuggestionsShown_Completed) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("c.com", "/payment_request_free_shipping_test.html");
@@ -672,10 +672,10 @@ IN_PROC_BROWSER_TEST_F(
     NumberOfSuggestionsShown_UserAborted) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_free_shipping_test.html");
@@ -741,10 +741,10 @@ using PaymentRequestNotShownTest = PaymentRequestBrowserTestBase;
 IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
   // Installs two apps so that canMakePayment is true.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -798,10 +798,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompleteSuggestionsForEverythingTest,
                        UserHadCompleteSuggestionsForEverything) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_email_test.html");
@@ -869,9 +869,11 @@ class PaymentRequestIframeTest : public PaymentRequestBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &a_method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method);
   std::string b_method;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js", &b_method);
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method);
 
   base::HistogramTester histogram_tester;
 
@@ -939,9 +941,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_UserAborted) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &a_method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method);
   std::string b_method;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js", &b_method);
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method);
 
   NavigateTo("c.com", "/payment_request_free_shipping_with_iframe_test.html");
   base::HistogramTester histogram_tester;
@@ -992,9 +996,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_UserAborted) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_Completed) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &a_method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method);
   std::string b_method;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js", &b_method);
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method);
 
   NavigateTo("/payment_request_free_shipping_with_iframe_test.html");
   base::HistogramTester histogram_tester;
@@ -1051,9 +1057,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_Completed) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_UserAborted) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &a_method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method);
   std::string b_method;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js", &b_method);
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method);
 
   NavigateTo("/payment_request_free_shipping_with_iframe_test.html");
   base::HistogramTester histogram_tester;
@@ -1106,9 +1114,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_UserAborted) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_Completed) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &a_method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method);
   std::string b_method;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js", &b_method);
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method);
 
   NavigateTo("/payment_request_free_shipping_with_iframe_test.html");
   base::HistogramTester histogram_tester;

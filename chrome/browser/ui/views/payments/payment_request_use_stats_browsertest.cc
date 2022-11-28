@@ -34,7 +34,7 @@ using PaymentRequestShippingAddressUseStatsTest = PaymentRequestBrowserTestBase;
 // properly updated upon completion.
 IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest, RecordUse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_free_shipping_test.html");
@@ -79,7 +79,7 @@ using PaymentRequestContactAddressUseStatsTest = PaymentRequestBrowserTestBase;
 // properly updated upon completion.
 IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest, RecordUse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_name_test.html");
@@ -125,7 +125,7 @@ using PaymentRequestSameShippingAndContactAddressUseStatsTest =
 IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
                        RecordUse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_contact_details_and_free_shipping_test.html");

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -266,38 +267,21 @@ void PaymentRequestBrowserTestBase::InstallPaymentApp(
     const std::string& hostname,
     const std::string& service_worker_filename,
     std::string* url_method_output) {
-  NavigateTo(hostname, "/payment_handler_installer.html");
-  *url_method_output = https_server()->GetURL(hostname, "/").spec();
-  *url_method_output =
-      url_method_output->substr(0, url_method_output->length() - 1);
-  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
-  ASSERT_EQ("success",
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("install($1, [$2], false)",
-                                               service_worker_filename,
-                                               *url_method_output)));
-  // We can't output `url_method_output` by return because the ASSERTs require
-  // the method to return void.
+  *url_method_output = PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents(), *https_server(), hostname,
+      service_worker_filename, PaymentAppInstallUtil::IconInstall::kWithIcon);
+  ASSERT_FALSE(url_method_output->empty()) << "Failed to install payment app";
 }
 
-// The default |InstallPaymentApp| uses a manifest file that contains an icon.
-// This path doesn't install an icon.
 void PaymentRequestBrowserTestBase::InstallPaymentAppWithoutIcon(
     const std::string& hostname,
     const std::string& service_worker_filename,
     std::string* url_method_output) {
-  NavigateTo(hostname, "/payment_handler_installer_no_icon.html");
-  *url_method_output = https_server()->GetURL(hostname, "/").spec();
-  *url_method_output =
-      url_method_output->substr(0, url_method_output->length() - 1);
-  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
-  ASSERT_EQ("success",
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("install($1, [$2], false)",
-                                               service_worker_filename,
-                                               *url_method_output)));
-  // We can't output `url_method_output` by return because the ASSERTs require
-  // the method to return void.
+  *url_method_output = PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents(), *https_server(), hostname,
+      service_worker_filename,
+      PaymentAppInstallUtil::IconInstall::kWithoutIcon);
+  ASSERT_FALSE(url_method_output->empty()) << "Failed to install payment app";
 }
 
 void PaymentRequestBrowserTestBase::InvokePaymentRequestUI() {

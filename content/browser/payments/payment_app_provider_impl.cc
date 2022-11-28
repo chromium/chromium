@@ -77,6 +77,24 @@ void AddModifiersToMap(const std::vector<PaymentDetailsModifierPtr>& modifiers,
   }
 }
 
+std::string EncodeIcon(const SkBitmap& app_icon) {
+  std::string string_encoded_icon;
+  if (app_icon.empty())
+    return string_encoded_icon;
+
+  gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
+  scoped_refptr<base::RefCountedMemory> raw_data = decoded_image.As1xPNGBytes();
+  base::Base64Encode(
+      base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
+      &string_encoded_icon);
+  return string_encoded_icon;
+}
+
+void CheckRegistrationSuccess(base::OnceCallback<void(bool success)> callback,
+                              int64_t registration_id) {
+  std::move(callback).Run(/*success=*/registration_id >= 0);
+}
+
 }  // namespace
 
 // static
@@ -181,18 +199,8 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
         /*instance_id=*/event_data->payment_request_id, data);
   }
 
-  std::string string_encoded_icon;
-  if (!app_icon.empty()) {
-    gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
-    scoped_refptr<base::RefCountedMemory> raw_data =
-        decoded_image.As1xPNGBytes();
-    base::Base64Encode(
-        base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
-        &string_encoded_icon);
-  }
-
   PaymentAppInstaller::Install(
-      payment_request_web_contents_, app_name, string_encoded_icon, sw_js_url,
+      payment_request_web_contents_, app_name, EncodeIcon(app_icon), sw_js_url,
       sw_scope, sw_use_cache, method, supported_delegations,
       base::BindOnce(&PaymentAppProviderImpl::OnInstallPaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), sw_origin,
@@ -308,6 +316,24 @@ void PaymentAppProviderImpl::OnClosingOpenedWindow(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   event_dispatcher_->OnClosingOpenedWindow(reason);
+}
+
+void PaymentAppProviderImpl::InstallPaymentAppForTesting(
+    const SkBitmap& app_icon,
+    const GURL& service_worker_javascript_file_url,
+    const GURL& service_worker_scope,
+    const std::string& payment_method_identifier,
+    base::OnceCallback<void(bool success)> callback) {
+  CHECK(service_worker_javascript_file_url.is_valid());
+  CHECK(service_worker_scope.is_valid());
+  CHECK(!payment_method_identifier.empty());
+
+  PaymentAppInstaller::Install(
+      payment_request_web_contents_, /*app_name=*/"Test App Name",
+      EncodeIcon(app_icon), service_worker_javascript_file_url,
+      service_worker_scope, /*use_cache=*/false, payment_method_identifier,
+      content::SupportedDelegations(),
+      base::BindOnce(&CheckRegistrationSuccess, std::move(callback)));
 }
 
 scoped_refptr<DevToolsBackgroundServicesContextImpl>

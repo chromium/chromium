@@ -17,10 +17,10 @@ using PaymentRequestEmptyUpdateTest = PaymentRequestBrowserTestBase;
 IN_PROC_BROWSER_TEST_F(PaymentRequestEmptyUpdateTest, NoCrash) {
   // Installs two apps to ensure that the payment request UI is shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_empty_update_test.html");

@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithTotal) {
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithDisplayItems) {
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest,
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithModifiers) {
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithError) {
   AddAutofillProfile(autofill::test::GetFullProfile2());
 
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_update_with_test.html");

@@ -18,7 +18,7 @@ using PaymentRequestErrorMessageTest = PaymentRequestBrowserTestBase;
 // Testing the use of the complete('fail') JS API and the error message.
 IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_fail_complete_test.html");

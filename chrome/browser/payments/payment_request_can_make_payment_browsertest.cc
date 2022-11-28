@@ -37,7 +37,7 @@ class PaymentRequestCanMakePaymentQueryTest
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        AppRespondsFalseToCanMakePaymentEvent) {
   std::string method;
-  InstallPaymentApp("a.com", "can_make_payment_false_responder.js", &method);
+  InstallPaymentApp("a.com", "/can_make_payment_false_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        AppRespondsTrueToCanMakePaymentEvent) {
   std::string method;
-  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
+  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        IncognitoModeWithInstalledPaymentHandler) {
   std::string method;
-  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
+  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetOffTheRecord(true);
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   test_controller()->SetCanMakePaymentEnabledPref(false);
 
   std::string method;
-  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
+  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 // show().
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, InvalidSSL) {
   std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetValidSsl(false);

@@ -44,10 +44,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   // without an icon - this makes ServiceWorkerPaymentApp::CanPreselect false
   // for it and so the other app should be selected.
   std::string payment_method_name_1;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name_1);
   std::string payment_method_name_2;
-  InstallPaymentAppWithoutIcon("b.com", "payment_request_success_responder.js",
+  InstallPaymentAppWithoutIcon("b.com", "/payment_request_success_responder.js",
                                &payment_method_name_2);
 
   NavigateTo("/payment_request_with_modifiers_test.html");
@@ -70,10 +70,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   // The modifier without the total applies to the first method; to make sure
   // that it is always selected we install the second method without an icon.
   std::string payment_method_name_1;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name_1);
   std::string payment_method_name_2;
-  InstallPaymentAppWithoutIcon("b.com", "payment_request_success_responder.js",
+  InstallPaymentAppWithoutIcon("b.com", "/payment_request_success_responder.js",
                                &payment_method_name_2);
 
   NavigateTo("/payment_request_with_modifiers_test.html");

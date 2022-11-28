@@ -18,7 +18,7 @@ using PaymentRequestShippingAddressInstanceTest = PaymentRequestBrowserTestBase;
 IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressInstanceTest,
                        ShouldBeSameInstance) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();

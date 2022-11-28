@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   // Install a payment app that responds to the abortpayment event, which is
   // used by this test to determine that the app was successfully run.
   std::string payment_method;
-  InstallPaymentApp("a.com", "abort_responder_app.js", &payment_method);
+  InstallPaymentApp("a.com", "/abort_responder_app.js", &payment_method);
 
   // Navigate the top frame.
   GURL main_url(
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   // Install a payment app that responds to the abortpayment event, which is
   // used by this test to determine that the app was successfully run.
   std::string payment_method;
-  InstallPaymentApp("a.com", "abort_responder_app.js", &payment_method);
+  InstallPaymentApp("a.com", "/abort_responder_app.js", &payment_method);
 
   // Navigate the top frame.
   GURL main_url(

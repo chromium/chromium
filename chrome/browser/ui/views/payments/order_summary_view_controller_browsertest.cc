@@ -20,7 +20,7 @@ using PaymentRequestOrderSummaryViewControllerTest =
 IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
                        OrderSummaryReflectsShippingOption) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_dynamic_shipping_test.html");

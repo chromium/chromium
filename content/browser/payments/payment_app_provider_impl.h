@@ -66,6 +66,13 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   void OnClosingOpenedWindow(
       payments::mojom::PaymentEventResponseType reason) override;
 
+  void InstallPaymentAppForTesting(
+      const SkBitmap& app_icon,
+      const GURL& sw_js_url,
+      const GURL& sw_scope,
+      const std::string& method,
+      base::OnceCallback<void(bool success)> callback) override;
+
  private:
   explicit PaymentAppProviderImpl(WebContents* payment_request_web_contents);
   friend class WebContentsUserData<PaymentAppProviderImpl>;

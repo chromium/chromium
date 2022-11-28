@@ -28,14 +28,15 @@ using PaymentRequestPaymentResponseShippingAddressTest =
 IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
                        TestPaymentResponse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_free_shipping_test.html");
 
   // Create two shipping addresses, one with a higher frequency score so that it
   // is selected as the default shipping address.
-  autofill::AutofillProfile shipping_address1 = autofill::test::GetFullProfile();
+  autofill::AutofillProfile shipping_address1 =
+      autofill::test::GetFullProfile();
   AddAutofillProfile(shipping_address1);
   autofill::AutofillProfile shipping_address2 =
       autofill::test::GetFullProfile2();
@@ -70,7 +71,7 @@ using PaymentRequestPaymentResponseAllContactDetailsTest =
 IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAllContactDetailsTest,
                        TestPaymentResponse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_contact_details_and_free_shipping_test.html");
@@ -98,10 +99,10 @@ IN_PROC_BROWSER_TEST_F(
     RetryWithPayerErrors_HasSameValueButDifferentErrorsShown) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
   NavigateTo("/payment_request_retry_with_payer_errors.html");
@@ -156,7 +157,7 @@ using PaymentRequestPaymentResponseOneContactDetailTest =
 IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseOneContactDetailTest,
                        TestPaymentResponse) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_email_and_free_shipping_test.html");

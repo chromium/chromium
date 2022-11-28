@@ -6,6 +6,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "payment_app_install_util.cc",
+    "payment_app_install_util.h",
     "payment_request_platform_browsertest_base.cc",
     "payment_request_platform_browsertest_base.h",
     "payment_request_test_controller.h",

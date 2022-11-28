@@ -65,6 +65,7 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources += [
+      "capability_delegation_browsertest.cc",
       "manifest_verifier_browsertest.cc",
       "payment_manifest_parser_browsertest.cc",
       "secure_payment_confirmation_authenticator_browsertest.cc",

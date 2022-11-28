@@ -30,7 +30,7 @@ using PaymentRequestProfileListTest = PaymentRequestBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   std::string payment_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &payment_method_name);
 
   NavigateTo("/payment_request_free_shipping_test.html");
