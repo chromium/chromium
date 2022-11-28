@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -171,8 +170,8 @@ bool WallpaperColorCalculator::StartCalculation() {
   }
 
   image_.MakeThreadSafe();
-  if (base::PostTaskAndReplyWithResult(
-          task_runner_.get(), FROM_HERE,
+  if (task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(&CalculateWallpaperColor, image_, color_profiles_),
           base::BindOnce(&WallpaperColorCalculator::OnAsyncCalculationComplete,
                          weak_ptr_factory_.GetWeakPtr(),

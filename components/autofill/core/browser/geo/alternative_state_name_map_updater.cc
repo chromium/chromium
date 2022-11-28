@@ -18,7 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -169,8 +168,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
 
     // |country_code| is used as the filename.
     // Example -> File "DE" contains the geographical states data of Germany.
-    base::PostTaskAndReplyWithResult(
-        GetTaskRunner().get(), FROM_HERE,
+    GetTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&LoadDataFromFile,
                        data_download_path.AppendASCII(country_code.value())),
         base::BindOnce(

@@ -23,7 +23,6 @@
 #include "base/supports_user_data.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/download/database/in_progress/download_entry.h"
@@ -801,8 +800,8 @@ void DownloadManagerImpl::CheckForFileRemoval(
   if (!pending_disk_access_query_.insert(download_item->GetId()).second)
     return;
 
-  base::PostTaskAndReplyWithResult(
-      disk_access_task_runner_.get(), FROM_HERE,
+  disk_access_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&base::PathExists, download_item->GetTargetFilePath()),
       base::BindOnce(&DownloadManagerImpl::OnFileExistenceChecked,
                      weak_factory_.GetWeakPtr(), download_item->GetId()));

@@ -5,7 +5,6 @@
 #include "content/public/renderer/video_encode_accelerator.h"
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -26,8 +25,8 @@ void CreateVideoEncodeAccelerator(
 
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner =
       gpu_factories->GetTaskRunner();
-  base::PostTaskAndReplyWithResult(
-      encode_task_runner.get(), FROM_HERE,
+  encode_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &media::GpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator,
           base::Unretained(gpu_factories)),

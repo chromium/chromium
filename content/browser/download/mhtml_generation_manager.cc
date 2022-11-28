@@ -15,7 +15,6 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
@@ -355,9 +354,8 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
   if (extra_parts)
     extra_data_parts_ = extra_parts->parts();
 
-  base::PostTaskAndReplyWithResult(
-      download::GetDownloadTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&CreateMHTMLFile, params_.file_path),
+  download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreateMHTMLFile, params_.file_path),
       base::BindOnce(&Job::OnFileAvailable, weak_factory_.GetWeakPtr()));
 }
 
@@ -621,8 +619,8 @@ void MHTMLGenerationManager::Job::CloseFile(
     save_status = mojom::MhtmlSaveStatus::kFileWritingError;
 
   // If no previous error occurred the boundary should be sent.
-  base::PostTaskAndReplyWithResult(
-      download::GetDownloadTaskRunner().get(), FROM_HERE,
+  download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MHTMLGenerationManager::Job::FinalizeOnFileThread,
                      save_status, mhtml_boundary_marker_,
                      std::move(browser_file_), std::move(extra_data_parts_),

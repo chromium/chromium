@@ -16,7 +16,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
@@ -443,8 +442,8 @@ void RulesetService::IndexAndStoreRuleset(
     const UnindexedRulesetInfo& unindexed_ruleset_info,
     WriteRulesetCallback success_callback) {
   DCHECK(!unindexed_ruleset_info.content_version.empty());
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&RulesetService::IndexAndWriteRuleset,
                      indexed_ruleset_base_dir_, unindexed_ruleset_info),
       base::BindOnce(&RulesetService::OnWrittenRuleset, AsWeakPtr(),

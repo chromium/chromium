@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -79,9 +78,8 @@ void CertificateImporterImpl::RunTaskOnIOTaskRunnerAndCallDoneCallback(
                      weak_factory_.GetWeakPtr(), std::move(done_callback));
 
   // The NSSCertDatabase must be accessed on |io_task_runner_|
-  base::PostTaskAndReplyWithResult(io_task_runner_.get(), FROM_HERE,
-                                   std::move(task),
-                                   std::move(callback_to_this));
+  io_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                              std::move(callback_to_this));
 }
 
 void CertificateImporterImpl::RunDoneCallback(DoneCallback callback,

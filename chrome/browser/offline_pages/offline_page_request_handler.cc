@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -755,8 +754,8 @@ void OfflinePageRequestHandler::FinalizeDigestOnBackground(
   // Delegate to background task runner to finalize the hash to get the digest
   // since it is time consuming. Once it is done, |digest_finalized_callback|
   // will be called with the digest.
-  base::PostTaskAndReplyWithResult(
-      file_task_runner_.get(), FROM_HERE,
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ThreadSafeArchiveValidator::Finish, archive_validator_),
       std::move(digest_finalized_callback));
 }

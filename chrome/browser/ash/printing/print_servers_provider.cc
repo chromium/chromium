@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
@@ -214,8 +213,8 @@ class PrintServersProviderImpl : public PrintServersProvider {
   void SetData(std::unique_ptr<std::string> data) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     const bool previously_completed = IsCompleted();
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&ParseData, ++last_received_task_, std::move(data)),
         base::BindOnce(&PrintServersProviderImpl::OnComputationComplete,
                        weak_ptr_factory_.GetWeakPtr()));

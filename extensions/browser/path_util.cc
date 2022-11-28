@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -110,9 +109,8 @@ void CalculateAndFormatExtensionDirectorySize(
     const base::FilePath& extension_path,
     int message_id,
     base::OnceCallback<void(const std::u16string&)> callback) {
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&base::ComputeDirectorySize, extension_path),
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::ComputeDirectorySize, extension_path),
       base::BindOnce(&OnDirectorySizeCalculated, message_id,
                      std::move(callback)));
 }

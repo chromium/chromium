@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -142,8 +141,8 @@ void DesktopCloudPolicyStore::Load() {
 
   // Start a new Load operation and have us get called back when it is
   // complete.
-  base::PostTaskAndReplyWithResult(
-      background_task_runner().get(), FROM_HERE,
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DesktopCloudPolicyStore::LoadAndFilterPolicyFromDisk,
                      policy_path_, key_path_, policy_load_filter_),
       base::BindOnce(&DesktopCloudPolicyStore::PolicyLoaded,

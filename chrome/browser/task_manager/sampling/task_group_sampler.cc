@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/process/process_metrics.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -73,25 +72,23 @@ void TaskGroupSampler::Refresh(int64_t refresh_flags) {
 
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_CPU,
                                                     refresh_flags)) {
-    base::PostTaskAndReplyWithResult(
-        blocking_pool_runner_.get(), FROM_HERE,
-        base::BindOnce(&TaskGroupSampler::RefreshCpuUsage, this),
+    blocking_pool_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&TaskGroupSampler::RefreshCpuUsage, this),
         base::BindOnce(on_cpu_refresh_callback_));
   }
 
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_SWAPPED_MEM,
                                                     refresh_flags)) {
-    base::PostTaskAndReplyWithResult(
-        blocking_pool_runner_.get(), FROM_HERE,
-        base::BindOnce(&TaskGroupSampler::RefreshSwappedMem, this),
+    blocking_pool_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&TaskGroupSampler::RefreshSwappedMem, this),
         base::BindOnce(on_swapped_mem_refresh_callback_));
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_IDLE_WAKEUPS,
                                                     refresh_flags)) {
-    base::PostTaskAndReplyWithResult(
-        blocking_pool_runner_.get(), FROM_HERE,
+    blocking_pool_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&TaskGroupSampler::RefreshIdleWakeupsPerSecond, this),
         base::BindOnce(on_idle_wakeups_callback_));
   }
@@ -100,17 +97,16 @@ void TaskGroupSampler::Refresh(int64_t refresh_flags) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_FD_COUNT,
                                                     refresh_flags)) {
-    base::PostTaskAndReplyWithResult(
-        blocking_pool_runner_.get(), FROM_HERE,
-        base::BindOnce(&TaskGroupSampler::RefreshOpenFdCount, this),
+    blocking_pool_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&TaskGroupSampler::RefreshOpenFdCount, this),
         base::BindOnce(on_open_fd_count_callback_));
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_PRIORITY,
                                                     refresh_flags)) {
-    base::PostTaskAndReplyWithResult(
-        blocking_pool_runner_.get(), FROM_HERE,
+    blocking_pool_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&TaskGroupSampler::RefreshProcessPriority, this),
         base::BindOnce(on_process_priority_callback_));
   }

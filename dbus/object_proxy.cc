@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -250,8 +249,8 @@ void ObjectProxy::ConnectToSignal(const std::string& interface_name,
   bus_->AssertOnOriginThread();
 
   if (bus_->HasDBusThread()) {
-    base::PostTaskAndReplyWithResult(
-        bus_->GetDBusTaskRunner(), FROM_HERE,
+    bus_->GetDBusTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&ObjectProxy::ConnectToSignalAndBlock, this,
                        interface_name, signal_name, signal_callback),
         base::BindOnce(std::move(on_connected_callback), interface_name,

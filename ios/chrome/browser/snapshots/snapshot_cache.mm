@@ -23,7 +23,6 @@
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/task/task_runner_util.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
@@ -440,8 +439,8 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   }
 
   __weak SnapshotLRUCache* weakLRUCache = _lruCache;
-  base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE,
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
                      IMAGE_TYPE_COLOR, _snapshotsScale, _cacheDirectory),
       base::BindOnce(^(UIImage* image) {
@@ -595,8 +594,8 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     return;
 
   __weak SnapshotCache* weakSelf = self;
-  base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE,
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GreyImageFromCachedImage, _cacheDirectory, snapshotID,
                      _snapshotsScale, image),
       base::BindOnce(^(UIImage* greyImage) {
@@ -660,8 +659,8 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   }
 
   __weak SnapshotCache* weakSelf = self;
-  base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE,
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
                      IMAGE_TYPE_GREYSCALE, _snapshotsScale, _cacheDirectory),
       base::BindOnce(^(UIImage* image) {

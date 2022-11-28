@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
@@ -365,9 +364,8 @@ void ArcSystemStatCollector::Start(const base::TimeDelta& max_interval) {
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&SystemReadersContext::InitOnBackgroundThread),
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&SystemReadersContext::InitOnBackgroundThread),
       base::BindOnce(&ArcSystemStatCollector::OnInitOnUiThread,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -591,8 +589,8 @@ void ArcSystemStatCollector::ScheduleSystemStatUpdate() {
       LOG(WARNING) << "Dropping update, already pending";
     return;
   }
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ArcSystemStatCollector::ReadSystemStatOnBackgroundThread,
                      std::move(context_)),
       base::BindOnce(&ArcSystemStatCollector::UpdateSystemStatOnUiThread,

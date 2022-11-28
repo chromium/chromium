@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
@@ -106,8 +105,8 @@ void OnCustomizedDefaultWallpaperDecoded(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-  base::PostTaskAndReplyWithResult(
-      task_runner.get(), FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ResizeAndSaveCustomizedDefaultWallpaper,
                      wallpaper->image().DeepCopy(), resized_small_path,
                      resized_large_path),
@@ -171,8 +170,8 @@ void StartSettingCustomizedDefaultWallpaper(const GURL& wallpaper_url,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-  base::PostTaskAndReplyWithResult(
-      task_runner.get(), FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CheckCustomizedWallpaperFilesExist, resized_small_path,
                      resized_large_path),
       base::BindOnce(&SetCustomizedDefaultWallpaperAfterCheck, wallpaper_url,

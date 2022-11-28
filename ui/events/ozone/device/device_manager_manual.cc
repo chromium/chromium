@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
@@ -64,8 +63,8 @@ void DeviceManagerManual::RemoveObserver(DeviceEventObserver* observer) {
 }
 
 void DeviceManagerManual::StartWatching() {
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &base::FilePathWatcher::Watch, base::Unretained(watcher_.get()),
           base::FilePath(kDevInput), base::FilePathWatcher::Type::kNonRecursive,

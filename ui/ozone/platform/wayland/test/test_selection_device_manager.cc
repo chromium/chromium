@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -106,9 +105,8 @@ void TestSelectionSource::ReadData(const std::string& mime_type,
 
   // 2. Schedule the ReadDataOnWorkerThread task. The result of read
   // operation will be then passed in to the callback requested by the caller.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ReadDataOnWorkerThread, std::move(read_fd)),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ReadDataOnWorkerThread, std::move(read_fd)),
       std::move(callback));
 }
 

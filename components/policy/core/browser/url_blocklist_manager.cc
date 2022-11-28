@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -269,8 +268,8 @@ void URLBlocklistManager::Update() {
       GetPrefList(pref_service_, blocklist_pref_path_);
   const base::Value::List* allow =
       GetPrefList(pref_service_, allowlist_pref_path_);
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
           base::Owned(block

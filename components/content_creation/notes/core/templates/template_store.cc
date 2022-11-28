@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -87,9 +86,8 @@ void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
   if (IsDynamicTemplatesEnabled()) {
     FetchTemplates(std::move(callback));
   } else {
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&TemplateStore::BuildDefaultTemplates),
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&TemplateStore::BuildDefaultTemplates),
         base::BindOnce(&TemplateStore::OnTemplatesReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

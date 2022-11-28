@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "sql/database.h"
 
@@ -135,9 +134,8 @@ class SqlStoreBase {
           base::BindOnce(std::move(result_callback), std::move(default_value)));
       return;
     }
-    base::PostTaskAndReplyWithResult(
-        background_task_runner_.get(), FROM_HERE,
-        base::BindOnce(std::move(run_callback), db),
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(std::move(run_callback), db),
         base::BindOnce(&SqlStoreBase::RescheduleClosing<T>,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(result_callback)));

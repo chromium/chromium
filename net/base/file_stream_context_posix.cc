@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -36,8 +35,8 @@ int FileStream::Context::Read(IOBuffer* in_buf,
   DCHECK(!async_in_progress_);
 
   scoped_refptr<IOBuffer> buf = in_buf;
-  const bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  const bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::ReadFileImpl, base::Unretained(this), buf,
                      buf_len),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
@@ -54,8 +53,8 @@ int FileStream::Context::Write(IOBuffer* in_buf,
   DCHECK(!async_in_progress_);
 
   scoped_refptr<IOBuffer> buf = in_buf;
-  const bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  const bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::WriteFileImpl, base::Unretained(this), buf,
                      buf_len),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),

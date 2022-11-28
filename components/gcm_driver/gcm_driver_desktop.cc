@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -580,8 +579,8 @@ void GCMDriverDesktop::DoValidateRegistration(
     scoped_refptr<RegistrationInfo> registration_info,
     const std::string& registration_id,
     ValidateRegistrationCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      io_thread_.get(), FROM_HERE,
+  io_thread_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GCMDriverDesktop::IOWorker::ValidateRegistration,
                      base::Unretained(io_worker_.get()),
                      std::move(registration_info), registration_id),

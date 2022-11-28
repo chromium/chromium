@@ -17,7 +17,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -173,8 +172,8 @@ ModelConfigLoaderImpl::ModelConfigLoaderImpl(
 void ModelConfigLoaderImpl::Init(const base::FilePath& model_params_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LoadModelParamsFromDisk, model_params_path, is_testing_),
       base::BindOnce(&ModelConfigLoaderImpl::OnModelParamsLoadedFromDisk,
                      weak_ptr_factory_.GetWeakPtr()));

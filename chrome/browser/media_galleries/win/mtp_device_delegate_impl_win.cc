@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"
@@ -530,9 +529,9 @@ void MTPDeviceDelegateImplWin::EnsureInitAndRunTask(PendingTaskInfo task_info) {
   if ((init_state_ == INITIALIZED) && !task_in_progress_) {
     DCHECK(pending_tasks_.empty());
     DCHECK(!current_snapshot_details_.get());
-    base::PostTaskAndReplyWithResult(
-        media_task_runner_.get(), task_info.location, std::move(task_info.task),
-        std::move(task_info.reply));
+    media_task_runner_->PostTaskAndReplyWithResult(task_info.location,
+                                                   std::move(task_info.task),
+                                                   std::move(task_info.reply));
     task_in_progress_ = true;
     return;
   }
@@ -540,8 +539,8 @@ void MTPDeviceDelegateImplWin::EnsureInitAndRunTask(PendingTaskInfo task_info) {
   pending_tasks_.push(std::move(task_info));
   if (init_state_ == UNINITIALIZED) {
     init_state_ = PENDING_INIT;
-    base::PostTaskAndReplyWithResult(
-        media_task_runner_.get(), FROM_HERE,
+    media_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&OpenDeviceOnBlockingPoolThread,
                        storage_device_info_.pnp_device_id,
                        storage_device_info_.registered_device_path),
@@ -553,8 +552,8 @@ void MTPDeviceDelegateImplWin::EnsureInitAndRunTask(PendingTaskInfo task_info) {
 
 void MTPDeviceDelegateImplWin::WriteDataChunkIntoSnapshotFile() {
   DCHECK(current_snapshot_details_.get());
-  base::PostTaskAndReplyWithResult(
-      media_task_runner_.get(), FROM_HERE,
+  media_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &WriteDataChunkIntoSnapshotFileOnBlockingPoolThread,
           current_snapshot_details_->file_info(),
@@ -574,9 +573,9 @@ void MTPDeviceDelegateImplWin::ProcessNextPendingRequest() {
     return;
   PendingTaskInfo& task_info = pending_tasks_.front();
   task_in_progress_ = true;
-  base::PostTaskAndReplyWithResult(media_task_runner_.get(), task_info.location,
-                                   std::move(task_info.task),
-                                   std::move(task_info.reply));
+  media_task_runner_->PostTaskAndReplyWithResult(task_info.location,
+                                                 std::move(task_info.task),
+                                                 std::move(task_info.reply));
   pending_tasks_.pop();
 }
 

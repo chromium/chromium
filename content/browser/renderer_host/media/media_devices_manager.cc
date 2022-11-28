@@ -20,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -446,8 +445,8 @@ void MediaDevicesManager::EnumerateDevices(
       request_audio_input_capabilities ? "true" : "false",
       request_video_input_capabilities ? "true" : "false"));
 
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id,
                      render_frame_id),
       base::BindOnce(&MediaDevicesManager::CheckPermissionsForEnumerateDevices,
@@ -477,8 +476,8 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
 
   // Fetch the first device_id_salt for this subscriber's frame, to be able to
   // later detect changes.
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id,
                      render_frame_id),
       base::BindOnce(&MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt,
@@ -1049,8 +1048,8 @@ void MediaDevicesManager::UpdateSnapshot(
   for (const auto& subscription : subscriptions_) {
     const SubscriptionRequest& request = subscription.second;
     if (request.subscribe_types[static_cast<size_t>(type)]) {
-      base::PostTaskAndReplyWithResult(
-          GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(salt_and_origin_callback_, request.render_process_id,
                          request.render_frame_id),
           base::BindOnce(&MediaDevicesManager::OnSaltAndOriginForSubscription,

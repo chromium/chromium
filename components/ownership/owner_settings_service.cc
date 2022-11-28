@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "components/ownership/owner_key_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -136,8 +135,8 @@ bool OwnerSettingsService::AssembleAndSignPolicyAsync(
   // the key that was actually included in a policy gets marked as persisted
   // (theoretically a different key can be re-assigned to |public_key_| in
   // between the async calls).
-  return base::PostTaskAndReplyWithResult(
-      task_runner, FROM_HERE,
+  return task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&AssembleAndSignPolicy, std::move(policy), public_key_,
                      private_key_),
       base::BindOnce(std::move(callback), public_key_));

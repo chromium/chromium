@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -455,8 +454,8 @@ void LevelDBSiteDataStore::ReadSiteDataFromStore(
 
   // Trigger the asynchronous task and make it run the callback on this thread
   // once it returns.
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB,
                      base::Unretained(async_helper_.get()), origin),
       std::move(callback));
@@ -501,8 +500,8 @@ void LevelDBSiteDataStore::GetStoreSize(GetStoreSizeCallback callback) {
       },
       std::move(callback));
 
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize,
                      base::Unretained(async_helper_.get())),
       std::move(reply_callback));

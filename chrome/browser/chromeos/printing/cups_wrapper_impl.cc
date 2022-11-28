@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -47,8 +46,8 @@ class CupsWrapperImpl : public CupsWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // It's safe to pass unretained pointer here because we delete |backend_| on
     // the same task runner.
-    base::PostTaskAndReplyWithResult(
-        backend_task_runner_.get(), FROM_HERE,
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&Backend::QueryCupsPrintJobs,
                        base::Unretained(backend_.get()), printer_ids),
         std::move(callback));
@@ -71,8 +70,8 @@ class CupsWrapperImpl : public CupsWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // It's safe to pass unretained pointer here because we delete |backend_| on
     // the same task runner.
-    base::PostTaskAndReplyWithResult(
-        backend_task_runner_.get(), FROM_HERE,
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&Backend::QueryCupsPrinterStatus,
                        base::Unretained(backend_.get()), printer_id),
         std::move(callback));

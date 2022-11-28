@@ -20,7 +20,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "components/dbus/menu/menu.h"
 #include "components/dbus/properties/dbus_properties.h"
@@ -476,8 +475,8 @@ void StatusIconLinuxDbus::SetIconImpl(const gfx::ImageSkia& image,
     return;
 
   if (should_write_icon_to_file_) {
-    base::PostTaskAndReplyWithResult(
-        icon_task_runner_.get(), FROM_HERE,
+    icon_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(WriteIconFile, icon_file_id_++,
                        gfx::Image(image).As1xPNGBytes()),
         base::BindOnce(&StatusIconLinuxDbus::OnIconFileWritten, this));

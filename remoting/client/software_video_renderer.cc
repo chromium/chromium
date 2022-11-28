@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "remoting/base/util.h"
 #include "remoting/client/client_context.h"
 #include "remoting/codec/video_decoder.h"
@@ -154,8 +153,8 @@ void SoftwareVideoRenderer::ProcessVideoPacket(
       consumer_->AllocateFrame(source_size_);
   frame->set_dpi(source_dpi_);
 
-  base::PostTaskAndReplyWithResult(
-      decode_task_runner_.get(), FROM_HERE,
+  decode_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DoDecodeFrame, decoder_.get(), std::move(packet),
                      std::move(frame)),
       base::BindOnce(&SoftwareVideoRenderer::RenderFrame,

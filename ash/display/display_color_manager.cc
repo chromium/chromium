@@ -17,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/quirks/quirks_manager.h"
@@ -415,8 +414,8 @@ void DisplayColorManager::FinishLoadCalibrationForDisplay(
           << " for display id: " << display_id
           << " with product id: " << product_string;
 
-  base::PostTaskAndReplyWithResult(
-      sequenced_task_runner_.get(), FROM_HERE,
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ParseDisplayProfile, path, has_color_correction_matrix),
       base::BindOnce(&DisplayColorManager::UpdateCalibrationData,
                      weak_ptr_factory_.GetWeakPtr(), display_id, product_code));

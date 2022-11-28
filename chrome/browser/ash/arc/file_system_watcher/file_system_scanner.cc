@@ -11,7 +11,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_enumerator.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -211,8 +210,8 @@ void FileSystemScanner::ScheduleFullScan() {
   // several SystemTimeClock change happened later (in separate CL). To do the
   // skip, we could have a boolean variable full_scan_requested, and PostTask
   // full_scan_requested from the OnFullScanFinished.
-  base::PostTaskAndReplyWithResult(
-      scan_runner_.get(), FROM_HERE,
+  scan_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&FullScan, cros_dir_, previous_scan_time_, cros_dir_,
                      android_dir_),
       base::BindOnce(&FileSystemScanner::OnFullScanFinished,
@@ -239,8 +238,8 @@ void FileSystemScanner::ScheduleRegularScan() {
   if (state_ != State::kIdle)
     return;
   state_ = State::kWaitingForScanToFinish;
-  base::PostTaskAndReplyWithResult(
-      scan_runner_.get(), FROM_HERE,
+  scan_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&RegularScan, previous_scan_time_, cros_dir_, android_dir_,
                      ctime_callback_),
       base::BindOnce(&FileSystemScanner::OnRegularScanFinished,

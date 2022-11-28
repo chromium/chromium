@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -140,11 +139,11 @@ void ChangeMetricsReportingStateWithReply(
       metrics::structured::NeutrinoDevicesLocation::
           kChangeMetricsReportingStateWithReply);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  base::PostTaskAndReplyWithResult(
-      GoogleUpdateSettings::CollectStatsConsentTaskRunner(), FROM_HERE,
-      base::BindOnce(&SetGoogleUpdateSettings, enabled),
-      base::BindOnce(&SetMetricsReporting, enabled, std::move(callback_fn),
-                     called_from));
+  GoogleUpdateSettings::CollectStatsConsentTaskRunner()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&SetGoogleUpdateSettings, enabled),
+          base::BindOnce(&SetMetricsReporting, enabled, std::move(callback_fn),
+                         called_from));
 }
 
 void UpdateMetricsPrefsOnPermissionChange(

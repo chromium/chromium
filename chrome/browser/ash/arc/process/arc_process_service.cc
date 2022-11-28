@@ -29,7 +29,6 @@
 #include "base/memory/singleton.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -372,8 +371,8 @@ void ArcProcessService::OnReceiveProcessList(
     RequestProcessListCallback callback,
     std::vector<mojom::RunningAppProcessInfoPtr> processes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&UpdateAndReturnProcessList, cached_process_snapshot_,
                      nspid_to_pid_, std::move(processes)),
       std::move(callback));
@@ -385,8 +384,8 @@ void ArcProcessService::OnReceiveMemoryInfo(
     RequestMemoryInfoCallback callback,
     std::vector<mojom::ArcMemoryDumpPtr> process_dumps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&UpdateAndReturnMemoryInfo, cached_process_snapshot_,
                      nspid_to_pid_, std::move(process_dumps)),
       std::move(callback));
@@ -494,8 +493,8 @@ void ArcProcessService::ContinueAppProcessListRequest(
 void ArcProcessService::ContinueSystemProcessListRequest(
     RequestProcessListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetArcSystemProcessList, cached_process_snapshot_),
       std::move(callback));
 
@@ -532,8 +531,8 @@ void ArcProcessService::ContinueSystemMemoryInfoRequest(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetArcSystemProcessList, cached_process_snapshot_),
       base::BindOnce(&ArcProcessService::OnGetSystemProcessList,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

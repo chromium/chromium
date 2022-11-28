@@ -27,7 +27,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "components/prefs/pref_filter.h"
@@ -317,9 +316,8 @@ void JsonPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   error_delegate_.reset(error_delegate);
 
   // Weakly binds the read task so that it doesn't kick in during shutdown.
-  base::PostTaskAndReplyWithResult(
-      file_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ReadPrefsFromDisk, path_),
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ReadPrefsFromDisk, path_),
       base::BindOnce(&JsonPrefStore::OnFileRead, AsWeakPtr()));
 }
 

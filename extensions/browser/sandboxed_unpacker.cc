@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -696,8 +695,8 @@ void SandboxedUnpacker::ReadMessageCatalogs() {
   // runner.
   base::FilePath locales_path = extension_root_.Append(kLocaleFolder);
 
-  base::PostTaskAndReplyWithResult(
-      extensions::GetExtensionFileTaskRunner().get(), FROM_HERE,
+  extensions::GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetMessageCatalogPathsToBeSanitized, locales_path),
       base::BindOnce(&SandboxedUnpacker::SanitizeMessageCatalogs, this));
 }

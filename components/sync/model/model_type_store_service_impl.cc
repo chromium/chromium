@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -88,8 +87,8 @@ void CreateModelTypeStoreOnFrontendSequence(
   auto reply = base::BindOnce(&ConstructModelTypeStoreOnFrontendSequence, type,
                               backend_task_runner, std::move(callback));
 
-  base::PostTaskAndReplyWithResult(backend_task_runner.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                  std::move(reply));
 }
 
 }  // namespace

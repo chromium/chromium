@@ -13,7 +13,6 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/components/sensors/buildflags.h"
 #if BUILDFLAG(USE_IIOSERVICE)
@@ -75,8 +74,8 @@ void AlsReader::Init() {
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&GetNumAls),
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetNumAls),
       base::BindOnce(&AlsReader::OnNumAlsRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(USE_IIOSERVICE)

@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -979,8 +978,8 @@ ScriptingRegisterContentScriptsFunction::Run() {
   // made immediately following this one.
   loader->AddPendingDynamicScriptIDs(std::move(new_script_ids));
 
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ValidateParsedScriptsOnFileThread,
                      script_parsing::GetSymlinkPolicy(extension()),
                      std::move(parsed_scripts)),
@@ -1242,8 +1241,8 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
   // made immediately following this one.
   loader->AddPendingDynamicScriptIDs(std::move(ids_to_update));
 
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ValidateParsedScriptsOnFileThread,
                      script_parsing::GetSymlinkPolicy(extension()),
                      std::move(parsed_scripts)),

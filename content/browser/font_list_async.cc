@@ -7,16 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "content/common/font_list.h"
 
 namespace content {
 
 void GetFontListAsync(base::OnceCallback<void(base::Value::List)> callback) {
-  base::PostTaskAndReplyWithResult(GetFontListTaskRunner().get(), FROM_HERE,
-                                   base::BindOnce(&GetFontList_SlowBlocking),
-                                   std::move(callback));
+  GetFontListTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetFontList_SlowBlocking),
+      std::move(callback));
 }
 
 }  // namespace content

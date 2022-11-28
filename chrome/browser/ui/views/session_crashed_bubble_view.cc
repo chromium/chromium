@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/task_runner_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -213,11 +212,12 @@ void SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
           browser);
 
   if (DoesSupportConsentCheck()) {
-    base::PostTaskAndReplyWithResult(
-        GoogleUpdateSettings::CollectStatsConsentTaskRunner(), FROM_HERE,
-        base::BindOnce(&GoogleUpdateSettings::GetCollectStatsConsent),
-        base::BindOnce(&SessionCrashedBubbleView::Show,
-                       std::move(browser_observer), skip_tab_checking));
+    GoogleUpdateSettings::CollectStatsConsentTaskRunner()
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(&GoogleUpdateSettings::GetCollectStatsConsent),
+            base::BindOnce(&SessionCrashedBubbleView::Show,
+                           std::move(browser_observer), skip_tab_checking));
   } else {
     SessionCrashedBubbleView::Show(std::move(browser_observer),
                                    skip_tab_checking, false);

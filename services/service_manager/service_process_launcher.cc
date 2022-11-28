@@ -23,7 +23,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -162,8 +161,8 @@ mojo::PendingRemote<mojom::Service> ServiceProcessLauncher::Start(
   }
 
   state_ = base::WrapRefCounted(new ProcessState);
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ProcessState::LaunchInBackground, state_, target,
                      sandbox_type, std::move(child_command_line),
                      std::move(handle_passing_info), std::move(channel),

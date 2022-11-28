@@ -20,7 +20,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/win/wincrypt_shim.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -51,8 +50,8 @@ class ClientCertIdentityWin : public ClientCertIdentity {
 
   void AcquirePrivateKey(base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
                              private_key_callback) override {
-    base::PostTaskAndReplyWithResult(
-        key_task_runner_.get(), FROM_HERE,
+    key_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&FetchClientCertPrivateKey,
                        base::Unretained(certificate()), cert_context_.get()),
         std::move(private_key_callback));
@@ -226,8 +225,8 @@ ClientCertStoreWin::~ClientCertStoreWin() = default;
 
 void ClientCertStoreWin::GetClientCerts(const SSLCertRequestInfo& request,
                                         ClientCertListCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      GetSSLPlatformKeyTaskRunner().get(), FROM_HERE,
+  GetSSLPlatformKeyTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       // Caller is responsible for keeping the |request| alive
       // until the callback is run, so std::cref is safe.
       base::BindOnce(&ClientCertStoreWin::GetClientCertsWithCertStore,

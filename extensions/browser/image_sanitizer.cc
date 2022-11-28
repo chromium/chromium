@@ -8,7 +8,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/extension_resource_path_normalizer.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -118,9 +117,8 @@ void ImageSanitizer::Start() {
   // either error to be reported (kImagePathError or kFileReadError).
   for (const base::FilePath& path : image_paths_) {
     base::FilePath full_image_path = image_dir_.Append(path);
-    base::PostTaskAndReplyWithResult(
-        io_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&ReadAndDeleteBinaryFile, full_image_path),
+    io_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&ReadAndDeleteBinaryFile, full_image_path),
         base::BindOnce(&ImageSanitizer::ImageFileRead,
                        weak_factory_.GetWeakPtr(), path));
   }
@@ -164,9 +162,8 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
   // TODO(mpcomplete): It's lame that we're encoding all images as PNG, even
   // though they may originally be .jpg, etc.  Figure something out.
   // http://code.google.com/p/chromium/issues/detail?id=12459
-  base::PostTaskAndReplyWithResult(
-      io_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&EncodeImage, decoded_image),
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&EncodeImage, decoded_image),
       base::BindOnce(&ImageSanitizer::ImageReencoded,
                      weak_factory_.GetWeakPtr(), image_path));
 
@@ -185,8 +182,8 @@ void ImageSanitizer::ImageReencoded(
   }
 
   int size = base::checked_cast<int>(image_data.size());
-  base::PostTaskAndReplyWithResult(
-      io_task_runner_.get(), FROM_HERE,
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&WriteFile, image_dir_.Append(image_path),
                      std::move(image_data)),
       base::BindOnce(&ImageSanitizer::ImageWritten, weak_factory_.GetWeakPtr(),

@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -99,9 +98,8 @@ void SpellCheckLanguage::Initialize(const std::string& language) {
   language_ = language;
   dictionary_file_path_ = GetDictionaryFilePath(language);
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&base::PathExists, dictionary_file_path_),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, dictionary_file_path_),
       base::BindOnce(&SpellCheckLanguage::OnPathExistsComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -124,9 +122,8 @@ void SpellCheckLanguage::InitializeSpellCheckService() {
             .Pass());
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&OpenDictionaryFile, dictionary_file_path_),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&OpenDictionaryFile, dictionary_file_path_),
       base::BindOnce(&SpellCheckLanguage::OnOpenDictionaryFileComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -142,8 +139,8 @@ void SpellCheckLanguage::OnSimpleURLLoaderComplete(base::FilePath tmp_path) {
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&base::ReplaceFile, tmp_path, dictionary_file_path_,
                      nullptr),
       base::BindOnce(&SpellCheckLanguage::OnSaveDictionaryDataComplete,

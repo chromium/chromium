@@ -28,7 +28,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -2265,8 +2264,8 @@ void ArcAppListPrefs::InstallIcon(const std::string& app_id,
       GetForegroundIconPath(app_id, descriptor);
   const base::FilePath background_icon_path =
       GetBackgroundIconPath(app_id, descriptor);
-  base::PostTaskAndReplyWithResult(
-      file_task_runner_.get(), FROM_HERE,
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&InstallIconFromFileThread, icon_path,
                      foreground_icon_path, background_icon_path,
                      std::move(icon)),

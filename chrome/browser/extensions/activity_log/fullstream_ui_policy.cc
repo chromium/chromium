@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_runner_util.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
@@ -391,8 +390,8 @@ void FullStreamUIPolicy::ReadFilteredData(
     const std::string& arg_url,
     const int days_ago,
     base::OnceCallback<void(std::unique_ptr<Action::ActionVector>)> callback) {
-  base::PostTaskAndReplyWithResult(
-      GetActivityLogTaskRunner().get(), FROM_HERE,
+  GetActivityLogTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&FullStreamUIPolicy::DoReadFilteredData,
                      base::Unretained(this), extension_id, type, api_name,
                      page_url, arg_url, days_ago),

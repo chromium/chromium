@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_constants.h"
@@ -311,8 +310,8 @@ bool SpellcheckCustomDictionary::IsSyncing() {
 
 void SpellcheckCustomDictionary::Load() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SpellcheckCustomDictionary::LoadDictionaryFile,
                      custom_dictionary_path_),
       base::BindOnce(&SpellcheckCustomDictionary::OnLoaded,

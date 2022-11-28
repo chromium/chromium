@@ -10,7 +10,6 @@
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
@@ -239,8 +238,8 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   for (const auto& it : favicon_pairs) {
     // Create a thumbail in a different thread and update the thumbnail in
     // current thread.
-    base::PostTaskAndReplyWithResult(
-        image_resize_task_runner_.get(), FROM_HERE,
+    image_resize_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CreateEnclosedFaviconImage, thumbnail_size_, it.second),
         base::BindOnce(&TabDesktopMediaList::UpdateSourceThumbnail,
                        weak_factory_.GetWeakPtr(), it.first));

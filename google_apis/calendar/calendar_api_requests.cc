@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
 
@@ -100,8 +99,8 @@ void CalendarApiEventsRequest::ProcessURLFetchResults(
   ApiErrorCode error = GetErrorCode();
   switch (error) {
     case HTTP_SUCCESS:
-      base::PostTaskAndReplyWithResult(
-          blocking_task_runner(), FROM_HERE,
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(&CalendarApiEventsRequest::Parse,
                          std::move(response_body)),
           base::BindOnce(&CalendarApiEventsRequest::OnDataParsed,

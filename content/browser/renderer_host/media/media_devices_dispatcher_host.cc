@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -166,8 +165,8 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
 void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
     GetVideoInputCapabilitiesCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -181,8 +180,8 @@ void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -198,8 +197,8 @@ void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -211,8 +210,8 @@ void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
 
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
     GetAudioInputCapabilitiesCallback client_callback) {
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),

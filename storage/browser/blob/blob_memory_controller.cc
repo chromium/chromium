@@ -418,8 +418,8 @@ class BlobMemoryController::FileQuotaAllocationTask
           controller_->file_runner_.get()));
     }
     // Send file creation task to file thread.
-    base::PostTaskAndReplyWithResult(
-        controller_->file_runner_.get(), FROM_HERE,
+    controller_->file_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CreateEmptyFiles, controller_->blob_storage_dir_,
                        disk_space_function, controller_->file_runner_,
                        std::move(file_paths)),
@@ -919,8 +919,8 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
                        weak_factory_.GetWeakPtr(), total_items_size));
 
     // Post the file writing task.
-    base::PostTaskAndReplyWithResult(
-        file_runner_.get(), FROM_HERE,
+    file_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CreateFileAndWriteItems, blob_storage_dir_,
                        disk_space_function_, std::move(page_file_path),
                        file_runner_, std::move(data_for_paging),

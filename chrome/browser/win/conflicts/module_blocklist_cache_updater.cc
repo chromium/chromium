@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
@@ -415,8 +414,8 @@ void ModuleBlocklistCacheUpdater::StartModuleBlocklistCacheUpdate() {
       CalculateTimeDateStamp(base::Time::Now() - kMaxEntryAge);
 
   // Update the module blocklist cache on a background sequence.
-  base::PostTaskAndReplyWithResult(
-      background_sequence_.get(), FROM_HERE,
+  background_sequence_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&UpdateModuleBlocklistCache, cache_file_path,
                      module_list_filter_, std::move(newly_blocklisted_modules_),
                      std::move(blocked_modules_), kMaxModuleCount,

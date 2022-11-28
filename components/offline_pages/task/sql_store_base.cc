@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 
 namespace offline_pages {
@@ -106,8 +105,8 @@ void SqlStoreBase::Initialize(base::OnceClosure pending_command) {
                                              .cache_size = 500}),
                           base::OnTaskRunnerDeleter(background_task_runner_));
 
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&InitializeSync, db_.get(), db_file_path_, histogram_tag_,
                      GetSchemaInitializationFunction()),
       base::BindOnce(&SqlStoreBase::InitializeDone,

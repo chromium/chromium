@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/storage_monitor/media_storage_util.h"
@@ -258,8 +257,8 @@ void StorageMonitorLinux::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!mtab_path_.empty());
 
-  base::PostTaskAndReplyWithResult(
-      mtab_watcher_task_runner_.get(), FROM_HERE,
+  mtab_watcher_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CreateMtabWatcherLinuxOnMtabWatcherTaskRunner, mtab_path_,
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      base::BindRepeating(&StorageMonitorLinux::UpdateMtab,
@@ -416,8 +415,8 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
       if (IsDeviceAlreadyMounted(mount_device)) {
         HandleDeviceMountedMultipleTimes(mount_device, mount_point);
       } else {
-        base::PostTaskAndReplyWithResult(
-            mounting_task_runner.get(), FROM_HERE,
+        mounting_task_runner->PostTaskAndReplyWithResult(
+            FROM_HERE,
             base::BindOnce(get_device_info_callback_, mount_device,
                            mount_point),
             base::BindOnce(&StorageMonitorLinux::AddNewMount,

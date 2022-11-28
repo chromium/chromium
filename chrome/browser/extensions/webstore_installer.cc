@@ -27,7 +27,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -550,8 +549,8 @@ void WebstoreInstaller::DownloadCrx(
   base::FilePath download_directory(g_download_directory_for_tests ?
       *g_download_directory_for_tests : download_path);
 
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetDownloadFilePath, download_directory, extension_id),
       base::BindOnce(&WebstoreInstaller::StartDownload, this, extension_id));
 }

@@ -27,7 +27,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -3413,8 +3412,8 @@ void WebMediaPlayerImpl::ReportMemoryUsage() {
   // to cycle the media thread before we destroy `demuxer_`. In this case skip
   // collection of the demuxer memory stats.
   if (demuxer_ && !IsNetworkStateError(network_state_)) {
-    base::PostTaskAndReplyWithResult(
-        media_task_runner_.get(), FROM_HERE,
+    media_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&Demuxer::GetMemoryUsage,
                        base::Unretained(demuxer_.get())),
         base::BindOnce(&WebMediaPlayerImpl::FinishMemoryUsageReport,

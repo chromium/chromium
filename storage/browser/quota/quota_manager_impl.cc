@@ -37,7 +37,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
@@ -1745,8 +1744,8 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
     return;
 
   is_bootstrapping_database_ = true;
-  base::PostTaskAndReplyWithResult(
-      db_runner_.get(), FROM_HERE,
+  db_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&QuotaDatabase::IsBootstrapped,
                      base::Unretained(database_.get())),
       base::BindOnce(&QuotaManagerImpl::DidGetBootstrapFlag,
@@ -2598,8 +2597,8 @@ void QuotaManagerImpl::GetStorageCapacity(StorageCapacityCallback callback) {
                        weak_factory_.GetWeakPtr()));
     return;
   }
-  base::PostTaskAndReplyWithResult(
-      db_runner_.get(), FROM_HERE,
+  db_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&QuotaManagerImpl::CallGetVolumeInfo, get_volume_info_fn_,
                      profile_path_),
       base::BindOnce(&QuotaManagerImpl::DidGetStorageCapacity,
@@ -2666,8 +2665,8 @@ void QuotaManagerImpl::DidDatabaseWork(bool success, bool is_bootstrap_work) {
     db_error_count_ = 0;
 
     // Wipe the database before triggering another bootstrap.
-    base::PostTaskAndReplyWithResult(
-        db_runner_.get(), FROM_HERE,
+    db_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&QuotaDatabase::RazeAndReopen,
                        base::Unretained(database_.get())),
         base::BindOnce(&QuotaManagerImpl::DidRazeForReBootstrap,
@@ -2888,8 +2887,8 @@ void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      db_runner_.get(), from_here,
+  db_runner_->PostTaskAndReplyWithResult(
+      from_here,
       base::BindOnce(std::move(task), base::Unretained(database_.get())),
       std::move(reply));
 }
@@ -2917,8 +2916,8 @@ void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      db_runner_.get(), from_here,
+  db_runner_->PostTaskAndReplyWithResult(
+      from_here,
       base::BindOnce(std::move(task), base::Unretained(database_.get())),
       std::move(reply));
 }

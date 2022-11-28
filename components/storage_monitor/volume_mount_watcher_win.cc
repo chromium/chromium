@@ -25,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -347,8 +346,8 @@ void VolumeMountWatcherWin::Init() {
   // When VolumeMountWatcherWin is created, the message pumps are not running
   // so a posted task from the constructor would never run. Therefore, do all
   // the initializations here.
-  base::PostTaskAndReplyWithResult(
-      device_info_task_runner_.get(), FROM_HERE, GetAttachedDevicesCallback(),
+  device_info_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, GetAttachedDevicesCallback(),
       base::BindOnce(&VolumeMountWatcherWin::AddDevicesOnUIThread,
                      weak_factory_.GetWeakPtr()));
 }

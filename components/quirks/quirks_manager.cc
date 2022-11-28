@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -135,8 +134,8 @@ void QuirksManager::RequestIccProfilePath(
   }
 
   std::string name = IdToFileName(product_id);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CheckForIccFile,
                      delegate_->GetDisplayProfileDirectory().Append(name)),
       base::BindOnce(&QuirksManager::OnIccFilePathRequestCompleted,

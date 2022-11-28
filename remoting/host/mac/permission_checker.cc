@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "remoting/host/mac/permission_process_utils.h"
 #include "remoting/host/version.h"
 
@@ -38,16 +37,16 @@ std::string PermissionChecker::GetBundleName() {
 
 void PermissionChecker::CheckAccessibilityPermission(
     PermissionWizard::ResultCallback onResult) {
-  base::PostTaskAndReplyWithResult(
-      io_task_runner_.get(), FROM_HERE,
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(remoting::mac::CheckAccessibilityPermission, mode_),
       std::move(onResult));
 }
 
 void PermissionChecker::CheckScreenRecordingPermission(
     PermissionWizard::ResultCallback onResult) {
-  base::PostTaskAndReplyWithResult(
-      io_task_runner_.get(), FROM_HERE,
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(remoting::mac::CheckScreenRecordingPermission, mode_),
       std::move(onResult));
 }

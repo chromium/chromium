@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,11 +120,12 @@ class EulaTest : public OobeBaseTest {
         };
 
     base::RunLoop runloop;
-    base::PostTaskAndReplyWithResult(
-        GoogleUpdateSettings::CollectStatsConsentTaskRunner(), FROM_HERE,
-        base::BindOnce(&GoogleUpdateSettings::GetCollectStatsConsent),
-        base::BindOnce(on_get_collect_stats_consent_callback,
-                       runloop.QuitClosure(), &consented));
+    GoogleUpdateSettings::CollectStatsConsentTaskRunner()
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(&GoogleUpdateSettings::GetCollectStatsConsent),
+            base::BindOnce(on_get_collect_stats_consent_callback,
+                           runloop.QuitClosure(), &consented));
     runloop.Run();
 
     return consented;

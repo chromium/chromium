@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -220,8 +219,8 @@ void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
     std::move(callback).Run(base::File(), base::OnceClosure());
     return;
   }
-  base::PostTaskAndReplyWithResult(
-      media_task_runner, FROM_HERE,
+  media_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&storage::NativeFileUtil::CreateOrOpen, platform_path,
                      file_flags),
       base::BindOnce(&DidOpenSnapshot, std::move(callback),
@@ -266,8 +265,8 @@ void NativeMediaFileUtil::CreateDirectory(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::CreateDirectory,
                      base::Unretained(core_.get()), std::move(context), url,
                      exclusive, recursive),
@@ -333,8 +332,8 @@ void NativeMediaFileUtil::CopyFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::CopyOrMoveFileLocal,
                      base::Unretained(core_.get()), std::move(context), src_url,
                      dest_url, options, true /* copy */),
@@ -350,8 +349,8 @@ void NativeMediaFileUtil::MoveFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::CopyOrMoveFileLocal,
                      base::Unretained(core_.get()), std::move(context), src_url,
                      dest_url, options, false /* copy */),
@@ -366,8 +365,8 @@ void NativeMediaFileUtil::CopyInForeignFile(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::CopyInForeignFile,
                      base::Unretained(core_.get()), std::move(context),
                      src_file_path, dest_url),
@@ -381,8 +380,8 @@ void NativeMediaFileUtil::DeleteFile(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::DeleteFile,
                      base::Unretained(core_.get()), std::move(context), url),
       std::move(callback));
@@ -396,8 +395,8 @@ void NativeMediaFileUtil::DeleteDirectory(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();
-  const bool success = base::PostTaskAndReplyWithResult(
-      context_ptr->task_runner(), FROM_HERE,
+  const bool success = context_ptr->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NativeMediaFileUtil::Core::DeleteDirectory,
                      base::Unretained(core_.get()), std::move(context), url),
       std::move(callback));

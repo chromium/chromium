@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -89,8 +88,8 @@ void PasswordManagerExporter::PreparePasswordsForExport() {
     return credential.blocked_by_user;
   });
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&PasswordCSVWriter::SerializePasswords, credentials),
       base::BindOnce(&PasswordManagerExporter::SetSerialisedPasswordList,
                      weak_factory_.GetWeakPtr(), credentials.size()));
@@ -160,8 +159,8 @@ void PasswordManagerExporter::Export() {
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(DoWriteOnTaskRunner, write_function_,
                      set_permissions_function_, destination_,
                      std::move(serialised_password_list_)),

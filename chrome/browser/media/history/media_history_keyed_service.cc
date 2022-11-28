@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
@@ -203,8 +202,8 @@ void MediaHistoryKeyedService::SavePlayback(
 
 void MediaHistoryKeyedService::GetMediaHistoryStats(
     base::OnceCallback<void(mojom::MediaHistoryStatsPtr)> callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetMediaHistoryStats,
                      store_->GetForRead()),
       std::move(callback));
@@ -213,8 +212,8 @@ void MediaHistoryKeyedService::GetMediaHistoryStats(
 void MediaHistoryKeyedService::GetOriginRowsForDebug(
     base::OnceCallback<void(std::vector<mojom::MediaHistoryOriginRowPtr>)>
         callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetOriginRowsForDebug,
                      store_->GetForRead()),
       std::move(callback));
@@ -223,8 +222,8 @@ void MediaHistoryKeyedService::GetOriginRowsForDebug(
 void MediaHistoryKeyedService::GetMediaHistoryPlaybackRowsForDebug(
     base::OnceCallback<void(std::vector<mojom::MediaHistoryPlaybackRowPtr>)>
         callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetMediaHistoryPlaybackRowsForDebug,
                      store_->GetForRead()),
       std::move(callback));
@@ -235,8 +234,8 @@ void MediaHistoryKeyedService::GetPlaybackSessions(
     absl::optional<GetPlaybackSessionsFilter> filter,
     base::OnceCallback<
         void(std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>)> callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetPlaybackSessions,
                      store_->GetForRead(), num_sessions, std::move(filter)),
       std::move(callback));
@@ -257,8 +256,8 @@ void MediaHistoryKeyedService::SavePlaybackSession(
 void MediaHistoryKeyedService::GetHighWatchTimeOrigins(
     const base::TimeDelta& audio_video_watchtime_min,
     base::OnceCallback<void(const std::vector<url::Origin>&)> callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetHighWatchTimeOrigins,
                      store_->GetForRead(), audio_video_watchtime_min),
       std::move(callback));
@@ -267,8 +266,8 @@ void MediaHistoryKeyedService::GetHighWatchTimeOrigins(
 void MediaHistoryKeyedService::GetURLsInTableForTest(
     const std::string& table,
     base::OnceCallback<void(std::set<GURL>)> callback) {
-  base::PostTaskAndReplyWithResult(
-      store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
+  store_->GetForRead()->db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaHistoryStore::GetURLsInTableForTest,
                      store_->GetForRead(), table),
       std::move(callback));

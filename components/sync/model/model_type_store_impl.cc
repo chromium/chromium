@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/task/task_runner_util.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
@@ -81,8 +80,8 @@ void ModelTypeStoreImpl::ReadData(const IdList& id_list,
   auto reply = base::BindOnce(
       &ModelTypeStoreImpl::ReadDataDone, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), std::move(record_list), std::move(missing_id_list));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 void ModelTypeStoreImpl::ReadDataDone(ReadDataCallback callback,
@@ -104,8 +103,8 @@ void ModelTypeStoreImpl::ReadAllData(ReadAllDataCallback callback) {
   auto reply = base::BindOnce(&ModelTypeStoreImpl::ReadAllDataDone,
                               weak_ptr_factory_.GetWeakPtr(),
                               std::move(callback), std::move(record_list));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 void ModelTypeStoreImpl::ReadAllDataDone(
@@ -127,8 +126,8 @@ void ModelTypeStoreImpl::ReadAllMetadata(ReadMetadataCallback callback) {
   auto reply = base::BindOnce(&ModelTypeStoreImpl::ReadAllMetadataDone,
                               weak_ptr_factory_.GetWeakPtr(),
                               std::move(callback), std::move(metadata_batch));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 void ModelTypeStoreImpl::ReadAllMetadataDone(
@@ -161,8 +160,8 @@ void ModelTypeStoreImpl::ReadAllDataAndPreprocess(
       base::BindOnce(&ModelTypeStoreImpl::ReadAllDataAndPreprocessDone,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_on_frontend_sequence_callback));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 void ModelTypeStoreImpl::ReadAllDataAndPreprocessDone(
@@ -180,8 +179,8 @@ void ModelTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
   auto reply =
       base::BindOnce(&ModelTypeStoreImpl::WriteModificationsDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 std::unique_ptr<ModelTypeStore::WriteBatch>
@@ -201,8 +200,8 @@ void ModelTypeStoreImpl::CommitWriteBatch(
   auto reply =
       base::BindOnce(&ModelTypeStoreImpl::WriteModificationsDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
+  backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                                   std::move(reply));
 }
 
 void ModelTypeStoreImpl::WriteModificationsDone(

@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/task/task_runner_util.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -55,8 +54,8 @@ SaveAsWebBundleJob::SaveAsWebBundleJob(
     : data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
       snapshots_(std::move(snapshots)),
       callback_(std::move(callback)) {
-  base::PostTaskAndReplyWithResult(
-      download::GetDownloadTaskRunner().get(), FROM_HERE,
+  download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& file_path) {
             const uint32_t file_flags =

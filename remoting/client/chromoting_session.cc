@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/timer/timer.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/socket/client_socket_factory.h"
@@ -696,8 +695,8 @@ void ChromotingSession::GetFeedbackData(
 
   // Bind to base::Unretained(core) instead of the WeakPtr so that we can still
   // get the feedback data after the session is remotely disconnected.
-  base::PostTaskAndReplyWithResult(
-      runtime_->network_task_runner().get(), FROM_HERE,
+  runtime_->network_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Core::GetFeedbackData, base::Unretained(core_.get())),
       std::move(callback));
 }

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -80,8 +79,8 @@ class PrinterCapabilitiesTest : public testing::Test {
     base::RunLoop run_loop;
     base::Value::Dict settings;
 
-    base::PostTaskAndReplyWithResult(
-        blocking_task_runner_.get(), FROM_HERE,
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&GetSettingsOnBlockingTaskRunner, printer_name,
                        basic_info, std::move(papers),
                        /*has_secure_protocol=*/false, test_backend_),

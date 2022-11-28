@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "remoting/codec/audio_decoder.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"
@@ -38,8 +37,8 @@ void AudioDecodeScheduler::ProcessAudioPacket(
     base::OnceClosure done) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  base::PostTaskAndReplyWithResult(
-      audio_decode_task_runner_.get(), FROM_HERE,
+  audio_decode_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&AudioDecoder::Decode, base::Unretained(decoder_.get()),
                      std::move(packet)),
       base::BindOnce(&AudioDecodeScheduler::ProcessDecodedPacket,

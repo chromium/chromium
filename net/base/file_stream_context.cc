@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -86,8 +85,8 @@ void FileStream::Context::Open(const base::FilePath& path,
                                CompletionOnceCallback callback) {
   DCHECK(!async_in_progress_);
 
-  bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::OpenFileImpl, base::Unretained(this), path,
                      open_flags),
       base::BindOnce(&Context::OnOpenCompleted, base::Unretained(this),
@@ -100,8 +99,8 @@ void FileStream::Context::Open(const base::FilePath& path,
 void FileStream::Context::Close(CompletionOnceCallback callback) {
   DCHECK(!async_in_progress_);
 
-  bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::CloseFileImpl, base::Unretained(this)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
                      IntToInt64(std::move(callback))));
@@ -119,8 +118,8 @@ void FileStream::Context::Seek(int64_t offset,
     return;
   }
 
-  bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::SeekFileImpl, base::Unretained(this), offset),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
                      std::move(callback)));
@@ -131,8 +130,8 @@ void FileStream::Context::Seek(int64_t offset,
 
 void FileStream::Context::GetFileInfo(base::File::Info* file_info,
                                       CompletionOnceCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::GetFileInfoImpl, base::Unretained(this),
                      base::Unretained(file_info)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
@@ -144,8 +143,8 @@ void FileStream::Context::GetFileInfo(base::File::Info* file_info,
 void FileStream::Context::Flush(CompletionOnceCallback callback) {
   DCHECK(!async_in_progress_);
 
-  bool posted = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  bool posted = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Context::FlushFileImpl, base::Unretained(this)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
                      IntToInt64(std::move(callback))));

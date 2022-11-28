@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #import "base/ios/ios_util.h"
 #include "base/memory/weak_ptr.h"
-#import "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #import "components/image_fetcher/ios/webp_decoder.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -87,8 +86,8 @@ void IOSImageDecoderImpl::DecodeImage(const std::string& image_data,
     decodeBlock = ^NSData*() { return data; };
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE, base::BindOnce(decodeBlock),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(decodeBlock),
       base::BindOnce(&IOSImageDecoderImpl::CreateUIImageAndRunCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -207,9 +206,8 @@ int32_t FileIOResource::Query(PP_FileInfo* info,
   // For the non-blocking case, post a task to the file thread and add a
   // completion task to write the result.
   scoped_refptr<QueryOp> query_op(new QueryOp(file_holder_));
-  base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
-      base::BindOnce(&FileIOResource::QueryOp::DoWork, query_op),
+  PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&FileIOResource::QueryOp::DoWork, query_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(
       base::BindOnce(&FileIOResource::OnQueryComplete, this, query_op, info));
@@ -469,9 +467,8 @@ int32_t FileIOResource::ReadValidated(int64_t offset,
   // For the non-blocking case, post a task to the file thread.
   scoped_refptr<ReadOp> read_op(
       new ReadOp(file_holder_, offset, bytes_to_read));
-  base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
-      base::BindOnce(&FileIOResource::ReadOp::DoWork, read_op),
+  PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&FileIOResource::ReadOp::DoWork, read_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(base::BindOnce(&FileIOResource::OnReadComplete,
                                                this, read_op, array_output));
@@ -510,9 +507,8 @@ int32_t FileIOResource::WriteValidated(
   memcpy(copy.get(), buffer, bytes_to_write);
   scoped_refptr<WriteOp> write_op(new WriteOp(
       file_holder_, offset, std::move(copy), bytes_to_write, append));
-  base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
-      base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
+  PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(
       base::BindOnce(&FileIOResource::OnWriteComplete, this));
@@ -602,9 +598,8 @@ void FileIOResource::OnRequestWriteQuotaComplete(
     bool append = (open_flags_ & PP_FILEOPENFLAG_APPEND) != 0;
     scoped_refptr<WriteOp> write_op(new WriteOp(
         file_holder_, offset, std::move(buffer), bytes_to_write, append));
-    base::PostTaskAndReplyWithResult(
-        PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
-        base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
+    PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
         RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
     callback->set_completion_task(
         BindOnce(&FileIOResource::OnWriteComplete, this));

@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -482,8 +481,8 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
       old_image_path = base::FilePath::FromUTF8Unsafe(*value);
   }
 
-  base::PostTaskAndReplyWithResult(
-      parent_->background_task_runner_.get(), FROM_HERE,
+  parent_->background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SaveAndDeleteImage, image_bytes, image_path_,
                      old_image_path),
       base::BindOnce(&Job::OnSaveImageDone, weak_factory_.GetWeakPtr()));

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/pepper_file_util.h"
@@ -299,8 +298,8 @@ void PepperFileSystemBrowserHost::IOThreadState::CreateQuotaReservation(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(root_url_.is_valid());
-  base::PostTaskAndReplyWithResult(
-      file_system_context_->default_file_task_runner(), FROM_HERE,
+  file_system_context_->default_file_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&QuotaReservation::Create, file_system_context_,
                      root_url_.DeprecatedGetOriginAsURL(),
                      PepperFileSystemTypeToFileSystemType(type_)),
@@ -410,11 +409,13 @@ void PepperFileSystemBrowserHost::OpenQuotaFile(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      io_thread_state_->file_system_context()->default_file_task_runner(),
-      FROM_HERE,
-      base::BindOnce(&QuotaReservation::OpenFile, quota_reservation_, id, url),
-      base::BindOnce(RunOpenQuotaCallbackOnUI, std::move(callback)));
+  io_thread_state_->file_system_context()
+      ->default_file_task_runner()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&QuotaReservation::OpenFile, quota_reservation_, id,
+                         url),
+          base::BindOnce(RunOpenQuotaCallbackOnUI, std::move(callback)));
 }
 
 void PepperFileSystemBrowserHost::CloseQuotaFile(

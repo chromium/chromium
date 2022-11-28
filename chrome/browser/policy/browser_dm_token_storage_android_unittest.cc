@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/task/task_runner_util.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -89,9 +88,8 @@ TEST_F(BrowserDMTokenStorageAndroidTest, SaveDMToken) {
   auto task = storage.SaveDMTokenTask(kDMToken, storage.InitClientId());
   auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenStored,
                               base::Unretained(&callback_delegate));
-  base::PostTaskAndReplyWithResult(storage.SaveDMTokenTaskRunner().get(),
-                                   FROM_HERE, std::move(task),
-                                   std::move(reply));
+  storage.SaveDMTokenTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(task), std::move(reply));
 
   run_loop.Run();
 

@@ -16,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -87,9 +86,8 @@ TEST_F(BrowserDMTokenStorageMacTest, SaveDMToken) {
                                                storage_delegate.InitClientId());
   auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                               base::Unretained(&callback_delegate));
-  base::PostTaskAndReplyWithResult(
-      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
-      std::move(task), std::move(reply));
+  storage_delegate.SaveDMTokenTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(task), std::move(reply));
 
   callback_delegate.Wait();
   ASSERT_TRUE(callback_delegate.success());
@@ -138,9 +136,8 @@ TEST_F(BrowserDMTokenStorageMacTest, DeleteDMToken) {
   auto delete_reply =
       base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                      base::Unretained(&delete_callback_delegate));
-  base::PostTaskAndReplyWithResult(
-      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
-      std::move(delete_task), std::move(delete_reply));
+  storage_delegate.SaveDMTokenTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(delete_task), std::move(delete_reply));
 
   delete_callback_delegate.Wait();
   ASSERT_TRUE(delete_callback_delegate.WasCalled());
@@ -174,9 +171,8 @@ TEST_F(BrowserDMTokenStorageMacTest, DeleteEmptyDMToken) {
   auto delete_reply =
       base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                      base::Unretained(&callback_delegate));
-  base::PostTaskAndReplyWithResult(
-      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
-      std::move(delete_task), std::move(delete_reply));
+  storage_delegate.SaveDMTokenTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(delete_task), std::move(delete_reply));
 
   callback_delegate.Wait();
   ASSERT_TRUE(callback_delegate.WasCalled());

@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -272,8 +271,8 @@ void NetworkChangeNotifierWin::RecomputeCurrentConnectionTypeOnBlockingSequence(
     base::OnceCallback<void(ConnectionType)> reply_callback) const {
   // Unretained is safe in this call because this object owns the thread and the
   // thread is stopped in this object's destructor.
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&NetworkChangeNotifierWin::RecomputeCurrentConnectionType),
       std::move(reply_callback));
 }

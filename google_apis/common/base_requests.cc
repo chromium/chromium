@@ -16,7 +16,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/task_util.h"
@@ -322,8 +321,8 @@ void UrlFetchRequestBase::OnDataReceived(base::StringPiece string_piece,
 
   if (!download_data_->output_file_path.empty()) {
     DownloadData* download_data_ptr = download_data_.get();
-    base::PostTaskAndReplyWithResult(
-        blocking_task_runner(), FROM_HERE,
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&UrlFetchRequestBase::WriteFileData,
                        std::string(string_piece), download_data_ptr),
         base::BindOnce(&UrlFetchRequestBase::OnWriteComplete,

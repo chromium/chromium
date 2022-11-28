@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
@@ -152,8 +151,8 @@ std::string CachedPolicyKeyLoader::LoadPolicyKey(const base::FilePath& path) {
 void CachedPolicyKeyLoader::TriggerLoadPolicyKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CachedPolicyKeyLoader::LoadPolicyKey,
                      cached_policy_key_path_),
       base::BindOnce(&CachedPolicyKeyLoader::OnPolicyKeyLoaded,

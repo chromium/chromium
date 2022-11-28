@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -307,8 +306,8 @@ void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(
     base::OnceCallback<void(bool)> cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
-  base::PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::MarkLocalKeysAsStale,
                      backend_, account_info),
       std::move(cb));
@@ -361,8 +360,8 @@ void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
     base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
-  base::PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting,
           backend_),
@@ -374,8 +373,8 @@ void StandaloneTrustedVaultClient::
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
-  base::PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::
                          GetLastAddedRecoveryMethodPublicKeyForTesting,
                      backend_),

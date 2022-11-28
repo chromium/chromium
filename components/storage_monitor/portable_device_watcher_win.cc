@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_co_mem.h"
@@ -586,8 +585,8 @@ void PortableDeviceWatcherWin::EnumerateAttachedDevices() {
   DCHECK(media_task_runner_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Devices* devices = new Devices;
-  base::PostTaskAndReplyWithResult(
-      media_task_runner_.get(), FROM_HERE,
+  media_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&EnumerateAttachedDevicesOnBlockingThread, devices),
       base::BindOnce(&PortableDeviceWatcherWin::OnDidEnumerateAttachedDevices,
                      weak_ptr_factory_.GetWeakPtr(), base::Owned(devices)));
@@ -610,8 +609,8 @@ void PortableDeviceWatcherWin::HandleDeviceAttachEvent(
   DCHECK(media_task_runner_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DeviceDetails* device_details = new DeviceDetails;
-  base::PostTaskAndReplyWithResult(
-      media_task_runner_.get(), FROM_HERE,
+  media_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HandleDeviceAttachedEventOnBlockingThread, pnp_device_id,
                      device_details),
       base::BindOnce(&PortableDeviceWatcherWin::OnDidHandleDeviceAttachEvent,

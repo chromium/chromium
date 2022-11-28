@@ -26,7 +26,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "crypto/rsa_private_key.h"
@@ -1012,8 +1011,8 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWaitWithResult(
 
   base::RunLoop run_loop;
   bool task_result = false;
-  if (!base::PostTaskAndReplyWithResult(
-          io_thread_->task_runner().get(), FROM_HERE, std::move(task),
+  if (!io_thread_->task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE, std::move(task),
           base::BindOnce(base::BindLambdaForTesting([&](bool result) {
             task_result = result;
             run_loop.Quit();

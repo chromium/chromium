@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
@@ -144,9 +143,8 @@ void RankerModelLoaderImpl::StartLoadFromFile() {
   DCHECK(!model_path_.empty());
   state_ = LoaderState::LOADING_FROM_FILE;
   load_start_time_ = base::TimeTicks::Now();
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LoadFromFile, model_path_),
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&LoadFromFile, model_path_),
       base::BindOnce(&RankerModelLoaderImpl::OnFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }

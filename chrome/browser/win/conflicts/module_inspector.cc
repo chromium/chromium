@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
@@ -156,8 +155,8 @@ void ModuleInspector::OnStartupFinished() {
   is_after_startup_ = true;
 
   // Read the inspection cache now that it won't affect startup.
-  base::PostTaskAndReplyWithResult(
-      cache_task_runner_.get(), FROM_HERE,
+  cache_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReadInspectionResultsCacheOnBackgroundSequence,
                      GetInspectionResultsCachePath()),
       base::BindOnce(&ModuleInspector::OnInspectionResultsCacheRead,

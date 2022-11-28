@@ -21,7 +21,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/typed_macros.h"
@@ -278,9 +277,8 @@ class ReporterRunner {
     // invocations are finished.
     auto reporter_done = base::BindOnce(
         &ReporterRunner::ReporterDone, base::Unretained(this), next_invocation);
-    base::PostTaskAndReplyWithResult(task_runner, FROM_HERE,
-                                     std::move(launch_and_wait),
-                                     std::move(reporter_done));
+    task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(launch_and_wait), std::move(reporter_done));
   }
 
   // This method is called on the UI thread when an invocation of the reporter

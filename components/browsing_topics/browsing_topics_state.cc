@@ -11,7 +11,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/browsing_topics/util.h"
@@ -65,9 +64,8 @@ BrowsingTopicsState::BrowsingTopicsState(const base::FilePath& profile_path,
               backend_task_runner_,
               kSaveDelay,
               /*histogram_suffix=*/"BrowsingTopicsState") {
-  base::PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LoadFileOnBackendTaskRunner, writer_.path()),
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&LoadFileOnBackendTaskRunner, writer_.path()),
       base::BindOnce(&BrowsingTopicsState::DidLoadFile,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(loaded_callback)));

@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
@@ -125,8 +124,8 @@ void KioskExternalUpdater::OnMountEvent(
       return;
     }
 
-    base::PostTaskAndReplyWithResult(
-        backend_task_runner_.get(), FROM_HERE,
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&ParseExternalUpdateManifest,
                        base::FilePath(mount_info.mount_path)),
         base::BindOnce(&KioskExternalUpdater::ProcessParsedManifest,
@@ -175,8 +174,8 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
       external_updates_[app_id].external_crx.path;
   base::FilePath temp_crx_path =
       crx_unpack_dir_.Append(external_crx_path.BaseName());
-  base::PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CopyExternalCrxAndDeleteTempDir, external_crx_path,
                      temp_crx_path, temp_dir),
       base::BindOnce(&KioskExternalUpdater::PutValidatedExtension,

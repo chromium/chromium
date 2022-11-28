@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -84,8 +83,8 @@ int32_t PepperExternalFileRefBackend::Touch(
     PP_Time last_access_time,
     PP_Time last_modified_time) {
   IPC::Message reply_msg = PpapiPluginMsg_FileRef_TouchReply();
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       BindOnce(&CallTouchFile, path_, last_access_time, last_modified_time),
       base::BindOnce(&PepperExternalFileRefBackend::DidFinish,
                      weak_factory_.GetWeakPtr(), reply_context, reply_msg));
@@ -107,8 +106,8 @@ int32_t PepperExternalFileRefBackend::Rename(
 
 int32_t PepperExternalFileRefBackend::Query(
     ppapi::host::ReplyMessageContext reply_context) {
-  bool ok = base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE, base::BindOnce(&DoGetFileInfo, path_),
+  bool ok = task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoGetFileInfo, path_),
       base::BindOnce(
           &SendGetFileInfoResults,
           base::BindOnce(&PepperExternalFileRefBackend::GetMetadataComplete,

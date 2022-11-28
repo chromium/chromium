@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
@@ -304,9 +303,8 @@ TransportSecurityPersister::TransportSecurityPersister(
       background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);
 
-  base::PostTaskAndReplyWithResult(
-      background_runner_.get(), FROM_HERE,
-      base::BindOnce(&LoadState, writer_.path()),
+  background_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&LoadState, writer_.path()),
       base::BindOnce(&TransportSecurityPersister::CompleteLoad,
                      weak_ptr_factory_.GetWeakPtr()));
 }

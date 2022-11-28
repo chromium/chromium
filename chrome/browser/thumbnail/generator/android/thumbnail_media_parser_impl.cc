@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -82,9 +81,8 @@ void ThumbnailMediaParserImpl::Start(ParseCompleteCB parse_complete_cb) {
   }
 
   // Get the size of the file if needed.
-  base::PostTaskAndReplyWithResult(
-      file_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&GetFileSize, file_path_),
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetFileSize, file_path_),
       base::BindOnce(&ThumbnailMediaParserImpl::OnReadFileSize,
                      weak_factory_.GetWeakPtr()));
 }

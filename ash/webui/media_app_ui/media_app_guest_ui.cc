@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
@@ -248,9 +247,8 @@ void MediaAppGuestUI::StartFontDataRequestAfterPathExists(
   if (path_exists) {
     auto font_data = std::make_unique<std::string>();
     std::string* data = font_data.get();
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&base::ReadFileToString, font_path, data),
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&base::ReadFileToString, font_path, data),
         base::BindOnce(&FontLoaded, std::move(got_data_callback),
                        std::move(font_data)));
 

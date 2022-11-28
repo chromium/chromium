@@ -5,7 +5,6 @@
 #import "content/browser/sandbox_support_mac_impl.h"
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #import "content/browser/theme_helper_mac.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,8 +23,8 @@ void SandboxSupportMacImpl::BindReceiver(
 
 void SandboxSupportMacImpl::GetSystemColors(GetSystemColorsCallback callback) {
   auto task_runner = GetUIThreadTaskRunner({});
-  base::PostTaskAndReplyWithResult(
-      task_runner.get(), FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ThemeHelperMac::DuplicateReadOnlyColorMapRegion,
                      base::Unretained(ThemeHelperMac::GetInstance())),
       std::move(callback));

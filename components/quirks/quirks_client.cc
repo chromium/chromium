@@ -10,7 +10,6 @@
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_runner_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/version_info/version_info.h"
@@ -164,9 +163,8 @@ void QuirksClient::OnDownloadComplete(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      manager_->task_runner(), FROM_HERE,
-      base::BindOnce(&WriteIccFile, icc_path_, data),
+  manager_->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&WriteIccFile, icc_path_, data),
       base::BindOnce(&QuirksClient::Shutdown, weak_ptr_factory_.GetWeakPtr()));
 }
 

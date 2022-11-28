@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,8 +39,8 @@ ArcAppInstallEventLogManager::ArcAppInstallEventLogManager(
   uploader_->SetDelegate(this);
   log_ = std::make_unique<ArcLog>();
   app_log_upload_ = std::make_unique<AppLogUpload>(this);
-  base::PostTaskAndReplyWithResult(
-      log_task_runner_.get(), FROM_HERE,
+  log_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ArcLog::Init, base::Unretained(log_.get()),
                      GetLogFilePath(*profile)),
       base::BindOnce(&ArcAppInstallEventLogManager::AppLogUpload::OnLogInit,
@@ -83,8 +82,8 @@ void ArcAppInstallEventLogManager::Add(
                  << event.event_type();
   }
 
-  base::PostTaskAndReplyWithResult(
-      log_task_runner_.get(), FROM_HERE,
+  log_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ArcLog::Add, base::Unretained(log_.get()), packages,
                      event),
       base::BindOnce(&ArcAppInstallEventLogManager::AppLogUpload::OnLogChange,
@@ -98,8 +97,8 @@ void ArcAppInstallEventLogManager::GetAndroidId(
 
 void ArcAppInstallEventLogManager::SerializeForUpload(
     ArcAppInstallEventLogUploader::Delegate::SerializationCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      log_task_runner_.get(), FROM_HERE,
+  log_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ArcAppInstallEventLogManager::ArcLog::Serialize,
                      base::Unretained(log_.get())),
       base::BindOnce(
@@ -117,8 +116,8 @@ void ArcAppInstallEventLogManager::OnUploadSuccess() {
   }
   app_log_upload_->upload_requested_ = false;
 
-  base::PostTaskAndReplyWithResult(
-      log_task_runner_.get(), FROM_HERE,
+  log_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &ArcAppInstallEventLogManager::ArcLog::ClearSerializedAndStore,
           base::Unretained(log_.get())),

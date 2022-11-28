@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
@@ -104,8 +103,8 @@ int FilesystemProxyFileStreamReader::Read(
 
 int64_t FilesystemProxyFileStreamReader::GetLength(
     net::Int64CompletionOnceCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DoGetFileInfo, file_path_, shared_filesystem_proxy_),
       base::BindOnce(
           &FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength,
@@ -152,8 +151,8 @@ void FilesystemProxyFileStreamReader::DidVerifyForOpen(
   }
 
   callback_ = std::move(callback);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DoOpenFile, file_path_, shared_filesystem_proxy_),
       base::BindOnce(&FilesystemProxyFileStreamReader::DidOpenFile,
                      weak_factory_.GetWeakPtr()));

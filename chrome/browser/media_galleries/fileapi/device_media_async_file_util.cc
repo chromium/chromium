@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
@@ -171,8 +170,8 @@ void OnDidCreateSnapshotFile(AsyncFileUtil::CreateSnapshotFileCallback callback,
           media_task_runner);
 
   if (validate_media_files) {
-    base::PostTaskAndReplyWithResult(
-        media_task_runner, FROM_HERE,
+    media_task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&NativeMediaFileUtil::IsMediaFile, platform_path),
         base::BindOnce(&OnDidCheckMediaForCreateSnapshotFile,
                        std::move(callback), file_info, file));
@@ -604,8 +603,8 @@ void DeviceMediaAsyncFileUtil::CreateSnapshotFile(
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner(context->task_runner());
-  base::PostTaskAndReplyWithResult(
-      task_runner.get(), FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CreateSnapshotFileOnBlockingPool, profile_path_),
       base::BindOnce(&OnSnapshotFileCreatedRunTask, std::move(context),
                      std::move(callback), url, validate_media_files()));
@@ -687,8 +686,8 @@ void DeviceMediaAsyncFileUtil::OnDidGetFileInfo(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner, FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaPathFilterWrapper::CheckFilePath,
                      media_path_filter_wrapper_, path),
       base::BindOnce(&OnDidCheckMediaForGetFileInfo, std::move(callback),
@@ -706,8 +705,8 @@ void DeviceMediaAsyncFileUtil::OnDidReadDirectory(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner, FROM_HERE,
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&MediaPathFilterWrapper::FilterMediaEntries,
                      media_path_filter_wrapper_, std::move(file_list)),
       base::BindOnce(&OnDidCheckMediaForReadDirectory, callback, has_more));

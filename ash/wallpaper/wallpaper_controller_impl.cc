@@ -55,7 +55,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -1108,15 +1107,15 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
   if (params.variants.empty()) {
     // |params.variants| can be empty for users who use the old wallpaper
     // picker. If that's the case, just follow the old flow.
-    base::PostTaskAndReplyWithResult(
-        sequenced_task_runner_.get(), FROM_HERE,
+    sequenced_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&GetExistingOnlineWallpaperPath, params.url.spec()),
         base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperFromPath,
                        set_wallpaper_weak_factory_.GetWeakPtr(),
                        std::move(callback), params));
   } else {
-    base::PostTaskAndReplyWithResult(
-        sequenced_task_runner_.get(), FROM_HERE,
+    sequenced_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&GetOnlineWallpaperVariantPaths, params.variants),
         base::BindOnce(
             &WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths,
@@ -1604,9 +1603,9 @@ void WallpaperControllerImpl::RemovePolicyWallpaper(
 
 void WallpaperControllerImpl::GetOfflineWallpaperList(
     GetOfflineWallpaperListCallback callback) {
-  base::PostTaskAndReplyWithResult(sequenced_task_runner_.get(), FROM_HERE,
-                                   base::BindOnce(&GetOfflineWallpaperListImpl),
-                                   std::move(callback));
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetOfflineWallpaperListImpl),
+      std::move(callback));
 }
 
 void WallpaperControllerImpl::SetAnimationDuration(

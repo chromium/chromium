@@ -26,7 +26,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/elapsed_timer.h"
@@ -232,8 +231,8 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     bool is_app_identity_update_supported,
     std::vector<webapps::WebApkUpdateReason> update_reasons,
     base::OnceCallback<void(bool)> callback) {
-  base::PostTaskAndReplyWithResult(
-      GetBackgroundTaskRunner().get(), FROM_HERE,
+  GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &webapps::StoreUpdateRequestToFileInBackground, update_request_path,
           shortcut_info, app_key, primary_icon_data, is_primary_icon_maskable,
@@ -408,9 +407,8 @@ void WebApkInstaller::UpdateAsync(const base::FilePath& update_request_path,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      GetBackgroundTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&ReadFileInBackground, update_request_path),
+  GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ReadFileInBackground, update_request_path),
       base::BindOnce(&WebApkInstaller::OnReadUpdateRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }

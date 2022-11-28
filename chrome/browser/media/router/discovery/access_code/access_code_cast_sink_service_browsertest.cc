@@ -7,7 +7,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
-#include "base/task/task_runner_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
@@ -129,14 +128,16 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   EXPECT_FALSE(
       GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
 
-  base::PostTaskAndReplyWithResult(
-      mock_cast_media_sink_service_impl()->task_runner().get(), FROM_HERE,
-      base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
-                     base::Unretained(mock_cast_media_sink_service_impl()),
-                     "cast:<1234>"),
-      base::BindOnce(
-          &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasNoSinks,
-          weak_ptr_factory_.GetWeakPtr()));
+  mock_cast_media_sink_service_impl()
+      ->task_runner()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
+                         base::Unretained(mock_cast_media_sink_service_impl()),
+                         "cast:<1234>"),
+          base::BindOnce(&AccessCodeCastIntegrationBrowserTest::
+                             ExpectMediaRouterHasNoSinks,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 // TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac/ChromeOS.
@@ -219,14 +220,16 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   EXPECT_TRUE(
       GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
 
-  base::PostTaskAndReplyWithResult(
-      mock_cast_media_sink_service_impl()->task_runner().get(), FROM_HERE,
-      base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
-                     base::Unretained(mock_cast_media_sink_service_impl()),
-                     "cast:<1234>"),
-      base::BindOnce(
-          &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink,
-          weak_ptr_factory_.GetWeakPtr()));
+  mock_cast_media_sink_service_impl()
+      ->task_runner()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
+                         base::Unretained(mock_cast_media_sink_service_impl()),
+                         "cast:<1234>"),
+          base::BindOnce(
+              &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace media_router

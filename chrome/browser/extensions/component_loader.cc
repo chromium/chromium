@@ -16,7 +16,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
@@ -583,8 +582,8 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::FilePath::CharType* manifest_filename =
       IsNormalSession() ? manifest_file_name : guest_manifest_file_name;
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LoadManifestOnFileThread, root_directory,
                      manifest_filename, true),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
@@ -598,8 +597,8 @@ void ComponentLoader::AddWithNameAndDescriptionFromDir(
     const std::string& name_string,
     const std::string& description_string) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      GetExtensionFileTaskRunner().get(), FROM_HERE,
+  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LoadManifestOnFileThread, root_directory,
                      extensions::kManifestFilename, false),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,

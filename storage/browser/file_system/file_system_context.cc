@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -568,8 +567,8 @@ void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      default_file_task_runner(), FROM_HERE,
+  default_file_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       // It is safe to pass Unretained(quota_util) since context owns it.
       base::BindOnce(
           &FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,

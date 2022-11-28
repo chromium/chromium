@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "components/permissions/permission_uma_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -86,8 +85,8 @@ void CrowdDenyPreloadData::LoadFromDisk(const base::FilePath& proto_path,
   // On failure, LoadAndParseAndIndexPreloadDataFromDisk will return an empty
   // map. Replace the in-memory state with that regardless, so that the stale
   // old data will no longer be used.
-  base::PostTaskAndReplyWithResult(
-      loading_task_runner_.get(), FROM_HERE,
+  loading_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&LoadAndParseAndIndexPreloadDataFromDisk, proto_path),
       base::BindOnce(&CrowdDenyPreloadData::SetSiteReputations,
                      base::Unretained(this)));

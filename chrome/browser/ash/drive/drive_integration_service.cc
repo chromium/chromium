@@ -23,7 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -886,8 +885,8 @@ void DriveIntegrationService::AddDriveMountPoint() {
     if (mount_start_.is_null() || was_ever_mounted) {
       mount_start_ = base::TimeTicks::Now();
     }
-    base::PostTaskAndReplyWithResult(
-        blocking_task_runner_.get(), FROM_HERE,
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&EnsureDirectoryExists,
                        drivefs_holder_->drivefs_host()->GetDataPath()),
         base::BindOnce(&DriveIntegrationService::MaybeMountDrive,
@@ -1056,8 +1055,8 @@ void DriveIntegrationService::Initialize() {
 
   state_ = INITIALIZING;
 
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &InitializeMetadata, cache_root_directory_, metadata_storage_.get(),
           file_manager::util::GetDownloadsFolderForProfile(profile_)),
@@ -1105,8 +1104,8 @@ void DriveIntegrationService::MigratePinnedFiles() {
   if (!metadata_storage_)
     return;
 
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &GetPinnedAndDirtyFiles, std::move(metadata_storage_),
           cache_root_directory_,

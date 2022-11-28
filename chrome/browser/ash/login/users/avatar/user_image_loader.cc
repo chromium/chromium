@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
@@ -172,8 +171,8 @@ void UserImageRequest::OnImageDecoded(const SkBitmap& decoded_image) {
     SkBitmap* bitmap = new SkBitmap;
     auto* image_format = new user_manager::UserImage::ImageFormat(
         user_manager::UserImage::FORMAT_UNKNOWN);
-    base::PostTaskAndReplyWithResult(
-        background_task_runner_.get(), FROM_HERE,
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CropImage, decoded_image, target_size, bitmap,
                        image_format),
         base::BindOnce(&UserImageRequest::OnImageCropped,
@@ -371,9 +370,8 @@ void StartWithFilePath(
     int pixels_per_side,
     LoadedCallback loaded_cb) {
   std::string* data = new std::string;
-  base::PostTaskAndReplyWithResult(
-      background_task_runner.get(), FROM_HERE,
-      base::BindOnce(&base::ReadFileToString, file_path, data),
+  background_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::ReadFileToString, file_path, data),
       base::BindOnce(&DecodeImage,
                      ImageInfo(file_path, pixels_per_side, image_codec,
                                std::move(loaded_cb)),

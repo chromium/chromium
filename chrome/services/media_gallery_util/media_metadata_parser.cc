@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "media/base/data_source.h"
 #include "media/filters/audio_video_metadata_extractor.h"
@@ -122,8 +121,8 @@ void MediaMetadataParser::Start(MetadataCallback callback) {
   media_thread_ = std::make_unique<base::Thread>("media_thread");
   CHECK(media_thread_->Start());
 
-  base::PostTaskAndReplyWithResult(
-      media_thread_->task_runner().get(), FROM_HERE,
+  media_thread_->task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ParseAudioVideoMetadata, source_.get(),
                      get_attached_images_, mime_type_, images),
       base::BindOnce(&FinishParseAudioVideoMetadata, std::move(callback),

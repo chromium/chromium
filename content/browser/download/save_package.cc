@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
@@ -1391,8 +1390,8 @@ void SavePackage::GetSaveInfo() {
   std::string mime_type =
       static_cast<PageImpl*>(page_.get())->contents_mime_type();
   bool can_save_as_complete = CanSaveAsComplete(mime_type);
-  base::PostTaskAndReplyWithResult(
-      download::GetDownloadTaskRunner().get(), FROM_HERE,
+  download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SavePackage::CreateDirectoryOnFileThread, title_,
                      page_url_, can_save_as_complete, mime_type,
                      website_save_dir, download_save_dir),

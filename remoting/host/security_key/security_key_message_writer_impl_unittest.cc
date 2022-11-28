@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "remoting/host/security_key/security_key_message.h"
@@ -109,8 +108,8 @@ void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   base::RunLoop run_loop;
 
-  ASSERT_TRUE(base::PostTaskAndReplyWithResult(
-      reader_thread.task_runner().get(), FROM_HERE,
+  ASSERT_TRUE(reader_thread.task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SecurityKeyMessageWriterImplTest::ReadMessage,
                      base::Unretained(this), payload.size()),
       base::BindOnce(&SecurityKeyMessageWriterImplTest::OnReadComplete,

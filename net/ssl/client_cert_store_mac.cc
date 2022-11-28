@@ -25,7 +25,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_runner_util.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/pki/extended_key_usage.h"
@@ -402,8 +401,8 @@ ClientCertStoreMac::~ClientCertStoreMac() = default;
 
 void ClientCertStoreMac::GetClientCerts(const SSLCertRequestInfo& request,
                                         ClientCertListCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      GetSSLPlatformKeyTaskRunner().get(), FROM_HERE,
+  GetSSLPlatformKeyTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       // Caller is responsible for keeping the |request| alive
       // until the callback is run, so std::cref is safe.
       base::BindOnce(&GetClientCertsOnBackgroundThread, std::cref(request)),

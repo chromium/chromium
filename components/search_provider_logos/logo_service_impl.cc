@@ -16,7 +16,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -321,8 +320,8 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
   if (is_idle_) {
     is_idle_ = false;
 
-    base::PostTaskAndReplyWithResult(
-        cache_task_runner_.get(), FROM_HERE,
+    cache_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&GetLogoFromCacheOnFileThread,
                        base::Unretained(logo_cache_.get()), logo_url_,
                        clock_->Now()),

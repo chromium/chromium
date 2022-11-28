@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_handler.h"
@@ -383,8 +382,8 @@ const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {
 void SyncEngineImpl::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {
   DCHECK(IsInitialized());
-  base::PostTaskAndReplyWithResult(
-      sync_task_runner_.get(), FROM_HERE,
+  sync_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SyncEngineBackend::HasUnsyncedItemsForTest, backend_),
       std::move(cb));
 }

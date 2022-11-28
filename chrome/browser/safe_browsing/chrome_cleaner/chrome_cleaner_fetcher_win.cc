@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -155,8 +154,8 @@ ChromeCleanerFetcher::ChromeCleanerFetcher(
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       scoped_temp_dir_(new base::ScopedTempDir(),
                        base::OnTaskRunnerDeleter(blocking_task_runner_)) {
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ChromeCleanerFetcher::CreateTemporaryDirectory,
                      base::Unretained(this)),
       base::BindOnce(&ChromeCleanerFetcher::OnTemporaryDirectoryCreated,

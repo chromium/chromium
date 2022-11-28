@@ -23,7 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -496,8 +495,8 @@ void ScanService::OnPageReceived(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SavePage, scan_to_path, file_type,
                      std::move(scanned_image), page_number, start_time_),
       base::BindOnce(&ScanService::OnPageSaved,
@@ -510,8 +509,8 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
   if (failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
       !scanned_images_.empty()) {
     DCHECK(!scanned_file_paths_.empty());
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back(),
                        rotate_alternate_pages_, is_multi_page_scan, scan_dpi_),
         base::BindOnce(&ScanService::OnPdfSaved,
@@ -520,8 +519,8 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
 
   // Post a task to the task runner to ensure all the pages have been saved
   // before reporting the scan job as complete.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           [](lorgnette::ScanFailureMode failure_mode) { return failure_mode; },
           failure_mode),

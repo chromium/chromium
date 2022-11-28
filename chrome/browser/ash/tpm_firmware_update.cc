@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -199,13 +198,13 @@ class AvailabilityChecker {
     // this function terminates. Thus, the final check needs to run independent
     // of |this| and takes |callback_| ownership.
     if (callback_) {
-      base::PostTaskAndReplyWithResult(background_task_runner_.get(), FROM_HERE,
-                                       base::BindOnce([]() {
-                                         Status status;
-                                         CheckAvailabilityStatus(&status);
-                                         return status;
-                                       }),
-                                       std::move(callback_));
+      background_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce([]() {
+            Status status;
+            CheckAvailabilityStatus(&status);
+            return status;
+          }),
+          std::move(callback_));
     }
   }
 

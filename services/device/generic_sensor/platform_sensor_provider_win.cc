@@ -10,7 +10,6 @@
 #include <iomanip>
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -110,8 +109,8 @@ void PlatformSensorProviderWin::OnInitSensorManager(
 
     // Try to create low-level sensors by default.
     default: {
-      base::PostTaskAndReplyWithResult(
-          com_sta_task_runner_.get(), FROM_HERE,
+      com_sta_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(&PlatformSensorProviderWin::CreateSensorReader,
                          base::Unretained(this), type),
           base::BindOnce(&PlatformSensorProviderWin::SensorReaderCreated,

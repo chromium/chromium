@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -132,8 +131,8 @@ void FileWatcher::WatchLocalFile(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      sequenced_task_runner_.get(), FROM_HERE,
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&CreateAndStartFilePathWatcher, local_path,
                      google_apis::CreateRelayCallback(file_watcher_callback)),
       base::BindOnce(&FileWatcher::OnWatcherStarted,

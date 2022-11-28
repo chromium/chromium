@@ -12,7 +12,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -539,9 +538,8 @@ base::TimeDelta SmartChargingManager::DurationRecentVideoPlaying() {
 void SmartChargingManager::MaybeLoadFromDisk(
     const base::FilePath& profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LoadFromDisk, profile_path),
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&LoadFromDisk, profile_path),
       base::BindOnce(&SmartChargingManager::OnLoadProtoFromDiskComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

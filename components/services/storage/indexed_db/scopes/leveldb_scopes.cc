@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
@@ -234,8 +233,8 @@ leveldb::Status LevelDBScopes::StartRecoveryAndCleanupTasks(
             ? CleanupScopeTask::CleanupMode::kExecuteCleanupTasks
             : CleanupScopeTask::CleanupMode::kIgnoreCleanupTasks,
         max_write_batch_size_bytes_);
-    base::PostTaskAndReplyWithResult(
-        cleanup_runner_.get(), FROM_HERE,
+    cleanup_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CleanupScopeTask::Run, std::move(cleanup_task)),
         base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
                        weak_factory_.GetWeakPtr(), base::OnceClosure()));
@@ -282,9 +281,8 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
         level_db_, metadata_key_prefix_, scope->scope_id(),
         CleanupScopeTask::CleanupMode::kExecuteCleanupTasks,
         max_write_batch_size_bytes_);
-    base::PostTaskAndReplyWithResult(
-        cleanup_runner_.get(), FROM_HERE,
-        base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
+    cleanup_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
         base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
                        weak_factory_.GetWeakPtr(), std::move(on_complete)));
   }
@@ -298,9 +296,8 @@ leveldb::Status LevelDBScopes::Rollback(int64_t scope_id,
       level_db_, metadata_key_prefix_, scope_id, max_write_batch_size_bytes_);
 
   if (revert_runner_) {
-    base::PostTaskAndReplyWithResult(
-        revert_runner_.get(), FROM_HERE,
-        base::BindOnce(&RevertScopeTask::Run, std::move(task)),
+    revert_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&RevertScopeTask::Run, std::move(task)),
         base::BindOnce(&LevelDBScopes::OnRevertTaskResult,
                        weak_factory_.GetWeakPtr(), scope_id, std::move(locks)));
     return leveldb::Status::OK();
@@ -332,9 +329,8 @@ void LevelDBScopes::OnRevertTaskResult(int64_t scope_id,
       level_db_, metadata_key_prefix_, scope_id,
       CleanupScopeTask::CleanupMode::kIgnoreCleanupTasks,
       max_write_batch_size_bytes_);
-  base::PostTaskAndReplyWithResult(
-      cleanup_runner_.get(), FROM_HERE,
-      base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
+  cleanup_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
       base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
                      weak_factory_.GetWeakPtr(), base::OnceClosure()));
 }

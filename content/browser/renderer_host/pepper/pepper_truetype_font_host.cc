@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/pepper/pepper_truetype_font_host.h"
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
 #include "content/public/browser/browser_ppapi_host.h"
@@ -34,8 +33,8 @@ PepperTrueTypeFontHost::PepperTrueTypeFontHost(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   SerializedTrueTypeFontDesc* actual_desc =
       new SerializedTrueTypeFontDesc(desc);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&PepperTrueTypeFont::Initialize, font_, actual_desc),
       base::BindOnce(&PepperTrueTypeFontHost::OnInitializeComplete,
                      weak_factory_.GetWeakPtr(), base::Owned(actual_desc)));
@@ -69,9 +68,8 @@ int32_t PepperTrueTypeFontHost::OnHostMsgGetTableTags(
 
   // Get font data on a thread that allows slow blocking operations.
   std::vector<uint32_t>* tags = new std::vector<uint32_t>();
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&PepperTrueTypeFont::GetTableTags, font_, tags),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&PepperTrueTypeFont::GetTableTags, font_, tags),
       base::BindOnce(&PepperTrueTypeFontHost::OnGetTableTagsComplete,
                      weak_factory_.GetWeakPtr(), base::Owned(tags),
                      context->MakeReplyMessageContext()));
@@ -90,8 +88,8 @@ int32_t PepperTrueTypeFontHost::OnHostMsgGetTable(HostMessageContext* context,
 
   // Get font data on a thread that allows slow blocking operations.
   std::string* data = new std::string();
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&PepperTrueTypeFont::GetTable, font_, table, offset,
                      max_data_length, data),
       base::BindOnce(&PepperTrueTypeFontHost::OnGetTableComplete,

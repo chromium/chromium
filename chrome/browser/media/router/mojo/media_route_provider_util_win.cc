@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/installer/util/firewall_manager_win.h"
@@ -37,9 +36,9 @@ bool DoCanFirewallUseLocalPorts() {
 void CanFirewallUseLocalPorts(base::OnceCallback<void(bool)> callback) {
   auto task_runner = base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-  base::PostTaskAndReplyWithResult(task_runner.get(), FROM_HERE,
-                                   base::BindOnce(&DoCanFirewallUseLocalPorts),
-                                   std::move(callback));
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoCanFirewallUseLocalPorts),
+      std::move(callback));
 }
 
 }  // namespace media_router

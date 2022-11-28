@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
@@ -207,8 +206,8 @@ void SystemMonitor::UpdateObservedMetrics() {
 
 void SystemMonitor::RefreshCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SystemMonitor::EvaluateMetrics, GetMetricsToEvaluate()),
       base::BindOnce(&SystemMonitor::NotifyObservers,
                      weak_factory_.GetWeakPtr()));

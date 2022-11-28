@@ -31,7 +31,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -363,8 +362,8 @@ void ProcessDataCollector::StartSamplingCpuUsage() {
 }
 
 void ProcessDataCollector::SampleCpuUsage() {
-  base::PostTaskAndReplyWithResult(
-      cpu_data_task_runner_.get(), FROM_HERE,
+  cpu_data_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ProcessDataCollector::ComputeSampleAsync, config_,
                      prev_samples_, curr_samples_, curr_summary_),
       base::BindOnce(&ProcessDataCollector::SaveSamplesOnUIThread,

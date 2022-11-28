@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -253,8 +252,8 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   VLOG(1) << "Getting default printer in-process";
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetDefaultPrinterAsync,
                      g_browser_process->GetApplicationLocale()),
       std::move(cb));
@@ -278,8 +277,8 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   VLOG(1) << "Enumerate printers start in-process";
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&EnumeratePrintersAsync,
                      g_browser_process->GetApplicationLocale()),
       base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
@@ -307,8 +306,8 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   VLOG(1) << "Getting printer capabilities in-process for " << device_name;
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&FetchCapabilitiesAsync, device_name,
                      g_browser_process->GetApplicationLocale()),
       std::move(cb));

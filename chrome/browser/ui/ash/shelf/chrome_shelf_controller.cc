@@ -33,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -1106,9 +1105,8 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
     copy = image.DeepCopy();
   }
 
-  base::PostTaskAndReplyWithResult(
-      standard_icon_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&CreateStandardImageOnWorkerThread, copy),
+  standard_icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreateStandardImageOnWorkerThread, copy),
       base::BindOnce(&ChromeShelfController::UpdateAppImage,
                      weak_ptr_factory_.GetWeakPtr(), app_id));
 }

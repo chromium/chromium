@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
@@ -96,8 +95,8 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
   // because a task to delete it can only be posted to (and, therefore,
   // processed by) |task_runner| after this method returns, hence after the
   // below task is posted.
-  base::PostTaskAndReplyWithResult(
-      task_runner_, FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&Core::Initialize, base::Unretained(core_.get()),
                      std::move(params), ruleset_handle->ruleset_.get()),
       base::BindOnce(&AsyncDocumentSubresourceFilter::OnActivateStateCalculated,
@@ -145,8 +144,8 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
 
   // TODO(pkalinnikov): Think about avoiding copy of |subdocument_url| if it is
   // too big and won't be allowed anyway (e.g., it's a data: URI).
-  base::PostTaskAndReplyWithResult(
-      task_runner_, FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           [](AsyncDocumentSubresourceFilter::Core* core,
              const GURL& subdocument_url) {
@@ -169,8 +168,8 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
 
   // TODO(pkalinnikov): Think about avoiding copying of |urls| if they are
   // too big and won't be allowed anyway (e.g. data: URI).
-  base::PostTaskAndReplyWithResult(
-      task_runner_, FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&AsyncDocumentSubresourceFilter::Core::GetLoadPolicies,
                      base::Unretained(core_.get()), urls),
       std::move(result_callback));

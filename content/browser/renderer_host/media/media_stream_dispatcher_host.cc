@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -227,8 +226,8 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
   base::RepeatingClosure focus_callback =
       base::BindRepeating(&MediaStreamDispatcherHost::OnWebContentsFocused,
                           weak_factory_.GetWeakPtr());
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&StartObservingWebContents, render_process_id_,
                      render_frame_id_, std::move(focus_callback)),
       base::BindOnce(&MediaStreamDispatcherHost::SetWebContentsObserver,
@@ -435,8 +434,8 @@ void MediaStreamDispatcherHost::GenerateStreams(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread,
           /*render_process_id=*/render_process_id_,
@@ -545,8 +544,8 @@ void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id_,
                      render_frame_id_),
       base::BindOnce(&MediaStreamDispatcherHost::DoOpenDevice,
@@ -701,8 +700,8 @@ void MediaStreamDispatcherHost::GetOpenDevice(
   // on it", and whether we can/need to specific the destination renderer/frame
   // in this case.
 
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id_,
                      render_frame_id_),
       base::BindOnce(&MediaStreamDispatcherHost::DoGetOpenDevice,

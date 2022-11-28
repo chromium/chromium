@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_thread.h"
@@ -113,8 +112,8 @@ int ArcContentFileSystemFileStreamWriter::Flush(
 
   // |file_| is alive on FlushFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and FlushFile() won't be called.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE, base::BindOnce(&FlushFile, file_.get()),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&FlushFile, file_.get()),
       base::BindOnce(&ArcContentFileSystemFileStreamWriter::OnFlushFile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return net::ERR_IO_PENDING;
@@ -141,8 +140,8 @@ void ArcContentFileSystemFileStreamWriter::WriteInternal(
 
   // |file_| is alive on WriteFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and WriteFile() won't be called.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&WriteFile, file_.get(), base::WrapRefCounted(buffer),
                      buffer_length),
       base::BindOnce(&ArcContentFileSystemFileStreamWriter::OnWrite,
@@ -204,9 +203,8 @@ void ArcContentFileSystemFileStreamWriter::OnOpenFileSession(
   }
   // |file_| is alive on SeekFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and SeekFile() won't be called.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&SeekFile, file_.get(), offset_),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&SeekFile, file_.get(), offset_),
       base::BindOnce(&ArcContentFileSystemFileStreamWriter::OnSeekFile,
                      weak_ptr_factory_.GetWeakPtr(), buf, buffer_length,
                      std::move(callback)));

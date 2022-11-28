@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -311,8 +310,8 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
 
   iv->uncompressed.MakeThreadSafe();
 
-  base::PostTaskAndReplyWithResult(
-      standard_icon_task_runner_.get(), FROM_HERE,
+  standard_icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ApplyEffects, icon_effects, size_hint_in_dip_,
                      std::move(iv), mask_image),
       base::BindOnce(&AppIconLoader::ApplyBadges, base::WrapRefCounted(this),

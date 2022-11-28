@@ -41,7 +41,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -563,8 +562,8 @@ void DownloadItemImpl::StealDangerousDownload(bool delete_file_afterward,
 
   if (delete_file_afterward) {
     if (download_file_) {
-      base::PostTaskAndReplyWithResult(
-          GetDownloadTaskRunner().get(), FROM_HERE,
+      GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(&DownloadFileDetach, std::move(download_file_)),
           std::move(callback));
     } else {
@@ -574,8 +573,8 @@ void DownloadItemImpl::StealDangerousDownload(bool delete_file_afterward,
     Remove();
     // Download item has now been deleted.
   } else if (download_file_) {
-    base::PostTaskAndReplyWithResult(
-        GetDownloadTaskRunner().get(), FROM_HERE,
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&MakeCopyOfDownloadFile, download_file_.get()),
         std::move(callback));
   } else {
@@ -777,8 +776,8 @@ void DownloadItemImpl::Rename(const base::FilePath& display_name,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      GetDownloadTaskRunner().get(), FROM_HERE,
+  GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&download::RenameDownloadedFile, GetFullPath(),
                      display_name),
       base::BindOnce(&DownloadItemImpl::RenameDownloadedFileDone,
@@ -1003,9 +1002,8 @@ void DownloadItemImpl::DeleteFile(base::OnceCallback<void(bool)> callback) {
                                   std::move(callback), true));
     return;
   }
-  base::PostTaskAndReplyWithResult(
-      GetDownloadTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&DeleteDownloadedFile, GetFullPath()),
+  GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DeleteDownloadedFile, GetFullPath()),
       base::BindOnce(&DeleteDownloadedFileDone, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace net {
@@ -70,8 +69,8 @@ std::vector<uint16_t> ThreadedSSLPrivateKey::GetAlgorithmPreferences() {
 void ThreadedSSLPrivateKey::Sign(uint16_t algorithm,
                                  base::span<const uint8_t> input,
                                  SSLPrivateKey::SignCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ThreadedSSLPrivateKey::Core::Sign, core_, algorithm,
                      std::vector<uint8_t>(input.begin(), input.end())),
       base::BindOnce(&DoCallback, weak_factory_.GetWeakPtr(),

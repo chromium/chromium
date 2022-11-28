@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -518,9 +517,8 @@ void DownloadPathReservationTracker::GetReservedPath(
                                 download_item->GetStartTime(),
                                 conflict_action};
 
-  base::PostTaskAndReplyWithResult(
-      GetTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&CreateReservation, info, reserved_path),
+  GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreateReservation, info, reserved_path),
       base::BindOnce(&RunGetReservedPathCallback, std::move(callback),
                      base::Owned(reserved_path)));
 }
@@ -542,8 +540,8 @@ void DownloadPathReservationTracker::CheckDownloadPathForExistingDownload(
     const base::FilePath& target_path,
     DownloadItem* download_item,
     CheckDownloadPathCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      GetTaskRunner().get(), FROM_HERE,
+  GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&IsAdditionalPathReserved, target_path, download_item),
       std::move(callback));
 }

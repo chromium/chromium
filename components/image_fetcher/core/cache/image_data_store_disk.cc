@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -130,9 +129,8 @@ ImageDataStoreDisk::~ImageDataStoreDisk() = default;
 
 void ImageDataStoreDisk::Initialize(base::OnceClosure callback) {
   DCHECK(initialization_status_ == InitializationStatus::UNINITIALIZED);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(InitializeImpl, storage_path_),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(InitializeImpl, storage_path_),
       base::BindOnce(&ImageDataStoreDisk::OnInitializationComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -161,8 +159,8 @@ void ImageDataStoreDisk::LoadImage(const std::string& key,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(LoadImageImpl, storage_path_, key, needs_transcoding),
       base::BindOnce(&ImageDataStoreDisk::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr(), needs_transcoding,
@@ -184,9 +182,9 @@ void ImageDataStoreDisk::GetAllKeys(KeysCallback callback) {
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(GetAllKeysImpl, storage_path_), std::move(callback));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(GetAllKeysImpl, storage_path_),
+      std::move(callback));
 }
 
 void ImageDataStoreDisk::OnInitializationComplete(

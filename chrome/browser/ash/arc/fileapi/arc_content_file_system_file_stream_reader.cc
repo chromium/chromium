@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
@@ -116,8 +115,8 @@ void ArcContentFileSystemFileStreamReader::ReadInternal(
 
   // |file_| is alive on ReadFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and ReadFile() won't be called.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReadFile, file_.get(), base::WrapRefCounted(buffer),
                      buffer_length),
       base::BindOnce(&ArcContentFileSystemFileStreamReader::OnRead,
@@ -183,9 +182,8 @@ void ArcContentFileSystemFileStreamReader::OnOpenFileSession(
   }
   // |file_| is alive on SeekFile(), since the destructor will destruct
   // |task_runner_| along with |file_| and SeekFile() won't be called.
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&SeekFile, file_.get(), offset_),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&SeekFile, file_.get(), offset_),
       base::BindOnce(&ArcContentFileSystemFileStreamReader::OnSeekFile,
                      weak_ptr_factory_.GetWeakPtr(), buf, buffer_length,
                      std::move(callback)));
@@ -238,8 +236,8 @@ void ArcContentFileSystemFileStreamReader::ConsumeFileContents(
   auto num_bytes_to_read = std::min(
       static_cast<int64_t>(temporary_buffer->size()), num_bytes_to_consume);
   // TODO(hashimoto): This may block the worker thread forever. crbug.com/673222
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReadFile, file_.get(), temporary_buffer,
                      num_bytes_to_read),
       base::BindOnce(

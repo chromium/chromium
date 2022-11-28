@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -144,9 +143,9 @@ class PpdCacheImpl : public PpdCache {
 
   // Public API functions.
   void Find(const std::string& key, FindCallback cb) override {
-    base::PostTaskAndReplyWithResult(
-        fetch_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&FindImpl, cache_base_dir_, key), std::move(cb));
+    fetch_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&FindImpl, cache_base_dir_, key),
+        std::move(cb));
   }
 
   // Store the given contents at the given key.  If cb is non-null, it will

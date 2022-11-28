@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -92,8 +91,8 @@ class AfterStartupTaskTest : public testing::Test {
   bool GetIsBrowserStartupCompleteFromBackgroundSequence() {
     base::RunLoop run_loop;
     bool is_complete;
-    base::PostTaskAndReplyWithResult(
-        background_sequence_->real_runner(), FROM_HERE,
+    background_sequence_->real_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&AfterStartupTaskUtils::IsBrowserStartupComplete),
         base::BindOnce(&AfterStartupTaskTest::GotIsOnBrowserStartupComplete,
                        &run_loop, &is_complete));
