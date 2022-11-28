@@ -71,6 +71,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"emptyTitle", IDS_BOOKMARKS_EMPTY_STATE_TITLE},
       {"emptyBody", IDS_BOOKMARKS_EMPTY_STATE_BODY},
+      {"searchBookmarks", IDS_BOOKMARK_MANAGER_SEARCH_BUTTON},
+      {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

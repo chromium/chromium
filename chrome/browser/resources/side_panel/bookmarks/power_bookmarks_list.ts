@@ -10,6 +10,7 @@ import './power_bookmark_row.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -106,7 +107,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   static get observers() {
     return [
       'updateShownBookmarks_(folders_.*, ' +
-          'activeFolderPath_.*, labels_.*, activeSortIndex_)',
+          'activeFolderPath_.*, labels_.*, activeSortIndex_, searchQuery_)',
     ];
   }
 
@@ -127,6 +128,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private showPriceTracking_: boolean;
   private activeSortIndex_: number;
   private sortTypes_: string[];
+  private searchQuery_: string|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -429,17 +431,31 @@ export class PowerBookmarksListElement extends PolymerElement {
               topLevelBookmarks.concat(folder.children!));
       shownBookmarks = topLevelBookmarks;
     }
-    // Price tracking label
-    if (this.labels_[0]!.active) {
-      shownBookmarks = shownBookmarks.filter(
-          (bookmark, _) => this.isPriceTracked_(bookmark));
-    }
+    shownBookmarks = shownBookmarks.filter(
+        (b: chrome.bookmarks.BookmarkTreeNode) =>
+            this.nodeMatchesContentFilters_(b));
     const sortChangedPosition = this.sortBookmarks_(shownBookmarks);
     if (sortChangedPosition) {
       this.shownBookmarks_ = shownBookmarks.slice();
     } else {
       this.shownBookmarks_ = shownBookmarks;
     }
+  }
+
+  private nodeMatchesContentFilters_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
+    // Price tracking label
+    if (this.labels_[0]!.active && !this.isPriceTracked_(bookmark)) {
+      return false;
+    } else if (
+        this.searchQuery_ &&
+        !(bookmark.title &&
+          bookmark.title.toLocaleLowerCase().includes(this.searchQuery_!)) &&
+        !(bookmark.url &&
+          bookmark.url.toLocaleLowerCase().includes(this.searchQuery_!))) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -543,6 +559,10 @@ export class PowerBookmarksListElement extends PolymerElement {
    */
   private onBackClicked_() {
     this.pop('activeFolderPath_');
+  }
+
+  private onSearchChanged_(e: CustomEvent<string>) {
+    this.searchQuery_ = e.detail.toLocaleLowerCase();
   }
 
   private onShowSortMenuClicked_(event: MouseEvent) {
