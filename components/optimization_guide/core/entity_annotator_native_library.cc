@@ -59,7 +59,7 @@ class ScopedEntityAnnotatorCreationStatusRecorder {
   ~ScopedEntityAnnotatorCreationStatusRecorder() {
     DCHECK_NE(status_, EntityAnnotatorCreationStatus::kUnknown);
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus", status_);
+        "OptimizationGuide.PageEntitiesModelHandler.CreationStatus", status_);
   }
 
   void set_status(EntityAnnotatorCreationStatus status) { status_ = status; }

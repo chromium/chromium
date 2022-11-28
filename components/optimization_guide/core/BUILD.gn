@@ -206,10 +206,10 @@ static_library("core") {
       "model_validator.h",
       "page_content_annotation_job_executor.cc",
       "page_content_annotation_job_executor.h",
-      "page_entities_model_executor.cc",
-      "page_entities_model_executor.h",
-      "page_topics_model_executor.cc",
-      "page_topics_model_executor.h",
+      "page_entities_model_handler.cc",
+      "page_entities_model_handler.h",
+      "page_topics_model_handler.cc",
+      "page_topics_model_handler.h",
       "page_visibility_model_handler.cc",
       "page_visibility_model_handler.h",
     ]
@@ -217,8 +217,8 @@ static_library("core") {
       sources += [
         "entity_annotator_native_library.cc",
         "entity_annotator_native_library.h",
-        "page_entities_model_executor_impl.cc",
-        "page_entities_model_executor_impl.h",
+        "page_entities_model_handler_impl.cc",
+        "page_entities_model_handler_impl.h",
       ]
     }
   }
@@ -402,14 +402,14 @@ source_set("unit_tests") {
       "bert_model_executor_unittest.cc",
       "model_validator_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
-      "page_topics_model_executor_unittest.cc",
+      "page_topics_model_handler_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]
     if (build_with_internal_optimization_guide) {
       sources += [
         "entity_annotator_native_library_unittest.cc",
-        "page_entities_model_executor_impl_unittest.cc",
+        "page_entities_model_handler_impl_unittest.cc",
       ]
     }
   }

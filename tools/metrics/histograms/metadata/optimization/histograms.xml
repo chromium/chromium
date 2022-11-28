@@ -844,6 +844,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully"
     enum="BooleanSuccess" expires_after="2023-03-26">
+  <obsolete>
+    Renamed to OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully in
+    M110.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -856,10 +860,38 @@ chromium-metrics-reviews@google.com.
 <histogram name="OptimizationGuide.PageEntitiesModelExecutor.CreationStatus"
     enum="OptimizationGuideEntityAnnotatorCreationStatus"
     expires_after="2023-03-26">
+  <obsolete>
+    Renamed to OptimizationGuide.PageEntitiesModelHandler.CreationStatus in
+    M110.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the status for the page entities model executor's creation. Recorded
+    each time it was attempted, which can be multiple times a session if a model
+    update was received during the session.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully"
+    enum="BooleanSuccess" expires_after="2023-03-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the page entities model handler was created successfully
+    from a model file. Recorded each time it was attempted, which can be
+    multiple times a session if a model update was received during the session.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageEntitiesModelHandler.CreationStatus"
+    enum="OptimizationGuideEntityAnnotatorCreationStatus"
+    expires_after="2023-03-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status for the page entities model handler's creation. Recorded
     each time it was attempted, which can be multiple times a session if a model
     update was received during the session.
   </summary>

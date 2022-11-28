@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_entities_model_executor_impl.h"
+#include "components/optimization_guide/core/page_entities_model_handler_impl.h"
 
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -62,24 +62,24 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
   base::ObserverList<OptimizationTargetModelObserver> registered_observers_;
 };
 
-class PageEntitiesModelExecutorImplTest : public testing::Test {
+class PageEntitiesModelHandlerImplTest : public testing::Test {
  public:
-  PageEntitiesModelExecutorImplTest() {
-    PageEntitiesModelExecutorConfig config;
+  PageEntitiesModelHandlerImplTest() {
+    PageEntitiesModelHandlerConfig config;
     // The false variation is tested in a src-internal test.
     config.should_provide_filter_path = true;
-    SetPageEntitiesModelExecutorConfigForTesting(config);
+    SetPageEntitiesModelHandlerConfigForTesting(config);
   }
 
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
 
-    model_executor_ = std::make_unique<PageEntitiesModelExecutorImpl>(
+    model_executor_ = std::make_unique<PageEntitiesModelHandlerImpl>(
         model_observer_tracker_.get(),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 
-    // Wait for PageEntitiesModelExecutor to set everything up.
+    // Wait for PageEntitiesModelHandler to set everything up.
     task_environment_.RunUntilIdle();
   }
 
@@ -87,7 +87,7 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
     model_executor_.reset();
     model_observer_tracker_.reset();
 
-    // Wait for PageEntitiesModelExecutor to clean everything up.
+    // Wait for PageEntitiesModelHandler to clean everything up.
     task_environment_.RunUntilIdle();
   }
 
@@ -132,7 +132,7 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
     return entity_metadata;
   }
 
-  PageEntitiesModelExecutor* model_executor() { return model_executor_.get(); }
+  PageEntitiesModelHandler* model_executor() { return model_executor_.get(); }
 
   ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
@@ -155,10 +155,10 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
-  std::unique_ptr<PageEntitiesModelExecutorImpl> model_executor_;
+  std::unique_ptr<PageEntitiesModelHandlerImpl> model_executor_;
 };
 
-TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
+TEST_F(PageEntitiesModelHandlerImplTest, CreateNoMetadata) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder().Build();
@@ -170,14 +170,14 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
   EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
       1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      "OptimizationGuide.PageEntitiesModelHandler.CreationStatus",
       EntityAnnotatorCreationStatus::kMissingModelMetadata, 1);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
+TEST_F(PageEntitiesModelHandlerImplTest, CreateMetadataWrongType) {
   base::HistogramTester histogram_tester;
 
   proto::Any any;
@@ -199,14 +199,14 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
   EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
       1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      "OptimizationGuide.PageEntitiesModelHandler.CreationStatus",
       EntityAnnotatorCreationStatus::kMissingEntitiesModelMetadata, 1);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
+TEST_F(PageEntitiesModelHandlerImplTest, CreateNoSlices) {
   base::HistogramTester histogram_tester;
 
   proto::Any any;
@@ -228,16 +228,16 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
   EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
       1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+      "OptimizationGuide.PageEntitiesModelHandler.CreationStatus",
       EntityAnnotatorCreationStatus::
           kMissingEntitiesModelMetadataSliceSpecification,
       1);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, ModelInfoUpdated) {
+TEST_F(PageEntitiesModelHandlerImplTest, ModelInfoUpdated) {
   bool callback_run = false;
   model_executor()->AddOnModelUpdatedCallback(
       base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
@@ -266,7 +266,7 @@ TEST_F(PageEntitiesModelExecutorImplTest, ModelInfoUpdated) {
   EXPECT_TRUE(immediate_callback_run);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
+TEST_F(PageEntitiesModelHandlerImplTest, CreateMissingFiles) {
   proto::Any any;
   proto::PageEntitiesModelMetadata metadata;
   metadata.add_slice("global");
@@ -319,24 +319,24 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
     EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
-        false, 1);
+        "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
+        1);
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PageEntitiesModelExecutor.CreationStatus",
+        "OptimizationGuide.PageEntitiesModelHandler.CreationStatus",
         missing_file_and_status.second, 1);
   }
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, GetMetadataForEntityIdNoModel) {
+TEST_F(PageEntitiesModelHandlerImplTest, GetMetadataForEntityIdNoModel) {
   EXPECT_EQ(GetMetadataForEntityId("/m/0dl567"), absl::nullopt);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, ExecuteModelNoModel) {
+TEST_F(PageEntitiesModelHandlerImplTest, ExecuteModelNoModel) {
   EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest,
+TEST_F(PageEntitiesModelHandlerImplTest,
        SetsUpModelCorrectlyBasedOnFeatureParams) {
   absl::optional<proto::Any> registered_model_metadata;
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_topics_model_executor.h"
+#include "components/optimization_guide/core/page_topics_model_handler.h"
 
 #include <ctype.h>
 
@@ -139,7 +139,7 @@ int MeaninglessPrefixLength(const std::string& host) {
 
 }  // namespace
 
-PageTopicsModelExecutor::PageTopicsModelExecutor(
+PageTopicsModelHandler::PageTopicsModelHandler(
     OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const absl::optional<proto::Any>& model_metadata)
@@ -150,9 +150,9 @@ PageTopicsModelExecutor::PageTopicsModelExecutor(
       background_task_runner_(background_task_runner) {
   SetShouldUnloadModelOnComplete(false);
 }
-PageTopicsModelExecutor::~PageTopicsModelExecutor() = default;
+PageTopicsModelHandler::~PageTopicsModelHandler() = default;
 
-void PageTopicsModelExecutor::ExecuteJob(
+void PageTopicsModelHandler::ExecuteJob(
     base::OnceClosure on_job_complete_callback,
     std::unique_ptr<PageContentAnnotationJob> job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,7 +163,7 @@ void PageTopicsModelExecutor::ExecuteJob(
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadOverrideListFromFile, *override_list_file_path_),
-        base::BindOnce(&PageTopicsModelExecutor::OnOverrideListLoadAttemptDone,
+        base::BindOnce(&PageTopicsModelHandler::OnOverrideListLoadAttemptDone,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(on_job_complete_callback), std::move(job)));
     return;
@@ -173,7 +173,7 @@ void PageTopicsModelExecutor::ExecuteJob(
       std::move(on_job_complete_callback), std::move(job));
 }
 
-std::string PageTopicsModelExecutor::PreprocessHost(
+std::string PageTopicsModelHandler::PreprocessHost(
     const std::string& host) const {
   std::string output = base::ToLowerASCII(host);
 
@@ -199,7 +199,7 @@ std::string PageTopicsModelExecutor::PreprocessHost(
   return output;
 }
 
-void PageTopicsModelExecutor::ExecuteOnSingleInput(
+void PageTopicsModelHandler::ExecuteOnSingleInput(
     AnnotationType annotation_type,
     const std::string& raw_input,
     base::OnceCallback<void(const BatchAnnotationResult&)> callback) {
@@ -227,14 +227,14 @@ void PageTopicsModelExecutor::ExecuteOnSingleInput(
   }
 
   ExecuteModelWithInput(
-      base::BindOnce(&PageTopicsModelExecutor::
-                         PostprocessCategoriesToBatchAnnotationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     annotation_type, raw_input),
+      base::BindOnce(
+          &PageTopicsModelHandler::PostprocessCategoriesToBatchAnnotationResult,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), annotation_type,
+          raw_input),
       processed_input);
 }
 
-void PageTopicsModelExecutor::OnOverrideListLoadAttemptDone(
+void PageTopicsModelHandler::OnOverrideListLoadAttemptDone(
     base::OnceClosure on_job_complete_callback,
     std::unique_ptr<PageContentAnnotationJob> job,
     absl::optional<
@@ -253,7 +253,7 @@ void PageTopicsModelExecutor::OnOverrideListLoadAttemptDone(
       std::move(on_job_complete_callback), std::move(job));
 }
 
-void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
+void PageTopicsModelHandler::PostprocessCategoriesToBatchAnnotationResult(
     base::OnceCallback<void(const BatchAnnotationResult&)> callback,
     AnnotationType annotation_type,
     const std::string& raw_input,
@@ -270,7 +270,7 @@ void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
 }
 
 absl::optional<std::vector<WeightedIdentifier>>
-PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
+PageTopicsModelHandler::ExtractCategoriesFromModelOutput(
     const std::vector<tflite::task::core::Category>& model_output) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -394,14 +394,14 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
   return final_categories;
 }
 
-void PageTopicsModelExecutor::UnloadModel() {
+void PageTopicsModelHandler::UnloadModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BertModelHandler::UnloadModel();
   override_list_ = absl::nullopt;
 }
 
-void PageTopicsModelExecutor::OnModelUpdated(
+void PageTopicsModelHandler::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     const ModelInfo& model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

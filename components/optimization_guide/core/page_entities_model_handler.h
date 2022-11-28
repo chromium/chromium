@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_H_
 
 #include <string>
 #include <vector>
@@ -17,11 +17,11 @@
 
 namespace optimization_guide {
 
-// The PageEntitiesModelExecutor is responsible for executing the PAGE_ENTITIES
+// The PageEntitiesModelHandler is responsible for executing the PAGE_ENTITIES
 // model.
-class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor {
+class PageEntitiesModelHandler : public PageContentAnnotationJobExecutor {
  public:
-  virtual ~PageEntitiesModelExecutor() = default;
+  virtual ~PageEntitiesModelHandler() = default;
 
   using PageEntitiesMetadataModelExecutedCallback = base::OnceCallback<void(
       const absl::optional<std::vector<ScoredEntityMetadata>>&)>;
@@ -58,4 +58,4 @@ class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_HANDLER_H_
