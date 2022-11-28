@@ -60,7 +60,7 @@ class CryptAuthKeyBundle {
       const std::string& name);
 
   static absl::optional<CryptAuthKeyBundle> FromDictionary(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
   CryptAuthKeyBundle(Name name);
 

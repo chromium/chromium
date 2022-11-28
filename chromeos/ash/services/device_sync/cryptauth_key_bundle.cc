@@ -77,11 +77,8 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
 
 // static
 absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
-    const base::Value& dict) {
-  if (!dict.is_dict())
-    return absl::nullopt;
-
-  const std::string* name_string = dict.FindStringKey(kBundleNameDictKey);
+    const base::Value::Dict& dict) {
+  const std::string* name_string = dict.FindString(kBundleNameDictKey);
   if (!name_string)
     return absl::nullopt;
 
@@ -92,12 +89,12 @@ absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
 
   CryptAuthKeyBundle bundle(*name);
 
-  const base::Value* keys = dict.FindKey(kKeyListDictKey);
-  if (!keys || !keys->is_list())
+  const base::Value::List* keys = dict.FindList(kKeyListDictKey);
+  if (!keys)
     return absl::nullopt;
 
   bool active_key_exists = false;
-  for (const base::Value& key_dict : keys->GetListDeprecated()) {
+  for (const base::Value& key_dict : *keys) {
     absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(key_dict);
     if (!key)
       return absl::nullopt;
@@ -118,7 +115,7 @@ absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
   }
 
   const base::Value* encoded_serialized_key_directive =
-      dict.FindKey(kKeyDirectiveDictKey);
+      dict.Find(kKeyDirectiveDictKey);
   if (encoded_serialized_key_directive) {
     absl::optional<cryptauthv2::KeyDirective> key_directive =
         util::DecodeProtoMessageFromValueString<cryptauthv2::KeyDirective>(

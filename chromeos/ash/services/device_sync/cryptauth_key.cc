@@ -44,27 +44,28 @@ bool IsAsymmetricKeyType(cryptauthv2::KeyType type) {
 
 // static
 absl::optional<CryptAuthKey> CryptAuthKey::FromDictionary(
-    const base::Value& dict) {
-  if (!dict.is_dict())
+    const base::Value& value) {
+  if (!value.is_dict())
     return absl::nullopt;
 
-  absl::optional<int> opt_status = dict.FindIntKey(kStatusDictKey);
+  const base::Value::Dict& dict = value.GetDict();
+  absl::optional<int> opt_status = dict.FindInt(kStatusDictKey);
   if (!opt_status)
     return absl::nullopt;
   CryptAuthKey::Status status = static_cast<CryptAuthKey::Status>(*opt_status);
 
-  absl::optional<int> opt_type = dict.FindIntKey(kTypeDictKey);
+  absl::optional<int> opt_type = dict.FindInt(kTypeDictKey);
   if (!opt_type || !cryptauthv2::KeyType_IsValid(*opt_type))
     return absl::nullopt;
   cryptauthv2::KeyType type = static_cast<cryptauthv2::KeyType>(*opt_type);
 
-  const std::string* handle = dict.FindStringKey(kHandleDictKey);
+  const std::string* handle = dict.FindString(kHandleDictKey);
   if (!handle || handle->empty())
     return absl::nullopt;
 
   if (IsSymmetricKeyType(type)) {
     absl::optional<std::string> symmetric_key =
-        util::DecodeFromValueString(dict.FindKey(kSymmetricKeyDictKey));
+        util::DecodeFromValueString(dict.Find(kSymmetricKeyDictKey));
     if (!symmetric_key || symmetric_key->empty())
       return absl::nullopt;
 
@@ -74,9 +75,9 @@ absl::optional<CryptAuthKey> CryptAuthKey::FromDictionary(
   DCHECK(IsAsymmetricKeyType(type));
 
   absl::optional<std::string> public_key =
-      util::DecodeFromValueString(dict.FindKey(kPublicKeyDictKey));
+      util::DecodeFromValueString(dict.Find(kPublicKeyDictKey));
   absl::optional<std::string> private_key =
-      util::DecodeFromValueString(dict.FindKey(kPrivateKeyDictKey));
+      util::DecodeFromValueString(dict.Find(kPrivateKeyDictKey));
   if (!public_key || !private_key || public_key->empty()) {
     return absl::nullopt;
   }
@@ -124,27 +125,27 @@ bool CryptAuthKey::IsAsymmetricKey() const {
   return IsAsymmetricKeyType(type_);
 }
 
-base::Value CryptAuthKey::AsSymmetricKeyDictionary() const {
+base::Value::Dict CryptAuthKey::AsSymmetricKeyDictionary() const {
   DCHECK(IsSymmetricKey());
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kHandleDictKey, base::Value(handle_));
-  dict.SetKey(kStatusDictKey, base::Value(status_));
-  dict.SetKey(kTypeDictKey, base::Value(type_));
-  dict.SetKey(kSymmetricKeyDictKey, util::EncodeAsValueString(symmetric_key_));
+  base::Value::Dict dict;
+  dict.Set(kHandleDictKey, handle_);
+  dict.Set(kStatusDictKey, status_);
+  dict.Set(kTypeDictKey, type_);
+  dict.Set(kSymmetricKeyDictKey, util::EncodeAsValueString(symmetric_key_));
 
   return dict;
 }
 
-base::Value CryptAuthKey::AsAsymmetricKeyDictionary() const {
+base::Value::Dict CryptAuthKey::AsAsymmetricKeyDictionary() const {
   DCHECK(IsAsymmetricKey());
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kHandleDictKey, base::Value(handle_));
-  dict.SetKey(kStatusDictKey, base::Value(status_));
-  dict.SetKey(kTypeDictKey, base::Value(type_));
-  dict.SetKey(kPublicKeyDictKey, util::EncodeAsValueString(public_key_));
-  dict.SetKey(kPrivateKeyDictKey, util::EncodeAsValueString(private_key_));
+  base::Value::Dict dict;
+  dict.Set(kHandleDictKey, handle_);
+  dict.Set(kStatusDictKey, status_);
+  dict.Set(kTypeDictKey, type_);
+  dict.Set(kPublicKeyDictKey, util::EncodeAsValueString(public_key_));
+  dict.Set(kPrivateKeyDictKey, util::EncodeAsValueString(private_key_));
 
   return dict;
 }

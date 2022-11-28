@@ -63,11 +63,11 @@ TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyAsDictionary) {
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                              cryptauthv2::KeyType::RAW256, kFakeHandle);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
-  dict.SetKey("symmetric_key", util::EncodeAsValueString(kFakeSymmetricKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::RAW256);
+  dict.Set("symmetric_key", util::EncodeAsValueString(kFakeSymmetricKey));
 
   EXPECT_EQ(symmetric_key.AsSymmetricKeyDictionary(), dict);
 }
@@ -77,38 +77,40 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyAsDictionary) {
                               CryptAuthKey::Status::kActive,
                               cryptauthv2::KeyType::P256, kFakeHandle);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::P256));
-  dict.SetKey("public_key", util::EncodeAsValueString(kFakePublicKey));
-  dict.SetKey("private_key", util::EncodeAsValueString(kFakePrivateKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::P256);
+  dict.Set("public_key", util::EncodeAsValueString(kFakePublicKey));
+  dict.Set("private_key", util::EncodeAsValueString(kFakePrivateKey));
 
   EXPECT_EQ(asymmetric_key.AsAsymmetricKeyDictionary(), dict);
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyFromDictionary) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
-  dict.SetKey("symmetric_key", util::EncodeAsValueString(kFakeSymmetricKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::RAW256);
+  dict.Set("symmetric_key", util::EncodeAsValueString(kFakeSymmetricKey));
 
-  absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
+  absl::optional<CryptAuthKey> key =
+      CryptAuthKey::FromDictionary(base::Value(std::move(dict)));
   ASSERT_TRUE(key);
   EXPECT_EQ(*key, CryptAuthKey(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                                cryptauthv2::KeyType::RAW256, kFakeHandle));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::P256));
-  dict.SetKey("public_key", util::EncodeAsValueString(kFakePublicKey));
-  dict.SetKey("private_key", util::EncodeAsValueString(kFakePrivateKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::P256);
+  dict.Set("public_key", util::EncodeAsValueString(kFakePublicKey));
+  dict.Set("private_key", util::EncodeAsValueString(kFakePrivateKey));
 
-  absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
+  absl::optional<CryptAuthKey> key =
+      CryptAuthKey::FromDictionary(base::Value(std::move(dict)));
   ASSERT_TRUE(key);
   EXPECT_EQ(*key, CryptAuthKey(kFakePublicKey, kFakePrivateKey,
                                CryptAuthKey::Status::kActive,
@@ -116,61 +118,61 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary) {
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingHandle) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
-  dict.SetKey("symmetric_key", base::Value(kFakeSymmetricKey));
+  base::Value::Dict dict;
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::RAW256);
+  dict.Set("symmetric_key", kFakeSymmetricKey);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingStatus) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
-  dict.SetKey("symmetric_key", base::Value(kFakeSymmetricKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("type", cryptauthv2::KeyType::RAW256);
+  dict.Set("symmetric_key", kFakeSymmetricKey);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingType) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("symmetric_key", base::Value(kFakeSymmetricKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("symmetric_key", kFakeSymmetricKey);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest,
      SymmetricKeyFromDictionary_MissingSymmetricKey) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::RAW256);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary_MissingPublicKey) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::P256));
-  dict.SetKey("private_key", base::Value(kFakePrivateKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::P256);
+  dict.Set("private_key", kFakePrivateKey);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest,
      AsymmetricKeyFromDictionary_MissingPrivateKey) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("handle", base::Value(kFakeHandle));
-  dict.SetKey("status", base::Value(CryptAuthKey::Status::kActive));
-  dict.SetKey("type", base::Value(cryptauthv2::KeyType::P256));
-  dict.SetKey("public_key", base::Value(kFakePublicKey));
+  base::Value::Dict dict;
+  dict.Set("handle", kFakeHandle);
+  dict.Set("status", CryptAuthKey::Status::kActive);
+  dict.Set("type", cryptauthv2::KeyType::P256);
+  dict.Set("public_key", kFakePublicKey);
 
-  EXPECT_FALSE(CryptAuthKey::FromDictionary(dict));
+  EXPECT_FALSE(CryptAuthKey::FromDictionary(base::Value(std::move(dict))));
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, Equality) {

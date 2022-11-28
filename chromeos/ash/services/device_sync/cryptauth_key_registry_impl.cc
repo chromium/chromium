@@ -48,7 +48,7 @@ CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
   for (const CryptAuthKeyBundle::Name& name : CryptAuthKeyBundle::AllNames()) {
     std::string name_string =
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name);
-    const base::Value* bundle_dict = dict.Find(name_string);
+    const base::Value::Dict* bundle_dict = dict.FindDict(name_string);
     if (!bundle_dict)
       continue;
 
