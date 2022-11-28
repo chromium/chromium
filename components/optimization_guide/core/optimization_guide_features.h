@@ -47,6 +47,7 @@ BASE_DECLARE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite);
 BASE_DECLARE_FEATURE(kRemotePageMetadata);
 BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
+BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.

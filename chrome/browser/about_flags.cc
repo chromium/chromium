@@ -5589,6 +5589,14 @@ const FeatureEntry kFeatureEntries[] = {
          kJourneysVisitDedupingVariations,
          "HistoryJourneysVisitDeduping")},
 
+    {"extract-related-searches-from-prefetched-zps-response",
+     flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,
+     flag_descriptions::
+         kExtractRelatedSearchesFromPrefetchedZPSResponseDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(optimization_guide::features::
+                            kExtractRelatedSearchesFromPrefetchedZPSResponse)},
+
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,
      kOsDesktop | kOsAndroid,

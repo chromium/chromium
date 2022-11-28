@@ -3527,6 +3527,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "extract-related-searches-from-prefetched-zps-response",
+    "owners": [ "khalidpeer", "chrome-journeys@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fail-fast-quiet-chip",
     "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS"],
     "expiry_milestone": 115

@@ -990,6 +990,9 @@ extern const char kJourneysShowAllClustersDescription[];
 extern const char kJourneysVisitDedupingName[];
 extern const char kJourneysVisitDedupingDescription[];
 
+extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[];
+extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
+
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 

@@ -198,6 +198,10 @@ BASE_FEATURE(kOptimizationGuideInstallWideModelStore,
              "OptimizationGuideInstallWideModelStore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
+             "ExtractRelatedSearchesFromPrefetchedZPSResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
