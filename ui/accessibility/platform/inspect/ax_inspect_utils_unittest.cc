@@ -32,34 +32,37 @@ TEST(AXInspectUtilsTest, FormatDouble) {
 }
 
 TEST(AXInspectUtilsTest, FormatList) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("item1");
   list.Append("item2");
-  EXPECT_EQ(AXFormatValue(list), std::string("['item1', 'item2']"));
+  EXPECT_EQ(AXFormatValue(base::Value(std::move(list))),
+            std::string("['item1', 'item2']"));
 }
 
 TEST(AXInspectUtilsTest, FormatDict) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringPath("anchor", AXMakeConst("textbox"));
-  dict.SetIntPath("offset", 2);
-  dict.SetStringPath("affinity", AXMakeConst("down"));
-  EXPECT_EQ(AXFormatValue(dict),
+  base::Value::Dict dict;
+  dict.Set("anchor", AXMakeConst("textbox"));
+  dict.Set("offset", 2);
+  dict.Set("affinity", AXMakeConst("down"));
+  EXPECT_EQ(AXFormatValue(base::Value(std::move(dict))),
             std::string("{affinity: down, anchor: textbox, offset: 2}"));
 }
 
 TEST(AXInspectUtilsTest, FormatSet) {
-  base::Value set(base::Value::Type::DICTIONARY);
-  set.SetStringPath(AXMakeSetKey("index1_anchor"), AXMakeConst(":1"));
-  set.SetIntPath(AXMakeSetKey("index2_offset"), 2);
-  set.SetStringPath(AXMakeSetKey("index3_affinity"), AXMakeConst("down"));
-  EXPECT_EQ(AXFormatValue(set), std::string("{:1, 2, down}"));
+  base::Value::Dict set;
+  set.Set(AXMakeSetKey("index1_anchor"), AXMakeConst(":1"));
+  set.Set(AXMakeSetKey("index2_offset"), 2);
+  set.Set(AXMakeSetKey("index3_affinity"), AXMakeConst("down"));
+  EXPECT_EQ(AXFormatValue(base::Value(std::move(set))),
+            std::string("{:1, 2, down}"));
 }
 
 TEST(AXInspectUtilsTest, FormatOrderedDict) {
-  base::Value ordered_dict(base::Value::Type::DICTIONARY);
-  ordered_dict.SetIntPath(AXMakeOrderedKey("w", 0), 40);
-  ordered_dict.SetIntPath(AXMakeOrderedKey("h", 1), 30);
-  EXPECT_EQ(AXFormatValue(ordered_dict), std::string("{w: 40, h: 30}"));
+  base::Value::Dict ordered_dict;
+  ordered_dict.Set(AXMakeOrderedKey("w", 0), 40);
+  ordered_dict.Set(AXMakeOrderedKey("h", 1), 30);
+  EXPECT_EQ(AXFormatValue(base::Value(std::move(ordered_dict))),
+            std::string("{w: 40, h: 30}"));
 }
 
 }  // namespace ui
