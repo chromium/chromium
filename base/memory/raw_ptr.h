@@ -23,30 +23,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-// A strange dance is done here to provide `CHECK` for `raw_ptr<T>`
-// in the presence of NaCl. The constraints are:
-// 1. PA doesn't build under NaCl and cannot be a GN `public_dep` under
-//    NaCl.
-// 2. Individual PA headers may leak into `raw_ptr.h` (and other parts
-//    of `//base`) by inclusion, but using implementations (e.g. of
-//    `CheckError`) will cause a linker error. (Not sure if this is
-//    good form or if it is merely accidentally permissible.)
-// 3. `raw_ptr.h` is part of the standalone PA distribution and must not
-//    have a hard dependency on `//base/check.h`.
-//
-// The solution appears to be to use `//base/check.h` under NaCl to
-// provide `raw_ptr`-level `CHECK()`s. `raw_ref.h` follows suit. This
-// macro isn't used _everywhere_ (e.g. not in the implementation of
-// BRP) because we assert that NaCl always uses RawPtrNoOpImpl (see
-// `static_assert` below).
-#if BUILDFLAG(IS_NACL)
-#include "base/check.h"
-#define PA_RAW_PTR_CHECK(condition) CHECK(condition)
-#else
-#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
-#define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
-#endif  // BUILDFLAG(IS_NACL)
-
 #if BUILDFLAG(USE_MTE_CHECKED_PTR) && \
     defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
@@ -77,6 +53,25 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/allocator/partition_allocator/partition_alloc_base/win/win_handle_types.h"
 #endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+// Live implementation of MiraclePtr being built.
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || \
+    defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
+#else
+// No-op implementation of MiraclePtr being built.
+// Note that `PA_BASE_DCHECK()` evaporates from non-DCHECK builds,
+// minimizing impact of generated code.
+#define PA_RAW_PTR_CHECK(condition) PA_BASE_DCHECK(condition)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+        // || defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#else   // BUILDFLAG(USE_PARTITION_ALLOC
+// Without PartitionAlloc, there's no `PA_BASE_D?CHECK()` implementation
+// available.
+#define PA_RAW_PTR_CHECK(condition)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace cc {
 class Scheduler;
@@ -991,10 +986,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       raw_ptr<T, internal::RawPtrCountingImplWrapperForTest<RawPtrMayDangle>>,
       raw_ptr<T, RawPtrMayDangle>>;
 
-#if BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(USE_PARTITION_ALLOC)
   // See comment at top about `PA_RAW_PTR_CHECK()`.
   static_assert(std::is_same_v<Impl, internal::RawPtrNoOpImpl>);
-#endif  // BUILDFLAG(IS_NACL)
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC)
 
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
