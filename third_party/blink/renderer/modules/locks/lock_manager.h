@@ -80,11 +80,11 @@ class LockManager final : public ScriptWrappable,
   bool IsPendingRequest(LockRequestImpl*);
 
   void QueryImpl(ScriptPromiseResolver* resolver);
-  void RequestImpl(ScriptPromiseResolver* resolver,
-                   const LockOptions* options,
+  void RequestImpl(const LockOptions* options,
                    const String& name,
                    V8LockGrantedCallback* callback,
-                   mojom::blink::LockMode mode);
+                   mojom::blink::LockMode mode,
+                   ScriptPromiseResolver* resolver);
 
   // Query the ContentSettingsClient to ensure access is allowed from
   // this context. This invokes an asynchronous IPC call.

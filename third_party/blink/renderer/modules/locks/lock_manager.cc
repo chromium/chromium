@@ -351,34 +351,27 @@ ScriptPromise LockManager::request(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      WTF::BindOnce(&LockManager::RequestImpl, WrapWeakPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(options), name,
-                    WrapPersistent(callback), mode));
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &LockManager::RequestImpl, WrapWeakPersistent(this),
+          WrapPersistent(options), name, WrapPersistent(callback), mode)));
 
   // 12. Return promise.
   return promise;
 }
 
-void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
-                              const LockOptions* options,
+void LockManager::RequestImpl(const LockOptions* options,
                               const String& name,
                               V8LockGrantedCallback* callback,
-                              mojom::blink::LockMode mode) {
+                              mojom::blink::LockMode mode,
+                              ScriptPromiseResolver* resolver) {
   ExecutionContext* context = resolver->GetExecutionContext();
-
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed()) {
-    return;
-  }
-
   if (!service_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
     if (!service_.is_bound()) {
-      resolver->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
     }
   }
   if (!observer_.is_bound()) {
@@ -387,8 +380,7 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
     if (!observer_.is_bound()) {
-      resolver->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
     }
   }
 
@@ -450,26 +442,20 @@ ScriptPromise LockManager::query(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      WTF::BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this),
-                    WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this))));
   return promise;
 }
 
 void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
   ExecutionContext* context = resolver->GetExecutionContext();
-
-  if (!resolver->GetScriptState()->ContextIsValid()) {
-    return;
-  }
-
   if (!service_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
     if (!service_.is_bound()) {
-      resolver->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
     }
   }
 
