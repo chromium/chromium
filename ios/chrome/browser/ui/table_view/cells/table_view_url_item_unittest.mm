@@ -191,7 +191,6 @@ TEST_F(TableViewURLItemTest, ThirdRowTextColor) {
 
   id cell = [[[item cellClass] alloc] init];
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  styler.cellDetailColor = UIColor.redColor;
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
   EXPECT_NSEQ(

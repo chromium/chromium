@@ -53,7 +53,6 @@
 - (void)start {
   self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.styler.cellSeparatorColor = UIColor.clearColor;
   self.viewController.presentationDelegate = self;
   self.mediator = [[SafeBrowsingEnhancedProtectionMediator alloc] init];
   self.mediator.consumer = self.viewController;

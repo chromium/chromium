@@ -39,8 +39,6 @@
   // Use colors from styler if available.
   if (styler.tableViewBackgroundColor)
     header.contentView.backgroundColor = styler.tableViewBackgroundColor;
-  if (styler.headerFooterTitleColor)
-    header.titleLabel.textColor = styler.headerFooterTitleColor;
 }
 
 @end

@@ -69,15 +69,6 @@ const int kGridHeaderTitleColor = 0xFFFFFF;
 const int kGridHeaderValueColor = 0xEBEBF5;
 const CGFloat kGridHeaderContentSpacing = 4.0f;
 
-// GridCell styling.
-// Dark theme colors.
-// Extra dark theme colors until iOS 12 gets removed.
-const int kGridDarkThemeCellTitleColor = 0xFFFFFF;
-const int kGridDarkThemeCellDetailColor = 0xEBEBF5;
-const CGFloat kGridDarkThemeCellDetailAlpha = 0.6;
-const int kGridDarkThemeCellTintColor = 0x8AB4F9;
-extern const int kGridDarkThemeCellSolidButtonTextColor = 0x202124;
-
 // GridCell dimensions.
 const CGSize kGridCellSizeSmall = CGSize{144.0f, 168.0f};
 const CGSize kGridCellSizeMedium = CGSize{168.0f, 202.0f};

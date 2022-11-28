@@ -77,13 +77,9 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
   // Decide cell.button titleColor in order:
   //   1. self.buttonTextColor;
-  //   2. styler.solidButtonTextColor
-  //   3. [UIColor colorNamed:kSolidButtonTextColor]
+  //   2. [UIColor colorNamed:kSolidButtonTextColor]
   if (self.buttonTextColor) {
     [cell.button setTitleColor:self.buttonTextColor
-                      forState:UIControlStateNormal];
-  } else if (styler.solidButtonTextColor) {
-    [cell.button setTitleColor:styler.solidButtonTextColor
                       forState:UIControlStateNormal];
   } else {
     [cell.button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
@@ -92,12 +88,9 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   cell.button.accessibilityIdentifier = self.buttonAccessibilityIdentifier;
   // Decide cell.button.backgroundColor in order:
   //   1. self.buttonBackgroundColor
-  //   2. styler.tintColor
-  //   3. [UIColor colorNamed:kBlueColor]
+  //   2. [UIColor colorNamed:kBlueColor]
   if (self.buttonBackgroundColor) {
     cell.button.backgroundColor = self.buttonBackgroundColor;
-  } else if (styler.tintColor) {
-    cell.button.backgroundColor = styler.tintColor;
   } else {
     cell.button.backgroundColor = [UIColor colorNamed:kBlueColor];
   }

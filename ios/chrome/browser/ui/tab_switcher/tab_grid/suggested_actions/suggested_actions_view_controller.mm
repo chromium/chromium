@@ -114,9 +114,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:kSectionIdentifierSuggestedActions];
-  UIColor* actionsTextColor = self.styler.tintColor
-                                  ? self.styler.tintColor
-                                  : [UIColor colorNamed:kBlueColor];
+  UIColor* actionsTextColor = [UIColor colorNamed:kBlueColor];
   TableViewImageItem* searchWebItem = [[TableViewImageItem alloc]
       initWithType:ItemTypeSuggestedActionSearchWeb];
   searchWebItem.title =

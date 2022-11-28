@@ -368,11 +368,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   historyItem.image = UseSymbols() ? DefaultSymbolWithPointSize(
                                          kHistorySymbol, kSymbolActionPointSize)
                                    : [UIImage imageNamed:@"show_history"];
-  if (self.styler.tintColor) {
-    historyItem.textColor = self.styler.tintColor;
-  } else {
-    historyItem.textColor = [UIColor colorNamed:kBlueColor];
-  }
+  historyItem.textColor = [UIColor colorNamed:kBlueColor];
   historyItem.accessibilityIdentifier =
       kRecentTabsShowFullHistoryCellAccessibilityIdentifier;
   [model addItem:historyItem
@@ -726,9 +722,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)addSuggestedActionsSection {
   TableViewModel* model = self.tableViewModel;
 
-  UIColor* actionsTextColor = self.styler.tintColor
-                                  ? self.styler.tintColor
-                                  : [UIColor colorNamed:kBlueColor];
+  UIColor* actionsTextColor = [UIColor colorNamed:kBlueColor];
 
   [model addSectionWithIdentifier:SectionIdentifierSuggestedActions];
   TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]

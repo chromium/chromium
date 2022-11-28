@@ -75,18 +75,6 @@ extern const int kGridHeaderValueColor;
 // The space between different labels inside the GridHeader.
 extern const CGFloat kGridHeaderContentSpacing;
 
-// GridCell styling.
-// All kxxxColor constants after this are RGB values stored in a Hex integer.
-// These will be converted into UIColors using the UIColorFromRGB() function,
-// from uikit_ui_util.h.
-// TODO(crbug.com/981889): remove with iOS 12.
-// Extra dark theme colors until iOS 12 gets removed.
-extern const int kGridDarkThemeCellTitleColor;
-extern const int kGridDarkThemeCellDetailColor;
-extern const CGFloat kGridDarkThemeCellDetailAlpha;
-extern const int kGridDarkThemeCellTintColor;
-extern const int kGridDarkThemeCellSolidButtonTextColor;
-
 // GridCell dimensions.
 extern const CGSize kGridCellSizeSmall;
 extern const CGSize kGridCellSizeMedium;

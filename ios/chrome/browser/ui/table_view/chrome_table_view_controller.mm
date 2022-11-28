@@ -55,7 +55,6 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   [super viewDidLoad];
 
   [self.tableView setBackgroundColor:self.styler.tableViewBackgroundColor];
-  [self.tableView setSeparatorColor:self.styler.cellSeparatorColor];
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewSeparatorInsetWithIcon, 0,
                                          0)];

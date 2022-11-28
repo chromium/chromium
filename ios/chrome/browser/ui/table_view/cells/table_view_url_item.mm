@@ -63,11 +63,6 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
   if (styler.cellTitleColor)
     cell.titleLabel.textColor = styler.cellTitleColor;
-  if (styler.cellDetailColor) {
-    cell.URLLabel.textColor = styler.cellDetailColor;
-    cell.thirdRowLabel.textColor = styler.cellDetailColor;
-    cell.metadataLabel.textColor = styler.cellDetailColor;
-  }
   if (self.thirdRowTextColor)
     cell.thirdRowLabel.textColor = self.thirdRowTextColor;
 

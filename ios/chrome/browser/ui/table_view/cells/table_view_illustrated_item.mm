@@ -78,13 +78,6 @@ const CGFloat kButtonCornerRadius = 8.0;
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
   }
-  if (styler.tintColor) {
-    cell.button.backgroundColor = styler.tintColor;
-  }
-  if (styler.solidButtonTextColor) {
-    [cell.button setTitleColor:styler.solidButtonTextColor
-                      forState:UIControlStateNormal];
-  }
 }
 
 @end
