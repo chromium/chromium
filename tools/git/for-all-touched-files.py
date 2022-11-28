@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,8 +21,6 @@ Examples:
   %prog -g "tools/sort_sources.py [[FILENAME]]"
   %prog -t "~~BINGO~~" "echo I modified ~~BINGO~~"
 """
-
-from __future__ import print_function
 
 import optparse
 import os

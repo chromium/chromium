@@ -3,12 +3,12 @@ This directory contains some helpful Git tools.
 post-checkout and post-merge
 ============================
 These hooks warn you about DEPS modifications so you will remember
-to run "gclient sync".
+to run `gclient sync`.
 
 To install these Git hooks, create symlinks like so:
-  ln -s $(pwd)/post-checkout $(git rev-parse --git-dir)/hooks
-  ln -s $(pwd)/post-merge    $(git rev-parse --git-dir)/hooks
 
+    ln -s $(pwd)/post-checkout $(git rev-parse --git-dir)/hooks
+    ln -s $(pwd)/post-merge    $(git rev-parse --git-dir)/hooks
 
 git-graph
 =========
@@ -17,7 +17,6 @@ expression in the project.
 
 suggest_owners
 ==============
-
 A script to suggest new owners for subdirectories in a git repo based on commit
 count to the relevant subdirectory.
 
@@ -50,4 +49,3 @@ optional arguments:
   --dir-commit-limit DIR_COMMIT_LIMIT
                         Merge directories with less than this number of
                         commits into their parent directory. (default: 100)
-
