@@ -103,7 +103,9 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-TEST_F(SyncEncryptionKeysTabHelperTest, ShouldNotExposeMojoApiIfNavigatedAway) {
+// TODO(https://crbug.com/1394191): flaky on android bots.
+TEST_F(SyncEncryptionKeysTabHelperTest,
+       DISABLED_ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
@@ -136,8 +138,9 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
+// TODO(https://crbug.com/1394191): flaky on android bots.
 TEST_F(SyncEncryptionKeysTabHelperTest,
-       ShouldNotExposeMojoApiIfNavigatedAwayToErrorPage) {
+       DISABLED_ShouldNotExposeMojoApiIfNavigatedAwayToErrorPage) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
 
