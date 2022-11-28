@@ -3058,7 +3058,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CompositeBGColorAnimation"
+                        "CompositeBGColorAnimation",
+                        "NativePaintUsesCompositorPriority"
                     ]
                 }
             ]
