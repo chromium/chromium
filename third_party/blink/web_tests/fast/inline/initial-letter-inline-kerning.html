@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<title>Tests Initial Letter with Inline Kerning</title>
+<link rel="author" title="Google LLC" href="https://www.google.com/">
+<link rel="help" href="https://drafts.csswg.org/css-inline/#initial-letter-inline-position">
+<style>
+.sample {
+  font-size: 20px;
+  margin-left: 20px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+  border: solid 1px blue;
+  float: left;
+}
+
+.sample::first-letter {
+    background: yellow;
+    initial-letter: 3;
+    font-style: italic;
+    color: green;
+}
+
+.border::first-letter { border: solid 1px cyan; }
+.padding::first-letter { padding: 10px; }
+
+
+.ltr {
+    direction: ltr;
+    width: 10ch;
+}
+
+.rtl {
+    direction: rtl;
+    width: 10ch;
+}
+
+.vlr {
+    writing-mode: vertical-lr;
+    height: 5ch;
+}
+
+.vrl {
+    writing-mode: vertical-rl;
+    height: 5ch;
+}
+
+.sideways { text-orientation: sideways; }
+</style>
+</head>
+<body>
+<div class="sample ltr">fine thank you and you?</div>
+<div class="sample rtl">fine thank you and you?</div>
+<!-- Inline kerning is applied if zero padding and border. -->
+<div class="sample ltr border">fine thank you and you?</div>
+<div class="sample rtl border">fine thank you and you?</div>
+<br style="clear:both">
+<!-- Inline kerning is applied if zero padding and border. -->
+<div class="sample ltr padding" style="width: 20ch">fine thank you and you? fine thank you and you? fine thank you and you? fine thank you and you?</div>
+<div class="sample rtl padding" style="width: 20ch">fine thank you and you? fine thank you and you? fine thank you and you? fine thank you and you?</div>
+<br style="clear:both">
+<!-- Inline kerning is not applied vertical writing mode -->
+<div class="sample vlr">fine thank you and you?</div>
+<div class="sample vrl">fine thank you and you?</div>
+<br style="clear:both">
+<!-- Inline kerning is applied sideways in vertical writing mode -->
+<div style="margin-bottom: 10px">text-orientation: sideways</div>
+<br style="clear:both">
+<div class="sample vlr sideways">fine thank you and you?</div>
+<div class="sample vrl sideways">fine thank you and you?</div>
+</body>
+</html>

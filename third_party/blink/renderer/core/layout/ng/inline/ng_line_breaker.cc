@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_segment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
@@ -34,6 +35,114 @@
 namespace blink {
 
 namespace {
+
+// Returns smallest negative left and right bearing in `box_fragment`.
+// This function is used for calculating side bearing.
+NGLineBoxStrut ComputeNegativeSideBearings(
+    const NGPhysicalBoxFragment& box_fragment) {
+  const auto get_shape_result =
+      [](const NGInlineCursor cursor) -> const ShapeResultView* {
+    if (!cursor)
+      return nullptr;
+    const NGFragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() != NGFragmentItem::kText &&
+        item.Type() != NGFragmentItem::kGeneratedText)
+      return nullptr;
+    if (item.IsFlowControl())
+      return nullptr;
+    return item.TextShapeResult();
+  };
+
+  NGLineBoxStrut side_bearing;
+
+  for (NGInlineCursor cursor(box_fragment); cursor; cursor.MoveToNextLine()) {
+    // Take left/right bearing from the first/last child in the line if it has
+    // `ShapeResult`. The first/last child can be non text item, e.g. image.
+    // Note: Items in the line are in visual order. So, first=left, last=right.
+    //
+    // Example: If we have three text item "[", "T", "]", we should take left
+    // baring from "[" and right bearing from "]". The text ink bounds of "T"
+    // is not involved with side bearing calculation.
+    DCHECK(cursor.Current().IsLineBox());
+
+    // `gfx::RectF` returned from `ShapeResult::ComputeInkBounds()` is in
+    // text origin coordinate aka baseline. Y-coordinate of points above
+    // baseline are negative.
+    //
+    //  Text Ink Bounds:
+    //   * left bearing = text_ink_bounds.X()
+    //   * right bearing = width - text_ink_bounds.InlineEndOffset()
+    //
+    //          <--> left bearing (positive)
+    //          ...+---------+
+    //          ...|*********|..<
+    //          ...|....*....|..<
+    //          ...|....*....|<-> right bearing (positive)
+    //          ...|....*....|..<
+    //          ...|....*....|..<
+    //          >..+----*----+..< baseline
+    //          ^text origin
+    //          <---------------> width/advance
+    //
+    //            left bearing (negative)
+    //          <-->          <--> right bearing (negative)
+    //          +----------------+
+    //          |... *****..*****|
+    //          |......*.....*<..|
+    //          |.....*.....*.<..|
+    //          |....*******..<..|
+    //          |...*.....*...<..|
+    //          |..*.....*....<..|
+    //          +****..*****..<..+
+    //             ^ text origin
+    //             <----------> width/advance
+    //
+    // When `NGFragmentItem` has `ShapeTesult`, its `rect` is
+    //    * `rect.offset.left = X`
+    //    * `rect.size.width  = shape_result.SnappedWidth() // advance
+    // where `X` is the original item offset.
+    // For the initial letter text, its `rect` is[1]
+    //    * `rect.offset.left = X - text_ink_bounds.X()`
+    //    * `rect.size.width  = text_ink_bounds.Width()`
+    // [1] https://drafts.csswg.org/css-inline/#initial-letter-box-size
+    // Sizeing the Initial Letter Box
+    NGInlineCursor child_at_left_edge = cursor;
+    child_at_left_edge.MoveToFirstChild();
+    if (auto* shape_result = get_shape_result(child_at_left_edge)) {
+      const LayoutUnit left_bearing =
+          LogicalRect::EnclosingRect(shape_result->ComputeInkBounds())
+              .offset.inline_offset;
+      side_bearing.inline_start =
+          std::min(side_bearing.inline_start, left_bearing);
+    }
+
+    NGInlineCursor child_at_right_edge = cursor;
+    child_at_right_edge.MoveToLastChild();
+    if (auto* shape_result = get_shape_result(child_at_right_edge)) {
+      const LayoutUnit width = shape_result->SnappedWidth();
+      const LogicalRect text_ink_bounds =
+          LogicalRect::EnclosingRect(shape_result->ComputeInkBounds());
+      const LayoutUnit right_bearing =
+          width - text_ink_bounds.InlineEndOffset();
+      side_bearing.inline_end =
+          std::min(side_bearing.inline_end, right_bearing);
+    }
+  }
+
+  return side_bearing;
+}
+
+// This rule comes from the spec[1].
+// Note: We don't apply inline kerning for vertical writing mode with text
+// orientation other than `sideways` because characters are laid out vertically.
+// [1] https://drafts.csswg.org/css-inline/#initial-letter-inline-position
+bool ShouldApplyInlineKerning(const NGPhysicalBoxFragment& box_fragment) {
+  if (!box_fragment.Borders().IsZero() || !box_fragment.Padding().IsZero())
+    return false;
+  const ComputedStyle& style = box_fragment.Style();
+  return style.IsHorizontalWritingMode() ||
+         style.GetTextOrientation() == ETextOrientation::kSideways;
+}
 
 // CSS-defined white space characters, excluding the newline character.
 // In most cases, the line breaker consider break opportunities are before
@@ -1973,12 +2082,14 @@ void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(line_info->MutableResults());
 
+  const bool is_initial_letter_box =
+      item.Type() == NGInlineItem::kInitialLetterBox;
   // When we're just computing min/max content sizes, we can skip the full
   // layout and just compute those sizes. On the other hand, for regular
   // layout we need to do the full layout and get the layout result.
   // Doing a full layout for min/max content can also have undesirable
   // side effects when that falls back to legacy layout.
-  if (mode_ == NGLineBreakerMode::kContent) {
+  if (mode_ == NGLineBreakerMode::kContent || UNLIKELY(is_initial_letter_box)) {
     // https://drafts.csswg.org/css-pseudo-4/#first-text-line
     // > The first line of a table-cell or inline-block cannot be the first
     // > formatted line of an ancestor element.
@@ -1986,10 +2097,29 @@ void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
         NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .LayoutAtomicInline(constraint_space_, node_.Style(),
                                 /* use_first_line_style */ false);
+
+    const auto& physical_box_fragment = To<NGPhysicalBoxFragment>(
+        item_result->layout_result->PhysicalFragment());
     item_result->inline_size =
         NGFragment(constraint_space_.GetWritingDirection(),
-                   item_result->layout_result->PhysicalFragment())
+                   physical_box_fragment)
             .InlineSize();
+
+    if (UNLIKELY(is_initial_letter_box) &&
+        ShouldApplyInlineKerning(physical_box_fragment)) {
+      // Apply "Inline Kerning" to the initial letter box[1].
+      // [1] https://drafts.csswg.org/css-inline/#initial-letter-inline-position
+      const NGLineBoxStrut side_bearing =
+          ComputeNegativeSideBearings(physical_box_fragment);
+      if (IsLtr(base_direction_)) {
+        item_result->margins.inline_start += side_bearing.inline_start;
+        inline_margins += side_bearing.inline_start;
+      } else {
+        item_result->margins.inline_end += side_bearing.inline_end;
+        inline_margins += side_bearing.inline_end;
+      }
+    }
+
     item_result->inline_size += inline_margins;
   } else {
     DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
