@@ -88,6 +88,7 @@
 
 - (void)disconnect {
   self.webContentAreaOverlayPresenter = nullptr;
+  self.navigationBrowserAgent = nullptr;
 
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
@@ -253,6 +254,9 @@
     if (self.consumer) {
       [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
     }
+  } else {
+    // Clear the web navigation browser agent if the webStateList is nil.
+    self.navigationBrowserAgent = nil;
   }
 }
 
@@ -299,9 +303,12 @@
     (web::WebState*)webState {
   DCHECK(webState);
   const id<ToolbarConsumer> consumer = self.consumer;
-  [consumer
-      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
-  [consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
+  WebNavigationBrowserAgent* navigationBrowserAgent =
+      self.navigationBrowserAgent;
+  if (navigationBrowserAgent) {
+    [consumer setCanGoForward:navigationBrowserAgent->CanGoForward(webState)];
+    [consumer setCanGoBack:navigationBrowserAgent->CanGoBack(webState)];
+  }
 }
 
 // Updates the Share Menu button of the consumer.
