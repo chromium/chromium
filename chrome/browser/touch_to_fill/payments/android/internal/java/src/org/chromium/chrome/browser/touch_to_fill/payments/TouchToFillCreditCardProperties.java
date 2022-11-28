@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import org.chromium.base.Callback;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -15,6 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 class TouchToFillCreditCardProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
+    public static final PropertyModel.ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
+            new PropertyModel.ReadableObjectPropertyKey("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SCAN_CREDIT_CARD =
@@ -22,6 +25,29 @@ class TouchToFillCreditCardProperties {
     static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
             new ReadableObjectPropertyKey<>("scan_credit_card_callback");
 
-    static final PropertyKey[] ALL_KEYS = {
-            VISIBLE, DISMISS_HANDLER, SHOULD_SHOW_SCAN_CREDIT_CARD, SCAN_CREDIT_CARD_CALLBACK};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER,
+            SHOULD_SHOW_SCAN_CREDIT_CARD, SCAN_CREDIT_CARD_CALLBACK};
+
+    @interface ItemType {
+        // A section containing the credit card data.
+        int CREDIT_CARD = 0;
+    }
+
+    /**
+     * Properties for a credit card entry in the TouchToFill sheet for payments.
+     */
+    static class CreditCardProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NAME =
+                new PropertyModel.ReadableObjectPropertyKey<>("card_name");
+        static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NUMBER =
+                new PropertyModel.ReadableObjectPropertyKey<>("card_number");
+        static final PropertyModel.ReadableObjectPropertyKey<String> CARD_EXPIRATION =
+                new PropertyModel.ReadableObjectPropertyKey<>("card_expiration");
+
+        static final PropertyKey[] ALL_KEYS = {CARD_NAME, CARD_NUMBER, CARD_EXPIRATION};
+
+        private CreditCardProperties() {}
+    }
+
+    private TouchToFillCreditCardProperties() {}
 }

@@ -45,7 +45,7 @@ class TouchToFillCreditCardViewBridge {
     @CalledByNative
     private void showSheet(
             PersonalDataManager.CreditCard[] cards, boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(shouldShowScanCreditCard);
+        mComponent.showSheet(cards, shouldShowScanCreditCard);
     }
 
     @CalledByNative

@@ -4,13 +4,22 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
  * Implements the TouchToFillCreditCardComponent. It uses a bottom sheet to let the user select a
@@ -23,23 +32,16 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
             TouchToFillCreditCardComponent.Delegate delegate) {
-        mTouchToFillCreditCardModel =
-                new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
-                        .with(TouchToFillCreditCardProperties.VISIBLE, false)
-                        .with(TouchToFillCreditCardProperties.DISMISS_HANDLER,
-                                mMediator::onDismissed)
-                        .with(TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK,
-                                mMediator::scanCreditCard)
-                        .build();
+        PropertyModel mTouchToFillCreditCardModel = createModel(mMediator);
 
-        mMediator.initialize(delegate, mTouchToFillCreditCardModel);
+        mMediator.initialize(context, delegate, mTouchToFillCreditCardModel);
         setUpModelChangeProcessors(mTouchToFillCreditCardModel,
                 new TouchToFillCreditCardView(context, sheetController));
     }
 
     @Override
-    public void showSheet(boolean shouldShowScanCreditCard) {
-        mMediator.showSheet(shouldShowScanCreditCard);
+    public void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
+        mMediator.showSheet(cards, shouldShowScanCreditCard);
     }
 
     @Override
@@ -58,8 +60,19 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
                 model, view, TouchToFillCreditCardViewBinder::bindTouchToFillCreditCardView);
     }
 
-    @VisibleForTesting
-    PropertyModel getTouchToFillCreditCardPropertyModelForTesting() {
-        return mTouchToFillCreditCardModel;
+    static void setUpCardItems(PropertyModel model, TouchToFillCreditCardView view) {
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
+        adapter.registerType(CREDIT_CARD, TouchToFillCreditCardViewBinder::createCardItemView,
+                TouchToFillCreditCardViewBinder::bindCardItemView);
+        view.setSheetItemListAdapter(adapter);
+    }
+
+    PropertyModel createModel(TouchToFillCreditCardMediator mediator) {
+        return new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
+                .with(VISIBLE, false)
+                .with(SHEET_ITEMS, new ModelList())
+                .with(DISMISS_HANDLER, mediator::onDismissed)
+                .with(SCAN_CREDIT_CARD_CALLBACK, mMediator::scanCreditCard)
+                .build();
     }
 }

@@ -35,6 +35,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:layout_marginEnd="4dp"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
             <TextView
                 android:id="@+id/card_number"

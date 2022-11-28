@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
+
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Calendar;
 import java.util.List;
@@ -26,27 +28,25 @@ public class AutofillTestHelper {
     }
 
     void setRequestTimeoutForTesting() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.setRequestTimeoutForTesting(0));
+        runOnUiThreadBlocking(() -> PersonalDataManager.setRequestTimeoutForTesting(0));
     }
 
     void setSyncServiceForTesting() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.getInstance().setSyncServiceForTesting());
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().setSyncServiceForTesting());
     }
 
     AutofillProfile getProfile(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getProfile(guid));
     }
 
     List<AutofillProfile> getProfilesToSuggest(final boolean includeNameInLabel) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getProfilesToSuggest(includeNameInLabel));
     }
 
     List<AutofillProfile> getProfilesForSettings() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getProfilesForSettings());
     }
 
@@ -60,7 +60,7 @@ public class AutofillTestHelper {
 
     public String setProfile(final AutofillProfile profile) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        String guid = TestThreadUtils.runOnUiThreadBlockingNoException(
+        String guid = runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().setProfile(profile));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
@@ -68,25 +68,24 @@ public class AutofillTestHelper {
 
     public void deleteProfile(final String guid) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.getInstance().deleteProfile(guid));
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().deleteProfile(guid));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
     public CreditCard getCreditCard(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCreditCard(guid));
     }
 
     List<CreditCard> getCreditCardsToSuggest() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 ()
                         -> PersonalDataManager.getInstance().getCreditCardsToSuggest(
                                 /*includeServerCards=*/true));
     }
 
     List<CreditCard> getCreditCardsForSettings() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCreditCardsForSettings());
     }
 
@@ -94,13 +93,13 @@ public class AutofillTestHelper {
         return getCreditCardsToSuggest().size();
     }
 
-    int getNumberOfCreditCardsForSettings() {
+    public int getNumberOfCreditCardsForSettings() {
         return getCreditCardsForSettings().size();
     }
 
     public String setCreditCard(final CreditCard card) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        String guid = TestThreadUtils.runOnUiThreadBlockingNoException(
+        String guid = runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().setCreditCard(card));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
@@ -108,7 +107,7 @@ public class AutofillTestHelper {
 
     public void addServerCreditCard(final CreditCard card) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 () -> PersonalDataManager.getInstance().addServerCreditCardForTest(card));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
@@ -116,18 +115,16 @@ public class AutofillTestHelper {
     public void addServerCreditCard(final CreditCard card, String nickname, int cardIssuer)
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PersonalDataManager.getInstance()
-                                   .addServerCreditCardForTestWithAdditionalFields(
-                                           card, nickname, cardIssuer));
+        runOnUiThreadBlocking(()
+                                      -> PersonalDataManager.getInstance()
+                                                 .addServerCreditCardForTestWithAdditionalFields(
+                                                         card, nickname, cardIssuer));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
     void deleteCreditCard(final String guid) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.getInstance().deleteCreditCard(guid));
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().deleteCreditCard(guid));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -140,8 +137,7 @@ public class AutofillTestHelper {
      */
     void recordAndLogProfileUse(final String guid) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.getInstance().recordAndLogProfileUse(guid));
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().recordAndLogProfileUse(guid));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -159,7 +155,7 @@ public class AutofillTestHelper {
     public void setProfileUseStatsForTesting(final String guid, final int count, final long date)
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 ()
                         -> PersonalDataManager.getInstance().setProfileUseStatsForTesting(
                                 guid, count, date));
@@ -173,7 +169,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the profile.
      */
     public int getProfileUseCountForTesting(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getProfileUseCountForTesting(guid));
     }
 
@@ -186,7 +182,7 @@ public class AutofillTestHelper {
      *         the Windows epoch. For more details see the comment header in time.h.
      */
     public long getProfileUseDateForTesting(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getProfileUseDateForTesting(guid));
     }
 
@@ -199,7 +195,7 @@ public class AutofillTestHelper {
      */
     public void recordAndLogCreditCardUse(final String guid) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 () -> PersonalDataManager.getInstance().recordAndLogCreditCardUse(guid));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
@@ -218,7 +214,7 @@ public class AutofillTestHelper {
     public void setCreditCardUseStatsForTesting(final String guid, final int count, final long date)
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 ()
                         -> PersonalDataManager.getInstance().setCreditCardUseStatsForTesting(
                                 guid, count, date));
@@ -232,7 +228,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the credit card.
      */
     public int getCreditCardUseCountForTesting(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCreditCardUseCountForTesting(guid));
     }
 
@@ -245,7 +241,7 @@ public class AutofillTestHelper {
      *         since the Windows epoch. For more details see the comment header in time.h.
      */
     public long getCreditCardUseDateForTesting(final String guid) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCreditCardUseDateForTesting(guid));
     }
 
@@ -257,7 +253,7 @@ public class AutofillTestHelper {
      *         For more details see the comment header in time.h.
      */
     public long getCurrentDateForTesting() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCurrentDateForTesting());
     }
 
@@ -266,18 +262,17 @@ public class AutofillTestHelper {
      * #addServerCreditCard(CreditCard)}}.
      */
     public void clearAllDataForTesting() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.getInstance().clearServerDataForTesting());
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().clearServerDataForTesting());
         // Clear remaining local profiles and cards.
         for (AutofillProfile profile : getProfilesForSettings()) {
             if (profile.getIsLocal()) {
-                TestThreadUtils.runOnUiThreadBlocking(
+                runOnUiThreadBlocking(
                         () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
             }
         }
         for (CreditCard card : getCreditCardsForSettings()) {
             if (card.getIsLocal()) {
-                TestThreadUtils.runOnUiThreadBlocking(
+                runOnUiThreadBlocking(
                         () -> PersonalDataManager.getInstance().deleteCreditCard(card.getGUID()));
             }
         }
@@ -295,10 +290,16 @@ public class AutofillTestHelper {
         return String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1);
     }
 
+    /** Creates a simple {@link CreditCard}. */
+    public static CreditCard createLocalCreditCard(
+            String name, String number, String month, String year) {
+        return new CreditCard("", "", true, false, name, number, "", month, year, "", 0, "", "");
+    }
+
     private void registerDataObserver() {
         try {
             int callCount = mOnPersonalDataChangedHelper.getCallCount();
-            boolean isDataLoaded = TestThreadUtils.runOnUiThreadBlockingNoException(
+            boolean isDataLoaded = runOnUiThreadBlockingNoException(
                     ()
                             -> PersonalDataManager.getInstance().registerDataObserver(
                                     () -> mOnPersonalDataChangedHelper.notifyCalled()));
