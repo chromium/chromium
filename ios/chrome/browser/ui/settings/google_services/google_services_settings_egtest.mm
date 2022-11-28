@@ -6,8 +6,6 @@
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "components/safe_browsing/core/common/features.h"
-#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/policy/policy_util.h"
