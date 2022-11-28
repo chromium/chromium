@@ -852,7 +852,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   return false;
 #else
   // We should not offer FIDO opt-in for virtual cards.
-  if (card_->record_type() == CreditCard::VIRTUAL_CARD)
+  if (!card_ || card_->record_type() == CreditCard::VIRTUAL_CARD)
     return false;
 
   // If this card is not eligible for offering FIDO opt-in, we should not offer
