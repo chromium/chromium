@@ -14,7 +14,7 @@ import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 
 

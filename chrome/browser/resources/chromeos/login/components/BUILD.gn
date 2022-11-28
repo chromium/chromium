@@ -18,7 +18,7 @@ group("closure_compile") {
     "oobe_vars:closure_compile",
 
     # Local targets
-    ":display_manager_types.m",
+    ":display_manager_types",
     ":gaia_button",
     ":gaia_dialog",
     ":gaia_header",
@@ -66,10 +66,10 @@ group("polymer3_elements") {
 ###############################
 # Closure compiler libraries below
 
-js_library("display_manager_types.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.m.js" ]
+js_library("display_manager_types") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.js" ]
   deps = []
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":copy_js" ]
 }
 
 js_library("gaia_button") {
@@ -290,7 +290,6 @@ polymer_modulizer("oobe_network_icons") {
 
 js_modulizer("modulize") {
   input_files = [
-    "display_manager_types.js",
     "long_touch_detector.js",
     "oobe_select.js",
     "oobe_types.js",
@@ -300,6 +299,15 @@ js_modulizer("modulize") {
   ]
   namespace_rewrites = []
 }
+
+# Copy existing files to output directory for closure compilation.
+copy("copy_js") {
+  sources = [
+    "display_manager_types.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 
 html_to_js("web_components") {
   js_files = [

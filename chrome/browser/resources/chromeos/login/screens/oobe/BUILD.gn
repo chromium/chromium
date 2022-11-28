@@ -94,7 +94,7 @@ js_library("enterprise_enrollment") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enterprise_enrollment.js" ]
   deps = [
     "../../../keyboard:keyboard_utils.m",
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:gaia_dialog",
     "../../components:keyboard_utils_for_injection.m",
     "../../components/behaviors:login_screen_behavior.m",

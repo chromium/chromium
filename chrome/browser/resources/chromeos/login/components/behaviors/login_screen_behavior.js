@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OOBE_UI_STATE} from '../display_manager_types.m.js';
+// #import {OOBE_UI_STATE} from '../display_manager_types.js';
 // #import {OobeTypes} from '../oobe_types.m.js';
 // #import {Oobe} from '../../cr_ui.js';
 

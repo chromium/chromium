@@ -166,7 +166,7 @@ js_library("consolidated_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
   deps = [
     "../..:display_manager",
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
     "../../components:web_view_helper.m",
@@ -242,7 +242,7 @@ js_library("family_link_notice") {
 js_library("fingerprint_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.js" ]
   deps = [
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -365,7 +365,7 @@ js_library("managed_terms_of_service") {
 js_library("marketing_opt_in") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.js" ]
   deps = [
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:oobe_a11y_option",
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
@@ -562,7 +562,7 @@ js_library("saml_confirm_password") {
 js_library("signin_fatal_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.js" ]
   deps = [
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -590,7 +590,7 @@ js_library("smart_privacy_protection.m") {
 js_library("sync_consent.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/sync_consent.m.js" ]
   deps = [
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_text_button",
@@ -605,7 +605,7 @@ js_library("sync_consent.m") {
 js_library("theme_selection") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.js" ]
   deps = [
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -661,7 +661,7 @@ js_library("error_message") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.js" ]
   deps = [
     "../../:cr_ui",
-    "../../components:display_manager_types.m",
+    "../../components:display_manager_types",
     "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",

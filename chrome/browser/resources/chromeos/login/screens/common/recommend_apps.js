@@ -21,7 +21,7 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeAppsList} from '../../components/oobe_apps_list.js';
 
 

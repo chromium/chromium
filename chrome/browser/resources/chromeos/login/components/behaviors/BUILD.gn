@@ -21,7 +21,7 @@ js_type_check("closure_compile") {
 js_library("login_screen_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/login_screen_behavior.m.js" ]
   deps = [
-    "..:display_manager_types.m",
+    "..:display_manager_types",
     "..:oobe_types.m",
   ]
   extra_deps = [ ":modulize" ]

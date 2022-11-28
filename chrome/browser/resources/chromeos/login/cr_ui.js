@@ -14,7 +14,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {DisplayManager} from './display_manager.js';
-import {DISPLAY_TYPE} from './components/display_manager_types.m.js';
+import {DISPLAY_TYPE} from './components/display_manager_types.js';
 import {loadTimeData} from './i18n_setup.js';
 import {OobeTypes} from './components/oobe_types.m.js';
 

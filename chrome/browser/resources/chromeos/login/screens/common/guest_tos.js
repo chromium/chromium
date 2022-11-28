@@ -25,7 +25,7 @@ import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';
 import {WebViewLoader} from '../../components/web_view_loader.m.js';
 

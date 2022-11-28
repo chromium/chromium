@@ -27,7 +27,7 @@ import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
+import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {Oobe} from '../../cr_ui.js';

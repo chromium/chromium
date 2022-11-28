@@ -26,7 +26,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {getSelectedValue} from '../../components/oobe_select.m.js';
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {WebViewHelper} from '../../components/web_view_helper.m.js';

@@ -11,7 +11,7 @@ import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.js';
 import {loadTimeData} from './i18n_setup.js';
 import {OobeTypes} from './components/oobe_types.m.js';
 
-import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
 import {keyboard} from './keyboard_utils.m.js';
 
