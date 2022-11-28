@@ -24,11 +24,17 @@
 // Button text color.
 @property(nonatomic, strong) UIColor* buttonTextColor;
 
-// Whether the button text will be bold or not. Default is YES.
-@property(nonatomic, assign) BOOL boldButtonText;
-
 // Button background color. Default is custom blue color.
 @property(nonatomic, strong) UIColor* buttonBackgroundColor;
+
+// If yes, adds a 50% alpha to the background in disabled state.
+// Otherwise, colors in disabled state are the same as in enabled
+// state and it is the responsibility of the owner to update color
+// before calling `configureCell:withStyler:` (default YES).
+@property(nonatomic, assign) BOOL dimBackgroundWhenDisabled;
+
+// Whether the button text will be bold or not. Default is YES.
+@property(nonatomic, assign) BOOL boldButtonText;
 
 // Accessibility identifier that will assigned to the button.
 @property(nonatomic, strong) NSString* buttonAccessibilityIdentifier;
