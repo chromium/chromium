@@ -5,9 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -72,10 +70,10 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
       // Schedule the ephemeral profile for deletion if it wasn't deleted yet,
       // since it's not needed any more.
       if (!profile_path_.has_value() &&
-          !IsProfileDirectoryMarkedForDeletion(profile_->GetPath())) {
+          !ProfileManager::IsProfileDirectoryMarkedForDeletion(
+              profile_->GetPath())) {
         g_browser_process->profile_manager()
-            ->GetDeleteProfileHelper()
-            .ScheduleEphemeralProfileForDeletion(profile_->GetPath());
+            ->ScheduleEphemeralProfileForDeletion(profile_->GetPath());
       }
     }
 

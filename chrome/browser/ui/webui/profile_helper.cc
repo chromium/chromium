@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -54,10 +53,8 @@ void DeleteProfileAtPath(base::FilePath file_path,
                          ProfileMetrics::ProfileDelete deletion_source) {
   if (!profiles::IsMultipleProfilesEnabled())
     return;
-  g_browser_process->profile_manager()
-      ->GetDeleteProfileHelper()
-      .MaybeScheduleProfileForDeletion(
-          file_path, base::BindOnce(&OpenNewWindowForProfile), deletion_source);
+  g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
+      file_path, base::BindOnce(&OpenNewWindowForProfile), deletion_source);
 }
 
 }  // namespace webui

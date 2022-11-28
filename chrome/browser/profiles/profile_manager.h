@@ -25,7 +25,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -39,10 +38,10 @@
 class AccountProfileMapper;
 #endif
 
-class DeleteProfileHelper;
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
+class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
 // Manages the lifecycle of Profile objects.
@@ -62,6 +61,9 @@ class ProfileManager : public Profile::Delegate {
   // Invokes SessionServiceFactory::ShutdownForProfile() for all profiles.
   static void ShutdownSessionServices();
 #endif
+
+  // Physically remove deleted profile directories from disk.
+  static void NukeDeletedProfilesFromDisk();
 
   // Get the Profile last used (the Profile to which owns the most recently
   // focused window) with this Chrome build. If no signed profile has been
@@ -185,7 +187,6 @@ class ProfileManager : public Profile::Delegate {
   // Get the path of the last used profile, or if that's undefined, the default
   // profile.
   base::FilePath GetLastUsedProfileDir();
-  static base::FilePath GetLastUsedProfileBaseName();
 
   // Returns the path of a profile with the requested account, or the empty
   // path if none exists.
@@ -260,20 +261,41 @@ class ProfileManager : public Profile::Delegate {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Searches for the latest active profile that respects |predicate|, already
-  // loaded preferably. Returns nullopt if no existing profile respects all the
-  // conditions.
-  absl::optional<base::FilePath> FindLastActiveProfile(
-      base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
+  // Less strict version of ScheduleProfileForDeletion(), silently exits if
+  // profile is either scheduling or marked for deletion.
+  void MaybeScheduleProfileForDeletion(
+      const base::FilePath& profile_dir,
+      ProfileLoadedCallback callback,
+      ProfileMetrics::ProfileDelete deletion_source);
+
+  // Schedules the profile at the given path to be deleted on shutdown. If we're
+  // deleting the last profile, a new one will be created in its place, and in
+  // that case the callback will be called when profile creation is complete.
+  void ScheduleProfileForDeletion(const base::FilePath& profile_dir,
+                                  ProfileLoadedCallback callback);
+
+  // Schedules the ephemeral profile at the given path to be deleted on
+  // shutdown. New profiles will not be created.
+  void ScheduleEphemeralProfileForDeletion(const base::FilePath& profile_dir);
 
   // Deletes Guest profile's browsing data.
   static void CleanUpGuestProfile();
-
-  DeleteProfileHelper& GetDeleteProfileHelper();
 #endif
+
+  // Returns if profile is marked for deletion.
+  static bool IsProfileDirectoryMarkedForDeletion(
+      const base::FilePath& profile_dir);
 
   // Autoloads profiles if they are running background apps.
   void AutoloadProfiles();
+
+  // Checks if any ephemeral profiles are left behind (e.g. because of a browser
+  // crash) and schedule them for deletion.
+  void CleanUpEphemeralProfiles();
+
+  // Checks if files of deleted profiles are left behind (e.g. because of a
+  // browser crash) and delete them in case they still exist.
+  void CleanUpDeletedProfiles();
 
   // Initializes user prefs of |profile|. This includes profile name and
   // avatar values.
@@ -327,12 +349,6 @@ class ProfileManager : public Profile::Delegate {
   // Profile* to be deleted from now on, even if it never had a visible
   // browser window.
   void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
-
-  // Returns whether |path| is allowed for profile creation.
-  bool IsAllowedProfilePath(const base::FilePath& path) const;
-
-  // Notifies `OnProfileMarkedForPermanentDeletion()` to the observers.
-  void NotifyOnProfileMarkedForPermanentDeletion(Profile* profile);
 
  protected:
   // Creates a new profile by calling into the profile's profile creation
@@ -464,6 +480,29 @@ class ProfileManager : public Profile::Delegate {
   // null if creation fails.
   Profile* CreateAndInitializeProfile(const base::FilePath& profile_dir);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Continues the scheduled profile deletion after closing all the profile's
+  // browsers tabs. Creates a new profile if the profile to be deleted is the
+  // last non-supervised profile. In the Mac, loads the next non-supervised
+  // profile if the profile to be deleted is the active profile.
+  void EnsureActiveProfileExistsBeforeDeletion(
+      ProfileLoadedCallback callback,
+      const base::FilePath& profile_dir);
+
+  // Schedules the profile at the given path to be deleted on shutdown,
+  // and marks the new profile as active.
+  void FinishDeletingProfile(const base::FilePath& profile_dir,
+                             const base::FilePath& new_active_profile_dir);
+  void OnLoadProfileForProfileDeletion(const base::FilePath& profile_dir,
+                                       Profile* profile);
+
+  // Searches for the latest active profile that respects |predicate|, already
+  // loaded preferably. Returns nullopt if no existing profile respects all the
+  // conditions.
+  absl::optional<base::FilePath> FindLastActiveProfile(
+      base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
+#endif
+
   // Registers profile with given info. Returns pointer to created ProfileInfo
   // entry.
   ProfileInfo* RegisterUnownedProfile(Profile* profile);
@@ -477,6 +516,9 @@ class ProfileManager : public Profile::Delegate {
   // also return a profile that is not fully initialized yet, so this method
   // should be used carefully.
   Profile* GetProfileByPathInternal(const base::FilePath& path) const;
+
+  // Returns whether |path| is allowed for profile creation.
+  bool IsAllowedProfilePath(const base::FilePath& path) const;
 
   // Whether a new profile can be created at |path|.
   bool CanCreateProfileAtPath(const base::FilePath& path) const;
@@ -520,6 +562,18 @@ class ProfileManager : public Profile::Delegate {
     raw_ptr<ProfileManager> profile_manager_;
   };
 
+  // If the `loaded_profile` has been loaded successfully and isn't already
+  // scheduled for deletion, then finishes adding `profile_to_delete_dir` to the
+  // queue of profiles to be deleted, and updates the kProfileLastUsed
+  // preference based on `last_non_supervised_profile_path`. `keep_alive` may be
+  // null and is used to ensure shutdown does not start.
+  void OnNewActiveProfileInitialized(
+      const base::FilePath& profile_to_delete_path,
+      const base::FilePath& last_non_supervised_profile_path,
+      ProfileLoadedCallback callback,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      Profile* loaded_profile);
+
   void OnClosingAllBrowsersChanged(bool closing);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -554,8 +608,6 @@ class ProfileManager : public Profile::Delegate {
 
 #if !BUILDFLAG(IS_ANDROID)
   BrowserListObserver browser_list_observer_{this};
-
-  std::unique_ptr<DeleteProfileHelper> delete_profile_helper_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Maps profile path to ProfileInfo (if profile has been created). Use
