@@ -544,6 +544,11 @@ void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {
   custom_data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
 }
 
+void ViewAccessibility::ClearPosInSetOverride() {
+  custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
+  custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
+}
+
 void ViewAccessibility::OverrideNextFocus(Widget* widget) {
   if (widget)
     next_focus_ = widget->GetWeakPtr();

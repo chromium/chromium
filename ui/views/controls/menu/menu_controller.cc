@@ -78,9 +78,19 @@
 
 using ui::OSExchangeData;
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::ViewTracker>*)
+
 namespace views {
 
 namespace {
+
+// The menu controller manages the AX index attributes inside menu items. This
+// property maintains a vector of menu children that were last assigned such
+// attributes by MenuController::SetSelectionIndices() so that the controller
+// can update them if children change via MenuController::MenuChildrenChanged().
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::ViewTracker>,
+                                   kOrderedMenuChildren,
+                                   nullptr)
 
 #if BUILDFLAG(IS_MAC)
 bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
@@ -2256,6 +2266,10 @@ void MenuController::MenuChildrenChanged(MenuItemView* item) {
   // Menu shouldn't be updated during drag operation.
   DCHECK(!active_mouse_view_tracker_->view());
 
+  // If needed, refresh the AX index assignments.
+  if (item->GetProperty(kOrderedMenuChildren))
+    SetSelectionIndices(item);
+
   // If the current item or pending item is a descendant of the item
   // that changed, move the selection back to the changed item.
   const MenuItemView* ancestor = state_.item;
@@ -2816,6 +2830,14 @@ void MenuController::IncrementSelection(
 }
 
 void MenuController::SetSelectionIndices(MenuItemView* parent) {
+  if (parent->GetProperty(kOrderedMenuChildren)) {
+    // Clear any old AX index assignments.
+    for (ViewTracker& item : *(parent->GetProperty(kOrderedMenuChildren))) {
+      if (item.view())
+        item.view()->GetViewAccessibility().ClearPosInSetOverride();
+    }
+  }
+
   std::vector<View*> ordering;
   SubmenuView* const submenu = parent->GetSubmenu();
 
@@ -2834,6 +2856,10 @@ void MenuController::SetSelectionIndices(MenuItemView* parent) {
     if (!found_focusable)
       ordering.push_back(item);
   }
+
+  parent->SetProperty(kOrderedMenuChildren,
+                      std::make_unique<std::vector<ViewTracker>>(
+                          ordering.begin(), ordering.end()));
 
   if (ordering.empty())
     return;

@@ -218,6 +218,7 @@ class VIEWS_EXPORT ViewAccessibility {
   //
   // Note that |pos_in_set| is one-based, i.e. it starts from 1 not 0.
   void OverridePosInSet(int pos_in_set, int set_size);
+  void ClearPosInSetOverride();
 
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus
