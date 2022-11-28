@@ -11,6 +11,11 @@
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/events/event_constants.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/accelerators/accelerator.h"
+#endif
 
 namespace ui::test {
 
@@ -42,6 +47,11 @@ class MockInteractionSimulator : public InteractionTestUtil::Simulator {
                bool(TrackedElement* element,
                     const std::u16string& text,
                     TextEntryMode mode));
+  MOCK_METHOD1(ActivateSurface, bool(TrackedElement* element));
+#if !BUILDFLAG(IS_IOS)
+  MOCK_METHOD2(SendAccelerator,
+               bool(TrackedElement* element, const Accelerator& accelerator));
+#endif
   MOCK_METHOD1(Confirm, bool(TrackedElement* element));
 };
 
@@ -121,6 +131,30 @@ TEST(InteractionTestUtilTest, EnterText) {
   util.EnterText(&element, kText,
                  InteractionTestUtil::TextEntryMode::kReplaceAll);
 }
+
+TEST(InteractionTestUtilTest, ActivateSurface) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  EXPECT_CALL(*mock, ActivateSurface(&element)).WillOnce(testing::Return(true));
+  util.ActivateSurface(&element);
+}
+
+#if !BUILDFLAG(IS_IOS)
+TEST(InteractionTestUtilTest, SendAccelerator) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  Accelerator accel(KeyboardCode::VKEY_F5, EF_SHIFT_DOWN);
+  EXPECT_CALL(*mock, SendAccelerator(&element, testing::Eq(accel)))
+      .WillOnce(testing::Return(true));
+  util.SendAccelerator(&element, accel);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST(InteractionTestUtilTest, Confirm) {
   TestElement element(kTestElementIdentifier, kTestElementContext);

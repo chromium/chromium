@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -78,6 +79,29 @@ class DefaultActionTestView : public View {
 
  private:
   bool activated_ = false;
+};
+
+class AcceleratorView : public View {
+ public:
+  explicit AcceleratorView(ui::Accelerator accelerator)
+      : accelerator_(accelerator) {
+    AddAccelerator(accelerator);
+  }
+
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    EXPECT_EQ(accelerator_, accelerator);
+    EXPECT_FALSE(pressed_);
+    pressed_ = true;
+    return true;
+  }
+
+  bool CanHandleAccelerators() const override { return true; }
+
+  bool pressed() const { return pressed_; }
+
+ private:
+  const ui::Accelerator accelerator_;
+  bool pressed_ = false;
 };
 
 }  // namespace
@@ -409,6 +433,37 @@ TEST_F(InteractionTestUtilViewsTest, EnterText_EditableCombobox) {
       box_el, u"1234",
       ui::test::InteractionTestUtil::TextEntryMode::kInsertOrReplace);
   EXPECT_EQ(u"ef1234cd", box->GetText());
+}
+
+TEST_F(InteractionTestUtilViewsTest, ActivateSurface) {
+  // Create a bubble that will close on deactivation.
+  auto dialog_ptr = std::make_unique<BubbleDialogDelegateView>(
+      contents_, BubbleBorder::Arrow::TOP_LEFT);
+  dialog_ptr->set_close_on_deactivate(true);
+  auto* widget = BubbleDialogDelegateView::CreateBubble(std::move(dialog_ptr));
+  WidgetVisibleWaiter shown_waiter(widget);
+  widget->Show();
+  shown_waiter.Wait();
+
+  // Activating the primary widget should close the bubble again.
+  WidgetDestroyedWaiter closed_waiter(widget);
+  auto* const view_el =
+      ElementTrackerViews::GetInstance()->GetElementForView(contents_, true);
+  test_util_->ActivateSurface(view_el);
+  closed_waiter.Wait();
+}
+
+TEST_F(InteractionTestUtilViewsTest, SendAccelerator) {
+  ui::Accelerator accel(ui::VKEY_F5, ui::EF_SHIFT_DOWN);
+  ui::Accelerator accel2(ui::VKEY_F6, ui::EF_NONE);
+  auto* const view =
+      contents_->AddChildView(std::make_unique<AcceleratorView>(accel));
+  auto* const view_el =
+      ElementTrackerViews::GetInstance()->GetElementForView(view, true);
+  test_util_->SendAccelerator(view_el, accel2);
+  EXPECT_FALSE(view->pressed());
+  test_util_->SendAccelerator(view_el, accel);
+  EXPECT_TRUE(view->pressed());
 }
 
 TEST_F(InteractionTestUtilViewsTest, Confirm) {

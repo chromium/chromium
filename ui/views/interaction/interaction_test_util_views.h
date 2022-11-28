@@ -43,6 +43,9 @@ class InteractionTestUtilSimulatorViews
   bool EnterText(ui::TrackedElement* element,
                  const std::u16string& text,
                  TextEntryMode mode) override;
+  bool ActivateSurface(ui::TrackedElement* element) override;
+  bool SendAccelerator(ui::TrackedElement* element,
+                       const ui::Accelerator& accelerator) override;
   bool Confirm(ui::TrackedElement* element) override;
 
   // Convenience method for tests that need to simulate a button press and have

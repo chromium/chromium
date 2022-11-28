@@ -113,6 +113,8 @@ Verbs fall into a number of different categories:
     - `SelectTab()`
     - `SelectDropdownItem()`
     - `EnterText()`
+    - `ActivateSurface()`
+    - `SendAccelerator()`
     - `Confirm()`
     - `DoDefaultAction()`
     - `NavigateWebContents()` [Browser]

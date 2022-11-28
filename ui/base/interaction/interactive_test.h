@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/rectify_callback.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -18,6 +19,10 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/accelerators/accelerator.h"
+#endif
 
 namespace ui::test {
 
@@ -101,6 +106,11 @@ class InteractiveTestApi {
       ElementSpecifier element,
       std::u16string text,
       TextEntryMode mode = TextEntryMode::kReplaceAll);
+  [[nodiscard]] StepBuilder ActivateSurface(ElementSpecifier element);
+#if !BUILDFLAG(IS_IOS)
+  [[nodiscard]] StepBuilder SendAccelerator(ElementSpecifier element,
+                                            Accelerator accelerator);
+#endif
   [[nodiscard]] StepBuilder Confirm(ElementSpecifier element);
 
   // Specifies a test action that is not tied to any one UI element.

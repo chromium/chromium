@@ -8,7 +8,12 @@
 #include <memory>
 #include <vector>
 
+#include "build/build_config.h"
 #include "ui/base/interaction/element_tracker.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/accelerators/accelerator.h"
+#endif
 
 namespace ui::test {
 
@@ -122,6 +127,15 @@ class InteractionTestUtil {
                                          const std::u16string& text,
                                          TextEntryMode mode);
 
+    // Activates the surface containing `element`.
+    [[nodiscard]] virtual bool ActivateSurface(TrackedElement* element);
+
+#if !BUILDFLAG(IS_IOS)
+    // Sends the given accelerator to the surface containing the element.
+    [[nodiscard]] virtual bool SendAccelerator(TrackedElement* element,
+                                               const Accelerator& accelerator);
+#endif
+
     // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
     [[nodiscard]] virtual bool Confirm(TrackedElement* element);
   };
@@ -183,6 +197,15 @@ class InteractionTestUtil {
   void EnterText(TrackedElement* element,
                  std::u16string text,
                  TextEntryMode mode = TextEntryMode::kReplaceAll);
+
+  // Activates the surface containing `element`.
+  void ActivateSurface(TrackedElement* element);
+
+#if !BUILDFLAG(IS_IOS)
+  // Sends `accelerator` to the surface containing `element`. May not work if
+  // the surface is not active.
+  void SendAccelerator(TrackedElement* element, Accelerator accelerator);
+#endif
 
   // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
   void Confirm(TrackedElement* element);

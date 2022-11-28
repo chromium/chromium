@@ -111,6 +111,34 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
   return builder;
 }
 
+InteractionSequence::StepBuilder InteractiveTestApi::ActivateSurface(
+    ElementSpecifier element) {
+  StepBuilder builder;
+  internal::SpecifyElement(builder, element);
+  builder.SetStartCallback(base::BindOnce(
+      [](InteractiveTestApi* test, InteractionSequence*, TrackedElement* el) {
+        test->test_util().ActivateSurface(el);
+      },
+      base::Unretained(this)));
+  return builder;
+}
+
+#if !BUILDFLAG(IS_IOS)
+InteractionSequence::StepBuilder InteractiveTestApi::SendAccelerator(
+    ElementSpecifier element,
+    Accelerator accelerator) {
+  StepBuilder builder;
+  internal::SpecifyElement(builder, element);
+  builder.SetStartCallback(base::BindOnce(
+      [](Accelerator accelerator, InteractiveTestApi* test,
+         InteractionSequence*, TrackedElement* el) {
+        test->test_util().SendAccelerator(el, accelerator);
+      },
+      accelerator, base::Unretained(this)));
+  return builder;
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
     ElementSpecifier element) {
   StepBuilder builder;

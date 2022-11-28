@@ -37,6 +37,7 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -486,6 +487,31 @@ bool InteractionTestUtilSimulatorViews::EnterText(ui::TrackedElement* element,
   }
 
   return false;
+}
+
+bool InteractionTestUtilSimulatorViews::ActivateSurface(
+    ui::TrackedElement* element) {
+  if (!element->IsA<TrackedElementViews>())
+    return false;
+
+  auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
+  views::test::WidgetActivationWaiter waiter(widget, true);
+  widget->Activate();
+  waiter.Wait();
+  return true;
+}
+
+bool InteractionTestUtilSimulatorViews::SendAccelerator(
+    ui::TrackedElement* element,
+    const ui::Accelerator& accelerator) {
+  if (!element->IsA<TrackedElementViews>())
+    return false;
+
+  element->AsA<TrackedElementViews>()
+      ->view()
+      ->GetFocusManager()
+      ->ProcessAccelerator(accelerator);
+  return true;
 }
 
 bool InteractionTestUtilSimulatorViews::Confirm(ui::TrackedElement* element) {
