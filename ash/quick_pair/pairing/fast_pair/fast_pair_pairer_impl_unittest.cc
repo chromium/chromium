@@ -2284,5 +2284,39 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
       /*success=*/false, 0);
 }
 
+// There are two pairing flows in which PairFailure::kCreateBondTimeout occurs.
+// In this test's scenario, |adapter_| knows of |device_|, so the
+// FastPairPairerImpl object in |fake_fast_pair_handshake_| will attempt and
+// fail to pair with it directly using FastPairPairerImpl::Pair.
+TEST_F(FastPairPairerImplTest, CreateBondTimeout_AdapterHasDeviceAddress) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateBondTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
+}
+
+// There are two pairing flows in which PairFailure::kCreateBondTimeout occurs.
+// In this test's scenario, |adapter_| doesn't know of |device_|, so the
+// FastPairPairerImpl object in |fake_fast_pair_handshake_| will attempt and
+// fail to connect with it using FastPairPairerImpl::ConnectDevice.
+TEST_F(FastPairPairerImplTest,
+       CreateBondTimeout_AdapterDoesNotHaveDeviceAddress) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  SetGetDeviceNullptr();
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateBondTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

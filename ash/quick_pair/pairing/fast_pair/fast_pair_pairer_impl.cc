@@ -33,6 +33,9 @@
 
 namespace {
 
+// 15s timeout chosen to align with Android's Fast Pair implementation.
+constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
+
 std::string MessageTypeToString(
     ash::quick_pair::FastPairMessageType message_type) {
   switch (message_type) {
@@ -251,7 +254,6 @@ FastPairPairerImpl::~FastPairPairerImpl() {
 void FastPairPairerImpl::StartPairing() {
   std::string device_address = device_->classic_address().value();
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
-
   switch (device_->protocol) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairSubsequent:
@@ -264,21 +266,27 @@ void FastPairPairerImpl::StartPairing() {
                       << device_address << ". Found device: "
                       << ((bt_device != nullptr) ? "Yes" : "No") << ".";
 
-      if (bt_device) {
-        if (bt_device->IsBonded()) {
-          QP_LOG(INFO) << __func__
-                       << ": Trying to pair to device that is already paired; "
-                          "returning success.";
-          std::move(paired_callback_).Run(device_);
-          // In addition to recording kPairingSuccess in the callback above,
-          // also record that the device was already paired.
-          AttemptRecordingFastPairEngagementFlow(
-              *device_,
-              FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
-          AttemptSendAccountKey();
-          return;
-        }
+      if (bt_device && bt_device->IsBonded()) {
+        QP_LOG(INFO) << __func__
+                     << ": Trying to pair to device that is already paired; "
+                        "returning success.";
+        std::move(paired_callback_).Run(device_);
 
+        // In addition to recording kPairingSuccess in the callback above,
+        // also record that the device was already paired.
+        AttemptRecordingFastPairEngagementFlow(
+            *device_,
+            FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
+        AttemptSendAccountKey();
+        return;
+      }
+
+      create_bond_timeout_timer_.Start(
+          FROM_HERE, kCreateBondTimeout,
+          base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
+                         base::Unretained(this)));
+
+      if (bt_device) {
         bt_device->Pair(this,
                         base::BindOnce(&FastPairPairerImpl::OnPairConnected,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -286,7 +294,6 @@ void FastPairPairerImpl::StartPairing() {
         adapter_->AddPairingDelegate(
             this, device::BluetoothAdapter::PairingDelegatePriority::
                       PAIRING_DELEGATE_PRIORITY_HIGH);
-
         adapter_->ConnectDevice(
             device_address,
             /*address_type=*/absl::nullopt,
@@ -308,6 +315,9 @@ void FastPairPairerImpl::StartPairing() {
 
 void FastPairPairerImpl::OnPairConnected(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  if (!StopCreateBondTimer(__func__))
+    return;
+
   QP_LOG(INFO) << __func__;
   RecordPairDeviceResult(/*success=*/!error.has_value());
 
@@ -325,6 +335,9 @@ void FastPairPairerImpl::OnPairConnected(
 }
 
 void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
+  if (!StopCreateBondTimer(__func__))
+    return;
+
   QP_LOG(INFO) << __func__;
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   RecordConnectDeviceResult(/*success=*/true);
@@ -334,6 +347,9 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
 }
 
 void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
+  if (!StopCreateBondTimer(__func__))
+    return;
+
   QP_LOG(WARNING) << __func__ << " " << error_message;
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
@@ -674,6 +690,26 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
       std::move(pairing_procedure_complete_).Run(device_);
     }
   }
+}
+
+void FastPairPairerImpl::OnCreateBondTimeout() {
+  QP_LOG(WARNING) << __func__
+                  << ": Timeout while attempting to create bond with device.";
+  std::move(pair_failed_callback_)
+      .Run(device_, PairFailure::kCreateBondTimeout);
+}
+
+bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {
+  if (create_bond_timeout_timer_.IsRunning()) {
+    create_bond_timeout_timer_.Stop();
+    return true;
+  }
+
+  QP_LOG(WARNING) << __func__ << ": " << callback_name
+                  << " called after an attempt to create a bond with device"
+                     "with classic address "
+                  << device_->classic_address().value() << " has timed out.";
+  return false;
 }
 
 }  // namespace quick_pair

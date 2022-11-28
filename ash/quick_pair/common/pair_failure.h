@@ -66,7 +66,9 @@ enum class PairFailure {
   kAddressConnect = 22,
   // BLE device instance lost mid pair with classic instance
   kBleDeviceLostMidPair = 23,
-  kMaxValue = kBleDeviceLostMidPair,
+  // Timed out attempting to bond to device.
+  kCreateBondTimeout = 24,
+  kMaxValue = kCreateBondTimeout,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

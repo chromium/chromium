@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -111,6 +112,13 @@ class FastPairPairerImpl : public FastPairPairer,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
 
+  // Helper to safely stop |create_bond_timeout_timer_|.
+  // If the timer can be stopped because it is running, this function returns
+  // true. If the timer cannot be stopped, this function returns false,
+  // informing the caller that the timer has expired and the caller should not
+  // proceed with bond creation.
+  bool StopCreateBondTimer(const std::string& callback_name);
+
   // device::BluetoothDevice::Pair callback
   void OnPairConnected(
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
@@ -118,6 +126,10 @@ class FastPairPairerImpl : public FastPairPairer,
   // device::BluetoothAdapter::ConnectDevice callbacks
   void OnConnectDevice(device::BluetoothDevice* device);
   void OnConnectError(const std::string& error_message);
+
+  // Callback for timeout on creating a bond with |device_| in
+  // StartPairing.
+  void OnCreateBondTimeout();
 
   //  FastPairHandshakeLookup::Create callback
   void OnHandshakeComplete(scoped_refptr<Device> device,
@@ -173,6 +185,10 @@ class FastPairPairerImpl : public FastPairPairer,
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
+
+  // A timer to time the bonding with |device_| in StartPairing and invoke a
+  // timeout if necessary.
+  base::OneShotTimer create_bond_timeout_timer_;
   base::WeakPtrFactory<FastPairPairerImpl> weak_ptr_factory_{this};
 };
 
