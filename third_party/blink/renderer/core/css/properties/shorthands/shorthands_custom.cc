@@ -3000,7 +3000,9 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  const Vector<AtomicString>& name_vector = style.ViewTimelineName();
+  const HeapVector<Member<const ScopedCSSName>>& name_vector =
+      style.ViewTimelineName() ? style.ViewTimelineName()->GetNames()
+                               : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
@@ -3008,7 +3010,7 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
   if (name_vector.size() == axis_vector.size()) {
     for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
       list->Append(*ComputedStyleUtils::SingleValueForViewTimelineShorthand(
-          name_vector[i], axis_vector[i]));
+          name_vector[i].Get(), axis_vector[i]));
     }
   }
 

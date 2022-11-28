@@ -2854,14 +2854,16 @@ Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
   return insets;
 }
 
-Vector<AtomicString> StyleBuilderConverter::ConvertViewTimelineName(
+ScopedCSSNameList* StyleBuilderConverter::ConvertViewTimelineName(
     StyleResolverState& state,
-    const CSSValue& value) {
-  Vector<AtomicString> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertNoneOrCustomIdent(state, *item));
+    const ScopedCSSValue& value) {
+  HeapVector<Member<const ScopedCSSName>> names;
+  for (const Member<const CSSValue>& item :
+       To<CSSValueList>(value.GetCSSValue())) {
+    names.push_back(ConvertNoneOrCustomIdent(
+        state, ScopedCSSValue(*item, value.GetTreeScope())));
   }
-  return names;
+  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
 }  // namespace blink

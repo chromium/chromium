@@ -362,8 +362,8 @@ class StyleBuilderConverter {
                                                       const CSSValue&);
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
-  static Vector<AtomicString> ConvertViewTimelineName(StyleResolverState&,
-                                                      const CSSValue&);
+  static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,
+                                                    const ScopedCSSValue&);
 };
 
 template <typename T>

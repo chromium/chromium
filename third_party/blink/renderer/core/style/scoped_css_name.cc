@@ -8,4 +8,8 @@ void ScopedCSSName::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
 }
 
+void ScopedCSSNameList::Trace(Visitor* visitor) const {
+  visitor->Trace(names_);
+}
+
 }  // namespace blink

@@ -7923,12 +7923,12 @@ const CSSValue* ViewTimelineName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  const Vector<AtomicString>& vector = style.ViewTimelineName();
-  if (vector.empty())
+  if (!style.ViewTimelineName())
     return InitialValue();
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const AtomicString& name : vector) {
-    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name));
+  for (const Member<const ScopedCSSName>& name :
+       style.ViewTimelineName()->GetNames()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
   }
   return list;
 }

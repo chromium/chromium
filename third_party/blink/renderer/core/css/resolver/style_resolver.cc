@@ -195,7 +195,7 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 bool HasTimelines(const StyleResolverState& state) {
   if (!state.StyleBuilder().ScrollTimelineName().empty())
     return true;
-  if (!state.StyleBuilder().ViewTimelineName().empty())
+  if (state.StyleBuilder().ViewTimelineName())
     return true;
   if (ElementAnimations* element_animations = GetElementAnimations(state))
     return element_animations->CssAnimations().HasTimelines();

@@ -501,15 +501,13 @@ void CSSAnimations::CalculateViewTimelineUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element,
     const ComputedStyleBuilder& style_builder) {
-  const Vector<AtomicString>& names = style_builder.ViewTimelineName();
-  const Vector<TimelineAxis>& axes = style_builder.ViewTimelineAxis();
-  const Vector<TimelineInset>& insets = style_builder.ViewTimelineInset();
-
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
 
-  if (names.empty() && (!timeline_data || timeline_data->IsEmpty()))
+  if (!style_builder.ViewTimelineName() &&
+      (!timeline_data || timeline_data->IsEmpty())) {
     return;
+  }
 
   CSSViewTimelineMap changed_timelines;
 
@@ -521,10 +519,20 @@ void CSSAnimations::CalculateViewTimelineUpdate(
     }
   }
 
+  const HeapVector<Member<const ScopedCSSName>>& names =
+      style_builder.ViewTimelineName()
+          ? style_builder.ViewTimelineName()->GetNames()
+          : HeapVector<Member<const ScopedCSSName>>();
+  const Vector<TimelineAxis>& axes = style_builder.ViewTimelineAxis();
+  const Vector<TimelineInset>& insets = style_builder.ViewTimelineInset();
+
   for (wtf_size_t i = 0; i < names.size(); ++i) {
-    const AtomicString& name = names[i];
-    if (name.empty())
+    if (!names[i]) {
+      // A value of nullptr means "none".
       continue;
+    }
+    // TODO(crbug.com/1382876): Handle TreeScopes.
+    const AtomicString& name = names[i]->GetName();
     TimelineAxis axis = axes.empty() ? TimelineAxis::kBlock
                                      : axes[std::min(i, axes.size() - 1)];
     const TimelineInset& inset = insets.empty()

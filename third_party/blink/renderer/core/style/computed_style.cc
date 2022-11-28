@@ -279,11 +279,11 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
 static bool AffectsScrollAnimations(const ComputedStyle* old_style,
                                     const ComputedStyle* new_style) {
   if (old_style && !(old_style->ScrollTimelineName().empty() &&
-                     old_style->ViewTimelineName().empty())) {
+                     !old_style->ViewTimelineName())) {
     return true;
   }
   if (new_style && !(new_style->ScrollTimelineName().empty() &&
-                     new_style->ViewTimelineName().empty())) {
+                     !new_style->ViewTimelineName())) {
     return true;
   }
   return false;

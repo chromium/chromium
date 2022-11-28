@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SCOPED_CSS_NAME_H_
 
 #include "base/memory/values_equivalent.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -53,6 +55,38 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
   // Weak reference to break ref cycle with both GC-ed and ref-counted objects:
   // Document -> ComputedStyle -> ScopedCSSName -> TreeScope(Document)
   WeakMember<const TreeScope> tree_scope_;
+};
+
+// Represents a list of tree-scoped names (or tree-scoped references).
+//
+// https://drafts.csswg.org/css-scoping/#css-tree-scoped-name
+// https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
+class CORE_EXPORT ScopedCSSNameList
+    : public GarbageCollected<ScopedCSSNameList> {
+ public:
+  explicit ScopedCSSNameList(HeapVector<Member<const ScopedCSSName>> names)
+      : names_(std::move(names)) {
+    DCHECK(!names_.empty());
+  }
+
+  const HeapVector<Member<const ScopedCSSName>>& GetNames() const {
+    return names_;
+  }
+
+  bool operator==(const ScopedCSSNameList& other) const {
+    return base::ranges::equal(names_, other.names_,
+                               [](const auto& a, const auto& b) {
+                                 return base::ValuesEquivalent(a, b);
+                               });
+  }
+  bool operator!=(const ScopedCSSNameList& other) const {
+    return !operator==(other);
+  }
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  HeapVector<Member<const ScopedCSSName>> names_;
 };
 
 }  // namespace blink

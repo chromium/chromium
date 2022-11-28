@@ -2057,7 +2057,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
 }
 
 CSSValue* ComputedStyleUtils::SingleValueForViewTimelineShorthand(
-    const AtomicString& name,
+    const ScopedCSSName* name,
     TimelineAxis axis) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ValueForCustomIdentOrNone(name));
@@ -3291,6 +3291,11 @@ CSSValue* ComputedStyleUtils::ValueForCustomIdentOrNone(
   if (ident.empty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(ident);
+}
+
+CSSValue* ComputedStyleUtils::ValueForCustomIdentOrNone(
+    const ScopedCSSName* name) {
+  return ValueForCustomIdentOrNone(name ? name->GetName() : g_null_atom);
 }
 
 const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(
