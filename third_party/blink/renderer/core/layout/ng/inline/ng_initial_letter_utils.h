@@ -19,8 +19,7 @@ class NGLogicalLineItems;
 // Adjust text position of texts in inline text box and returns adjusted
 // `FontHeight` to fit initial letter box in block direction.
 // Note: `NGLineBreaker::NextLine()` adjust inline size.
-FontHeight AdjustInitialLetterInTextPosition(const NGLineInfo& line_info,
-                                             const FontHeight& line_box_metrics,
+FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
                                              NGLogicalLineItems* line_box);
 
 // Calculate inline size of initial letter text.

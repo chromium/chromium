@@ -1815,10 +1815,16 @@ static LayoutUnit ComputeContentSize(
   };
 
   if (UNLIKELY(node.IsInitialLetterBox())) {
-    NGLineInfo line_info;
-    line_breaker.NextLine(&line_info);
-    DCHECK(line_breaker.IsFinished());
-    return CalculateInitialLetterBoxInlineSize(line_info);
+    LayoutUnit inline_size = LayoutUnit();
+    do {
+      NGLineInfo line_info;
+      line_breaker.NextLine(&line_info);
+      if (line_info.Results().empty())
+        break;
+      inline_size =
+          std::max(CalculateInitialLetterBoxInlineSize(line_info), inline_size);
+    } while (!line_breaker.IsFinished());
+    return inline_size;
   }
 
   FloatsMaxSize floats_max_size(float_input);

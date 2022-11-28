@@ -171,62 +171,65 @@ const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
 
 }  // namespace
 
-FontHeight AdjustInitialLetterInTextPosition(const NGLineInfo& line_info,
-                                             const FontHeight& line_box_metrics,
+FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
                                              NGLogicalLineItems* line_box) {
-  // TODO(crbug.com/1276900): Once we get a sample having more than one
-  // `NGLogicalLinteItem` in `line_box`, we should support it.
-  DCHECK_EQ(line_box->size(), 1u);
+  FontHeight font_height = FontHeight::Empty();
+  for (NGLogicalLineItem& line_item : *line_box) {
+    const ShapeResultView* const shape_result = line_item.shape_result.get();
+    if (!shape_result || !line_item.inline_item ||
+        line_item.inline_item->Type() != NGInlineItem::kText)
+      continue;
 
-  NGLogicalLineItem& line_item = *line_box->begin();
-  DCHECK(line_item.shape_result);
+    LayoutUnit baseline;
+    const ComputedStyle& style = *line_item.Style();
+    const LogicalRect text_ink_bounds =
+        ComputeTextInkBounds(*shape_result, style, &baseline);
 
-  LayoutUnit baseline;
-  const ComputedStyle& style = *line_item.Style();
-  const LogicalRect text_ink_bounds =
-      ComputeTextInkBounds(*line_item.shape_result, style, &baseline);
+    // Set `line_item.rect`, text paint origin, to left-top of
+    // `text_ink_bounds`. Note: ` NGTextFragmentPainter::Paint()` adds font
+    // ascent to block offset.
+    line_item.rect.offset.inline_offset +=
+        -text_ink_bounds.offset.inline_offset;
+    line_item.rect.offset.block_offset = -style.GetFontHeight().ascent;
+    line_item.inline_size = text_ink_bounds.size.inline_size;
 
-  // Set `line_item.rect`, text paint origin, to left-top of `text_ink_bounds`.
-  // Note: ` NGTextFragmentPainter::Paint()` adds font ascent to block offset.
-  line_item.rect.offset.inline_offset += -text_ink_bounds.offset.inline_offset;
-  line_item.rect.offset.block_offset = -style.GetFontHeight().ascent;
+    if (style.IsHorizontalWritingMode() ||
+        style.GetTextOrientation() == ETextOrientation::kSideways) {
+      const LayoutUnit line_height = text_ink_bounds.size.block_size;
+      const LayoutUnit ascent = baseline - text_ink_bounds.offset.block_offset;
+      font_height.Unite(FontHeight(ascent, line_height - ascent));
+      continue;
+    }
 
-  if (style.IsHorizontalWritingMode() ||
-      style.GetTextOrientation() == ETextOrientation::kSideways) {
     const LayoutUnit line_height = text_ink_bounds.size.block_size;
-    const LayoutUnit ascent = baseline - text_ink_bounds.offset.block_offset;
-    return FontHeight(ascent, LayoutUnit(line_height - ascent));
+    const LayoutUnit ascent = LayoutUnit::FromFloatFloor(line_height / 2);
+    font_height.Unite(FontHeight(ascent, line_height - ascent));
   }
-
-  const LayoutUnit line_height = text_ink_bounds.size.block_size;
-  const LayoutUnit ascent = LayoutUnit::FromFloatFloor(line_height / 2);
-  return FontHeight(LayoutUnit(ascent), LayoutUnit(line_height - ascent));
+  return font_height;
 }
 
 LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
-  // TODO(crbug.com/1276900): Once we get a sample having more than one
-  // `NGInlineItemResult` in `line_info`, we should support it.
-  DCHECK_EQ(line_info.Results().size(), 1u);
+  LayoutUnit inline_size = line_info.TextIndent();
+  for (const NGInlineItemResult& item_result : line_info.Results()) {
+    const ShapeResultView* const shape_result = item_result.shape_result.get();
+    if (!shape_result || item_result.item->Type() != NGInlineItem::kText) {
+      inline_size += item_result.inline_size;
+      continue;
+    }
+    const auto& style = *item_result.item->Style();
+    const LogicalRect text_ink_bounds =
+        ComputeTextInkBounds(*shape_result, style);
 
-  const NGInlineItemResult& initial_letter_text_item_result =
-      line_info.Results().front();
-  const ShapeResultView* const shape_result =
-      initial_letter_text_item_result.shape_result.get();
-  if (!shape_result)
-    return LayoutUnit();
-
-  const auto& style = *initial_letter_text_item_result.item->Style();
-  const LogicalRect text_ink_bounds =
-      ComputeTextInkBounds(*shape_result, style);
-
-  // Example of `text_ink_bounds`
-  //   - <i>f</i>   -16,18+59x81
-  //   - <i>T</i>   6,21+53x59
-  //   - T          2,21+51x59
-  //   - U+05E9     2,20+50x79 (HEBREW)
-  //   - U+3042     5,10+80x73 (HIRAGANA LETTER)
-  // See also `AdjustInitialLetterInTextPosition()`.
-  return text_ink_bounds.size.inline_size + line_info.TextIndent();
+    // Example of `text_ink_bounds`
+    //   - <i>f</i>   -16,18+59x81
+    //   - <i>T</i>   6,21+53x59
+    //   - T          2,21+51x59
+    //   - U+05E9     2,20+50x79 (HEBREW)
+    //   - U+3042     5,10+80x73 (HIRAGANA LETTER)
+    // See also `AdjustInitialLetterInTextPosition()`.
+    inline_size += text_ink_bounds.size.inline_size;
+  }
+  return inline_size;
 }
 
 const NGExclusion* PostPlaceInitialLetterBox(

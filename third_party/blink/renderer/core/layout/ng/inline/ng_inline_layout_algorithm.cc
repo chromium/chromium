@@ -527,10 +527,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
     const auto one_em = Node().Style().ComputedFontSizeAsFixed();
     inline_size = std::min(inline_size, one_em);
   } else if (UNLIKELY(Node().IsInitialLetterBox())) {
-    const FontHeight& adjusted_metrics = AdjustInitialLetterInTextPosition(
-        *line_info, line_box_metrics, line_box);
-    container_builder_.SetMetrics(adjusted_metrics);
-    line_box->MoveInBlockDirection(adjusted_metrics.ascent);
+    const FontHeight& adjusted_metrics =
+        AdjustInitialLetterInTextPosition(line_box_metrics, line_box);
+    if (!adjusted_metrics.IsEmpty()) {
+      container_builder_.SetMetrics(adjusted_metrics);
+      line_box->MoveInBlockDirection(adjusted_metrics.ascent);
+    }
   } else if (LIKELY(!Node().IsSvgText())) {
     // Convert baseline relative block offset of `NGLogicalLineItem::rect` to
     // to line box relative block offset.
