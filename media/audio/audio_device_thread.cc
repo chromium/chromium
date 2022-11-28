@@ -5,6 +5,7 @@
 #include "media/audio/audio_device_thread.h"
 
 #include <limits>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/system/sys_info.h"
