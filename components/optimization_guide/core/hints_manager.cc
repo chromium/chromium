@@ -1125,18 +1125,19 @@ void HintsManager::CanApplyOptimization(
   if (IsHintBeingFetchedForNavigation(url)) {
     CanApplyOptimizationAsync(url, optimization_type, std::move(callback));
   } else {
-    OptimizationMetadata meta;
+    OptimizationMetadata metadata;
+    OptimizationTypeDecision type_decision =
+        CanApplyOptimization(url, optimization_type, &metadata);
     OptimizationGuideDecision decision =
-        GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-            CanApplyOptimization(url, optimization_type, &meta));
+        GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
 
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ApplyDecision." +
             optimization_guide::GetStringNameForOptimizationType(
                 optimization_type),
-        decision);
+        type_decision);
 
-    std::move(callback).Run(decision, meta);
+    std::move(callback).Run(decision, metadata);
   }
 }
 
