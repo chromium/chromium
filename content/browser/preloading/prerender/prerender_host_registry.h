@@ -54,8 +54,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // The time to allow prerendering kept alive in the background. All the hosts
   // that this PrerenderHostRegistry holds will be terminated with
   // kTimeoutBackgrounded when the timer exceeds this. The value was determined
-  // to align with the default value of BFCache's eviction timer.
-  static constexpr base::TimeDelta kTimeToLiveInBackground = base::Seconds(180);
+  // by PageLoad.Clients.Prerender.NavigationToActivation.*.
+  static constexpr base::TimeDelta kTimeToLiveInBackground = base::Seconds(19);
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
