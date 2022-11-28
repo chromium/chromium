@@ -464,16 +464,13 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Returns the substring of the input identified by the given component.
   std::string ComponentString(const url::Component& comp) const {
-    if (comp.is_empty())
-      return std::string();
-    return std::string(spec_, static_cast<size_t>(comp.begin),
-                       static_cast<size_t>(comp.len));
+    return std::string(ComponentStringPiece(comp));
   }
   base::StringPiece ComponentStringPiece(const url::Component& comp) const {
     if (comp.is_empty())
       return base::StringPiece();
-    return base::StringPiece(&spec_[static_cast<size_t>(comp.begin)],
-                             static_cast<size_t>(comp.len));
+    return base::StringPiece(spec_).substr(static_cast<size_t>(comp.begin),
+                                           static_cast<size_t>(comp.len));
   }
 
   void ProcessFileSystemURLAfterReplaceComponents();

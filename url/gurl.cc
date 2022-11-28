@@ -416,8 +416,8 @@ base::StringPiece GURL::PathForRequestPiece() const {
   if (parsed_.ref.is_valid()) {
     // Clip off the reference when it exists. The reference starts after the
     // #-sign, so we have to subtract one to also remove it.
-    return base::StringPiece(&spec_[parsed_.path.begin],
-                             parsed_.ref.begin - parsed_.path.begin - 1);
+    return base::StringPiece(spec_).substr(
+        parsed_.path.begin, parsed_.ref.begin - parsed_.path.begin - 1);
   }
   // Compute the actual path length, rather than depending on the spec's
   // terminator. If we're an inner_url, our spec continues on into our outer
@@ -426,7 +426,7 @@ base::StringPiece GURL::PathForRequestPiece() const {
   if (parsed_.query.is_valid())
     path_len = parsed_.query.end() - parsed_.path.begin;
 
-  return base::StringPiece(&spec_[parsed_.path.begin], path_len);
+  return base::StringPiece(spec_).substr(parsed_.path.begin, path_len);
 }
 
 std::string GURL::PathForRequest() const {
