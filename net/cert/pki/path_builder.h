@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"

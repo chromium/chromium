@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/trust_store.h"
@@ -43,7 +42,7 @@ struct PemBlockMapping {
   const char* block_name;
 
   // The destination where the read value should be written to.
-  raw_ptr<std::string> value;
+  std::string* value;
 
   // True to indicate that the block is not required to be present. If the
   // block is optional and is not present, then |value| will not be modified.
