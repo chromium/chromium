@@ -797,6 +797,39 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
       visit_duration);
 }
 
+TEST_F(HistorySyncBridgeTest, UploadsUpdatedUrlTitle) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+
+  // Notify the bridge about the visit - it should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+
+  // Update the URL's title.
+  const std::string new_title("New title!");
+  url_row.set_title(base::ASCIIToUTF16(new_title));
+  ASSERT_TRUE(backend()->UpdateURL(url_row));
+  bridge()->OnURLsModified(/*history_backend=*/nullptr, {url_row},
+                           /*is_from_expiration=*/false);
+
+  // The updated data should have been sent to the processor.
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  const syncer::EntityData& entity = processor()->GetEntities().at(storage_key);
+  ASSERT_EQ(entity.specifics.history().redirect_entries().size(), 1);
+  EXPECT_EQ(entity.specifics.history().redirect_entries(0).title(), new_title);
+}
+
 TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
   // Start syncing (with no data yet).
   ApplyInitialSyncChanges({});

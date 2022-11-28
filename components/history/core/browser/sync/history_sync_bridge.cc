@@ -681,14 +681,27 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
 void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
                                        const URLRows& changed_urls,
                                        bool is_from_expiration) {
-  // Not interested: This class is watching visits rather than URLs, so
-  // modifications are handled in OnVisitUpdated().
-  // TODO(crbug.com/1318028): The title *can* get updated without a new visit,
-  // so watch for and commit such changes. Basically:
-  // - Get most recent visit for the URL.
-  // - If it's a local visit, and is tracked (and, maybe, is the end of a
-  //   redirect chain):
-  // - Build the specifics and Put() it.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ShouldCommitRightNow()) {
+    return;
+  }
+
+  // Not interested in expirations - both the server side and other clients have
+  // their own, independent expiration logic, so no need to send any updates.
+  if (is_from_expiration) {
+    return;
+  }
+
+  for (const URLRow& url_row : changed_urls) {
+    VisitRow visit_row;
+    if (history_backend_->GetMostRecentVisitForURL(url_row.id(), &visit_row) &&
+        visit_row.originator_cache_guid.empty()) {
+      // It's the URL corresponding to a local visit - probably the title got
+      // updated.
+      MaybeCommit(visit_row);
+    }
+  }
 }
 
 void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
@@ -975,7 +988,7 @@ bool HistorySyncBridge::UpdateEntityInBackend(
     return false;
   }
 
-  // TODO(crbug.com/1318028): Handle updates to the URL-related fields
+  // TODO(crbug.com/1393079): Handle updates to the URL-related fields
   // (notably the title - other fields probably can't change).
   return true;
 }

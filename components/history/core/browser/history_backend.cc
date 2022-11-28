@@ -1418,6 +1418,12 @@ bool HistoryBackend::GetVisitsForURL(URLID id, VisitVector* visits) {
   return false;
 }
 
+bool HistoryBackend::GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) {
+  if (db_)
+    return db_->GetMostRecentVisitForURL(id, visit_row);
+  return false;
+}
+
 bool HistoryBackend::GetMostRecentVisitsForURL(URLID id,
                                                int max_visits,
                                                VisitVector* visits) {

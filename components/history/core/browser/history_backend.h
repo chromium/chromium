@@ -564,6 +564,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool GetVisitsForURL(URLID id, VisitVector* visits);
 
+  bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
+
   // Fetches up to `max_visits` most recent visits for the passed URL.
   bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
 
