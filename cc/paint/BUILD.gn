@@ -132,7 +132,6 @@ cc_component("paint") {
     "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/common:mailbox",
     "//ui/gfx/animation",
-    "//ui/gfx/ipc/color",
   ]
 
   if (skia_support_skottie) {
