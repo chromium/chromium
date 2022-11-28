@@ -22,6 +22,7 @@
 #include "chrome/browser/history_clusters/entity_image_service.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -513,15 +514,21 @@ void HistoryClustersHandler::OnGotClustersBatch(
     bool can_load_more,
     bool is_continuation) {
   // TODO(tommycli): It's weird that there's one more post-processing step here
-  // that's not encapsulated within `QueryClustersState`. That's because
-  // `EntityImageService` can't live in the component yet, because it depends
-  // on code in the /chrome directory. Fix this using dependency injection.
-  auto* entity_image_service = EntityImageService::Get(GetProfile());
-  entity_image_service->PopulateEntityImagesFor(
-      std::move(clusters_batch),
-      base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
-                     weak_ptr_factory_.GetWeakPtr(), query, can_load_more,
-                     is_continuation));
+  // that's not encapsulated within `QueryClustersState`. After componentizing
+  // ImageService, have HistoryClustersService pass a pointer to it in the
+  // constructor, so `QueryClustersState` can do this for itself.
+  if (auto* image_service =
+          image_service::ImageServiceFactory::GetForBrowserContext(
+              GetProfile())) {
+    image_service->PopulateEntityImagesFor(
+        std::move(clusters_batch),
+        base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
+                       weak_ptr_factory_.GetWeakPtr(), query, can_load_more,
+                       is_continuation));
+  } else {
+    SendClustersToPage(query, can_load_more, is_continuation,
+                       std::move(clusters_batch));
+  }
 }
 
 void HistoryClustersHandler::SendClustersToPage(

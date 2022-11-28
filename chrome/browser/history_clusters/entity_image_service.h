@@ -5,35 +5,34 @@
 #ifndef CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
 #define CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 namespace history_clusters {
 
 // Used to get the image URL associated with a cluster. It doesn't actually
 // fetch the image, that's up to the UI to do.
+// TODO(tommycli): Move to /components and rename to `ImageService`.
 class EntityImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
-  // This should only be called by the internal factory. Most callers should use
-  // the `Get()` method instead.
-  explicit EntityImageService(Profile* profile);
+  EntityImageService(
+      std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
+      syncer::SyncService* sync_service);
   EntityImageService(const EntityImageService&) = delete;
   EntityImageService& operator=(const EntityImageService&) = delete;
 
   ~EntityImageService() override;
-
-  // Gets the fetcher associated with `profile`. Always succeeds.
-  static EntityImageService* Get(Profile* profile);
 
   // Populates entity images into the `image_url` of any eligible visits within
   // every cluster in `clusters`. `clusters` should be moved into the parameter.
@@ -58,9 +57,7 @@ class EntityImageService : public KeyedService {
                       ResultCallback callback,
                       const GURL& image_url);
 
-  const raw_ptr<Profile> profile_;
-  ChromeAutocompleteProviderClient autocomplete_provider_client_;
-
+  std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
 

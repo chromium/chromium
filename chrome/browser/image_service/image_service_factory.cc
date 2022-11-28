@@ -1,0 +1,44 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/image_service/image_service_factory.h"
+
+#include "base/no_destructor.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/history_clusters/entity_image_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+
+namespace image_service {
+
+// static
+history_clusters::EntityImageService* ImageServiceFactory::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return static_cast<history_clusters::EntityImageService*>(
+      GetInstance().GetServiceForBrowserContext(browser_context, true));
+}
+
+// static
+ImageServiceFactory& ImageServiceFactory::GetInstance() {
+  static base::NoDestructor<ImageServiceFactory> instance;
+  return *instance;
+}
+
+ImageServiceFactory::ImageServiceFactory()
+    : ProfileKeyedServiceFactory("ImageService") {
+  DependsOn(SyncServiceFactory::GetInstance());
+}
+
+ImageServiceFactory::~ImageServiceFactory() = default;
+
+KeyedService* ImageServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  auto* profile = Profile::FromBrowserContext(context);
+  // TODO(tommycli): Move EntityImageService to the image_service component.
+  return new history_clusters::EntityImageService(
+      std::make_unique<ChromeAutocompleteProviderClient>(profile),
+      SyncServiceFactory::GetForProfile(profile));
+}
+
+}  // namespace image_service
