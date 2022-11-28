@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/scan_done_section.js';
 
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
-export function scanDoneSectionTest() {
+suite('scanDoneSectionTest', function() {
   /** @type {?ScanDoneSectionElement} */
   let scanDoneSection = null;
 
@@ -200,4 +200,4 @@ export function scanDoneSectionTest() {
               scanDoneSection.$$('#editButtonLabel').textContent.trim());
         });
   });
-}
+});

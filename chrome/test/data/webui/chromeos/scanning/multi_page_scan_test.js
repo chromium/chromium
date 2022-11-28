@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/multi_page_scan.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
-export function multiPageScanTest() {
+suite('multiPageScanTest', function() {
   /** @type {?MultiPageScanElement} */
   let multiPageScan = null;
 
@@ -130,4 +130,4 @@ export function multiPageScanTest() {
     multiPageScan.$$('#cancelButton').click();
     assertTrue(clickCancelEventFired);
   });
-}
+});

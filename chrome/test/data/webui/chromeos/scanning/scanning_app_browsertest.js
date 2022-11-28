@@ -3,18 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Test suite for chrome://scanning.
- * Unified polymer testing suite for scanning app.
- *
- * To run all tests in a single instance (default, faster):
+ * @fileoverview Test suite for chrome://scanning. Tests
+ * individual polymer components in isolation. To run all tests in a single
+ * instance (default, faster):
  * `browser_tests --gtest_filter=ScanningApp*`
- *
- * To run each test in a new instance:
- * `browser_tests --run-manual --gtest_filter=ScanningAppBrowserTest.MANUAL_*`
- *
- * To run a single test suite, such as 'ScanApp':
- * `browser_tests --run-manual
- * --gtest_filter=ScanningAppBrowserTest.MANUAL_ScanApp`
+ * To run a single test suite such as 'ActionToolbar':
+ * browser_tests --gtest_filter=ScanningAppActionToolbar.All
  */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
@@ -22,50 +16,42 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/**
- * @constructor
- * @extends {PolymerTest}
- */
-function ScanningAppBrowserTest() {}
+this.ScanningAppBrowserTest = class extends PolymerTest {};
 
-ScanningAppBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
-  browsePreload: 'chrome://scanning/test_loader.html?module=chromeos/' +
-      'scanning/scanning_app_unified_test.js&host=test',
-};
-
-// List of names of suites in unified test to register for individual debugging.
-// You must register all suites in unified test here as well for consistency,
-// although technically is not necessary.
-const debug_suites_list = [
-  'ActionToolbar',
-  'ColorModeSelect',
-  'FileTypeSelect',
-  'LoadingPage',
-  'MultiPageCheckbox',
-  'MultiPageScan',
-  'PageSizeSelect',
-  'ResolutionSelect',
-  'ScanApp',
-  'ScanDoneSection',
-  'ScannerSelect',
-  'ScanPreview',
-  'ScanToSelect',
-  'SourceSelect',
+const tests = [
+  ['ActionToolbar', 'action_toolbar_test.js'],
+  ['ColorModeSelect', 'color_mode_select_test.js'],
+  ['FileTypeSelect', 'file_type_select_test.js'],
+  ['LoadingPage', 'loading_page_test.js'],
+  ['MultiPageCheckbox', 'multi_page_checkbox_test.js'],
+  ['MultiPageScan', 'multi_page_scan_test.js'],
+  ['PageSizeSelect', 'page_size_select_test.js'],
+  ['ResolutionSelect', 'resolution_select_test.js'],
+  ['ScanApp', 'scanning_app_test.js'],
+  ['ScanDoneSection', 'scan_done_section_test.js'],
+  ['ScannerSelect', 'scanner_select_test.js'],
+  ['ScanPreview', 'scan_preview_test.js'],
+  ['ScanToSelect', 'scan_to_select_test.js'],
+  ['SourceSelect', 'source_select_test.js'],
 ];
 
-// Flaky. See crbug.com/1334465
-TEST_F('ScanningAppBrowserTest', 'All', function() {
-  assertDeepEquals(
-      debug_suites_list, test_suites_list,
-      'List of registered tests suites and debug suites do not match.\n' +
-          'Did you forget to add your test in debug_suites_list?');
-  mocha.run();
-});
 
-// Register each suite listed as individual tests for debugging purposes.
-for (const suiteName of debug_suites_list) {
-  TEST_F('ScanningAppBrowserTest', `MANUAL_${suiteName}`, function() {
-    runMochaSuite(suiteName);
-  });
+tests.forEach(test => registerTest(...test));
+
+/*
+ * Add a `caseName` to a specific test to disable it i.e. 'DISABLED_All'
+ * @param {string} testName
+ * @param {string} module
+ * @param {string} caseName
+ */
+function registerTest(testName, module, caseName) {
+  const className = `ScanningApp${testName}`;
+  this[className] = class extends ScanningAppBrowserTest {
+    /** @override */
+    get browsePreload() {
+      return `chrome://scanning/test_loader.html` +
+          `?module=chromeos/scanning/${module}&host=test`;
+    }
+  };
+  TEST_F(className, caseName || 'All', () => mocha.run());
 }

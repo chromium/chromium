@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/scanning_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
 import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -405,7 +405,7 @@ class FakeMultiPageScanController {
   }
 }
 
-export function scanningAppTest() {
+suite('scanningAppTest', function() {
   /** @type {?ScanningAppElement} */
   let scanningApp = null;
 
@@ -2613,4 +2613,4 @@ export function scanningAppTest() {
               scanningApp.$$('#pageSizeSelect').$$('select').value);
         });
   });
-}
+});

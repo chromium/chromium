@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './scanning_shared_css.js';
+import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';

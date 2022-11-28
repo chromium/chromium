@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/file_type_select.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -14,7 +15,7 @@ const FileType = {
   PNG: ash.scanning.mojom.FileType.kPng,
 };
 
-export function fileTypeSelectTest() {
+suite('fileTypeSelectTest', function() {
   /** @type {?FileTypeSelectElement} */
   let fileTypeSelect = null;
 
@@ -51,4 +52,4 @@ export function fileTypeSelectTest() {
               FileType.JPG.toString(), fileTypeSelect.selectedFileType);
         });
   });
-}
+});

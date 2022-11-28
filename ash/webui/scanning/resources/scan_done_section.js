@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
+import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.js';

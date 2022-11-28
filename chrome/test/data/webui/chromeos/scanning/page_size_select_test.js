@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/page_size_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
@@ -21,7 +21,7 @@ const PageSize = {
   Max: ash.scanning.mojom.PageSize.kMax,
 };
 
-export function pageSizeSelectTest() {
+suite('pageSizeSelectTest', function() {
   /** @type {?PageSizeSelectElement} */
   let pageSizeSelect = null;
 
@@ -126,4 +126,4 @@ export function pageSizeSelectTest() {
               select.options[select.selectedIndex].value);
         });
   });
-}
+});

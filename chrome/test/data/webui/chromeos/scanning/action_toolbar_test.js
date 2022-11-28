@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/action_toolbar.js';
 
+import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-export function actionToolbarTest() {
+suite('actionToolbarTest', function() {
   /** @type {?ActionToolbarElement} */
   let actionToolbar = null;
 
@@ -73,4 +73,4 @@ export function actionToolbarTest() {
       assertEquals(expectedPageIndex, pageIndexFromEvent);
     });
   });
-}
+});

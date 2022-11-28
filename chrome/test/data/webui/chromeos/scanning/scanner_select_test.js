@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/scanner_select.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 
@@ -22,7 +22,7 @@ const secondScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
 const secondScannerName = 'Scanner 2';
 
-export function scannerSelectTest() {
+suite('scannerSelectTest', function() {
   /** @type {?ScannerSelectElement} */
   let scannerSelect = null;
 
@@ -116,4 +116,4 @@ export function scannerSelectTest() {
       assertEquals(firstScannerIdString, scannerSelect.$$('select').value);
     });
   });
-}
+});

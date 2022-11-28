@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/loading_page.js';
 
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMediaQueryList} from './scanning_app_test_utils.js';
 
-export function loadingPageTest() {
+suite('loadingPageTest', function() {
   const scanningSrcBase = 'chrome://scanning/';
 
   /** @type {?LoadingPageElement} */
@@ -136,4 +136,4 @@ export function loadingPageTest() {
     await setFakePrefersColorSchemeDark(true);
     assertEquals(getLoadingSvg().src, darkModeSvg);
   });
-}
+});

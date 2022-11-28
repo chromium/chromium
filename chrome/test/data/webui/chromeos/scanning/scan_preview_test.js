@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/scan_preview.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -9,11 +10,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {setAccessibilityFeaturesForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMediaQueryList} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -47,7 +47,7 @@ class FakeAccessibilityFeatures {
   }
 }
 
-export function scanPreviewTest() {
+suite('scanPreviewTest', function() {
   /** @type {?ScanPreviewElement} */
   let scanPreview = null;
 
@@ -459,4 +459,4 @@ export function scanPreviewTest() {
     await setFakePrefersColorSchemeDark(true);
     assertEquals(getReadyToScanSvg().src, darkModeSvg);
   });
-}
+});

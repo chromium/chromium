@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/multi_page_checkbox.js';
 
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-export function multiPageCheckboxTest() {
+suite('multiPageCheckboxTest', function() {
   /** @type {?MultiPageCheckboxElement} */
   let multiPageCheckbox = null;
 
@@ -35,4 +35,4 @@ export function multiPageCheckboxTest() {
     multiPageCheckbox.$$('#checkboxText').click();
     assertFalse(multiPageCheckbox.multiPageScanChecked);
   });
-}
+});

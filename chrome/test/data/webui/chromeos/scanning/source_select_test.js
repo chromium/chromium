@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './scanning_mojom_imports.js';
 import 'chrome://scanning/source_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
@@ -40,7 +40,7 @@ const colorModes =
     [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE, ColorMode.COLOR];
 const resolutions = [75, 150, 300];
 
-export function sourceSelectTest() {
+suite('sourceSelectTest', function() {
   /** @type {?SourceSelectElement} */
   let sourceSelect = null;
 
@@ -132,4 +132,4 @@ export function sourceSelectTest() {
     flush();
     assertEquals(sourceSelect.selectedOption, sourceSelect.options[0].name);
   });
-}
+});
