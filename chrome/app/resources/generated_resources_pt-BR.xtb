@@ -7712,7 +7712,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="820568752112382238">Sites mais visitados</translation>
 <translation id="8206745257863499010">Chorinho</translation>
 <translation id="8206859287963243715">Celular</translation>
-<translation id="8207404892907560325">Escolha uma senha de acesso</translation>
+<translation id="8207404892907560325">Escolha uma chave de acesso</translation>
 <translation id="8208216423136871611">Não salvar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="821119981794423735">Se quiser importar senhas para o Gerenciador de senhas do Google da conta <ph name="USER_EMAIL" />, selecione um arquivo CSV</translation>
