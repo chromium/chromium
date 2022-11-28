@@ -396,7 +396,9 @@ class IntentChipButtonIPHBubbleBrowserTest
   base::CallbackListSubscription subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
+// TODO(crbug.com/1393003): This test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest,
+                       DISABLED_ShowAndCloseIPH) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
