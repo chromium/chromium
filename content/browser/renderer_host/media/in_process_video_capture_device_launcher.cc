@@ -98,6 +98,13 @@ BASE_FEATURE(kDesktopCaptureMacV2,
 BASE_FEATURE(kScreenCaptureKitMac,
              "ScreenCaptureKitMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If this feature is enabled, ScreenCaptureKit will be used for window
+// capturing even if kScreenCaptureKitMac is disabled. Please note that this
+// feature has no effect if kScreenCaptureKitMac is enabled.
+BASE_FEATURE(kScreenCaptureKitMacWindow,
+             "ScreenCaptureKitMacWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
@@ -491,7 +498,9 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   // Prefer using ScreenCaptureKit. After that try DesktopCaptureDeviceMac, and
   // if both fail, use the generic DesktopCaptureDevice.
   if (!video_capture_device &&
-      base::FeatureList::IsEnabled(kScreenCaptureKitMac)) {
+      (base::FeatureList::IsEnabled(kScreenCaptureKitMac) ||
+       (desktop_id.type == DesktopMediaID::TYPE_WINDOW &&
+        base::FeatureList::IsEnabled(kScreenCaptureKitMacWindow)))) {
     if ((video_capture_device = CreateScreenCaptureKitDeviceMac(desktop_id)))
       implementation = kScreenCaptureKitDeviceMac;
   }
