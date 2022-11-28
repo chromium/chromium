@@ -54,7 +54,10 @@ class PeriodicCollector : public CollectorBase {
   ~PeriodicCollector() override;
 
  protected:
-  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
+  // CollectorBase:
+  void OnMetricDataCollected(bool is_event_driven,
+                             absl::optional<MetricData> metric_data) override;
+  bool CanCollect() const override;
 
  private:
   void StartPeriodicCollection();

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
@@ -35,7 +36,8 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
       metric_report_queue_(metric_report_queue),
       rate_controller_(std::make_unique<MetricRateController>(
           base::BindRepeating(&PeriodicCollector::Collect,
-                              base::Unretained(this)),
+                              base::Unretained(this),
+                              /*is_event_driven=*/false),
           reporting_settings,
           rate_setting_path,
           default_rate,
@@ -77,20 +79,29 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
 PeriodicCollector::~PeriodicCollector() = default;
 
 void PeriodicCollector::OnMetricDataCollected(
+    bool is_event_driven,
     absl::optional<MetricData> metric_data) {
   CheckOnSequence();
   if (!metric_data.has_value()) {
     return;
   }
 
+  if (is_event_driven) {
+    DCHECK(metric_data->has_telemetry_data());
+    metric_data->mutable_telemetry_data()->set_is_event_driven(is_event_driven);
+  }
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
   metric_report_queue_->Enqueue(std::move(metric_data.value()));
+}
+
+bool PeriodicCollector::CanCollect() const {
+  return reporting_controller_->IsEnabled();
 }
 
 void PeriodicCollector::StartPeriodicCollection() {
   CheckOnSequence();
   // Do initial collection at startup.
-  Collect();
+  Collect(/*is_event_driven=*/false);
   rate_controller_->Start();
 }
 

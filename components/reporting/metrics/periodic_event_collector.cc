@@ -29,7 +29,8 @@ PeriodicEventCollector::PeriodicEventCollector(
       event_detector_(std::move(event_detector)),
       rate_controller_(std::make_unique<MetricRateController>(
           base::BindRepeating(&PeriodicEventCollector::Collect,
-                              base::Unretained(this)),
+                              base::Unretained(this),
+                              /*is_event_driven=*/false),
           reporting_settings,
           rate_setting_path,
           default_rate,
@@ -46,7 +47,7 @@ void PeriodicEventCollector::SetOnEventObservedCallback(
 void PeriodicEventCollector::SetReportingEnabled(bool is_enabled) {
   if (is_enabled) {
     // Do initial collection at startup.
-    Collect();
+    Collect(/*is_event_driven=*/false);
     rate_controller_->Start();
     return;
   }
@@ -54,6 +55,7 @@ void PeriodicEventCollector::SetReportingEnabled(bool is_enabled) {
 }
 
 void PeriodicEventCollector::OnMetricDataCollected(
+    bool is_event_driven,
     absl::optional<MetricData> metric_data) {
   if (!metric_data.has_value()) {
     return;
@@ -69,5 +71,9 @@ void PeriodicEventCollector::OnMetricDataCollected(
   }
   last_collected_data_->mutable_event_data()->set_type(event.value());
   on_event_observed_cb_.Run(last_collected_data_.value());
+}
+
+bool PeriodicEventCollector::CanCollect() const {
+  return true;
 }
 }  // namespace reporting

@@ -142,15 +142,26 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
   // collection.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
-  task_environment_.FastForwardBy(init_delay - interval);
+  collector.Collect(/*is_event_driven=*/true);
 
-  // One initial collection when the init delay is elapsed.
+  // `init_delay` not elapsed but manual collection is triggered.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
-
   MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().is_event_driven());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
+
+  task_environment_.FastForwardBy(init_delay - interval);
+
+  // One initial collection when the init delay is elapsed.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
+
+  metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_FALSE(metric_data_reported.telemetry_data().is_event_driven());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
@@ -193,21 +204,41 @@ TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
   // Setting is disabled, no data collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
+  collector.Collect(/*is_event_driven=*/true);
+
+  // Manual collection is triggered but reporting is disabled.
+  EXPECT_EQ(sampler_->GetNumCollectCalls(), 0);
+
   settings_->SetBoolean(kEnableSettingPath, true);
   // One initial collection at policy enablement.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
-
-  task_environment_.FastForwardBy(interval);
-  // 1 collection at policy enablement + 1 collection after interval.
-  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
 
   MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_FALSE(metric_data_reported.telemetry_data().has_is_event_driven());
+
+  task_environment_.FastForwardBy(interval / 2);
+
+  collector.Collect(/*is_event_driven=*/true);
+
+  // `interval` not elapsed but manual collection is triggered.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
   metric_data_reported = metric_report_queue_->GetMetricDataReported();
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
   EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().is_event_driven());
+
+  task_environment_.FastForwardBy(interval / 2);
+  // 1 collection at policy enablement + 1 manual collection  + 1 collection
+  // after interval.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(3));
+
+  metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_FALSE(metric_data_reported.telemetry_data().has_is_event_driven());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());

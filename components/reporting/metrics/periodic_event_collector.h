@@ -62,7 +62,9 @@ class PeriodicEventCollector : public MetricEventObserver,
 
  protected:
   // CollectorBase:
-  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
+  void OnMetricDataCollected(bool is_event_driven,
+                             absl::optional<MetricData> metric_data) override;
+  bool CanCollect() const override;
 
  private:
   MetricRepeatingCallback on_event_observed_cb_;

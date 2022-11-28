@@ -21,12 +21,17 @@ CollectorBase::~CollectorBase() {
   CheckOnSequence();
 }
 
-void CollectorBase::Collect() {
+void CollectorBase::Collect(bool is_event_driven) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   CheckOnSequence();
 
-  auto on_collected_cb = base::BindOnce(&CollectorBase::OnMetricDataCollected,
-                                        weak_ptr_factory_.GetWeakPtr());
+  if (!CanCollect()) {
+    return;
+  }
+
+  auto on_collected_cb =
+      base::BindOnce(&CollectorBase::OnMetricDataCollected,
+                     weak_ptr_factory_.GetWeakPtr(), is_event_driven);
   sampler_->MaybeCollect(
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(on_collected_cb)));

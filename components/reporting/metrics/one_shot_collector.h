@@ -53,10 +53,14 @@ class OneShotCollector : public CollectorBase {
 
   ~OneShotCollector() override;
 
- protected:
-  void Collect() override;
+  // CollectorBase:
+  void Collect(bool is_event_driven) override;
 
-  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
+ protected:
+  // CollectorBase:
+  void OnMetricDataCollected(bool is_event_driven,
+                             absl::optional<MetricData> metric_data) override;
+  bool CanCollect() const override;
 
  private:
   void SetReportingControllerCb();

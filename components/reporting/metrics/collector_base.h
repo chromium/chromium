@@ -25,15 +25,18 @@ class CollectorBase {
 
   virtual ~CollectorBase();
 
- protected:
   // Collect metric data provided by `sampler_` asynchronously.
-  virtual void Collect();
+  virtual void Collect(bool is_event_driven);
 
+ protected:
   // Callback executed when metric data is collected.
   virtual void OnMetricDataCollected(
+      bool is_event_driven,
       absl::optional<MetricData> metric_data) = 0;
 
   void CheckOnSequence() const;
+
+  virtual bool CanCollect() const = 0;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

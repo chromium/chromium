@@ -32,6 +32,11 @@ MetricReportingController::~MetricReportingController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+bool MetricReportingController::IsEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return setting_enabled_;
+}
+
 void MetricReportingController::SetSettingUpdateCb(
     base::RepeatingClosure on_setting_enabled,
     base::RepeatingClosure on_setting_disabled) {

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -64,34 +65,47 @@ OneShotCollector::OneShotCollector(
 
 OneShotCollector::~OneShotCollector() = default;
 
-void OneShotCollector::Collect() {
+void OneShotCollector::Collect(bool is_event_driven) {
   CheckOnSequence();
-
-  if (data_collected_) {
-    return;
+  if (!is_event_driven) {
+    if (data_collected_) {
+      return;
+    }
+    // TODO(b/260093529): Should this be set for event driven telemetry
+    // collection as well?
+    data_collected_ = true;
   }
-  data_collected_ = true;
-  reporting_controller_.reset();
-  CollectorBase::Collect();
+  CollectorBase::Collect(is_event_driven);
+}
+
+bool OneShotCollector::CanCollect() const {
+  return reporting_controller_->IsEnabled();
 }
 
 void OneShotCollector::OnMetricDataCollected(
+    bool is_event_driven,
     absl::optional<MetricData> metric_data) {
   CheckOnSequence();
-  DCHECK(on_data_reported_);
+  DCHECK(is_event_driven || on_data_reported_);
   if (!metric_data.has_value()) {
     return;
   }
 
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
-  metric_report_queue_->Enqueue(std::move(metric_data.value()),
-                                std::move(on_data_reported_));
+  if (is_event_driven) {
+    DCHECK(metric_data->has_telemetry_data());
+    metric_data->mutable_telemetry_data()->set_is_event_driven(is_event_driven);
+  }
+  metric_report_queue_->Enqueue(
+      std::move(metric_data.value()),
+      is_event_driven ? base::DoNothing() : std::move(on_data_reported_));
 }
 
 void OneShotCollector::SetReportingControllerCb() {
   CheckOnSequence();
 
   reporting_controller_->SetSettingUpdateCb(
-      base::BindRepeating(&OneShotCollector::Collect, base::Unretained(this)));
+      base::BindRepeating(&OneShotCollector::Collect, base::Unretained(this),
+                          /*is_event_driven=*/false));
 }
 }  // namespace reporting

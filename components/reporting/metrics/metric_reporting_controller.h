@@ -32,6 +32,9 @@ class MetricReportingController {
 
   ~MetricReportingController();
 
+  // Whether reporting is currently enabled.
+  bool IsEnabled() const;
+
   // When called, `on_setting_enabled` will run if the setting is enabled and
   // nothing will run otherwise, then whenever the setting state changes, the
   // corresponding callback will run.

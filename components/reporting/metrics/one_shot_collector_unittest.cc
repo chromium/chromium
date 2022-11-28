@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/metrics/fakes/fake_sampler.h"
@@ -48,7 +49,7 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
   settings_->SetBoolean(kEnableSettingPath, true);
 
   MetricData metric_data;
-  metric_data.mutable_info_data();
+  metric_data.mutable_telemetry_data();
   sampler_->SetMetricData(std::move(metric_data));
   base::test::TestFuture<Status> test_future;
 
@@ -72,7 +73,28 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
       metric_report_queue_->GetMetricDataReported();
 
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported.has_info_data());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_FALSE(metric_data_reported.telemetry_data().has_is_event_driven());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
+
+  settings_->SetBoolean(kEnableSettingPath, false);
+  collector.Collect(/*is_event_driven=*/true);
+
+  // No new data collection, setting is disabled.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
+
+  settings_->SetBoolean(kEnableSettingPath, true);
+  collector.Collect(/*is_event_driven=*/true);
+
+  // Number of collection calls increased by one, setting is enabled and manual
+  // collection called.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
+
+  metric_data_reported = metric_report_queue_->GetMetricDataReported();
+
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().is_event_driven());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
@@ -81,7 +103,7 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
   settings_->SetBoolean(kEnableSettingPath, true);
 
   MetricData metric_data;
-  metric_data.mutable_info_data();
+  metric_data.mutable_telemetry_data();
   sampler_->SetMetricData(std::move(metric_data));
   base::test::TestFuture<Status> test_future;
 
@@ -96,24 +118,36 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
   // `init_delay` is not elapsed yet.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
+  collector.Collect(/*is_event_driven=*/true);
+
+  // Data manually collected before `init_delay`.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
+
+  MetricData metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().is_event_driven());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
+
   task_environment_.FastForwardBy(init_delay - elapsed);
 
-  // Setting is initially enabled, data is being collected.
-  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
+  // Setting is initially enabled and `init_delay` elapsed, data is collected.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
 
   settings_->SetBoolean(kEnableSettingPath, false);
   settings_->SetBoolean(kEnableSettingPath, true);
 
   // No more data should be collected even if the setting was disabled then
   // re-enabled.
-  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
   EXPECT_TRUE(test_future.Wait());
 
-  MetricData metric_data_reported =
-      metric_report_queue_->GetMetricDataReported();
+  metric_data_reported = metric_report_queue_->GetMetricDataReported();
 
   EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported.has_info_data());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 

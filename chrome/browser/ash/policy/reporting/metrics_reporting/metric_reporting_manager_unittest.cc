@@ -81,7 +81,10 @@ class FakeCollector : public CollectorBase {
   ~FakeCollector() override { --(*collector_count_); }
 
  protected:
-  void OnMetricDataCollected(absl::optional<MetricData>) override {}
+  // CollectorBase:
+  void OnMetricDataCollected(bool is_event_driven,
+                             absl::optional<MetricData> metric_data) override {}
+  bool CanCollect() const override { return true; }
 
  private:
   raw_ptr<int> collector_count_;
