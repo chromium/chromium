@@ -146,7 +146,7 @@ TEST_P(HoldingSpaceItemViewsSectionTest, MAYBE_ItemOrder) {
 // Verifies that partially initialized items will not show until they are fully
 // initialized.
 // https://crbug.com/1392609.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_PartiallyInitializedItemsDontShow \
   DISABLED_PartiallyInitializedItemsDontShow
 #else
