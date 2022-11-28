@@ -14,6 +14,9 @@ BASE_DECLARE_FEATURE(kEnableSuggestionsScrollingOnIPad);
 // Feature flag to enable omnibox suggestions with iOS 16 `PasteButton`.
 BASE_DECLARE_FEATURE(kOmniboxPasteButton);
 
+// Feature flag to make omnibox popup a floating rounded rect.
+BASE_DECLARE_FEATURE(kEnablePopoutOmniboxIpad);
+
 // Feature parameter for kOmniboxPasteButton.
 extern const char kOmniboxPasteButtonParameterName[];
 // PasteButton on suggestion row, blue color with icon only and capsule shape.
@@ -38,5 +41,6 @@ bool IsOmniboxActionsVisualTreatment1();
 bool IsOmniboxActionsVisualTreatment2();
 // Returns false, swift version not supported anymore.
 bool IsSwiftUIPopupEnabled();
-
+// Returns if kEnablePopoutOmniboxIpad feature is enabled.
+bool IsIpadPopoutOmniboxEnabled();
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

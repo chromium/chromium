@@ -24,6 +24,7 @@
 
 namespace {
 const CGFloat kVerticalOffset = 6;
+const CGFloat kPopoutOmniboxSideInsets = -8;
 }  // namespace
 
 @interface OmniboxPopupPresenter ()
@@ -74,7 +75,33 @@ const CGFloat kVerticalOffset = 6;
 
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(viewController.view, _popupContainerView);
+
+    if (IsIpadPopoutOmniboxEnabled()) {
+      _popupContainerView.clipsToBounds = YES;
+      _popupContainerView.layer.cornerRadius = 11.0f;
+
+      if (IsOmniboxActionsVisualTreatment1()) {
+        UIColor* borderColor =
+            incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
+                      : [UIColor.blackColor colorWithAlphaComponent:0.12];
+
+        _popupContainerView.layer.borderColor = borderColor.CGColor;
+        _popupContainerView.layer.borderWidth = 2.0f;
+        AddSameConstraints(viewController.view, _popupContainerView);
+
+      } else {
+        // Treatment 2.
+        // Popup's outer edges align with the omnibox, top edge overlaps the
+        // toolbar by 1pt.
+        AddSameConstraintsWithInsets(
+            viewController.view, _popupContainerView,
+            ChromeDirectionalEdgeInsetsMake(0, kPopoutOmniboxSideInsets, 0,
+                                            kPopoutOmniboxSideInsets));
+        _popupContainerView.backgroundColor = UIColor.redColor;
+      }
+    } else {
+      AddSameConstraints(viewController.view, _popupContainerView);
+    }
 
     if (!IsSwiftUIPopupEnabled()) {
       // Add bottom separator. This will only be visible on iPad where
@@ -142,6 +169,33 @@ const CGFloat kVerticalOffset = 6;
   }
 }
 
+// With popout omnibox, the popup might be in either of two states:
+// a) regular x regular state, where the popup matches OB width
+// b) compact state, where popup takes whole screen width
+// Therefore, on trait collection change, re-add the popup and recreate the
+// constraints to make sure the correct ones are used.
+- (void)updatePopupAfterTraitCollectionChange {
+  DCHECK(IsIpadPopoutOmniboxEnabled());
+
+  if (!self.open) {
+    return;
+  }
+
+  // Re-add the popup container to break any existing constraints.
+  [self.popupContainerView removeFromSuperview];
+  [[self.delegate popupParentViewForPresenter:self]
+      addSubview:self.popupContainerView];
+
+  // Re-add necessary constraints.
+  [self initialLayout];
+
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+      IsSwiftUIPopupEnabled()) {
+    self.bottomConstraint.active = YES;
+    self.bottomSeparator.hidden = NO;
+  }
+}
+
 #pragma mark - Private
 
 // Layouts the popup when it is just added to the view hierarchy.
@@ -157,18 +211,32 @@ const CGFloat kVerticalOffset = 6;
 
   // Position the top anchor of the popup relatively to the layout guide
   // positioned on the omnibox.
-  UILayoutGuide* topLayout =
-      [NamedGuide guideWithName:kOmniboxGuide view:popup];
+  UILayoutGuide* omniboxGuide = [NamedGuide guideWithName:kOmniboxGuide
+                                                     view:popup];
   NSLayoutConstraint* topConstraint =
-      [popup.topAnchor constraintEqualToAnchor:topLayout.bottomAnchor];
+      [popup.topAnchor constraintEqualToAnchor:omniboxGuide.bottomAnchor];
   topConstraint.constant = kVerticalOffset;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [popup.leadingAnchor constraintEqualToAnchor:popup.superview.leadingAnchor],
-    [popup.trailingAnchor
-        constraintEqualToAnchor:popup.superview.trailingAnchor],
-    topConstraint,
-  ]];
+  NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
+      [NSMutableArray arrayWithObject:topConstraint];
+
+  if (IsIpadPopoutOmniboxEnabled() &&
+      IsRegularXRegularSizeClass(self.popupContainerView)) {
+    [constraintsToActivate addObjectsFromArray:@[
+      [popup.leadingAnchor constraintEqualToAnchor:omniboxGuide.leadingAnchor],
+      [popup.trailingAnchor
+          constraintEqualToAnchor:omniboxGuide.trailingAnchor],
+    ]];
+  } else {
+    [constraintsToActivate addObjectsFromArray:@[
+      [popup.leadingAnchor
+          constraintEqualToAnchor:popup.superview.leadingAnchor],
+      [popup.trailingAnchor
+          constraintEqualToAnchor:popup.superview.trailingAnchor],
+    ]];
+  }
+
+  [NSLayoutConstraint activateConstraints:constraintsToActivate];
 
   [[popup superview] layoutIfNeeded];
 }

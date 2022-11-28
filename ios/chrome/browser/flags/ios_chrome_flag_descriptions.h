@@ -133,6 +133,10 @@ extern const char kEnableExpKitCalendarTextClassifierDescription[];
 extern const char kEnableExpKitTextClassifierName[];
 extern const char kEnableExpKitTextClassifierDescription[];
 
+// Title and description for popout omnibox on iPad feature.
+extern const char kEnablePopoutOmniboxIpadName[];
+extern const char kEnablePopoutOmniboxIpadDescription[];
+
 // Title and description for the flag to enable long press surrounding text.
 extern const char kLongPressSurroundingTextName[];
 extern const char kLongPressSurroundingTextDescription[];

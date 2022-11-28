@@ -6,9 +6,14 @@
 
 #include "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kEnableSuggestionsScrollingOnIPad,
              "EnableSuggestionsScrollingOnIPad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnablePopoutOmniboxIpad,
+             "EnablePopoutOmniboxIpad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxPasteButton,
@@ -50,4 +55,9 @@ bool IsOmniboxActionsVisualTreatment2() {
 
 bool IsSwiftUIPopupEnabled() {
   return false;
+}
+
+bool IsIpadPopoutOmniboxEnabled() {
+  return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }

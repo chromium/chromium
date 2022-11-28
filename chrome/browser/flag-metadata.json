@@ -5527,6 +5527,11 @@
     "owners": [ "finnur" ],
     "expiry_milestone": 110
   },
+    {
+    "name": "popout-omnibox-ipad",
+    "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
   {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],

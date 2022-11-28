@@ -14,6 +14,10 @@
 // Delegate for AutocompleteResultConsumer.
 @protocol AutocompleteResultConsumerDelegate <NSObject>
 
+// Notify about a size change.
+- (void)autocompleteResultConsumerDidChangeTraitCollection:
+    (id<AutocompleteResultConsumer>)sender;
+
 // Tells the delegate on scroll.
 - (void)autocompleteResultConsumerDidScroll:
     (id<AutocompleteResultConsumer>)sender;

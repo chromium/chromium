@@ -39,6 +39,10 @@
 // if necessary.
 - (void)updatePopup;
 
+// Only called when IsIpadPopoutOmniboxEnabled is true.
+// Tells the presenter to update, following a trait collection change.
+- (void)updatePopupAfterTraitCollectionChange;
+
 - (instancetype)initWithPopupPresenterDelegate:
                     (id<OmniboxPopupPresenterDelegate>)presenterDelegate
                            popupViewController:

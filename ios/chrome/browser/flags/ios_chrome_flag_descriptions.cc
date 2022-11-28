@@ -157,6 +157,11 @@ extern const char kEnableExpKitTextClassifierDescription[] =
     "When enabled, Experience Kit will use Text Classifier library in "
     "entity detection where possible.";
 
+const char kEnablePopoutOmniboxIpadName[] = "Popout omnibox (iPad)";
+const char kEnablePopoutOmniboxIpadDescription[] =
+    "Make omnibox popup appear in a detached rounded rectangle below the "
+    "omnibox.";
+
 extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"

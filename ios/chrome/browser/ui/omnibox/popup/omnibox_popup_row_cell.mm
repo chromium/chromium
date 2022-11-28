@@ -37,6 +37,8 @@ const CGFloat kTextSpacingActionsEnabled = 2.0f;
 // omnibox image. If Variation 2 becomes default, probably we don't need the
 // fancy layout guide setup and can get away with simple margins.
 const CGFloat kImageOffsetVariation2 = 8.0f;
+const CGFloat kImageAdditionalOffsetVariation2PopoutOmnibox = 10.0f;
+const CGFloat kAdditionalTextOffsetVariation2 = 8.0f;
 const CGFloat kTextOffsetVariation2 = 8.0f;
 const CGFloat kTrailingButtonPointSize = 17.0f;
 
@@ -346,15 +348,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   // views. See -freezeLayoutGuidePositions for the reason why.
 
   CGFloat iconXOffset = 0;
+  BOOL isRTL = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
+                           self.omniboxSemanticContentAttribute] ==
+               UIUserInterfaceLayoutDirectionRightToLeft;
+
   if (IsOmniboxActionsVisualTreatment2() && !IsRegularXRegularSizeClass(self)) {
     // Inset the icons in variation 2, except in reg x reg size class where the
     // alignment works well already. Flip the inset on RTL as it's not flipped
     // automatically.
-    BOOL isRTL =
-        [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
-                    self.omniboxSemanticContentAttribute] ==
-        UIUserInterfaceLayoutDirectionRightToLeft;
     iconXOffset = isRTL ? -kImageOffsetVariation2 : kImageOffsetVariation2;
+  }
+
+  if (IsIpadPopoutOmniboxEnabled() && IsOmniboxActionsVisualTreatment2()) {
+    iconXOffset += kImageAdditionalOffsetVariation2PopoutOmnibox;
   }
 
   self.nonDeletingLayoutGuideConstraints = @[
@@ -415,11 +421,21 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   CGRect layoutGuideFrame =
       [layoutGuide.owningView convertRect:layoutGuide.layoutFrame
                                    toView:self.contentView];
-  return self.omniboxSemanticContentAttribute ==
-                 UISemanticContentAttributeForceRightToLeft
-             ? self.contentView.bounds.size.width - layoutGuideFrame.origin.x -
-                   layoutGuideFrame.size.width
-             : layoutGuideFrame.origin.x;
+  CGFloat leadingSpace = self.omniboxSemanticContentAttribute ==
+                                 UISemanticContentAttributeForceRightToLeft
+                             ? self.contentView.bounds.size.width -
+                                   layoutGuideFrame.origin.x -
+                                   layoutGuideFrame.size.width
+                             : layoutGuideFrame.origin.x;
+
+  if (IsIpadPopoutOmniboxEnabled() && IsOmniboxActionsVisualTreatment2()) {
+    leadingSpace += self.omniboxSemanticContentAttribute ==
+                            UISemanticContentAttributeForceRightToLeft
+                        ? -kAdditionalTextOffsetVariation2
+                        : kAdditionalTextOffsetVariation2;
+  }
+
+  return leadingSpace;
 }
 
 // Unfreezes the position of any view that is positioned relative to a layout

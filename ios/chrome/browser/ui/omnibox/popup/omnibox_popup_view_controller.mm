@@ -45,6 +45,9 @@ const CGFloat kTopAndBottomPadding = 8.0;
 const CGFloat kTopPaddingVariation1 = 0.0;
 const CGFloat kTopPaddingVariation2 = 10.0;
 const CGFloat kTopBottomPaddingVariation2Ipad = 16.0;
+const CGFloat kTopPaddingVariation2IpadPopoutOmnibox = 8.0;
+const CGFloat kBottomPaddingVariation2IpadPopoutOmnibox = -12.0;
+const CGFloat kSidePaddingVariation2IpadPopoutOmnibox = 8.0;
 const CGFloat kFooterHeightVariation1 = 12.0;
 const CGFloat kFooterHeightVariation2 = 16.0;
 // Percentage of the suggestion height that needs to be visible in order to
@@ -179,6 +182,9 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   [self updateBackgroundColor];
+  if (IsIpadPopoutOmniboxEnabled()) {
+    [self.delegate autocompleteResultConsumerDidChangeTraitCollection:self];
+  }
 }
 
 #pragma mark - Getter/Setter
@@ -315,7 +321,13 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
                                   omniboxFrame.origin.x -
                                   omniboxFrame.size.width
                             : 0;
+
   if (IsOmniboxActionsVisualTreatment2()) {
+    if (IsIpadPopoutOmniboxEnabled() && IsRegularXRegularSizeClass(self)) {
+      leftMargin += kSidePaddingVariation2IpadPopoutOmnibox;
+      rightMargin += kSidePaddingVariation2IpadPopoutOmnibox;
+    }
+
     // Adjust the table view to be aligned with the omnibox textfield.
     self.tableView.layoutMargins =
         UIEdgeInsetsMake(self.tableView.layoutMargins.top, leftMargin,
@@ -1040,6 +1052,10 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
     BOOL isIpad = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
     topPadding =
         isIpad ? kTopBottomPaddingVariation2Ipad : kTopPaddingVariation2;
+
+    if (IsIpadPopoutOmniboxEnabled()) {
+      topPadding = kTopPaddingVariation2IpadPopoutOmnibox;
+    }
   }
   return topPadding;
 }
@@ -1047,6 +1063,10 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 - (CGFloat)bottomPadding {
   if (IsOmniboxActionsVisualTreatment2() &&
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
+    if (IsIpadPopoutOmniboxEnabled()) {
+      return kBottomPaddingVariation2IpadPopoutOmnibox;
+    }
+
     return kTopBottomPaddingVariation2Ipad;
   }
   return kTopAndBottomPadding;

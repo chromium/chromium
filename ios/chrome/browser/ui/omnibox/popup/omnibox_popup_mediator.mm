@@ -165,6 +165,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 #pragma mark - AutocompleteResultConsumerDelegate
 
+- (void)autocompleteResultConsumerDidChangeTraitCollection:
+    (id<AutocompleteResultConsumer>)sender {
+  [self.presenter updatePopupAfterTraitCollectionChange];
+}
+
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row {
