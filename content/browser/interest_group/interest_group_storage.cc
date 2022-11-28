@@ -1394,21 +1394,6 @@ bool DoGetKAnonymity(
   return interest_group_kanon.Succeeded();
 }
 
-bool DoGetInterestGroupNameKAnonymity(
-    sql::Database& db,
-    const url::Origin& owner,
-    const std::string& name,
-    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
-  return DoGetKAnonymity(db, KAnonKeyFor(owner, name), output);
-}
-
-bool DoGetURLKAnonymity(
-    sql::Database& db,
-    const GURL& url,
-    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
-  return DoGetKAnonymity(db, url.spec(), output);
-}
-
 bool GetPreviousWins(sql::Database& db,
                      const blink::InterestGroupKey& group_key,
                      base::Time win_time_after,
@@ -1536,26 +1521,6 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     return absl::nullopt;
   }
 
-  if (!DoGetInterestGroupNameKAnonymity(db, group_key.owner, group_key.name,
-                                        db_interest_group.name_kanon)) {
-    // This should only happen if the database was created with an older version
-    // of the k-anon key for interest group names. Try the old group name.
-    // TODO(behamilton): Remove this in a new version
-    if (!DoGetKAnonymity(db,
-                         group_key.owner.GetURL()
-                             .Resolve(base::EscapePath(group_key.name))
-                             .spec(),
-                         db_interest_group.name_kanon))
-      return absl::nullopt;
-    db_interest_group.name_kanon->key =
-        KAnonKeyFor(group_key.owner, group_key.name);
-  }
-  if (db_interest_group.interest_group.daily_update_url &&
-      !DoGetURLKAnonymity(
-          db, db_interest_group.interest_group.daily_update_url.value(),
-          db_interest_group.daily_update_url_kanon)) {
-    return absl::nullopt;
-  }
   if (db_interest_group.interest_group.bidding_url) {
     if (db_interest_group.interest_group.ads) {
       for (auto& ad : db_interest_group.interest_group.ads.value()) {

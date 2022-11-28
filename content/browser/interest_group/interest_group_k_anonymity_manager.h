@@ -46,11 +46,6 @@ class InterestGroupKAnonymityManager {
   void QueryKAnonymityForInterestGroup(
       const StorageInterestGroup& storage_group);
 
-  // Notify the k-anonymity service that we are joining this interest group.
-  // Internally this calls RegisterIDAsJoined() for interest group name and
-  // update URL.
-  void RegisterInterestGroupAsJoined(const blink::InterestGroup& group);
-
   // Notify the k-anonymity service that this ad won an auction. Internally this
   // calls RegisterIDAsJoined().
   void RegisterAdAsWon(const blink::InterestGroup& group,

@@ -11,10 +11,6 @@
 
 namespace content {
 
-std::string KAnonKeyFor(const url::Origin& owner, const std::string& name) {
-  return owner.GetURL().spec() + '\n' + name;
-}
-
 std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
                              const blink::InterestGroup::Ad& ad) {
   DCHECK(group.ads);
@@ -23,7 +19,6 @@ std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
   DCHECK(group.bidding_url);
   return group.owner.GetURL().spec() + '\n' +
          group.bidding_url.value_or(GURL()).spec() + '\n' +
-         group.bidding_wasm_helper_url.value_or(GURL()).spec() + '\n' +
          ad.render_url.spec();
 }
 
@@ -32,10 +27,9 @@ std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
   DCHECK(group.ads);
   DCHECK(base::Contains(*group.ads, ad));
   DCHECK(group.bidding_url);
-  return group.owner.GetURL().spec() + '\n' + group.name + '\n' +
+  return group.owner.GetURL().spec() + '\n' +
          group.bidding_url.value_or(GURL()).spec() + '\n' +
-         group.bidding_wasm_helper_url.value_or(GURL()).spec() + '\n' +
-         ad.render_url.spec();
+         ad.render_url.spec() + '\n' + group.name;
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
@@ -55,21 +49,6 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
   std::vector<std::string> ids_to_query;
   base::Time check_time = base::Time::Now();
   base::TimeDelta min_wait = k_anonymity_service_->GetQueryInterval();
-
-  if (!storage_group.name_kanon ||
-      storage_group.name_kanon->last_updated < check_time - min_wait) {
-    ids_to_query.push_back(KAnonKeyFor(storage_group.interest_group.owner,
-                                       storage_group.interest_group.name));
-  }
-
-  if (storage_group.interest_group.daily_update_url) {
-    if (!storage_group.daily_update_url_kanon ||
-        storage_group.daily_update_url_kanon->last_updated <
-            check_time - min_wait) {
-      ids_to_query.push_back(
-          storage_group.interest_group.daily_update_url->spec());
-    }
-  }
 
   for (const auto& ad : storage_group.bidding_ads_kanon) {
     if (ad.last_updated < check_time - min_wait) {
@@ -110,13 +89,6 @@ void InterestGroupKAnonymityManager::QuerySetsCallback(
                                                  update_time};
     interest_group_manager_->UpdateKAnonymity(data);
   }
-}
-
-void InterestGroupKAnonymityManager::RegisterInterestGroupAsJoined(
-    const blink::InterestGroup& group) {
-  RegisterIDAsJoined(KAnonKeyFor(group.owner, group.name));
-  if (group.daily_update_url)
-    RegisterIDAsJoined(group.daily_update_url->spec());
 }
 
 void InterestGroupKAnonymityManager::RegisterAdAsWon(

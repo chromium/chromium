@@ -327,7 +327,6 @@ void InterestGroupManagerImpl::ClearPermissionsCache() {
 void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(
     const StorageInterestGroup& group) {
   k_anonymity_manager_->QueryKAnonymityForInterestGroup(group);
-  k_anonymity_manager_->RegisterInterestGroupAsJoined(group.interest_group);
 }
 
 void InterestGroupManagerImpl::UpdateKAnonymity(

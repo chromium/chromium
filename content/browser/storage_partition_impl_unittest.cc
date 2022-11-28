@@ -250,7 +250,7 @@ class RemoveInterestGroupTester {
     static_cast<InterestGroupManagerImpl*>(
         storage_partition_->GetInterestGroupManager())
         ->GetLastKAnonymityReported(
-            KAnonKeyFor(origin, "Name"),
+            k_anon_key,
             base::BindOnce(
                 &RemoveInterestGroupTester::GetLastKAnonymityReportedCallback,
                 base::Unretained(this)));
@@ -264,13 +264,19 @@ class RemoveInterestGroupTester {
     group.owner = origin;
     group.name = "Name";
     group.expiry = base::Time::Now() + base::Days(30);
+    group.bidding_url = origin.GetURL().Resolve("/bidding.js");
+    group.ads.emplace();
+    group.ads->push_back(blink::InterestGroup::Ad(
+        GURL("https://owner.example.com/ad1"), "metadata"));
+
     InterestGroupManagerImpl* interest_group_manager =
         static_cast<InterestGroupManagerImpl*>(
             storage_partition_->GetInterestGroupManager());
     interest_group_manager->JoinInterestGroup(group, origin.GetURL());
+
     // Update the K-anonymity so that we can tell when it gets removed.
-    interest_group_manager->UpdateLastKAnonymityReported(
-        KAnonKeyFor(origin, "Name"));
+    k_anon_key = KAnonKeyForAdBid(group, group.ads.value()[0]);
+    interest_group_manager->UpdateLastKAnonymityReported(k_anon_key);
   }
 
  private:
@@ -288,6 +294,7 @@ class RemoveInterestGroupTester {
 
   bool get_interest_group_success_ = false;
   bool contains_kanon_ = false;
+  std::string k_anon_key;
   AwaitCompletionHelper await_completion_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
 };

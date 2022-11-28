@@ -51,8 +51,6 @@ struct CONTENT_EXPORT StorageInterestGroup {
 
   blink::InterestGroup interest_group;
   auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
-  absl::optional<KAnonymityData> name_kanon;
-  absl::optional<KAnonymityData> daily_update_url_kanon;
 
   // Can an ad bid (when k-anonymity is enforced)?
   std::vector<KAnonymityData> bidding_ads_kanon;
