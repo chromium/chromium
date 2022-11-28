@@ -12,8 +12,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -30,7 +28,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 class TouchToFillCreditCardView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
-    private final RecyclerView mSheetItemListView;
     private Callback<Integer> mDismissHandler;
     private Runnable mScanCreditCardHandler;
     // TODO(): show gpay logo if there is at least one card coming from GPay,
@@ -71,9 +68,6 @@ class TouchToFillCreditCardView implements BottomSheetContent {
         brandingIcon.setImageDrawable(ResourcesCompat.getDrawable(mContentView.getResources(),
                 mOnlyLocalCards ? R.drawable.fre_product_logo : R.drawable.google_pay,
                 ContextUtils.getApplicationContext().getTheme()));
-        mSheetItemListView = mContentView.findViewById(R.id.sheet_item_list);
-        mSheetItemListView.setLayoutManager(
-                new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
     }
 
     void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
@@ -118,10 +112,6 @@ class TouchToFillCreditCardView implements BottomSheetContent {
             return false;
         }
         return true;
-    }
-
-    void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
-        mSheetItemListView.setAdapter(adapter);
     }
 
     @Override

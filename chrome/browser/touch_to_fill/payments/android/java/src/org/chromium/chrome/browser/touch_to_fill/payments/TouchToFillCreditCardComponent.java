@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * This component allows to select a credit card to be filled into a form. It acts as a 1-tap
  * surface (bottom sheet) and is meant to be shown while the keyboard is suppressed.
  */
-interface TouchToFillCreditCardComponent {
+public interface TouchToFillCreditCardComponent {
     /**
      * This delegate is called when the TouchToFillCreditCard component is interacted with.
      */
@@ -40,7 +39,7 @@ interface TouchToFillCreditCardComponent {
     /**
      * Displays a new bottom sheet.
      */
-    void showSheet(PersonalDataManager.CreditCard[] cards, boolean shouldShowScanCreditCard);
+    void showSheet(boolean shouldShowScanCreditCard);
 
     /**
      * Hides the bottom sheet if shown.
