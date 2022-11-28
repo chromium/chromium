@@ -1076,12 +1076,6 @@ if (!is_ios) {
     }
   }
 
-  # TODO(chromium:1382224): Remove this target as soon as all the builders have switched to :chromedriver_group
-  group("chromedriver") {
-    testonly = true
-    deps = [ ":chromedriver_group" ]
-  }
-
   # This group includes all of the targets needed to build and test Blink,
   # including running web tests (see below). This target is defined here because
   # previously //third_party/WebKit, now //third_party/blink, couldn't depend on
