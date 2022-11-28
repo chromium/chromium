@@ -6678,7 +6678,7 @@
   {
     "name" : "unified-side-panel",
     "owners": [ "chrome-desktop-ui-sea@google.com", "corising", "pbos", "tluk" ],
-    "expiry_milestone" : 109
+    "expiry_milestone" : 110
   },
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
