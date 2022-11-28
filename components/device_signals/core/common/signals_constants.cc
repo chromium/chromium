@@ -8,6 +8,10 @@ namespace device_signals {
 
 namespace names {
 
+// Sub-property name for representing an Agent ID value. This is used for
+// forwarding third-party agent signals.
+const char kAgentId[] = "agentId";
+
 // Name of the signal for getting information of the AllowScreenLock
 // policy https://chromeenterprise.google/policies/?policy=AllowScreenLock.
 const char kAllowScreenLock[] = "allowSreenLock";
@@ -26,6 +30,14 @@ const char kChromeCleanupEnabled[] = "chromeCleanupEnabled";
 // Name of the signal for getting information about whether users can
 // access other computers from Chrome using Chrome Remote Desktop.
 const char kChromeRemoteDesktopAppBlocked[] = "chromeRemoteDesktopAppBlocked";
+
+// Name of a signal object containing information about a CrowdStrike agent
+// currently installed.
+const char kCrowdStrike[] = "crowdStrike";
+
+// Sub-property name for representing a Customer ID value. This is used for
+// forwarding third-party agent signals.
+const char kCustomerId[] = "customerId";
 
 // Customer IDs of organizations that are affiliated with the organization
 // that is currently managing the device (or browser for non-CrOS platforms).
