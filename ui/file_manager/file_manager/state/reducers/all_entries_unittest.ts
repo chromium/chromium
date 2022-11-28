@@ -12,7 +12,8 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {ActionType, ClearStaleCachedEntriesAction} from '../actions.js';
+import {ActionType} from '../actions.js';
+import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
 import {cd, changeSelection} from '../for_tests.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 

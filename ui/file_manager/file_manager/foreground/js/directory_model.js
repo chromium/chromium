@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
@@ -18,7 +18,8 @@ import {PropStatus, State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {changeDirectory, searchAction} from '../../state/actions.js';
+import {searchAction} from '../../state/actions.js';
+import {changeDirectory} from '../../state/actions/current_directory.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';

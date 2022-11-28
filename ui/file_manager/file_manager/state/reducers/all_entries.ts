@@ -6,7 +6,8 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {EntryType, State} from '../../externs/ts/state.js';
-import {Action, ActionType, ClearStaleCachedEntriesAction} from '../actions.js';
+import {Action, ActionType} from '../actions.js';
+import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
 import {getStore} from '../store.js';
 
 /**

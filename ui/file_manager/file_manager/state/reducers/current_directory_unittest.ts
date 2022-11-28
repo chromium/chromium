@@ -10,7 +10,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CurrentDirectory, PropStatus} from '../../externs/ts/state.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {changeDirectory, updateSelection} from '../actions.js';
+import {changeDirectory, updateSelection} from '../actions/current_directory.js';
 import {assertStateEquals} from '../for_tests.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 

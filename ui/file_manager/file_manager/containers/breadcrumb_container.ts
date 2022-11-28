@@ -7,7 +7,7 @@ import '../widgets/xf_breadcrumb.js';
 import {metrics} from '../common/js/metrics.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
-import {changeDirectory} from '../state/actions.js';
+import {changeDirectory} from '../state/actions/current_directory.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';
 import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';

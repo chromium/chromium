@@ -7,7 +7,7 @@ import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../externs/ts/state.js';
 
-import {changeDirectory, updateSelection} from './actions.js';
+import {changeDirectory, updateSelection} from './actions/current_directory.js';
 import {Store} from './store.js';
 
 /**

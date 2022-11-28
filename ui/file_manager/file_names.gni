@@ -250,13 +250,19 @@ ts_files = [
   "file_manager/lib/concurrency_models.ts",
 
   # State.
+  "file_manager/state/file_key.ts",
   "file_manager/state/store.ts",
+
+  # Actions.
+  "file_manager/state/actions.ts",
+  "file_manager/state/actions/all_entries.ts",
+  "file_manager/state/actions/current_directory.ts",
+
+  # Reducers.
   "file_manager/state/reducers/root.ts",
   "file_manager/state/reducers/all_entries.ts",
   "file_manager/state/reducers/current_directory.ts",
   "file_manager/state/reducers/search.ts",
-  "file_manager/state/actions.ts",
-  "file_manager/state/file_key.ts",
 
   # Containers.
   "file_manager/containers/breadcrumb_container.ts",

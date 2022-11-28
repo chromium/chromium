@@ -4,7 +4,7 @@
 
 import {CurrentDirectory, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
-import {ChangeDirectoryAction, ChangeSelectionAction} from '../actions.js';
+import {ChangeDirectoryAction, ChangeSelectionAction} from '../actions/current_directory.js';
 
 /**
  * @fileoverview
