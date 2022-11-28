@@ -7,8 +7,6 @@ import argparse
 import logging
 
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.local_wpt import LocalWPT
-from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import (
     CHANGE_ID_FOOTER,
     WPT_GH_URL,
@@ -17,9 +15,12 @@ from blinkpy.w3c.common import (
     PROVISIONAL_PR_LABEL,
     read_credentials,
 )
-from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
-from blinkpy.w3c.wpt_github import WPTGitHub, MergeError
+from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.export_notifier import ExportNotifier
+from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
+from blinkpy.w3c.local_wpt import LocalWPT
+from blinkpy.w3c.pr_cleanup_tool import PrCleanupTool
+from blinkpy.w3c.wpt_github import WPTGitHub, MergeError
 
 _log = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ _log = logging.getLogger(__name__)
 class TestExporter(object):
     def __init__(self, host):
         self.host = host
+        self.pr_cleaner = PrCleanupTool(self.host)
         self.wpt_github = None
         self.gerrit = None
         self.dry_run = False
@@ -66,6 +68,10 @@ class TestExporter(object):
             self.host, credentials['GERRIT_USER'], credentials['GERRIT_TOKEN'])
         self.local_wpt = self.local_wpt or LocalWPT(self.host,
                                                     credentials['GH_TOKEN'])
+
+        if not self.dry_run:
+            self.pr_cleaner.run(self.wpt_github, self.gerrit)
+
         self.local_wpt.fetch()
 
         _log.info('Searching for exportable in-flight CLs.')
