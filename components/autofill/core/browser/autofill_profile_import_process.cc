@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -100,10 +101,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   int number_of_unchanged_profiles = 0;
 
-  // TODO(crbug.com/1348294): Consider `kAccount` profiles to detect duplicates.
+  // We don't offer an import if `observed_profile_` is a duplicate of an
+  // existing profile. For `kAccount` profiles, only silent updates are allowed.
   const std::vector<AutofillProfile*> existing_profiles =
-      personal_data_manager_->GetProfilesFromSource(
-          AutofillProfile::Source::kLocalOrSyncable);
+      personal_data_manager_->GetProfiles();
 
   // If we have reason to believe that the country was complemented incorrectly,
   // remove it.
@@ -136,14 +137,16 @@ void ProfileImportProcess::DetermineProfileImportType() {
       continue;
     }
 
-    // At this point, the observed profile was merged with the existing profile
-    // which changed in some way.
+    // At this point, the observed profile was merged with (a copy of) the
+    // existing profile which changed in some way.
     // Now, determine if the merge alters any settings-visible value, or if the
     // merge can  be considered as a silent update that does not need to get
     // user confirmation.
+    // Setting-visible updates are not offered for `kAccount` profiles.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile, app_locale_)) {
-      if (allow_only_silent_updates_) {
+      if (allow_only_silent_updates_ ||
+          existing_profile->source() == AutofillProfile::Source::kAccount) {
         ++number_of_unchanged_profiles;
         continue;
       }
@@ -175,8 +178,12 @@ void ProfileImportProcess::DetermineProfileImportType() {
     }
     // If the profile changed but all settings-visible values are maintained,
     // the profile can be updated silently.
-    merged_profile.set_modification_date(AutofillClock::Now());
-    updated_profiles_.emplace_back(merged_profile);
+    if (existing_profile->source() ==
+            AutofillProfile::Source::kLocalOrSyncable ||
+        features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) {
+      merged_profile.set_modification_date(AutofillClock::Now());
+      updated_profiles_.emplace_back(merged_profile);
+    }
   }
 
   // If the profile is not mergeable with an existing profile, the import

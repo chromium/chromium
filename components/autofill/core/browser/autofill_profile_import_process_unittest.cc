@@ -271,6 +271,103 @@ TEST_F(AutofillProfileImportProcessTest,
                                             distinct_existing_profile));
 }
 
+// Tests that importing a profile that is an exact duplicate of a kAccount
+// profile is rejected as a duplicate.
+TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
+  AutofillProfile account_profile = test::StandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  std::vector<AutofillProfile> existing_profiles = {account_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  ProfileImportProcess import_data(
+      /*observed_profile=*/test::StandardProfile(), "en_US", url_,
+      &personal_data_manager_,
+      /*allow_only_silent_updates=*/false);
+
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(import_data.GetResultingProfiles(),
+              testing::ElementsAreArray(existing_profiles));
+}
+
+// Tests that importing a profile that is a subset of a kAccount profile is
+// rejected as a duplicate.
+TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
+  AutofillProfile account_profile = test::StandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  std::vector<AutofillProfile> existing_profiles = {account_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  ProfileImportProcess import_data(
+      /*observed_profile=*/test::SubsetOfStandardProfile(), "en_US", url_,
+      &personal_data_manager_,
+      /*allow_only_silent_updates=*/false);
+
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(import_data.GetResultingProfiles(),
+              testing::ElementsAreArray(existing_profiles));
+}
+
+// Tests that importing a profile that is a superset of a kAccount profile is
+// rejected as a duplicate.
+TEST_F(AutofillProfileImportProcessTest, ImportSupersetProfile_kAccount) {
+  AutofillProfile account_profile = test::SubsetOfStandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  std::vector<AutofillProfile> existing_profiles = {account_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  ProfileImportProcess import_data(
+      /*observed_profile=*/test::StandardProfile(), "en_US", url_,
+      &personal_data_manager_,
+      /*allow_only_silent_updates=*/false);
+
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(import_data.GetResultingProfiles(),
+              testing::ElementsAreArray(existing_profiles));
+}
+
+// Tests that an import can cause a silent update of a `kAccount` profile, if
+// the feature parameter is enabled.
+TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillAccountProfilesUnionView,
+      {{features::kAutofillEnableSilentUpdatesForAccountProfiles.name,
+        "true"}});
+
+  AutofillProfile account_profile = test::UpdateableStandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  std::vector<AutofillProfile> existing_profiles = {account_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // The `observed_profile` is of type `kLocalOrSyncable`. This should not
+  // prevent silent-updating a `kAccount` profile.
+  ProfileImportProcess import_data(
+      /*observed_profile=*/test::StandardProfile(), "en_US", url_,
+      &personal_data_manager_,
+      /*allow_only_silent_updates=*/true);
+
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+  // Expect that the existing profiles was updated to the standard profile,
+  // while maintaining it's `kAccount` status.
+  AutofillProfile expected_profile = test::StandardProfile();
+  expected_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  expected_profile.set_guid(account_profile.guid());
+  EXPECT_THAT(import_data.GetResultingProfiles(),
+              testing::ElementsAre(expected_profile));
+}
+
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile.
 TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {

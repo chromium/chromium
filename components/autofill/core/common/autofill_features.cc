@@ -34,6 +34,10 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites,
 BASE_FEATURE(kAutofillAccountProfilesUnionView,
              "AutofillAccountProfilesUnionView",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Account profiles are not considered for regular updates on import, but if
+// this parameter is enabeld, they are considered for silent updates.
+const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
+    &kAutofillAccountProfilesUnionView, "enable_silent_updates", true};
 
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
