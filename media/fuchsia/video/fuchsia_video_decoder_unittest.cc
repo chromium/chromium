@@ -29,7 +29,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -341,7 +341,7 @@ class TestFuchsiaMediaCodecProvider
   }
 
   void GetSupportedVideoDecoderConfigs(
-      GetSupportedVideoDecoderConfigsCallback callback) final {
+      GetSupportedVideoDecoderConfigsCallback callback) override {
     ADD_FAILURE();
   }
 

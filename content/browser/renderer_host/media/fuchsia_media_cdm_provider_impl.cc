@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/media/media_resource_provider_fuchsia.h"
+#include "content/browser/renderer_host/media/fuchsia_media_cdm_provider_impl.h"
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
@@ -16,22 +16,21 @@
 namespace content {
 
 // static
-void MediaResourceProviderFuchsia::Bind(
-    content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
-        receiver) {
+void FuchsiaMediaCdmProviderImpl::Bind(
+    RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver) {
   CHECK(frame_host);
   // The object will delete itself when connection to the frame is broken.
-  new MediaResourceProviderFuchsia(*frame_host, std::move(receiver));
+  new FuchsiaMediaCdmProviderImpl(*frame_host, std::move(receiver));
 }
 
-MediaResourceProviderFuchsia::MediaResourceProviderFuchsia(
-    content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
+FuchsiaMediaCdmProviderImpl::FuchsiaMediaCdmProviderImpl(
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<media::mojom::FuchsiaMediaCdmProvider> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
-MediaResourceProviderFuchsia::~MediaResourceProviderFuchsia() = default;
+FuchsiaMediaCdmProviderImpl::~FuchsiaMediaCdmProviderImpl() = default;
 
-void MediaResourceProviderFuchsia::CreateCdm(
+void FuchsiaMediaCdmProviderImpl::CreateCdm(
     const std::string& key_system,
     fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
         request) {
@@ -48,7 +47,7 @@ void MediaResourceProviderFuchsia::CreateCdm(
           ->GetURLLoaderFactoryForBrowserProcess();
 
   media::CreateFetcherCB create_fetcher_cb = base::BindRepeating(
-      &content::CreateProvisionFetcher, std::move(url_loader_factory));
+      &CreateProvisionFetcher, std::move(url_loader_factory));
   cdm_manager->CreateAndProvision(
       key_system, origin(), std::move(create_fetcher_cb), std::move(request));
 }

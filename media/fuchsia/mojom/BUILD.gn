@@ -4,8 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("fuchsia_media_resource_provider") {
-  sources = [ "fuchsia_media_resource_provider.mojom" ]
+mojom("fuchsia_media") {
+  sources = [ "fuchsia_media.mojom" ]
   deps = [ "//media/mojo/mojom" ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
@@ -25,7 +25,7 @@ mojom("fuchsia_media_resource_provider") {
         move_only = true
       },
     ]
-    traits_headers = [ "fuchsia_media_resource_provider_mojom_traits.h" ]
+    traits_headers = [ "fuchsia_media_mojom_traits.h" ]
     traits_public_deps = [
       "//mojo/public/cpp/base/fuchsia:traits",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",

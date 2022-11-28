@@ -210,8 +210,8 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "content/browser/renderer_host/media/media_resource_provider_fuchsia.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "content/browser/renderer_host/media/fuchsia_media_cdm_provider_impl.h"
+#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
 #endif
 
 namespace blink {
@@ -1105,8 +1105,8 @@ void PopulateBinderMapWithContext(
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  map->Add<media::mojom::FuchsiaMediaResourceProvider>(
-      base::BindRepeating(&MediaResourceProviderFuchsia::Bind));
+  map->Add<media::mojom::FuchsiaMediaCdmProvider>(
+      base::BindRepeating(&FuchsiaMediaCdmProviderImpl::Bind));
 #endif
 }
 

@@ -14,7 +14,7 @@ source_set("client") {
 
   deps = [
     "//media",
-    "//media/fuchsia/mojom:fuchsia_media_resource_provider",
+    "//media/fuchsia/mojom:fuchsia_media",
     "//third_party/blink/public:blink_headers",
   ]
 }

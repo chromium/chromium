@@ -32,7 +32,7 @@ enum VideoDecoderSecureMemoryMode {
 
 // Interface used by the renderer to connect to CDM and mediacodec resources.
 // Instances are document-scoped.
-interface FuchsiaMediaResourceProvider {
+interface FuchsiaMediaCdmProvider {
   // Create connection to fuchsia::media::drm::ContentDecryptionModule for
   // `key_system`. Implementation should make sure the persistent storage is
   // isolated per web origin.

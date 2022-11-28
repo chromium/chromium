@@ -33,7 +33,7 @@
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
