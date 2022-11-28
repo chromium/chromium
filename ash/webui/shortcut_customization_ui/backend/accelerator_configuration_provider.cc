@@ -82,10 +82,12 @@ mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
       mojom::AcceleratorLayoutInfo::New();
   layout_info->category = layout_details.category;
   layout_info->sub_category = layout_details.sub_category;
+  // TODO(michaelcheco): Description needs to switch which table it performs
+  // the lookup on depending on the accelerator source.
   layout_info->description = l10n_util::GetStringUTF16(
       kAcceleratorActionToStringIdMap.at(layout_details.action_id));
   layout_info->style = layout_details.layout_style;
-  layout_info->source = mojom::AcceleratorSource::kAsh;
+  layout_info->source = layout_details.source;
   layout_info->action = static_cast<uint32_t>(layout_details.action_id);
 
   return layout_info;
