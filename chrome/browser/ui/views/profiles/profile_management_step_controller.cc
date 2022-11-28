@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -152,8 +153,9 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
       finish_flow_callback_->Reset();
 
       // The profile setup did not continue. Schedule it for deletion.
-      g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-          profile_->GetPath());
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .ScheduleEphemeralProfileForDeletion(profile_->GetPath());
     }
   }
 

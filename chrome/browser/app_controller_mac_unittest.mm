@@ -16,7 +16,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -199,8 +201,11 @@ TEST_F(AppControllerTest, LastProfileIfLoaded) {
   base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
 
   // Delete the active profile.
-  profile_manager_.profile_manager()->ScheduleProfileForDeletion(
-      dest_path1, base::DoNothing());
+  profile_manager_.profile_manager()
+      ->GetDeleteProfileHelper()
+      .MaybeScheduleProfileForDeletion(
+          dest_path1, base::DoNothing(),
+          ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
 
   base::RunLoop().RunUntilIdle();
 

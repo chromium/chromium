@@ -28,6 +28,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1543,7 +1544,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   initial_last_active_profile_list.Append(
       base::Value(path2.BaseName().MaybeAsASCII()));
 
-  profile_manager->CleanUpEphemeralProfiles();
+  profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
   const base::Value::List& final_last_active_profile_list =
       local_state->GetList(prefs::kProfilesLastActive);
@@ -1561,7 +1562,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 
   // Mark the remaining profile ephemeral and clean up.
   storage.GetAllProfilesAttributes()[0]->SetIsEphemeral(true);
-  profile_manager->CleanUpEphemeralProfiles();
+  profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
 
   // The profile should be deleted, and the last used profile set to a new one.
@@ -1614,7 +1615,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   initial_last_active_profile_list.Append(
       base::Value(path.BaseName().MaybeAsASCII()));
 
-  profile_manager->CleanUpEphemeralProfiles();
+  profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
   const base::Value::List& final_last_active_profile_list =
       local_state->GetList(prefs::kProfilesLastActive);
@@ -1653,7 +1654,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed, std::string("Guest Profile"));
 
-  profile_manager->CleanUpEphemeralProfiles();
+  profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
 
   ASSERT_EQ(0u, storage.GetNumberOfProfiles());
@@ -1770,7 +1771,9 @@ TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
-  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path1, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(profile_path2, profile_manager->GetLastUsedProfile()->GetPath());
@@ -1803,7 +1806,9 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
-  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path1, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 
   // A new profile should have been created
@@ -1863,7 +1868,9 @@ TEST_F(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_basename);
 
   // Delete the other profile.
-  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path1, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 
   // A new profile should have been created.
@@ -1907,8 +1914,9 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameResetsDefaultName) {
             profiles::GetAvatarNameForProfile(profile2->GetPath()));
 
   // Deleting a profile means returning to the default name.
-  profile_manager->ScheduleProfileForDeletion(profile2->GetPath(),
-                                              base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile2->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
@@ -1951,8 +1959,9 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
             profiles::GetAvatarNameForProfile(profile2->GetPath()));
 
   // Deleting a profile means returning to the original, custom name.
-  profile_manager->ScheduleProfileForDeletion(profile2->GetPath(),
-                                              base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile2->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(custom_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
@@ -2004,8 +2013,9 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
             profiles::GetAvatarNameForProfile(profile2->GetPath()));
 
   // Deleting a profile means returning to the original, actual profile name.
-  profile_manager->ScheduleProfileForDeletion(profile2->GetPath(),
-                                              base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile2->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(gaia_given_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
@@ -2127,7 +2137,9 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
 
   // Delete the active profile. This should switch and load the unloaded
   // profile.
-  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path1, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
 
   content::RunAllTasksUntilIdle();
 
@@ -2201,10 +2213,14 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   // Try to break this flow by setting the active profile to Profile2 in the
   // middle (so after the first posted message), and trying to delete Profile2,
   // so that the ProfileManager has to look for a different profile to load.
-  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path1, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_path2.BaseName().MaybeAsASCII());
-  profile_manager->ScheduleProfileForDeletion(profile_path2, base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_path2, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(profile_path3, profile_manager->GetLastUsedProfile()->GetPath());

@@ -36,11 +36,13 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -829,8 +831,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                                            ServiceAccessType::EXPLICIT_ACCESS));
 
   // Delete profile2.
-  profile_manager->ScheduleProfileForDeletion(profile2->GetPath(),
-                                              base::DoNothing());
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile2->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 
   // Verify the controller's history is back to profile1.

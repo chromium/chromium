@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -296,10 +297,13 @@ void PrimaryAccountPolicyManager::OnUserConfirmedProfileDeletion(
 
   DCHECK(profiles::IsMultipleProfilesEnabled());
 
-  g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
-      profile_path,
-      hide_ui_for_testing_ ? base::DoNothing()
-                           : base::BindOnce(&webui::OpenNewWindowForProfile),
-      ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .MaybeScheduleProfileForDeletion(
+          profile_path,
+          hide_ui_for_testing_
+              ? base::DoNothing()
+              : base::BindOnce(&webui::OpenNewWindowForProfile),
+          ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
 }
 #endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)

@@ -8,6 +8,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -135,8 +136,9 @@ class ProfileCreationSignedInFlowController
     // Record unfinished signed-in profile creation.
     if (!is_finishing_) {
       // Schedule the profile for deletion, it's not needed any more.
-      g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-          profile()->GetPath());
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .ScheduleEphemeralProfileForDeletion(profile()->GetPath());
 
       // TODO(crbug.com/1300109): Consider moving this recording into
       // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
@@ -169,8 +171,9 @@ class ProfileCreationSignedInFlowController
     is_finishing_ = true;
 
     // Schedule the profile for deletion, it's not needed any more.
-    g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-        profile()->GetPath());
+    g_browser_process->profile_manager()
+        ->GetDeleteProfileHelper()
+        .ScheduleEphemeralProfileForDeletion(profile()->GetPath());
   }
 
   void FinishAndOpenBrowser(PostHostClearedCallback callback) override {

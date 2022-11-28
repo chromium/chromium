@@ -32,6 +32,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1813,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 #else
   EXPECT_FALSE(contents_profile->IsSystemProfile());
   // The sign-in profile should be marked for deletion.
-  ProfileManager::IsProfileDirectoryMarkedForDeletion(contents_profile_path);
+  IsProfileDirectoryMarkedForDeletion(contents_profile_path);
 #endif
   EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
                                        ->GetProfileAttributesStorage()

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -91,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
   }
 
   // On exit, the provider should schedule the profile it created for deletion.
-  EXPECT_TRUE(ProfileManager::IsProfileDirectoryMarkedForDeletion(
-      provider_profile_path));
+  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(provider_profile_path));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
@@ -129,6 +130,5 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
   }
 
   // Since a profile has been passed in, the provider should not delete it.
-  EXPECT_FALSE(ProfileManager::IsProfileDirectoryMarkedForDeletion(
-      provider_profile_path));
+  EXPECT_FALSE(IsProfileDirectoryMarkedForDeletion(provider_profile_path));
 }

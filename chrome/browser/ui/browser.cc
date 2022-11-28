@@ -69,6 +69,7 @@
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -431,7 +432,7 @@ Browser::CreationStatus Browser::GetCreationStatusForProfile(Profile* profile) {
   if (!IncognitoModePrefs::CanOpenBrowser(profile) ||
       (profile->IsGuestSession() && !profile->IsOffTheRecord()) ||
       !profile->AllowsBrowserWindows() ||
-      ProfileManager::IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+      IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
     return CreationStatus::kErrorProfileUnsuitable;
   }
 
