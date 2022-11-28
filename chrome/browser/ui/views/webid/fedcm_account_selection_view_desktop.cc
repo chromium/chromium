@@ -190,7 +190,14 @@ void FedCmAccountSelectionView::OnAccountSelected(
                : State::VERIFYING;
   if (state_ == State::VERIFYING) {
     notify_delegate_of_dismiss_ = false;
+
+    base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
+        weak_ptr_factory_.GetWeakPtr());
     delegate_->OnAccountSelected(idp_data.idp_metadata_.config_url, account);
+    // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
+    // See https://crbug.com/1393650 for details.
+    if (!weak_ptr)
+      return;
 
     GetBubbleView()->ShowVerifyingSheet(account, idp_data);
     return;

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
@@ -108,6 +109,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   bool notify_delegate_of_dismiss_{true};
 
   base::WeakPtr<views::Widget> bubble_widget_;
+
+  base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_

@@ -160,6 +160,9 @@ void AccountSelectionViewAndroid::OnAccountSelected(
   delegate_->OnAccountSelected(
       config_url, ConvertFieldsToAccount(env, account_string_fields,
                                          account_picture_url, is_sign_in));
+  // The AccountSelectionViewAndroid may be destroyed.
+  // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
+  // See https://crbug.com/1393650 for details.
 }
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
