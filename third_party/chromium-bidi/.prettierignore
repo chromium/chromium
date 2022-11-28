@@ -2,6 +2,5 @@ examples/*.html
 src/.build
 tests/__pycache__
 wpt/
+lib/
 
-# Don't emit semicolon at the end of the IIFE in /scripts files since these are meant to be inserted inline into a string for evaluation.
-src/bidiMapper/scripts

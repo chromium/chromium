@@ -21,7 +21,7 @@ import puppeteer, {PuppeteerNode} from 'puppeteer';
 import mapperReader from './mapperReader';
 import {MapperServer} from './mapperServer';
 import {BidiServerRunner} from './bidiServerRunner';
-import {ITransport} from './utils/transport';
+import {ITransport} from '../utils/transport';
 
 function parseArguments() {
   const parser = new argparse.ArgumentParser({

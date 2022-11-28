@@ -1,4 +1,5 @@
 .build
+lib
 .cache
 .idea
 __pycache__

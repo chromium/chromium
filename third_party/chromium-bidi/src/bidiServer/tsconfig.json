@@ -1,9 +1,7 @@
 {
   "extends": "../../configs/tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["DOM", "ESNext"],
     "module": "CommonJS",
-    "outDir": "../../lib/cjs/bidiMapper",
-    "declaration": true
+    "outDir": "../../lib/cjs/bidiServer"
   },
 }

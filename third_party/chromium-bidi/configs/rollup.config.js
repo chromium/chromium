@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import {terser} from 'rollup-plugin-terser';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
-export default async function read(): Promise<string> {
-  return await fs.readFile(
-    path.join(__dirname, '../bidiMapper/mapper.js'),
-    'utf8'
-  );
-}
+export default {
+  input: 'lib/cjs/bidiMapper/bidiMapper/mapper.js',
+  output: {
+    file: 'lib/iife/bidiMapper/mapper.js',
+    sourcemap: true,
+    format: 'iife',
+  },
+  plugins: [
+    nodeResolve(),
+    commonjs(),
+    terser(),
+  ],
+};

@@ -1,8 +1,8 @@
 {
-  "extends": "./configs/tsconfig.common.json",
-  "exclude": ["bidiMapper"],
-  "compilerOptions": {
-    "lib": ["DOM", "ESNext"],
-    "outDir": "./.build/bidiServer"
-  }
+  "extends": "../configs/tsconfig.base.json",
+  "files": [],
+  "references": [
+    {"path": "bidiMapper/tsconfig.json"},
+    {"path": "bidiServer/tsconfig.json"}
+  ]
 }
