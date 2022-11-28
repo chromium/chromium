@@ -14030,13 +14030,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Esed purus vestibulum velit convalli
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_BULLET_1" translateable="false" desc="Learn more bullet point 1 in privacy sandbox consent dialog">
-      Nulla in tortor: a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor: <ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_BULLET_2" translateable="false" desc="Learn more bullet point 2 in privacy sandbox consent dialog">
-      Consectetur adipiscing elit: Duis pretium pulvinar metus non mollis
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Consectetur adipiscing elit:<ph name="END_BOLD">&lt;/b&gt;</ph> Duis pretium pulvinar metus non mollis
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_BULLET_3" translateable="false" desc="Learn more bullet point 3 in privacy sandbox consent dialog">
-      Sed purus vestibulum: velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Sed purus vestibulum:<ph name="END_BOLD">&lt;/b&gt;</ph> velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_LINK" translateable="false" desc="Learn more link in privacy sandbox consent dialog">
       Esed purus vestibulum velit convalli
@@ -14079,13 +14079,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Proin sed purus vestibulum velit velit eget dapibus.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_EEA_LEARN_MORE_BULLET_1" translateable="false" desc="Learn more bullet point 1 in privacy sandbox notice EEA dialog">
-      Nulla in tortor: a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor:<ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_EEA_LEARN_MORE_BULLET_2" translateable="false" desc="Learn more bullet point 2 in privacy sandbox notice EEA dialog">
-      Consectetur adipiscing elit: Duis pretium pulvinar metus non mollis
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Consectetur adipiscing elit:<ph name="END_BOLD">&lt;/b&gt;</ph> Duis pretium pulvinar metus non mollis
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_EEA_LEARN_MORE_BULLET_3" translateable="false" desc="Learn more bullet point 3 in privacy sandbox notice EEA dialog">
-      Sed purus vestibulum: velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Sed purus vestibulum:<ph name="END_BOLD">&lt;/b&gt;</ph> velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
     </message>
 
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_TITLE" translateable="false" desc="Title of privacy sandbox notice ROW dialog">
