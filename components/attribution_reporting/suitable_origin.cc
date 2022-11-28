@@ -13,12 +13,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace attribution_reporting {
 
 // static
 bool SuitableOrigin::IsSuitable(const url::Origin& origin) {
-  return network::IsOriginPotentiallyTrustworthy(origin);
+  const std::string& scheme = origin.scheme();
+  return (scheme == url::kHttpScheme || scheme == url::kHttpsScheme) &&
+         network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 // static

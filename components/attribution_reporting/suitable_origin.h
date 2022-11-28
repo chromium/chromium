@@ -27,10 +27,8 @@ namespace attribution_reporting {
 // origin.
 //
 // These origins must be potentially trustworthy, as determined by
-// `network::IsOriginPotentiallyTrustworthy()`.
-//
-// In the future, this type will also enforce the use of HTTP or HTTPS as the
-// origin's scheme (crbug.com/1351086).
+// `network::IsOriginPotentiallyTrustworthy()`, and their scheme must be HTTP or
+// HTTPS.
 //
 // It is an error to use instances of this type after moving.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {

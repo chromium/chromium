@@ -34,6 +34,14 @@ TEST(SuitableOriginTest, Create) {
           url::Origin::Create(GURL("http://localhost")),
           true,
       },
+      {
+          url::Origin::Create(GURL("ws://a.test")),
+          false,
+      },
+      {
+          url::Origin::Create(GURL("wss://a.test")),
+          false,
+      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -84,6 +92,16 @@ TEST(SuitableOriginTest, Deserialize_Serialize) {
           "https://a.test/path?x=y#z",
           url::Origin::Create(GURL("https://a.test")),
           "https://a.test",
+      },
+      {
+          "ws://a.test",
+          absl::nullopt,
+          nullptr,
+      },
+      {
+          "wss://a.test",
+          absl::nullopt,
+          nullptr,
       },
   };
 
