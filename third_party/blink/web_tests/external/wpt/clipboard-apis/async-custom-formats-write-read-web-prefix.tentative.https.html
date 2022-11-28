@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Async Clipboard custom write -> Async Clipboard custom read test</title>
+<title>Async Clipboard web custom format read/write test.</title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
 <body>Body needed for test_driver.click()</body>
 <script src="/resources/testharness.js"></script>
@@ -14,17 +14,14 @@
 promise_test(async t => {
   await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
   await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
-  const format1 = 'web application/x-custom-format-clipboard-test-format-1';
-  const format2 = 'web application/x-custom-format-clipboard-test-format-2';
-  const blobInput1 = new Blob(['input data 1'], {type: format1});
-  const blobInput2 = new Blob(['input data 2'], {type: format2});
+
+  const format1 = 'web text/plain';
+  const format2 = 'web text/plain';
+  const blobInput1 = new Blob(['input data 1'], {type: format2});
   const clipboardItemInput = new ClipboardItem(
-      {[format1]: blobInput1, [format2]: blobInput2});
+      {[format1]: blobInput1});
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
-
-  // Items should be readable on a custom format clipboard after custom format
-  // write.
   await waitForUserActivation();
   const clipboardItems = await navigator.clipboard.read();
   assert_equals(clipboardItems.length, 1);
@@ -37,11 +34,6 @@ promise_test(async t => {
   assert_equals(blobOutput1.type, format1);
   const data1 = await (new Response(blobOutput1)).text();
   assert_equals(data1, 'input data 1');
-
-  const blobOutput2 = await clipboardItem.getType(format2);
-  assert_equals(blobOutput2.type, format2);
-  const data2 = await (new Response(blobOutput2)).text();
-  assert_equals(data2, 'input data 2');
-}, 'Verify write and read clipboard given 2 platform-neutral custom format inputs');
+}, 'navigator.clipboard.write() for custom format and Blob type with web prefix');
 
 </script>
