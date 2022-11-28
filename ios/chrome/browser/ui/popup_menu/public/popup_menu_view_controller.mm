@@ -56,8 +56,8 @@ const CGFloat kImageMargin = 196;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  // Let the view controller become first responder to handle the ESC key
-  // command. See `-keyCommands` and `-keyCommand_close`.
+  // Let the view controller become first responder to handle key commands.
+  // See `-keyCommands`.
   [self becomeFirstResponder];
 }
 
@@ -78,12 +78,19 @@ const CGFloat kImageMargin = 196;
 }
 
 - (NSArray*)keyCommands {
-  return @[ UIKeyCommand.cr_close ];
+  return @[ UIKeyCommand.cr_close, UIKeyCommand.cr_stop ];
 }
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self.delegate popupMenuViewControllerWillDismiss:self];
+}
+
+- (void)keyCommand_stop {
+  // Forward to the keyCommand_close action. Usually this is done by the OS
+  // implicitly, but since BVC handles the stop action for stopping loading the
+  // page, the PopupMenuViewController needs to explicitly catch it before.
+  [self keyCommand_close];
 }
 
 #pragma mark - Private
