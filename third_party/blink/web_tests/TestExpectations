@@ -8145,8 +8145,9 @@ crbug.com/1393474 [ Linux ] wpt_internal/geolocation-api/timeout.https.html [ Fa
 # Sheriff 2022-11-28
 crbug.com/1393567 external/wpt/screen-orientation/hidden_document.html [ Failure Pass Timeout ]
 crbug.com/1393985 [ Mac11-arm64 ] virtual/expose-lcp-render-time/external/wpt/performance-timeline/cross-origin-non-tao-image.sub.html [ Failure Pass ]
-crbug.com/1290077 [ Mac11-arm64 ] virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ] 
-crbug.com/1290077 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ] 
+crbug.com/1290077 [ Mac11-arm64 ] virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
+crbug.com/1290077 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
+crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [ Pass Timeout ]
 crbug.com/1393995 fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Failure Pass ]
 crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
 
