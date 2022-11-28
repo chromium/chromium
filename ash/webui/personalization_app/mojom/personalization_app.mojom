@@ -529,6 +529,9 @@ interface AmbientObserver {
   // Notifies the JS side about the previews of the selected Google Photos
   // albums.
   OnGooglePhotosAlbumsPreviewsFetched(array<url.mojom.Url> previews);
+
+  // Nofities the JS side when the screen saver is closed.
+  OnScreenSaverClosed();
 };
 
 // Provides APIs to expose Ambient mode settings.

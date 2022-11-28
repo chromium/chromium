@@ -16,9 +16,9 @@ namespace ash {
 enum class AmbientUiVisibility {
   kShown,    // Screen saver is shown.
   kPreview,  // Same as kShown, but do not lock screen or acquire wake lock.
-             // kPreview state is used to show a preview of the screensaver.
-             // Users should be able to exit from the preview mode directly
-             // into. Hence, no need to lock the screen or acquire wake lock.
+             // kPreview state is used to show a preview of the screen saver.
+             // Users should be able to exit from the preview mode directly.
+             // Hence, no need to lock the screen or acquire wake lock.
   kHidden,   // Screen saver is closed; start inactivity timer to restart it.
   kClosed,   // Screen saver is closed; all observers and timers are cancelled.
 };
