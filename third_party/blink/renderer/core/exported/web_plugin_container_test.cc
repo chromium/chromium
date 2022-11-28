@@ -142,6 +142,7 @@ class TestPlugin : public FakeWebPlugin {
   bool HasSelection() const override { return true; }
   WebString SelectionAsText() const override { return WebString("x"); }
   WebString SelectionAsMarkup() const override { return WebString("y"); }
+  bool CanCopy() const override;
   bool SupportsPaginatedPrint() override { return true; }
   int PrintBegin(const WebPrintParams& print_params) override { return 1; }
   void PrintPage(int page_number, cc::PaintCanvas*) override;
@@ -230,12 +231,20 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
   void SetHasEditableText(bool has_editable_text) {
     has_editable_text_ = has_editable_text;
   }
+  void SetCanCopy(bool can_copy) { can_copy_ = can_copy; }
+  bool CanCopy() const { return can_copy_; }
 
  private:
   bool printed_page_ = false;
   bool has_editable_text_ = false;
+  bool can_copy_ = true;
   PageTestBase::MockClipboardHostProvider mock_clipboard_host_provider_;
 };
+
+bool TestPlugin::CanCopy() const {
+  DCHECK(test_client_);
+  return test_client_->CanCopy();
+}
 
 void TestPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
   DCHECK(test_client_);
@@ -369,7 +378,7 @@ TEST_F(WebPluginContainerTest, LocalToWindowPointTest) {
 // Verifies executing the command 'Copy' results in copying to the clipboard.
 TEST_F(WebPluginContainerTest, Copy) {
   RegisterMockedURL("plugin_container.html");
-  // Must outlive |web_view_helper|.
+  // Must outlive `web_view_helper`.
   TestPluginWebFrameClient plugin_web_frame_client;
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
@@ -389,9 +398,35 @@ TEST_F(WebPluginContainerTest, Copy) {
   ClearClipboardBuffer(*local_frame);
 }
 
+// Verifies executing the command 'Copy' results in copying nothing to the
+// clipboard when the plugin does not have the copy permission.
+TEST_F(WebPluginContainerTest, CopyWithoutPermission) {
+  RegisterMockedURL("plugin_container.html");
+  // Must outlive `web_view_helper`.
+  TestPluginWebFrameClient plugin_web_frame_client;
+  // Make sure to create a plugin without the copy permission.
+  plugin_web_frame_client.SetCanCopy(false);
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_container.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  web_view->MainFrameImpl()
+      ->GetDocument()
+      .Unwrap<Document>()
+      ->body()
+      ->getElementById("translated-plugin")
+      ->Focus();
+  EXPECT_TRUE(web_view->MainFrame()->ToWebLocalFrame()->ExecuteCommand("Copy"));
+
+  LocalFrame* local_frame = web_view->MainFrameImpl()->GetFrame();
+  EXPECT_EQ(String(""), ReadClipboard(*local_frame));
+  ClearClipboardBuffer(*local_frame);
+}
+
 TEST_F(WebPluginContainerTest, CopyFromContextMenu) {
   RegisterMockedURL("plugin_container.html");
-  // Must outlive |web_view_helper|.
+  // Must outlive `web_view_helper`.
   TestPluginWebFrameClient plugin_web_frame_client;
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
@@ -424,11 +459,46 @@ TEST_F(WebPluginContainerTest, CopyFromContextMenu) {
   ClearClipboardBuffer(*local_frame);
 }
 
-// Verifies |Ctrl-C| and |Ctrl-Insert| keyboard events, results in copying to
+TEST_F(WebPluginContainerTest, CopyFromContextMenuWithoutCopyPermission) {
+  RegisterMockedURL("plugin_container.html");
+  // Must outlive `web_view_helper`.
+  TestPluginWebFrameClient plugin_web_frame_client;
+  // Make sure to create a plugin without the copy permission.
+  plugin_web_frame_client.SetCanCopy(false);
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_container.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  // Make sure the right-click + command copies nothing in common scenario.
+  ExecuteContextMenuCommand(web_view, "Copy");
+  LocalFrame* local_frame = web_view->MainFrameImpl()->GetFrame();
+  EXPECT_EQ(String(""), ReadClipboard(*local_frame));
+  ClearClipboardBuffer(*local_frame);
+
+  auto event = frame_test_helpers::CreateMouseEvent(
+      WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kRight,
+      gfx::Point(30, 30), 0);
+  event.click_count = 1;
+
+  // Now, make sure the context menu copies nothing in a more complex scenario.
+  // 1) open the context menu. This will focus the plugin.
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(event, ui::LatencyInfo()));
+  // 2) document blurs the plugin, because it can.
+  web_view->FocusedElement()->blur();
+  // 3) Copy should still operate on the context node, even though the focus had
+  //    shifted.
+  EXPECT_TRUE(web_view->MainFrameImpl()->ExecuteCommand("Copy"));
+  EXPECT_EQ(String(""), ReadClipboard(*local_frame));
+  ClearClipboardBuffer(*local_frame);
+}
+
+// Verifies `Ctrl-C` and `Ctrl-Insert` keyboard events, results in copying to
 // the clipboard.
 TEST_F(WebPluginContainerTest, CopyInsertKeyboardEventsTest) {
   RegisterMockedURL("plugin_container.html");
-  // Must outlive |web_view_helper|.
+  // Must outlive `web_view_helper`.
   TestPluginWebFrameClient plugin_web_frame_client;
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
@@ -449,6 +519,37 @@ TEST_F(WebPluginContainerTest, CopyInsertKeyboardEventsTest) {
   CreateAndHandleKeyboardEvent(&plugin_container_one_element, modifier_key,
                                VKEY_INSERT);
   EXPECT_EQ(String("x"), ReadClipboard(*local_frame));
+  ClearClipboardBuffer(*local_frame);
+}
+
+// Verifies `Ctrl-C` and `Ctrl-Insert` keyboard events, results in copying
+// nothing to the clipboard.
+TEST_F(WebPluginContainerTest,
+       CopyInsertKeyboardEventsTestWithoutCopyPermission) {
+  RegisterMockedURL("plugin_container.html");
+  // Must outlive `web_view_helper`.
+  TestPluginWebFrameClient plugin_web_frame_client;
+  // Make sure to create a plugin without the copy permission.
+  plugin_web_frame_client.SetCanCopy(false);
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_container.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  WebElement plugin_container_one_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(
+          WebString::FromUTF8("translated-plugin"));
+  WebInputEvent::Modifiers modifier_key = static_cast<WebInputEvent::Modifiers>(
+      kEditingModifier | WebInputEvent::kNumLockOn | WebInputEvent::kIsLeft);
+  CreateAndHandleKeyboardEvent(&plugin_container_one_element, modifier_key,
+                               VKEY_C);
+  LocalFrame* local_frame = web_view->MainFrameImpl()->GetFrame();
+  EXPECT_EQ(String(""), ReadClipboard(*local_frame));
+  ClearClipboardBuffer(*local_frame);
+
+  CreateAndHandleKeyboardEvent(&plugin_container_one_element, modifier_key,
+                               VKEY_INSERT);
+  EXPECT_EQ(String(""), ReadClipboard(*local_frame));
   ClearClipboardBuffer(*local_frame);
 }
 
