@@ -296,9 +296,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsTabbedMenuViewInteractiveUITest,
   DismissUi();
 }
 
+// TODO(crbug.com/1393696): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption \
+  DISABLED_InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption
+#else
+#define MAYBE_InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption \
+  InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption
+#endif
 IN_PROC_BROWSER_TEST_F(
     ExtensionsTabbedMenuViewInteractiveUITest,
-    InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption) {
+    MAYBE_InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption) {
   LoadTestExtension("extensions/simple_with_popup");
   ShowMenu();
 
