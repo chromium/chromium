@@ -84,8 +84,6 @@ const char kAppsGalleryURL[] = "apps-gallery-url";
 
 // Allowlist for Negotiate Auth servers
 const char kAuthServerAllowlist[] = "auth-server-allowlist";
-const char kAuthServerAllowlistDeprecated[] =
-    "auth-server-whitelist";  // nocheck
 
 // This flag makes Chrome auto-open DevTools window for each tab. It is
 // intended to be used by developers and automation to not require user
