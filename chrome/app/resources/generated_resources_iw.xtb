@@ -2352,6 +2352,7 @@
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
 <translation id="310671807099593501">‏האתר משתמש ב-Bluetooth</translation>
 <translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
+<translation id="3108957152224931571">הצבע להדגשה</translation>
 <translation id="3109206895301430738">קבוצות כרטיסיות שמורות</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="3112292765614504292">גודל האפליקציה: <ph name="APP_SIZE" /></translation>
@@ -4590,6 +4591,7 @@
 <translation id="5260334392110301220">מירכאות חכמות</translation>
 <translation id="5260508466980570042">מצטערים, לא ניתן לאמת את האימייל או את הסיסמה שלך. יש לנסות שוב.</translation>
 <translation id="5260958083445173099">התוכן באתרים יוצג בשפות המועדפות שלך כשזה יהיה אפשרי.</translation>
+<translation id="5261619498868361045">שם הקונטיינר לא יכול להיות ריק.</translation>
 <translation id="5261683757250193089">פתיחה בחנות האינטרנט</translation>
 <translation id="5262178194499261222">הסרת הסיסמה</translation>
 <translation id="5262784498883614021">התחברות אוטומטית לרשת</translation>
@@ -4996,6 +4998,7 @@
 <translation id="562935524653278697">מנהל המערכת השבית את הסנכרון של סימניות, היסטוריה, סיסמאות והגדרות אחרות שלך.</translation>
 <translation id="5631017369956619646">שימוש במעבד</translation>
 <translation id="5632059346822207074">‏נשלחה בקשת הרשאה, יש ללחוץ על Ctrl + 'קדימה' כדי להשיב</translation>
+<translation id="5632221585574759616">מידע נוסף על הרשאות לתוספים</translation>
 <translation id="5632566673632479864">הסתיימה ההרשאה של החשבון שלך <ph name="EMAIL" /> כחשבון ראשי. החשבון הזה מנוהל על ידי <ph name="DOMAIN" />, ולכן הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות יימחקו מהמכשיר הזה.</translation>
 <translation id="5632592977009207922">‏מתבצעת הורדה, נשארו ‎<ph name="PERCENT_REMAINING" />%‎</translation>
 <translation id="5633149627228920745">מידע נוסף על דרישות המערכת</translation>
@@ -5616,6 +5619,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> לא מחובר לרשת. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="6220413761270491930">אירעה שגיאה בטעינת תוסף</translation>
 <translation id="6224481128663248237">הפרמוט הסתיים בהצלחה!</translation>
+<translation id="622474711739321877">הקונטיינר הזה כבר קיים.</translation>
 <translation id="622537739776246443">הפרופיל יימחק</translation>
 <translation id="6225475702458870625">יש חיבור נתונים זמין ב-<ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">קובץ מפתח פרטי (אופציונלי)</translation>
@@ -6418,6 +6422,7 @@
 <translation id="696780070563539690">‏אתרים לא יכולים להשתמש בקובצי ה-cookie שלך כדי לראות את פעילות הגלישה באתרים שונים, למשל לצורך התאמה אישית של מודעות</translation>
 <translation id="6968288415730398122">יש להזין את הסיסמה כדי להגדיר את נעילת המסך</translation>
 <translation id="6969047215179982698">כיבוי של 'שיתוף בקרבת מקום'</translation>
+<translation id="6969216690072714773">הזנת פרטים חדשים או עדכון פרטים קיימים שישויכו למכשיר הזה.</translation>
 <translation id="6970480684834282392">סוג הפעלה</translation>
 <translation id="6970543303783413625">לא ניתן לייבא את הסיסמאות. ניתן לייבא רק עד <ph name="COUNT" /> סיסמאות בכל פעם.</translation>
 <translation id="6970856801391541997">הדפסת דפים ספציפיים</translation>
@@ -6824,6 +6829,7 @@
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>
 <translation id="7378611153938412599">קל לנחש סיסמאות חלשות. חשוב להגדיר סיסמאות חזקות. <ph name="BEGIN_LINK" />לטיפים נוספים לגבי אבטחה.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">‏פתיחת חנות האינטרנט של Chrome</translation>
+<translation id="7380272457268061606">להשבית את שחזור הנתונים המקומיים?</translation>
 <translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
 <translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> עודכנה</translation>
@@ -7073,6 +7079,7 @@
 <translation id="7617263010641145920">‏הפעלה של חנות Play</translation>
 <translation id="7617648809369507487">שימוש במצב שקט יותר של העברת הודעות</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
+<translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
 <translation id="7622114377921274169">בטעינה.</translation>
 <translation id="7622768823216805500">‏אתרים מתקינים בדרך כלל רכיבי handler של תשלומים כדי להציע תכונות קנייה, כמו תשלום קל יותר בקופה</translation>
 <translation id="7622903810087708234">פרטי סיסמה</translation>

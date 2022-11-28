@@ -395,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनी गई, <ph name="TOPIC_SOURCE" /> एल्बम चुनने के लिए Enter दबाएं</translation>
 <translation id="484790837831576105">(Android) डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="4848429997038228357">चल रहा है</translation>
+<translation id="4854586501323951986">पहले से मौजूद टचस्क्रीन</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="4873827928179867585">पुष्टि करने का एल्गोरिदम</translation>
 <translation id="4880328057631981605">एक्सेस पॉइंट नाम</translation>
@@ -568,6 +569,7 @@
 <translation id="6394634179843537518">फ़ाइल जोड़ें</translation>
 <translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="641081527798843608">विषय मिलान</translation>
+<translation id="6412715219990689313">पहले से मौजूद कीबोर्ड</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
@@ -666,6 +668,7 @@
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="73631062356239394">गड़बड़ी की जानकारी का डेटा शेयर करें</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">पहले से मौजूद टचपैड</translation>
 <translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>

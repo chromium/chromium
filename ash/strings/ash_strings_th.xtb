@@ -728,6 +728,7 @@
 <translation id="4987738733603015246">เดสก์ที่ 16</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
 <translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">การเข้าถึงไมโครโฟนของอุปกรณ์เปิดอยู่</translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
@@ -962,6 +963,7 @@
 <translation id="6359587239691116345">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด หากปฏิเสธการอัปเดตนี้ อุปกรณ์อาจทำงานไม่ถูกต้องอีกต่อไป และคุณอาจพบปัญหาด้านความปลอดภัยและประสิทธิภาพ</translation>
 <translation id="6376931439017688372">บลูทูธเปิดอยู่</translation>
 <translation id="6381109794406942707">ป้อน PIN เพื่อปลดล็อกอุปกรณ์</translation>
+<translation id="638716340450135524">เปิดการเข้าถึงกล้อง</translation>
 <translation id="639644700271529076">CAPS LOCK ปิดอยู่</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -969,6 +971,7 @@
 <translation id="642644398083277086">ล้างการแจ้งเตือนทั้งหมด</translation>
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
 <translation id="6431865393913628856">บันทึกหน้าจอ</translation>
+<translation id="6442259747294754014">การเข้าถึงไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="6449483711453944360">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -1364,6 +1367,7 @@
 <translation id="8598235756057743477">จัดเรียงแอปตามชื่อหรือสี</translation>
 <translation id="8614517853887502247">การแจ้งเตือนของ <ph name="APP_1_TITLE" /> และ <ph name="APP_2_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="8627191004499078455">เชื่อมต่อ<ph name="DEVICE_NAME" />แล้ว</translation>
+<translation id="8630991711272431708">ปิดการเข้าถึงกล้อง</translation>
 <translation id="8631727435199967028">การตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8639760480004882931">เหลือ <ph name="PERCENTAGE" />%</translation>

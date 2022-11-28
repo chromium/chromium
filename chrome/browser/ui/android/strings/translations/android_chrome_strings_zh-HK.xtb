@@ -283,11 +283,11 @@
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2573452357057307036">瞭解如何將 Chrome 設定為預設瀏覽器</translation>
-<translation id="2580436639406015883">網站可透過私密狀態權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。
+<translation id="2580436639406015883">為減少垃圾內容和欺詐行為，系統需依賴 Private State Token，以協助網站對抗欺詐行為，並分辨機器人和真人。
 
-網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發私密狀態權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的私密狀態權杖，這些網站就較有可能會判斷你是真人，而非機器人。
+網站可根據您與網站的互動 (例如定期登入網站)，向您的瀏覽器發出 Private State Token。日後，如果您瀏覽的其他網站檢查並找到有效的 Private State Token，則這些網站更有可能將您視為真人，而不是機器人。
 
-私密狀態權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
+Private State Token 能夠改善網絡上的私隱，而且系統無法透過信任憑證來識別您的身分。</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
 <translation id="2593272815202181319">等寬</translation>
@@ -576,9 +576,11 @@
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
 <translation id="4141536112466364990">瞭解 Chrome</translation>
-<translation id="4147131678541801076">在試用期間，網站會使用私密狀態權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發私密狀態權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的私密狀態權杖，這些網站就較有可能會判斷你是真人，而非機器人。
+<translation id="4147131678541801076">在試用期間，為減少垃圾內容和欺詐行為，系統需依賴 Private State Token，以協助網站對抗欺詐行為，並分辨機器人和真人。
 
-私密狀態權杖能進一步保護網路使用者的隱私，且無法用來識別個人身分。</translation>
+網站可根據您與網站的互動 (例如定期登入網站)，向您的瀏覽器發出 Private State Token。日後，如果您瀏覽的其他網站檢查並找到有效的 Private State Token，則這些網站更有可能將您視為真人，而不是機器人。
+
+Private State Token 能夠改善網絡上的私隱，而且系統無法透過信任憑證來識別您的身分。</translation>
 <translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
@@ -687,7 +689,7 @@
 <translation id="4766313118839197559">密碼會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
 <translation id="4769095993849849966">新檔案名稱</translation>
-<translation id="4778653490315793244">目前還沒有內容</translation>
+<translation id="4778653490315793244">未有可以顯示內容</translation>
 <translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1513,7 +1515,7 @@
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 部影片}other{# 部影片}}</translation>
-<translation id="9042827002460091668">請檢查你的網際網路連線，然後再試一次</translation>
+<translation id="9042827002460091668">請檢查您的互聯網連線，然後再試一次</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9063523880881406963">關閉「切換為電腦版網站」</translation>

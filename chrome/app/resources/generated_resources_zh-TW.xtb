@@ -4626,7 +4626,7 @@
 <translation id="5293170712604732402">將設定還原成原始預設值</translation>
 <translation id="5294097441441645251">開頭必須是小寫字元或底線</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> 會使用內建感應器偵測裝置前方的人員。所有資料都會立即在這部裝置上處理，完成後便會全數刪除。感應器資料絕不會傳送給 Google。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="5296350763804564124">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字反饋功能。</translation>
+<translation id="5296350763804564124">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字回饋功能。</translation>
 <translation id="5297005732522718715">重新整理網路共用設定</translation>
 <translation id="5297082477358294722">密碼已儲存。你可以查看及管理 <ph name="SAVED_PASSWORDS_STORE" />中儲存的密碼。</translation>
 <translation id="5297946558563358707">有人在窺探你的螢幕時，螢幕右下方會顯示「隱私權」眼睛圖示</translation>
@@ -8787,7 +8787,7 @@
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="9188732951356337132">傳送使用狀況與診斷資料。這個裝置目前會自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
-<translation id="9192019773545828776">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字反饋功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左鍵或向右鍵即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
+<translation id="9192019773545828776">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字回饋功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左鍵或向右鍵即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
 <translation id="9198090666959937775">使用你的 Android 手機做為安全金鑰</translation>
 <translation id="9199503643457729322">按一下即可離開「隱私權指南」頁面。</translation>

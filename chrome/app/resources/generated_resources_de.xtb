@@ -2334,6 +2334,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
+<translation id="3108957152224931571">Hervorhebungsfarbe</translation>
 <translation id="3109206895301430738">Gespeicherte Tabgruppen</translation>
 <translation id="3109724472072898302">Minimiert</translation>
 <translation id="3112292765614504292">App-Größe: <ph name="APP_SIZE" /></translation>
@@ -4571,6 +4572,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5260334392110301220">Intelligente Anführungszeichen</translation>
 <translation id="5260508466980570042">Deine E-Mail-Adresse oder Dein Passwort konnte nicht bestätigt werden. Bitte versuche es noch einmal.</translation>
 <translation id="5260958083445173099">Inhalte auf Websites werden dir nach Möglichkeit in deinen bevorzugten Sprachen angezeigt</translation>
+<translation id="5261619498868361045">Containername darf nicht leer sein.</translation>
 <translation id="5261683757250193089">Im Web Store öffnen</translation>
 <translation id="5262178194499261222">Passwort entfernen</translation>
 <translation id="5262784498883614021">Automatisch mit Netzwerk verbinden</translation>
@@ -4975,6 +4977,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="562935524653278697">Dein Administrator hat die Synchronisierung des Verlaufs sowie deiner Lesezeichen, Passwörter und sonstigen Einstellungen deaktiviert.</translation>
 <translation id="5631017369956619646">CPU-Auslastung</translation>
 <translation id="5632059346822207074">Berechtigung angefordert. Drücke „Ctrl + Weiter“, um zu reagieren.</translation>
+<translation id="5632221585574759616">Weitere Informationen zu Erweiterungsberechtigungen</translation>
 <translation id="5632566673632479864">Dein Konto <ph name="EMAIL" /> ist nicht mehr als primäres Konto zugelassen. Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden dein Verlauf sowie deine Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht.</translation>
 <translation id="5632592977009207922">Wird heruntergeladen, <ph name="PERCENT_REMAINING" /> % verbleibend</translation>
 <translation id="5633149627228920745">Weitere Informationen zu den Systemanforderungen</translation>
@@ -5594,6 +5597,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ist offline. Stelle eine Internetverbindung her und versuche es noch einmal.</translation>
 <translation id="6220413761270491930">Fehler beim Laden der Erweiterung</translation>
 <translation id="6224481128663248237">Formatierung abgeschlossen</translation>
+<translation id="622474711739321877">Dieser Container ist bereits vorhanden.</translation>
 <translation id="622537739776246443">Profil wird gelöscht</translation>
 <translation id="6225475702458870625">Datenverbindung von deinem <ph name="PHONE_NAME" /> verfügbar</translation>
 <translation id="6226777517901268232">Datei mit privatem Schlüssel (optional)</translation>
@@ -6392,6 +6396,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="696780070563539690">Websites können deine Cookies nicht dazu verwenden, deine Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
 <translation id="6968288415730398122">Gib dein Passwort ein, um die Displaysperre zu konfigurieren</translation>
 <translation id="6969047215179982698">Nearby Share deaktivieren</translation>
+<translation id="6969216690072714773">Eingabe neuer oder Aktualisierung vorhandener Informationen für dieses Gerät.</translation>
 <translation id="6970480684834282392">Starttyp</translation>
 <translation id="6970543303783413625">Import der Passwörter nicht möglich. Du kannst nur maximal <ph name="COUNT" /> Passwörter gleichzeitig importieren.</translation>
 <translation id="6970856801391541997">Bestimmte Seiten drucken</translation>
@@ -6798,6 +6803,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="7378611153938412599">Schwache Passwörter sind einfach zu erraten. Erstelle deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
+<translation id="7380272457268061606">Wiederherstellung lokaler Daten deaktivieren?</translation>
 <translation id="7380459290951585794">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein und Bluetooth sowie WLAN müssen aktiviert sein</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> aktualisiert</translation>
@@ -7047,6 +7053,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7617263010641145920">Play Store aktivieren</translation>
 <translation id="7617648809369507487">Unaufdringlichere Benachrichtigungen verwenden</translation>
 <translation id="7621382409404463535">Das System konnte die Gerätekonfiguration nicht speichern.</translation>
+<translation id="7621595347123595643">Wenn du dein Passwort oder deine PIN vergisst, kannst du keine lokalen Daten wiederherstellen.</translation>
 <translation id="7622114377921274169">Wird aufgeladen.</translation>
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>
 <translation id="7622903810087708234">Passwortdetails</translation>

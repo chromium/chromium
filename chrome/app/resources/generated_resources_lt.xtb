@@ -2355,6 +2355,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3105796011181310544">Pakeisti atgal į „Google“?</translation>
 <translation id="310671807099593501">Svetainė naudoja „Bluetooth“</translation>
 <translation id="3108931485517391283">Nepavyko gauti</translation>
+<translation id="3108957152224931571">Paryškinimo spalva</translation>
 <translation id="3109206895301430738">Išsaugotos skirtukų grupės</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="3112292765614504292">Programos dydis: <ph name="APP_SIZE" /></translation>
@@ -4593,6 +4594,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5260334392110301220">Išmaniosios kabutės</translation>
 <translation id="5260508466980570042">Atsiprašome, el. pašto ir slaptažodžio patvirtinti nepavyko. Bandykite dar kartą.</translation>
 <translation id="5260958083445173099">Kai bus įmanoma, svetainių turinys bus rodomas pageidaujamomis kalbomis</translation>
+<translation id="5261619498868361045">Sudėtinio failo pavadinimo laukas negali būti tuščias.</translation>
 <translation id="5261683757250193089">Atidaryti internetinėje parduotuvėje</translation>
 <translation id="5262178194499261222">Pašalinti slaptažodį</translation>
 <translation id="5262784498883614021">Automatiškai prisijungti prie tinklo</translation>
@@ -5000,6 +5002,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="562935524653278697">Administratorius išjungė žymių, istorijos, slaptažodžių ir kitų nustatymų sinchronizavimą.</translation>
 <translation id="5631017369956619646">Centrinio procesoriaus naudojimas</translation>
 <translation id="5632059346822207074">Pateikta užklausa dėl leidimo; paspauskite Ctrl + pirmyn, kad atsakytumėte</translation>
+<translation id="5632221585574759616">Sužinokite daugiau apie plėtinių leidimus</translation>
 <translation id="5632566673632479864">Jūsų paskyra <ph name="EMAIL" /> nebeleidžiama kaip pagrindinė paskyra. Kadangi ši paskyra tvarkoma <ph name="DOMAIN" />, jūsų žymės, istorija, slaptažodžiai ir kiti nustatymai bus išvalyti iš šio įrenginio.</translation>
 <translation id="5632592977009207922">Atsisiunčiama, liko <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="5633149627228920745">Sužinokite daugiau apie sistemos reikalavimus</translation>
@@ -5620,6 +5623,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6218058416316985984">„<ph name="DEVICE_TYPE" />“ įrenginyje neįjungtas internetas. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
 <translation id="6220413761270491930">Klaida įkeliant plėtinį</translation>
 <translation id="6224481128663248237">Formatavimas sėkmingai baigtas!</translation>
+<translation id="622474711739321877">Šis sudėtinis failas jau yra.</translation>
 <translation id="622537739776246443">Profilis bus ištrintas</translation>
 <translation id="6225475702458870625">Duomenų ryšys pasiekiamas iš „<ph name="PHONE_NAME" />“ telefono</translation>
 <translation id="6226777517901268232">Privataus rakto failas (pasirenkama)</translation>
@@ -6424,6 +6428,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="696780070563539690">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus</translation>
 <translation id="6968288415730398122">Įveskite slaptažodį ir konfigūruokite ekrano užraktą</translation>
 <translation id="6969047215179982698">Išjungti Bendrinimo netoliese funkciją</translation>
+<translation id="6969216690072714773">Įveskite naują arba atnaujinkite esamą informaciją, kuri bus susieta su šiuo įrenginiu.</translation>
 <translation id="6970480684834282392">Paleisties tipas</translation>
 <translation id="6970543303783413625">Nepavyko importuoti slaptažodžių. Vienu metu galite importuoti daugiausia tik tiek slaptažodžių: <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Spausdinti konkrečius puslapius</translation>
@@ -6830,6 +6835,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>
 <translation id="7378611153938412599">Nesudėtingus slaptažodžius lengva atspėti. Įsitikinkite, kad kuriate sudėtingus slaptažodžius. <ph name="BEGIN_LINK" />Žr. daugiau saugos patarimų.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Atidarykite „Chrome“ internetinę parduotuvę</translation>
+<translation id="7380272457268061606">Išjungti vietinių duomenų atkūrimą?</translation>
 <translation id="7380459290951585794">Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys</translation>
 <translation id="7380622428988553498">Įrenginio pavadinime yra netinkamų simbolių</translation>
 <translation id="7380768571499464492">Atnaujintas „<ph name="PRINTER_NAME" />“</translation>
@@ -7079,6 +7085,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7617263010641145920">Įjungti „Play“ parduotuvę</translation>
 <translation id="7617648809369507487">Naudoti tylesnio susirašinėjimo funkcijas</translation>
 <translation id="7621382409404463535">Sistemai nepavyko išsaugoti įrenginio konfigūracijos.</translation>
+<translation id="7621595347123595643">Negalėsite atkurti vietinių duomenų, jei pamiršite slaptažodį ar PIN kodą.</translation>
 <translation id="7622114377921274169">Įkraunama.</translation>
 <translation id="7622768823216805500">Paprastai svetainėse įdiegiamos mokėjimų doroklės, naudojamos vykdant apsipirkimo funkcijas, pvz., norint supaprastinti atsiskaitymo procesą</translation>
 <translation id="7622903810087708234">Išsami slaptažodžio informacija</translation>

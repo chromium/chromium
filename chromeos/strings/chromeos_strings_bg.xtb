@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Избрахте опцията <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Натиснете Enter, за да посочите албуми от <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
+<translation id="4854586501323951986">Вграден сензорен екран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="4873827928179867585">Алгоритъм за удостоверяване</translation>
 <translation id="4880328057631981605">Име на точката за достъп</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">Добавяне на файл</translation>
 <translation id="6410257289063177456">Графични файлове</translation>
 <translation id="641081527798843608">Съвпадение на субекта</translation>
+<translation id="6412715219990689313">Вградена клавиатура</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Към настройките на профила</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="73631062356239394">Споделяне на диагностични данни</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Вграден сензорен панел</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>

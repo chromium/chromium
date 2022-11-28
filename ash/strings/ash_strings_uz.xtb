@@ -554,6 +554,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Yoqilmagan, 1 ta ilova}other{Yoqilmagan, # ta ilova}}</translation>
 <translation id="4066027111132117168">Yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="4072264167173457037">Signal o‘rtacha</translation>
+<translation id="4086921558679520050">Qurilmadagi mikrofon tashqi tugmasini bosing</translation>
 <translation id="4112140312785995938">Orqaga qaytarish</translation>
 <translation id="4114315158543974537">Phone Hub funksiyasini yoqish</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
@@ -606,6 +607,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal darajasi: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="4378551569595875038">Ulanmoqda...</translation>
 <translation id="4379531060876907730">Bular – stilus vositalaringiz</translation>
+<translation id="4381031910344220229">Bunda mikrofonga ruxsat beriladi. <ph name="APP_NAME" /> va barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="439598569299422042">Pauzada, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Skrinkast saqlanmadi</translation>
@@ -728,6 +730,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Keyingi gap</translation>
 <translation id="5016558321564993266">Marker holatini oʻzgartirish. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Qurilma mikrofoniga ruxsat yoniq</translation>
 <translation id="5030687792513154421">Vaqt tugadi</translation>
 <translation id="5033299697334913360">Butun ekranni tasvirga olish uchun istalgan joyga bosing</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yangi telefonga ulandi</translation>
@@ -959,9 +962,11 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> seansi <ph name="MANAGER" /> domenida boshqariladi</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ulandi</translation>
 <translation id="6351032674660237738">ILOVA TAKLIFLARI</translation>
+<translation id="6352082849089527770">Notanish tarmoqlar</translation>
 <translation id="6359587239691116345">Eng oxirgi funksiyalar va xavfsizlikka oid yangilanishlarni olish Bu yangilanishni rad qilsangiz, qurilmangiz ishlashi, xavfsizlik va unumdorlikda muammolar yuz berishi mumkin.</translation>
 <translation id="6376931439017688372">Bluetooth yoniq</translation>
 <translation id="6381109794406942707">Qurilmani qulfdan chiqarish uchun PIN kodingizni kiriting.</translation>
+<translation id="638716340450135524">Kamera ruxsatini yoqing</translation>
 <translation id="639644700271529076">CAPS LOCK o‘chiq</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -969,6 +974,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="642644398083277086">Barcha eslatmalarni tozalang</translation>
 <translation id="643147933154517414">Bajarildi</translation>
 <translation id="6431865393913628856">Ekran yozuvi</translation>
+<translation id="6442259747294754014">Qurilma mikrofoniga ruxsat oʻchiq</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
 <translation id="6449483711453944360">Linux ilovalari va inkognito oynalarida ishlamaydi</translation>
@@ -1133,6 +1139,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
 <translation id="736045644501761622">Fon rasmi va uslubini sozlash</translation>
 <translation id="7371404428569700291">Yozib olish oynasi</translation>
+<translation id="737315737514430195">Bunda mikrofonga ruxsat beriladi. Barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="7377169924702866686">Caps Lock yoniq.</translation>
 <translation id="7377481913241237033">Kod bilan ulanish</translation>
 <translation id="7378203170292176219">Yozib olinadigan hududni tanlash uchun suring</translation>
@@ -1201,6 +1208,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7671610481353807627">Ilovalar rangi asosida saralandi</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> qurilmasiga ulangan, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> uchun kameradan kiritish sozlandi.</translation>
+<translation id="7689817529363080918">Bunda mikrofonga ruxsat beriladi. <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yangi mobil tarmoq kiritish</translation>
 <translation id="7720400844887872976">Yoniqlik muddati: <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8598235756057743477">Ilovalarni nomi yoki rangi asosida saralash</translation>
 <translation id="8614517853887502247">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" /> va <ph name="APP_2_TITLE" /> bildirishnomalari yashirildi</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> qurilmasiga ulandi</translation>
+<translation id="8630991711272431708">Kameraga ruxsatni faolsizlantirish</translation>
 <translation id="8631727435199967028">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="8637598503828012618">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> qoldi</translation>

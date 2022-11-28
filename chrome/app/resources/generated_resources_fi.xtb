@@ -2353,6 +2353,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3105796011181310544">Vaihdetaanko takaisin Googleen?</translation>
 <translation id="310671807099593501">Sivusto käyttää Bluetoothia</translation>
 <translation id="3108931485517391283">Ei voi vastaanottaa</translation>
+<translation id="3108957152224931571">Korostusväri</translation>
 <translation id="3109206895301430738">Tallennetut välilehtiryhmät</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
 <translation id="3112292765614504292">Sovelluksen koko: <ph name="APP_SIZE" /></translation>
@@ -4595,6 +4596,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5260334392110301220">Älykkäät lainausmerkit</translation>
 <translation id="5260508466980570042">Sähköpostiosoitteesi tai salasanasi vahvistaminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5260958083445173099">Verkkosivustojen sisältö näkyy haluamillasi kielillä, jos mahdollista</translation>
+<translation id="5261619498868361045">Säilön nimi ei voi olla tyhjä.</translation>
 <translation id="5261683757250193089">Avaa Web Storessa</translation>
 <translation id="5262178194499261222">Poista salasana</translation>
 <translation id="5262784498883614021">Yhdistä verkkoon automaattisesti</translation>
@@ -5001,6 +5003,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="562935524653278697">Järjestelmänvalvoja on poistanut käytöstä kirjanmerkkien, historian, salasanojen ja muiden asetusten synkronoinnin.</translation>
 <translation id="5631017369956619646">Suorittimen käyttö</translation>
 <translation id="5632059346822207074">Lupaa pyydetty, vastaa painamalla Ctrl + seuraava</translation>
+<translation id="5632221585574759616">Lue lisää laajennusten luvista</translation>
 <translation id="5632566673632479864">Tilisi <ph name="EMAIL" /> ei ole enää sallittu ensisijaisena tilinä. Koska <ph name="DOMAIN" /> ylläpitää tätä tiliä, kirjanmerkit, historia, salasanat ja muut asetukset tyhjennetään tältä laitteelta.</translation>
 <translation id="5632592977009207922">Ladataan, <ph name="PERCENT_REMAINING" /> % jäljellä</translation>
 <translation id="5633149627228920745">Lue lisää järjestelmävaatimuksista</translation>
@@ -5621,6 +5624,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> on offline-tilassa. Muodosta internetyhteys ja yritä uudelleen.</translation>
 <translation id="6220413761270491930">Virhe ladattaessa laajennusta</translation>
 <translation id="6224481128663248237">Alustus onnistui!</translation>
+<translation id="622474711739321877">Tämä säilö on jo olemassa.</translation>
 <translation id="622537739776246443">Profiili poistetaan</translation>
 <translation id="6225475702458870625">Datayhteys käytettävissä puhelimella <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Yksityinen avaintiedosto (valinnainen)</translation>
@@ -6420,6 +6424,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="696780070563539690">Sivustot eivät voi nähdä evästeiden kautta selaustoimintaasi eri sivustoilla esim. personoidakseen mainoksia</translation>
 <translation id="6968288415730398122">Määritä näytön lukitus antamalla salasanasi.</translation>
 <translation id="6969047215179982698">Laita lähijakaminen pois päältä</translation>
+<translation id="6969216690072714773">Lisää uudet tai päivitä aiemmat tiedot, jotta laiteyhteyden voi muodostaa.</translation>
 <translation id="6970480684834282392">Käynnistystyyppi</translation>
 <translation id="6970543303783413625">Salasanojen siirto ei onnistu. Voit siirtää vain <ph name="COUNT" /> salasanaa kerrallaan.</translation>
 <translation id="6970856801391541997">Tulosta tietyt sivut</translation>
@@ -6826,6 +6831,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
 <translation id="7378611153938412599">Heikko salasana on helppo arvata. Muista käyttää vahvoja salasanoja. <ph name="BEGIN_LINK" />Katso muita tietoturvavinkkejä.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Avaa Chrome Web Store</translation>
+<translation id="7380272457268061606">Poistetaanko paikallisen datan palautus käytöstä?</translation>
 <translation id="7380459290951585794">Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä</translation>
 <translation id="7380622428988553498">Laitteen nimi sisältää virheellisiä merkkejä</translation>
 <translation id="7380768571499464492">Päivitetty <ph name="PRINTER_NAME" /></translation>
@@ -7076,6 +7082,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7617263010641145920">Ota Play Kauppa käyttöön</translation>
 <translation id="7617648809369507487">Käytä hiljaisempia viestejä</translation>
 <translation id="7621382409404463535">Laitteen kokoonpanon tallentaminen järjestelmään epäonnistui.</translation>
+<translation id="7621595347123595643">Et voi palauttaa paikallista dataa, jos unohdat salasanan tai PIN-koodin.</translation>
 <translation id="7622114377921274169">Ladataan</translation>
 <translation id="7622768823216805500">Sivustot asentavat yleensä maksunkäsittelijöitä tarjotakseen osto-ominaisuuksia, esim. helpomman maksamisen</translation>
 <translation id="7622903810087708234">Salasanan tiedot</translation>

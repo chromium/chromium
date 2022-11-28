@@ -4092,6 +4092,15 @@ Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageIn
 
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het beleid <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
+<translation id="5069522005630249098">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
+
+      Als het beleid is ingesteld op <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> of niet is ingesteld, wordt er geen achterwaartse gegevensmigratie uitgevoerd.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, worden alle gebruikersgegevens verwijderd. Dit is de veiligste optie.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, worden de meeste gebruikersgegevens verwijderd. Alleen bestanden die niet afhankelijk zijn van de browser worden bewaard (zoals downloads).
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, worden alle gebruikersgegevens bewaard. Deze optie heeft een hoog risico op fouten en vereist een Powerwash om te herstellen.</translation>
 <translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 

@@ -2331,6 +2331,7 @@
 <translation id="3105796011181310544">Google に戻しますか？</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
 <translation id="3108931485517391283">受信できません</translation>
+<translation id="3108957152224931571">ハイライトの色</translation>
 <translation id="3109206895301430738">保存したタブグループ</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="3112292765614504292">アプリのサイズ: <ph name="APP_SIZE" /></translation>
@@ -4565,6 +4566,7 @@
 <translation id="5260334392110301220">スマート引用符</translation>
 <translation id="5260508466980570042">メールまたはパスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="5260958083445173099">ウェブサイトのコンテンツが指定した言語で表示されるようになります（可能な場合）</translation>
+<translation id="5261619498868361045">コンテナ名を空白にすることはできません。</translation>
 <translation id="5261683757250193089">ウェブストアで開く</translation>
 <translation id="5262178194499261222">パスワードを削除</translation>
 <translation id="5262784498883614021">ネットワークに自動接続する</translation>
@@ -4970,6 +4972,7 @@
 <translation id="562935524653278697">管理者がブックマーク、履歴、パスワードなどの設定の同期を無効にしました。</translation>
 <translation id="5631017369956619646">CPU 使用状況</translation>
 <translation id="5632059346822207074">権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
+<translation id="5632221585574759616">拡張機能の権限の詳細</translation>
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5632592977009207922">ダウンロードしています（残り <ph name="PERCENT_REMAINING" />%）</translation>
 <translation id="5633149627228920745">システム要件の詳細</translation>
@@ -5590,6 +5593,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> はオフラインです。インターネットに接続してもう一度お試しください。</translation>
 <translation id="6220413761270491930">拡張機能の読み込みエラー</translation>
 <translation id="6224481128663248237">フォーマットが完了しました。</translation>
+<translation id="622474711739321877">このコンテナはすでに存在します。</translation>
 <translation id="622537739776246443">プロフィールは削除されます</translation>
 <translation id="6225475702458870625"><ph name="PHONE_NAME" /> からデータ接続が可能です</translation>
 <translation id="6226777517901268232">秘密鍵ファイル（省略可能）</translation>
@@ -6386,6 +6390,7 @@
 <translation id="696780070563539690">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できません（広告のカスタマイズなどが行えません）</translation>
 <translation id="6968288415730398122">画面ロックを設定するにはパスワードを入力します</translation>
 <translation id="6969047215179982698">ニアバイシェアをオフにする</translation>
+<translation id="6969216690072714773">このデバイスに関連付ける新しい情報を入力するか、既存の情報を更新します。</translation>
 <translation id="6970480684834282392">起動タイプ</translation>
 <translation id="6970543303783413625">パスワードをインポートできません。一度にインポートできるパスワードは最大 <ph name="COUNT" /> 件です。</translation>
 <translation id="6970856801391541997">指定したページを印刷</translation>
@@ -6791,6 +6796,7 @@
 <translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="7378611153938412599">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。<ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome ウェブストアを開きます</translation>
+<translation id="7380272457268061606">ローカルデータの復元を無効にしますか？</translation>
 <translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
 <translation id="7380768571499464492">更新: <ph name="PRINTER_NAME" /></translation>
@@ -7040,6 +7046,7 @@
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
 <translation id="7617648809369507487">静かな方法で通知する</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
+<translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622903810087708234">パスワードの詳細</translation>

@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
+<translation id="1990820278544963435">ค้นหา</translation>
 <translation id="199425419756152024">ดูรหัสผ่าน</translation>
 <translation id="2010008505735295285">โหลดซ้ำ</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
@@ -875,6 +876,7 @@
 <translation id="7531345132340165516">เว็บไซต์ปัจจุบัน</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
 <translation id="7553234618121028547">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ตัวเลือกรหัสผ่าน</translation>
+<translation id="7554645225856321710">ปิดทั้งหมด</translation>
 <translation id="7554791636758816595">แท็บใหม่</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
 <translation id="7583004045319035904">ใช้ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> เพื่อปลดล็อกแท็บที่ไม่ระบุตัวตน</translation>
@@ -1089,6 +1091,7 @@
 <translation id="9188680907066685419">ออกจากระบบบัญชีที่มีการจัดการ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> วันที่ผ่านมา</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">ค้นหาแท็บ…</translation>
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>
 <translation id="941747855997058526">เลือกรหัสผ่าน...</translation>
 <translation id="952704832371081537">ยกเลิก</translation>

@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择影集</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">正在运行</translation>
+<translation id="4854586501323951986">内置触摸屏</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="4873827928179867585">身份验证算法</translation>
 <translation id="4880328057631981605">接入点名称 (APN)</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">添加文件</translation>
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="641081527798843608">主题匹配</translation>
+<translation id="6412715219990689313">内置键盘</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开帐号设置</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="73631062356239394">分享诊断数据</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">内置触控板</translation>
 <translation id="7397270852490618635">关闭浅色主题</translation>
 <translation id="741244894080940828">换算</translation>
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>

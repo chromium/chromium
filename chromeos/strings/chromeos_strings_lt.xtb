@@ -395,6 +395,7 @@
 <translation id="4847902821209177679">Pasirinkta <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; jei norite pasirinkti <ph name="TOPIC_SOURCE" /> albumus, paspauskite „Enter“</translation>
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
+<translation id="4854586501323951986">Įtaisytas jutiklinis ekranas</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="4873827928179867585">Autentifikavimo algoritmas</translation>
 <translation id="4880328057631981605">Prieigos taško pavadinimas</translation>
@@ -568,6 +569,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6394634179843537518">Pridėti failą</translation>
 <translation id="6410257289063177456">Vaizdo failai</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
+<translation id="6412715219990689313">Įtaisyta klaviatūra</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Eiti į paskyros nustatymus</translation>
@@ -666,6 +668,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="73631062356239394">Diagnostikos duomenų bendrinimas</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Įtaisyta jutiklinė dalis</translation>
 <translation id="7397270852490618635">Išjungti šviesiąją temą</translation>
 <translation id="741244894080940828">konversija</translation>
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>

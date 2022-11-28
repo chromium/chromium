@@ -2337,6 +2337,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3105796011181310544">Tornare a Google?</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
+<translation id="3108957152224931571">Colore di evidenziazione</translation>
 <translation id="3109206895301430738">Gruppi di schede salvati</translation>
 <translation id="3109724472072898302">Compresso</translation>
 <translation id="3112292765614504292">Dimensioni app: <ph name="APP_SIZE" /></translation>
@@ -4574,6 +4575,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5260334392110301220">Virgolette smart</translation>
 <translation id="5260508466980570042">Spiacenti, impossibile verificare l'email o la password. Riprova.</translation>
 <translation id="5260958083445173099">Se possibile, i contenuti dei siti web verranno mostrati nelle tue lingue preferite</translation>
+<translation id="5261619498868361045">È necessario specificare il nome del contenitore.</translation>
 <translation id="5261683757250193089">Apri nel Web Store</translation>
 <translation id="5262178194499261222">Rimuovi password</translation>
 <translation id="5262784498883614021">Collegati automaticamente alla rete</translation>
@@ -4978,6 +4980,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="562935524653278697">L'amministratore ha disattivato la sincronizzazione dei tuoi preferiti, della cronologia, delle password e di altre impostazioni.</translation>
 <translation id="5631017369956619646">Utilizzo CPU</translation>
 <translation id="5632059346822207074">Autorizzazione richiesta, premi Ctrl + Avanti per rispondere</translation>
+<translation id="5632221585574759616">Scopri di più sulle autorizzazioni delle estensioni</translation>
 <translation id="5632566673632479864">Il tuo account <ph name="EMAIL" /> non è più consentito come account principale. Siccome l'account è gestito da <ph name="DOMAIN" />, i preferiti, la cronologia, le password e altre impostazioni verranno cancellati da questo dispositivo.</translation>
 <translation id="5632592977009207922">Download in corso: <ph name="PERCENT_REMAINING" />% rimanente</translation>
 <translation id="5633149627228920745">Scopri di più sui requisiti di sistema</translation>
@@ -5597,6 +5600,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> è offline. Connettiti a Internet e riprova.</translation>
 <translation id="6220413761270491930">Errore di caricamento dell'estensione</translation>
 <translation id="6224481128663248237">Formattazione terminata.</translation>
+<translation id="622474711739321877">Questo contenitore esiste già.</translation>
 <translation id="622537739776246443">Il profilo verrà eliminato</translation>
 <translation id="6225475702458870625">Connessione dati disponibile dal tuo dispositivo <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">File chiave privata (facoltativo)</translation>
@@ -6395,6 +6399,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="696780070563539690">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci</translation>
 <translation id="6968288415730398122">Inserisci la password per configurare il blocco schermo</translation>
 <translation id="6969047215179982698">Disattiva Condivisione nelle vicinanze</translation>
+<translation id="6969216690072714773">Inserisci nuove informazioni o aggiorna informazioni esistenti da associare a questo dispositivo.</translation>
 <translation id="6970480684834282392">Tipo di avvio</translation>
 <translation id="6970543303783413625">Impossibile importare le password. Puoi importarne massimo <ph name="COUNT" /> alla volta.</translation>
 <translation id="6970856801391541997">Stampa pagine specifiche</translation>
@@ -6801,6 +6806,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7377481913241237033">Connessione tramite codice</translation>
 <translation id="7378611153938412599">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Apri Chrome Web Store</translation>
+<translation id="7380272457268061606">Vuoi disattivare il recupero dei dati locali?</translation>
 <translation id="7380459290951585794">Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> è stata aggiornata</translation>
@@ -7050,6 +7056,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7617263010641145920">Attivare il Play Store</translation>
 <translation id="7617648809369507487">Usa messaggi più discreti</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
+<translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>
 <translation id="7622114377921274169">In carica.</translation>
 <translation id="7622768823216805500">In genere, i siti installano gestori dei pagamenti per funzionalità di acquisto come il pagamento semplificato</translation>
 <translation id="7622903810087708234">Dettagli password</translation>

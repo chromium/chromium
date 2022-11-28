@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Mae <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> wedi'i ddewis, pwyswch Enter i ddewis albymau <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Eglurdeb DNS (Android)</translation>
 <translation id="4848429997038228357">WRTHI'N RHEDEG</translation>
+<translation id="4854586501323951986">Sgrîn gyffwrdd integredig</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}zero{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}two{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}few{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}many{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}other{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}}</translation>
 <translation id="4873827928179867585">Algorithm dilysu</translation>
 <translation id="4880328057631981605">Enw pwynt mynediad</translation>
@@ -569,6 +570,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6394634179843537518">Ychwanegu ffeil</translation>
 <translation id="6410257289063177456">Ffeiliau llun</translation>
 <translation id="641081527798843608">Cyfateb pwnc</translation>
+<translation id="6412715219990689313">Bysellfwrdd integredig</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gwan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Mynd i'r gosodiadau cyfrif</translation>
@@ -667,6 +669,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7359657277149375382">Math ffeil</translation>
 <translation id="73631062356239394">Rhannu data diagnosteg</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Pad cyffwrdd integredig</translation>
 <translation id="7397270852490618635">Diffodd y thema olau</translation>
 <translation id="741244894080940828">trosi</translation>
 <translation id="7415801143053185905">Cuddni HTTP uchel iawn</translation>

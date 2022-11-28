@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valið, ýttu á færslulykilinn til að velja albúm í <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
+<translation id="4854586501323951986">Innbyggður snertiskjár</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="4873827928179867585">Auðkenningarreiknirit</translation>
 <translation id="4880328057631981605">Heiti aðgangsstaðar</translation>
@@ -569,6 +570,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6394634179843537518">Bæta við skrá</translation>
 <translation id="6410257289063177456">Myndaskrár</translation>
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
+<translation id="6412715219990689313">Innbyggt lyklaborð</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lítill (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Fara í reikningsstillingar</translation>
@@ -667,6 +669,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7359657277149375382">Skráargerð</translation>
 <translation id="73631062356239394">Deila greiningargögnum</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Innbyggður snertiflötur</translation>
 <translation id="7397270852490618635">Slökkva á ljósu þema</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>

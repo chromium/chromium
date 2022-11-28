@@ -1300,6 +1300,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2157875535253991059">Full screen na ngayon ang pahinang ito.</translation>
 <translation id="2158475082070321257">Kopyahin ang link sa highlight</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Saklaw ng <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162155940152307086">Magsisimula ang pag-sync sa sandaling umalis ka sa mga setting ng pag-sync</translation>
 <translation id="2162705204091149050">Basahin ang impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file</translation>
@@ -2689,6 +2690,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3445047461171030979">Mga mabilisang sagot ng Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> (na) min</translation>
 <translation id="344537926140058498">Na-block ng iyong organisasyon ang file na ito dahil mayroon itong sensitibo o mapanganib na content Hilingin sa may-ari nitong ayusin ito.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Inalis ang mga pahintulot sa <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> na hindi mo nabisita kamakailan}one{Inalis ang mga pahintulot sa <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> na hindi mo nabisita kamakailan}other{Inalis ang mga pahintulot sa <ph name="BEGIN_BOLD" />{NUM_SITES} na site<ph name="END_BOLD" /> na hindi mo nabisita kamakailan}}</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3446274660183028131">Pakilunsad ang Parallels Desktop para ma-install ang Windows.</translation>
 <translation id="344630545793878684">Basahin ang iyong data sa ilang website</translation>
@@ -2900,6 +2902,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3642699533549879077">Kapag may ibang taong tumitingin sa iyong screen, makakatanggap ka ng alerto at itatago ang content ng notification.</translation>
 <translation id="3643962751030964445">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang device na ito. Humihiling ang <ph name="DEVICE_MANAGER" /> ng bagong profile para sa account na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Gumalaw nang bahagya para mag-capture ng ibang bahagi ng fingerprint.</translation>
+<translation id="3647051300407077858">Suriin ang mga pahintulot sa notification</translation>
 <translation id="3647654707956482440">Hindi magamit ang link na ito. Tingnan kung may mga typo o gumamit ng ibang link para subukan ulit.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Natukoy ang <ph name="USB_DEVICE_NAME" /></translation>
@@ -3079,6 +3082,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="380408572480438692">Makakatulong sa Google ang pag-e-enable sa pagkolekta ng data ng pagganap na pahusayin ang system sa paglipas ng panahon. Walang ipinapadalang data hanggang sa maghain ka ng ulat ng feedback (Alt-Shift-I) at magsama ng data ng pagganap. Makakabalik ka sa screen na ito upang i-disable ang pagkolekta anumang oras.</translation>
 <translation id="3807249107536149332">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa screen sa pag-login.</translation>
 <translation id="3807747707162121253">&amp;Kanselahin</translation>
+<translation id="3808202562160426447">I-dim ang content sa background</translation>
 <translation id="3808443763115411087">Pag-develop ng Android app sa Crostini</translation>
 <translation id="38089336910894858">Magpakita ng babala bago lumabas sa ⌘Q</translation>
 <translation id="3809272675881623365">Kuneho</translation>
@@ -3670,6 +3674,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
 <translation id="4366138410738374926">Nagsimula ang pag-print</translation>
+<translation id="4367513928820380646">Suriin ang mga inalis na pahintulot</translation>
 <translation id="4369121877634339065">Mag-drag ng anumang larawan para maghanap</translation>
 <translation id="4369215744064167350">Inaprubahan ang kahilingan sa website</translation>
 <translation id="4370975561335139969">Hindi nagtutugma ang inilagay mong email at password</translation>
@@ -4390,6 +4395,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="504561833207953641">Binubuksan sa kasalukuyang session ng browser.</translation>
 <translation id="5049614114599109018">Gamitin ang History ng Input</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Nagpadala ang site ng maraming notification kamakailan. Puwede mong ihinto ang pagpapadala nito ng mga notification sa hinaharap.}one{Nagpadala ang mga site na ito ng maraming notification kamakailan. Puwede mong ihinto ang pagpapadala ng mga ito ng mga notification sa hinaharap.}other{Nagpadala ang mga site na ito ng maraming notification kamakailan. Puwede mong ihinto ang pagpapadala ng mga ito ng mga notification sa hinaharap.}}</translation>
 <translation id="5051836348807686060">Hindi sinusuportahan ang spellcheck para sa mga pinili mong wika</translation>
 <translation id="5052499409147950210">I-edit ang site</translation>
 <translation id="505347685865235222">Grupong walang pangalan - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7288,6 +7294,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7775694664330414886">Inilipat ang tab sa isang grupong walang pangalan - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Matitingnan ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /> hanggang sa isara mo ang lahat ng tab para sa site na ito</translation>
 <translation id="7776701556330691704">Walang nakitang boses</translation>
+<translation id="7777624210360383048">Shortcut na <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Aalisin ang lahat ng user account at lokal na data.</translation>
 <translation id="7782102568078991263">Wala nang mga suhestiyon mula sa Google</translation>
 <translation id="7782717250816686129">I-store ang mga persistent data sa screen sa pag-log in at ilagay ang mga kredensyal sa session.</translation>
@@ -7320,6 +7327,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7807711621188256451">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong camera</translation>
 <translation id="7810202088502699111">Hinarangan ang mga pop-up sa pahinang ito.</translation>
 <translation id="7814458197256864873">&amp;Kopyahin</translation>
+<translation id="7815583197273433531">I-edit ang shortcut na <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Na-block ang mapanganib na download</translation>
 <translation id="7817361223956157679">Hindi pa gumagana ang on-screen na keyboard sa mga app ng Linux</translation>
 <translation id="7818135753970109980">Nagdagdag ng bagong tema (<ph name="EXTENSION_NAME" />)</translation>
@@ -7394,6 +7402,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Tingnan ang Account</translation>
 <translation id="7883792253546618164">Mag-unsubscribe anumang oras.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Suriin ang 1 site na nagpadala ng maraming notification}one{Suriin ang {NUM_SITES} site na nagpadala ng maraming notification}other{Suriin ang {NUM_SITES} na site na nagpadala ng maraming notification}}</translation>
 <translation id="788453346724465748">Nilo-load ang impormasyon ng account...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{isang item}one{# item}other{# na item}}</translation>
 <translation id="7886605625338676841">eSIM</translation>

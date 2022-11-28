@@ -395,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> が選択されています。<ph name="TOPIC_SOURCE" /> アルバムを選択するには Enter キーを押してください</translation>
 <translation id="484790837831576105">（Android）DNS の解決</translation>
 <translation id="4848429997038228357">実行中</translation>
+<translation id="4854586501323951986">デバイス内蔵タッチスクリーン</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
 <translation id="4873827928179867585">認証アルゴリズム</translation>
 <translation id="4880328057631981605">アクセス ポイント名</translation>
@@ -568,6 +569,7 @@
 <translation id="6394634179843537518">ファイルを追加</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="641081527798843608">件名の一致</translation>
+<translation id="6412715219990689313">デバイス内蔵キーボード</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="6447630859861661624">アカウント設定に移動</translation>
@@ -666,6 +668,7 @@
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="73631062356239394">診断データを共有</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">デバイス内蔵タッチパッド</translation>
 <translation id="7397270852490618635">ライトモードをオフにする</translation>
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>

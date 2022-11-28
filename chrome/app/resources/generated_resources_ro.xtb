@@ -1286,6 +1286,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2157875535253991059">Acum această pagină este în modul ecran complet.</translation>
 <translation id="2158475082070321257">Copiază linkul către textul evidențiat</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Aria de acoperire <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Adăugați o rețea Wi-Fi...</translation>
 <translation id="2162155940152307086">Sincronizarea va porni după ce părăsești setările pentru sincronizare</translation>
 <translation id="2162705204091149050">Citește informații despre browserul, sistemul de operare, dispozitivul, software-ul instalat și fișierele tale</translation>
@@ -2672,6 +2673,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3445047461171030979">Răspunsuri rapide de la Asistentul Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344537926140058498">Organizația ta a blocat fișierul, deoarece include conținut sensibil sau periculos. Solicită-i proprietarului să îl remedieze.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{S-au eliminat permisiunile de pe <ph name="BEGIN_BOLD" />un site<ph name="END_BOLD" /> pe care nu l-ai accesat recent}few{S-au eliminat permisiunile pentru <ph name="BEGIN_BOLD" />{NUM_SITES} site-uri<ph name="END_BOLD" /> pe care nu le-ai accesat recent}other{S-au eliminat permisiunile pentru <ph name="BEGIN_BOLD" />{NUM_SITES} de site-uri<ph name="END_BOLD" /> pe care nu le-ai accesat recent}}</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
 <translation id="3446274660183028131">Lansează Parallels Desktop pentru a instala Windows.</translation>
 <translation id="344630545793878684">Citește datele de pe un număr de site-uri</translation>
@@ -2883,6 +2885,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3642699533549879077">Când altcineva îți privește ecranul, vei primi o alertă și conținutul notificării va fi ascuns.</translation>
 <translation id="3643962751030964445">Acest dispozitiv este gestionat de <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> solicită un profil nou pentru contul <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Mută ușor pentru a înregistra o altă parte a amprentei</translation>
+<translation id="3647051300407077858">Examinează permisiunile pentru notificări</translation>
 <translation id="3647654707956482440">Linkul nu poate fi folosit. Verifică dacă există greșeli de scriere sau folosește alt link pentru a încerca din nou.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">S-a detectat <ph name="USB_DEVICE_NAME" /></translation>
@@ -3061,6 +3064,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="380408572480438692">Activarea culegerii datelor privind performanța va permite Google să îmbunătățească sistemul în timp. Nu sunt trimise date decât după ce completați un raport de feedback (Alt-Shift-I) și includeți date privind performanța. Puteți să reveniți oricând la acest ecran pentru a dezactiva culegerea datelor.</translation>
 <translation id="3807249107536149332">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă într-un ecran de conectare.</translation>
 <translation id="3807747707162121253">&amp;Anulează</translation>
+<translation id="3808202562160426447">Redu luminozitatea fundalului</translation>
 <translation id="3808443763115411087">Dezvoltarea aplicațiilor pentru Android în Crostini</translation>
 <translation id="38089336910894858">Arată un avertisment înainte de a închide cu ⌘Q</translation>
 <translation id="3809272675881623365">Iepure</translation>
@@ -3649,6 +3653,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> trimite conținutul unei ferestre.</translation>
 <translation id="4364830672918311045">Afișează notificările</translation>
 <translation id="4366138410738374926">A început printarea</translation>
+<translation id="4367513928820380646">Examinează permisiunile eliminate</translation>
 <translation id="4369121877634339065">Trage aici orice imagine pentru a căuta</translation>
 <translation id="4369215744064167350">Solicitarea de site a fost aprobată</translation>
 <translation id="4370975561335139969">Adresa de e-mail și parola pe care le-ai introdus nu se potrivesc</translation>
@@ -4365,6 +4370,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="504561833207953641">Se deschide în sesiunea de browser existentă.</translation>
 <translation id="5049614114599109018">Folosește istoricul de introducere a textului</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Recent, acest site a trimis multe notificări. Poți să-l împiedici să trimită notificări pe viitor.}few{Aceste site-uri au trimis recent multe notificări. Poți să le împiedici să trimită notificări pe viitor.}other{Aceste site-uri au trimis recent multe notificări. Poți să le împiedici să trimită notificări pe viitor.}}</translation>
 <translation id="5051836348807686060">Verificarea ortografiei nu este acceptată pentru limbile selectate</translation>
 <translation id="5052499409147950210">Editează site-ul</translation>
 <translation id="505347685865235222">Grup nedenumit – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7261,6 +7267,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7775694664330414886">Fila a fost mutată într-un grup nedenumit – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> va putea vedea fișierele din <ph name="FOLDERNAME" /> până când închizi toate filele pentru acest site</translation>
 <translation id="7776701556330691704">Nu s-a găsit nicio voce</translation>
+<translation id="7777624210360383048">Comanda rapidă <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Toate conturile de utilizator și datele locale vor fi eliminate.</translation>
 <translation id="7782102568078991263">Nu mai există sugestii de la Google</translation>
 <translation id="7782717250816686129">Stochează datele persistente pe ecranul de conectare și introdu datele de conectare în sesiune.</translation>
@@ -7293,6 +7300,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7807711621188256451">Permiteți întotdeauna accesul <ph name="HOST" /> la camera dvs.</translation>
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
 <translation id="7814458197256864873">&amp;Copiază</translation>
+<translation id="7815583197273433531">Editează comanda rapidă <ph name="SHORTCUT" /> pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7817361223956157679">Tastatura de pe ecran nu funcționează încă în aplicațiile Linux</translation>
 <translation id="7818135753970109980">A fost adăugată o temă (<ph name="EXTENSION_NAME" />)</translation>
@@ -7367,6 +7375,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Afișați contul</translation>
 <translation id="7883792253546618164">Te poți dezabona în orice moment.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Examinează un site care a trimis multe notificări}few{Examinează {NUM_SITES} site-uri care au trimis multe notificări}other{Examinează {NUM_SITES} de site-uri care au trimis multe notificări}}</translation>
 <translation id="788453346724465748">Se încarcă informațiile despre cont…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un element}few{# elemente}other{# de elemente}}</translation>
 <translation id="7886605625338676841">eSIM</translation>

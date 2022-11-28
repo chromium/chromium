@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{გამორთულია აპისთვის}other{გამორთულია # აპისთვის}}</translation>
 <translation id="4066027111132117168">ჩართული, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">სიგნალი საშუალოა</translation>
+<translation id="4086921558679520050">ჩართეთ მიკროფონის ფიზიკური ჩამრთველი თქვენს მოწყობილობაზე</translation>
 <translation id="4112140312785995938">უკან გადახვევა</translation>
 <translation id="4114315158543974537">Phone Hub-ის ჩართვა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4379531060876907730">ეს არის თქვენი სტილუსის ხელსაწყოები</translation>
+<translation id="4381031910344220229">მიკროფონზე წვდომა მიენიჭება <ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომელსაც მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="439598569299422042">დაპაუზებულია, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">სკრინკასტის შენახვა ვერ მოხერხდა</translation>
@@ -959,6 +961,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> არის მართული სესია, რომელსაც მართავს <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> დაკავშირებულია</translation>
 <translation id="6351032674660237738">აპების შემოთავაზებები</translation>
+<translation id="6352082849089527770">უცნობი ქსელები</translation>
 <translation id="6359587239691116345">ისარგებლეთ უახლესი ფუნქციებითა და უსაფრთხოების გაუმჯობესებებით. თუ ამ განახლებას უარყოფთ, თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
@@ -1133,6 +1136,7 @@
 <translation id="7360036564632145207">პერიფერიული მოწყობილობებისთვის მონაცემებზე წვდომის დაცვის პარამეტრების შეცვლით შესაძლებელია წარმადობის ოპტიმიზაცია</translation>
 <translation id="736045644501761622">ფონის და სტილის დაყენება</translation>
 <translation id="7371404428569700291">ფანჯრის ჩაწერა</translation>
+<translation id="737315737514430195">მიკროფონზე წვდომა მიენიჭება ყველა აპსა და ვებსაიტს, რომელსაც მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="7377169924702866686">Caps Lock ჩართულია.</translation>
 <translation id="7377481913241237033">კოდით დაკავშირება</translation>
 <translation id="7378203170292176219">ჩავლებით გადაიტანეთ, ჩასაწერი არე რომ აირჩიოთ</translation>
@@ -1201,6 +1205,7 @@
 <translation id="7671610481353807627">აპები დალაგებულია ფერის მიხედვით</translation>
 <translation id="7672095158465655885">დაკავშირებულია <ph name="NAME" />-თან, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">კამერის შემავალ სიგნალად დაყენებულია <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">მიკროფონზე წვდომა მიენიჭება <ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომელსაც მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ახალი ფიჭური ქსელის დამატება</translation>
 <translation id="7720400844887872976">ჩართულია <ph name="TIME" />-მდე</translation>

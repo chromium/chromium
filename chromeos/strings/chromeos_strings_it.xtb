@@ -395,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selezionato, premi Invio per selezionare gli album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) risoluzione DNS</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
+<translation id="4854586501323951986">Touchscreen integrato</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
 <translation id="4873827928179867585">Algoritmo di autenticazione</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
@@ -568,6 +569,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6394634179843537518">Aggiungi file</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
+<translation id="6412715219990689313">Tastiera integrata</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
@@ -666,6 +668,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Touchpad integrato</translation>
 <translation id="7397270852490618635">Disattiva il tema chiaro</translation>
 <translation id="741244894080940828">conversione</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>

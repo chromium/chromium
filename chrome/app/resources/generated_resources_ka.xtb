@@ -1287,6 +1287,7 @@
 <translation id="2157875535253991059">ეს გვერდი ახლა მთელ ეკრანზეა.</translation>
 <translation id="2158475082070321257">გამოყოფილთან ბმულის კოპირება</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">სფერო <ph name="SHORTCUT" /> გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Wi-Fi-ს დამატება…</translation>
 <translation id="2162155940152307086">სინქრონიზაცია დაიწყება სინქრონიზაციის პარამეტრებიდან გამოსვლის შემდეგ</translation>
 <translation id="2162705204091149050">ინფორმაციის წაკითხვა თქვენი ბრაუზერის, ოპერაციული სისტემის, მოწყობილობის, დაინსტალირებული პროგრამული უზრუნველყოფისა და ფაილების შესახებ</translation>
@@ -2672,6 +2673,7 @@
 <translation id="3445047461171030979">Google ასისტენტის სწრაფი პასუხები</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="344537926140058498">თქვენმა ორგანიზაციამ დაბლოკა ეს ფაილი, რადგან ის შეიცავს სენსიტიურ ან სახიფათო კონტენტს. სთხოვეთ მის მფლობელს აღნიშნულის გამოსწორება.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{ნებართვები გაუუქმდა <ph name="BEGIN_BOLD" />1 საიტს<ph name="END_BOLD" />, რომელიც ახლახან არ მოგინახულებიათ}other{ნებართვები გაუუქმდა <ph name="BEGIN_BOLD" />{NUM_SITES} საიტს<ph name="END_BOLD" />, რომლებიც ახლახან არ მოგინახულებიათ}}</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3446274660183028131">Windows-ის ინსტალაციისთვის გაუშვით Parallels Desktop.</translation>
 <translation id="344630545793878684">წაიკითხეთ თქვენი მონაცემები რამდენიმე ვებსაიტზე</translation>
@@ -2883,6 +2885,7 @@
 <translation id="3642699533549879077">როცა ვინმე სხვა შეხედავს თქვენს ეკრანს, თქვენ მიიღებთ ამაზე გაფრთხილებას და შეტყობინების შინაარსი დაიმალება.</translation>
 <translation id="3643962751030964445">ამ მოწყობილობას მართავს <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> ითხოვს ახალ პროფილს ანგარიშისთვის <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">გთხოვთ, ოდნავ გადააადგილოთ თითი თქვენი თითის ანაბეჭდის სხვა ნაწილის აღსაბეჭდად.</translation>
+<translation id="3647051300407077858">შეტყობინებების ნებართვების შემოწმება</translation>
 <translation id="3647654707956482440">ამ ბმულის გამოყენება შეუძლებელია. ხელახლა საცდელად შეამოწმეთ, ხომ არ შეიცავს ბმული შეცდომებს, ან გამოიყენეთ სხვა ბმული.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}other{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> აღმოჩენილია</translation>
@@ -3062,6 +3065,7 @@
 <translation id="380408572480438692">ეფექტურობის მონაცემების შეგროვების ჩართვის შემთხვევაში თქვენ დაეხმარებით Google-ს სისტემის გაუმჯობესებაში. მონაცემები არ გაიგზავნება, სანამ არ გაგზავნით შეფასების მოხსენებას (Alt-Shift-I) ეფექტურობის მონაცემებით. შეგიძლიათ ნებისმიერ დროს გამორთოთ შეგროვების ფუნქცია ამ ფანჯარაში.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) არ არის ნებადართული შესვლის ეკრანზე.</translation>
 <translation id="3807747707162121253">&amp;გაუქმება</translation>
+<translation id="3808202562160426447">კონტენტის ფონის ჩაბნელება</translation>
 <translation id="3808443763115411087">Crostini-ს Android აპის შემუშავება</translation>
 <translation id="38089336910894858">გაფრთხილების ჩვენება ⌘Q-ის მეშვეობით გასვლამდე</translation>
 <translation id="3809272675881623365">კურდღელი</translation>
@@ -3653,6 +3657,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ფანჯარას აზიარებს.</translation>
 <translation id="4364830672918311045">შეტყობინებების ჩვენება</translation>
 <translation id="4366138410738374926">ბეჭდვა დაიწყო</translation>
+<translation id="4367513928820380646">გაუქმებული ნებართვების შემოწმება</translation>
 <translation id="4369121877634339065">ძიებისთვის ჩავლებით გადაიტანეთ ნებისმიერ სურათზე</translation>
 <translation id="4369215744064167350">ვებსაიტის მოთხოვნა დაკმაყოფილდა</translation>
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
@@ -4372,6 +4377,7 @@
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="504561833207953641">მიმდინარეობს ბრაუზერის არსებულ სესიაში გახსნა.</translation>
 <translation id="5049614114599109018">შეყვანის ისტორიის გამოყენება</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{ამ საიტმა ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან. სურვილისამებრ, შეგიძლიათ აღუკვეთოთ მას შეტყობინებების გამოგზავნა მომავალში.}other{ამ საიტებმა ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან. სურვილისამებრ, შეგიძლიათ აღუკვეთოთ მათ შეტყობინებების გამოგზავნა მომავალში.}}</translation>
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
 <translation id="5052499409147950210">საიტის რედაქტირება</translation>
 <translation id="505347685865235222">უსახელო ჯგუფი — <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7262,6 +7268,7 @@
 <translation id="7775694664330414886">ჩანართი გადატანილია უსახელო ჯგუფში — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> შეძლებს „<ph name="FOLDERNAME" />“-ში არსებული ფაილების ნახვას ამ საიტის ყველა ჩანართის დახურვამდე</translation>
 <translation id="7776701556330691704">ხმები ვერ მოიძებნა</translation>
+<translation id="7777624210360383048">მალსახმობი <ph name="SHORTCUT" /> გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">მომხმარებლის ყველა ანგარიში და ლოკალური მონაცემები წაიშლება.</translation>
 <translation id="7782102568078991263">Google-ის სხვა შემოთავაზება აღარ არის</translation>
 <translation id="7782717250816686129">შესვლის ეკრანზე მონაცემების ხანგრძლივად შენახვა და ავტორიზაციის მონაცემების შეტანა სესიაში.</translation>
@@ -7294,6 +7301,7 @@
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
 <translation id="7814458197256864873">&amp;კოპირება</translation>
+<translation id="7815583197273433531">მალსახმობი <ph name="SHORTCUT" />-ის რედაქტირება გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">სახიფათო ჩამოტვირთვა დაიბლოკა</translation>
 <translation id="7817361223956157679">ეკრანული კლავიატურა ჯერ არ მუშაობს Linux აპებში</translation>
 <translation id="7818135753970109980">დამატებულია ახალი თემა (<ph name="EXTENSION_NAME" />)</translation>
@@ -7368,6 +7376,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ანგარიშის ნახვა</translation>
 <translation id="7883792253546618164">გამოწერის გაუქმება ნებისმიერ დროს შეგიძლიათ.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{შეამოწმეთ 1 საიტი, რომელმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}other{შეამოწმეთ {NUM_SITES} საიტი, რომლებმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}}</translation>
 <translation id="788453346724465748">მიმდინარეობს ანგარიშის ინფორმაციის ჩატვირთვა...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="7886605625338676841">eSIM</translation>

@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">សាកល្បងអនុវត្តតាមជំហានដោះស្រាយបញ្ហា</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">សូម​ភ្ជាប់​ទៅ​បណ្ដាញ​ រួច​ផ្ទុក​ទំព័រ​ឡើងវិញ ដើម្បី​មើល​ធាតុ​រក្សាអេក្រង់។</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2085089206770112532">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺផ្ទាំងអេក្រង់</translation>
 <translation id="2105810540595158374">ឧបករណ៍គឺជាឧបករណ៍បញ្ជាហ្គេម។</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">ក្បួនបង្ហាប់</translation>
 <translation id="4794140124556169553">ការធ្វើតេស្ត CPU អាច​ប៉ះពាល់ដល់​ប្រតិបត្តិការប្រព័ន្ធរបស់អ្នក</translation>
 <translation id="4800589996161293643">សហគមន៍ Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">បានបោះបង់​ការងារបោះពុម្ព <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="4813136279048157860">រូបភាព​របស់ខ្ញុំ</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">ស្ត្រេស</translation>
 <translation id="4897058166682006107">ឧបករណ៍មានថ្មកាសខាងឆ្វេង <ph name="BATTERY_PERCENTAGE" />%។</translation>
 <translation id="4905998861748258752">បើកមុខងារនេះ ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
+<translation id="4910858703033903787">ប្រភេទ APN</translation>
 <translation id="4917385247580444890">ខ្លាំង</translation>
 <translation id="4917889632206600977">បានឈប់ - អស់​ក្រដាស</translation>
 <translation id="491791267030419270">គន្លឹះ​ក្នុងការសរសេរ​មតិកែលម្អ</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">មានអ្វីមួយខុសប្រក្រតី។ សូមសាកល្បង​ជ្រើសរើស​ផ្ទាំងរូបភាពម្ដងទៀត ឬបើក​កម្មវិធីឡើងវិញ។</translation>
 <translation id="5372659122375744710">បណ្ដាញ WiFi មិនមានសុវត្ថិភាពទេ</translation>
 <translation id="5376354385557966694">មុខងារភ្លឺ​ស្វ័យប្រវត្តិ</translation>
+<translation id="5378184552853359930">ប្រភេទ IP</translation>
 <translation id="5389159777326897627">ផ្ទាំងរូបភាព និង​រចនាប័ទ្ម</translation>
 <translation id="5389224261615877010">ឥន្ទធនូ</translation>
 <translation id="5400907029458559844">ឧបករណ៍កំពុងភ្ជាប់។</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ជ្រើសរើស <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
+<translation id="8183974620058026102">ភ្ជាប់</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
 <translation id="8226628635270268143">ជ្រើសរើស​រូបថត និងអាល់ប៊ុមដែលអ្នកចូលចិត្ត</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">ប្រើប្រាស់ជាឧបករណ៍ផ្ទាល់ខ្លួន</translation>
 <translation id="9028832514430399253">បើកប៊ូតុងបិទ/បើក ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>

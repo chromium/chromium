@@ -4100,6 +4100,15 @@ Se questo criterio viene impostato su Disabled o se non viene configurato, l'API
 
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
+<translation id="5069522005630249098">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> o se non viene configurato, la migrazione dei dati a ritroso non viene eseguita.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, tutti i dati utente vengono rimossi. Questa è l'opzione più sicura.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la maggior parte dei dati utente viene rimossa. Vengono conservati solo i file indipendenti dal browser (come i download).
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, tutti i dati utente vengono conservati. Questa opzione presenta un rischio elevato di errore e richiede il Powerwash per il ripristino.</translation>
 <translation id="5071303485174858500">Viene disattivata la sessione Ospite gestita limitata.</translation>
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 

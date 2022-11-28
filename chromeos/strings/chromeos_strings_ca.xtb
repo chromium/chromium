@@ -395,6 +395,7 @@
 <translation id="4847902821209177679">S'ha seleccionat <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, prem Retorn per seleccionar els àlbums de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolució de DNS</translation>
 <translation id="4848429997038228357">EN EXECUCIÓ</translation>
+<translation id="4854586501323951986">Pantalla tàctil integrada</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="4873827928179867585">Algoritme d'autenticació</translation>
 <translation id="4880328057631981605">Nom del punt d'accés</translation>
@@ -568,6 +569,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6394634179843537518">Afegeix un fitxer</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
+<translation id="6412715219990689313">Teclat integrat</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>
@@ -666,6 +668,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Ratolí tàctil integrat</translation>
 <translation id="7397270852490618635">Desactiva el tema clar</translation>
 <translation id="741244894080940828">conversió</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>

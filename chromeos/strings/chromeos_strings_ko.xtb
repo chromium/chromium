@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택됨, <ph name="TOPIC_SOURCE" /> 앨범을 선택하려면 Enter를 누르세요</translation>
 <translation id="484790837831576105">(Android) DNS 변환</translation>
 <translation id="4848429997038228357">실행 중</translation>
+<translation id="4854586501323951986">내장 터치스크린</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}other{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}}</translation>
 <translation id="4873827928179867585">인증 알고리즘</translation>
 <translation id="4880328057631981605">액세스포인트 네임(APN)</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">파일 추가</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>
+<translation id="6412715219990689313">내장 키보드</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">계정 설정으로 이동</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">내장 터치패드</translation>
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>

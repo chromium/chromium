@@ -1207,6 +1207,7 @@
 <translation id="7720410380936703141">再試行</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7742327441377685481">通知なし</translation>
 <translation id="7745560842763881396">シェルフのアプリを表示</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="776344839111254542">クリックしてアップデートの詳細を表示する</translation>

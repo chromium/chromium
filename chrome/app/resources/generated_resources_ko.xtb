@@ -2355,6 +2355,7 @@
 <translation id="3105796011181310544">Google로 되돌리시겠습니까?</translation>
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
 <translation id="3108931485517391283">수신할 수 없습니다.</translation>
+<translation id="3108957152224931571">강조 색상</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
@@ -4598,6 +4599,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5260334392110301220">스마트 인용</translation>
 <translation id="5260508466980570042">이메일 또는 비밀번호를 확인할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="5260958083445173099">가능한 경우 웹사이트 콘텐츠가 기본 언어로 표시됩니다.</translation>
+<translation id="5261619498868361045">컨테이너 이름은 비워 둘 수 없습니다.</translation>
 <translation id="5261683757250193089">웹 스토어에서 열기</translation>
 <translation id="5262178194499261222">비밀번호 삭제</translation>
 <translation id="5262784498883614021">자동으로 네트워크에 연결</translation>
@@ -5004,6 +5006,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="562935524653278697">관리자가 북마크, 방문 기록, 비밀번호 및 기타 설정의 동기화를 사용 중지했습니다.</translation>
 <translation id="5631017369956619646">CPU 사용</translation>
 <translation id="5632059346822207074">권한 요청됨, Ctrl 키와 앞으로를 눌러 응답</translation>
+<translation id="5632221585574759616">확장 프로그램 권한에 관해 자세히 알아보기</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> 계정이 더 이상 기본 계정으로 허용되지 않습니다. 이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 기기에서 삭제됩니다.</translation>
 <translation id="5632592977009207922">다운로드 중, <ph name="PERCENT_REMAINING" />% 남음</translation>
 <translation id="5633149627228920745">시스템 요구사항 자세히 알아보기</translation>
@@ -5624,6 +5627,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" />이(가) 오프라인 상태입니다. 인터넷에 연결하고 다시 시도해 보세요.</translation>
 <translation id="6220413761270491930">확장 프로그램 로드 중 오류</translation>
 <translation id="6224481128663248237">포맷을 마쳤습니다.</translation>
+<translation id="622474711739321877">이미 존재하는 컨테이너입니다.</translation>
 <translation id="622537739776246443">프로필이 삭제됩니다</translation>
 <translation id="6225475702458870625">데이터 연결을 <ph name="PHONE_NAME" />에서 사용할 수 있습니다.</translation>
 <translation id="6226777517901268232">비공개 키 파일(선택사항)</translation>
@@ -6423,6 +6427,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="696780070563539690">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 없습니다.</translation>
 <translation id="6968288415730398122">비밀번호를 입력하여 화면 잠금을 설정하세요.</translation>
 <translation id="6969047215179982698">Nearby Share 사용 중지</translation>
+<translation id="6969216690072714773">이 기기와 연결되도록 새 카드를 입력하거나 기존 카드 정보를 업데이트하세요.</translation>
 <translation id="6970480684834282392">시작 유형</translation>
 <translation id="6970543303783413625">비밀번호를 가져올 수 없습니다. 비밀번호는 한 번에 최대 <ph name="COUNT" />개까지 가져올 수 있습니다.</translation>
 <translation id="6970856801391541997">특정 페이지 인쇄</translation>
@@ -6829,6 +6834,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="7378611153938412599">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 설정하세요. <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
+<translation id="7380272457268061606">로컬 데이터 복구를 사용 중지하시겠어요?</translation>
 <translation id="7380459290951585794">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> 업데이트됨</translation>
@@ -7079,6 +7085,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
 <translation id="7617648809369507487">눈에 띄지 않는 메시지 사용</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
+<translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>
 <translation id="7622903810087708234">비밀번호 세부정보</translation>
@@ -8643,7 +8650,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9041692268811217999">관리자가 시스템의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
-<translation id="9042893549633094279">개인정보 및 보안</translation>
+<translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>

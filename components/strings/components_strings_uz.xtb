@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Parollar saqlanmaydigan saytlar</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Kompyuterdagi xatcho‘plar</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> qoidasi <ph name="SECURE_DNS_SALT" /> sozlanmaguncha ishlatilmaydi.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> tilidagi sahifalar hech qachon tarjima qilinmasin</translation>
 <translation id="1070853536588271387">Gibrid va muqobil transport</translation>
 <translation id="1070901266639972381">Tun</translation>
@@ -2093,6 +2094,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6328786501058569169">Bu – soxta sayt</translation>
 <translation id="6337133576188860026">Xotirada <ph name="SIZE" /> tozalandi. Bundan keyin ba’zi veb-saytlar sekinroq yuklanishi mumkin.</translation>
 <translation id="6337534724793800597">Qoidalarni nomi bo‘yicha filtrlash</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> qiymati mos emas va ishlatilmaydi.</translation>
 <translation id="6340739886198108203">Maxfiy kontent koʻringanda administrator skrinshot olish yoki yozib olishni tavsiya qilmaydi:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga yuklashni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga yuklashni tavsiya qilmaydi}}</translation>
 <translation id="6348220984832452017">Joriy oʻzgarishlar</translation>
@@ -2988,6 +2990,7 @@ Batafsil axborot:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="8666678546361132282">Ingliz tili</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> qiymati oʻlcham talablariga mos emas.</translation>
 <translation id="867224526087042813">Imzo</translation>
 <translation id="8672264262457010862">Biznes va sanoat</translation>
 <translation id="8676424191133491403">Kechikishsiz</translation>
@@ -3087,6 +3090,7 @@ Batafsil axborot:
 <translation id="8913778647360618320">Toʻlov usullarini boshqarish tugmasi, Chrome sozlamalari orqali toʻlov va kredit karta axborotini boshqarish uchun Enter tugmasini bosing</translation>
 <translation id="8922013791253848639">Bu saytda har doim reklama ko‘rsatilsin</translation>
 <translation id="892588693504540538">Yuqori oʻngdan teshik ochish</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> qiymati mos emas va <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> qoidasi sozlanmaguncha ishlatilmaydi.</translation>
 <translation id="8930330541574156305">Koʻchmas mulk</translation>
 <translation id="8931333241327730545">Ushbu karta Google hisobingizda saqlansinmi?</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>

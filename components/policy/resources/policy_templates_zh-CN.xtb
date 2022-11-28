@@ -4087,6 +4087,15 @@
 
       注意：系统也可通过 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
 <translation id="5067143124345820993">登录用户白名单</translation>
+<translation id="5069522005630249098">此设置用于确定在 <ph name="LACROS_NAME" /> 停用后保留多少用户数据。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> 或未设置，系统将不会执行反向数据迁移操作。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />，系统会移除所有用户数据。这是最安全的选项。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />，系统会移除大部分用户数据，只会保留与浏览器无关的文件（例如下载内容）。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />，系统会保留所有用户数据。此选项存在很高的失败风险，并且失败后需要执行 Powerwash 操作才能恢复。</translation>
 <translation id="5071303485174858500">停用受限受管理访客会话。</translation>
 <translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
 

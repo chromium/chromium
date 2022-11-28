@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Wybrano: <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />). Naciśnij Enter, by wybrać albumy ze źródła <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Rozpoznawanie nazw DNS</translation>
 <translation id="4848429997038228357">W TOKU</translation>
+<translation id="4854586501323951986">Wbudowany ekran dotykowy</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
 <translation id="4873827928179867585">Algorytm uwierzytelniania</translation>
 <translation id="4880328057631981605">Nazwa punktu dostępu</translation>
@@ -569,6 +570,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6394634179843537518">Dodaj plik</translation>
 <translation id="6410257289063177456">Pliki graficzne</translation>
 <translation id="641081527798843608">Dopasowanie do tematu</translation>
+<translation id="6412715219990689313">Klawiatura wbudowana</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Słaba (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>
@@ -667,6 +669,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7359657277149375382">Typ pliku</translation>
 <translation id="73631062356239394">Udostępnianie danych diagnostycznych</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Touchpad wbudowany</translation>
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
 <translation id="741244894080940828">przeliczanie</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>

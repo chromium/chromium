@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> geselecteerd, druk op Enter om <ph name="TOPIC_SOURCE" />-albums te selecteren</translation>
 <translation id="484790837831576105">(Android) DNS-omzetting</translation>
 <translation id="4848429997038228357">ACTIEF</translation>
+<translation id="4854586501323951986">Geïntegreerd touchscreen</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="4873827928179867585">Verificatiealgoritme</translation>
 <translation id="4880328057631981605">Naam van toegangspunt</translation>
@@ -569,6 +570,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6394634179843537518">Bestand toevoegen</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
+<translation id="6412715219990689313">Geïntegreerd toetsenbord</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zwak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Naar Accountinstellingen gaan</translation>
@@ -667,6 +669,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="73631062356239394">Diagnostische gegevens delen</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Geïntegreerde touchpad</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>

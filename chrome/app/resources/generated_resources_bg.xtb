@@ -2350,6 +2350,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3105796011181310544">Искате ли да се върнете към Google?</translation>
 <translation id="310671807099593501">Сайтът използва Bluetooth</translation>
 <translation id="3108931485517391283">Не е възможно получаване</translation>
+<translation id="3108957152224931571">Цвят за открояване</translation>
 <translation id="3109206895301430738">Запазени групи раздели</translation>
 <translation id="3109724472072898302">Свито</translation>
 <translation id="3112292765614504292">Размер на приложението: <ph name="APP_SIZE" /></translation>
@@ -4596,6 +4597,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5260334392110301220">Smart Quotes</translation>
 <translation id="5260508466980570042">За съжаление имейлът или паролата ви не можаха да бъдат потвърдени. Моля, опитайте отново.</translation>
 <translation id="5260958083445173099">Когато е възможно, уебсайтовете ще показват съдържание на предпочитаните от вас езици</translation>
+<translation id="5261619498868361045">Името на контейнера трябва да се попълни.</translation>
 <translation id="5261683757250193089">Отваряне в уеб магазина</translation>
 <translation id="5262178194499261222">Премахване на паролата</translation>
 <translation id="5262784498883614021">Автоматично свързване с мрежа</translation>
@@ -5003,6 +5005,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="562935524653278697">Администраторът ви е деактивирал синхронизирането на вашите отметки, история, пароли и други настройки.</translation>
 <translation id="5631017369956619646">Използване на процесора</translation>
 <translation id="5632059346822207074">Изисква се разрешение. Натиснете Ctrl + бутона за преминаване напред, за да отговорите</translation>
+<translation id="5632221585574759616">Научете повече за разрешенията за разширенията</translation>
 <translation id="5632566673632479864">Профилът ви <ph name="EMAIL" /> вече не може да се използва като основен. Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството.</translation>
 <translation id="5632592977009207922">Изтегля се, още<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">Научете повече за системните изисквания</translation>
@@ -5623,6 +5626,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> е офлайн. Свържете се с интернет и опитайте отново</translation>
 <translation id="6220413761270491930">Грешка при зареждането на разширението</translation>
 <translation id="6224481128663248237">Форматирането завърши успешно!</translation>
+<translation id="622474711739321877">Този контейнер вече съществува.</translation>
 <translation id="622537739776246443">Потребителският профил ще бъде изтрит</translation>
 <translation id="6225475702458870625">От устройството ви <ph name="PHONE_NAME" /> е налице връзка за пренос на данни</translation>
 <translation id="6226777517901268232">Файл с частен ключ (незадължително)</translation>
@@ -6422,6 +6426,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="696780070563539690">Сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="6968288415730398122">Въведете паролата си, за да конфигурирате заключването на екрана</translation>
 <translation id="6969047215179982698">Изключване на „Споделяне наблизо“</translation>
+<translation id="6969216690072714773">Въведете нова или актуализирайте съществуващата информация, която да бъде свързана с това устройство.</translation>
 <translation id="6970480684834282392">Тип стартиране</translation>
 <translation id="6970543303783413625">Импортирането на паролите не е възможно. Не можете да импортирате едновременно повече от <ph name="COUNT" /> пароли.</translation>
 <translation id="6970856801391541997">Отпечатване на конкретни страници</translation>
@@ -6828,6 +6833,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7377481913241237033">Свързване чрез код</translation>
 <translation id="7378611153938412599">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Отваряне на уеб магазина на Chrome</translation>
+<translation id="7380272457268061606">Да се деактивира ли възстановяването на локални данни?</translation>
 <translation id="7380459290951585794">Телефонът трябва да е наблизо, да е отключен и Bluetooth и функцията за Wi-Fi да са включени</translation>
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
 <translation id="7380768571499464492">Актуализирането на <ph name="PRINTER_NAME" /> завърши</translation>
@@ -7078,6 +7084,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7617263010641145920">Включване на Google Play Магазин</translation>
 <translation id="7617648809369507487">Използване на по-малко натрапчиви съобщения</translation>
 <translation id="7621382409404463535">Системата не успя да запази конфигурацията на устройството.</translation>
+<translation id="7621595347123595643">Няма да можете да възстановите локалните данни, ако забравите паролата или ПИН кода си.</translation>
 <translation id="7622114377921274169">Зарежда се.</translation>
 <translation id="7622768823216805500">Сайтовете обикновено инсталират инструменти за обработване на плащания, за да осигуряват функции за пазаруване, като например по-лесно плащане</translation>
 <translation id="7622903810087708234">Подробности за паролата</translation>

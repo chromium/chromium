@@ -1231,6 +1231,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4132448310531350254">Controladores duplicados de la extensión de archivo <ph name="FILE_EXTENSION" /> a los que hacen referencia las aplicaciones <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Crear documento</translation>
 <translation id="413544239732274901">Más información</translation>
+<translation id="4140905530744469899">ID de perfil:</translation>
 <translation id="4142935452406587478">Bandeja 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Sobre chino n.º 4</translation>
@@ -1354,6 +1355,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4407755609041463909">Fuego</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Electrónica de consumo</translation>
+<translation id="4412074349188076601">Esta configuración está marcada como instalable, pero no se ha proporcionado ninguna imagen para esta arquitectura, por lo que no se puede instalar.</translation>
 <translation id="4414515549596849729">cookies y datos de sitios</translation>
 <translation id="4415426530740016218">Dirección de recogida</translation>
 <translation id="4424024547088906515">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chrome no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -3203,6 +3205,7 @@ Más información:
 <translation id="9179907736442194268">Recibe alertas por correo electrónico si el precio baja en algún sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419">La página <ph name="HOST_NAME" /> utiliza un protocolo no admitido.</translation>
+<translation id="918454845714257218">Comprueba el código que hay en el <ph name="SIDE_OF_CARD" /> y vuelve a intentarlo</translation>
 <translation id="9187461866967718678">Deportes de riesgo</translation>
 <translation id="9191834167571392248">Perforado en la parte inferior izquierda</translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>

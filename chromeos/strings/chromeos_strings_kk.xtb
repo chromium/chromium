@@ -395,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> таңдалды, <ph name="TOPIC_SOURCE" /> альбомдарын таңдау үшін Enter пернесін басыңыз.</translation>
 <translation id="484790837831576105">DNS ажыратымдылығы (Android)</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
+<translation id="4854586501323951986">Ендірілген сенсорлық экран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="4873827928179867585">Аутентификация алгоритмі</translation>
 <translation id="4880328057631981605">Кіру нүктесінің атауы</translation>
@@ -567,6 +568,7 @@
 <translation id="6394634179843537518">Файл қосу</translation>
 <translation id="6410257289063177456">Кескін файлдары</translation>
 <translation id="641081527798843608">Тақырып сәйкестігі</translation>
+<translation id="6412715219990689313">Ендірілген пернетақта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Әлсіз (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунт параметрлеріне өту</translation>
@@ -665,6 +667,7 @@
 <translation id="7359657277149375382">Файл түрі</translation>
 <translation id="73631062356239394">Диагностика деректерін бөлісу</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Ендірілген сенсорлық тақта</translation>
 <translation id="7397270852490618635">Жарық режимді өшіру</translation>
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>

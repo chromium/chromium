@@ -3939,6 +3939,15 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       注: このリストには、<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ポリシーからも要素が追加される可能性があります。</translation>
 <translation id="5067143124345820993">ログイン ユーザーのホワイト リスト</translation>
+<translation id="5069522005630249098">この設定により、<ph name="LACROS_NAME" /> が無効になった後、どれだけのユーザーデータが保持されるかが決まります。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> に設定するか未設定のままにした場合、過去に遡ったデータの移行は行われません。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> に設定した場合は、すべてのユーザーデータが削除されます。これは最も安全な設定です。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> に設定した場合は、ほとんどのユーザーデータが削除され、ブラウザに依存しないファイルのみ（例: 「ダウンロード」）が保存されます。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> に設定した場合、ユーザーデータはすべて保持されます。この設定ではエラーが発生するリスクが高く、復旧するには Powerwash が必要になります。</translation>
 <translation id="5071303485174858500">制限付き管理対象ゲスト セッションを無効にする</translation>
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 

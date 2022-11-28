@@ -2337,6 +2337,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3105796011181310544">Vols tornar a utilitzar Google?</translation>
 <translation id="310671807099593501">El lloc web està utilitzant el Bluetooth</translation>
 <translation id="3108931485517391283">No es pot rebre</translation>
+<translation id="3108957152224931571">Color de marcatge</translation>
 <translation id="3109206895301430738">Grups de pestanyes desats</translation>
 <translation id="3109724472072898302">Reduït</translation>
 <translation id="3112292765614504292">Mida de l'aplicació: <ph name="APP_SIZE" /></translation>
@@ -4574,6 +4575,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5260334392110301220">Cometes intel·ligents</translation>
 <translation id="5260508466980570042">No s'ha pogut verificar el correu electrònic o la contrasenya. Torna-ho a provar.</translation>
 <translation id="5260958083445173099">Quan sigui possible, els llocs web mostraran el contingut en els teus idiomes preferits</translation>
+<translation id="5261619498868361045">El nom del contenidor no pot estar buit.</translation>
 <translation id="5261683757250193089">Obre a Web Store</translation>
 <translation id="5262178194499261222">Suprimeix la contrasenya</translation>
 <translation id="5262784498883614021">Connecta a la xarxa automàticament</translation>
@@ -4979,6 +4981,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="562935524653278697">L'administrador ha desactivat la sincronització de les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5631017369956619646">Ús de la CPU</translation>
 <translation id="5632059346822207074">S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
+<translation id="5632221585574759616">Més informació sobre els permisos d'extensions</translation>
 <translation id="5632566673632479864">Ja no es permet que <ph name="EMAIL" /> sigui el compte principal. Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5632592977009207922">S'està baixant. Queda un <ph name="PERCENT_REMAINING" />%.</translation>
 <translation id="5633149627228920745">Més informació sobre els requisits del sistema</translation>
@@ -5598,6 +5601,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> no té connexió. Connecta't a Internet i torna-ho a provar.</translation>
 <translation id="6220413761270491930">Error en carregar l'extensió</translation>
 <translation id="6224481128663248237">Ha finalitzat satisfactòriament el format.</translation>
+<translation id="622474711739321877">Aquest contenidor ja existeix.</translation>
 <translation id="622537739776246443">El perfil se suprimirà</translation>
 <translation id="6225475702458870625">Connexió de dades disponible des del teu <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Fitxer de clau privada (opcional)</translation>
@@ -6396,6 +6400,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="696780070563539690">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
 <translation id="6968288415730398122">Introdueix la contrasenya per configurar el bloqueig de pantalla</translation>
 <translation id="6969047215179982698">Desactiva Compartició Nearby</translation>
+<translation id="6969216690072714773">Introdueix informació nova o actualitza la que ja hi ha per associar-la a aquest dispositiu.</translation>
 <translation id="6970480684834282392">Tipus d'inici</translation>
 <translation id="6970543303783413625">No es poden importar les contrasenyes. Només en pots importar fins a <ph name="COUNT" /> alhora.</translation>
 <translation id="6970856801391541997">Imprimeix pàgines específiques</translation>
@@ -6802,6 +6807,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7377481913241237033">Connecta't amb un codi</translation>
 <translation id="7378611153938412599">Les contrasenyes poc segures són fàcils d'endevinar. Assegura't de crear contrasenyes segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
+<translation id="7380272457268061606">Vols desactivar la recuperació de dades locals?</translation>
 <translation id="7380459290951585794">Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi‑Fi activats</translation>
 <translation id="7380622428988553498">El nom del dispositiu conté caràcters que no són vàlids</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> s'ha actualitzat</translation>
@@ -7051,6 +7057,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7617263010641145920">Activa Play Store</translation>
 <translation id="7617648809369507487">Utilitza missatges més discrets</translation>
 <translation id="7621382409404463535">El sistema no ha pogut desar la configuració del dispositiu.</translation>
+<translation id="7621595347123595643">No podràs recuperar les dades locals si oblides la contrasenya o el PIN.</translation>
 <translation id="7622114377921274169">S'està carregant.</translation>
 <translation id="7622768823216805500">Els llocs web solen instal·lar gestors de pagament per a funcions de compra com ara una tramitació més senzilla</translation>
 <translation id="7622903810087708234">Detalls de la contrasenya</translation>

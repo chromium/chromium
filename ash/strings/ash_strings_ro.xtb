@@ -554,6 +554,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Dezac., o apl.}few{Dezac., # apl.}other{Dezac., # apl.}}</translation>
 <translation id="4066027111132117168">Activată, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Semnal mediu</translation>
+<translation id="4086921558679520050">Activează comutatorul pentru microfonul fizic al dispozitivului</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4379531060876907730">Acestea sunt instrumentele pentru creion</translation>
+<translation id="4381031910344220229">Aceasta permite accesul la microfon pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
@@ -959,6 +961,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> este o sesiune gestionată de <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> s-a conectat</translation>
 <translation id="6351032674660237738">SUGESTII DE APLICAȚII</translation>
+<translation id="6352082849089527770">Rețele necunoscute</translation>
 <translation id="6359587239691116345">Obține cele mai noi funcții și îmbunătățiri ale securității. Dacă refuzi această actualizare, este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
 <translation id="6381109794406942707">Pentru a debloca dispozitivul, introdu codul PIN.</translation>
@@ -1132,6 +1135,7 @@ Instalare nouă</translation>
 <translation id="7360036564632145207">Modificarea setării pentru protecția accesului la date pentru dispozitive periferice poate optimiza performanța</translation>
 <translation id="736045644501761622">Setează imaginea de fundal și stilul</translation>
 <translation id="7371404428569700291">Înregistrează fereastra</translation>
+<translation id="737315737514430195">Aceasta permite accesul la microfon pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="7377169924702866686">Tasta Caps Lock este activată.</translation>
 <translation id="7377481913241237033">Conectează-te cu un cod</translation>
 <translation id="7378203170292176219">Trage pentru a selecta o zonă de înregistrat</translation>
@@ -1200,6 +1204,7 @@ Instalare nouă</translation>
 <translation id="7671610481353807627">Aplicațiile se sortează după culoare</translation>
 <translation id="7672095158465655885">Conectat la <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Introducerea cu ajutorul camerei foto este setată la <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Aceasta permite accesul la microfon pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adaugă o nouă rețea de date mobile</translation>
 <translation id="7720400844887872976">Activată până la <ph name="TIME" /></translation>

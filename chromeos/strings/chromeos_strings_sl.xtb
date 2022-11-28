@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Izbrali ste <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter, da izberete albume <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Razreševanje DNS-ja (Android)</translation>
 <translation id="4848429997038228357">IZVAJANJE</translation>
+<translation id="4854586501323951986">Vgrajen zaslon na dotik</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskuse}other{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusov}}</translation>
 <translation id="4873827928179867585">Algoritem preverjanja pristnosti</translation>
 <translation id="4880328057631981605">Ime dostopne točke</translation>
@@ -569,6 +570,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6394634179843537518">Dodaj datoteko</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
+<translation id="6412715219990689313">Vgrajena tipkovnica</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Šibka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odpri nastavitve računa</translation>
@@ -667,6 +669,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="73631062356239394">Deljenje diagnostičnih podatkov</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Vgrajena sledilna ploščica</translation>
 <translation id="7397270852490618635">Izklop svetle teme</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>

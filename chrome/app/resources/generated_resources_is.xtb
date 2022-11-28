@@ -2355,6 +2355,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3105796011181310544">Skipta aftur yfir í Google?</translation>
 <translation id="310671807099593501">Vefsvæði er að nota Bluetooth</translation>
 <translation id="3108931485517391283">Ekki er hægt að taka við</translation>
+<translation id="3108957152224931571">Yfirstrikunarlitur</translation>
 <translation id="3109206895301430738">Vistaðir flipahópar</translation>
 <translation id="3109724472072898302">Minnkað</translation>
 <translation id="3112292765614504292">Stærð forrits <ph name="APP_SIZE" /></translation>
@@ -4600,6 +4601,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5260334392110301220">Sjálfvirkar gæsalappir</translation>
 <translation id="5260508466980570042">Því miður tókst ekki að staðfesta netfangið þitt eða aðgangsorðið. Reyndu aftur.</translation>
 <translation id="5260958083445173099">Vefsvæði birta efni á kjörtungumálum ef mögulegt er</translation>
+<translation id="5261619498868361045">Heiti geymis má ekki vera autt.</translation>
 <translation id="5261683757250193089">Opna í vefverslun</translation>
 <translation id="5262178194499261222">Fjarlægja aðgangsorð</translation>
 <translation id="5262784498883614021">Tengjast netkerfi sjálfkrafa</translation>
@@ -5006,6 +5008,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="562935524653278697">Kerfisstjóri hefur gert samstillingu bókamerkja, ferla, aðgangsorða og annarra stillinga óvirka.</translation>
 <translation id="5631017369956619646">Örgjörvanotkun</translation>
 <translation id="5632059346822207074">Heimildar óskað, ýttu á Ctrl + Áfram til að svara</translation>
+<translation id="5632221585574759616">Nánar um heimildir viðbóta</translation>
 <translation id="5632566673632479864">Reikningurinn þinn <ph name="EMAIL" /> er ekki lengur leyfður sem aðalreikningur. Þar sem <ph name="DOMAIN" /> stýrir þessum reikningi verða bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð úr tækinu.</translation>
 <translation id="5632592977009207922">Sækir, <ph name="PERCENT_REMAINING" />% eftir</translation>
 <translation id="5633149627228920745">Nánar um kerfiskröfur</translation>
@@ -5626,6 +5629,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> er án nettengingar. Tengdu við internetið og reyndu aftur.</translation>
 <translation id="6220413761270491930">Villa við að hlaða viðbót</translation>
 <translation id="6224481128663248237">Lokið við að sníða!</translation>
+<translation id="622474711739321877">Þessi geymir er þegar til.</translation>
 <translation id="622537739776246443">Prófílnum verður eytt</translation>
 <translation id="6225475702458870625">Gagnatenging tiltæk úr <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Skrá einkalykils (valfrjálst)</translation>
@@ -6427,6 +6431,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="696780070563539690">Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar</translation>
 <translation id="6968288415730398122">Sláðu inn aðgangsorðið til að stilla skjálásinn</translation>
 <translation id="6969047215179982698">Slökkva á Nærdeilingu</translation>
+<translation id="6969216690072714773">Færðu inn eða breyttu upplýsingunum sem á að tengja við þetta tæki.</translation>
 <translation id="6970480684834282392">Gerð ræsingar</translation>
 <translation id="6970543303783413625">Ekki er hægt að flytja inn aðgangsorð. Aðeins er hægt að flytja inn allt að <ph name="COUNT" /> aðgangsorð í einu.</translation>
 <translation id="6970856801391541997">Prenta tilteknar síður</translation>
@@ -6833,6 +6838,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7377481913241237033">Tengjast með kóða</translation>
 <translation id="7378611153938412599">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Passaðu að búa til traust aðgangsorð. <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Opna vefverslun Chrome</translation>
+<translation id="7380272457268061606">Slökkva á endurheimt staðbundinna gagna?</translation>
 <translation id="7380459290951585794">Gakktu úr skugga um að síminn sé nálægt, ólæstur og með kveikt á Bluetooth og Wi-Fi</translation>
 <translation id="7380622428988553498">Heiti tækis inniheldur ógilda stafi</translation>
 <translation id="7380768571499464492">Uppfært <ph name="PRINTER_NAME" /></translation>
@@ -7083,6 +7089,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7617263010641145920">Kveikja á Play Store</translation>
 <translation id="7617648809369507487">Nota hljóðlátari skilaboð</translation>
 <translation id="7621382409404463535">Kerfið gat ekki vistað stillingu tækisins.</translation>
+<translation id="7621595347123595643">Þú getur ekki endurheimt staðbundin gögn ef þú gleymir aðgangsorðinu þínu eða PIN-númerinu.</translation>
 <translation id="7622114377921274169">Í hleðslu.</translation>
 <translation id="7622768823216805500">Vefsvæði setja yfirleitt upp greiðslumiðlara fyrir verslunareiginleika eins og einfaldari greiðslu</translation>
 <translation id="7622903810087708234">Upplýsingar um aðgangsorð</translation>

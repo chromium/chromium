@@ -2357,6 +2357,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3105796011181310544">Newid yn ôl i Google?</translation>
 <translation id="310671807099593501">Mae'r wefan yn defnyddio Bluetooth</translation>
 <translation id="3108931485517391283">Methu â chael</translation>
+<translation id="3108957152224931571">Lliw amlygu</translation>
 <translation id="3109206895301430738">Cadwyd Grwpiau Tabiau</translation>
 <translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="3112292765614504292">Maint ap: <ph name="APP_SIZE" /></translation>
@@ -4602,6 +4603,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5260334392110301220">Dyfyniadau Smart</translation>
 <translation id="5260508466980570042">Mae'n ddrwg gennym, ni ellid dilysu'ch e-bost na'ch cyfrinair. Rhowch gynnig arall arni.</translation>
 <translation id="5260958083445173099">Bydd gwefannau yn ymddangos cynnwys yn eich ieithoedd a ffefrir, pan fydd hynny'n bosib</translation>
+<translation id="5261619498868361045">Ni all enw'r cynhwysydd fod yn wag.</translation>
 <translation id="5261683757250193089">Agor yn Web Store</translation>
 <translation id="5262178194499261222">Tynnu'r cyfrinair</translation>
 <translation id="5262784498883614021">Cysylltu â'r rhwydwaith yn awtomatig</translation>
@@ -5008,6 +5010,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="562935524653278697">Mae eich gweinyddwr wedi analluogi cysoni'ch nodau tudalen, eich hanes, eich cyfrineiriau a'ch gosodiadau eraill.</translation>
 <translation id="5631017369956619646">Defnydd CPU</translation>
 <translation id="5632059346822207074">Gofynnwyd am ganiatâd, pwyswch Ctrl + Forward i ymateb</translation>
+<translation id="5632221585574759616">Dysgu rhagor am ganiatadau estyniad</translation>
 <translation id="5632566673632479864">Ni chaniateir eich cyfrif <ph name="EMAIL" /> fel y prif gyfrif mwyach. Oherwydd bod y cyfrif hwn yn cael ei reoli gan <ph name="DOMAIN" />, bydd eich nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill yn cael eu clirio o'r ddyfais hon.</translation>
 <translation id="5632592977009207922">Wrthi'n lawrlwytho, mae <ph name="PERCENT_REMAINING" />% ar ôl</translation>
 <translation id="5633149627228920745">Dysgu rhagor am ofynion system</translation>
@@ -5628,6 +5631,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6218058416316985984">Mae <ph name="DEVICE_TYPE" /> all-lein. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="6220413761270491930">Gwall Llwytho Estyniad</translation>
 <translation id="6224481128663248237">Mae'r fformatio wedi'i gwblhau'n llwyddiannus!</translation>
+<translation id="622474711739321877">Mae'r cynhwysydd hwn eisoes yn bodoli.</translation>
 <translation id="622537739776246443">Bydd y proffil yn cael ei ddileu</translation>
 <translation id="6225475702458870625">Mae cysylltiad data ar gael o'ch <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Ffeil allwedd breifat (dewisol)</translation>
@@ -6435,6 +6439,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="696780070563539690">Ni all gwefannau ddefnyddio eich cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion</translation>
 <translation id="6968288415730398122">Rhowch eich cyfrinair i ffurfweddu'r clo sgrîn</translation>
 <translation id="6969047215179982698">Diffodd Rhannu Gerllaw</translation>
+<translation id="6969216690072714773">Rhowch wybodaeth newydd neu ddiweddarwch y wybodaeth bresennol i fod yn gysylltiedig â'r ddyfais hon.</translation>
 <translation id="6970480684834282392">Math o gychwyn</translation>
 <translation id="6970543303783413625">Methu â mewnforio cyfrineiriau. Dim ond hyd at <ph name="COUNT" /> o gyfrineiriau y gallwch eu mewnforio ar y tro.</translation>
 <translation id="6970856801391541997">Argraffu Tudalennau Penodol</translation>
@@ -6841,6 +6846,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7377481913241237033">Cysylltu gyda chod</translation>
 <translation id="7378611153938412599">Mae'n hawdd dyfalu cyfrineiriau gwan. Gwnewch yn siŵr eich bod yn creu cyfrineiriau cryf. <ph name="BEGIN_LINK" />Gweld rhagor o awgrymiadau diogelwch.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Agor Chrome Web Store</translation>
+<translation id="7380272457268061606">Analluogi adfer data lleol?</translation>
 <translation id="7380459290951585794">Gwnewch yn siŵr bod eich ffôn gerllaw, wedi'i ddatgloi, a bod Bluetooth a Wi-Fi wedi'u troi ymlaen</translation>
 <translation id="7380622428988553498">Mae enw'r ddyfais yn cynnwys nodau annilys</translation>
 <translation id="7380768571499464492">Diweddarwyd <ph name="PRINTER_NAME" /></translation>
@@ -7091,6 +7097,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7617263010641145920">Troi Play Store ymlaen</translation>
 <translation id="7617648809369507487">Defnyddiwch negeseuon tawelach</translation>
 <translation id="7621382409404463535">Gwnaeth y system fethu â chadw ffufrweddiad dyfais.</translation>
+<translation id="7621595347123595643">Ni fyddwch yn gallu adfer data lleol os byddwch yn anghofio eich cyfrinair neu PIN.</translation>
 <translation id="7622114377921274169">Wrthi'n gwefru.</translation>
 <translation id="7622768823216805500">Mae gwefannau fel arfer yn gosod trinyddion taliadau ar gyfer nodweddion siopa megis talu'n haws</translation>
 <translation id="7622903810087708234">Manylion cyfrinair</translation>

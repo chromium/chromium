@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Conectează-te la o rețea și reîncarcă pagina pentru a vedea screensaverul.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
@@ -384,6 +385,7 @@
 <translation id="4793756956024303490">Algoritm de comprimare</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
 <translation id="4800589996161293643">Comunitatea Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Temă luminoasă</translation>
 <translation id="4813136279048157860">Imaginile mele</translation>
@@ -404,6 +406,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Nivelul bateriei căștii stângi a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activează funcția ca să selectezi opțiuni pentru screensaver</translation>
+<translation id="4910858703033903787">Tipuri APN</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="491791267030419270">Sfaturi pentru a scrie feedback</translation>
@@ -459,6 +462,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5358174242040570474">A apărut o eroare. Încearcă din nou să alegi o imagine de fundal sau redeschide aplicația.</translation>
 <translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
 <translation id="5376354385557966694">Modul luminos automat</translation>
+<translation id="5378184552853359930">Tip de adresă IP</translation>
 <translation id="5389159777326897627">Stil și imagine de fundal</translation>
 <translation id="5389224261615877010">Curcubeu</translation>
 <translation id="5400907029458559844">Dispozitivul se conectează.</translation>
@@ -742,6 +746,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selectează <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Atașează</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
@@ -830,6 +835,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9025198690966128418">Folosește ca dispozitiv personal</translation>
 <translation id="9028832514430399253">Activează comutatorul pentru a selecta opțiunile pentru screensaver</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

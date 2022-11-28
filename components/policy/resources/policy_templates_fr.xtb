@@ -4131,6 +4131,15 @@ Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitSt
 
       Remarque : Vous pouvez également utiliser la règle <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> pour ajouter des éléments à cette liste.</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
+<translation id="5069522005630249098">Ce paramètre détermine la quantité de données utilisateur conservées une fois <ph name="LACROS_NAME" /> désactivé.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou n'est pas configurée, la rétromigration des données n'est pas effectuée.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, toutes les données utilisateur sont supprimées. C'est l'option la plus sûre.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la plupart des données utilisateur sont supprimées. Seuls les fichiers indépendants du navigateur (comme les téléchargements) sont conservés.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, toutes les données utilisateur sont conservées. Cette option présente un risque élevé d'échec, pour lequel la restauration nécessite d'effectuer un Powerwash.</translation>
 <translation id="5071303485174858500">Désactiver la session Invité gérée restreinte.</translation>
 <translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
 

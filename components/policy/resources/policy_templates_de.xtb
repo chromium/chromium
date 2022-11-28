@@ -4106,6 +4106,15 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, ist die window.we
 
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
+<translation id="5069522005630249098">Mit dieser Einstellung wird festgelegt, wie viele Nutzerdaten nach der Deaktivierung von <ph name="LACROS_NAME" /> gespeichert werden.
+
+      Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_NONE" />“ gesetzt oder nicht konfiguriert ist, wird keine umgekehrte Datenmigration ausgeführt.
+
+      Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />“ gesetzt ist, werden alle Nutzerdaten entfernt. Das ist die sicherste Option.
+
+      Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />“ gesetzt ist, werden die meisten Nutzerdaten entfernt. Es werden dann nur browserunabhängige Dateien gespeichert, z. B. Downloads.
+
+      Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />“ gesetzt ist, bleiben alle Nutzerdaten erhalten. Diese Option ist sehr fehleranfällig. Zur Wiederherstellung ist dann ein Zurücksetzen auf die Werkseinstellungen per Powerwash erforderlich.</translation>
 <translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 

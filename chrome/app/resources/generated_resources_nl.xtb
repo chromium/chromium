@@ -2339,6 +2339,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3105796011181310544">Teruggaan naar Google?</translation>
 <translation id="310671807099593501">Site gebruikt Bluetooth</translation>
 <translation id="3108931485517391283">Kan niet ontvangen</translation>
+<translation id="3108957152224931571">Markeringskleur</translation>
 <translation id="3109206895301430738">Opgeslagen tabbladgroepen</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="3112292765614504292">App-grootte: <ph name="APP_SIZE" /></translation>
@@ -4581,6 +4582,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5260334392110301220">Slimme aanhalingstekens</translation>
 <translation id="5260508466980570042">Je e-mailadres of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="5260958083445173099">Als het mogelijk is, tonen websites content in je voorkeurstalen</translation>
+<translation id="5261619498868361045">Containernaam mag niet leeg zijn.</translation>
 <translation id="5261683757250193089">Openen in Web Store</translation>
 <translation id="5262178194499261222">Wachtwoord verwijderen</translation>
 <translation id="5262784498883614021">Automatisch verbinding maken met netwerk</translation>
@@ -4985,6 +4987,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="562935524653278697">Je beheerder heeft de synchronisatie van je bookmarks, geschiedenis, wachtwoorden en andere instellingen uitgezet.</translation>
 <translation id="5631017369956619646">CPU-gebruik</translation>
 <translation id="5632059346822207074">Rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
+<translation id="5632221585574759616">Meer informatie over extensierechten</translation>
 <translation id="5632566673632479864">Je account <ph name="EMAIL" /> is niet meer toegestaan als het primaire account. Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist op dit apparaat.</translation>
 <translation id="5632592977009207922">Downloaden, <ph name="PERCENT_REMAINING" />% resterend</translation>
 <translation id="5633149627228920745">Meer informatie over systeemvereisten</translation>
@@ -5603,6 +5606,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="6220413761270491930">Fout bij laden van extensie</translation>
 <translation id="6224481128663248237">Het formatteren is voltooid.</translation>
+<translation id="622474711739321877">Deze container bestaat al.</translation>
 <translation id="622537739776246443">Profiel wordt verwijderd</translation>
 <translation id="6225475702458870625">Gegevensverbinding beschikbaar via je <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Privésleutelbestand (optioneel)</translation>
@@ -6401,6 +6405,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="696780070563539690">Sites mogen je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren</translation>
 <translation id="6968288415730398122">Geef je wachtwoord op om de schermvergrendeling te configureren</translation>
 <translation id="6969047215179982698">Dichtbij delen uitzetten</translation>
+<translation id="6969216690072714773">Voer nieuwe informatie in of update bestaande informatie die aan dit apparaat moet worden gekoppeld.</translation>
 <translation id="6970480684834282392">Opstarttype</translation>
 <translation id="6970543303783413625">Kan wachtwoorden niet importeren. Je kunt maximaal <ph name="COUNT" /> wachtwoorden tegelijk importeren.</translation>
 <translation id="6970856801391541997">Specifieke pagina's afdrukken</translation>
@@ -6807,6 +6812,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="7378611153938412599">Zwakke wachtwoorden zijn makkelijk te raden. Stel sterke wachtwoorden in. <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store openen</translation>
+<translation id="7380272457268061606">Herstel van lokale gegevens uitzetten?</translation>
 <translation id="7380459290951585794">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>
 <translation id="7380768571499464492">Geüpdatet: <ph name="PRINTER_NAME" /></translation>
@@ -7057,6 +7063,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7617263010641145920">Play Store aanzetten</translation>
 <translation id="7617648809369507487">Stillere berichten gebruiken</translation>
 <translation id="7621382409404463535">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
+<translation id="7621595347123595643">Als je je wachtwoord of pincode vergeet, kun je geen lokale gegevens herstellen.</translation>
 <translation id="7622114377921274169">Opladen.</translation>
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>
 <translation id="7622903810087708234">Wachtwoordgegevens</translation>

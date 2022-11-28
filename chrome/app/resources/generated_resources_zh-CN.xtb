@@ -2331,6 +2331,7 @@
 <translation id="3105796011181310544">改回 Google？</translation>
 <translation id="310671807099593501">该网站正在使用蓝牙</translation>
 <translation id="3108931485517391283">无法接收</translation>
+<translation id="3108957152224931571">突出显示颜色</translation>
 <translation id="3109206895301430738">已保存的标签页分组</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="3112292765614504292">应用大小：<ph name="APP_SIZE" /></translation>
@@ -4572,6 +4573,7 @@
 <translation id="5260334392110301220">智能引号</translation>
 <translation id="5260508466980570042">抱歉，您的电子邮件地址或密码无法进行验证，请重试。</translation>
 <translation id="5260958083445173099">网站会尽可能以您的首选语言显示内容</translation>
+<translation id="5261619498868361045">容器名称不得为空。</translation>
 <translation id="5261683757250193089">在 Chrome 应用商店中打开</translation>
 <translation id="5262178194499261222">移除密码</translation>
 <translation id="5262784498883614021">自动连接到网络</translation>
@@ -4976,6 +4978,7 @@
 <translation id="562935524653278697">您的管理员已停止同步您的书签、历史记录、密码及其他设置。</translation>
 <translation id="5631017369956619646">CPU 使用情况</translation>
 <translation id="5632059346822207074">收到了权限请求，按 Ctrl + 前进键即可回复</translation>
+<translation id="5632221585574759616">详细了解扩展程序的权限</translation>
 <translation id="5632566673632479864">您的帐号 <ph name="EMAIL" /> 已无法再用作主帐号。该帐号由 <ph name="DOMAIN" /> 管理，因此您的书签、历史记录、密码及其他设置将从此设备中清除。</translation>
 <translation id="5632592977009207922">正在下载，还剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">详细了解系统要求</translation>
@@ -5595,6 +5598,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> 处于离线状态。请连接到互联网，然后重试。</translation>
 <translation id="6220413761270491930">加载扩展程序时出错</translation>
 <translation id="6224481128663248237">格式化成功完成！</translation>
+<translation id="622474711739321877">此容器已存在。</translation>
 <translation id="622537739776246443">个人资料将被删除</translation>
 <translation id="6225475702458870625">可通过您的<ph name="PHONE_NAME" />使用数据网络连接</translation>
 <translation id="6226777517901268232">私钥文件（选填）</translation>
@@ -6394,6 +6398,7 @@
 <translation id="696780070563539690">网站无法使用您的 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="6968288415730398122">需输入您的密码，才能配置屏幕锁定</translation>
 <translation id="6969047215179982698">关闭“附近分享”功能</translation>
+<translation id="6969216690072714773">输入要与此设备关联的新信息，或者更新要与此设备关联的现有信息。</translation>
 <translation id="6970480684834282392">启动类型</translation>
 <translation id="6970543303783413625">无法导入密码。您一次最多只能导入 <ph name="COUNT" /> 个密码。</translation>
 <translation id="6970856801391541997">打印特定页面</translation>
@@ -6800,6 +6805,7 @@
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378611153938412599">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="73786666777299047">打开 Chrome 应用商店</translation>
+<translation id="7380272457268061606">停用“本地数据恢复”？</translation>
 <translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
 <translation id="7380768571499464492">已更新<ph name="PRINTER_NAME" /></translation>
@@ -7050,6 +7056,7 @@
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
+<translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
 <translation id="7622903810087708234">密码详细信息</translation>

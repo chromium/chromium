@@ -1286,6 +1286,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2157875535253991059">Ushbu sahifa hozir to‘liq ekran rejimida.</translation>
 <translation id="2158475082070321257">Havolani tanlangan matnga nusxalash</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> uchun <ph name="SHORTCUT" /> ishlatilishi</translation>
 <translation id="216169395504480358">Wi-Fi ulanishini qo‘shish...</translation>
 <translation id="2162155940152307086">Sync sozlamalaridan chiqishingiz bilan sinxronizatsiya boshlanadi</translation>
 <translation id="2162705204091149050">Brauzer, OT, qurilma, oʻrnatilgan dasturlar va fayllar haqidagi axborot bilan tanishing</translation>
@@ -2675,6 +2676,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3445047461171030979">Google Assistent tezkor javoblari</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> daq</translation>
 <translation id="344537926140058498">Bu faylda maxfiy yoki xavfli kontent borligi uchun tashkilotingiz uni bloklagan. Egasidan uni tuzatishni soʻrang.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Yaqinda ochilgan <ph name="BEGIN_BOLD" />1 ta sayt<ph name="END_BOLD" /> ruxsatlari olib tashlandi}other{Yaqinda ochilgan <ph name="BEGIN_BOLD" />{NUM_SITES} ta sayt<ph name="END_BOLD" /> ruxsatlari olib tashlandi}}</translation>
 <translation id="3445925074670675829">USB-C qurilma</translation>
 <translation id="3446274660183028131">Windowsni oʻrnatish uchun Parallels Desktopni ishga tushiring.</translation>
 <translation id="344630545793878684">Bir nechta saytlardagi ma’lumotlarni ko‘rish</translation>
@@ -2886,6 +2888,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3642699533549879077">Kimdir ekraningizga qarasa, bu haqida ogohlantirilasiz va bildirishnoma kontenti berkitiladi.</translation>
 <translation id="3643962751030964445">Bu – <ph name="DEVICE_MANAGER" /> tomonidan boshqariladigan qurilma. <ph name="DEVICE_MANAGER" /> <ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilishini talab qiladi</translation>
 <translation id="3645372836428131288">Barmoqning boshqa qismlari hamq qayd qilinishi uchun uni biroz siljiting.</translation>
+<translation id="3647051300407077858">Bildirishnoma ruxsatlarini tekshirish</translation>
 <translation id="3647654707956482440">Bu havola ishlamadi. Qayta urinish uchun imlo xatolarini tekshiring yoki boshqa havoladan foydalaning.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilindi}other{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilindi}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ulandi</translation>
@@ -3065,6 +3068,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="380408572480438692">Unumdorlik ma’lumotlarini yig‘ish yordamida Google tizim faoliyatiga yaxshilanishlar kiritadi. Ma’lumotlar faqatgina foydalanuvchi fikr-mulohaza jo‘natish (Alt-Shift-I) vaqtida unumdorlik ma’lumotlarini biriktirsa jo‘natiladi. Xohlagan vaqtda bu sahifaga qaytib ma’lumotlarni yig‘ish funksiyasini o‘chirib qo‘yish mumkin.</translation>
 <translation id="3807249107536149332">Kirish ekranida “<ph name="EXTENSION_NAME" />” kengaytmasidan (identifikatori: <ph name="EXTENSION_ID" />) foydalanish taqiqlanadi.</translation>
 <translation id="3807747707162121253">&amp;Bekor qilish</translation>
+<translation id="3808202562160426447">Fondagi kontentni xiralashtirish</translation>
 <translation id="3808443763115411087">Crostini tizimida Android ilovalarini ishlab chiqish</translation>
 <translation id="38089336910894858">⌘Q yordamida chiqishda ogohlantirilsin</translation>
 <translation id="3809272675881623365">Quyon</translation>
@@ -3656,6 +3660,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4364567974334641491">“<ph name="APP_NAME" />” ilovasi oynaga kirish uchun ruxsat berdi.</translation>
 <translation id="4364830672918311045">Bildirishnomalarni ko‘rsatish</translation>
 <translation id="4366138410738374926">Chop etish boshlangan</translation>
+<translation id="4367513928820380646">Olib tashlangan ruxsatlarni tekshirish</translation>
 <translation id="4369121877634339065">Qidirish uchun istalgan rasmni tortib tashlang</translation>
 <translation id="4369215744064167350">Saytga ruxsat berildi</translation>
 <translation id="4370975561335139969">Siz kiritgan e-pochta va parol mos kelmadi</translation>
@@ -4376,6 +4381,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="504561833207953641">Mavjud brauzer seansida ochilmoqda.</translation>
 <translation id="5049614114599109018">Kiritish tarixidan foydalanilsin</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Bu sayt yaqinda ortiqcha bildirishnoma yuborgan. Ularning bildirishnoma yuborishigini toʻxtatish mumkin.}other{Bu saytlar yaqinda ortiqcha bildirishnoma yuborgan. Ularning bildirishnoma yuborishigini toʻxtatish mumkin.}}</translation>
 <translation id="5051836348807686060">Tanlangan tilda imlo tekshirilmaydi</translation>
 <translation id="5052499409147950210">Saytni tahrirlash</translation>
 <translation id="505347685865235222">Nomsiz guruh – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7272,6 +7278,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7775694664330414886">Varaq nomsiz guruhga olindi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Bu sayt uchun varaqlar yopilmasa, <ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi barcha fayllarni ocha oladi</translation>
 <translation id="7776701556330691704">Ovoz namunalari topilmadi</translation>
+<translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> uchun <ph name="SHORTCUT" /> tezkor tugmasi</translation>
 <translation id="7781335840981796660">Barcha hisoblar va mahalliy ma’lumotlar o‘chib ketadi.</translation>
 <translation id="7782102568078991263">Google‘dan boshqa takliflar yo‘q</translation>
 <translation id="7782717250816686129">Doimiy maʼlumotlarni kirish ekranida saqlash va hisob maʼlumotlarini seansga kiritish.</translation>
@@ -7303,6 +7310,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
 <translation id="7814458197256864873">&amp;Nuxsa olish</translation>
+<translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> uchun <ph name="SHORTCUT" /> tezkor tugmasini tahrirlash</translation>
 <translation id="7815680994978050279">Xavfli yuklanma bloklandi</translation>
 <translation id="7817361223956157679">Ekran klaviaturasi hozircha Linux ilovalarda ishlamaydi</translation>
 <translation id="7818135753970109980">Yangi mavzu qo‘shildi (<ph name="EXTENSION_NAME" />)</translation>
@@ -7377,6 +7385,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Hisobni ko‘rish</translation>
 <translation id="7883792253546618164">Istalgan vaqt obunani bekor qilish mumkin.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Ortiqcha bildirishnoma yuborgan 1 ta saytni tekshiring}other{Ortiqcha bildirishnoma yuborgan {NUM_SITES} ta saytni tekshiring}}</translation>
 <translation id="788453346724465748">Hisob axboroti yuklanmoqda...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}other{# ta element}}</translation>
 <translation id="7886605625338676841">eSIM</translation>

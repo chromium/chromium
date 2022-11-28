@@ -2326,6 +2326,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3105796011181310544">Zmienić z powrotem na Google?</translation>
 <translation id="310671807099593501">Strona używa Bluetootha</translation>
 <translation id="3108931485517391283">Nie udało się odebrać</translation>
+<translation id="3108957152224931571">Kolor wyróżnienia</translation>
 <translation id="3109206895301430738">Zapisane grupy kart</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="3112292765614504292">Rozmiar aplikacji: <ph name="APP_SIZE" /></translation>
@@ -4570,6 +4571,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5260334392110301220">Inteligentne cudzysłowy</translation>
 <translation id="5260508466980570042">Niestety, nie udało się zweryfikować Twojego adresu e-mail lub hasła. Spróbuj ponownie.</translation>
 <translation id="5260958083445173099">Gdy będzie to możliwe, zawartość stron internetowych będzie się wyświetlać w wybranych językach</translation>
+<translation id="5261619498868361045">Nazwa kontenera nie może być pusta.</translation>
 <translation id="5261683757250193089">Otwórz w Chrome Web Store</translation>
 <translation id="5262178194499261222">Usuń hasło</translation>
 <translation id="5262784498883614021">Automatycznie łącz z siecią</translation>
@@ -4975,6 +4977,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="562935524653278697">Synchronizację zakładek, historii, haseł i innych ustawień wyłączył administrator.</translation>
 <translation id="5631017369956619646">Wykorzystanie procesora</translation>
 <translation id="5632059346822207074">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij Ctrl + Dalej.</translation>
+<translation id="5632221585574759616">Więcej informacji o uprawnieniach rozszerzeń</translation>
 <translation id="5632566673632479864">Twoje konto <ph name="EMAIL" /> nie może być już kontem podstawowym. To konto jest zarządzane przez <ph name="DOMAIN" />, dlatego Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia.</translation>
 <translation id="5632592977009207922">Pobieram, pozostało <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">Więcej informacji o wymaganiach systemowych</translation>
@@ -5595,6 +5598,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> jest offline. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="6220413761270491930">Błąd podczas ładowania rozszerzenia</translation>
 <translation id="6224481128663248237">Formatowanie zostało zakończone pomyślnie.</translation>
+<translation id="622474711739321877">Ten kontener już istnieje.</translation>
 <translation id="622537739776246443">Profil zostanie usunięty</translation>
 <translation id="6225475702458870625">Połączenie transmisji danych jest dostępne z telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Plik klucza prywatnego (opcjonalnie)</translation>
@@ -6396,6 +6400,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="696780070563539690">Strony nie mogą używać plików cookie do śledzenia Twojej aktywność związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam</translation>
 <translation id="6968288415730398122">Wpisz hasło, by skonfigurować blokadę ekranu</translation>
 <translation id="6969047215179982698">Wyłącz Udostępnianie w pobliżu</translation>
+<translation id="6969216690072714773">Dodaj lub popraw informacje, które mają być powiązane z tym urządzeniem.</translation>
 <translation id="6970480684834282392">Typ uruchamiania</translation>
 <translation id="6970543303783413625">Nie udało się zaimportować haseł. Maksymalna liczba haseł, jaką możesz zaimportować jednocześnie, to <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Drukuj wybrane strony</translation>
@@ -6802,6 +6807,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
 <translation id="7378611153938412599">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, by używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
+<translation id="7380272457268061606">Wyłączyć odzyskiwanie danych lokalnych?</translation>
 <translation id="7380459290951585794">Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi</translation>
 <translation id="7380622428988553498">Nazwa urządzenia zawiera niedozwolone znaki</translation>
 <translation id="7380768571499464492">Zaktualizowano: <ph name="PRINTER_NAME" /></translation>
@@ -7052,6 +7058,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7617263010641145920">Włącz Sklep Play</translation>
 <translation id="7617648809369507487">Pokazuj wiadomości dyskretnie</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
+<translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
 <translation id="7622903810087708234">Szczegóły haseł</translation>
