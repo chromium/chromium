@@ -74,6 +74,10 @@ class ExtensionTelemetryService : public KeyedService {
   // - created internally by a signal processor from other signals received.
   static void RecordSignalType(ExtensionSignalType signal_type);
 
+  // Recorded when a signal is discarded because it contains invalid data (e.g.,
+  // invalid extension id).
+  static void RecordSignalDiscarded(ExtensionSignalType signal_type);
+
   // Enables/disables the service.
   void SetEnabled(bool enable);
   bool enabled() const { return enabled_; }

@@ -6,13 +6,10 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/path_service.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -27,7 +24,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -204,6 +200,20 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
             extension_prefs_->GetInstallTime(kExtensionId[0]).ToJavaTime());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, DiscardsInvalidSignal) {
+  // Verify that service is enabled.
+  EXPECT_TRUE(IsTelemetryServiceEnabled());
+
+  // Add a tabs.executeScript API invocation signal to the telemetry service
+  // with an invalid extension id.
+  auto signal = std::make_unique<TabsExecuteScriptSignal>("", kScriptCode);
+  telemetry_service_->AddSignal(std::move(signal));
+
+  // Verify that the signal was not processed by checking that the extension
+  // store is empty.
+  EXPECT_TRUE(IsExtensionStoreEmpty());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {

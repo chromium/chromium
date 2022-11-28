@@ -626,6 +626,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionTelemetry.Signals.Discarded"
+    enum="SBExtensionTelemetrySignalsSignalType" expires_after="2023-05-07">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records discarded extension telemetry signals by type. Logged each time a
+    signal is discarded because it contains invalid data (e.g., invalid
+    extension id). The signal type recorded here only corresponds to a a raw
+    signal that is created externally and passed to extension service. The count
+    for a combined signal (that is created internally and derived from other raw
+    signals) should always be 0 since the internally generated signal data
+    should always be valid.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.Signals.SignalType"
     enum="SBExtensionTelemetrySignalsSignalType" expires_after="2023-05-07">
   <owner>anunoy@chromium.org</owner>
