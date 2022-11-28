@@ -77,92 +77,91 @@ void LeakDetector::OnLeakDetectionComplete(
     blink::mojom::LeakDetectionResultPtr result) {
   LeakDetectionReport report;
   report.leaked = false;
-  base::Value detail(base::Value::Type::DICTIONARY);
+  base::Value::Dict detail;
 
   if (previous_result_ && !result.is_null()) {
     if (previous_result_->number_of_live_audio_nodes <
         result->number_of_live_audio_nodes) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_audio_nodes));
       list.Append(static_cast<int>(result->number_of_live_audio_nodes));
-      detail.SetPath("numberOfLiveAudioNodes", std::move(list));
+      detail.Set("numberOfLiveAudioNodes", std::move(list));
     }
     if (previous_result_->number_of_live_documents <
         result->number_of_live_documents) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(previous_result_->number_of_live_documents));
       list.Append(static_cast<int>(result->number_of_live_documents));
-      detail.SetPath("numberOfLiveDocuments", std::move(list));
+      detail.Set("numberOfLiveDocuments", std::move(list));
     }
     if (previous_result_->number_of_live_nodes < result->number_of_live_nodes) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(previous_result_->number_of_live_nodes));
       list.Append(static_cast<int>(result->number_of_live_nodes));
-      detail.SetPath("numberOfLiveNodes", std::move(list));
+      detail.Set("numberOfLiveNodes", std::move(list));
     }
     if (previous_result_->number_of_live_layout_objects <
         result->number_of_live_layout_objects) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_layout_objects));
       list.Append(static_cast<int>(result->number_of_live_layout_objects));
-      detail.SetPath("numberOfLiveLayoutObjects", std::move(list));
+      detail.Set("numberOfLiveLayoutObjects", std::move(list));
     }
     // Resources associated with User Agent CSS should be excluded from leak
     // detection as they are persisted through page navigation.
     if (previous_result_->number_of_live_resources <
         (result->number_of_live_resources -
          result->number_of_live_ua_css_resources)) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(previous_result_->number_of_live_resources));
       list.Append(static_cast<int>(result->number_of_live_resources));
-      detail.SetPath("numberOfLiveResources", std::move(list));
+      detail.Set("numberOfLiveResources", std::move(list));
     }
     if (previous_result_->number_of_live_context_lifecycle_state_observers <
         result->number_of_live_context_lifecycle_state_observers) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(
           previous_result_->number_of_live_context_lifecycle_state_observers));
       list.Append(static_cast<int>(
           result->number_of_live_context_lifecycle_state_observers));
-      detail.SetPath("numberOfLiveContextLifecycleStateObservers",
-                     std::move(list));
+      detail.Set("numberOfLiveContextLifecycleStateObservers", std::move(list));
     }
     if (previous_result_->number_of_live_frames <
         result->number_of_live_frames) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(previous_result_->number_of_live_frames));
       list.Append(static_cast<int>(result->number_of_live_frames));
-      detail.SetPath("numberOfLiveFrames", std::move(list));
+      detail.Set("numberOfLiveFrames", std::move(list));
     }
     if (previous_result_->number_of_live_v8_per_context_data <
         result->number_of_live_v8_per_context_data) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(static_cast<int>(
           previous_result_->number_of_live_v8_per_context_data));
       list.Append(static_cast<int>(result->number_of_live_v8_per_context_data));
-      detail.SetPath("numberOfLiveV8PerContextData", std::move(list));
+      detail.Set("numberOfLiveV8PerContextData", std::move(list));
     }
     if (previous_result_->number_of_worker_global_scopes <
         result->number_of_worker_global_scopes) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(
           static_cast<int>(previous_result_->number_of_worker_global_scopes));
       list.Append(static_cast<int>(result->number_of_worker_global_scopes));
-      detail.SetPath("numberOfWorkerGlobalScopes", std::move(list));
+      detail.Set("numberOfWorkerGlobalScopes", std::move(list));
     }
     if (previous_result_->number_of_live_resource_fetchers <
         result->number_of_live_resource_fetchers) {
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_resource_fetchers));
       list.Append(static_cast<int>(result->number_of_live_resource_fetchers));
-      detail.SetPath("numberOfLiveResourceFetchers", std::move(list));
+      detail.Set("numberOfLiveResourceFetchers", std::move(list));
     }
   }
 
-  if (!detail.DictEmpty()) {
+  if (!detail.empty()) {
     std::string detail_str;
     base::JSONWriter::Write(detail, &detail_str);
     report.detail = detail_str;
