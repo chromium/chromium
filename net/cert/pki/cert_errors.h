@@ -49,7 +49,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_error_id.h"
 #include "net/cert/pki/parsed_certificate.h"

@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
