@@ -44,7 +44,7 @@ const char kPerfCyclesPPPHGCmd[] = "-- record -a -e cycles:pppHG -c 1000003";
 const char kPerfFPCallgraphPPPHGCmd[] =
     "-- record -a -e cycles:pppHG -g -c 4000037";
 const char kPerfLBRCallgraphPPPCmd[] =
-    "-- record -a -e cycles:ppp -c 4000037 --call-graph lbr";
+    "-- record -a -e cycles:ppp -c 6000011 --call-graph lbr";
 const char kPerfLBRCmd[] = "-- record -a -e r20c4 -b -c 800011";
 const char kPerfLBRCmdAtom[] = "-- record -a -e rc4 -b -c 800011";
 const char kPerfITLBMissCyclesCmdIvyBridge[] =

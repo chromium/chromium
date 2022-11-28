@@ -149,7 +149,7 @@ const char kPerfCommandDelimiter[] = " ";
 // Collect precise=3 (:ppp) cycle events on microarchitectures and kernels that
 // support it.
 const char kPerfLBRCallgraphPPPCmd[] =
-    "-- record -a -e cycles:ppp -c 4000037 --call-graph lbr";
+    "-- record -a -e cycles:ppp -c 6000011 --call-graph lbr";
 
 const char kPerfCyclesPPPHGCmd[] = "-- record -a -e cycles:pppHG -c 1000003";
 
