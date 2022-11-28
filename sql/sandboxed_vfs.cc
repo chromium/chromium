@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
