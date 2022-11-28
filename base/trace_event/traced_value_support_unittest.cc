@@ -109,5 +109,28 @@ TEST(TracedValueSupportTest, StringPiece) {
   EXPECT_EQ(perfetto::TracedValueToString(base::WStringPiece(L"wide")), "wide");
 }
 
+TEST(TracedValueSupportTest, RawPtr) {
+  // Serialise nullptr.
+  EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>()), "0x0");
+
+  {
+    // If the pointer is non-null, its dereferenced value will be serialised.
+    int value = 42;
+    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>(&value)), "42");
+  }
+
+  struct WithTraceSupport {
+    void WriteIntoTrace(perfetto::TracedValue ctx) const {
+      std::move(ctx).WriteString("result");
+    }
+  };
+
+  {
+    WithTraceSupport value;
+    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<WithTraceSupport>(&value)),
+              "result");
+  }
+}
+
 }  // namespace trace_event
 }  // namespace base

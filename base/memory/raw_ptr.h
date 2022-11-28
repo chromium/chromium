@@ -47,10 +47,6 @@
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
 #endif  // BUILDFLAG(IS_NACL)
 
-#if BUILDFLAG(PA_USE_BASE_TRACING)
-#include "base/trace_event/base_tracing_forward.h"
-#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
-
 #if BUILDFLAG(USE_MTE_CHECKED_PTR) && \
     defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
@@ -1373,16 +1369,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     Impl::IncrementSwapCountForTest();
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
   }
-
-#if BUILDFLAG(PA_USE_BASE_TRACING)
-  // If T can be serialised into trace, its alias is also
-  // serialisable.
-  template <class U = T>
-  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
-      perfetto::TracedValue&& context) const {
-    perfetto::WriteIntoTracedValue(std::move(context), get());
-  }
-#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
 
   PA_ALWAYS_INLINE void ReportIfDangling() const noexcept {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

@@ -170,17 +170,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
     swap(lhs.inner_, rhs.inner_);
   }
 
-#if BUILDFLAG(PA_USE_BASE_TRACING)
-  // If T can be serialised into trace, its alias is also
-  // serialisable.
-  template <class U = T>
-  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
-      perfetto::TracedValue&& context) const {
-    PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
-    inner_.WriteIntoTrace(std::move(context));
-  }
-#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
-
   template <class U>
   friend PA_ALWAYS_INLINE bool operator==(const raw_ref& lhs,
                                           const raw_ref<U, RawPtrType>& rhs) {
