@@ -39,22 +39,28 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kNavigation,
 };
 
+// Find all of the main and article nodes.
 // TODO(crbug.com/1266555): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
-const ui::AXNode* GetMainNode(const ui::AXNode* root) {
+void GetContentRootNodes(const ui::AXNode* root,
+                         std::vector<const ui::AXNode*>* content_root_nodes) {
   std::queue<const ui::AXNode*> queue;
   queue.push(root);
   while (!queue.empty()) {
     const ui::AXNode* node = queue.front();
     queue.pop();
-    if (node->GetRole() == ax::mojom::Role::kMain)
-      return node;
+    // If a main or article node is found, add it to the list of content root
+    // nodes and continue. Do not explore children for nested article nodes.
+    if (node->GetRole() == ax::mojom::Role::kMain ||
+        node->GetRole() == ax::mojom::Role::kArticle) {
+      content_root_nodes->push_back(node);
+      continue;
+    }
     for (auto iter = node->UnignoredChildrenBegin();
          iter != node->UnignoredChildrenEnd(); ++iter) {
       queue.push(iter.get());
     }
   }
-  return nullptr;
 }
 
 // Recurse through the root node, searching for content nodes (any node whose
@@ -149,12 +155,13 @@ void AXTreeDistiller::DistillViaAlgorithm() {
   if (!tree.Unserialize(*snapshot_))
     NOTREACHED() << tree.error();
 
-  const ui::AXNode* main_node = GetMainNode(tree.root());
-  // If this page does not have a main node, this means it is not distillable.
-  if (!main_node)
-    return;
-
-  AddContentNodesToVector(main_node, content_node_ids_.get());
+  std::vector<const ui::AXNode*> content_root_nodes;
+  GetContentRootNodes(tree.root(), &content_root_nodes);
+  for (const ui::AXNode* content_root_node : content_root_nodes) {
+    AddContentNodesToVector(content_root_node, content_node_ids_.get());
+  }
+  // If this page does not have any content root nodes, do nothing. It is not
+  // distillable.
 }
 
 void AXTreeDistiller::RunCallback() {

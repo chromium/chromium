@@ -85,7 +85,7 @@ const TestCase kDistillWebPageTestCases[] = {
       <body>)HTML",
      {"Test"}},
     /* ----------------------- */
-    {"simple_page_with_content",
+    {"simple_page_with_main",
      R"HTML(<!doctype html>
       <body role="main">
         <h1>Heading</h1>
@@ -94,6 +94,21 @@ const TestCase kDistillWebPageTestCases[] = {
         <div role='header'><h2>Header</h2></div>
       <body>)HTML",
      {"Heading", "Test 1", "Test 2", "Header"}},
+    /* ----------------------- */
+    {"simple_page_with_main_and_article",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <p>Main</p>
+        </main>
+        <div role="article">
+          <p>Article 1</p>
+        </div>
+        <div role="article">
+          <p>Article 2</p>
+        </div>
+      <body>)HTML",
+     {"Main", "Article 1", "Article 2"}},
     /* ----------------------- */
     {"simple_page_no_content",
      R"HTML(<!doctype html>
@@ -150,6 +165,24 @@ const TestCase kDistillWebPageTestCases[] = {
         <p>Some <b>bolded</b> text</p>
       <body>)HTML",
      {"Some bolded text"}},
+    /* ----------------------- */
+    {"simple_page_nested_article",
+     R"HTML(<!doctype html>
+      <body>
+        <div role="main">
+          <p>Main</p>
+          <div role="article">
+            <p>Article 1</p>
+          </div>
+        </div>
+        <div role="article">
+          <p>Article 2</p>
+          <div role="article">
+            <p>Article 3</p>
+          </div>
+        </div>
+      <body>)HTML",
+     {"Main", "Article 1", "Article 2", "Article 3"}},
 };
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
