@@ -1,15 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Library and tool to expand command lines that mention thin archives
 # into command lines that mention the contained object files.
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import argparse
 import sys
@@ -20,12 +15,13 @@ from remote_ld import RemoteLinkUnix
 
 def main(argv):
   ap = argparse.ArgumentParser(
-      description=('Expand command lines that mention thin archives into'
-                   ' command lines that mention the contained object files.'),
+      description=('Expand command lines that mention thin archives into '
+                   'command lines that mention the contained object files.'),
       usage='%(prog)s [options] -- command line')
-  ap.add_argument('-o', '--output',
-                  help=('Write new command line to named file'
-                        ' instead of standard output.'))
+  ap.add_argument('-o',
+                  '--output',
+                  help=('Write new command line to named file '
+                        'instead of standard output.'))
   ap.add_argument('-p', '--linker-prefix',
                   help='String to prefix linker flags with.',
                   default='')

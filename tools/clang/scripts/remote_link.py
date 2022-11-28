@@ -320,7 +320,7 @@ class RemoteLinkBase(object):
   def expand_thin_archives(self, args):
     """
     Yields the parameters in args, with thin archives replaced by a sequence
-    of '-start-lib', the member names, and '-end-lib'. This is used to get a
+    of '--start-lib', the member names, and '--end-lib'. This is used to get a
     command line where members of thin archives are mentioned explicitly.
     """
     for arg in args:
@@ -329,10 +329,10 @@ class RemoteLinkBase(object):
         prefix += '/'
       if (self.LIB_RE.match(arg) and os.path.exists(arg)
           and is_thin_archive(arg)):
-        yield (self.WL + '-start-lib')
+        yield (self.WL + '--start-lib')
         for name in names_in_archive(arg):
           yield (prefix + name)
-        yield (self.WL + '-end-lib')
+        yield (self.WL + '--end-lib')
       else:
         yield (arg)
 
