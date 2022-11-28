@@ -222,6 +222,7 @@ js2gtest("accessibility_tests") {
     "testing/accessibility_test_base.js",
     "testing/assert_additions.js",
     "testing/callback_helper.js",
+    "testing/common_e2e_test_base.js",
     "testing/doc_utils.js",
     "testing/e2e_test_base.js",
   ]
