@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/pki/crl.h"
+#include <algorithm>
 
-#include "base/stl_util.h"
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/crl.h"
 #include "net/cert/pki/revocation_util.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/pki/verify_name_match.h"
@@ -37,7 +37,10 @@ bool ContainsExactMatchingName(std::vector<std::string_view> a,
                                std::vector<std::string_view> b) {
   std::sort(a.begin(), a.end());
   std::sort(b.begin(), b.end());
-  return !base::STLSetIntersection<std::vector<std::string_view>>(a, b).empty();
+  std::vector<std::string_view> names_in_common;
+  std::set_intersection(a.begin(), a.end(), b.begin(), b.end(),
+                        std::back_inserter(names_in_common));
+  return !names_in_common.empty();
 }
 
 }  // namespace
