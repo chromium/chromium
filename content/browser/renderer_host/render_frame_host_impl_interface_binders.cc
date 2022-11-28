@@ -126,7 +126,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
     }
 
     BackForwardCacheImpl::VlogUnexpectedRendererToBrowserMessage(
-        interface_name_, message->name());
+        interface_name_, message->name(), render_frame_host_);
 
     TRACE_EVENT2(
         "content", "BackForwardCacheMessageFilter::WillDispatch bad_message",

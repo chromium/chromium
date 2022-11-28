@@ -1425,10 +1425,18 @@ bool BackForwardCacheImpl::IsScreenReaderAllowed() {
 // static
 void BackForwardCacheImpl::VlogUnexpectedRendererToBrowserMessage(
     const char* interface_name,
-    uint32_t message_name) {
+    uint32_t message_name,
+    RenderFrameHostImpl* rfh) {
   VLOG(1) << "BackForwardCacheMessageFilter::WillDispatch bad_message "
-          << "interface_name " << interface_name << "message_name "
+          << "interface_name " << interface_name << " message_name "
           << message_name;
+  // TODO(https://crbug.com/1379490): Remove these when bug is fixed.
+  PageLifecycleStateManager* page_lifecycle_state_manager =
+      rfh->render_view_host()->GetPageLifecycleStateManager();
+  VLOG(1) << "URL: " << rfh->GetLastCommittedURL() << " current "
+          << page_lifecycle_state_manager->IsInBackForwardCache() << " acked "
+          << page_lifecycle_state_manager->last_acknowledged_state()
+                 .is_in_back_forward_cache;
 }
 
 BackForwardCache::DisabledReason::DisabledReason(

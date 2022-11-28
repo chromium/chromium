@@ -207,7 +207,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // corresponds to this the value.
   static void VlogUnexpectedRendererToBrowserMessage(
       const char* interface_name_,
-      uint32_t message_name);
+      uint32_t message_name,
+      RenderFrameHostImpl* rfh);
 
   // Returns the reasons (if any) why this document and its children cannot
   // enter the back/forward cache. Depends on the |render_frame_host| and its
