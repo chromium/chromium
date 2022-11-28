@@ -438,7 +438,7 @@ struct AudioProcessorDefaultOutputFormatTest
   }
 };
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     AudioProcessorDefaultOutputFormatTest,
     ::testing::Combine(::testing::Bool(),

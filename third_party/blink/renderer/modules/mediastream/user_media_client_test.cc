@@ -1685,6 +1685,6 @@ TEST_P(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
 // Run tests with a separate queue for display capture requests (GetParam() ==
 // true) and without (GetParam() == false) , corresponding to if
 // kSplitUserMediaQueues is enabled or not.
-INSTANTIATE_TEST_CASE_P(/*no prefix*/, UserMediaClientTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/, UserMediaClientTest, ::testing::Bool());
 
 }  // namespace blink

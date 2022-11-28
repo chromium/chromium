@@ -141,17 +141,17 @@ TEST_P(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
   EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        AbortSignalTest,
-                        testing::Values(TestType::kRemoveEnabled,
-                                        TestType::kRemoveDisabled),
-                        [](const testing::TestParamInfo<TestType>& info) {
-                          switch (info.param) {
-                            case TestType::kRemoveEnabled:
-                              return "RemoveEnabled";
-                            case TestType::kRemoveDisabled:
-                              return "RemoveDisabled";
-                          }
-                        });
+INSTANTIATE_TEST_SUITE_P(,
+                         AbortSignalTest,
+                         testing::Values(TestType::kRemoveEnabled,
+                                         TestType::kRemoveDisabled),
+                         [](const testing::TestParamInfo<TestType>& info) {
+                           switch (info.param) {
+                             case TestType::kRemoveEnabled:
+                               return "RemoveEnabled";
+                             case TestType::kRemoveDisabled:
+                               return "RemoveDisabled";
+                           }
+                         });
 
 }  // namespace blink

@@ -3807,7 +3807,7 @@ TEST_P(CompositorTQPolicyDuringThreadedScrollTest, CompositorPriority) {
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     CompositorTQPolicyDuringThreadedScrollTest,
     testing::Values(

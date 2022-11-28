@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(WebAuthFlowGuestPartitionParamTest, PersistenceTest) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     WebAuthFlowGuestPartitionParamTest,
     testing::Combine(testing::Bool(),

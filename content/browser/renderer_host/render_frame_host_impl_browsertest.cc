@@ -6742,7 +6742,7 @@ class RenderFrameHostImplBrowserTestWithStoragePartitioning
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     All,
     RenderFrameHostImplBrowserTestWithStoragePartitioning,
     /*third_party_storage_partitioning_enabled*/ testing::Bool());

@@ -657,9 +657,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
-INSTANTIATE_TEST_CASE_P(/* no prefix */,
-                        StorageAccessAPIBrowserTest,
-                        testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         StorageAccessAPIBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 class StorageAccessAPIStorageBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
@@ -980,9 +980,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
-INSTANTIATE_TEST_CASE_P(/* no prefix */,
-                        StorageAccessAPIForOriginBrowserTest,
-                        testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         StorageAccessAPIForOriginBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests to validate First-Party Set use with `requestStorageAccessForOrigin`.
 class StorageAccessAPIForOriginWithFirstPartySetsBrowserTest
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginExplicitlyDisabledBrowserTest,
                   .ExtractBool());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     StorageAccessAPIForOriginExplicitlyDisabledBrowserTest,
     testing::Bool());

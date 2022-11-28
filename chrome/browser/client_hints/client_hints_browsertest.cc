@@ -3395,9 +3395,9 @@ class CriticalClientHintsRedirectBrowserTest
     : public CriticalClientHintsBrowserTest,
       public testing::WithParamInterface<net::HttpStatusCode> {};
 
-INSTANTIATE_TEST_CASE_P(AllRedirectCodes,
-                        CriticalClientHintsRedirectBrowserTest,
-                        testing::ValuesIn(kRedirectStatusCodes));
+INSTANTIATE_TEST_SUITE_P(AllRedirectCodes,
+                         CriticalClientHintsRedirectBrowserTest,
+                         testing::ValuesIn(kRedirectStatusCodes));
 
 IN_PROC_BROWSER_TEST_P(CriticalClientHintsRedirectBrowserTest,
                        RestartDuringRedirect) {
