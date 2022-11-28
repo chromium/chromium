@@ -67,7 +67,7 @@ bool IsDataSaverEnabled(content::BrowserContext* browser_context) {
     return g_cached_data_saver_setting.value();
   }
 
-  // There is a cached value, updated it asynchronously and return the cached
+  // There is a cached value. Update it asynchronously and return the cached
   // value immediately.
   FetchDataSaverOSSettingAsynchronously();
   DCHECK(g_cached_data_saver_setting);
