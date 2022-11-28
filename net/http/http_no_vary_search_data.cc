@@ -6,8 +6,10 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "net/base/url_search_params.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -32,6 +34,39 @@ HttpNoVarySearchData::HttpNoVarySearchData() = default;
 HttpNoVarySearchData::HttpNoVarySearchData(const HttpNoVarySearchData&) =
     default;
 HttpNoVarySearchData::~HttpNoVarySearchData() = default;
+
+bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
+  // Check urls without query and reference (fragment) for equality first.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
+    return false;
+  }
+
+  // If equal, look at how HttpNoVarySearchData argument affects
+  // search params variance.
+  UrlSearchParams a_search_params(a);
+  UrlSearchParams b_search_params(b);
+  // Ignore all the query search params that the URL is not varying on.
+  if (vary_by_default()) {
+    a_search_params.DeleteAllWithNames(no_vary_params());
+    b_search_params.DeleteAllWithNames(no_vary_params());
+  } else {
+    a_search_params.DeleteAllExceptWithNames(vary_params());
+    b_search_params.DeleteAllExceptWithNames(vary_params());
+  }
+  // Sort the params if the order of the search params in the query
+  // is ignored.
+  if (!vary_on_key_order()) {
+    a_search_params.Sort();
+    b_search_params.Sort();
+  }
+  // Check Search Params for equality
+  // All search params, in order, need to have the same keys and the same
+  // values.
+  return a_search_params.params() == b_search_params.params();
+}
 
 // static
 absl::optional<HttpNoVarySearchData> HttpNoVarySearchData::ParseFromHeaders(

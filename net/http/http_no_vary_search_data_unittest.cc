@@ -6,12 +6,15 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -36,11 +39,12 @@ class HttpNoVarySearchResponseHeadersTest
 TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
   const TestData test = GetParam();
 
-  std::string raw_headers = net::HttpUtil::AssembleRawHeaders(test.raw_headers);
+  const std::string raw_headers =
+      net::HttpUtil::AssembleRawHeaders(test.raw_headers);
 
-  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
-  absl::optional<HttpNoVarySearchData> no_vary_search_data =
+  const absl::optional<HttpNoVarySearchData> no_vary_search_data =
       HttpNoVarySearchData::ParseFromHeaders(*parsed);
 
   EXPECT_EQ(no_vary_search_data->vary_on_key_order(),
@@ -55,11 +59,11 @@ TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
 
 TEST_P(HttpNoVarySearchResponseHeadersParseFailureTest,
        ParsingFailureOrDefaultValue) {
-  std::string raw_headers = net::HttpUtil::AssembleRawHeaders(GetParam());
+  const std::string raw_headers = net::HttpUtil::AssembleRawHeaders(GetParam());
 
-  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
-  absl::optional<HttpNoVarySearchData> no_vary_search_data =
+  const absl::optional<HttpNoVarySearchData> no_vary_search_data =
       HttpNoVarySearchData::ParseFromHeaders(*parsed);
 
   EXPECT_FALSE(no_vary_search_data.has_value());
@@ -226,7 +230,7 @@ constexpr base::StringPiece response_header_failed[] = {
     "\r\n\r\n",
 };
 
-TestData response_headers_tests[] = {
+const TestData response_headers_tests[] = {
     // params set to a list of strings with one element.
     {
         "HTTP/1.1 200 OK\r\n"
@@ -279,7 +283,6 @@ TestData response_headers_tests[] = {
     },
     // Vary on all with one excepted search param.
     {
-
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("a"))"
@@ -591,6 +594,276 @@ INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchResponseHeadersTest,
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchResponseHeadersParseFailureTest,
                          HttpNoVarySearchResponseHeadersParseFailureTest,
                          testing::ValuesIn(response_header_failed));
+
+struct NoVarySearchCompareTestData {
+  const GURL request_url;
+  const GURL cached_url;
+  const base::StringPiece raw_headers;
+  const bool expected_match;
+};
+
+TEST(HttpNoVarySearchCompare,
+     CheckUrlEqualityByNoVarySearchWithSpecialCharacters) {
+  // Use special characters in both `keys` and `values`.
+  const base::flat_map<std::string, std::string> percent_encoding = {
+      {"!", "%21"},    {"#", "%23"},    {"$", "%24"},    {"%", "%25"},
+      {"&", "%26"},    {"'", "%27"},    {"(", "%28"},    {")", "%29"},
+      {"*", R"(%2A)"}, {"+", R"(%2B)"}, {",", R"(%2C)"}, {"-", R"(%2D)"},
+      {".", R"(%2E)"}, {"/", R"(%2F)"}, {":", R"(%3A)"}, {";", "%3B"},
+      {"<", R"(%3C)"}, {"=", R"(%3D)"}, {">", R"(%3E)"}, {"?", R"(%3F)"},
+      {"@", "%40"},    {"[", "%5B"},    {"]", R"(%5D)"}, {"^", R"(%5E)"},
+      {"_", R"(%5F)"}, {"`", "%60"},    {"{", "%7B"},    {"|", R"(%7C)"},
+      {"}", R"(%7D)"}, {"~", R"(%7E)"}, {"", ""}};
+
+  const base::StringPiece raw_headers =
+      "HTTP/1.1 200 OK\r\n"
+      R"(No-Vary-Search: params=("c"))"
+      "\r\n\r\n";
+  const std::string headers = net::HttpUtil::AssembleRawHeaders(raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+
+  const auto no_vary_search_data =
+      HttpNoVarySearchData::ParseFromHeaders(*parsed).value();
+
+  for (const auto& [key, value] : percent_encoding) {
+    std::string request_url_template =
+        R"(https://a.test/index.html?$key=$value)";
+    std::string cached_url_template =
+        R"(https://a.test/index.html?c=3&$key=$value)";
+
+    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", value);
+    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$value",
+                                       value);
+    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", value);
+    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$value",
+                                       value);
+
+    EXPECT_TRUE(no_vary_search_data.AreEquivalent(GURL(request_url_template),
+                                                  GURL(cached_url_template)));
+
+    std::string header_template =
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params, except=("$key"))"
+        "\r\n\r\n";
+    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", key);
+
+    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(header_template));
+    const auto no_vary_search_data_special_char =
+        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+
+    EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
+        GURL(request_url_template), GURL(cached_url_template)));
+  }
+}
+
+class HttpNoVarySearchCompare
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<NoVarySearchCompareTestData> {};
+
+TEST_P(HttpNoVarySearchCompare, CheckUrlEqualityByNoVarySearch) {
+  const auto& test_data = GetParam();
+
+  const std::string headers =
+      net::HttpUtil::AssembleRawHeaders(test_data.raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+
+  const auto no_vary_search_data =
+      HttpNoVarySearchData::ParseFromHeaders(*parsed).value();
+
+  EXPECT_EQ(no_vary_search_data.AreEquivalent(test_data.request_url,
+                                              test_data.cached_url),
+            test_data.expected_match)
+      << "request_url = " << test_data.request_url
+      << " cached_url = " << test_data.cached_url
+      << " headers = " << test_data.raw_headers
+      << " match = " << test_data.expected_match;
+}
+
+const NoVarySearchCompareTestData no_vary_search_compare_tests[] = {
+    // Url's for same page with same username but different passwords.
+    {GURL("https://owner:correct@a.test/index.html?a=2&b=3"),
+     GURL("https://owner:incorrect@a.test/index.html?a=2&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     false},
+    // Url's for same page with different username.
+    {GURL("https://anonymous@a.test/index.html?a=2&b=3"),
+     GURL("https://owner@a.test/index.html?a=2&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     false},
+    // Url's for same origin with different path.
+    {GURL("https://a.test/index.html?a=2&b=3"),
+     GURL("https://a.test/home.html?a=2&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     false},
+    // Url's for same page with different protocol.
+    {GURL("http://a.test/index.html?a=2&b=3"),
+     GURL("https://a.test/index.html?a=2&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     false},
+    // Url's for different pages without the query and reference part
+    // are not equivalent.
+    {GURL("https://a.test/index.html?a=2&b=3"),
+     GURL("https://b.test/index.html?b=4&c=5"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     false},
+    // Cached page requested again with different order of query parameters with
+    // the same values.
+    {GURL("https://a.test/index.html?a=2&b=3"),
+     GURL("https://a.test/index.html?b=3&a=2"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order\r\n\r\n",
+     true},
+    // Cached page requested again with different order of query parameters but
+    // with different values.
+    {GURL("https://a.test/index.html?a=2&c=5&b=3"),
+     GURL("https://a.test/index.html?c=4&b=3&a=2"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order\r\n\r\n",
+     false},
+    // Cached page requested again with values in different order for the query
+    // parameters with the same name. Key order is ignored.
+    {GURL("https://a.test/index.html?d=6&a=4&b=5&b=3&c=5&a=3"),
+     GURL("https://a.test/index.html?b=5&a=3&a=4&d=6&c=5&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order"
+     "\r\n\r\n",
+     false},
+    // Cached page requested again with values in the same order for the query
+    // parameters with the same name. Key order is ignored.
+    {GURL("https://a.test/index.html?d=6&a=3&b=5&b=3&c=5&a=4"),
+     GURL("https://a.test/index.html?b=5&a=3&a=4&d=6&c=5&b=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again with different order of query parameters but
+    // with one of the query parameters marked to be ignored.
+    {GURL("https://a.test/index.html?a=2&c=3&b=2"),
+     GURL("https://a.test/index.html?a=2&b=2&c=5"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("c"))"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again without any query parameters, but
+    // the cached URL's query parameter marked to be ignored.
+    {GURL("https://a.test/index.html"), GURL("https://a.test/index.html?a=2"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("a"))"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again with different values for the query
+    // parameters that are marked to be ignored. Same value for the query
+    // parameter that is marked as to vary.
+    {GURL("https://a.test/index.html?a=1&b=2&c=3"),
+     GURL("https://a.test/index.html?b=5&a=3&d=6&c=3"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("c"))"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again with different values for the query
+    // parameters that are marked to be ignored. Different value for the query
+    // parameter that is marked as to vary.
+    {GURL("https://a.test/index.html?a=1&b=2&c=5"),
+     GURL("https://a.test/index.html?b=5&a=3&d=6&c=3"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("c"))"
+     "\r\n\r\n",
+     false},
+    // Cached page requested again with different values for the query
+    // parameters that are marked to be ignored. Same values for the query
+    // parameters that are marked as to vary.
+    {GURL("https://a.test/index.html?d=6&a=1&b=2&c=5"),
+     GURL("https://a.test/index.html?b=5&a=3&d=6&c=5"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("c" "d"))"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again with different values for the query
+    // parameters that are marked to be ignored. Same values for the query
+    // parameters that are marked as to vary. Some query parameters to be
+    // ignored appear multiple times in the query.
+    {GURL("https://a.test/index.html?d=6&a=1&a=2&b=2&b=3&c=5"),
+     GURL("https://a.test/index.html?b=5&a=3&a=4&d=6&c=5"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("c" "d"))"
+     "\r\n\r\n",
+     true},
+    // Cached page requested again with query parameters. All query parameters
+    // are marked as to be ignored.
+    {GURL("https://a.test/index.html?a=1&b=2&c=5"),
+     GURL("https://a.test/index.html"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     true},
+    // Cached page requested again with query parameters. All query parameters
+    // are marked as to be ignored. Both request url and cached url have query
+    // parameters.
+    {GURL("https://a.test/index.html?a=1&b=2&c=5"),
+     GURL("https://a.test/index.html?a=5&b=6&c=8&d=1"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: params\r\n\r\n",
+     true},
+    // Add test for when the keys are percent encoded.
+    {GURL(R"(https://a.test/index.html?c+1=3&b+%202=2&a=1&%63%201=2&a=5)"),
+     GURL(R"(https://a.test/index.html?a=1&b%20%202=2&%63%201=3&a=5&c+1=2)"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order\r\n\r\n",
+     true},
+    // Add test for when there are different representations of a character
+    {GURL(R"(https://a.test/index.html?%C3%A9=f&a=2&c=4&é=b)"),
+     GURL(R"(https://a.test/index.html?a=2&é=f&c=4&d=7&é=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("d"), key-order)"
+     "\r\n\r\n",
+     true},
+    // Add test for when there are triple code point
+    {GURL(R"(https://a.test/index.html?%E3%81%81=f&a=2&c=4&%E3%81%81=b)"),
+     GURL(R"(https://a.test/index.html?a=2&%E3%81%81=f&c=4&d=7&%E3%81%81=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("d"), key-order)"
+     "\r\n\r\n",
+     true},
+    // Add test for when there are quadruple code point
+    {GURL(
+         R"(https://a.test/index.html?%F0%90%A8%80=%F0%90%A8%80&a=2&c=4&%F0%90%A8%80=b)"),
+     GURL(
+         R"(https://a.test/index.html?a=2&%F0%90%A8%80=%F0%90%A8%80&c=4&d=7&%F0%90%A8%80=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("d"), key-order)"
+     "\r\n\r\n",
+     true},
+    // Add test for when there are params with empty values / keys.
+    {GURL("https://a.test/index.html?a&b&c&a=2&d&=5&=1&=3"),
+     GURL("https://a.test/index.html?c&d&b&a&=5&=1&a=2&=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order\r\n\r\n",
+     true},
+    // Add test for when there are params with empty values / keys, an empty
+    // key pair missing.
+    {GURL("https://a.test/index.html?a&b&c&a=2&d&=5&=1&=3"),
+     GURL("https://a.test/index.html?c&d&b&a&=5&a=2&=3"),
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search: key-order\r\n\r\n",
+     false},
+    // Add test when there are params with keys / values that are wrongly
+    // escaped.
+    {GURL(R"(https://a.test/index.html?a=%3&%3=b)"),
+     GURL(R"(https://a.test/index.html?a=%3&c=3&%3=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("c"))"
+     "\r\n\r\n",
+     true},
+};
+
+INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchCompare,
+                         HttpNoVarySearchCompare,
+                         testing::ValuesIn(no_vary_search_compare_tests));
 
 }  // namespace
 
