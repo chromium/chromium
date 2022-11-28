@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use std::fs;
 use std::io::{Read, Write};
 use std::process::{self, ExitCode};
 
@@ -84,7 +85,26 @@ pub fn download(
         .find(|(allowed_license, _)| &cargo.package.license == *allowed_license)
         .expect("License in downloaded Cargo.toml is not in ALLOWED_LICENSES");
 
-    let readme = gen_readme_chromium_text(&cargo, readme_license, security);
+    let vcs_path = crate_path.join(".cargo_vcs_info.json");
+    let vcs_contents = match fs::read_to_string(&vcs_path) {
+        Ok(s) => serde_json::from_str(&s).unwrap(),
+        Err(_) => None,
+    };
+    let githash: Option<&str> = vcs_contents.as_ref().and_then(|v| {
+        use serde_json::Value::*;
+        match v {
+            Object(map) => match map.get("git") {
+                Some(Object(map)) => match map.get("sha1") {
+                    Some(String(s)) => Some(&s[..]),
+                    _ => None,
+                },
+                _ => None,
+            },
+            _ => None,
+        }
+    });
+
+    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security);
     std::fs::write(build_path.join("README.chromium"), readme)
         .expect("Failed to write README.chromium");
 
@@ -94,12 +114,15 @@ pub fn download(
 }
 
 /// Generate the contents of the README.chromium file.
-fn gen_readme_chromium_text(manifest: &CargoManifest, license: &str, security: bool) -> String {
-    let security = if security {
-        "yes"
-    } else {
-        "no"
-    };
+fn gen_readme_chromium_text(
+    manifest: &CargoManifest,
+    license: &str,
+    githash: Option<&str>,
+    security: bool,
+) -> String {
+    let security = if security { "yes" } else { "no" };
+
+    let revision = githash.map_or_else(String::new, |s| format!("Revision: {s}\n"));
 
     format!(
         "Name: {crate_name}\n\
@@ -107,7 +130,8 @@ fn gen_readme_chromium_text(manifest: &CargoManifest, license: &str, security: b
          Description: {description}\n\
          Version: {version}\n\
          Security Critical: {security}\n\
-         License: {license}\n",
+         License: {license}\n\
+         {revision}",
         crate_name = manifest.package.name,
         url = format!("{}/{}", CRATES_IO_VIEW_URL, manifest.package.name),
         description = manifest.package.description.as_ref().unwrap_or(&"".to_string()),
