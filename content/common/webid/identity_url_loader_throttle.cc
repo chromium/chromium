@@ -50,6 +50,8 @@ IdentityUrlLoaderThrottle::IdentityUrlLoaderThrottle(SetIdpStatusCallback cb)
 
 IdentityUrlLoaderThrottle::~IdentityUrlLoaderThrottle() = default;
 
+void IdentityUrlLoaderThrottle::DetachFromCurrentSequence() {}
+
 void IdentityUrlLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {

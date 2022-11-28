@@ -27,6 +27,7 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
       delete;
 
   // URLLoaderThrottle implementation:
+  void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
   void WillProcessResponse(const GURL& response_url,
