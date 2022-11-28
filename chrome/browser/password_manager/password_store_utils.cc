@@ -99,19 +99,6 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
 }  // namespace
 
-password_manager::PasswordStoreInterface* GetPasswordStore(
-    Profile* profile,
-    bool use_account_store) {
-  if (use_account_store) {
-    return AccountPasswordStoreFactory::GetForProfile(
-               profile, ServiceAccessType::EXPLICIT_ACCESS)
-        .get();
-  }
-  return PasswordStoreFactory::GetForProfile(profile,
-                                             ServiceAccessType::EXPLICIT_ACCESS)
-      .get();
-}
-
 void DelayReportingPasswordStoreMetrics(Profile* profile) {
   profile->SetUserData(kPasswordStoreMetricsReporterKey,
                        std::make_unique<StoreMetricReporterHelper>(profile));

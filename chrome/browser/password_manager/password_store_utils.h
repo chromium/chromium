@@ -9,16 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 
-namespace password_manager {
-class PasswordStoreInterface;
-}
-
 class Profile;
-
-// Returns the password store associated with the currently active profile.
-password_manager::PasswordStoreInterface* GetPasswordStore(
-    Profile* profile,
-    bool use_account_store);
 
 // Query the password stores and reports multiple metrics. The actual reporting
 // is delayed by 30 seconds, to ensure it doesn't happen during the "hot phase"

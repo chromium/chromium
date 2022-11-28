@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -68,8 +70,14 @@ void ItemsBubbleController::OnPasswordAction(
   Profile* profile = GetProfile();
   if (!profile)
     return;
-  password_manager::PasswordStoreInterface* password_store =
-      GetPasswordStore(profile, password_form.IsUsingAccountStore());
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      password_form.IsUsingAccountStore()
+          ? AccountPasswordStoreFactory::GetForProfile(
+                profile, ServiceAccessType::EXPLICIT_ACCESS)
+                .get()
+          : PasswordStoreFactory::GetForProfile(
+                profile, ServiceAccessType::EXPLICIT_ACCESS)
+                .get();
 
   DCHECK(password_store);
   if (action == PasswordAction::kRemovePassword)
