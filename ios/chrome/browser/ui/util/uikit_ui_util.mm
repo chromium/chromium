@@ -19,6 +19,7 @@
 #import "base/notreached.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -334,12 +335,34 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type) {
   }
 }
 
-NSString* TextForTabCount(long count) {
-  if (count <= 0)
-    return @"";
-  if (count > 99)
-    return @":)";
-  return [NSString stringWithFormat:@"%ld", count];
+NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
+  NSString* string;
+  if (count <= 0) {
+    string = @"";
+  } else if (count > 99) {
+    string = @":)";
+  } else {
+    string = [NSString stringWithFormat:@"%d", count];
+  }
+
+  if (UseSymbols()) {
+    UIFontWeight weight = UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy
+                                                             : UIFontWeightBold;
+    UIFont* font = [UIFont systemFontOfSize:font_size weight:weight];
+    UIFontDescriptor* descriptor = [font.fontDescriptor
+        fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+    font = [UIFont fontWithDescriptor:descriptor size:font_size];
+
+    return [[NSAttributedString alloc] initWithString:string
+                                           attributes:@{
+                                             NSFontAttributeName : font,
+                                             NSKernAttributeName : @(-0.8),
+                                           }];
+  }
+  UIFont* font = [UIFont systemFontOfSize:font_size weight:UIFontWeightBold];
+  return
+      [[NSAttributedString alloc] initWithString:string
+                                      attributes:@{NSFontAttributeName : font}];
 }
 
 void RegisterEditMenuItem(UIMenuItem* item) {

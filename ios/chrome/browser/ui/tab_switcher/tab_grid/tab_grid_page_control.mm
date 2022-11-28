@@ -115,6 +115,7 @@ const CGFloat kLegacyBackgroundCornerRadius = 13.0;
 // Sizes for the labels and their selected counterparts.
 const CGFloat kLabelSize = 20.0;
 const CGFloat kSelectedLabelSize = 23.0;
+const CGFloat kLabelSizeToFontSize = 0.6;
 
 // Maximum duration of slider motion animation.
 const NSTimeInterval kSliderMoveDuration = 0.2;
@@ -347,10 +348,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // visible when the slider is over a segment), and an ivar to store values that
 // are set before the labels are created.
 - (void)setRegularTabCount:(NSUInteger)regularTabCount {
-  NSString* regularText = TextForTabCount(regularTabCount);
-  self.regularLabel.text = regularText;
-  self.regularSelectedLabel.text = regularText;
   _regularTabCount = regularTabCount;
+  [self updateRegularLabels];
 }
 
 #pragma mark - Public methods
@@ -800,20 +799,12 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   self.tapRecognizer = tapRecognizer;
 }
 
-// Returns the font to be used for the Tab Number label, in the `selected` state
-// or not.
-- (UIFont*)fontForLabelSelected:(BOOL)selected {
-  CGFloat size = selected ? kSelectedLabelSize : kLabelSize;
-  if (!UseSymbols())
-    return [UIFont systemFontOfSize:size * .6 weight:UIFontWeightBold];
-
-  UIFontWeight weight =
-      UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy : UIFontWeightBold;
-  CGFloat fontSize = size * .6;
-  UIFont* font = [UIFont systemFontOfSize:fontSize weight:weight];
-  UIFontDescriptor* descriptor = [font.fontDescriptor
-      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
-  return font = [UIFont fontWithDescriptor:descriptor size:fontSize];
+// Updates the labels displaying the regular tab count.
+- (void)updateRegularLabels {
+  self.regularLabel.attributedText =
+      TextForTabCount(self.regularTabCount, kLabelSize * kLabelSizeToFontSize);
+  self.regularSelectedLabel.attributedText = TextForTabCount(
+      self.regularTabCount, kSelectedLabelSize * kLabelSizeToFontSize);
 }
 
 // Creates a label for use in this control.
@@ -832,7 +823,6 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   label.backgroundColor = UIColor.clearColor;
   label.textAlignment = NSTextAlignmentCenter;
   label.textColor = color;
-  label.font = [self fontForLabelSelected:selected];
   return label;
 }
 
@@ -886,8 +876,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
 // Callback for the notification that the user changed the bold status.
 - (void)accessibilityBoldTextStatusDidChange {
-  self.regularLabel.font = [self fontForLabelSelected:NO];
-  self.regularSelectedLabel.font = [self fontForLabelSelected:YES];
+  [self updateRegularLabels];
 }
 
 #pragma mark UIPointerInteractionDelegate

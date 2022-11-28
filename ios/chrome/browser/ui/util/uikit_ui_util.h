@@ -181,10 +181,10 @@ void TriggerHapticFeedbackForImpact(UIImpactFeedbackStyle impactStyle);
 // `type` represent the type of notification associated with this feedback.
 void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 
-// Returns the text for tabs count to be displayed in toolbar and tab_grid.
-// As an easter egg, show a smiley face instead of the count if the user has
-// more than 99 tabs open.
-NSString* TextForTabCount(long count);
+// Returns the attributed text for tabs count to be displayed in toolbar and
+// TabGrid, with the correct font. As an easter egg, show a smiley face instead
+// of the count if the user has more than 99 tabs open.
+NSAttributedString* TextForTabCount(int count, CGFloat font_size);
 
 // Adds `item` to the global Edit Menu configuration (UIMenuController). No-op
 // if a UIMenuItem with the same selector as `item` has already been registered.
