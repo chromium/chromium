@@ -70,7 +70,7 @@ def parse_options(args=None, values=None):
     parser.add_option("-c", "--extension_configs",
                       dest="configfile", default=None,
                       help="Read extension configurations from CONFIG_FILE. "
-                      "CONFIG_FILE must be of JSON or YAML format. YAML"
+                      "CONFIG_FILE must be of JSON or YAML format. YAML "
                       "format requires that a python YAML library be "
                       "installed. The parsed JSON or YAML must result in a "
                       "python dictionary which would be accepted by the "

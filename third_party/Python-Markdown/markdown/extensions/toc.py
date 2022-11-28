@@ -16,23 +16,26 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, AtomicString
-from ..postprocessors import UnescapePostprocessor
+from ..treeprocessors import UnescapeTreeprocessor
 import re
 import html
 import unicodedata
 import xml.etree.ElementTree as etree
 
 
-def slugify(value, separator, encoding='ascii'):
+def slugify(value, separator, unicode=False):
     """ Slugify a string, to make it URL friendly. """
-    value = unicodedata.normalize('NFKD', value).encode(encoding, 'ignore')
-    value = re.sub(r'[^\w\s-]', '', value.decode(encoding)).strip().lower()
+    if not unicode:
+        # Replace Extended Latin characters with ASCII, i.e. žlutý → zluty
+        value = unicodedata.normalize('NFKD', value)
+        value = value.encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
     return re.sub(r'[{}\s]+'.format(separator), separator, value)
 
 
 def slugify_unicode(value, separator):
     """ Slugify a string, to make it URL friendly while preserving Unicode characters. """
-    return slugify(value, separator, 'utf-8')
+    return slugify(value, separator, unicode=True)
 
 
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
@@ -81,8 +84,8 @@ def stashedHTML2text(text, md, strip_entities=True):
 
 def unescape(text):
     """ Unescape escaped text. """
-    c = UnescapePostprocessor()
-    return c.run(text)
+    c = UnescapeTreeprocessor()
+    return c.unescape(text)
 
 
 def nest_toc_tokens(toc_list):
@@ -157,6 +160,7 @@ class TocTreeprocessor(Treeprocessor):
         self.base_level = int(config["baselevel"]) - 1
         self.slugify = config["slugify"]
         self.sep = config["separator"]
+        self.toc_class = config["toc_class"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.anchorlink_class = config["anchorlink_class"]
         self.use_permalinks = parseBoolValue(config["permalink"], False)
@@ -192,7 +196,12 @@ class TocTreeprocessor(Treeprocessor):
             # To keep the output from screwing up the
             # validation by putting a <div> inside of a <p>
             # we actually replace the <p> in its entirety.
-            if c.text and c.text.strip() == self.marker:
+
+            # The <p> element may contain more than a single text content
+            # (nl2br can introduce a <br>). In this situation, c.text returns
+            # the very first content, ignore children contents or tail content.
+            # len(c) == 0 is here to ensure there is only text in the <p>.
+            if c.text and c.text.strip() == self.marker and len(c) == 0:
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = elem
@@ -231,7 +240,7 @@ class TocTreeprocessor(Treeprocessor):
     def build_toc_div(self, toc_list):
         """ Return a string div given a toc list. """
         div = etree.Element("div")
-        div.attrib["class"] = "toc"
+        div.attrib["class"] = self.toc_class
 
         # Add title to the div
         if self.title:
@@ -280,10 +289,10 @@ class TocTreeprocessor(Treeprocessor):
                     toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
-                        'name': unescape(stashedHTML2text(
+                        'name': stashedHTML2text(
                             code_escape(el.attrib.get('data-toc-label', text)),
                             self.md, strip_entities=False
-                        ))
+                        )
                     })
 
                 # Remove the data-toc-label attribute as it is no longer needed
@@ -320,6 +329,9 @@ class TocExtension(Extension):
             "title": ["",
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
+            "toc_class": ['toc',
+                          'CSS class(es) used for the link. '
+                          'Defaults to "toclink"'],
             "anchorlink": [False,
                            "True if header should be a self link - "
                            "Defaults to False"],
@@ -357,7 +369,7 @@ class TocExtension(Extension):
         self.reset()
         tocext = self.TreeProcessorClass(md, self.getConfigs())
         # Headerid ext is set to '>prettify'. With this set to '_end',
-        # it should always come after headerid ext (and honor ids assinged
+        # it should always come after headerid ext (and honor ids assigned
         # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.

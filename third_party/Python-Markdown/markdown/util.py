@@ -21,30 +21,10 @@ License: BSD (see LICENSE.md for details).
 
 import re
 import sys
-from collections import namedtuple
-from functools import wraps
 import warnings
-import xml.etree.ElementTree
-from .pep562 import Pep562
+from collections import namedtuple
+from functools import wraps, lru_cache
 from itertools import count
-
-try:
-    from importlib import metadata
-except ImportError:
-    # <PY38 use backport
-    import importlib_metadata as metadata
-
-PY37 = (3, 7) <= sys.version_info
-
-
-# TODO: Remove deprecated variables in a future release.
-__deprecated__ = {
-    'etree': ('xml.etree.ElementTree', xml.etree.ElementTree),
-    'string_type': ('str', str),
-    'text_type': ('str', str),
-    'int2str': ('chr', chr),
-    'iterrange': ('range', range)
-}
 
 
 """
@@ -83,8 +63,6 @@ Constants you probably do not need to change
 -----------------------------------------------------------------------------
 """
 
-# Only load extension entry_points once.
-INSTALLED_EXTENSIONS = metadata.entry_points().get('markdown.extensions', ())
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
     # Hebrew (0590-05FF), Arabic (0600-06FF),
@@ -100,32 +78,36 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
+@lru_cache(maxsize=None)
+def get_installed_extensions():
+    if sys.version_info >= (3, 10):
+        from importlib import metadata
+    else:  # <PY310 use backport
+        import importlib_metadata as metadata
+    # Only load extension entry_points once.
+    return metadata.entry_points(group='markdown.extensions')
+
+
 def deprecated(message, stacklevel=2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
-    Borrowed from https://stackoverflow.com/a/48632082/866026
+    Usage:
+        @deprecated("This method will be removed in version X; use Y instead.")
+        def some_method()"
+            pass
     """
-    def deprecated_decorator(func):
+    def wrapper(func):
         @wraps(func)
         def deprecated_func(*args, **kwargs):
             warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
+                f"'{func.__name__}' is deprecated. {message}",
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
             return func(*args, **kwargs)
         return deprecated_func
-    return deprecated_decorator
-
-
-@deprecated("Use 'Markdown.is_block_level' instead.")
-def isBlockLevel(tag):
-    """Check if the tag is a block level HTML tag."""
-    if isinstance(tag, str):
-        return tag.lower().rstrip('/') in BLOCK_LEVEL_ELEMENTS
-    # Some ElementTree tags are not strings, so return False.
-    return False
+    return wrapper
 
 
 def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
@@ -159,8 +141,7 @@ def code_escape(text):
 
 
 def _get_stack_depth(size=2):
-    """Get stack size for caller's frame.
-    See https://stackoverflow.com/a/47956089/866026
+    """Get current stack depth, performantly.
     """
     frame = sys._getframe(size)
 
@@ -171,7 +152,7 @@ def _get_stack_depth(size=2):
 
 
 def nearing_recursion_limit():
-    """Return true if current stack depth is withing 100 of maximum limit."""
+    """Return true if current stack depth is within 100 of maximum limit."""
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
@@ -189,12 +170,6 @@ class AtomicString(str):
 class Processor:
     def __init__(self, md=None):
         self.md = md
-
-    @property
-    @deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
 
 
 class HtmlStash:
@@ -346,7 +321,7 @@ class Registry:
         * `priority`: An integer or float used to sort against all items.
 
         If an item is registered with a "name" which already exists, the
-        existing item is replaced with the new item. Tread carefully as the
+        existing item is replaced with the new item. Treat carefully as the
         old item is lost with no way to recover it. The new item will be
         sorted according to its priority and will **not** retain the position
         of the old item.
@@ -381,102 +356,3 @@ class Registry:
         if not self._is_sorted:
             self._priority.sort(key=lambda item: item.priority, reverse=True)
             self._is_sorted = True
-
-    # Deprecated Methods which provide a smooth transition from OrderedDict
-
-    def __setitem__(self, key, value):
-        """ Register item with priorty 5 less than lowest existing priority. """
-        if isinstance(key, str):
-            warnings.warn(
-                'Using setitem to register a processor or pattern is deprecated. '
-                'Use the `register` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            if key in self:
-                # Key already exists, replace without altering priority
-                self._data[key] = value
-                return
-            if len(self) == 0:
-                # This is the first item. Set priority to 50.
-                priority = 50
-            else:
-                self._sort()
-                priority = self._priority[-1].priority - 5
-            self.register(value, key, priority)
-        else:
-            raise TypeError
-
-    def __delitem__(self, key):
-        """ Deregister an item by name. """
-        if key in self:
-            self.deregister(key)
-            warnings.warn(
-                'Using del to remove a processor or pattern is deprecated. '
-                'Use the `deregister` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        else:
-            raise KeyError('Cannot delete key {}, not registered.'.format(key))
-
-    def add(self, key, value, location):
-        """ Register a key by location. """
-        if len(self) == 0:
-            # This is the first item. Set priority to 50.
-            priority = 50
-        elif location == '_begin':
-            self._sort()
-            # Set priority 5 greater than highest existing priority
-            priority = self._priority[0].priority + 5
-        elif location == '_end':
-            self._sort()
-            # Set priority 5 less than lowest existing priority
-            priority = self._priority[-1].priority - 5
-        elif location.startswith('<') or location.startswith('>'):
-            # Set priority halfway between existing priorities.
-            i = self.get_index_for_name(location[1:])
-            if location.startswith('<'):
-                after = self._priority[i].priority
-                if i > 0:
-                    before = self._priority[i-1].priority
-                else:
-                    # Location is first item`
-                    before = after + 10
-            else:
-                # location.startswith('>')
-                before = self._priority[i].priority
-                if i < len(self) - 1:
-                    after = self._priority[i+1].priority
-                else:
-                    # location is last item
-                    after = before - 10
-            priority = before - ((before - after) / 2)
-        else:
-            raise ValueError('Not a valid location: "%s". Location key '
-                             'must start with a ">" or "<".' % location)
-        self.register(value, key, priority)
-        warnings.warn(
-            'Using the add method to register a processor or pattern is deprecated. '
-            'Use the `register` method instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-
-def __getattr__(name):
-    """Get attribute."""
-
-    deprecated = __deprecated__.get(name)
-    if deprecated:
-        warnings.warn(
-            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
-            category=DeprecationWarning,
-            stacklevel=(3 if PY37 else 4)
-        )
-        return deprecated[1]
-    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
-
-
-if not PY37:
-    Pep562(__name__)

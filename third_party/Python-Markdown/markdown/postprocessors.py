@@ -37,7 +37,6 @@ def build_postprocessors(md, **kwargs):
     postprocessors = util.Registry()
     postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
     postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
-    postprocessors.register(UnescapePostprocessor(), 'unescape', 10)
     return postprocessors
 
 
@@ -64,6 +63,8 @@ class Postprocessor(util.Processor):
 
 class RawHtmlPostprocessor(Postprocessor):
     """ Restore raw html to the document. """
+
+    BLOCK_LEVEL_REGEX = re.compile(r'^\<\/?([^ >]+)')
 
     def run(self, text):
         """ Iterate over html stash and restore html. """
@@ -99,7 +100,7 @@ class RawHtmlPostprocessor(Postprocessor):
             return self.run(processed_text)
 
     def isblocklevel(self, html):
-        m = re.match(r'^\<\/?([^ >]+)', html)
+        m = self.BLOCK_LEVEL_REGEX.match(html)
         if m:
             if m.group(1)[0] in ('!', '?', '@', '%'):
                 # Comment, php etc...
@@ -120,6 +121,10 @@ class AndSubstitutePostprocessor(Postprocessor):
         return text
 
 
+@util.deprecated(
+    "This class will be removed in the future; "
+    "use 'treeprocessors.UnescapeTreeprocessor' instead."
+)
 class UnescapePostprocessor(Postprocessor):
     """ Restore escaped chars """
 

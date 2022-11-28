@@ -83,7 +83,7 @@ smartypants.py license:
 from . import Extension
 from ..inlinepatterns import HtmlInlineProcessor, HTML_RE
 from ..treeprocessors import InlineProcessor
-from ..util import Registry, deprecated
+from ..util import Registry
 
 
 # Constants for quote education.
@@ -154,12 +154,6 @@ class SubstituteTextPattern(HtmlInlineProcessor):
         HtmlInlineProcessor.__init__(self, pattern)
         self.replace = replace
         self.md = md
-
-    @property
-    @deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
 
     def handleMatch(self, m, data):
         result = ''

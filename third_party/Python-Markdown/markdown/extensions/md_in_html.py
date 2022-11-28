@@ -33,13 +33,14 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.block_level_tags = set(md.block_level_elements.copy())
         # Block-level tags in which the content only gets span level parsing
         self.span_tags = set(
-            ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
+            ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'summary', 'td', 'th']
         )
         # Block-level tags which never get their content parsed.
         self.raw_tags = set(['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea'])
-        # Block-level tags in which the content gets parsed as blocks
+
         super().__init__(md, *args, **kwargs)
 
+        # Block-level tags in which the content gets parsed as blocks
         self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
         self.span_and_blocks_tags = self.block_tags | self.span_tags
 
@@ -247,11 +248,11 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
     def parse_element_content(self, element):
         """
-        Resursively parse the text content of an etree Element as Markdown.
+        Recursively parse the text content of an etree Element as Markdown.
 
         Any block level elements generated from the Markdown will be inserted as children of the element in place
         of the text content. All `markdown` attributes are removed. For any elements in which Markdown parsing has
-        been dissabled, the text content of it and its chidlren are wrapped in an `AtomicString`.
+        been disabled, the text content of it and its chidlren are wrapped in an `AtomicString`.
         """
 
         md_attr = element.attrib.pop('markdown', 'off')
@@ -267,7 +268,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             for child in list(element):
                 self.parse_element_content(child)
 
-            # Parse Markdown text in tail of children. Do this seperate to avoid raw HTML parsing.
+            # Parse Markdown text in tail of children. Do this separate to avoid raw HTML parsing.
             # Save the position of each item to be inserted later in reverse.
             tails = []
             for pos, child in enumerate(element):
@@ -328,7 +329,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                 # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
                 self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                 self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
-                # Comfirm the match to the blockparser.
+                # Confirm the match to the blockparser.
                 return True
         # No match found.
         return False

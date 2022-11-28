@@ -2,7 +2,7 @@
 Legacy Em Extension for Python-Markdown
 =======================================
 
-This extention provides legacy behavior for _connected_words_.
+This extension provides legacy behavior for _connected_words_.
 
 Copyright 2015-2018 The Python Markdown Project
 

@@ -30,9 +30,11 @@ class TableProcessor(BlockProcessor):
     RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')
     RE_END_BORDER = re.compile(r'(?<!\\)(?:\\\\)*\|$')
 
-    def __init__(self, parser):
+    def __init__(self, parser, config):
         self.border = False
         self.separator = ''
+        self.config = config
+
         super().__init__(parser)
 
     def test(self, parent, block):
@@ -126,7 +128,10 @@ class TableProcessor(BlockProcessor):
             except IndexError:  # pragma: no cover
                 c.text = ""
             if a:
-                c.set('align', a)
+                if self.config['use_align_attribute']:
+                    c.set('align', a)
+                else:
+                    c.set('style', f'text-align: {a};')
 
     def _split_row(self, row):
         """ split a row of text into list of cells. """
@@ -200,7 +205,7 @@ class TableProcessor(BlockProcessor):
             if not throw_out:
                 good_pipes.append(pipe)
 
-        # Split row according to table delimeters.
+        # Split row according to table delimiters.
         pos = 0
         for pipe in good_pipes:
             elements.append(row[pos:pipe])
@@ -212,11 +217,19 @@ class TableProcessor(BlockProcessor):
 class TableExtension(Extension):
     """ Add tables to Markdown. """
 
+    def __init__(self, **kwargs):
+        self.config = {
+            'use_align_attribute': [False, 'True to use align attribute instead of style.'],
+        }
+
+        super().__init__(**kwargs)
+
     def extendMarkdown(self, md):
         """ Add an instance of TableProcessor to BlockParser. """
         if '|' not in md.ESCAPED_CHARS:
             md.ESCAPED_CHARS.append('|')
-        md.parser.blockprocessors.register(TableProcessor(md.parser), 'table', 75)
+        processor = TableProcessor(md.parser, self.getConfigs())
+        md.parser.blockprocessors.register(processor, 'table', 75)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

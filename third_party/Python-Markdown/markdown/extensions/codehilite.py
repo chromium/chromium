@@ -23,6 +23,7 @@ try:  # pragma: no cover
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name, guess_lexer
     from pygments.formatters import get_formatter_by_name
+    from pygments.util import ClassNotFound
     pygments = True
 except ImportError:  # pragma: no cover
     pygments = False
@@ -63,12 +64,14 @@ class CodeHilite:
     * use_pygments: Pass code to pygments for code highlighting. If `False`, the code is
       instead wrapped for highlighting by a JavaScript library. Default: `True`.
 
+    * pygments_formatter: The name of a Pygments formatter or a formatter class used for
+      highlighting the code blocks. Default: `html`.
+
     * linenums: An alias to Pygments `linenos` formatter option. Default: `None`.
 
     * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
 
-    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
-      Default: "language-".
+    * lang_prefix: Prefix prepended to the language. Default: "language-".
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -79,6 +82,10 @@ class CodeHilite:
 
     Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
     Lexer Options: https://pygments.org/docs/lexers/
+
+    Additionally, when Pygments is enabled, the code's language is passed to the
+    formatter as an extra option `lang_str`, whose value being `{lang_prefix}{lang}`.
+    This option has no effect to the Pygments's builtin formatters.
 
     Advanced Usage:
         code = CodeHilite(
@@ -99,6 +106,7 @@ class CodeHilite:
         self.guess_lang = options.pop('guess_lang', True)
         self.use_pygments = options.pop('use_pygments', True)
         self.lang_prefix = options.pop('lang_prefix', 'language-')
+        self.pygments_formatter = options.pop('pygments_formatter', 'html')
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -112,7 +120,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self):
+    def hilite(self, shebang=True):
         """
         Pass code to the [Pygments](http://pygments.pocoo.org/) highliter with
         optional line numbers. The output should then be styled with css to
@@ -125,7 +133,7 @@ class CodeHilite:
 
         self.src = self.src.strip('\n')
 
-        if self.lang is None:
+        if self.lang is None and shebang:
             self._parseHeader()
 
         if pygments and self.use_pygments:
@@ -139,7 +147,17 @@ class CodeHilite:
                         lexer = get_lexer_by_name('text', **self.options)
                 except ValueError:  # pragma: no cover
                     lexer = get_lexer_by_name('text', **self.options)
-            formatter = get_formatter_by_name('html', **self.options)
+            if not self.lang:
+                # Use the guessed lexer's language instead
+                self.lang = lexer.aliases[0]
+            lang_str = f'{self.lang_prefix}{self.lang}'
+            if isinstance(self.pygments_formatter, str):
+                try:
+                    formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
+                except ClassNotFound:
+                    formatter = get_formatter_by_name('html', **self.options)
+            else:
+                formatter = self.pygments_formatter(lang_str=lang_str, **self.options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -221,7 +239,7 @@ class CodeHilite:
 
 
 class HiliteTreeprocessor(Treeprocessor):
-    """ Hilight source code in code blocks. """
+    """ Highlight source code in code blocks. """
 
     def code_unescape(self, text):
         """Unescape code."""
@@ -237,11 +255,12 @@ class HiliteTreeprocessor(Treeprocessor):
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
+                local_config = self.config.copy()
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
                     tab_length=self.md.tab_length,
-                    style=self.config.pop('pygments_style', 'default'),
-                    **self.config
+                    style=local_config.pop('pygments_style', 'default'),
+                    **local_config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
@@ -253,7 +272,7 @@ class HiliteTreeprocessor(Treeprocessor):
 
 
 class CodeHiliteExtension(Extension):
-    """ Add source code hilighting to markdown codeblocks. """
+    """ Add source code highlighting to markdown codeblocks. """
 
     def __init__(self, **kwargs):
         # define default configs
@@ -278,7 +297,11 @@ class CodeHiliteExtension(Extension):
             'lang_prefix': [
                 'language-',
                 'Prefix prepended to the language when use_pygments is false. Default: "language-"'
-            ]
+            ],
+            'pygments_formatter': ['html',
+                                   'Use a specific formatter for Pygments highlighting.'
+                                   'Default: "html"',
+                                   ],
             }
 
         for key, value in kwargs.items():

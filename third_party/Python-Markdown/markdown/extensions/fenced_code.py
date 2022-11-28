@@ -22,6 +22,7 @@ from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
+from ..serializers import _escape_attrib_html
 import re
 
 
@@ -42,13 +43,13 @@ class FencedCodeExtension(Extension):
 class FencedBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
-            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                      # opening fence
-            ((\{(?P<attrs>[^\}\n]*)\})?|                         # (optional {attrs} or
-            (\.?(?P<lang>[\w#.+-]*))?[ ]*                        # optional (.)lang
-            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?) # optional hl_lines)
-            [ ]*\n                                               # newline (end of opening fence)
-            (?P<code>.*?)(?<=\n)                                 # the code block
-            (?P=fence)[ ]*$                                      # closing fence
+            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
+            ((\{(?P<attrs>[^\}\n]*)\})|                              # (optional {attrs} or
+            (\.?(?P<lang>[\w#.+-]*)[ ]*)?                            # optional (.)lang
+            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot)[ ]*)?) # optional hl_lines)
+            \n                                                       # newline (end of opening fence)
+            (?P<code>.*?)(?<=\n)                                     # the code block
+            (?P=fence)[ ]*$                                          # closing fence
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
@@ -116,34 +117,28 @@ class FencedBlockPreprocessor(Preprocessor):
                         **local_config
                     )
 
-                    code = highliter.hilite()
+                    code = highliter.hilite(shebang=False)
                 else:
                     id_attr = lang_attr = class_attr = kv_pairs = ''
                     if lang:
-                        lang_attr = ' class="{}{}"'.format(self.config.get('lang_prefix', 'language-'), lang)
+                        prefix = self.config.get('lang_prefix', 'language-')
+                        lang_attr = f' class="{prefix}{_escape_attrib_html(lang)}"'
                     if classes:
-                        class_attr = ' class="{}"'.format(' '.join(classes))
+                        class_attr = f' class="{_escape_attrib_html(" ".join(classes))}"'
                     if id:
-                        id_attr = ' id="{}"'.format(id)
+                        id_attr = f' id="{_escape_attrib_html(id)}"'
                     if self.use_attr_list and config and not config.get('use_pygments', False):
                         # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
                         # were defined on the code block, and the `use_pygments` key was not set to True. The
                         # `use_pygments` key could be either set to False or not defined. It is omitted from output.
-                        kv_pairs = ' ' + ' '.join(
-                            '{k}="{v}"'.format(k=k, v=v) for k, v in config.items() if k != 'use_pygments'
+                        kv_pairs = ''.join(
+                            f' {k}="{_escape_attrib_html(v)}"' for k, v in config.items() if k != 'use_pygments'
                         )
-                    code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
-                        id=id_attr,
-                        cls=class_attr,
-                        lang=lang_attr,
-                        kv=kv_pairs,
-                        code=self._escape(m.group('code'))
-                    )
+                    code = self._escape(m.group('code'))
+                    code = f'<pre{id_attr}{class_attr}><code{lang_attr}{kv_pairs}>{code}</code></pre>'
 
                 placeholder = self.md.htmlStash.store(code)
-                text = '{}\n{}\n{}'.format(text[:m.start()],
-                                           placeholder,
-                                           text[m.end():])
+                text = f'{text[:m.start()]}\n{placeholder}\n{text[m.end():]}'
             else:
                 break
         return text.split("\n")

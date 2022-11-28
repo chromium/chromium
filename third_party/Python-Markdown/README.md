@@ -60,5 +60,5 @@ You may report bugs, ask for help, and discuss various other issues on the [bug 
 Code of Conduct
 ---------------
 
-Everyone interacting in the Python-Markdown project's codebases, issue trackers,
+Everyone interacting in the Python-Markdown project's code bases, issue trackers,
 and mailing lists is expected to follow the [Code of Conduct].

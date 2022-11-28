@@ -286,7 +286,7 @@ class BlockQuoteProcessor(BlockProcessor):
         m = self.RE.search(block)
         if m:
             before = block[:m.start()]  # Lines before blockquote
-            # Pass lines before blockquote in recursively for parsing forst.
+            # Pass lines before blockquote in recursively for parsing first.
             self.parser.parseBlocks(parent, [before])
             # Remove ``> `` from beginning of each line.
             block = '\n'.join(
@@ -321,7 +321,7 @@ class OListProcessor(BlockProcessor):
 
     TAG = 'ol'
     # The integer (python string) with which the lists starts (default=1)
-    # Eg: If list is intialized as)
+    # Eg: If list is initialized as)
     #   3. Item
     # The ol tag will get starts="3" attribute
     STARTSWITH = '1'
@@ -559,7 +559,7 @@ class EmptyBlockProcessor(BlockProcessor):
 class ReferenceProcessor(BlockProcessor):
     """ Process link references. """
     RE = re.compile(
-        r'^[ ]{0,3}\[([^\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*\n?[ ]*((["\'])(.*)\4|\((.*)\))?[ ]*$', re.MULTILINE
+        r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$', re.MULTILINE
     )
 
     def test(self, parent, block):

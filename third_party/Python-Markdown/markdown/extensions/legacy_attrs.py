@@ -26,7 +26,7 @@ An extension to Python Markdown which implements legacy attributes.
 Prior to Python-Markdown version 3.0, the Markdown class had an `enable_attributes`
 keyword which was on by default and provided for attributes to be defined for elements
 using the format `{@key=value}`. This extension is provided as a replacement for
-backward compatability. New documents should be authored using attr_lists. However,
+backward compatibility. New documents should be authored using attr_lists. However,
 numerious documents exist which have been using the old attribute format for many
 years. This extension can be used to continue to render those documents correctly.
 """

@@ -16,7 +16,7 @@ Python-Markdown that are not included here in Extra. Those extensions
 are not part of PHP Markdown Extra, and therefore, not part of
 Python-Markdown Extra. If you really would like Extra to include
 additional extensions, we suggest creating your own clone of Extra
-under a differant name. You could also edit the `extensions` global
+under a different name. You could also edit the `extensions` global
 variable defined below, but be aware that such changes may be lost
 when you upgrade to any future version of Python-Markdown.
 

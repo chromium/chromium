@@ -69,12 +69,6 @@ class BlockParser:
         self.state = State()
         self.md = md
 
-    @property
-    @util.deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
-
     def parseDocument(self, lines):
         """ Parse a markdown document into an ElementTree.
 

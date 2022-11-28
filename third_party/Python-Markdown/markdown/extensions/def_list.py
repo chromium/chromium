@@ -87,7 +87,7 @@ class DefListProcessor(BlockProcessor):
 class DefListIndentProcessor(ListIndentProcessor):
     """ Process indented children of definition list items. """
 
-    # Defintion lists need to be aware of all list types
+    # Definition lists need to be aware of all list types
     ITEM_TYPES = ['dd', 'li']
     LIST_TYPES = ['dl', 'ol', 'ul']
 
