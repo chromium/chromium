@@ -3271,7 +3271,7 @@
     ],
 
     'official_goma_fuchsia_x64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_chrome'
     ],
 
     'official_goma_linux_perf': [
