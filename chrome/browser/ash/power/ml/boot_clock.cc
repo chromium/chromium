@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 
 #include <time.h>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/time/time_override.h"
