@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/management/management_service.h"
 
+#include <ostream>
 #include <tuple>
 
 #include "base/barrier_closure.h"
