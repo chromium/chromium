@@ -58578,6 +58578,7 @@ from previous Chrome versions.
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
+  <int value="-1224843921" label="DevToolsTabTarget:enabled"/>
   <int value="-1222805155" label="PdfIsolation:enabled"/>
   <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
@@ -59003,6 +59004,7 @@ from previous Chrome versions.
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
   <int value="-981033001" label="TabScrollingButtonPosition:enabled"/>
   <int value="-980889204" label="SharingRenameDevices:enabled"/>
+  <int value="-980475527" label="DevToolsTabTarget:disabled"/>
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
   <int value="-980260493" label="NTPSnippets:disabled"/>
   <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>

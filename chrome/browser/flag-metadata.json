@@ -1302,6 +1302,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "devtools-tab-target",
+    "owners": [ "dsv", "caseq" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "diagnostics-app-navigation",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 112

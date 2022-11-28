@@ -9508,6 +9508,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::features::kUIEnableSharedImageCacheForGpu)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"devtools-tab-target", flag_descriptions::kDevToolsTabTargetLiteralName,
+     flag_descriptions::kDevToolsTabTargetLiteralDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(::features::kDevToolsTabTarget)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

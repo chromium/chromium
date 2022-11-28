@@ -4399,6 +4399,10 @@ const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
     "attestation statement from a security key when creating a Web "
     "Authentication credential.";
 
+const char kDevToolsTabTargetLiteralName[] = "DevTools using Tab Target";
+const char kDevToolsTabTargetLiteralDescription[] =
+    "Makes DevTools use an experimental CDP Tab target.";
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows ---------------------------------------------------------------------

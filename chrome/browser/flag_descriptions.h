@@ -2526,6 +2526,9 @@ extern const char kSharingDesktopShareToGoogleCollectionsDescription[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
+extern const char kDevToolsTabTargetLiteralName[];
+extern const char kDevToolsTabTargetLiteralDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows --------------------------------------------------------------------
