@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/cronet/android/cronet_context_adapter.h"
+#include "components/cronet/android/proto/request_context_config.pb.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -64,20 +65,6 @@
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-
-namespace {
-
-// Helper method that takes a Java string that can be null, in which case it
-// will get converted to an empty string.
-std::string ConvertNullableJavaStringToUTF8(JNIEnv* env,
-                                            const JavaParamRef<jstring>& jstr) {
-  std::string str;
-  if (!jstr.is_null())
-    base::android::ConvertJavaStringToUTF8(env, jstr, &str);
-  return str;
-}
-
-}  // namespace
 
 namespace cronet {
 
@@ -242,38 +229,37 @@ int CronetContextAdapter::default_load_flags() const {
 // Create a URLRequestContextConfig from the given parameters.
 static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& juser_agent,
-    const JavaParamRef<jstring>& jstorage_path,
-    jboolean jquic_enabled,
-    const JavaParamRef<jstring>& jquic_default_user_agent_id,
-    jboolean jhttp2_enabled,
-    jboolean jbrotli_enabled,
-    jboolean jdisable_cache,
-    jint jhttp_cache_mode,
-    jlong jhttp_cache_max_size,
-    const JavaParamRef<jstring>& jexperimental_quic_connection_options,
-    jlong jmock_cert_verifier,
-    jboolean jenable_network_quality_estimator,
-    jboolean jbypass_public_key_pinning_for_local_trust_anchors,
-    jint jnetwork_thread_priority) {
+    const JavaParamRef<jbyteArray>& javaSerializedProto) {
+  const int serializedProtoLength = env->GetArrayLength(javaSerializedProto);
+  org::chromium::net::RequestContextConfigOptions configOptions;
+
+  std::vector<uint8_t> serializedProto;
+
+  JavaByteArrayToByteVector(env, javaSerializedProto, &serializedProto);
+
+  if (!configOptions.ParseFromArray(serializedProto.data(),
+                                    serializedProtoLength)) {
+    return 0;
+  }
+
   std::unique_ptr<URLRequestContextConfig> url_request_context_config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
-          jquic_enabled,
-          ConvertNullableJavaStringToUTF8(env, jquic_default_user_agent_id),
-          jhttp2_enabled, jbrotli_enabled,
-          static_cast<URLRequestContextConfig::HttpCacheType>(jhttp_cache_mode),
-          jhttp_cache_max_size, jdisable_cache,
-          ConvertNullableJavaStringToUTF8(env, jstorage_path),
-          /* accept_languages */ std::string(),
-          ConvertNullableJavaStringToUTF8(env, juser_agent),
-          ConvertNullableJavaStringToUTF8(
-              env, jexperimental_quic_connection_options),
-          base::WrapUnique(
-              reinterpret_cast<net::CertVerifier*>(jmock_cert_verifier)),
-          jenable_network_quality_estimator,
-          jbypass_public_key_pinning_for_local_trust_anchors,
-          jnetwork_thread_priority >= -20 && jnetwork_thread_priority <= 19
-              ? absl::optional<double>(jnetwork_thread_priority)
+          configOptions.quic_enabled(),
+          configOptions.quic_default_user_agent_id(),
+          configOptions.http2_enabled(), configOptions.brotli_enabled(),
+          static_cast<URLRequestContextConfig::HttpCacheType>(
+              configOptions.http_cache_mode()),
+          configOptions.http_cache_max_size(), configOptions.disable_cache(),
+          configOptions.storage_path(),
+          /* accept_languages */ std::string(), configOptions.user_agent(),
+          configOptions.experimental_options(),
+          base::WrapUnique(reinterpret_cast<net::CertVerifier*>(
+              configOptions.mock_cert_verifier())),
+          configOptions.enable_network_quality_estimator(),
+          configOptions.bypass_public_key_pinning_for_local_trust_anchors(),
+          configOptions.network_thread_priority() >= -20 &&
+                  configOptions.network_thread_priority() <= 19
+              ? absl::optional<double>(configOptions.network_thread_priority())
               : absl::optional<double>());
   return reinterpret_cast<jlong>(url_request_context_config.release());
 }

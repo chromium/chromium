@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package org.chromium.net;
+
+option java_multiple_files = true;
+option java_package = "org.chromium.net";
+option optimize_for = LITE_RUNTIME;  // crbug/800281
+
+message RequestContextConfigOptions {
+  optional string user_agent = 1;
+  optional string storage_path = 2;
+  optional bool quic_enabled = 3;
+  optional string quic_default_user_agent_id = 4;
+  optional bool http2_enabled = 5;
+  optional bool brotli_enabled = 6;
+  optional bool disable_cache = 7;
+  optional int32 http_cache_mode = 8;
+  optional int64 http_cache_max_size = 9;
+  optional string experimental_options = 10;
+  optional int64 mock_cert_verifier = 11;
+  optional bool enable_network_quality_estimator = 12;
+  optional bool bypass_public_key_pinning_for_local_trust_anchors = 13;
+  optional int32 network_thread_priority = 14;
+}

@@ -135,11 +135,21 @@ process_version("implementation_api_version") {
 
 _cronet_version_header_include_dir = "$target_gen_dir/cronet_version_header"
 
+proto_library("request_context_config_proto") {
+  sources = [ "proto/request_context_config.proto" ]
+}
+
+proto_java_library("request_context_config_java_proto") {
+  proto_path = "."
+  sources = [ "proto/request_context_config.proto" ]
+}
+
 source_set("cronet_static") {
   deps = [
     ":buildflags",
     ":cronet_jni_headers",
     ":cronet_jni_registration",
+    ":request_context_config_proto",
     "//base",
     "//base/third_party/dynamic_annotations",
     "//components/cronet:cronet_common",
@@ -422,6 +432,7 @@ android_library("cronet_impl_native_base_java") {
   deps = [
     ":cronet_api_java",
     ":cronet_impl_common_base_java",
+    ":request_context_config_java_proto",
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -552,6 +563,7 @@ java_prebuilt("package_impl_native_java") {
     ":package_api_java",
     ":package_impl_common_java",
     ":repackage_native",
+    ":request_context_config_java_proto",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
