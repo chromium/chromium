@@ -65,11 +65,12 @@ void StreamingControllerBase::InitializeReceiverSession(
     cast_streaming::ReceiverConfig config,
     cast_streaming::ReceiverSession::Client* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!client_);
 
-  config_ = std::move(config);
+  config_.emplace(std::move(config));
   client_ = client;
 
-  ProcessConfig(config_);
+  ProcessConfig(*config_);
 
   TryStartPlayback();
 }
@@ -85,7 +86,7 @@ void StreamingControllerBase::StartPlaybackAsync(PlaybackStartedCB cb) {
 }
 
 void StreamingControllerBase::TryStartPlayback() {
-  if (playback_started_cb_ && demuxer_connector_) {
+  if (playback_started_cb_ && demuxer_connector_ && config_) {
     cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
         base::BindOnce(
             [](std::unique_ptr<cast_api_bindings::MessagePort> port) {
@@ -93,7 +94,7 @@ void StreamingControllerBase::TryStartPlayback() {
             },
             std::move(message_port_));
     receiver_session_ = cast_streaming::ReceiverSession::Create(
-        config_, std::move(message_port_provider), client_);
+        *config_, std::move(message_port_provider), client_);
     DCHECK(receiver_session_);
 
     StartPlayback(receiver_session_.get(), std::move(demuxer_connector_),
