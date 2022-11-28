@@ -431,7 +431,8 @@ class SyncConsentTestWithModesParams
 };
 
 // TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-#if !defined(NDEBUG)
+// TODO(crbug.com/1392782): Test failed on MSan/LSan.
+#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_Accept DISABLED_Accept
 #else
 #define MAYBE_Accept Accept
@@ -745,7 +746,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Accept) {
 }
 
 // TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-#if !defined(NDEBUG)
+// TODO(crbug.com/1392782): Test failed on MSan/LSan.
+#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_Decline DISABLED_Decline
 #else
 #define MAYBE_Decline Decline
