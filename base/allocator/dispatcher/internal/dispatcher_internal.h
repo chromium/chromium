@@ -11,6 +11,7 @@
 #include "base/allocator/dispatcher/internal/tools.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/subsystem.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 

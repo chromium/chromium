@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"

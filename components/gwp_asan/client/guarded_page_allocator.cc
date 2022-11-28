@@ -9,7 +9,9 @@
 #include <random>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/gwp_asan_support.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/bits.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"

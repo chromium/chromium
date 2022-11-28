@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"

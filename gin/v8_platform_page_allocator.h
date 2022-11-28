@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 

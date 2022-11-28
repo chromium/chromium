@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/allocator/dispatcher/internal/dispatcher_internal.h"
+#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/observer_mock.h"
 #include "base/allocator/dispatcher/testing/tools.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

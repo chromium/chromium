@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"

@@ -8,6 +8,7 @@
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
