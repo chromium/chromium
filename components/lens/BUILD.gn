@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 static_library("lens") {
   sources = [
     "lens_entrypoints.h",
-    "lens_features.cc",
-    "lens_features.h",
     "lens_metadata.cc",
     "lens_metadata.h",
     "lens_rendering_environment.h",
@@ -22,6 +20,20 @@ static_library("lens") {
     "//net",
     "//url",
   ]
+  public_deps = [ ":features" ]
+}
+
+component("features") {
+  output_name = "lens_features"
+
+  defines = [ "IS_LENS_FEATURES_IMPL" ]
+
+  sources = [
+    "lens_features.cc",
+    "lens_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 mojom("lens_mojo") {
