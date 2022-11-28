@@ -6749,13 +6749,6 @@ class SpdyNetworkTransactionPushUrlTest
                                        std::move(session_deps));
 
     helper.RunPreTestSetup();
-
-    if (GetParam().expect_ct_error) {
-      ssl_provider->ssl_info.ct_policy_compliance =
-          ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-      ssl_provider->ssl_info.is_issued_by_known_root = true;
-    }
-
     helper.AddDataWithSSLSocketDataProvider(&data, std::move(ssl_provider));
 
     HttpNetworkTransaction* trans = helper.trans();
