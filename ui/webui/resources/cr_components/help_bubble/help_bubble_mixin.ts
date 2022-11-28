@@ -117,10 +117,21 @@ export const HelpBubbleMixin = dedupingMixin(
          *
          *
          * See README.md for full instructions.
+         *
+         * This method can be called multiple times to re-register the
+         * nativeId to a new element/selector. If the help bubble is already
+         * showing, the registration will fail and return null. If successful,
+         * this method returns the new controller.
          */
         registerHelpBubble(nativeId: string, trackable: Trackable):
-            HelpBubbleController {
-          assert(!this.helpBubbleControllerById_.has(nativeId));
+            HelpBubbleController|null {
+          if (this.helpBubbleControllerById_.has(nativeId)) {
+            const ctrl = this.helpBubbleControllerById_.get(nativeId);
+            if (ctrl && ctrl.isShowing()) {
+              return null;
+            }
+            this.unregisterHelpBubble(nativeId);
+          }
           const controller =
               new HelpBubbleController(nativeId, this.shadowRoot!);
           controller.track(trackable);
@@ -132,6 +143,35 @@ export const HelpBubbleMixin = dedupingMixin(
             this.observeControllerAnchor_(controller);
           }
           return controller;
+        }
+
+        /**
+         * Unregisters a help bubble nativeId.
+         *
+         * This method will remove listeners, hide the help bubble if
+         * showing, and forget the nativeId.
+         */
+        unregisterHelpBubble(nativeId: string): void {
+          const ctrl = this.helpBubbleControllerById_.get(nativeId);
+          if (ctrl && ctrl.hasAnchor()) {
+            this.onAnchorVisibilityChanged_(ctrl.getAnchor()!, false);
+            this.unobserveControllerAnchor_(ctrl);
+          }
+          this.helpBubbleControllerById_.delete(nativeId);
+        }
+
+        private observeControllerAnchor_(controller: HelpBubbleController) {
+          assert(this.helpBubbleAnchorObserver_);
+          const anchor = controller.getAnchor();
+          assert(anchor, 'Help bubble does not have anchor');
+          this.helpBubbleAnchorObserver_.observe(anchor);
+        }
+
+        private unobserveControllerAnchor_(controller: HelpBubbleController) {
+          assert(this.helpBubbleAnchorObserver_);
+          const anchor = controller.getAnchor();
+          assert(anchor, 'Help bubble does not have anchor');
+          this.helpBubbleAnchorObserver_.unobserve(anchor);
         }
 
         /**
@@ -171,10 +211,14 @@ export const HelpBubbleMixin = dedupingMixin(
         /**
          * Returns whether a help bubble can be shown
          * This requires:
+         * - the mixin is tracking this controller
          * - the controller is in a state to be shown, e.g. `.canShow()`
          * - no other showing bubbles are anchored to the same element
          */
         canShowHelpBubble(controller: HelpBubbleController): boolean {
+          if (!this.helpBubbleControllerById_.has(controller.getNativeId())) {
+            return false;
+          }
           if (!controller.canShow()) {
             return false;
           }
@@ -265,6 +309,9 @@ export const HelpBubbleMixin = dedupingMixin(
           return true;
         }
 
+        /**
+         * This event is emitted by the mojo router
+         */
         private onAnchorVisibilityChanged_(
             target: HTMLElement, isVisible: boolean) {
           const nativeId = target.dataset['nativeId'];
@@ -281,13 +328,6 @@ export const HelpBubbleMixin = dedupingMixin(
         /**
          * This event is emitted by the mojo router
          */
-        private observeControllerAnchor_(controller: HelpBubbleController) {
-          assert(this.helpBubbleAnchorObserver_);
-          const anchor = controller.getAnchor();
-          assert(anchor, 'Help bubble does not have anchor');
-          this.helpBubbleAnchorObserver_.observe(anchor);
-        }
-
         private onShowHelpBubble_(params: HelpBubbleParams): void {
           if (!this.helpBubbleControllerById_.has(params.nativeIdentifier)) {
             // Identifier not handled by this mixin.
@@ -365,10 +405,12 @@ export const HelpBubbleMixin = dedupingMixin(
 
 export interface HelpBubbleMixinInterface {
   registerHelpBubble(nativeId: string, trackable: Trackable):
-      HelpBubbleController;
+      HelpBubbleController|null;
+  unregisterHelpBubble(nativeId: string): void;
   isHelpBubbleShowing(): boolean;
   isHelpBubbleShowingForTesting(id: string): boolean;
   getHelpBubbleForTesting(id: string): HelpBubbleElement|null;
+  canShowHelpBubble(controller: HelpBubbleController): boolean;
   showHelpBubble(controller: HelpBubbleController, params: HelpBubbleParams):
       void;
   hideHelpBubble(nativeId: string): boolean;

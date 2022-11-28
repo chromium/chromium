@@ -12,7 +12,7 @@ import {HelpBubbleController} from 'chrome://resources/cr_components/help_bubble
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleProxy, HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -21,6 +21,7 @@ const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
 const SPAN_NATIVE_ID: string = 'kHelpBubbleMixinTestSpanElementId';
+const LIST_ITEM_NATIVE_ID: string = 'kHelpBubbleMixinTestListItemElementId';
 const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
 const EVENT2_NAME: string = 'kSecondExampleCustomEvent';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
@@ -56,7 +57,7 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
       <h1 id='title'>This is the title</h1>
       <p id='p1'>Some paragraph text</p>
       <ul id='bulletList'>
-        <li>List item 1</li>
+        <li id='list-item'>List item 1</li>
         <li>List item 2</li>
       </ul>
       <span>Span text</span>
@@ -69,10 +70,10 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
     const spanEl = this.shadowRoot!.querySelector('span');
     assertTrue(spanEl !== null, 'connectedCallback: span element exists');
 
-    titleBubble = this.registerHelpBubble(TITLE_NATIVE_ID, '#title');
-    p1Bubble = this.registerHelpBubble(PARAGRAPH_NATIVE_ID, '#p1');
-    bulletListBubble = this.registerHelpBubble(LIST_NATIVE_ID, '#bulletList');
-    spanBubble = this.registerHelpBubble(SPAN_NATIVE_ID, spanEl);
+    titleBubble = this.registerHelpBubble(TITLE_NATIVE_ID, '#title')!;
+    p1Bubble = this.registerHelpBubble(PARAGRAPH_NATIVE_ID, '#p1')!;
+    bulletListBubble = this.registerHelpBubble(LIST_NATIVE_ID, '#bulletList')!;
+    spanBubble = this.registerHelpBubble(SPAN_NATIVE_ID, spanEl)!;
   }
 }
 
@@ -736,5 +737,66 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         testProxy.getHandler().getArgs('helpBubbleClosed'),
         'helpBubbleClosed is called with correct arguments');
     assertFalse(container.isHelpBubbleShowing(), 'no bubbles are showing');
+  });
+
+  test('help bubble mixin can unregister', () => {
+    let listItemBubble =
+        container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#bulletList');
+    assertTrue(listItemBubble !== null, 'help bubble is registered');
+    assertTrue(
+        container.canShowHelpBubble(listItemBubble!),
+        'help bubble can be shown');
+
+    // re-register when help bubble is not showing
+    listItemBubble =
+        container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
+    assertTrue(
+        listItemBubble !== null,
+        'help bubble can be re-registered with same nativeId');
+    assertTrue(
+        container.canShowHelpBubble(listItemBubble!),
+        'help bubble can be shown after re-registering');
+
+    // un-register directly when help bubble is not showing
+    container.unregisterHelpBubble(LIST_ITEM_NATIVE_ID);
+    assertFalse(
+        container.canShowHelpBubble(listItemBubble!),
+        'help bubble cannot be shown');
+    // unregisterHelpBubble clears out the nativeIds
+    assertThrows(
+        () => container.showHelpBubble(listItemBubble!, defaultParams),
+        'Can\'t show help bubble',
+    );
+  });
+
+  test('help bubble mixin can unregister when bubble is showing', () => {
+    const listItemBubble =
+        container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
+    assertTrue(listItemBubble !== null, 'help bubble is registered');
+    assertTrue(
+        container.canShowHelpBubble(listItemBubble!),
+        'help bubble can be shown');
+    assertFalse(container.isHelpBubbleShowing());
+    assertFalse(container.isHelpBubbleShowingForTesting('list-item'));
+
+    container.showHelpBubble(listItemBubble!, defaultParams);
+    assertTrue(container.isHelpBubbleShowing());
+    assertTrue(container.isHelpBubbleShowingForTesting('list-item'));
+
+    // re-register when help bubble is shown
+    const result =
+        container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
+    assertTrue(
+        result === null, 'registerHelpBubble fails when help bubble is shown');
+    assertTrue(
+        container.isHelpBubbleShowing(),
+        're-registering does not hide help bubble');
+    assertTrue(container.isHelpBubbleShowingForTesting('list-item'));
+
+    // unregister directly when help bubble is shown
+    container.unregisterHelpBubble(LIST_ITEM_NATIVE_ID);
+    assertFalse(
+        container.isHelpBubbleShowing(), 'unregister hides help bubble');
+    assertFalse(container.isHelpBubbleShowingForTesting('list-item'));
   });
 });
