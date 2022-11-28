@@ -21,6 +21,11 @@
 #include "media/video/h264_parser.h"
 #include "media/video/h265_nalu_parser.h"
 
+namespace gfx {
+struct HDRMetadata;
+struct ColorVolumeMetadata;
+}  // namespace gfx
+
 namespace media {
 
 // For explanations of each struct and its members, see H.265 specification
@@ -429,6 +434,8 @@ struct MEDIA_EXPORT H265SEIAlphaChannelInfo {
 struct MEDIA_EXPORT H265SEIContentLightLevelInfo {
   uint16_t max_content_light_level;
   uint16_t max_picture_average_light_level;
+
+  void PopulateHDRMetadata(gfx::HDRMetadata& hdr_metadata) const;
 };
 
 struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
@@ -441,6 +448,9 @@ struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
   uint16_t white_points[2];
   uint32_t max_luminance;
   uint32_t min_luminance;
+
+  void PopulateColorVolumeMetadata(
+      gfx::ColorVolumeMetadata& color_volume_metadata) const;
 };
 
 struct MEDIA_EXPORT H265SEIMessage {

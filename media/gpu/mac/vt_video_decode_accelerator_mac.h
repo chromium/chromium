@@ -138,6 +138,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
     // Decoded image, if decoding was successful.
     base::ScopedCFTypeRef<CVImageBufferRef> image;
+
+    // Dynamic HDR metadata, if any.
+    absl::optional<gfx::HDRMetadata> hdr_metadata;
   };
 
   struct Task {

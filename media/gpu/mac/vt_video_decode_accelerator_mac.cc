@@ -1431,10 +1431,28 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
       case H265NALU::PREFIX_SEI_NUT: {
         H265SEIMessage sei_msg;
         result = hevc_parser_.ParseSEI(&sei_msg);
-        if (result == H265Parser::kOk &&
-            sei_msg.type == H265SEIMessage::kSEIAlphaChannelInfo &&
-            sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0) {
-          has_alpha_ = true;
+        if (result == H265Parser::kOk) {
+          switch (sei_msg.type) {
+            case H265SEIMessage::kSEIAlphaChannelInfo:
+              if (sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0)
+                has_alpha_ = true;
+              break;
+            case H265SEIMessage::kSEIMasteringDisplayInfo:
+              if (!config_.hdr_metadata)
+                config_.hdr_metadata = gfx::HDRMetadata();
+              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
+                  config_.hdr_metadata->color_volume_metadata);
+              break;
+            case H265SEIMessage::kSEIContentLightLevelInfo: {
+              if (!config_.hdr_metadata)
+                config_.hdr_metadata = gfx::HDRMetadata();
+              sei_msg.content_light_level_info.PopulateHDRMetadata(
+                  config_.hdr_metadata.value());
+              break;
+            }
+            default:
+              break;
+          }
         }
         nalus.push_back(nalu);
         data_size += kNALUHeaderLength + nalu.size;
@@ -1562,6 +1580,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
 
   if (frame->is_idr)
     waiting_for_idr_ = false;
+  frame->hdr_metadata = config_.hdr_metadata;
 
   // If no IDR has been seen yet, skip decoding. Note that Flash sends
   // configuration changes as a bitstream with only SPS/PPS/VPS; we don't print
@@ -2283,6 +2302,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   // we don't need to use them when the image is never bound? Bindings are
   // typically only created when WebGL is in use.
   picture.set_read_lock_fences_enabled(true);
+  if (frame.hdr_metadata)
+    picture.set_hdr_metadata(frame.hdr_metadata);
   if (picture_info->uses_shared_images) {
     for (size_t plane = 0; plane < planes.size(); ++plane) {
       picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],

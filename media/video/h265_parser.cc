@@ -18,6 +18,7 @@
 #include "media/base/video_codecs.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -1314,6 +1315,30 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
       DVLOG(1) << "unknown video profile: " << profile_idc;
       return VIDEO_CODEC_PROFILE_UNKNOWN;
   }
+}
+
+void H265SEIContentLightLevelInfo::PopulateHDRMetadata(
+    gfx::HDRMetadata& hdr_metadata) const {
+  hdr_metadata.max_content_light_level = max_content_light_level;
+  hdr_metadata.max_frame_average_light_level = max_picture_average_light_level;
+}
+
+void H265SEIMasteringDisplayInfo::PopulateColorVolumeMetadata(
+    gfx::ColorVolumeMetadata& color_volume_metadata) const {
+  constexpr auto kChromaDenominator = 50000.0f;
+  constexpr auto kLumaDenoninator = 10000.0f;
+  // display primaries are in G/B/R order in MDCV SEI.
+  color_volume_metadata.primaries = {
+      display_primaries[2][0] / kChromaDenominator,
+      display_primaries[2][1] / kChromaDenominator,
+      display_primaries[0][0] / kChromaDenominator,
+      display_primaries[0][1] / kChromaDenominator,
+      display_primaries[1][0] / kChromaDenominator,
+      display_primaries[1][1] / kChromaDenominator,
+      white_points[0] / kChromaDenominator,
+      white_points[1] / kChromaDenominator};
+  color_volume_metadata.luminance_max = max_luminance / kLumaDenoninator;
+  color_volume_metadata.luminance_min = min_luminance / kLumaDenoninator;
 }
 
 H265Parser::Result H265Parser::ParseProfileTierLevel(
