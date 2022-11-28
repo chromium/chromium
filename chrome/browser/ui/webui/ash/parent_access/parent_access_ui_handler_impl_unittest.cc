@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
@@ -167,6 +168,7 @@ MATCHER_P(EqualsProto,
 
 // Verifies that the parent approvals sequence is handled correctly.
 TEST_F(ParentAccessUIHandlerImplTest, OnParentVerifiedAndApproved) {
+  base::HistogramTester histogram_tester;
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -218,6 +220,18 @@ TEST_F(ParentAccessUIHandlerImplTest, OnParentVerifiedAndApproved) {
           [&]() -> void { parent_approved_run_loop.Quit(); }));
 
   parent_approved_run_loop.Run();
+
+  // Reset handler to simulate dialog closing.
+  parent_access_ui_handler_.reset();
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessStateTracker::FlowResult::kAccessApproved, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessStateTracker::FlowResult::kAccessApproved, 1);
 }
 
 // Verifies that an unparsable parent access callback proto is handled
@@ -269,6 +283,7 @@ TEST_F(ParentAccessUIHandlerImplTest, OnNonBase64ParentAccessCallback) {
 
 // Verifies that parent declining is handled correctly.
 TEST_F(ParentAccessUIHandlerImplTest, OnParentDeclined) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(delegate_, SetDeclined()).Times(1);
 
   // Send the declined result status.
@@ -278,10 +293,23 @@ TEST_F(ParentAccessUIHandlerImplTest, OnParentDeclined) {
       base::BindLambdaForTesting([&]() -> void { run_loop.Quit(); }));
 
   run_loop.Run();
+
+  // Reset handler to simulate dialog closing.
+  parent_access_ui_handler_.reset();
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessStateTracker::FlowResult::kAccessDeclined, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessStateTracker::FlowResult::kAccessDeclined, 1);
 }
 
 // Verifies canceling the UI is handled correctly.
 TEST_F(ParentAccessUIHandlerImplTest, OnCanceled) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(delegate_, SetCanceled()).Times(1);
 
   // Send the declined result status.
@@ -291,10 +319,23 @@ TEST_F(ParentAccessUIHandlerImplTest, OnCanceled) {
       base::BindLambdaForTesting([&]() -> void { run_loop.Quit(); }));
 
   run_loop.Run();
+
+  // Reset handler to simulate dialog closing.
+  parent_access_ui_handler_.reset();
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessStateTracker::FlowResult::kParentAuthentication, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessStateTracker::FlowResult::kParentAuthentication, 1);
 }
 
 // Verifies errors are handled correctly.
 TEST_F(ParentAccessUIHandlerImplTest, OnError) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(delegate_, SetError()).Times(1);
 
   // Send the declined result status.
@@ -304,6 +345,18 @@ TEST_F(ParentAccessUIHandlerImplTest, OnError) {
       base::BindLambdaForTesting([&]() -> void { run_loop.Quit(); }));
 
   run_loop.Run();
+
+  // Reset handler to simulate dialog closing.
+  parent_access_ui_handler_.reset();
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessStateTracker::FlowResult::kError, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessStateTracker::FlowResult::kError, 1);
 }
 
 // Verifies that the ConsentDeclined status is ignored.

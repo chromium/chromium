@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_state_tracker.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -80,6 +81,9 @@ class ParentAccessUIHandlerImpl
   std::unique_ptr<
       kids::platform::parentaccess::client::proto::ParentAccessToken>
       parent_access_token_;
+
+  // Tracks the current state of the webUI, which is used for logging purposes.
+  std::unique_ptr<ParentAccessStateTracker> state_tracker_;
 
   base::WeakPtrFactory<ParentAccessUIHandlerImpl> weak_ptr_factory_{this};
 };

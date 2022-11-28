@@ -19,7 +19,7 @@ constexpr int kDesiredIconSize = 24;
 constexpr int kMonogramSize = 20;
 
 const char kFaviconAvailabilityHistogramName[] =
-    "SupervisedUsers.FaviconAvailability";
+    "ChromeOS.FamilyLinkUser.FaviconAvailability";
 }  // namespace
 
 // static

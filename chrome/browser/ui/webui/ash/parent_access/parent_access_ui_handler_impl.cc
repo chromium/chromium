@@ -56,7 +56,17 @@ ParentAccessUIHandlerImpl::ParentAccessUIHandlerImpl(
     ParentAccessUIHandlerDelegate* delegate)
     : identity_manager_(identity_manager),
       delegate_(delegate),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  // ParentAccess state is only tracked when a dialog is created. i.e. not when
+  // chrome://parent-access is directly accessed.
+  if (delegate_) {
+    // TODO(b/260144025): Reduce the number of times params are cloned.
+    parent_access_ui::mojom::ParentAccessParamsPtr params =
+        delegate_->CloneParentAccessParams();
+    state_tracker_ =
+        std::make_unique<ParentAccessStateTracker>(params->flow_type);
+  }
+}
 
 ParentAccessUIHandlerImpl::~ParentAccessUIHandlerImpl() = default;
 
@@ -108,6 +118,7 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
     std::move(callback).Run(parent_access_ui::mojom::ParentAccessParams::New());
     return;
   }
+  // TODO(b/260144025): Reduce the number of times params are cloned.
   std::move(callback).Run(delegate_->CloneParentAccessParams());
   return;
 }
@@ -124,6 +135,10 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
   switch (result) {
     case parent_access_ui::mojom::ParentAccessResult::kApproved:
       DCHECK(parent_access_token_);
+      if (state_tracker_) {
+        state_tracker_->OnWebUiStateChanged(
+            ParentAccessStateTracker::FlowResult::kAccessApproved);
+      }
       delegate_->SetApproved(
           parent_access_token_->token(),
           // Only keep the seconds, not the nanoseconds.
@@ -131,12 +146,20 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
               parent_access_token_->expire_time().seconds()));
       break;
     case parent_access_ui::mojom::ParentAccessResult::kDeclined:
+      if (state_tracker_) {
+        state_tracker_->OnWebUiStateChanged(
+            ParentAccessStateTracker::FlowResult::kAccessDeclined);
+      }
       delegate_->SetDeclined();
       break;
     case parent_access_ui::mojom::ParentAccessResult::kCanceled:
       delegate_->SetCanceled();
       break;
     case parent_access_ui::mojom::ParentAccessResult::kError:
+      if (state_tracker_) {
+        state_tracker_->OnWebUiStateChanged(
+            ParentAccessStateTracker::FlowResult::kError);
+      }
       delegate_->SetError();
       break;
   }
@@ -166,6 +189,7 @@ void ParentAccessUIHandlerImpl::GetParentAccessURL(
     DCHECK(GURL(url).DomainIs("google.com"));
   }
 
+  // TODO(b/260144025): Reduce the number of times params are cloned.
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       delegate_->CloneParentAccessParams();
 
@@ -221,7 +245,10 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
         CallbackCase::kOnParentVerified:
       message->type = parent_access_ui::mojom::ParentAccessServerMessageType::
           kParentVerified;
-
+      if (state_tracker_) {
+        state_tracker_->OnWebUiStateChanged(
+            ParentAccessStateTracker::FlowResult::kApproval);
+      }
       if (parent_access_callback.on_parent_verified()
               .verification_proof_case() ==
           kids::platform::parentaccess::client::proto::OnParentVerified::
