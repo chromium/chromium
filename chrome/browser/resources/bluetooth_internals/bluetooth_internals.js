@@ -8,7 +8,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 import {DiscoverySessionRemote} from './adapter.mojom-webui.js';
 import {AdapterBroker, AdapterProperty, getAdapterBroker} from './adapter_broker.js';
@@ -288,7 +288,10 @@ function setupPages() {
   window.addEventListener('hashchange', function() {
     // If a user navigates and the page doesn't exist, do nothing.
     const pageName = window.location.hash.substr(1);
-    if ($(pageName)) {
+    // Device page names are invalid selectors for querySelector(), as they
+    // contain "/" and ":".
+    // eslint-disable-next-line no-restricted-properties
+    if (document.getElementById(pageName)) {
       pageManager.showPageByName(pageName);
     }
   });

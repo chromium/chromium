@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+function getRequiredElement(id) {
+  // Disable getElementById restriction here, because this UI uses non valid
+  // selectors that don't work with querySelector().
+  // eslint-disable-next-line no-restricted-properties
+  const el = document.getElementById(id);
+  assert(el instanceof HTMLElement);
+  return el;
+}
 
 /**
  * Finds a good place to set initial focus. Generally called when UI is shown.

@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.js';
+import {listenOnce} from 'chrome://resources/js/util_ts.js';
 
 import {getTemplate} from './snackbar.html.js';
 
@@ -118,6 +118,25 @@ class BluetoothSnackbarElement extends CustomElement {
     this.dispatchEvent(
         new CustomEvent('showed', {bubbles: true, composed: true}));
   }
+  /**
+   * transitionend does not always fire (e.g. when animation is aborted
+   * or when no paint happens during the animation). This function sets up
+   * a timer and emulate the event if it is not fired when the timer expires.
+   * @private
+   */
+  ensureTransitionEndEvent_() {
+    let fired = false;
+    this.addEventListener('transitionend', function f(e) {
+      this.removeEventListener('transitionend', f);
+      fired = true;
+    }.bind(this));
+    window.setTimeout(() => {
+      if (!fired) {
+        this.dispatchEvent(new CustomEvent('transitionend',
+              {bubbles: true, composed: true}));
+      }
+    }, TRANSITION_DURATION);
+  }
 
   /**
    * Dismisses the Snackbar. Once the Snackbar is completely hidden, the
@@ -138,7 +157,7 @@ class BluetoothSnackbarElement extends CustomElement {
         resolve();
       }.bind(this));
 
-      ensureTransitionEndEvent(this, TRANSITION_DURATION);
+      this.ensureTransitionEndEvent_();
       this.classList.remove('open');
 
       document.removeEventListener('contentfocus', this.boundStartTimeout_);

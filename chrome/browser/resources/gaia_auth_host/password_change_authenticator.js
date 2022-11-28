@@ -9,8 +9,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 // <if expr="chromeos_ash">
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-// </if>
 import {$, appendParam} from 'chrome://resources/js/util.js';
+// </if>
+// <if expr="not chromeos_ash">
+import {$, appendParam} from 'chrome://resources/js/util_ts.js';
+// </if>
 
 import {SamlHandler} from './saml_handler.js';
 import {WebviewEventManager} from './webview_event_manager.js';

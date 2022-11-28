@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="chromeos_ash">
 import {appendParam} from 'chrome://resources/js/util.js';
+// </if>
+// <if expr="not chromeos_ash">
+import {appendParam} from 'chrome://resources/js/util_ts.js';
+// </if>
 
 /**
  * Try to autofill email on login page for supported identity providers

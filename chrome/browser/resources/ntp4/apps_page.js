@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, appendParam} from 'chrome://resources/js/util.js';
+import {$, appendParam} from 'chrome://resources/js/util_ts.js';
 
 import {AppInfo} from './app_info.js';
 import {contextMenuHandler} from './context_menu_handler.js';

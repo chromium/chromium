@@ -12,7 +12,7 @@ import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 import {fakeAdapterInfo, fakeCharacteristicInfo1, fakeDeviceInfo1, fakeDeviceInfo2, fakeDeviceInfo3, fakeServiceInfo1, fakeServiceInfo2, TestAdapter, TestBluetoothInternalsHandler, TestDevice} from './test_utils.js';
 
@@ -545,7 +545,7 @@ suite('bluetooth_internals', function() {
     deviceInspectLink.click();
     assertEquals('#' + deviceDetailsPageId, window.location.hash);
 
-    let detailsPage = $(deviceDetailsPageId);
+    let detailsPage = document.getElementById(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
     return internalsHandler.adapter.deviceImplMap.get(device.address)
@@ -556,7 +556,7 @@ suite('bluetooth_internals', function() {
 
           detailsPage.querySelector('.forget').click();
           assertEquals('#devices', window.location.hash);
-          detailsPage = $(deviceDetailsPageId);
+          detailsPage = document.getElementById(deviceDetailsPageId);
           assertFalse(!!detailsPage);
         });
   });
@@ -573,7 +573,7 @@ suite('bluetooth_internals', function() {
     deviceLinks[0].click();
     assertEquals('#' + deviceDetailsPageId, window.location.hash);
 
-    let detailsPage = $(deviceDetailsPageId);
+    let detailsPage = document.getElementById(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
     return internalsHandler.adapter.deviceImplMap.get(device.address)
@@ -585,7 +585,7 @@ suite('bluetooth_internals', function() {
           // Second link is 'Forget'.
           deviceLinks[1].click();
           assertEquals('#devices', window.location.hash);
-          detailsPage = $(deviceDetailsPageId);
+          detailsPage = document.getElementById(deviceDetailsPageId);
           assertFalse(!!detailsPage);
         });
   });

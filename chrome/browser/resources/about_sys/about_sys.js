@@ -4,9 +4,9 @@
 
 import './strings.m.js';
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 
 // Contents of lines that act as delimiters for multi-line values.
 const DELIM_START = '---------- START ----------';

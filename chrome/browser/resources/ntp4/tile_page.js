@@ -6,7 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, isRTL} from 'chrome://resources/js/util.js';
+import {$, isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {App} from './apps_page.js';
 import {dispatchSimpleEvent} from './cr_deprecated.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 window.invalidations_test = {};

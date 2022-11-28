@@ -5,13 +5,14 @@
 import {assert} from 'chrome://resources/js/assert.js';
 // <if expr="not chromeos_ash">
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {$, appendParam} from 'chrome://resources/js/util_ts.js';
 // </if>
 // <if expr="chromeos_ash">
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 // </if>
 
-import {$, appendParam} from 'chrome://resources/js/util.js';
 
 import {OnHeadersReceivedDetails, SamlHandler} from './saml_handler.js';
 import {PasswordAttributes} from './saml_password_attributes.js';

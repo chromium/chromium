@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, isRTL} from 'chrome://resources/js/util.js';
+import {$, isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {AppInfo} from './app_info.js';
 import {App, AppsPage} from './apps_page.js';
