@@ -27,7 +27,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -80,17 +79,13 @@ const char kSignalNotificationClosed[] = "NotificationClosed";
 const char kSignalNotificationReplied[] = "NotificationReplied";
 
 // Capabilities.
-const char kCapabilityActionIcons[] = "action-icons";
 const char kCapabilityActions[] = "actions";
 const char kCapabilityBody[] = "body";
 const char kCapabilityBodyHyperlinks[] = "body-hyperlinks";
 const char kCapabilityBodyImages[] = "body-images";
 const char kCapabilityBodyMarkup[] = "body-markup";
-const char kCapabilityIconMulti[] = "icon-multi";
-const char kCapabilityIconStatic[] = "icon-static";
 const char kCapabilityInlineReply[] = "inline-reply";
 const char kCapabilityPersistence[] = "persistence";
-const char kCapabilitySound[] = "sound";
 const char kCapabilityXKdeOriginName[] = "x-kde-origin-name";
 const char kCapabilityXKdeReplyPlaceholderText[] =
     "x-kde-reply-placeholder-text";
@@ -533,7 +528,6 @@ class NotificationPlatformBridgeLinuxImpl
       for (const std::string& capability : capabilities)
         capabilities_.insert(capability);
     }
-    RecordMetricsForCapabilities();
     if (!base::Contains(capabilities_, kCapabilityBody) ||
         !base::Contains(capabilities_, kCapabilityActions)) {
       OnConnectionInitializationFinishedOnTaskRunner(
@@ -1046,10 +1040,6 @@ class NotificationPlatformBridgeLinuxImpl
   void OnConnectionInitializationFinishedOnTaskRunner(
       ConnectionInitializationStatusCode status) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    UMA_HISTOGRAM_ENUMERATION(
-        "Notifications.Linux.BridgeInitializationStatus",
-        static_cast<int>(status),
-        static_cast<int>(ConnectionInitializationStatusCode::NUM_ITEMS));
     bool success = status == ConnectionInitializationStatusCode::SUCCESS;
 
     // Note: Not all code paths set connect_signals_in_progress_ to true!
@@ -1090,37 +1080,6 @@ class NotificationPlatformBridgeLinuxImpl
     // In either case, we want to rewrite the file.
     product_logo_file_.reset();
     product_logo_file_watcher_.reset();
-  }
-
-  void RecordMetricsForCapabilities() {
-    // Histogram macros must be called with the same name for each
-    // callsite, so we can't roll the below into a nice loop.
-    UMA_HISTOGRAM_BOOLEAN(
-        "Notifications.Freedesktop.Capabilities.ActionIcons",
-        base::Contains(capabilities_, kCapabilityActionIcons));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.Actions",
-                          base::Contains(capabilities_, kCapabilityActions));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.Body",
-                          base::Contains(capabilities_, kCapabilityBody));
-    UMA_HISTOGRAM_BOOLEAN(
-        "Notifications.Freedesktop.Capabilities.BodyHyperlinks",
-        base::Contains(capabilities_, kCapabilityBodyHyperlinks));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.BodyImages",
-                          base::Contains(capabilities_, kCapabilityBodyImages));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.BodyMarkup",
-                          base::Contains(capabilities_, kCapabilityBodyMarkup));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.IconMulti",
-                          base::Contains(capabilities_, kCapabilityIconMulti));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.IconStatic",
-                          base::Contains(capabilities_, kCapabilityIconStatic));
-    UMA_HISTOGRAM_BOOLEAN(
-        "Notifications.Freedesktop.Capabilities.InlineReply",
-        base::Contains(capabilities_, kCapabilityInlineReply));
-    UMA_HISTOGRAM_BOOLEAN(
-        "Notifications.Freedesktop.Capabilities.Persistence",
-        base::Contains(capabilities_, kCapabilityPersistence));
-    UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.Sound",
-                          base::Contains(capabilities_, kCapabilitySound));
   }
 
   void RewriteProductLogoFile() {

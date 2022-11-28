@@ -2102,20 +2102,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="FirstUserAction.BackgroundTimeNewTask"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FreedesktopNotificationCapabilitiesId" separator=".">
-  <suffix name="ActionIcons" label="action-icons capability"/>
-  <suffix name="Actions" label="actions capability"/>
-  <suffix name="Body" label="body capability"/>
-  <suffix name="BodyHyperlinks" label="body-hyperlinks capability"/>
-  <suffix name="BodyImages" label="body-images capability"/>
-  <suffix name="BodyMarkup" label="body-markup capability"/>
-  <suffix name="IconMulti" label="icon-multi capability"/>
-  <suffix name="IconStatic" label="icon-static capability"/>
-  <suffix name="Persistence" label="persistence capability"/>
-  <suffix name="Sound" label="sound capability"/>
-  <affected-histogram name="Notifications.Freedesktop.Capabilities"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FromGWS" separator="_">
   <suffix name="FromGWS"
       label="Only page loads that are a result of a navigation from a web

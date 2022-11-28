@@ -455,27 +455,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Notifications.Freedesktop.Capabilities"
-    enum="BooleanSupported" expires_after="M90">
-<!-- Name completed by histogram_suffixes name="FreedesktopNotificationCapabilitiesId" -->
-
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    Whether the notification server supports the capability in question. (Linux
-    only) Logged when the proxy to /org/Freedesktop/Notifications is set up
-    successfully, which happens at most once on startup.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Linux.BridgeInitializationStatus"
-    enum="LinuxNotificationBridgeStatusCode" expires_after="M77">
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    The status code for initializing NotificationPlatformBridgeLinux. (Linux
-    only) Logged on each start up.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.LoadProfileResult" enum="BooleanSuccess"
     expires_after="2022-04-17">
   <owner>knollr@chromium.org</owner>
