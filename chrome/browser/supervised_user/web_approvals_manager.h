@@ -19,7 +19,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -155,7 +155,7 @@ class WebApprovalsManager {
       SupervisedUserSettingsService* settings_service,
       const GURL& url,
       base::TimeTicks start_time,
-      std::unique_ptr<ash::ParentAccessDialog::Result> result);
+      crosapi::mojom::ParentAccessResultPtr result);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Helpers for private method testing.

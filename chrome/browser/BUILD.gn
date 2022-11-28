@@ -7716,6 +7716,9 @@ static_library("browser") {
       "supervised_user/web_approvals_manager.cc",
       "supervised_user/web_approvals_manager.h",
     ]
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/crosapi" ]
+    }
     if (is_chromeos) {
       sources += [
         "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",

@@ -9022,6 +9022,10 @@ test("unit_tests") {
       "../browser/supervised_user/supervised_user_url_filter_unittest.cc",
       "../browser/supervised_user/web_approvals_manager_unittest.cc",
     ]
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/crosapi" ]
+    }
+
     if (enable_extensions) {
       sources +=
           [ "../browser/supervised_user/supervised_user_extension_unittest.cc" ]

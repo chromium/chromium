@@ -25,7 +25,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -288,8 +288,9 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
   EXPECT_CALL(supervisedUserSettingsServiceMock,
               RecordLocalWebsiteApproval(url.host()));
 
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
+  auto result = crosapi::mojom::ParentAccessResult::NewApproved(
+      crosapi::mojom::ParentAccessApprovedResult::New(
+          "TEST_TOKEN", base::Time::FromDoubleT(123456UL)));
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -298,8 +299,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
   task_environment().FastForwardBy(approval_duration);
 
   web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
-      &supervisedUserSettingsServiceMock, url, start_time,
-      std::move(dialog_result));
+      &supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
@@ -321,8 +321,8 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
               RecordLocalWebsiteApproval(url.host()))
       .Times(0);
 
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
+  auto result = crosapi::mojom::ParentAccessResult::NewDeclined(
+      crosapi::mojom::ParentAccessDeclinedResult::New());
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -331,8 +331,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
   task_environment().FastForwardBy(approval_duration);
 
   web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
-      &supervisedUserSettingsServiceMock, url, start_time,
-      std::move(dialog_result));
+      &supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       WebApprovalsManager::GetLocalApprovalResultHistogram(),
@@ -354,8 +353,8 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalCanceledChromeOSTest) {
               RecordLocalWebsiteApproval(url.host()))
       .Times(0);
 
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
+  auto result = crosapi::mojom::ParentAccessResult::NewCanceled(
+      crosapi::mojom::ParentAccessCanceledResult::New());
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -364,8 +363,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalCanceledChromeOSTest) {
   task_environment().FastForwardBy(approval_duration);
 
   web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
-      &supervisedUserSettingsServiceMock, url, start_time,
-      std::move(dialog_result));
+      &supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   // Check that the approval duration was NOT recorded for canceled request.
   histogram_tester.ExpectTotalCount(
@@ -385,8 +383,9 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
               RecordLocalWebsiteApproval(url.host()))
       .Times(0);
 
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
+  auto result = crosapi::mojom::ParentAccessResult::NewError(
+      crosapi::mojom::ParentAccessErrorResult::New(
+          crosapi::mojom::ParentAccessErrorResult::Type::kUnknown));
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
@@ -395,8 +394,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
   task_environment().FastForwardBy(approval_duration);
 
   web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
-      &supervisedUserSettingsServiceMock, url, start_time,
-      std::move(dialog_result));
+      &supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
   // Check that the approval duration was NOT recorded on error.
   histogram_tester.ExpectTotalCount(

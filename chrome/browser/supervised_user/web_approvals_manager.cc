@@ -20,7 +20,6 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -28,10 +27,22 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/notreached.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/parent_access_ash.h"
+#endif
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+crosapi::mojom::ParentAccess* GetParentAccess() {
+  crosapi::mojom::ParentAccess* parent_access =
+      crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
+  DCHECK(parent_access);
+  return parent_access;
+}
+#endif
 
 constexpr char kLocalWebApprovalDurationHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
@@ -61,16 +72,38 @@ WebApprovalsManager::LocalApprovalResult AndroidOutcomeToLocalApprovalResult(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 WebApprovalsManager::LocalApprovalResult ChromeOSResultToLocalApprovalResult(
-    ash::ParentAccessDialog::Result::Status result) {
+    crosapi::mojom::ParentAccessResult::Tag result) {
   switch (result) {
-    case ash::ParentAccessDialog::Result::Status::kApproved:
+    case crosapi::mojom::ParentAccessResult::Tag::kApproved:
       return WebApprovalsManager::LocalApprovalResult::kApproved;
-    case ash::ParentAccessDialog::Result::Status::kDeclined:
+    case crosapi::mojom::ParentAccessResult::Tag::kDeclined:
       return WebApprovalsManager::LocalApprovalResult::kDeclined;
-    case ash::ParentAccessDialog::Result::Status::kCanceled:
+    case crosapi::mojom::ParentAccessResult::Tag::kCanceled:
       return WebApprovalsManager::LocalApprovalResult::kCanceled;
-    case ash::ParentAccessDialog::Result::Status::kError:
+    case crosapi::mojom::ParentAccessResult::Tag::kError:
       return WebApprovalsManager::LocalApprovalResult::kError;
+  }
+}
+
+void HandleChromeOSErrorResult(
+    crosapi::mojom::ParentAccessErrorResult::Type type) {
+  switch (type) {
+    case crosapi::mojom::ParentAccessErrorResult::Type::kNotAChildUser:
+      // Fatal debug error because this can only occur due to a programming
+      // error.
+      DLOG(FATAL) << "ParentAccess UI invoked by non-child user";
+      return;
+    case crosapi::mojom::ParentAccessErrorResult::Type::kAlreadyVisible:
+      // Fatal debug error because this can only occur due to a programming
+      // error.
+      DLOG(FATAL) << "ParentAccess UI invoked while instance already visible";
+      return;
+    case crosapi::mojom::ParentAccessErrorResult::Type::kUnknown:
+      LOG(ERROR) << "Unknown error in ParentAccess UI";
+      return;
+    case crosapi::mojom::ParentAccessErrorResult::Type::kNone:
+      NOTREACHED();
+      return;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -123,38 +156,16 @@ void WebApprovalsManager::RequestLocalApproval(
     const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(b/250954669): replace this with call to the ParentAccess crosapi with
-  // appropriate parameters and handle the ParentAccess crosapi result.
   SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
-  std::vector<uint8_t> favicon_bytes;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(*favicon.bitmap(), false,
-                                        &favicon_bytes);
-  parent_access_ui::mojom::ParentAccessParamsPtr params =
-      parent_access_ui::mojom::ParentAccessParams::New(
-          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
-          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New(
-                  url.GetWithEmptyPath(), child_display_name, favicon_bytes)));
-
-  ash::ParentAccessDialogProvider provider;
-  ash::ParentAccessDialogProvider::ShowError result = provider.Show(
-      std::move(params),
+  GetParentAccess()->GetWebsiteParentApproval(
+      url.GetWithEmptyPath(), child_display_name, favicon,
       base::BindOnce(
           &WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS,
           weak_ptr_factory_.GetWeakPtr(), settings_service, url,
           base::TimeTicks::Now()));
-
-  if (result != ash::ParentAccessDialogProvider::ShowError::kNone) {
-    LOG(ERROR) << "Error showing ParentAccessDialog: "
-               << static_cast<int>(result);
-    base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName,
-                                  LocalApprovalResult::kError);
-    std::move(callback).Run(false);
-    return;
-  }
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_ANDROID)
   SupervisedUserSettingsService* settings_service =
@@ -278,9 +289,12 @@ void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
     SupervisedUserSettingsService* settings_service,
     const GURL& url,
     base::TimeTicks start_time,
-    std::unique_ptr<ash::ParentAccessDialog::Result> result) {
+    crosapi::mojom::ParentAccessResultPtr result) {
   CompleteLocalApprovalRequest(
       settings_service, url, start_time,
-      ChromeOSResultToLocalApprovalResult(result->status));
+      ChromeOSResultToLocalApprovalResult(result->which()));
+
+  if (result->is_error())
+    HandleChromeOSErrorResult(result->get_error()->type);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
