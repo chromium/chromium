@@ -79,9 +79,9 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
     return;
   }
   _nonUserChange = NO;
-  NSColor* color = [panel color];
-  if ([[color colorSpaceName] isEqualToString:NSNamedColorSpace]) {
-    color = [color colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]];
+  NSColor* color = panel.color;
+  if (color.type == NSColorTypeCatalog) {
+    color = [color colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
     // Some colors in "Developer" palette in "Color Palettes" tab can't be
     // converted to RGB. We just ignore such colors.
     // TODO(tkent): We should notice the rejection to users.
@@ -89,7 +89,7 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
       return;
   }
   SkColor skColor = 0;
-  if ([color colorSpace] == [NSColorSpace genericRGBColorSpace]) {
+  if (color.colorSpace == NSColorSpace.genericRGBColorSpace) {
     // genericRGB -> deviceRGB conversion isn't ignorable.  We'd like to use RGB
     // values shown in NSColorPanel UI.
     CGFloat red, green, blue, alpha;
@@ -99,7 +99,7 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
         SkScalarRoundToInt(255.0 * green), SkScalarRoundToInt(255.0 * blue));
   } else {
     skColor = skia::NSDeviceColorToSkColor(
-        [[panel color] colorUsingColorSpaceName:NSDeviceRGBColorSpace]);
+        [color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace]);
   }
   if (g_current_panel_bridge)
     g_current_panel_bridge->host()->DidChooseColorInColorPanel(skColor);
