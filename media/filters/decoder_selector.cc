@@ -349,10 +349,11 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
-    // Note: Don't track this decode status, as it is the result of
-    // initialization failure.
+    // Note: Don't track this decode status, as it is the result of decoder
+    // selection (initialization) failure.
     MEDIA_LOG(INFO, media_log_)
-        << "Failed to initialize " << decoder_->GetDecoderType();
+        << "Cannot select " << decoder_->GetDecoderType() << " for "
+        << DemuxerStream::GetTypeName(StreamType) << " decoding";
 
     // Try the next decoder on the list.
     decoder_ = nullptr;
