@@ -1225,6 +1225,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "default-browser-blue-dot-promo",
+    "owners": ["nicolasmacbeth@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "default-browser-fullscreen-promo-experiment",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 93

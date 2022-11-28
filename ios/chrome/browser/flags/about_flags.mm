@@ -1322,6 +1322,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTruncateTableViewCellTitleName,
      flag_descriptions::kTruncateTableViewCellTitleDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTruncateTableViewCellTitle)},
+    {"default-browser-blue-dot-promo",
+     flag_descriptions::kDefaultBrowserBlueDotPromoName,
+     flag_descriptions::kDefaultBrowserBlueDotPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserBlueDotPromo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

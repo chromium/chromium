@@ -7,6 +7,20 @@
 
 #include "Availability.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+
+// Feature flag to enable default browser blue dot promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
+
+// Enum for blue dot promo user groups (control/experiment) and its param. The
+// reason why we need a custom control group is to disable other independent
+// default browser promos, which are already shipped.
+enum class BlueDotPromoUserGroup {
+  kAllDBPromosDisabled,
+  kOnlyBlueDotPromoEnabled,
+};
+extern const base::FeatureParam<BlueDotPromoUserGroup>
+    kBlueDotPromoUserGroupParam;
 
 // Feature to open tab switcher after sliding down the toolbar.
 BASE_DECLARE_FEATURE(kExpandedTabStrip);

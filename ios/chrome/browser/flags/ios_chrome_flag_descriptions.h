@@ -166,6 +166,11 @@ extern const char kCrashpadIOSDescription[];
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 
+// Title and description for the flag to enable the default browser blue dot
+// promo.
+extern const char kDefaultBrowserBlueDotPromoName[];
+extern const char kDefaultBrowserBlueDotPromoDescription[];
+
 // Title and description for the flag to show a modified fullscreen modal promo
 // with a button that would send the users in the Settings.app to update the
 // default browser.

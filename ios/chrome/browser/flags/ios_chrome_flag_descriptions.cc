@@ -195,6 +195,11 @@ const char kCredentialProviderExtensionPromoDescription[] =
     "When enabled, Credential Provider Extension promo will be "
     "presented to eligible users.";
 
+const char kDefaultBrowserBlueDotPromoName[] = "Default Browser Blue Dot Promo";
+const char kDefaultBrowserBlueDotPromoDescription[] =
+    "When enabled, a blue dot default browser promo will be shown to eligible "
+    "users.";
+
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
 const char kDefaultBrowserFullscreenPromoExperimentDescription[] =

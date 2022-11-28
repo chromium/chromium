@@ -4,6 +4,21 @@
 
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
+BASE_FEATURE(kDefaultBrowserBlueDotPromo,
+             "DefaultBrowserBlueDotPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<BlueDotPromoUserGroup>::Option
+    kBlueDotPromoUserGroupOptions[] = {
+        {BlueDotPromoUserGroup::kAllDBPromosDisabled, "all-db-promos-disabled"},
+        {BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled,
+         "only-blue-dot-promo-enabled"}};
+
+constexpr base::FeatureParam<BlueDotPromoUserGroup> kBlueDotPromoUserGroupParam{
+    &kDefaultBrowserBlueDotPromo, "user-group",
+    BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled,
+    &kBlueDotPromoUserGroupOptions};
+
 BASE_FEATURE(kExpandedTabStrip,
              "ExpandedTabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
