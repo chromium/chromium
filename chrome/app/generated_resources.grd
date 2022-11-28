@@ -14041,6 +14041,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_LINK" translateable="false" desc="Learn more link in privacy sandbox consent dialog">
       Esed purus vestibulum velit convalli
     </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_BANNER_IMAGE_A11Y_DESCRIPTION" translateable="false" desc="A11y description for the banner image in privacy sandbox consent dialog">
+      Sed ullamcorper, ligula ac tempus venenatis
+    </message>
 
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_EEA_TITLE" translateable="false" desc="Title of privacy sandbox notice EEA dialog">
       Lorem ipsum Notice EEA
@@ -14141,6 +14144,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_6" translateable="false" desc="Sixth part of description in privacy sandbox notice ROW dialog">
       Cras sed lacus suscipit, efficitur erat nec, semper sapien. Fusce at nunc molestie, elementum augue at, auctor nunc. Sed dui nisi, consectetur sit amet urna vitae, facilisis scelerisque justo.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_BANNER_IMAGE_A11Y_DESCRIPTION" translateable="false" desc="A11y description for the banner image in privacy sandbox notice ROW dialog">
+      Ut venenatis magna nec lacus facilisis
     </message>
 
     <!-- Automated Password Change on Desktop strings -->

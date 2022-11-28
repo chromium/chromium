@@ -114,6 +114,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_BULLET_3},
       {"m1ConsentLearnMoreLink",
        IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_LEARN_MORE_LINK},
+      {"m1ConsentBannerImageA11yDescription",
+       IDS_PRIVACY_SANDBOX_DIALOG_M1_CONSENT_BANNER_IMAGE_A11Y_DESCRIPTION},
 
       // Strings for the notice step of the combined dialog (kM1NoticeEEA).
       {"m1NoticeEeaTitle", IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_EEA_TITLE},
@@ -180,7 +182,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5},
       {"m1NoticeRowLearnMoreDescription6",
        IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_6},
-  };
+      {"m1NoticeRowBannerImageA11yDescription",
+       IDS_PRIVACY_SANDBOX_DIALOG_M1_NOTICE_ROW_BANNER_IMAGE_A11Y_DESCRIPTION}};
 
   source->AddLocalizedStrings(kStrings);
 
