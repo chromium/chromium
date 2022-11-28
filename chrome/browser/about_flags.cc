@@ -3206,7 +3206,15 @@ const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable2Minutes[] = {
     {"time_before_discard", "2m"}};
 const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable1Hour[] = {
     {"time_before_discard", "1h"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable4Hour[] = {
+    {"time_before_discard", "4h"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable6Hour[] = {
+    {"time_before_discard", "6h"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable12Hour[] = {
+    {"time_before_discard", "12h"}};
 const FeatureEntry::FeatureParam kHighEfficiencyModeDefaultOn[] = {
+    {"default_state", "true"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeDefaultOnAnd30Seconds[] = {
     {"default_state", "true"},
     {"time_before_discard", "30s"}};
 const FeatureEntry::FeatureVariation kHighEfficiencyModeAvailableVariations[] =
@@ -3219,8 +3227,17 @@ const FeatureEntry::FeatureVariation kHighEfficiencyModeAvailableVariations[] =
          std::size(kHighEfficiencyModeAvailable2Minutes), nullptr},
         {"With 1 Hour Discard", kHighEfficiencyModeAvailable1Hour,
          std::size(kHighEfficiencyModeAvailable1Hour), nullptr},
-        {"With Default On and 30 Second Discard", kHighEfficiencyModeDefaultOn,
+        {"With 4 Hour Discard", kHighEfficiencyModeAvailable4Hour,
+         std::size(kHighEfficiencyModeAvailable4Hour), nullptr},
+        {"With 6 Hour Discard", kHighEfficiencyModeAvailable6Hour,
+         std::size(kHighEfficiencyModeAvailable6Hour), nullptr},
+        {"With 12 Hour Discard", kHighEfficiencyModeAvailable12Hour,
+         std::size(kHighEfficiencyModeAvailable12Hour), nullptr},
+        {"With Default On", kHighEfficiencyModeDefaultOn,
          std::size(kHighEfficiencyModeDefaultOn), nullptr},
+        {"With Default On and 30 Second Discard",
+         kHighEfficiencyModeDefaultOnAnd30Seconds,
+         std::size(kHighEfficiencyModeDefaultOnAnd30Seconds), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
