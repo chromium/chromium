@@ -1200,6 +1200,7 @@ public class Fido2CredentialRequestTest {
                         "One of the excluded credentials exists on the local device"));
 
         mCreationOptions.isPaymentCredentialCreation = true;
+        mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.PREFERRED;
         Assert.assertFalse(mFrameHost.mIsPaymentCredentialCreation);
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
                 (responseStatus, response)
