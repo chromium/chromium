@@ -25,7 +25,7 @@ bool IsStartSurfaceEnabled() {
 double GetReturnToStartSurfaceDuration() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-      60 * 60 * 12 /*default to 12 hour*/);
+      60 * 60 * 6 /*default to 6 hour*/);
 }
 
 bool ShouldHideShortcutsForStartSurface() {
