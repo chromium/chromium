@@ -137,20 +137,20 @@ bool ParseListAccountsData(const std::string& data,
 
   if (!value->is_list())
     return false;
-  base::Value::ConstListView list = value->GetListDeprecated();
+  const base::Value::List& list = value->GetList();
   if (list.size() < 2u)
     return false;
 
   // Get list of account info.
   if (!list[1].is_list())
     return false;
-  base::Value::ConstListView account_list = list[1].GetListDeprecated();
+  const base::Value::List& account_list = list[1].GetList();
 
   // Build a vector of accounts from the cookie.  Order is important: the first
   // account in the list is the primary account.
   for (size_t i = 0; i < account_list.size(); ++i) {
     if (account_list[i].is_list()) {
-      base::Value::ConstListView account = account_list[i].GetListDeprecated();
+      const base::Value::List& account = account_list[i].GetList();
       std::string email;
       // Canonicalize the email since ListAccounts returns "display email".
       if (3u < account.size() && account[3].is_string() &&

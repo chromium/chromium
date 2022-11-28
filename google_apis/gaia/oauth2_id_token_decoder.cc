@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -27,13 +28,13 @@ const char kServicesKey[] = "services";
 
 // Decodes the JWT ID token to a dictionary. Returns whether the decoding was
 // successful.
-std::unique_ptr<base::Value> DecodeIdToken(const std::string id_token) {
+absl::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
   const std::vector<base::StringPiece> token_pieces =
       base::SplitStringPiece(base::StringPiece(id_token), ".",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (token_pieces.size() != 3) {
     VLOG(1) << "Invalid id_token: not in JWT format";
-    return nullptr;
+    return absl::nullopt;
   }
   // Only the payload is used. The header is ignored, and signature
   // verification is not needed since the token was obtained directly from LSO.
@@ -42,16 +43,15 @@ std::unique_ptr<base::Value> DecodeIdToken(const std::string id_token) {
                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
                              &payload)) {
     VLOG(1) << "Invalid id_token: not in Base64Url encoding";
-    return nullptr;
+    return absl::nullopt;
   }
-  std::unique_ptr<base::Value> decoded_payload =
-      base::JSONReader::ReadDeprecated(payload);
-  if (!decoded_payload.get() ||
+  absl::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
+  if (!decoded_payload.has_value() ||
       decoded_payload->type() != base::Value::Type::DICTIONARY) {
     VLOG(1) << "Invalid id_token: paylod is not a well-formed JSON";
-    return nullptr;
+    return absl::nullopt;
   }
-  return decoded_payload;
+  return std::move(decoded_payload->GetDict());
 }
 
 // Obtains a vector of service flags from the encoded JWT ID token. Returns
@@ -61,18 +61,18 @@ bool GetServiceFlags(const std::string id_token,
                      std::vector<std::string>* out_service_flags) {
   DCHECK(out_service_flags->empty());
 
-  std::unique_ptr<base::Value> decoded_payload = DecodeIdToken(id_token);
-  if (decoded_payload == nullptr) {
+  absl::optional<base::Value::Dict> decoded_payload = DecodeIdToken(id_token);
+  if (!decoded_payload.has_value()) {
     VLOG(1) << "Failed to decode the id_token";
     return false;
   }
-  const base::Value* service_flags_value_raw =
-      decoded_payload->FindKeyOfType(kServicesKey, base::Value::Type::LIST);
+  const base::Value::List* service_flags_value_raw =
+      decoded_payload->FindList(kServicesKey);
   if (service_flags_value_raw == nullptr) {
     VLOG(1) << "Missing service flags in the id_token";
     return false;
   }
-  for (const auto& flag_value : service_flags_value_raw->GetListDeprecated()) {
+  for (const auto& flag_value : *service_flags_value_raw) {
     const std::string& flag = flag_value.GetString();
     if (flag.size())
       out_service_flags->push_back(flag);

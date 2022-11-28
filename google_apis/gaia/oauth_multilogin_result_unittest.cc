@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -86,9 +86,7 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
         }
       )";
 
-  std::unique_ptr<base::DictionaryValue> dictionary_value =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(data));
-  result.TryParseCookiesFromValue(dictionary_value.get());
+  result.TryParseCookiesFromValue(base::test::ParseJsonDict(data));
 
   base::Time time_now = base::Time::Now();
   base::Time expiration_time = (time_now + base::Seconds(34560000.));
@@ -755,9 +753,7 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
   ]
 })";
 
-  std::unique_ptr<base::DictionaryValue> dictionary_value =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(data));
-  result.TryParseCookiesFromValue(dictionary_value.get());
+  result.TryParseCookiesFromValue(base::test::ParseJsonDict(data));
 
   ASSERT_EQ((int)result.cookies().size(), 31);
 
