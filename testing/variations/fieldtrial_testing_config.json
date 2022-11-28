@@ -4575,6 +4575,24 @@
             ]
         }
     ],
+    "FeedPerformanceStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "useIncrementalMount": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedPositionAndroid": [
         {
             "platforms": [
