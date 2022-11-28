@@ -5,6 +5,8 @@
 #ifndef UI_BASE_RESOURCE_MOCK_RESOURCE_BUNDLE_DELEGATE_H_
 #define UI_BASE_RESOURCE_MOCK_RESOURCE_BUNDLE_DELEGATE_H_
 
+#include <string>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 

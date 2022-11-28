@@ -5,8 +5,11 @@
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
 
 #include <algorithm>
+#include <map>
+#include <memory>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"

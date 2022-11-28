@@ -5,6 +5,8 @@
 #ifndef UI_BASE_RESOURCE_DATA_PACK_WITH_RESOURCE_SHARING_LACROS_H_
 #define UI_BASE_RESOURCE_DATA_PACK_WITH_RESOURCE_SHARING_LACROS_H_
 
+#include <map>
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"

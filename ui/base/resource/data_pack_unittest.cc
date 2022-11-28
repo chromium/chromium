@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
+#include <string>
 #include <utility>
 
 #include "base/files/file.h"

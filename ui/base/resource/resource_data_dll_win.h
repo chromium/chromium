@@ -8,6 +8,9 @@
 #include <windows.h>
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "ui/base/resource/resource_handle.h"
 
 namespace ui {

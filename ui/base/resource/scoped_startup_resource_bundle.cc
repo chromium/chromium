@@ -4,12 +4,12 @@
 
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
-
-#include "base/logging.h"
 
 namespace ui {
 

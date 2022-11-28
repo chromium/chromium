@@ -5,8 +5,11 @@
 #include "ui/base/resource/data_pack.h"
 
 #include <errno.h>
+
 #include <algorithm>
+#include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"

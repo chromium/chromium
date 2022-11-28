@@ -4,6 +4,8 @@
 
 #include "ui/base/resource/resource_bundle_android.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/android/apk_assets.h"

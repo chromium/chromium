@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/image_operations.h"
