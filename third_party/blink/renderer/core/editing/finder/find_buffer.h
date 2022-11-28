@@ -78,11 +78,16 @@ class CORE_EXPORT FindBuffer {
             const String& search_text,
             const blink::FindOptions options);
 
-    class CORE_EXPORT Iterator
-        : public std::iterator<std::forward_iterator_tag, BufferMatchResult> {
+    class CORE_EXPORT Iterator {
       STACK_ALLOCATED();
 
      public:
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = BufferMatchResult;
+      using difference_type = std::ptrdiff_t;
+      using pointer = BufferMatchResult*;
+      using reference = BufferMatchResult&;
+
       Iterator() = default;
       Iterator(const FindBuffer& find_buffer,
                TextSearcherICU* text_searcher,

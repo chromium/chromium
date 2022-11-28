@@ -42,11 +42,16 @@ class PLATFORM_EXPORT DisplayItemList {
   // Declares itself as a forward iterator, but also supports a few more
   // things. The whole random access iterator interface is a bit much.
   template <typename BaseIterator, typename ItemType>
-  class IteratorWrapper
-      : public std::iterator<std::forward_iterator_tag, ItemType> {
+  class IteratorWrapper {
     DISALLOW_NEW();
 
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = ItemType;
+    using difference_type = std::ptrdiff_t;
+    using pointer = ItemType*;
+    using reference = ItemType&;
+
     IteratorWrapper() = default;
     explicit IteratorWrapper(const BaseIterator& it) : it_(it) {}
 

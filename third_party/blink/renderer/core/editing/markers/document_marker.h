@@ -61,9 +61,14 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kCustomHighlight = 1 << kCustomHighlightMarkerIndex
   };
 
-  class MarkerTypesIterator
-      : public std::iterator<std::forward_iterator_tag, MarkerType> {
+  class MarkerTypesIterator {
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = MarkerType;
+    using difference_type = std::ptrdiff_t;
+    using pointer = MarkerType*;
+    using reference = MarkerType&;
+
     explicit MarkerTypesIterator(unsigned marker_types)
         : remaining_types_(marker_types) {}
     MarkerTypesIterator(const MarkerTypesIterator& other) = default;

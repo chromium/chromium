@@ -33,9 +33,14 @@ class BaseSetOperators {
 
   using Map = std::map<ElementIDType, std::unique_ptr<ElementType>>;
 
-  class const_iterator :
-    public std::iterator<std::input_iterator_tag, const ElementType*> {
+  class const_iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = const ElementType*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const ElementType**;
+    using reference = const ElementType*&;
+
     const_iterator(const typename Map::const_iterator& it) : it_(it) {}
     const_iterator(const const_iterator& ids_it) : it_(ids_it.it_) {}
 

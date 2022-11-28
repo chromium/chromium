@@ -96,11 +96,16 @@ class CORE_EXPORT TextOffsetMapping final {
     STACK_ALLOCATED();
 
    public:
-    class CORE_EXPORT Iterator
-        : public std::iterator<std::input_iterator_tag, InlineContents> {
+    class CORE_EXPORT Iterator {
       STACK_ALLOCATED();
 
      public:
+      using iterator_category = std::input_iterator_tag;
+      using value_type = InlineContents;
+      using difference_type = std::ptrdiff_t;
+      using pointer = InlineContents*;
+      using reference = InlineContents&;
+
       explicit Iterator(const InlineContents& current) : current_(current) {}
       Iterator() = default;
 
@@ -133,11 +138,16 @@ class CORE_EXPORT TextOffsetMapping final {
     STACK_ALLOCATED();
 
    public:
-    class CORE_EXPORT Iterator
-        : public std::iterator<std::forward_iterator_tag, InlineContents> {
+    class CORE_EXPORT Iterator {
       STACK_ALLOCATED();
 
      public:
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = InlineContents;
+      using difference_type = std::ptrdiff_t;
+      using pointer = InlineContents*;
+      using reference = InlineContents&;
+
       explicit Iterator(const InlineContents& current) : current_(current) {}
       Iterator() = default;
 
