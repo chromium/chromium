@@ -1226,7 +1226,7 @@ BASE_FEATURE(kWebAssemblyBaseline,
 // Enable memory protection for code JITed for WebAssembly.
 BASE_FEATURE(kWebAssemblyCodeProtection,
              "WebAssemblyCodeProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 // Use memory protection keys in userspace (PKU) (if available) to protect code
