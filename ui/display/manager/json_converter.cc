@@ -137,7 +137,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
   if (!field->is_list())
     return false;
 
-  const base::Value::ConstListView list = field->GetListDeprecated();
+  const base::Value::List& list = field->GetList();
   output->reserve(list.size());
 
   for (const base::Value& list_item : list) {
@@ -145,12 +145,12 @@ bool UpdateFromDict(const base::Value::Dict& dict,
       return false;
 
     DisplayPlacement item;
-    if (!UpdateFromDict(list_item.GetDict(), kOffsetKey, &item.offset) ||
-        !UpdateFromDict(list_item.GetDict(), kPositionKey, &item.position) ||
-        !UpdateFromDict(list_item.GetDict(), kDisplayPlacementDisplayIdKey,
+    const base::Value::Dict& item_dict = list_item.GetDict();
+    if (!UpdateFromDict(item_dict, kOffsetKey, &item.offset) ||
+        !UpdateFromDict(item_dict, kPositionKey, &item.position) ||
+        !UpdateFromDict(item_dict, kDisplayPlacementDisplayIdKey,
                         &item.display_id) ||
-        !UpdateFromDict(list_item.GetDict(),
-                        kDisplayPlacementParentDisplayIdKey,
+        !UpdateFromDict(item_dict, kDisplayPlacementParentDisplayIdKey,
                         &item.parent_display_id)) {
       return false;
     }
