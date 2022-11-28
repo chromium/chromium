@@ -2,13 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 TEST_PATTERNS = [r'.+_test.py$']
-STYLE_VAR_GEN_INPUTS = [r'^ui[\\/]chromeos[\\/]colors[\\/].+\.json5$']
+# Regex patterns which identify all source json5 files we currently use in
+# production. Note these patterns can assume the file path is always in unix
+# style i.e. a/b/c.
+STYLE_VAR_GEN_INPUTS = [
+    # Matches all json5 files which are in ui/chromeos/styles.
+    r'^ui\/chromeos\/styles\/.*\.json5$'
+]
 
 
-def _CommonChecks(input_api, output_api):
+def CheckCrosColorCSS(input_api, output_api):
     results = []
     try:
         import sys
@@ -27,7 +34,7 @@ def _CommonChecks(input_api, output_api):
         results += (
             style_variable_generator.presubmit_support.FindDeletedCSSVariables(
                 input_api, output_api, STYLE_VAR_GEN_INPUTS))
-        results = input_api.canned_checks.RunUnitTestsInDirectory(
+        results += input_api.canned_checks.RunUnitTestsInDirectory(
             input_api,
             output_api,
             '.',
@@ -37,11 +44,3 @@ def _CommonChecks(input_api, output_api):
     finally:
         sys.path = old_sys_path
     return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
