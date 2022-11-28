@@ -622,9 +622,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // Creates and returns an empty tree.
   static std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateEmptyTree(
       RenderFrameHostImpl* rfh);
-  // Creates and returns an empty tree before committing navigation.
   static std::unique_ptr<BackForwardCacheCanStoreTreeResult>
-  CreateEmptyTreeBeforeCommit(NavigationRequest* navigation);
+  CreateEmptyTreeForNavigation(NavigationRequest* navigation);
 
  private:
   friend class BackForwardCacheImplTest;
@@ -633,19 +632,16 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, FirstCrossOriginReachable);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
                            SecondCrossOriginReachable);
+  // This constructor is for creating a tree for |rfh| as the subtree's root
+  // document's frame.
   BackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl* rfh,
       const url::Origin& main_document_origin,
       const GURL& url,
       BackForwardCacheCanStoreDocumentResult& result_for_this_document);
 
-  BackForwardCacheCanStoreTreeResult(
-      BackForwardCacheCanStoreDocumentResult& result_for_this_document,
-      bool is_same_origin,
-      const std::string& id,
-      const std::string& name,
-      const std::string& src,
-      const GURL& url);
+  // Creates an empty placeholder tree with the empty result.
+  BackForwardCacheCanStoreTreeResult(bool is_same_origin, const GURL& url);
 
   // Helper function for |GetWebExposedNotRestoredReasons()|. |index| is the
   // random index of the cross-origin iframe that we decided to report
@@ -674,6 +670,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   const bool is_same_origin_;
   // The id, name and src attribute of the frame owner of this subtree's root
   // document.
+  // TODO(yuzus): Make them optional.
   const std::string id_;
   const std::string name_;
   const std::string src_;

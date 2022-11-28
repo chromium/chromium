@@ -134,10 +134,11 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   // Record metrics for history navigation, if applicable.
   if (IsCrossDocumentMainFrameHistoryNavigation(navigation)) {
     // We have to update not restored reasons even though we already did in
-    // |SendCommitNavigation()|, because at the commit we might create a new
-    // metrics object.
-    UpdateNotRestoredReasonsForNavigation(navigation, /*before_commit=*/false);
-
+    // |SendCommitNavigation()|, because the NavigationEntry and
+    // the BackForwardCacheMetrics object might not exist anymore, e.g. when the
+    // NavigationEntry got pruned by another navigation committing before the
+    // history navigation committed.
+    UpdateNotRestoredReasonsForNavigation(navigation);
     bool can_restore = page_store_result_->CanRestore();
     bool did_store = navigation->IsServedFromBackForwardCache();
     DCHECK_EQ(can_restore, did_store) << page_store_result_->ToString();
@@ -375,8 +376,7 @@ BackForwardCacheMetrics::GetWebExposedNotRestoredReasons() {
 }
 
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
-    NavigationRequest* navigation,
-    bool before_commit) {
+    NavigationRequest* navigation) {
   DCHECK(IsCrossDocumentMainFrameHistoryNavigation(navigation));
   BackForwardCacheCanStoreDocumentResult new_blocking_reasons;
   // |last_committed_cross_document_main_frame_navigation_id_| is -1 even though
@@ -388,6 +388,8 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     new_blocking_reasons.No(NotRestoredReason::kSessionRestored);
   }
 
+  // TODO(rakina): Remove this call from here and move it to
+  // |SetNotRestoredReasons()| that is called from |UnloadOldFrame()|.
   if (!DidSwapBrowsingInstance()) {
     new_blocking_reasons.No(NotRestoredReason::kBrowsingInstanceNotSwapped);
   }
@@ -407,11 +409,8 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
   // Initialize the empty tree result if nothing is set.
   if (!page_store_tree_result_) {
     page_store_tree_result_ =
-        before_commit
-            ? BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
-                  navigation)
-            : BackForwardCacheCanStoreTreeResult::CreateEmptyTree(
-                  navigation->GetRenderFrameHost());
+        BackForwardCacheCanStoreTreeResult::CreateEmptyTreeForNavigation(
+            navigation);
   }
   // Add the same reason to the root node of the tree once we update the
   // flattened list of reasons.
