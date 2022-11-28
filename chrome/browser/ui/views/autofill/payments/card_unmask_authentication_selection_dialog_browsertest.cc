@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,16 +13,27 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
 
+// Parameters of the CardUnmaskAuthenticationSelectionDialogBrowserTest.
+using ChallengeOptionTypes = std::vector<CardUnmaskChallengeOptionType>;
+using EnableCvcForVcnYellowPathIsEnabled = bool;
+
 class CardUnmaskAuthenticationSelectionDialogBrowserTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<
-          std::vector<CardUnmaskChallengeOptionType>> {
+          std::tuple<ChallengeOptionTypes,
+                     EnableCvcForVcnYellowPathIsEnabled>> {
  public:
-  CardUnmaskAuthenticationSelectionDialogBrowserTest() = default;
+  CardUnmaskAuthenticationSelectionDialogBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        /*feature=*/features::kAutofillEnableCvcForVcnYellowPath,
+        /*enabled=*/GetEnableCvcForVcnYellowPathIsEnabled());
+  }
+
   CardUnmaskAuthenticationSelectionDialogBrowserTest(
       const CardUnmaskAuthenticationSelectionDialogBrowserTest&) = delete;
   CardUnmaskAuthenticationSelectionDialogBrowserTest& operator=(
@@ -68,40 +80,69 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTest
         FromWebContents(browser()->tab_strip_model()->GetActiveWebContents());
   }
 
+  ChallengeOptionTypes GetChallengeOptionTypes() {
+    return std::get<0>(GetParam());
+  }
+
+  EnableCvcForVcnYellowPathIsEnabled GetEnableCvcForVcnYellowPathIsEnabled() {
+    return std::get<1>(GetParam());
+  }
+
  private:
   std::vector<CardUnmaskChallengeOption> challenge_options_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                         testing::Values(
-                             std::vector<CardUnmaskChallengeOptionType>{
-                                 CardUnmaskChallengeOptionType::kSmsOtp},
-                             std::vector<CardUnmaskChallengeOptionType>{
-                                 CardUnmaskChallengeOptionType::kSmsOtp,
-                                 CardUnmaskChallengeOptionType::kCvc}));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CardUnmaskAuthenticationSelectionDialogBrowserTest,
+    testing::Combine(testing::Values(
+                         std::vector<CardUnmaskChallengeOptionType>{
+                             CardUnmaskChallengeOptionType::kSmsOtp},
+                         std::vector<CardUnmaskChallengeOptionType>{
+                             CardUnmaskChallengeOptionType::kSmsOtp,
+                             CardUnmaskChallengeOptionType::kCvc}),
+                     testing::Bool()));
 
 // Ensures the UI can be shown.
 IN_PROC_BROWSER_TEST_P(CardUnmaskAuthenticationSelectionDialogBrowserTest,
                        InvokeUi_CardUnmaskAuthSelectionDialogDisplays) {
   base::HistogramTester histogram_tester;
-  SetChallengeOptionList(test::GetCardUnmaskChallengeOptions(GetParam()));
+  SetChallengeOptionList(
+      test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowAndVerifyUi();
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown", true, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"),
+      // If the CVC flag is on, then the count depends on the number of
+      // challenge options, i.e. `GetParam().size()`. If the CVC flag is
+      // off, it will always be 1.
+      base::BucketsAre(base::Bucket(GetEnableCvcForVcnYellowPathIsEnabled()
+                                        ? GetChallengeOptionTypes().size()
+                                        : 1,
+                                    1)));
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
 IN_PROC_BROWSER_TEST_P(CardUnmaskAuthenticationSelectionDialogBrowserTest,
                        CanCloseTabWhileDialogShowing) {
   base::HistogramTester histogram_tester;
-  SetChallengeOptionList(test::GetCardUnmaskChallengeOptions(GetParam()));
+  SetChallengeOptionList(
+      test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowUi("");
   VerifyUi();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown", true, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"),
+      // If the CVC flag is on, then the count depends on the number of
+      // challenge options, i.e. `GetParam().size()`. If the CVC flag is
+      // off, it will always be 1.
+      base::BucketsAre(base::Bucket(GetEnableCvcForVcnYellowPathIsEnabled()
+                                        ? GetChallengeOptionTypes().size()
+                                        : 1,
+                                    1)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUnmaskAuthenticationSelectionDialog.Result",
       AutofillMetrics::CardUnmaskAuthenticationSelectionDialogResultMetric::
@@ -113,13 +154,22 @@ IN_PROC_BROWSER_TEST_P(CardUnmaskAuthenticationSelectionDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(CardUnmaskAuthenticationSelectionDialogBrowserTest,
                        CanCloseBrowserWhileDialogShowing) {
   base::HistogramTester histogram_tester;
-  SetChallengeOptionList(test::GetCardUnmaskChallengeOptions(GetParam()));
+  SetChallengeOptionList(
+      test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowUi("");
   VerifyUi();
   browser()->window()->Close();
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown", true, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"),
+      // If the CVC flag is on, then the count depends on the number of
+      // challenge options, i.e. `GetParam().size()`. If the CVC flag is
+      // off, it will always be 1.
+      base::BucketsAre(base::Bucket(GetEnableCvcForVcnYellowPathIsEnabled()
+                                        ? GetChallengeOptionTypes().size()
+                                        : 1,
+                                    1)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUnmaskAuthenticationSelectionDialog.Result",
       AutofillMetrics::CardUnmaskAuthenticationSelectionDialogResultMetric::
@@ -132,7 +182,8 @@ IN_PROC_BROWSER_TEST_P(
     CardUnmaskAuthenticationSelectionDialogBrowserTest,
     CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected) {
   base::HistogramTester histogram_tester;
-  SetChallengeOptionList(test::GetCardUnmaskChallengeOptions(GetParam()));
+  SetChallengeOptionList(
+      test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowUi("");
   VerifyUi();
   // Put the dialog in pending state.

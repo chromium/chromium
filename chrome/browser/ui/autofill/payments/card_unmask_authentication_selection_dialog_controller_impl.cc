@@ -67,7 +67,8 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
       this, &GetWebContents());
 
   DCHECK(dialog_view_);
-  AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown();
+  AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown(
+      challenge_options_.size());
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::
