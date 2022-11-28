@@ -133,18 +133,21 @@ void ExpectMojomAcceleratorsEqual(
 // the data provided by `AcceleratorConfigurationProvider`.
 void ValidateAcceleratorLayouts(
     const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>&
-        actual_layout_infos,
-    mojom::AcceleratorSource expected_source) {
+        actual_layout_infos) {
   for (const auto& actual : actual_layout_infos) {
-    EXPECT_TRUE(ash::kAcceleratorLayouts.contains(actual->action));
-
-    const ash::AcceleratorLayoutDetails& expected =
-        ash::kAcceleratorLayouts.at(actual->action);
-
-    EXPECT_EQ(expected.category, actual->category);
-    EXPECT_EQ(expected.sub_category, actual->sub_category);
-    EXPECT_EQ(expected.layout_style, actual->style);
-    EXPECT_EQ(expected_source, actual->source);
+    // Iterate through `kAcceleratorLayouts` to find the matching action.
+    bool found_match = false;
+    for (const auto& expected_layout : kAcceleratorLayouts) {
+      if (expected_layout.action_id == actual->action) {
+        EXPECT_EQ(expected_layout.category, actual->category);
+        EXPECT_EQ(expected_layout.sub_category, actual->sub_category);
+        EXPECT_EQ(expected_layout.layout_style, actual->style);
+        EXPECT_EQ(expected_layout.source, actual->source);
+        found_match = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(found_match);
   }
 }
 
@@ -363,8 +366,7 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
   // correctly mapped layout details
   provider_->GetAcceleratorLayoutInfos(base::BindLambdaForTesting(
       [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
-        ValidateAcceleratorLayouts(actual_layout_infos,
-                                   mojom::AcceleratorSource::kAsh);
+        ValidateAcceleratorLayouts(actual_layout_infos);
       }));
 }
 

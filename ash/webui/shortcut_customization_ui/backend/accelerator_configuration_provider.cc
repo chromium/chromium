@@ -77,17 +77,16 @@ mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
 }
 
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
-    AcceleratorActionId action_id,
     AcceleratorLayoutDetails layout_details) {
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();
   layout_info->category = layout_details.category;
   layout_info->sub_category = layout_details.sub_category;
-  layout_info->description =
-      l10n_util::GetStringUTF16(kAcceleratorActionToStringIdMap.at(action_id));
+  layout_info->description = l10n_util::GetStringUTF16(
+      kAcceleratorActionToStringIdMap.at(layout_details.action_id));
   layout_info->style = layout_details.layout_style;
   layout_info->source = mojom::AcceleratorSource::kAsh;
-  layout_info->action = static_cast<uint32_t>(action_id);
+  layout_info->action = static_cast<uint32_t>(layout_details.action_id);
 
   return layout_info;
 }
@@ -148,10 +147,10 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
 
   UpdateKeyboards();
 
-  // Create LayoutInfos from kAcceleratorLayouts map. LayoutInfos are static
+  // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
-  for (const auto& [action_id, layout_details] : kAcceleratorLayouts) {
-    layout_infos_.push_back(LayoutInfoToMojom(action_id, layout_details));
+  for (const auto& layout_details : kAcceleratorLayouts) {
+    layout_infos_.push_back(LayoutInfoToMojom(layout_details));
   }
 }
 
