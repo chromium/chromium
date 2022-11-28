@@ -3,6 +3,11 @@
   --focus-border-width: 1px;
 }
 .navigation-item {
+  --active-shadow-rgb: transparent; /* Disable Active Shadow on cr-button */
+  --focus-shadow-color: transparent; /* Disable Focus Shadow on cr-button */
+  --hover-bg-color: var(--cros-ripple-color);
+  --ripple-opacity: 0; /* Disable Ripple on cr-button */
+
   align-items: center;
   border-block-end-width: var(--focus-border-width);
   border-block-start-width: var(--focus-border-width);
@@ -15,6 +20,7 @@
   cursor: pointer;
   display: flex;
   font-weight: 500;
+  justify-content: start;
   margin-bottom: 8px;
   margin-inline-end: 2px;
   min-height: 32px;
@@ -23,10 +29,6 @@
 
 .navigation-item:focus-visible {
   outline: var(--cros-focus-ring-color) solid var(--focus-border-width);
-}
-
-div:hover:not(.selected).navigation-item {
-  background-color: var(--cros-ripple-color);
 }
 
 .navigation-item.selected {
@@ -61,13 +63,13 @@ cr-expand-button {
 <div id="navigationSelectorComponent">
   <div id="navigationSelectorMenu">
     <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
-        <div class$="{{computeInitialClass_(item)}}" tabindex="0"
+        <cr-button class$="{{computeInitialClass_(item)}}" tabindex="0"
             part="navigation-item"
             on-click="onSelected_">
           <iron-icon class="icon" icon="[[item.icon]]"
             alt="" hidden="[[!item.icon]]"></iron-icon>
           [[item.name]]
-        </div>
+        </cr-button>
     </template>
   </div>
 </div>
