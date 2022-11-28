@@ -11,12 +11,15 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/color/color_id.h"
+
+using read_anything::mojom::Spacing;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingFontModel
@@ -77,19 +80,15 @@ class ReadAnythingColorsModel : public ui::ComboboxModel {
     int icon_asset;
 
     // The foreground color, used for text and icon hints.
-    SkColor foreground;
+    ui::ColorId foreground_color_id;
 
     // The background color, used for text background.
-    SkColor background;
-
-    // The foreground color as a ColorId, used for separators.
-    ui::ColorId foreground_color_id;
+    ui::ColorId background_color_id;
   };
 
   bool IsValidColorsIndex(size_t index);
   void SetDefaultColorsIndexFromPref(size_t index);
   ColorInfo& GetColorsAt(size_t index);
-  ui::ColorId GetForegroundColorId(size_t index);
   void SetIconColorId(ui::ColorId color_id);
 
   // Simple pass-through method so Init can set the starting state colors.
@@ -220,7 +219,12 @@ class ReadAnythingModel {
         const ui::AXTreeUpdate& snapshot,
         const std::vector<ui::AXNodeID>& content_node_ids) {}
     virtual void OnReadAnythingThemeChanged(
-        read_anything::mojom::ReadAnythingThemePtr new_theme) = 0;
+        std::string& font_name,
+        double font_scale,
+        ui::ColorId foreground_color_id,
+        ui::ColorId background_color_id,
+        read_anything::mojom::Spacing line_spacing,
+        read_anything::mojom::Spacing letter_spacing) = 0;
   };
 
   ReadAnythingModel();
@@ -244,6 +248,7 @@ class ReadAnythingModel {
   double GetValidFontScale(double font_scale);
   void DecreaseTextSize();
   void IncreaseTextSize();
+  void SetIconColorIds(ui::ColorId color_id);
   void SetSelectedColorsByIndex(size_t new_index);
   void SetSelectedLineSpacingByIndex(size_t new_index);
   void SetSelectedLetterSpacingByIndex(size_t new_index);
@@ -251,7 +256,6 @@ class ReadAnythingModel {
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
   double GetFontScale() { return font_scale_; }
   ReadAnythingColorsModel* GetColorsModel() { return colors_model_.get(); }
-  ui::ColorId GetForegroundColorId();
   ReadAnythingLineSpacingModel* GetLineSpacingModel() {
     return line_spacing_model_.get();
   }
@@ -262,23 +266,22 @@ class ReadAnythingModel {
  private:
   void NotifyAXTreeDistilled();
   void NotifyThemeChanged();
-  void SetIconColorIds(ui::ColorId color_id);
 
   // State:
 
   // Members of read_anything::mojom::ReadAnythingTheme:
-  std::string font_name_;
-  SkColor foreground_color_;
-  SkColor background_color_;
+  std::string font_name_ = kReadAnythingDefaultFontName;
+  ui::ColorId foreground_color_id_ = ui::kColorReadAnythingForeground;
+  ui::ColorId background_color_id_ = ui::kColorReadAnythingBackground;
 
   // A scale multiplier for font size (internal use only, not shown to user).
-  float font_scale_;
+  float font_scale_ = kReadAnythingDefaultFontScale;
 
-  read_anything::mojom::Spacing line_spacing_;
-  read_anything::mojom::Spacing letter_spacing_;
+  read_anything::mojom::Spacing line_spacing_ = Spacing::kDefault;
+  read_anything::mojom::Spacing letter_spacing_ = Spacing::kDefault;
 
   // Currently selected index for colors combobox
-  int colors_combobox_index_;
+  int colors_combobox_index_ = 0;
 
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
