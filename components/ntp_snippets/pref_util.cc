@@ -5,6 +5,7 @@
 #include "components/ntp_snippets/pref_util.h"
 
 #include <memory>
+#include <ostream>
 
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
