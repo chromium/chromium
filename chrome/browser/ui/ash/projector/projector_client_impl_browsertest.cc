@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -376,6 +377,8 @@ class ProjectorClientManagedTest
   }
 
  private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
       is_child() ? LoggedInUserMixin::LogInType::kChild
