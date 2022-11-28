@@ -86,16 +86,6 @@ BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnhancedProtection,
-             "SafeBrowsingEnhancedProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnhancedProtectionPhase2IOS,
-             "SafeBrowsingEnhancedProtectionPhase2IOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kEsbIphBubbleAndCollapseSettings,
              "EsbIphBubbleAndCollapseSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -246,10 +236,6 @@ constexpr struct {
 #endif
       {&kDelayedWarnings, true}, {&kDownloadBubble, true},
       {&kDownloadBubbleV2, true}, {&kDownloadTailoredWarnings, true},
-      {&kEnhancedProtection, true},
-#if BUILDFLAG(IS_IOS)
-      {&kEnhancedProtectionPhase2IOS, true},
-#endif
       {&kExtensionTelemetry, true},
       {&kExtensionTelemetryCookiesGetAllSignal, true},
       {&kExtensionTelemetryCookiesGetSignal, true},

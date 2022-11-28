@@ -332,15 +332,6 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on sites that users followed.";
 
-const char kEnhancedProtectionName[] = "Enable Enhanced Safe Browsing";
-const char kEnhancedProtectionDescription[] =
-    "Allows users to opt-in to Enhanced Safe Browsing";
-
-const char kEnhancedProtectionPhase2Name[] =
-    "Enable Enhanced Safe Browsing Phase 2";
-const char kEnhancedProtectionPhase2Description[] =
-    "Enable additional improvements related to Enhanced Safe Browsing";
-
 const char kTailoredSecurityIntegrationName[] =
     "Enable Tailored Security Integration";
 const char kTailoredSecurityIntegrationDescription[] =

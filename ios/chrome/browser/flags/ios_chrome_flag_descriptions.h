@@ -211,16 +211,6 @@ extern const char kDmTokenDeletionDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-// Title and description for the flag to enable kEnhancedProtection flag on
-// iOS.
-extern const char kEnhancedProtectionName[];
-extern const char kEnhancedProtectionDescription[];
-
-// Title and description for the flag to enable kEnhancedProtectionPhase2
-// flag on iOS.
-extern const char kEnhancedProtectionPhase2Name[];
-extern const char kEnhancedProtectionPhase2Description[];
-
 // Title and description for the flag to enable kTailoredSecurityIntegration
 // flag on iOS.
 extern const char kTailoredSecurityIntegrationName[];

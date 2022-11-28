@@ -440,9 +440,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
           break;
         case SafeBrowsingCheckRowStateSafe:
         case SafeBrowsingCheckRowStateUnsafe:  // Show Safe Browsing settings.
-          if (base::FeatureList::IsEnabled(
-                  safe_browsing::kEnhancedProtectionPhase2IOS))
-            [self.handler showSafeBrowsingPreferencePage];
+          [self.handler showSafeBrowsingPreferencePage];
           break;
       }
       break;
@@ -467,15 +465,9 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     case CheckStartItemType:
       return YES;
     case SafeBrowsingItemType:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kEnhancedProtectionPhase2IOS)) {
-        return safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
-                   safe_browsing::SafeBrowsingState::STANDARD_PROTECTION ||
-               self.safeBrowsingCheckRowState ==
-                   SafeBrowsingCheckRowStateUnsafe;
-      } else {
-        return NO;
-      }
+      return safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
+                 safe_browsing::SafeBrowsingState::STANDARD_PROTECTION ||
+             self.safeBrowsingCheckRowState == SafeBrowsingCheckRowStateUnsafe;
     case HeaderItem:
     case TimestampFooterItem:
       return NO;
@@ -1217,34 +1209,25 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
           [UIColor colorNamed:kGreenColor];
       self.safeBrowsingCheckItem.detailText =
           [self safeBrowsingCheckItemDetailText];
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kEnhancedProtectionPhase2IOS)) {
-        if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
-            safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
-          self.safeBrowsingCheckItem.accessoryType =
-              UITableViewCellAccessoryDisclosureIndicator;
-        }
+      if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
+          safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
+        self.safeBrowsingCheckItem.accessoryType =
+            UITableViewCellAccessoryDisclosureIndicator;
       }
       break;
     }
     case SafeBrowsingCheckRowStateUnsafe: {
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kEnhancedProtectionPhase2IOS)) {
-        UIImage* unSafeIconImage =
-            UseSymbols()
-                ? DefaultSymbolTemplateWithPointSize(
-                      kWarningFillSymbol, kTrailingSymbolImagePointSize)
-                : [[UIImage imageNamed:@"settings_unsafe_state"]
-                      imageWithRenderingMode:
-                          UIImageRenderingModeAlwaysTemplate];
-        self.safeBrowsingCheckItem.trailingImage = unSafeIconImage;
-        self.safeBrowsingCheckItem.trailingImageTintColor =
-            [UIColor colorNamed:kRedColor];
-        self.safeBrowsingCheckItem.accessoryType =
-            UITableViewCellAccessoryDisclosureIndicator;
-      } else {
-        self.safeBrowsingCheckItem.infoButtonHidden = NO;
-      }
+      UIImage* unSafeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kWarningFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_unsafe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      self.safeBrowsingCheckItem.trailingImage = unSafeIconImage;
+      self.safeBrowsingCheckItem.trailingImageTintColor =
+          [UIColor colorNamed:kRedColor];
+      self.safeBrowsingCheckItem.accessoryType =
+          UITableViewCellAccessoryDisclosureIndicator;
       self.safeBrowsingCheckItem.detailText = GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC);
       break;
@@ -1261,13 +1244,8 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       safe_browsing::GetSafeBrowsingState(*self.userPrefService);
   switch (safeBrowsingState) {
     case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kEnhancedProtectionPhase2IOS)) {
-        return GetNSString(
-            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION);
-      }
       return GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC);
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION);
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       return GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC);

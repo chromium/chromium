@@ -80,12 +80,6 @@ BASE_DECLARE_FEATURE(kDownloadBubbleV2);
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 
-// Enables Enhanced Safe Browsing. Launched on all platforms in M106.
-BASE_DECLARE_FEATURE(kEnhancedProtection);
-
-// Phase 2 of Enhanced Safe Browsing changes.
-BASE_DECLARE_FEATURE(kEnhancedProtectionPhase2IOS);
-
 // Enables instructional improvements when users are directed to the security
 // settings page to enable Enhanced Safe Browsing. Enables the In-page help
 // (IPH) Bubble to be shown when the user is referred from an ESB promotion.
