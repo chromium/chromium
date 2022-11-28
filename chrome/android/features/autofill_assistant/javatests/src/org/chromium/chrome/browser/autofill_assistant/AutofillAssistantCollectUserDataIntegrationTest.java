@@ -147,6 +147,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1394156")
     public void testEnterPayment() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
@@ -279,6 +280,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1394156")
     public void testFailingAutofillSendsProperError() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
