@@ -251,6 +251,7 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "components/oobe_carousel.js",
     "components/oobe_cr_lottie.js",
     "components/oobe_i18n_dropdown.js",
+    "components/oobe_screens_list.js",
     "components/oobe_slide.js",
     "components/progress_list_item.js",
     "components/security_token_pin.js",

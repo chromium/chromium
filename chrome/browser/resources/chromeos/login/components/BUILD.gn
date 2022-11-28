@@ -36,6 +36,7 @@ group("closure_compile") {
     ":oobe_i18n_dropdown",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
+    ":oobe_screens_list",
     ":oobe_select.m",
     ":oobe_slide",
     ":oobe_types.m",
@@ -204,6 +205,15 @@ js_library("oobe_network_icons.m") {
   extra_deps = [ ":oobe_network_icons_module" ]
 }
 
+js_library("oobe_screens_list") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_screens_list.js" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("oobe_select.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.m.js" ]
   deps = []
@@ -305,6 +315,7 @@ html_to_js("web_components") {
     "oobe_carousel.js",
     "oobe_cr_lottie.js",
     "oobe_i18n_dropdown.js",
+    "oobe_screens_list.js",
     "oobe_slide.js",
     "progress_list_item.js",
     "security_token_pin.js",

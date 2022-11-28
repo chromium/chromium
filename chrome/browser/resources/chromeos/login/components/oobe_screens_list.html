@@ -1,0 +1,91 @@
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+
+<!--
+  OOBE polymer element which is used to show a list of optional screens
+  that would be displayed in CHOOBE.
+  It has all styling for the screen_item element and can display
+  for each screen : Icon and a title.
+-->
+
+<style include="oobe-dialog-host-styles cros-color-overrides">
+  /* TODO(b/260302591) Update the color to semantic color. --> */
+  :host {
+    --cr-card-button-height: 150px;
+    --cr-card-button-checked: var(--google-blue-500);
+  }
+
+  #screensList {
+    column-gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .screen-title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-body-1-font);
+  }
+
+  .screen-item {
+    background-color: var(--cros-highlight-color);
+    border: none;
+    border-radius: 16px;
+    height: var(--cr-card-button-height);
+    margin-bottom: 16px;
+    padding: 0;
+    transition: color 250ms linear, background-color 250ms linear;
+    width: 100%;
+  }
+
+  .screen-icon  {
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    align-items: center;
+    align-self: center;
+    display: flex;
+    height: 32px;
+    margin-inline-end: 16px;
+    margin-inline-start: 24px ;
+    width: 32px;
+  }
+
+  .screen-title  {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-end: 16px;
+  }
+
+   /* If we have an odd number of screens then the last
+      screen will cover the entire row. */
+  .screen-item:nth-child(odd):last-of-type {
+    width: calc(200% + 16px);
+  }
+
+  .screen-item[checked=true] {
+    background-color: var(--cr-card-button-checked);
+  }
+
+  .screen-item[checked=true] .screen-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-primary-inverted);
+  }
+
+  .screen-item[checked=true] .screen-title {
+    color: var(--cros-button-label-color-primary);
+  }
+
+</style>
+<div id="screensList">
+  <template is="dom-repeat" items="{{screensList}}">
+    <cr-button class="screen-item" on-click="onclick_">
+      <div class="flex horizontal layout center-justified center">
+          <iron-icon class="screen-icon" icon="[[item.icon]]"></iron-icon>
+          <div class="screen-title">[[item.title]]</div>
+      </div>
+    </cr-button>
+  </template>
+</div>
