@@ -58,24 +58,24 @@ decltype(auto) ReturnByMove(T t) {
   return Return(ByMove(std::move(t)));
 }
 
-base::Value CreateDefaultRule() {
-  base::Value rule(base::Value::Type::DICTIONARY);
-  rule.SetStringKey("target_platform", "IOS");
-  rule.SetStringKey("version", "[75-)");
-  rule.SetStringKey("message_id", "test_message");
-  rule.SetStringKey("message_text", "message_text.json");
-  rule.SetStringKey("link_text", "link_text.json");
-  rule.SetStringKey("link_url", "https://example.com/some_link");
-  rule.SetIntKey("percent", 100);
-  rule.SetBoolKey("allow_silence", true);
+base::Value::Dict CreateDefaultRule() {
+  base::Value::Dict rule;
+  rule.Set("target_platform", "IOS");
+  rule.Set("version", "[75-)");
+  rule.Set("message_id", "test_message");
+  rule.Set("message_text", "message_text.json");
+  rule.Set("link_text", "link_text.json");
+  rule.Set("link_url", "https://example.com/some_link");
+  rule.Set("percent", 100);
+  rule.Set("allow_silence", true);
   return rule;
 }
 
 base::Value CreateDefaultTranslations(const std::string& text) {
-  base::Value translations(base::Value::Type::DICTIONARY);
-  translations.SetStringKey("en-US", "en-US:" + text);
-  translations.SetStringKey("zh-CN", "zh-CN:" + text);
-  return translations;
+  base::Value::Dict translations;
+  translations.Set("en-US", "en-US:" + text);
+  translations.Set("zh-CN", "zh-CN:" + text);
+  return base::Value(std::move(translations));
 }
 
 NotificationMessage CreateDefaultNotification() {
@@ -111,9 +111,9 @@ class NotificationClientTest : public ::testing::Test {
 };
 
 TEST_F(NotificationClientTest, NoRule) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -121,10 +121,10 @@ TEST_F(NotificationClientTest, NoRule) {
 }
 
 TEST_F(NotificationClientTest, DefaultRule) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -136,12 +136,12 @@ TEST_F(NotificationClientTest, DefaultRule) {
 }
 
 TEST_F(NotificationClientTest, PlatformNotMatched) {
-  base::Value rule = CreateDefaultRule();
-  rule.SetStringKey("target_platform", "ANDROID");
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("target_platform", "ANDROID");
+  base::Value::List rules;
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -149,12 +149,12 @@ TEST_F(NotificationClientTest, PlatformNotMatched) {
 }
 
 TEST_F(NotificationClientTest, VersionNotMatched) {
-  base::Value rule = CreateDefaultRule();
-  rule.SetStringKey("version", "[77-)");
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("version", "[77-)");
+  base::Value::List rules;
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -162,12 +162,12 @@ TEST_F(NotificationClientTest, VersionNotMatched) {
 }
 
 TEST_F(NotificationClientTest, OsVersionNotMatched) {
-  base::Value rule = CreateDefaultRule();
-  rule.SetStringKey("os_version", "(-15.1)");
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("os_version", "(-15.1)");
+  base::Value::List rules;
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -175,12 +175,12 @@ TEST_F(NotificationClientTest, OsVersionNotMatched) {
 }
 
 TEST_F(NotificationClientTest, OsVersionMatched) {
-  base::Value rule = CreateDefaultRule();
-  rule.SetStringKey("os_version", "[15-)");
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("os_version", "[15-)");
+  base::Value::List rules;
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -192,12 +192,12 @@ TEST_F(NotificationClientTest, OsVersionMatched) {
 }
 
 TEST_F(NotificationClientTest, UserNotSelected) {
-  base::Value rule = CreateDefaultRule();
-  rule.SetIntKey("percent", 0);
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("percent", 0);
+  base::Value::List rules;
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -205,14 +205,14 @@ TEST_F(NotificationClientTest, UserNotSelected) {
 }
 
 TEST_F(NotificationClientTest, SecondRuleMatches) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule_1 = CreateDefaultRule();
-  rule_1.SetStringKey("target_platform", "ANDROID");
-  rule_1.SetStringKey("message_text", "message_text_1.json");
+  base::Value::List rules;
+  base::Value::Dict rule_1 = CreateDefaultRule();
+  rule_1.Set("target_platform", "ANDROID");
+  rule_1.Set("message_text", "message_text_1.json");
   rules.Append(std::move(rule_1));
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -224,13 +224,13 @@ TEST_F(NotificationClientTest, SecondRuleMatches) {
 }
 
 TEST_F(NotificationClientTest, MultipleMatchingRules_FirstRuleSelected) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
-  base::Value rule_2 = CreateDefaultRule();
-  rule_2.SetStringKey("message_text", "message_text_2.json");
+  base::Value::Dict rule_2 = CreateDefaultRule();
+  rule_2.Set("message_text", "message_text_2.json");
   rules.Append(std::move(rule_2));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -242,10 +242,10 @@ TEST_F(NotificationClientTest, MultipleMatchingRules_FirstRuleSelected) {
 }
 
 TEST_F(NotificationClientTest, TextFilesNotFound) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::Value translation = CreateDefaultTranslations("message");
 
@@ -260,14 +260,14 @@ TEST_F(NotificationClientTest, TextFilesNotFound) {
 }
 
 TEST_F(NotificationClientTest, TranslationNotFound_FallbackToGenericLanguage) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::Value translations = CreateDefaultTranslations("message");
-  translations.RemoveKey("zh-CN");
-  translations.SetStringKey("zh", "zh:message");
+  translations.GetDict().Remove("zh-CN");
+  translations.GetDict().Set("zh", "zh:message");
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(std::move(translations)));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -281,13 +281,13 @@ TEST_F(NotificationClientTest, TranslationNotFound_FallbackToGenericLanguage) {
 }
 
 TEST_F(NotificationClientTest, TranslationNotFound_FallbackToEnglish) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::Value translations = CreateDefaultTranslations("message");
-  translations.RemoveKey("zh-CN");
+  translations.GetDict().Remove("zh-CN");
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(std::move(translations)));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -304,10 +304,10 @@ TEST_F(NotificationClientTest,
        GenericLanguageTranslationNotFound_FallbackToEnglish) {
   Reset(/* should_ignore_dev_messages= */ false, /* test_locale= */ "es");
 
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
@@ -323,10 +323,10 @@ TEST_F(NotificationClientTest,
 }
 
 TEST_F(NotificationClientTest, NoAvailableTranslation) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   rules.Append(CreateDefaultRule());
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(base::Value(base::Value::Type::DICTIONARY)));
@@ -339,12 +339,12 @@ TEST_F(NotificationClientTest, NoAvailableTranslation) {
 }
 
 TEST_F(NotificationClientTest, ReleaseBuildsIgnoreDevMessages) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.SetBoolKey("dev_mode", true);
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("dev_mode", true);
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -352,12 +352,12 @@ TEST_F(NotificationClientTest, ReleaseBuildsIgnoreDevMessages) {
 }
 
 TEST_F(NotificationClientTest, ReleaseBuildsDontIgnoreDevMessages) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.SetBoolKey("dev_mode", false);
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("dev_mode", false);
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -371,12 +371,12 @@ TEST_F(NotificationClientTest, ReleaseBuildsDontIgnoreDevMessages) {
 TEST_F(NotificationClientTest, DebugBuildsDontIgnoreDevMessages) {
   Reset(/* should_ignore_dev_messages */ false);
 
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.SetBoolKey("dev_mode", true);
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("dev_mode", true);
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -388,12 +388,12 @@ TEST_F(NotificationClientTest, DebugBuildsDontIgnoreDevMessages) {
 }
 
 TEST_F(NotificationClientTest, AllowSilenceNotSet_DefaultToFalse) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.RemoveKey("allow_silence");
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Remove("allow_silence");
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
@@ -408,12 +408,12 @@ TEST_F(NotificationClientTest, AllowSilenceNotSet_DefaultToFalse) {
 
 TEST_F(NotificationClientTest,
        EmptyUserEmailAndNot100PercentRollout_NoNotification) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.SetIntKey("percent", 99);
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("percent", 99);
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
@@ -422,12 +422,12 @@ TEST_F(NotificationClientTest,
 
 TEST_F(NotificationClientTest,
        EmptyUserEmailAnd100PercentRollout_ReturnsNotification) {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value rule = CreateDefaultRule();
-  rule.SetIntKey("percent", 100);
+  base::Value::List rules;
+  base::Value::Dict rule = CreateDefaultRule();
+  rule.Set("percent", 100);
   rules.Append(std::move(rule));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
-      .WillOnce(ReturnByMove(std::move(rules)));
+      .WillOnce(ReturnByMove(base::Value(std::move(rules))));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
       .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))

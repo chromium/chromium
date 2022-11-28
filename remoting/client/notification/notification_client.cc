@@ -76,13 +76,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 template <typename T, typename IsTChecker, typename TGetter>
-bool FindKeyAndGet(const base::Value& dict,
+bool FindKeyAndGet(const base::Value::Dict& dict,
                    const std::string& key,
                    T* out,
                    IsTChecker is_t_checker,
                    TGetter t_getter,
                    const std::string& type_name) {
-  const base::Value* value = dict.FindKey(key);
+  const base::Value* value = dict.Find(key);
   if (!value) {
     LOG(WARNING) << "|" << key << "| not found in dictionary.";
     return false;
@@ -95,7 +95,7 @@ bool FindKeyAndGet(const base::Value& dict,
   return true;
 }
 
-bool FindKeyAndGet(const base::Value& dict,
+bool FindKeyAndGet(const base::Value::Dict& dict,
                    const std::string& key,
                    std::string* out) {
   const std::string& (base::Value::*get_string_fp)() const =
@@ -104,12 +104,16 @@ bool FindKeyAndGet(const base::Value& dict,
                        "string");
 }
 
-bool FindKeyAndGet(const base::Value& dict, const std::string& key, int* out) {
+bool FindKeyAndGet(const base::Value::Dict& dict,
+                   const std::string& key,
+                   int* out) {
   return FindKeyAndGet(dict, key, out, &base::Value::is_int,
                        &base::Value::GetInt, "int");
 }
 
-bool FindKeyAndGet(const base::Value& dict, const std::string& key, bool* out) {
+bool FindKeyAndGet(const base::Value::Dict& dict,
+                   const std::string& key,
+                   bool* out) {
   return FindKeyAndGet(dict, key, out, &base::Value::is_bool,
                        &base::Value::GetBool, "bool");
 }
@@ -173,9 +177,10 @@ class MessageAndLinkTextResults
       NotifyFetchFailed();
       return;
     }
+
+    const base::Value::Dict& dict = translations->GetDict();
     bool is_translation_found = false;
-    is_translation_found =
-        FindKeyAndGet(*translations, locale_, string_to_update);
+    is_translation_found = FindKeyAndGet(dict, locale_, string_to_update);
     if (!is_translation_found) {
       LOG(WARNING) << "Failed to find translation for locale " << locale_
                    << ". Looking for parent locales instead.";
@@ -185,7 +190,7 @@ class MessageAndLinkTextResults
         // Locales returned by GetParentLocales() use "_" instead of "-", which
         // need to be fixed.
         std::replace(parent_locale.begin(), parent_locale.end(), '_', '-');
-        if (FindKeyAndGet(*translations, parent_locale, string_to_update)) {
+        if (FindKeyAndGet(dict, parent_locale, string_to_update)) {
           LOG(WARNING) << "Locale " << parent_locale
                        << " is being used instead.";
           is_translation_found = true;
@@ -199,7 +204,7 @@ class MessageAndLinkTextResults
           << " is found in translations. Falling back to default locale: "
           << kDefaultLocale;
       is_translation_found =
-          FindKeyAndGet(*translations, kDefaultLocale, string_to_update);
+          FindKeyAndGet(dict, kDefaultLocale, string_to_update);
     }
     if (!is_translation_found) {
       LOG(ERROR) << "Failed to find translation for default locale";
@@ -288,11 +293,12 @@ void NotificationClient::OnRulesFetched(const std::string& user_email,
     return;
   }
 
-  for (const auto& rule : rules->GetListDeprecated()) {
+  for (const auto& rule : rules->GetList()) {
     std::string message_text_filename;
     std::string link_text_filename;
-    auto message = ParseAndMatchRule(rule, user_email, &message_text_filename,
-                                     &link_text_filename);
+    auto message =
+        ParseAndMatchRule(rule.GetDict(), user_email, &message_text_filename,
+                          &link_text_filename);
 
     if (message) {
       FetchTranslatedTexts(message_text_filename, link_text_filename,
@@ -305,7 +311,7 @@ void NotificationClient::OnRulesFetched(const std::string& user_email,
 }
 
 absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
-    const base::Value& rule,
+    const base::Value::Dict& rule,
     const std::string& user_email,
     std::string* out_message_text_filename,
     std::string* out_link_text_filename) {
