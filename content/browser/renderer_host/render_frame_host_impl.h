@@ -288,6 +288,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public blink::mojom::AssociatedInterfaceProvider,
       public blink::mojom::BackForwardCacheControllerHost,
       public blink::mojom::LocalFrameHost,
+      public blink::mojom::NonAssociatedLocalFrameHost,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
       public network::mojom::CookieAccessObserver,
@@ -2008,6 +2009,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindRenderAccessibilityHost(
       mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver);
 
+  void BindNonAssociatedLocalFrameHost(
+      mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost>
+          receiver);
+
   // Prerender2:
   // Tells PrerenderHostRegistry to cancel the prerendering of the page this
   // frame is in, which destroys this frame.
@@ -2240,7 +2245,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
-  void WillPotentiallyStartNavigation(const GURL& url) override;
+  void WillPotentiallyStartOutermostMainFrameNavigation(
+      const GURL& url) override;
   void UpdateFaviconURL(
       std::vector<blink::mojom::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;
@@ -4077,6 +4083,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::AssociatedRemote<mojom::FrameBindingsControl> frame_bindings_control_;
   mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>
       local_frame_host_receiver_{this};
+  mojo::Receiver<blink::mojom::NonAssociatedLocalFrameHost>
+      non_associated_local_frame_host_receiver_{this};
   // Should only be bound when the frame is a swapped in main frame.
   mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>
       local_main_frame_host_receiver_{this};

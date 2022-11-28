@@ -128,6 +128,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
@@ -981,6 +982,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::RenderAccessibilityHost>(
       base::BindRepeating(&RenderFrameHostImpl::BindRenderAccessibilityHost,
+                          base::Unretained(host)));
+
+  map->Add<blink::mojom::NonAssociatedLocalFrameHost>(
+      base::BindRepeating(&RenderFrameHostImpl::BindNonAssociatedLocalFrameHost,
                           base::Unretained(host)));
 
 #if BUILDFLAG(IS_FUCHSIA)

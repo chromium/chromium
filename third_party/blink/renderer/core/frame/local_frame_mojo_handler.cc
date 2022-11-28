@@ -402,6 +402,10 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
           frame.GetTaskRunner(TaskType::kInternalDefault)));
 #endif
 
+  frame.GetBrowserInterfaceBroker().GetInterface(
+      non_associated_local_frame_host_remote_.BindNewPipeAndPassReceiver(
+          frame.GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame)));
+
   frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       local_frame_host_remote_.BindNewEndpointAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
@@ -428,6 +432,7 @@ void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(reporting_service_);
   visitor->Trace(device_posture_provider_service_);
   visitor->Trace(local_frame_host_remote_);
+  visitor->Trace(non_associated_local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);

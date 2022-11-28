@@ -5212,10 +5212,12 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
                                     std::move(dialog_closed_callback));
 }
 
-void RenderFrameHostImpl::WillPotentiallyStartNavigation(const GURL& url) {
-  TRACE_EVENT1("navigation",
-               "RenderFrameHostImpl::WillPotentiallyStartNavigation", "url",
-               url);
+void RenderFrameHostImpl::WillPotentiallyStartOutermostMainFrameNavigation(
+    const GURL& url) {
+  TRACE_EVENT2(
+      "navigation",
+      "RenderFrameHostImpl::WillPotentiallyStartOutermostMainFrameNavigation",
+      "url", url, "render_frame_host", this);
 
   GURL filtered_url(url);
   GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
@@ -10275,6 +10277,11 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
   render_accessibility_host_ax_tree_id_ = ax_tree_id;
   render_accessibility_host_.AsyncCall(&RenderAccessibilityHost::Bind)
       .WithArgs(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
+    mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost> receiver) {
+  non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
 }
 
 bool RenderFrameHostImpl::CancelPrerendering(

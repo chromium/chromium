@@ -1545,8 +1545,6 @@ NavigationRequest::NavigationRequest(
               ? absl::make_optional(
                     FencedFrameURLMapping::FencedFrameProperties())
               : absl::nullopt) {
-  TRACE_EVENT1("navigation", "NavigationRequest::NavigationRequest", "url",
-               GetURL());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -1588,6 +1586,8 @@ NavigationRequest::NavigationRequest(
     base::debug::DumpWithoutCrashing();
   }
 
+  TRACE_EVENT1("navigation", "NavigationRequest::NavigationRequest",
+               "navigation_request", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
                                     navigation_id_, "navigation_request", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",

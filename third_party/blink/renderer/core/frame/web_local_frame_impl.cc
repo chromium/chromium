@@ -2723,9 +2723,9 @@ void WebLocalFrameImpl::DownloadURL(
                           std::move(blob_url_token));
 }
 
-void WebLocalFrameImpl::WillPotentiallyStartNavigation(
+void WebLocalFrameImpl::WillPotentiallyStartOutermostMainFrameNavigation(
     const WebURL& url) const {
-  GetFrame()->WillPotentiallyStartNavigation(url);
+  GetFrame()->WillPotentiallyStartOutermostMainFrameNavigation(url);
 }
 
 bool WebLocalFrameImpl::WillStartNavigation(const WebNavigationInfo& info) {

@@ -388,6 +388,7 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   frame_.reset();
   frame_bindings_control_.reset();
   local_frame_host_receiver_.reset();
+  non_associated_local_frame_host_receiver_.reset();
   local_main_frame_host_receiver_.reset();
 
   broker_receiver_.reset();

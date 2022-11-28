@@ -410,15 +410,6 @@ interface LocalFrameHost {
   [Sync]
   RunBeforeUnloadConfirm(bool is_reload) => (bool success);
 
-  // Notifies that a renderer-initiated navigation to |url| will
-  // potentially start soon. This is fired before the beforeunload event
-  // (if it's needed) gets dispatched in the renderer, so that the
-  // browser can speculatively start service worker before processing
-  // beforeunload event, which might take a long time. Note that the
-  // navigation might not actually start, e.g. if it gets canceled by
-  // beforeunload.
-  WillPotentiallyStartNavigation(url.mojom.Url url);
-
   // Notifies that the urls for the favicon of a site has been determined.
   UpdateFaviconURL(array<FaviconURL> favicon_urls);
 
@@ -620,6 +611,26 @@ interface LocalFrameHost {
       RemoteFrameInterfacesFromRenderer remote_frame_interfaces,
       blink.mojom.RemoteFrameToken frame_token,
       mojo_base.mojom.UnguessableToken devtools_frame_token);
+};
+
+// Implemented in Browser, this interface defines frame-specific methods
+// that will be invoked from the renderer process
+// (e.g. blink::LocalFrame) but processed at a higher priority than
+// methods invoked on the LocalFrameHost interface.
+//
+// Note this interface is not a channel-associated interface and as such
+// there are no ordering guarantees for messages sent on this interface
+// against the messages sent on LocalFrameHost. This interface is for
+// experimental purposes (https://crbug.com/1377753).
+interface NonAssociatedLocalFrameHost {
+  // Notifies that a renderer-initiated navigation to |url| will
+  // potentially start soon. This is fired before the beforeunload event
+  // (if it's needed) gets dispatched in the renderer, so that the
+  // browser can speculatively start service worker before processing
+  // beforeunload event, which might take a long time. Note that the
+  // navigation might not actually start, e.g. if it gets canceled by
+  // beforeunload.
+  WillPotentiallyStartOutermostMainFrameNavigation(url.mojom.Url url);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

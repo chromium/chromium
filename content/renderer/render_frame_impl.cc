@@ -5172,10 +5172,10 @@ void RenderFrameImpl::BeginNavigation(
     }
   }
 
-  if (IsTopLevelNavigation(frame_) && url.SchemeIsHTTPOrHTTPS() &&
+  if (frame_->IsOutermostMainFrame() && url.SchemeIsHTTPOrHTTPS() &&
       !url.is_empty() &&
       base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
-    frame_->WillPotentiallyStartNavigation(url);
+    frame_->WillPotentiallyStartOutermostMainFrameNavigation(url);
   }
 
   if (info->navigation_policy == blink::kWebNavigationPolicyCurrentTab) {
