@@ -96,7 +96,7 @@ try_.orchestrator_builder(
     name = "android-arm64-rel",
     mirrors = [
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
-        "ci/android-pie-arm64-rel",  # Pixel 2 on Pie
+        #"ci/android-pie-arm64-rel",  # Pixel 2 on Pie
     ],
     description_html = "This builder may trigger tests on multiple Android versions.",
     try_settings = builder_config.try_settings(
