@@ -42,7 +42,8 @@
   :host {
     --background-color-pressed: var(--cros-icon-color-selection);
     --background-color-unpressed: var(--cros-highlight-color);
-    --background-color-tested: var(--cros-text-highlight-color);
+    --background-color-tested: rgba(var(--cros-icon-color-selection-rgb),
+        var(--cros-second-tone-opacity));
     --border-color: var(--cros-icon-color-prominent);
     --border-radius:
         var(--keyboard-key-top-radii, 3px)
@@ -51,8 +52,8 @@
         3px;
     --icon-size: var(--keyboard-key-icon-size, 100%);
     --travel: var(--keyboard-key-travel, 3px);
-    --foreground-color-unpressed: var(--cros-icon-color-prominent);
-    --foreground-color-pressed: var(--cros-button-icon-color-primary);
+    --text-color-unpressed: var(--cros-icon-color-prominent);
+    --text-color-pressed: var(--cros-button-icon-color-primary);
 
     position: relative;
   }
@@ -63,7 +64,7 @@
     border-radius: var(--border-radius);
     border-top-width: var(--keyboard-key-border-top-width, 1px);
     bottom: var(--travel);
-    color: var(--foreground-color-unpressed);
+    color: var(--text-color-unpressed);
     display: grid;
     font-family: 'Google Sans', sans-serif;
     grid-auto-columns: 1fr;
@@ -91,7 +92,7 @@
   }
 
   iron-icon {
-    --iron-icon-fill-color: var(--foreground-color-unpressed);
+    --iron-icon-fill-color: var(--text-color-unpressed);
     --iron-icon-height: var(--icon-size);
     --iron-icon-width: var(--icon-size);
     align-self: center;
@@ -142,8 +143,9 @@
 
   :host([state='pressed']) #key {
     background-color: var(--background-color-pressed);
+    border-color: var(--background-color-pressed);
     bottom: 0;
-    color: var(--foreground-color-pressed);
+    color: var(--text-color-pressed);
     top: var(--travel);
   }
 
@@ -153,7 +155,7 @@
   }
 
   :host([state='pressed']) iron-icon {
-    --iron-icon-fill-color: var(--foreground-color-pressed);
+    --iron-icon-fill-color: var(--text-color-pressed);
   }
 
   :host([state='tested']) #key {
@@ -190,13 +192,6 @@
 
   :host(.disabled) #shadow {
     background-color: var(--cros-bg-color-dropped-elevation-2);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --background-color-tested: rgba(var(--google-blue-600-rgb),
-        var(--cros-second-tone-opacity));
-    }
   }
 </style>
 <div id="shadow"></div>
