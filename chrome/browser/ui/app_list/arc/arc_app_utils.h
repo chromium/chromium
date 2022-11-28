@@ -15,8 +15,6 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

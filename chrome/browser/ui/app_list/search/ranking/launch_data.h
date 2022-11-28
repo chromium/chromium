@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 
 namespace app_list {
 
@@ -23,10 +22,6 @@ struct LaunchData {
   // The type of the result.
   ash::AppListSearchResultType result_type =
       ash::AppListSearchResultType::kUnknown;
-  // The type of the result used for ranking.
-  // TODO(crbug.com/1378861): This is no longer needed and can be removed when
-  // the search_result_ranker/ directory is removed.
-  RankingItemType ranking_item_type = RankingItemType::kUnknown;
   ash::AppListLaunchedFrom launched_from =
       ash::AppListLaunchedFrom::kLaunchedFromShelf;
   // The type of app launched.

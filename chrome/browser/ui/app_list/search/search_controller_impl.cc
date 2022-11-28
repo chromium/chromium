@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
@@ -394,17 +395,17 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
         .SetApp(last_launched_app_id_)
         .SetSearchQuery(query)
         .SetSearchQueryLength(query.size())
-        .SetProviderType(static_cast<int>(launch_data.ranking_item_type))
+        .SetProviderType(static_cast<int>(launch_data.result_type))
         .SetHour(now_exploded.hour)
         .SetScore(launch_data.score)
         .Record();
 
     // Only record the last launched app if the hashed logging feature flag is
     // enabled, because it is only used by hashed logging.
-    if (launch_data.ranking_item_type == RankingItemType::kApp) {
+    if (IsResultTypeApp(launch_data.result_type)) {
       last_launched_app_id_ = NormalizeId(launch_data.id);
-    } else if (launch_data.ranking_item_type ==
-               RankingItemType::kArcAppShortcut) {
+    } else if (launch_data.result_type ==
+               ash::AppListSearchResultType::kArcAppShortcut) {
       last_launched_app_id_ =
           RemoveAppShortcutLabel(NormalizeId(launch_data.id));
     }
@@ -416,7 +417,7 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
   // CrOS action recorder.
   CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(
       {base::StrCat({"SearchResultLaunched-", NormalizeId(launch_data.id)})},
-      {{"ResultType", static_cast<int>(launch_data.ranking_item_type)},
+      {{"ResultType", static_cast<int>(launch_data.result_type)},
        {"Query", static_cast<int>(base::HashMetricName(query))}});
 
   // Train all search result ranking models.

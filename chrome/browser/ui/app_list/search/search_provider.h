@@ -13,9 +13,14 @@
 
 class ChromeSearchResult;
 
+namespace ash {
+
+enum class AppListSearchResultType;
+
+}  // namespace ash
+
 namespace app_list {
 
-enum class RankingItemType;
 class SearchController;
 
 class SearchProvider {
@@ -45,9 +50,10 @@ class SearchProvider {
   virtual void StopZeroState() {}
 
   // Handles training signals if necessary. A given |SearchProvider| may receive
-  // training signals for results of any |RankingItemType|, so it is the
+  // training signals for results of any |AppListSearchResultType|, so it is the
   // |SearchProvider|'s responsibility to check |type| and ignore if necessary.
-  virtual void Train(const std::string& id, RankingItemType type) {}
+  virtual void Train(const std::string& id, ash::AppListSearchResultType type) {
+  }
   // Returns the main result type created by this provider.
   virtual ash::AppListSearchResultType ResultType() const = 0;
 

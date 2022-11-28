@@ -28,11 +28,11 @@
 #include "chrome/browser/ui/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_watcher.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
@@ -211,8 +211,6 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   app_list::LaunchData launch_data;
   launch_data.id = result_id;
   launch_data.result_type = result->result_type();
-  launch_data.ranking_item_type =
-      app_list::RankingItemTypeFromSearchResult(*result);
   launch_data.launch_type = launch_type;
   launch_data.launched_from = launched_from;
   launch_data.suggestion_index = suggestion_index;
@@ -221,7 +219,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   const size_t last_query_length = search_controller_->get_query().size();
   if (launch_type == ash::AppListLaunchType::kAppSearchResult &&
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox &&
-      launch_data.ranking_item_type == app_list::RankingItemType::kApp &&
+      app_list::IsResultTypeApp(launch_data.result_type) &&
       last_query_length != 0) {
     ash::RecordSuccessfulAppLaunchUsingSearch(launched_from, last_query_length);
   }
@@ -345,8 +343,6 @@ void AppListClientImpl::ActivateItem(int profile_id,
     // We don't have easy access to the search result type here, so
     // launch_data.result_type isn't set. However we have no need to distinguish
     // the type of apps launched from the grid in SearchController::Train.
-    launch_data.ranking_item_type =
-        app_list::RankingItemTypeFromChromeAppListItem(*item);
     launch_data.launched_from = launched_from;
     search_controller_->Train(std::move(launch_data));
   }

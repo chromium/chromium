@@ -19,21 +19,15 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -49,13 +43,11 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chrome/common/pref_names.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
@@ -63,7 +55,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -792,7 +783,6 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
   launch_data.id =
       ConstructArcAppShortcutUrl(arc_shelf_id.app_id(), shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;
-  launch_data.ranking_item_type = app_list::RankingItemType::kArcAppShortcut;
   app_list_client_impl->search_controller()->Train(std::move(launch_data));
 }
 

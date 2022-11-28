@@ -35,7 +35,6 @@ namespace app_list {
 
 class SearchMetricsManager;
 class SearchProvider;
-enum class RankingItemType;
 
 class SearchControllerImpl : public SearchController {
  public:

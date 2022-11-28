@@ -2179,8 +2179,6 @@ static_library("ui") {
       "app_list/search/ranking/ranker.h",
       "app_list/search/ranking/ranker_manager.cc",
       "app_list/search/ranking/ranker_manager.h",
-      "app_list/search/ranking/ranking_item_util.cc",
-      "app_list/search/ranking/ranking_item_util.h",
       "app_list/search/ranking/removed_results_ranker.cc",
       "app_list/search/ranking/removed_results_ranker.h",
       "app_list/search/ranking/score_normalizing_ranker.cc",

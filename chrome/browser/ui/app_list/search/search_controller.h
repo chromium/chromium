@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -34,7 +33,6 @@ namespace app_list {
 
 class AppSearchDataSource;
 class SearchProvider;
-enum class RankingItemType;
 
 // Common types used throughout result ranking.
 //
@@ -67,7 +65,7 @@ class SearchController {
         const std::vector<const ChromeSearchResult*>& results) {}
   };
 
-  virtual ~SearchController() {}
+  virtual ~SearchController() = default;
 
   virtual void StartSearch(const std::u16string& query) = 0;
   virtual void ClearSearch() = 0;

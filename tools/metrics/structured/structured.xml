@@ -227,7 +227,7 @@
     <metric name="ProviderType" type="int">
       <summary>
         Which type of search provider the launched result was created by. This comes
-        from the RankingItemType enum.
+        from the AppListSearchResultType enum.
       </summary>
     </metric>
     <metric name="Score" type="int">
