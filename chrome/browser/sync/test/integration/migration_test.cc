@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -14,9 +13,8 @@
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
-#include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service_impl.h"
-#include "components/translate/core/browser/translate_prefs.h"
 #include "content/public/test/browser_test.h"
 
 using bookmarks_helper::AddURL;
@@ -119,6 +117,14 @@ class MigrationTest : public SyncTest {
 
     // Doesn't make sense to migrate commit only types.
     preferred_data_types.RemoveAll(syncer::CommitOnlyTypes());
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+      // The "SyncEnableHistoryDataType" feature soft-disables TYPES_URLS: It'll
+      // still be technically registered, but will never actually become active
+      // (due to the controller's GetPreconditionState()). For the purposes of
+      // these tests, consider it not preferred.
+      preferred_data_types.Remove(syncer::TYPED_URLS);
+    }
 
     return preferred_data_types;
   }

@@ -21,6 +21,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -315,23 +316,26 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
+  const syncer::ModelType history_type =
+      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)
+          ? syncer::HISTORY
+          : syncer::TYPED_URLS;
+
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   syncer::ModelTypeSet synced_datatypes =
       GetSyncService(0)->GetActiveDataTypes();
-  ASSERT_TRUE(synced_datatypes.Has(syncer::TYPED_URLS));
+  ASSERT_TRUE(synced_datatypes.Has(history_type));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
                                         true);
 
   // Wait for reconfigurations.
-  ASSERT_TRUE(
-      TypeDisabledChecker(GetSyncService(0), syncer::TYPED_URLS).Wait());
+  ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), history_type).Wait());
   ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), syncer::SESSIONS).Wait());
 
   const BookmarkNode* node1 = AddFolder(0, 0, "title1");
   SetTitle(0, node1, "new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  // TODO(lipalani): Verify initial sync ended for typed url is false.
 }
 
 // Tests that the unsynced entity will be eventually committed even after failed

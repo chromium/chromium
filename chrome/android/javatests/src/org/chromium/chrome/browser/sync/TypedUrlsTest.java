@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -36,11 +37,15 @@ import org.chromium.ui.base.PageTransition;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO(crbug.com/1365291): After kSyncEnableHistoryDataType is enabled and
+// HISTORY has replaced TYPED_URLS, these tests can be deleted.
+
 /**
  * Test suite for the typed URLs sync data type.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures("SyncEnableHistoryDataType")
 public class TypedUrlsTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();

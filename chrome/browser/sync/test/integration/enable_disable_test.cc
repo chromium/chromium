@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
@@ -101,6 +102,13 @@ class EnableDisableSingleClientTest : public SyncTest {
         })));
 
     registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypesForTest();
+    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+      // The "SyncEnableHistoryDataType" feature soft-disables TYPES_URLS: It'll
+      // still be technically registered, but will never actually become active
+      // (due to the controller's GetPreconditionState()). For the purposes of
+      // these tests, consider it not registered.
+      registered_data_types_.Remove(syncer::TYPED_URLS);
+    }
     multi_grouped_types_ = MultiGroupTypes(registered_data_types_);
     registered_selectable_types_ = GetRegisteredSelectableTypes(0);
   }
@@ -347,8 +355,19 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // inspects the last-sync-cycle state. If low-prio types are active, they
+  // cause another (uninteresting) cycle and mess up the stats we're interested
+  // in.
+  ASSERT_TRUE(GetClient(0)->SetupSync(
+      base::BindOnce([](syncer::SyncUserSettings* settings) {
+        UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
+        types.Remove(syncer::UserSelectableType::kHistory);
+        settings->SetSelectedTypes(/*sync_everything=*/false, types);
+      })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().HasAny(
+      syncer::LowPriorityUserTypes()));
 
   // Make sure the bookmark got synced down.
   ASSERT_TRUE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
@@ -377,8 +396,19 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // inspects the last-sync-cycle state. If low-prio types are active, they
+  // cause another (uninteresting) cycle and mess up the stats we're interested
+  // in.
+  ASSERT_TRUE(GetClient(0)->SetupSync(
+      base::BindOnce([](syncer::SyncUserSettings* settings) {
+        UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
+        types.Remove(syncer::UserSelectableType::kHistory);
+        settings->SetSelectedTypes(/*sync_everything=*/false, types);
+      })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().HasAny(
+      syncer::LowPriorityUserTypes()));
 
   // Make sure the bookmark got synced down.
   ASSERT_TRUE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(

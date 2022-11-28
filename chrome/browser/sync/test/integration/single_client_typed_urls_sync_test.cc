@@ -18,6 +18,9 @@ using typed_urls_helper::GetTypedUrlsFromClient;
 
 const char kSanityHistoryUrl[] = "http://www.sanity-history.google.com";
 
+// TODO(crbug.com/1365291): Evaluate which of these tests should be kept after
+// kSyncEnableHistoryDataType is enabled and HISTORY has replaced TYPED_URLS.
+
 class SingleClientTypedUrlsSyncTest : public SyncTest {
  public:
   SingleClientTypedUrlsSyncTest() : SyncTest(SINGLE_CLIENT) {}

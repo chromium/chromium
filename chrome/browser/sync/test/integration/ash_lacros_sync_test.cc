@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -83,24 +84,28 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
       << syncer::UserSelectableOsTypeSetToString(
              user_settings->GetRegisteredSelectableOsTypes());
 
+  syncer::ModelTypeSet expected_active_types(
+      syncer::BOOKMARKS, syncer::PREFERENCES, syncer::PASSWORDS,
+      syncer::AUTOFILL_PROFILE, syncer::AUTOFILL, syncer::AUTOFILL_WALLET_DATA,
+      syncer::AUTOFILL_WALLET_METADATA, syncer::AUTOFILL_WALLET_OFFER,
+      syncer::THEMES, syncer::EXTENSIONS, syncer::SEARCH_ENGINES,
+      syncer::SESSIONS, syncer::APPS, syncer::APP_SETTINGS,
+      syncer::EXTENSION_SETTINGS, syncer::HISTORY_DELETE_DIRECTIVES,
+      syncer::DICTIONARY, syncer::DEVICE_INFO, syncer::PRIORITY_PREFERENCES,
+      syncer::APP_LIST, syncer::ARC_PACKAGE, syncer::PRINTERS,
+      syncer::READING_LIST, syncer::USER_EVENTS, syncer::USER_CONSENTS,
+      syncer::SEND_TAB_TO_SELF, syncer::SECURITY_EVENTS,
+      syncer::WIFI_CONFIGURATIONS, syncer::OS_PREFERENCES,
+      syncer::OS_PRIORITY_PREFERENCES, syncer::SHARING_MESSAGE,
+      syncer::WORKSPACE_DESK, syncer::PROXY_TABS, syncer::NIGORI);
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    expected_active_types.Put(syncer::HISTORY);
+  } else {
+    expected_active_types.Put(syncer::TYPED_URLS);
+  }
+
   // All of the model types, both browser and OS, should be active.
-  EXPECT_EQ(
-      sync_service->GetActiveDataTypes(),
-      syncer::ModelTypeSet(
-          syncer::BOOKMARKS, syncer::PREFERENCES, syncer::PASSWORDS,
-          syncer::AUTOFILL_PROFILE, syncer::AUTOFILL,
-          syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
-          syncer::AUTOFILL_WALLET_OFFER, syncer::THEMES, syncer::TYPED_URLS,
-          syncer::EXTENSIONS, syncer::SEARCH_ENGINES, syncer::SESSIONS,
-          syncer::APPS, syncer::APP_SETTINGS, syncer::EXTENSION_SETTINGS,
-          syncer::HISTORY_DELETE_DIRECTIVES, syncer::DICTIONARY,
-          syncer::DEVICE_INFO, syncer::PRIORITY_PREFERENCES, syncer::APP_LIST,
-          syncer::ARC_PACKAGE, syncer::PRINTERS, syncer::READING_LIST,
-          syncer::USER_EVENTS, syncer::USER_CONSENTS, syncer::SEND_TAB_TO_SELF,
-          syncer::SECURITY_EVENTS, syncer::WIFI_CONFIGURATIONS,
-          syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
-          syncer::SHARING_MESSAGE, syncer::WORKSPACE_DESK, syncer::PROXY_TABS,
-          syncer::NIGORI));
+  EXPECT_EQ(sync_service->GetActiveDataTypes(), expected_active_types);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {

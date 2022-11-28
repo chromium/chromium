@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -159,8 +160,13 @@ void HistoryModelTypeController::OnStateChanged(syncer::SyncService* sync) {
                            base::Unretained(this)));
   }
 
-  history_service_->SetSyncTransportState(
-      helper_.sync_service()->GetTransportState());
+  // `history_service_` is null in many unit tests.
+  if (history_service_) {
+    history_service_->SetSyncTransportState(
+        helper_.sync_service()->GetTransportState());
+  } else {
+    CHECK_IS_TEST();
+  }
 
   // Most of these calls will be no-ops but SyncService handles that just fine.
   helper_.sync_service()->DataTypePreconditionChanged(type());

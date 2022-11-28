@@ -19,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
@@ -71,12 +72,10 @@ class LocalSyncTest : public InProcessBrowserTest {
   base::ScopedTempDir local_sync_backend_dir_;
 };
 
-// The local sync backend is currently only supported on Windows, Mac and Linux.
-// TODO(crbug.com/1052397): Reassess whether the following block needs to be
-// included in lacros-chrome once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+// The local sync backend is currently only supported on Windows, Mac, Linux,
+// and Lacros.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
@@ -106,17 +105,21 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::PRIORITY_PREFERENCES, syncer::WEB_APPS, syncer::PROXY_TABS,
       syncer::NIGORI);
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    // If this feature is enabled, HISTORY replaces TYPED_URLS (and HISTORY
+    // isn't supported in local sync mode).
+    expected_active_data_types.Remove(syncer::TYPED_URLS);
+  }
+
   if (features::kTabGroupsSaveSyncIntegration.Get()) {
     expected_active_data_types.Put(syncer::SAVED_TAB_GROUP);
   }
 
-  // The dictionary is currently only synced on Windows and Linux.
+  // The dictionary is currently only synced on Windows, Linux, and Lacros.
   // TODO(crbug.com/1052397): Reassess whether the following block needs to be
-  // included
-  // in lacros-chrome once build flag switch of lacros-chrome is
+  // included in lacros-chrome once build flag switch of lacros-chrome is
   // complete.
-
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
   EXPECT_EQ(service->GetActiveDataTypes(), expected_active_data_types);
@@ -128,6 +131,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::HISTORY));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
