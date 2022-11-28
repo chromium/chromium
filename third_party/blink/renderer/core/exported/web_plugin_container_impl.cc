@@ -447,6 +447,9 @@ void WebPluginContainerImpl::PrintEnd() {
 }
 
 void WebPluginContainerImpl::Copy() {
+  if (!web_plugin_->CanCopy())
+    return;
+
   if (!web_plugin_->HasSelection())
     return;
 
