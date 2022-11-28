@@ -118,7 +118,11 @@ TEST(NewTabPageColorMixer, DefaultColorComprehensiveThemeColor) {
 
   EXPECT_EQ(provider.GetColor(kColorToolbar), kSampleToolbarColor);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageBackground), kSampleToolbarColor);
-  EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground), SK_ColorBLUE);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground),
+            kSampleToolbarColor);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonForeground),
+            gfx::kGoogleBlue600);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageLink), gfx::kGoogleBlue600);
 }
 
 }  // namespace
