@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_tree_as_text.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -245,7 +246,7 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
 static bool WriteSVGPaint(WTF::TextStream& ts,
                           const LayoutObject& object,
                           const SVGPaint& paint,
-                          const CSSProperty& property,
+                          const Longhand& property,
                           const char* paint_name) {
   TextStreamSeparator s(" ");
   const ComputedStyle& style = object.StyleRef();

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -129,15 +130,20 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
 }
 
 TEST_F(CSSPropertyTest, Surrogates) {
+  // NOTE: The downcast here is to go through the CSSProperty vtable,
+  // so that we don't have to mark these functions as CORE_EXPORT only for
+  // the test.
+  const CSSProperty& inline_size = GetCSSPropertyInlineSize();
+  const CSSProperty& writing_mode = GetCSSPropertyWebkitWritingMode();
   EXPECT_EQ(&GetCSSPropertyWidth(),
-            GetCSSPropertyInlineSize().SurrogateFor(
-                TextDirection::kLtr, WritingMode::kHorizontalTb));
-  EXPECT_EQ(&GetCSSPropertyHeight(),
-            GetCSSPropertyInlineSize().SurrogateFor(TextDirection::kLtr,
-                                                    WritingMode::kVerticalRl));
+            inline_size.SurrogateFor(TextDirection::kLtr,
+                                     WritingMode::kHorizontalTb));
+  EXPECT_EQ(
+      &GetCSSPropertyHeight(),
+      inline_size.SurrogateFor(TextDirection::kLtr, WritingMode::kVerticalRl));
   EXPECT_EQ(&GetCSSPropertyWritingMode(),
-            GetCSSPropertyWebkitWritingMode().SurrogateFor(
-                TextDirection::kLtr, WritingMode::kHorizontalTb));
+            writing_mode.SurrogateFor(TextDirection::kLtr,
+                                      WritingMode::kHorizontalTb));
   EXPECT_FALSE(GetCSSPropertyWidth().SurrogateFor(TextDirection::kLtr,
                                                   WritingMode::kHorizontalTb));
 }

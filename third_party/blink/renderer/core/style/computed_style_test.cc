@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
@@ -1115,9 +1116,10 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
   };
 
   for (const auto& test : tests) {
-    for (const auto* property :
-         {&GetCSSPropertyBorderTopWidth(), &GetCSSPropertyOutlineWidth(),
-          &GetCSSPropertyColumnRuleWidth()}) {
+    for (const Longhand* property :
+         {static_cast<const Longhand*>(&GetCSSPropertyBorderTopWidth()),
+          static_cast<const Longhand*>(&GetCSSPropertyOutlineWidth()),
+          static_cast<const Longhand*>(&GetCSSPropertyColumnRuleWidth())}) {
       const Longhand& longhand = To<Longhand>(*property);
       auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
           *test.style, nullptr /* layout_object */,
@@ -1193,11 +1195,11 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
   };
 
   for (const auto& test : tests) {
-    for (const auto* property :
-         {&GetCSSPropertyBorderTopWidth(), &GetCSSPropertyOutlineWidth(),
-          &GetCSSPropertyColumnRuleWidth()}) {
-      const Longhand& longhand = To<Longhand>(*property);
-      auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
+    for (const Longhand* longhand :
+         {static_cast<const Longhand*>(&GetCSSPropertyBorderTopWidth()),
+          static_cast<const Longhand*>(&GetCSSPropertyOutlineWidth()),
+          static_cast<const Longhand*>(&GetCSSPropertyColumnRuleWidth())}) {
+      auto* computed_value = longhand->CSSValueFromComputedStyleInternal(
           *test.style, nullptr /* layout_object */,
           false /* allow_visited_style */);
       ASSERT_NE(computed_value, nullptr);

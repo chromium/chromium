@@ -2742,11 +2742,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   static inline Color ResolveColor(const ComputedStyle& style_to_use,
-                                   const CSSProperty& color_property) {
+                                   const Longhand& color_property) {
     return style_to_use.VisitedDependentColor(color_property);
   }
 
-  inline Color ResolveColor(const CSSProperty& color_property) const {
+  inline Color ResolveColor(const Longhand& color_property) const {
     NOT_DESTROYED();
     return StyleRef().VisitedDependentColor(color_property);
   }

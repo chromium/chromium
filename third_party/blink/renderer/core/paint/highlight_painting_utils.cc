@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
@@ -284,8 +285,8 @@ Color HighlightPaintingUtils::ResolveColor(
   }
   if (pseudo_style) {
     bool is_current_color;
-    Color result =
-        pseudo_style->VisitedDependentColor(property, &is_current_color);
+    Color result = pseudo_style->VisitedDependentColor(To<Longhand>(property),
+                                                       &is_current_color);
     if (!is_current_color)
       return result;
   }

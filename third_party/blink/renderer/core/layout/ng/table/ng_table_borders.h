@@ -71,7 +71,6 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
   bool operator==(const NGTableBorders& other) const;
 #endif
 
-
   enum class EdgeSource { kNone, kCell, kRow, kSection, kColumn, kTable };
 
   // Specifies which side of CSS style defines the edge.
@@ -141,21 +140,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
     return border_style;
   }
 
-  static Color BorderColor(const ComputedStyle* style, EdgeSide edge_side) {
-    switch (edge_side) {
-      case EdgeSide::kLeft:
-        return style->VisitedDependentColor(GetCSSPropertyBorderLeftColor());
-      case EdgeSide::kRight:
-        return style->VisitedDependentColor(GetCSSPropertyBorderRightColor());
-      case EdgeSide::kTop:
-        return style->VisitedDependentColor(GetCSSPropertyBorderTopColor());
-      case EdgeSide::kBottom:
-        return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
-      case EdgeSide::kDoNotFill:
-        NOTREACHED();
-        return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
-    }
-  }
+  static Color BorderColor(const ComputedStyle* style, EdgeSide edge_side);
 
   static bool HasBorder(const ComputedStyle* style) {
     if (!style)

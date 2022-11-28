@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -254,6 +255,23 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
 NGTableBorders::NGTableBorders(const NGBoxStrut& table_border,
                                const bool is_collapsed)
     : table_border_(table_border), is_collapsed_(is_collapsed) {}
+
+Color NGTableBorders::BorderColor(const ComputedStyle* style,
+                                  EdgeSide edge_side) {
+  switch (edge_side) {
+    case EdgeSide::kLeft:
+      return style->VisitedDependentColor(GetCSSPropertyBorderLeftColor());
+    case EdgeSide::kRight:
+      return style->VisitedDependentColor(GetCSSPropertyBorderRightColor());
+    case EdgeSide::kTop:
+      return style->VisitedDependentColor(GetCSSPropertyBorderTopColor());
+    case EdgeSide::kBottom:
+      return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
+    case EdgeSide::kDoNotFill:
+      NOTREACHED();
+      return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
+  }
+}
 
 #if DCHECK_IS_ON()
 String NGTableBorders::DumpEdges() {

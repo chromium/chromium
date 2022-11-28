@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"

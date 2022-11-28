@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
@@ -3095,7 +3096,7 @@ TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
 
   Color red(255, 0, 0);
-  const CSSProperty& color = GetCSSPropertyColor();
+  const css_longhand::Color& color = GetCSSPropertyColor();
   EXPECT_EQ(red, cascade.TakeStyle()->VisitedDependentColor(color));
 }
 
@@ -3113,7 +3114,8 @@ TEST_F(StyleCascadeTest, VarInInternalVisitedColorShorthand) {
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("outline-color"));
 
   Color red(255, 0, 0);
-  const CSSProperty& outline_color = GetCSSPropertyOutlineColor();
+  const css_longhand::OutlineColor& outline_color =
+      GetCSSPropertyOutlineColor();
   EXPECT_EQ(red, cascade.TakeStyle()->VisitedDependentColor(outline_color));
 }
 

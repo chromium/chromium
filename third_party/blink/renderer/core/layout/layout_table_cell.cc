@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -576,10 +577,10 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedStartBorder() const {
 
   // For the start border, we need to check, in order of precedence:
   // (1) Our start border.
-  const CSSProperty& start_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderInlineStartColor());
-  const CSSProperty& end_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderInlineEndColor());
+  const Longhand& start_color_property = To<Longhand>(
+      ResolveBorderProperty(GetCSSPropertyBorderInlineStartColor()));
+  const Longhand& end_color_property =
+      To<Longhand>(ResolveBorderProperty(GetCSSPropertyBorderInlineEndColor()));
   CollapsedBorderValue result(BorderStartInTableDirection(),
                               ResolveColor(start_color_property),
                               kBorderPrecedenceCell);
@@ -710,10 +711,10 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedEndBorder() const {
 
   // For end border, we need to check, in order of precedence:
   // (1) Our end border.
-  const CSSProperty& start_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderInlineStartColor());
-  const CSSProperty& end_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderInlineEndColor());
+  const Longhand& start_color_property = To<Longhand>(
+      ResolveBorderProperty(GetCSSPropertyBorderInlineStartColor()));
+  const Longhand& end_color_property =
+      To<Longhand>(ResolveBorderProperty(GetCSSPropertyBorderInlineEndColor()));
   CollapsedBorderValue result = CollapsedBorderValue(
       BorderEndInTableDirection(), ResolveColor(end_color_property),
       kBorderPrecedenceCell);
@@ -836,10 +837,10 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedBeforeBorder() const {
 
   // For before border, we need to check, in order of precedence:
   // (1) Our before border.
-  const CSSProperty& before_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderBlockStartColor());
-  const CSSProperty& after_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderBlockEndColor());
+  const Longhand& before_color_property = To<Longhand>(
+      ResolveBorderProperty(GetCSSPropertyBorderBlockStartColor()));
+  const Longhand& after_color_property =
+      To<Longhand>(ResolveBorderProperty(GetCSSPropertyBorderBlockEndColor()));
   CollapsedBorderValue result = CollapsedBorderValue(
       StyleRef().BorderBeforeStyle(), StyleRef().BorderBeforeWidth(),
       ResolveColor(before_color_property), kBorderPrecedenceCell);
@@ -968,10 +969,10 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedAfterBorder() const {
 
   // For after border, we need to check, in order of precedence:
   // (1) Our after border.
-  const CSSProperty& before_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderBlockStartColor());
-  const CSSProperty& after_color_property =
-      ResolveBorderProperty(GetCSSPropertyBorderBlockEndColor());
+  const Longhand& before_color_property = To<Longhand>(
+      ResolveBorderProperty(GetCSSPropertyBorderBlockStartColor()));
+  const Longhand& after_color_property =
+      To<Longhand>(ResolveBorderProperty(GetCSSPropertyBorderBlockEndColor()));
   CollapsedBorderValue result = CollapsedBorderValue(
       StyleRef().BorderAfterStyle(), StyleRef().BorderAfterWidth(),
       ResolveColor(after_color_property), kBorderPrecedenceCell);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/html_canvas_painter.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"

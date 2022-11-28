@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include <gtest/gtest.h>
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 
 namespace blink {
 

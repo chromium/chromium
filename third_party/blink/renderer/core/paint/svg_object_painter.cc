@@ -90,8 +90,9 @@ bool SVGObjectPainter::PreparePaint(
     }
   }
   if (paint.HasColor()) {
-    const CSSProperty& property =
-        apply_to_fill ? GetCSSPropertyFill() : GetCSSPropertyStroke();
+    const Longhand& property = apply_to_fill
+                                   ? To<Longhand>(GetCSSPropertyFill())
+                                   : To<Longhand>(GetCSSPropertyStroke());
     const Color color = style.VisitedDependentColor(property);
     flags.setColor(ScaleAlpha(color.Rgb(), alpha));
     flags.setShader(nullptr);

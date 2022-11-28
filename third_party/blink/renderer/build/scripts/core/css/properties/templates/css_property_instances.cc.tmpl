@@ -13,22 +13,14 @@
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 
 namespace blink {
-namespace {
-
+namespace static_properties {
 {% for property in properties %}
-static constexpr {{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
+const ::blink::{{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
 {% endfor %}
 {% for property in aliases %}
-static constexpr {{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
+const ::blink::{{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
 {% endfor %}
-
-} // namespace
-
-{% for property in properties %}
-const CSSProperty& Get{{property.property_id}}() {
-  return property_{{property.property_id.lower()}};
-}
-{% endfor %}
+} // namespace static_properties
 
 const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
   DCHECK_GT(id, kLastCSSProperty);  // last property id
@@ -36,7 +28,7 @@ const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
   switch (id) {
     {% for property in aliases %}
     case CSSPropertyID::{{property.enum_key}}:
-      return &property_{{property.property_id.lower()}};
+      return &static_properties::property_{{property.property_id.lower()}};
     {% endfor %}
     default:
       NOTREACHED();
@@ -48,7 +40,7 @@ const CSSUnresolvedProperty* const kPropertyClasses[] = {
   nullptr,  // kInvalid.
   nullptr,  // kVariable.
   {% for property in properties %}
-  &property_{{property.property_id.lower()}},  // {{property.property_id}}
+  &static_properties::property_{{property.property_id.lower()}},  // {{property.property_id}}
   {% endfor %}
 };
 

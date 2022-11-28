@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -487,7 +488,7 @@ static void WritePaintProperties(WTF::TextStream& ts,
     ts << "fragments:\n";
   }
   int fragment_index = 0;
-  for (const auto *fragment = &o.FirstFragment(); fragment;
+  for (const auto* fragment = &o.FirstFragment(); fragment;
        fragment = fragment->NextFragment(), ++fragment_index) {
     WriteIndent(ts, indent);
     if (has_fragments)

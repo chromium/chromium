@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -115,11 +116,11 @@ bool KeyframeEffectModelBase::SnapshotNeutralCompositorKeyframes(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
     const ComputedStyle* parent_style) const {
-  auto should_snapshot_property =
-      [&old_style, &new_style](const PropertyHandle& property) {
-        return !CSSPropertyEquality::PropertiesEqual(property, old_style,
-                                                     new_style);
-      };
+  auto should_snapshot_property = [&old_style,
+                                   &new_style](const PropertyHandle& property) {
+    return !CSSPropertyEquality::PropertiesEqual(property, old_style,
+                                                 new_style);
+  };
   auto should_snapshot_keyframe = [](const PropertySpecificKeyframe& keyframe) {
     return keyframe.IsNeutral();
   };

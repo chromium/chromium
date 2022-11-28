@@ -34,6 +34,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/foundation_util.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"

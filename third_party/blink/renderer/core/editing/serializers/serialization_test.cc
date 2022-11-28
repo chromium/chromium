@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"

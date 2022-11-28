@@ -93,6 +93,7 @@ class FilterOperations;
 class Font;
 class Hyphenation;
 class LayoutTheme;
+class Longhand;
 class NinePieceImage;
 class ShadowList;
 class ShapeValue;
@@ -2216,22 +2217,12 @@ class ComputedStyle : public ComputedStyleBase,
       return false;
     return ShadowListHasCurrentColor(BoxShadow());
   }
-  bool HasBackground() const {
-    blink::Color color = VisitedDependentColor(GetCSSPropertyBackgroundColor());
-    if (color.Alpha())
-      return true;
-    // When background color animation is running on the compositor thread, we
-    // need to trigger repaint even if the background is transparent to collect
-    // artifacts in order to run the animation on the compositor.
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        HasCurrentBackgroundColorAnimation())
-      return true;
-    return HasBackgroundImage();
-  }
+
+  CORE_EXPORT bool HasBackground() const;
 
   // Color utility functions.
   CORE_EXPORT blink::Color VisitedDependentColor(
-      const CSSProperty& color_property,
+      const Longhand& color_property,
       bool* is_current_color = nullptr) const;
 
   // -webkit-appearance utility functions.

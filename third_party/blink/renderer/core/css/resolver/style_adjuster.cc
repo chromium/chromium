@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
