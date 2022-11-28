@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -2032,8 +2033,16 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
            timeline.GetKeyword() == CSSValueID::kNone);
     return CSSIdentifierValue::Create(timeline.GetKeyword());
   }
-  if (timeline.IsName())
-    return ValueForStyleName(timeline.GetName());
+  if (timeline.IsName()) {
+    const AtomicString& name = timeline.GetName();
+    // Serialize as <string> if the value is not a valid <custom-ident>.
+    if (css_parsing_utils::IsCSSWideKeyword(name) ||
+        EqualIgnoringASCIICase(name, "auto") ||
+        EqualIgnoringASCIICase(name, "none")) {
+      return MakeGarbageCollected<CSSStringValue>(name);
+    }
+    return MakeGarbageCollected<CSSCustomIdentValue>(name);
+  }
   DCHECK(timeline.IsScroll());
   const StyleTimeline::ScrollData& scroll_data = timeline.GetScroll();
   CSSValue* axis = scroll_data.HasDefaultAxis()

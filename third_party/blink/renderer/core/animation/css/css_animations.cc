@@ -689,8 +689,8 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    return FindPreviousSiblingAncestorTimeline(
-        style_timeline.GetName().GetValue(), element, &update);
+    return FindPreviousSiblingAncestorTimeline(style_timeline.GetName(),
+                                               element, &update);
   }
   DCHECK(style_timeline.IsScroll());
   return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll());

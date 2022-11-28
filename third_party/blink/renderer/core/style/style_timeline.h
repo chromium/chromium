@@ -46,7 +46,7 @@ class CORE_EXPORT StyleTimeline {
   };
 
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}
-  explicit StyleTimeline(StyleName name) : data_(name) {}
+  explicit StyleTimeline(const AtomicString& name) : data_(name) {}
   explicit StyleTimeline(const ScrollData& scroll_data) : data_(scroll_data) {}
 
   bool operator==(const StyleTimeline& other) const {
@@ -57,15 +57,15 @@ class CORE_EXPORT StyleTimeline {
   }
 
   bool IsKeyword() const { return absl::holds_alternative<CSSValueID>(data_); }
-  bool IsName() const { return absl::holds_alternative<StyleName>(data_); }
+  bool IsName() const { return absl::holds_alternative<AtomicString>(data_); }
   bool IsScroll() const { return absl::holds_alternative<ScrollData>(data_); }
 
   const CSSValueID& GetKeyword() const { return absl::get<CSSValueID>(data_); }
-  const StyleName& GetName() const { return absl::get<StyleName>(data_); }
+  const AtomicString& GetName() const { return absl::get<AtomicString>(data_); }
   const ScrollData& GetScroll() const { return absl::get<ScrollData>(data_); }
 
  private:
-  absl::variant<CSSValueID, StyleName, ScrollData> data_;
+  absl::variant<CSSValueID, AtomicString, ScrollData> data_;
 };
 
 }  // namespace blink

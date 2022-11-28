@@ -395,12 +395,10 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
     return StyleTimeline(ident->GetValueID());
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return StyleTimeline(
-        StyleName(custom_ident->Value(), StyleName::Type::kCustomIdent));
+    return StyleTimeline(custom_ident->Value());
   }
   if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
-    return StyleTimeline(StyleName(AtomicString(string_value->Value()),
-                                   StyleName::Type::kString));
+    return StyleTimeline(AtomicString(string_value->Value()));
   }
   const auto& scroll_value = To<cssvalue::CSSScrollValue>(value);
   const auto* axis_value = DynamicTo<CSSIdentifierValue>(scroll_value.Axis());
