@@ -88,16 +88,18 @@
   }
 
   #logsDialog::part(dialog) {
-    width: 512px;
+    height: 640px;
+    width: 864px;
   }
 
   #logsDialog::part(wrapper) {
-    height: 480px;
+    max-height: 100%;
   }
 
   #logsDialog [slot=button-container] {
-    padding-bottom: 24px;
-    padding-top: 24px;
+    height: 40px;
+    padding-bottom: 12px;
+    padding-top: 12px;
   }
 
   #logsDialog [slot=title] {
@@ -107,6 +109,20 @@
     height: 32px;
     justify-content: center;
     padding: 0 24px 0 24px;
+  }
+
+  .logs-dialog-footer-text {
+    color: var(--shimless-dialog-body-text-color);
+    font-family: var(--shimless-dialog-body-font-family);
+    font-size: var(--shimless-dialog-body-font-size);
+    font-weight: var(--shimless-regular-font-weight);
+    line-height: var(--shimless-dialog-body-line-height);
+  }
+
+  .logs-dialog-icon {
+    align-self: flex-start;
+    padding-inline-end: 6px;
+    padding-top: 2px;
   }
 
   #logText {
@@ -219,10 +235,12 @@
         slot="button-container"
         hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
     <div id="logSavedIconText">
-      <iron-icon id="verificationIcon" class="small-icon"
+      <iron-icon id="verificationIcon" class="small-icon logs-dialog-icon"
           icon="[[getSaveLogResultIcon_(usbLogState_)]]">
       </iron-icon>
-      <span id="logSavedStatusText">[[logSavedStatusText_]]</span>
+      <span id="logSavedStatusText" class="logs-dialog-footer-text">
+        [[logSavedStatusText_]]
+      </span>
     </div>
     <cr-button id="logRetryDialogButton" class="text-button action-button"
         on-click="retrySaveLogs_"
@@ -238,9 +256,9 @@
         slot="button-container"
         hidden="[[!shouldShowLogUsbMessageContainer_(usbLogState_)]]">
     <div id="logSavedIconText">
-      <iron-icon id="connectUsbIcon" class="small-icon"
+      <iron-icon id="connectUsbIcon" class="small-icon logs-dialog-icon"
           icon="shimless-icon:warning"></iron-icon>
-      <span id="connectUsbInstructions" class="instructions">
+      <span id="connectUsbInstructions" class="logs-dialog-footer-text">
         [[i18n('rmaLogsMissingUsbMessageText')]]
       </span>
       <cr-button id="closeLogDialogButton" class="action-button"
