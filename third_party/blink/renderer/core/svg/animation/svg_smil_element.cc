@@ -558,21 +558,13 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
     cached_min_ = kInvalidCachedTime;
   } else if (name == svg_names::kMaxAttr) {
     cached_max_ = kInvalidCachedTime;
+  } else if (SVGURIReference::IsKnownAttribute(name)) {
+    // TODO(fs): Could be smarter here when 'href' is specified and 'xlink:href'
+    // is changed.
+    BuildPendingResource();
   } else {
     SVGElement::ParseAttribute(params);
   }
-}
-
-void SVGSMILElement::SvgAttributeChanged(
-    const SvgAttributeChangedParams& params) {
-  if (SVGURIReference::IsKnownAttribute(params.name)) {
-    // TODO(fs): Could be smarter here when 'href' is specified and 'xlink:href'
-    // is changed.
-    SVGElement::InvalidationGuard invalidation_guard(this);
-    BuildPendingResource();
-    return;
-  }
-  SVGElement::SvgAttributeChanged(params);
 }
 
 bool SVGSMILElement::IsPresentationAttribute(
