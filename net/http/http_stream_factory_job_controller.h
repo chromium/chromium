@@ -307,7 +307,8 @@ class HttpStreamFactory::JobController
   // the SpdySessionKey is different.
   const bool enable_ip_based_pooling_;
 
-  // Enable using alternative services for the request.
+  // Enable using alternative services for the request. If false, the
+  // JobController will only create a |main_job_|.
   const bool enable_alternative_services_;
 
   // For normal (non-preconnect) job, |main_job_| is a job waiting to see if
