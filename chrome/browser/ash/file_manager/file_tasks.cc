@@ -442,8 +442,9 @@ void OpenHostedOfficeFile(Profile* profile,
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
                               OfficeTaskResult::OPENED);
   } else {
-    GetUserFallbackChoice(profile, task, file_urls,
-                          ash::office_fallback::FallbackReason::kOffline);
+    GetUserFallbackChoice(
+        profile, task, file_urls,
+        ash::office_fallback::FallbackReason::kInvalidGoogleDocsURL);
   }
 }
 

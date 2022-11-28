@@ -17,6 +17,7 @@ enum FallbackReason {
   DRIVE_UNAVAILABLE = 1,
   ONEDRIVE_UNAVAILABLE = 2,
   ERROR_OPENING_WEB = 3,
+  INVALID_GOOGLE_DOCS_URL = 4,
 }
 
 /**
@@ -72,6 +73,8 @@ export class OfficeFallbackElement extends HTMLElement {
         return FallbackReason.ONEDRIVE_UNAVAILABLE;
       case 'Error opening web':
         return FallbackReason.ERROR_OPENING_WEB;
+      case 'Invalid Google Docs URL':
+        return FallbackReason.INVALID_GOOGLE_DOCS_URL;
     }
     console.error('No matching FallbackReason for given string');
     return;
@@ -146,6 +149,11 @@ export class OfficeFallbackElement extends HTMLElement {
         reasonMessageElement.innerText =
             `The application ${this.taskTitle} requires OneDrive \
           to be available.`;
+        break;
+      case FallbackReason.INVALID_GOOGLE_DOCS_URL:
+        titleElement.innerText = `Can't open the URL for ${fileNamesDisplayed}`;
+        reasonMessageElement.innerText = `The application ${
+            this.taskTitle} requires a valid ${this.taskTitle} URL.`;
         break;
     }
     return template;

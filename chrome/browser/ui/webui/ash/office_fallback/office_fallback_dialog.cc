@@ -85,6 +85,8 @@ std::string FallbackReasonToString(FallbackReason fallback_reason) {
       return "OneDrive Unavailable";
     case FallbackReason::kErrorOpeningWeb:
       return "Error opening web";
+    case FallbackReason::kInvalidGoogleDocsURL:
+      return "Invalid Google Docs URL";
   }
 }
 
