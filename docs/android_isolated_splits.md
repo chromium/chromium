@@ -281,8 +281,12 @@ for classes that do not exist in the application's ClassLoader. The custom
 ClassLoader is passed to `Bundle` instances in
 `ChromeBaseAppCompatActivity.onRestoreInstanceState()`.
 
+Having Android Framework call `Bundle.setClassLoader()` is tracked in
+[b/260574161].
+
 [`onSaveInstanceState`]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.onSaveInstanceState&ss=chromium
 [a custom ClassLoader]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.getClassLoader&ss=chromium
+[b/260574161]: https://issuetracker.google.com/260574161
 
 ### Calling Methods Across a Split Boundary
 
