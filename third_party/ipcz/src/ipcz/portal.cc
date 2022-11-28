@@ -12,6 +12,7 @@
 #include "ipcz/local_router_link.h"
 #include "ipcz/operation_context.h"
 #include "ipcz/router.h"
+#include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
@@ -237,13 +238,14 @@ IpczResult Portal::BeginGet(const void** data,
 
 IpczResult Portal::CommitGet(size_t num_data_bytes_consumed,
                              absl::Span<IpczHandle> handles) {
+  TrapEventDispatcher dispatcher;
   absl::MutexLock lock(&mutex_);
   if (!in_two_phase_get_) {
     return IPCZ_RESULT_FAILED_PRECONDITION;
   }
 
-  IpczResult result =
-      router_->CommitGetNextIncomingParcel(num_data_bytes_consumed, handles);
+  IpczResult result = router_->CommitGetNextIncomingParcel(
+      num_data_bytes_consumed, handles, dispatcher);
   if (result == IPCZ_RESULT_OK) {
     in_two_phase_get_ = false;
   }

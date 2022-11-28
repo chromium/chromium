@@ -494,10 +494,11 @@ IpczResult Router::BeginGetNextIncomingParcel(const void** data,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Router::CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
-                                               absl::Span<IpczHandle> handles) {
+IpczResult Router::CommitGetNextIncomingParcel(
+    size_t num_data_bytes_consumed,
+    absl::Span<IpczHandle> handles,
+    TrapEventDispatcher& dispatcher) {
   const OperationContext context{OperationContext::kAPICall};
-  TrapEventDispatcher dispatcher;
   {
     absl::MutexLock lock(&mutex_);
     if (inward_edge_) {

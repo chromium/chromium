@@ -42,14 +42,15 @@ void GetConditionsForMessagePipeSignals(MojoHandleSignals signals,
 
 // Translates Mojo signal conditions to equivalent IpczTrapConditions for any
 // portal used as a data pipe endpoint. Watching data pipes for readability or
-// writability is equivalent to watching their control portal for new incoming
+// writability is equivalent to watching their control portal for inbound
 // parcels, since each transaction from the peer elicits such a parcel.
 void GetConditionsForDataPipeSignals(MojoHandleSignals signals,
                                      IpczTrapConditions* conditions) {
   conditions->flags |= IPCZ_TRAP_DEAD;
   if (signals & (MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_READABLE |
                  MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE)) {
-    conditions->flags |= IPCZ_TRAP_NEW_LOCAL_PARCEL;
+    conditions->flags |= IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS;
+    conditions->min_local_parcels = 0;
   }
   if (signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED) {
     conditions->flags |= IPCZ_TRAP_PEER_CLOSED;
@@ -85,7 +86,7 @@ bool GetEventResultForSignalsState(const MojoHandleSignalsState& state,
 bool PopulateEventForDataPipe(DataPipe& pipe,
                               MojoHandleSignals trigger_signals,
                               MojoTrapEvent& event) {
-  event.signals_state = pipe.Flush();
+  event.signals_state = pipe.GetSignals();
   return GetEventResultForSignalsState(event.signals_state, trigger_signals,
                                        event.result);
 }

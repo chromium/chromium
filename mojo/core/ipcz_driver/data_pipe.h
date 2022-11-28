@@ -149,14 +149,14 @@ class DataPipe : public Object<DataPipe> {
       base::span<const uint8_t> data,
       base::span<PlatformHandle> handles);
 
-  // Flushes any incoming control messages and returns a MojoSignalsState to
-  // reflect the current state of the DataPipe.
-  MojoHandleSignalsState Flush();
+  // Returns Mojo signals to reflect the effective state of this DataPipe and
+  // its control portal.
+  MojoHandleSignalsState GetSignals();
 
  private:
   ~DataPipe() override;
 
-  void FlushUpdatesFromPeer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void FlushUpdatesFromPeer() LOCKS_EXCLUDED(lock_);
   bool DeserializeRingBuffer(const RingBuffer::SerializedState& state);
 
   const EndpointType endpoint_type_;
