@@ -21,12 +21,8 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_image.h"
 
-using testing::_;
-
 namespace gpu {
 namespace {
-
-constexpr int kTestBackingSize = 40000;
 
 class TestSharedImageBackingFactory : public SharedImageBackingFactory {
  public:
@@ -44,9 +40,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
     if (allocations_should_fail_)
       return nullptr;
 
-    return std::make_unique<TestImageBacking>(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        kTestBackingSize);
+    return std::make_unique<TestImageBacking>(mailbox, format, size,
+                                              color_space, surface_origin,
+                                              alpha_type, usage, 0);
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -148,7 +144,7 @@ class CompoundImageBackingTest : public testing::Test {
  protected:
   SharedImageManager manager_;
   TestSharedImageBackingFactory test_factory_;
-  testing::NiceMock<gles2::MockMemoryTracker> mock_memory_tracker_;
+  gles2::MockMemoryTracker mock_memory_tracker_;
   MemoryTypeTracker tracker_{&mock_memory_tracker_};
 };
 
@@ -163,14 +159,7 @@ TEST_F(CompoundImageBackingTest, References) {
   EXPECT_FALSE(compound_backing->HasAnyRefs());
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 
-  // When the compound backing is first registered it will get a reference
-  // and add shared memory backing size to the memory tracker.
-  EXPECT_CALL(mock_memory_tracker_,
-              TrackMemoryAllocatedChange(kTestBackingSize));
-
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
-
-  testing::Mock::VerifyAndClearExpectations(&mock_memory_tracker_);
 
   // After register compound backing it should have a reference. The GPU
   // backing should never have any reference as it's owned by the compound
@@ -178,15 +167,8 @@ TEST_F(CompoundImageBackingTest, References) {
   EXPECT_TRUE(compound_backing->HasAnyRefs());
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 
-  // On overlay access a GPU backing will be allocated and the recorded size
-  // will increase.
-  EXPECT_CALL(mock_memory_tracker_,
-              TrackMemoryAllocatedChange(kTestBackingSize));
-
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
-
-  testing::Mock::VerifyAndClearExpectations(&mock_memory_tracker_);
 
   auto* gpu_backing = GetGpuBacking(compound_backing);
 
@@ -197,11 +179,6 @@ TEST_F(CompoundImageBackingTest, References) {
 
   overlay_rep.reset();
   EXPECT_TRUE(compound_backing->HasAnyRefs());
-
-  // When all references are dropped the total size of shared memory and gpu
-  // backings will be subtracted from memory tracker.
-  EXPECT_CALL(mock_memory_tracker_,
-              TrackMemoryAllocatedChange(-kTestBackingSize * 2));
 
   // All the backings will be destroyed after this point.
   factory_rep.reset();

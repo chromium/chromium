@@ -204,25 +204,6 @@ SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
 }
 #endif
 
-void SharedImageBacking::UpdateEstimatedSize(size_t estimated_size_bytes) {
-  AutoLock auto_lock(this);
-
-  if (estimated_size_bytes == estimated_size_)
-    return;
-
-  if (!refs_.empty()) {
-    // Propagate the estimated size the memory tracker.
-    auto* memory_tracker = refs_[0]->tracker();
-    if (estimated_size_ < estimated_size_bytes) {
-      memory_tracker->TrackMemAlloc(estimated_size_bytes - estimated_size_);
-    } else {
-      memory_tracker->TrackMemFree(estimated_size_ - estimated_size_bytes);
-    }
-  }
-
-  estimated_size_ = estimated_size_bytes;
-}
-
 void SharedImageBacking::SetNotRefCounted() {
   DCHECK(!HasAnyRefs());
   is_ref_counted_ = false;
