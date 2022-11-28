@@ -731,7 +731,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser:sharing_send_message_result_generated_enum",
       "//chrome/browser:survey_http_client_type_enum",
       "//chrome/browser/notifications/scheduler/public:jni_enums",
-      "//chrome/browser/supervised_user/supervised_user_error_page:enums_srcjar",
       "//chrome/browser/ui:duplicate_download_enums_java",
       "//components/browsing_data/core:browsing_data_utils_java",
       "//components/browsing_data/core:clear_browsing_data_tab_java",

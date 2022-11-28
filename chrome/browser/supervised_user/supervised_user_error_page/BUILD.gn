@@ -23,12 +23,6 @@ static_library("supervised_user_error_page") {
   ]
 }
 
-if (is_android) {
-  java_cpp_enum("enums_srcjar") {
-    sources = [ "supervised_user_error_page.h" ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "supervised_user_error_page_unittest.cc" ]
