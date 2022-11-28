@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import {MapperTabPage} from '../bidiMapper/utils/mapperTabPage';
-
 export enum LogType {
   system = 'System',
   bidi = 'BiDi Messages',
@@ -29,6 +27,13 @@ export function log(logType: LogType): (...message: unknown[]) => void {
   return (...messages: any[]) => {
     console.log(logType, ...messages);
     // Add messages to the Mapper Tab Page, if exists.
-    MapperTabPage.log(logType, ...messages);
+    // Dynamic lookup to avoid circlular dependency.
+    if ('MapperTabPage' in globalThis) {
+      (
+        globalThis as unknown as {
+          MapperTabPage: {log: (...message: unknown[]) => void};
+        }
+      )['MapperTabPage'].log(logType, ...messages);
+    }
   };
 }

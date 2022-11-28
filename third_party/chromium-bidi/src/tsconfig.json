@@ -3,6 +3,7 @@
   "files": [],
   "references": [
     {"path": "bidiMapper/tsconfig.json"},
-    {"path": "bidiServer/tsconfig.json"}
+    {"path": "bidiServer/tsconfig.json"},
+    {"path": "bidiTab/tsconfig.json"}
   ]
 }

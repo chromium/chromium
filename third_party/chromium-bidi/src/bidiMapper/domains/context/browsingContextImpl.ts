@@ -491,9 +491,9 @@ export class BrowsingContextImpl {
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
     await this.#targetDefers.targetUnblocked;
 
-    const functionDeclaration = String((resultsSelector: string) =>
-      document.querySelector(resultsSelector)
-    );
+    const functionDeclaration = `
+      (resultsSelector) => document.querySelector(resultsSelector)
+    `;
     const _arguments: Script.ArgumentValue[] = [
       {type: 'string', value: selector},
     ];

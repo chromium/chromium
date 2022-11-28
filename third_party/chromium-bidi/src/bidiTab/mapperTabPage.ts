@@ -14,7 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {LogType} from '../../utils/log';
+import {LogType} from '../utils/log';
+
+declare global {
+  interface Window {
+    MapperTabPage: MapperTabPage;
+  }
+}
 
 export class MapperTabPage {
   // HTML source code for the user-facing Mapper tab.
@@ -26,6 +32,7 @@ export class MapperTabPage {
     if (!globalThis.document?.documentElement) {
       return;
     }
+    window.MapperTabPage = MapperTabPage;
     window.document.documentElement.innerHTML = this.#mapperPageSource;
     // Create main log containers in proper order.
     this.#findOrCreateTypeLogContainer('System');

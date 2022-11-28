@@ -17,16 +17,16 @@
  * @license
  */
 
-import {CommandProcessor} from './commandProcessor';
+import {CommandProcessor} from '../bidiMapper/commandProcessor';
 
 import {CdpClient, CdpConnection} from '../cdp';
-import {BiDiMessageEntry, BidiServer} from './utils/bidiServer';
+import {BiDiMessageEntry, BidiServer} from '../bidiMapper/utils/bidiServer';
 import {ITransport} from '../utils/transport';
 
 import {log, LogType} from '../utils/log';
-import {EventManager} from './domains/events/EventManager';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
-import {MapperTabPage} from './utils/mapperTabPage';
+import {EventManager} from '../bidiMapper/domains/events/EventManager';
+import {BrowsingContextStorage} from '../bidiMapper/domains/context/browsingContextStorage';
+import {MapperTabPage} from './mapperTabPage';
 
 const logSystem = log(LogType.system);
 

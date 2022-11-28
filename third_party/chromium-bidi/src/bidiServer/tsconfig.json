@@ -3,5 +3,5 @@
   "compilerOptions": {
     "module": "CommonJS",
     "outDir": "../../lib/cjs/bidiServer"
-  },
+  }
 }
