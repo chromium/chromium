@@ -177,17 +177,17 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
           app_url, /*render_frame_host=*/nullptr, profile,
           net::ERR_INTERNET_DISCONNECTED);
 
-  // Expect mojom struct with icon url.
+  // Expect mojom struct with everything (except the icon) filled out.
   EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("icon_url"),
-      "data:image/"
-      "png;base64,"
-      "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA4UlEQVQ4jZVSuwqFMAw1"
-      "8baI2M3FyUXXfoGT3+FvC/"
-      "6A4iQKUrFDcweht7fWwUwhOSc5eUDXddEbw1foKIo+"
-      "1iOiIAIAiAgAfIINubh7KtABALTWxhjOuYVax58BAM7zLIqirmtEvMS4an8EIkJEpZSU"
-      "smkaIYQQwhjjSUK3tmVmWaaUWtc1jmNvGbGU0m3COZ/neRiGtm3zPO/"
-      "7Pk3T8JYuSVrrsiyrqjqOY5omzrkx5nGtRMQYG8dx33et9bZtSZK46D+"
-      "Cy1yWBREvtJcNH44xdg8GZrh3u5d7fI0ne/2tX8uNb4qnIrpWAAAAAElFTkSuQmCC");
+  EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
+            "Manifest test app");
+  // This test may at first glance seem like an end-to-end test of the default
+  // offline experience, but should be considered more of a unit test for just
+  // the initial values provided to the default offline page. For a proper
+  // end-to-end test, see WebAppOfflinePageIconShowing in the
+  // WebAppOfflinePageTest suite.
+  EXPECT_EQ(*info->alternative_error_page_params.Find("icon_url"), "''");
+  EXPECT_EQ(*info->alternative_error_page_params.Find(
+                "web_app_default_offline_message"),
+            "You're offline");
 }
