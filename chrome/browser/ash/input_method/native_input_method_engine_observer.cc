@@ -687,8 +687,11 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ConnectToImeService(mojom::ConnectionTarget::kImeServiceLib, engine_id);
   } else if (ShouldRouteToRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
-    ConnectToImeService(mojom::ConnectionTarget::kRulebasedEngine,
-                        new_engine_id);
+    ConnectToImeService(
+        base::FeatureList::IsEnabled(features::kMigrateRuleBasedInputMethods)
+            ? mojom::ConnectionTarget::kImeServiceLib
+            : mojom::ConnectionTarget::kRulebasedEngine,
+        new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
