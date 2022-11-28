@@ -4793,6 +4793,81 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   }
 }
 
+// Tests that prerendering in a new tab multiple times and activating one of
+// them succeed.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       MultipleNewTabPrerendering) {
+  GURL initial_url = GetUrl("/simple_links.html");
+  std::vector<GURL> prerendering_urls = {GetUrl("/title2.html"),
+                                         GetUrl("/title2.html?2"),
+                                         GetUrl("/title2.html?3")};
+
+  // Navigate to an initial page which has a link to `prerendering_urls[0]`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering.
+  TestNavigationObserver nav_observer(prerendering_urls[2]);
+  nav_observer.StartWatchingNewWebContents();
+  for (const GURL& prerendering_url : prerendering_urls) {
+    AddPrerenderWithTargetHintAsync(prerendering_url, "_blank");
+  }
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_urls[2]);
+
+  // Make sure that prerendering in a new tab creates new PrerenderHost and
+  // new WebContentsImpl every time.
+  std::vector<PrerenderHost*> prerender_hosts;
+  std::vector<WebContentsImpl*> prerender_web_contents_impls;
+  for (const GURL& prerendering_url : prerendering_urls) {
+    PrerenderHost* prerender_host =
+        web_contents_impl()
+            ->GetPrerenderHostRegistry()
+            ->FindHostByUrlForTesting(prerendering_url);
+    ASSERT_TRUE(prerender_host);
+    EXPECT_FALSE(base::Contains(prerender_hosts, prerender_host));
+    prerender_hosts.push_back(prerender_host);
+
+    auto* prerender_web_contents_impl = WebContentsImpl::FromFrameTreeNode(
+        prerender_host->GetPrerenderFrameTree().root());
+    ASSERT_TRUE(prerender_web_contents_impl);
+    EXPECT_NE(prerender_web_contents_impl, web_contents_impl());
+    ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents_impl);
+
+    // Prerendering in a new tab should create a new WebContentsImpl, not reuse
+    // existing WebContentsImpl.
+    EXPECT_FALSE(base::Contains(prerender_web_contents_impls,
+                                prerender_web_contents_impl));
+    prerender_web_contents_impls.push_back(prerender_web_contents_impl);
+  }
+  ASSERT_EQ(prerender_hosts.size(), prerendering_urls.size());
+  ASSERT_EQ(prerender_web_contents_impls.size(), prerendering_urls.size());
+
+  // Click the link to prerendering_urls[0]. This should activate
+  // prerender_hosts[0].
+  test::PrerenderHostObserver prerender_observer(
+      *prerender_web_contents_impls[0],
+      prerender_hosts[0]->frame_tree_node_id());
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  prerender_observer.WaitForActivation();
+  EXPECT_EQ(prerender_web_contents_impls[0]->GetLastCommittedURL(),
+            prerendering_urls[0]);
+  EXPECT_TRUE(prerender_observer.was_activated());
+
+  // prerender_hosts[0] was consumed for activation, but others were not.
+  EXPECT_FALSE(HasHostForUrl(prerendering_urls[0]));
+  EXPECT_TRUE(HasHostForUrl(prerendering_urls[1]));
+  EXPECT_TRUE(HasHostForUrl(prerendering_urls[2]));
+
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+}
+
 // TODO(crbug.com/1356907): Remove this and merge it to PrerenderBrowserTest
 // once kPrerender2InBackground is enabled by default.
 class PrerenderHostRegistryInBackgroundTest : public PrerenderBrowserTest {
