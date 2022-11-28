@@ -7,12 +7,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/workers/worker_navigator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -36,42 +36,52 @@ NavigatorBadge::NavigatorBadge(ExecutionContext* context)
 
 // static
 ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
-                                          Navigator& /*navigator*/) {
-  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0));
-}
-
-// static
-ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
-                                          WorkerNavigator& /*navigator*/) {
-  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0));
-}
-
-// static
-ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
                                           Navigator& /*navigator*/,
-                                          uint64_t content) {
-  return SetAppBadgeHelper(script_state,
-                           mojom::blink::BadgeValue::NewNumber(content));
+                                          ExceptionState& exception_state) {
+  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0),
+                           exception_state);
 }
 
 // static
 ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
                                           WorkerNavigator& /*navigator*/,
-                                          uint64_t content) {
+                                          ExceptionState& exception_state) {
+  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0),
+                           exception_state);
+}
+
+// static
+ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
+                                          Navigator& /*navigator*/,
+                                          uint64_t content,
+                                          ExceptionState& exception_state) {
   return SetAppBadgeHelper(script_state,
-                           mojom::blink::BadgeValue::NewNumber(content));
+                           mojom::blink::BadgeValue::NewNumber(content),
+                           exception_state);
+}
+
+// static
+ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
+                                          WorkerNavigator& /*navigator*/,
+                                          uint64_t content,
+                                          ExceptionState& exception_state) {
+  return SetAppBadgeHelper(script_state,
+                           mojom::blink::BadgeValue::NewNumber(content),
+                           exception_state);
 }
 
 // static
 ScriptPromise NavigatorBadge::clearAppBadge(ScriptState* script_state,
-                                            Navigator& /*navigator*/) {
-  return ClearAppBadgeHelper(script_state);
+                                            Navigator& /*navigator*/,
+                                            ExceptionState& exception_state) {
+  return ClearAppBadgeHelper(script_state, exception_state);
 }
 
 // static
 ScriptPromise NavigatorBadge::clearAppBadge(ScriptState* script_state,
-                                            WorkerNavigator& /*navigator*/) {
-  return ClearAppBadgeHelper(script_state);
+                                            WorkerNavigator& /*navigator*/,
+                                            ExceptionState& exception_state) {
+  return ClearAppBadgeHelper(script_state, exception_state);
 }
 
 void NavigatorBadge::Trace(Visitor* visitor) const {
@@ -81,15 +91,16 @@ void NavigatorBadge::Trace(Visitor* visitor) const {
 // static
 ScriptPromise NavigatorBadge::SetAppBadgeHelper(
     ScriptState* script_state,
-    mojom::blink::BadgeValuePtr badge_value) {
+    mojom::blink::BadgeValuePtr badge_value,
+    ExceptionState& exception_state) {
   if (badge_value->is_number() && badge_value->get_number() == 0)
-    return ClearAppBadgeHelper(script_state);
+    return ClearAppBadgeHelper(script_state, exception_state);
 
   if (!IsAllowed(script_state)) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotAllowedError,
-                          "The badge API is not allowed in this context"));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "The badge API is not allowed in this context");
+    return ScriptPromise();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -99,12 +110,14 @@ ScriptPromise NavigatorBadge::SetAppBadgeHelper(
 }
 
 // static
-ScriptPromise NavigatorBadge::ClearAppBadgeHelper(ScriptState* script_state) {
+ScriptPromise NavigatorBadge::ClearAppBadgeHelper(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!IsAllowed(script_state)) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotAllowedError,
-                          "The badge API is not allowed in this context"));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "The badge API is not allowed in this context");
+    return ScriptPromise();
   }
 
 #if !BUILDFLAG(IS_ANDROID)

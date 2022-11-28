@@ -7,9 +7,9 @@
     SecureContext,
     ImplementedAs=NavigatorBadge
 ] partial interface Navigator {
-  [CallWith=ScriptState, MeasureAs=BadgeSet]
+  [CallWith=ScriptState, MeasureAs=BadgeSet, RaisesException]
   Promise<void> setAppBadge(optional [EnforceRange] unsigned long long contents);
 
-  [CallWith=ScriptState, MeasureAs=BadgeClear]
+  [CallWith=ScriptState, MeasureAs=BadgeClear, RaisesException]
   Promise<void> clearAppBadge();
 };
