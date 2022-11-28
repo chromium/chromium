@@ -674,6 +674,7 @@ struct BackupRefPtrImpl {
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 // Implementation that allows us to detect BackupRefPtr problems in ASan builds.
 struct AsanBackupRefPtrImpl {
   // Wraps a pointer.
@@ -754,6 +755,7 @@ struct AsanBackupRefPtrImpl {
   static BASE_EXPORT PA_NOINLINE void AsanCheckIfValidExtraction(
       void const volatile* ptr);
 };
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 template <class Super>
 struct RawPtrCountingImplWrapperForTest

@@ -75,6 +75,12 @@ declare_args() {
   use_asan_backup_ref_ptr = is_asan && (is_win || is_android || is_linux)
 }
 
+# AsanBackupRefPtr is not supported outside Chromium. The implementation is
+# entangled with `//base`. The code is only physically located with the
+# rest of `raw_ptr` to keep it together.
+assert(build_with_chromium || !use_asan_backup_ref_ptr,
+       "AsanBackupRefPtr is not supported outside Chromium")
+
 # BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
 assert(
     !enable_backup_ref_ptr_support || !use_asan_backup_ref_ptr,
@@ -127,6 +133,7 @@ if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
   enable_mte_checked_ptr_support = false
+  use_asan_backup_ref_ptr = false
   put_ref_count_in_previous_slot = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false

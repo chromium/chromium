@@ -61,13 +61,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   // and aborts. Failure to clear would be indicated by the related death tests
   // not CHECKing appropriately.
   static constexpr bool need_clear_after_move =
-      std::is_same_v<Impl, internal::RawPtrNoOpImpl> ||
 #if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
       std::is_same_v<Impl,
                      internal::MTECheckedPtrImpl<
                          internal::MTECheckedPtrImplPartitionAllocSupport>> ||
 #endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
-      std::is_same_v<Impl, internal::AsanBackupRefPtrImpl>;
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+      std::is_same_v<Impl, internal::AsanBackupRefPtrImpl> ||
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+      std::is_same_v<Impl, internal::RawPtrNoOpImpl>;
 
  public:
   PA_ALWAYS_INLINE explicit raw_ref(T& p) noexcept
