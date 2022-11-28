@@ -106,9 +106,10 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
         anchor_query, container_converter,
+        /* self_writing_direction */
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset(),
-        /* self_writing_mode */ WritingMode::kHorizontalTb);
+        PhysicalOffset());
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     LogicalSize computed_available_size =
@@ -133,9 +134,10 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
         anchor_query, container_converter,
+        /* self_writing_direction */
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset(),
-        /* self_writing_mode */ WritingMode::kHorizontalTb);
+        PhysicalOffset());
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     LogicalSize computed_available_size =

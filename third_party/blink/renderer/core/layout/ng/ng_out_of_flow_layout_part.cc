@@ -1648,15 +1648,14 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     DCHECK(css_containing_block);
     anchor_evaluator_storage.emplace(
         *anchor_queries, *css_containing_block, container_converter,
-        container_converter.ToPhysical(node_info.container_info.rect).offset,
-        candidate_writing_direction.GetWritingMode());
+        candidate_writing_direction,
+        container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else if (const NGLogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
-        *anchor_query, container_converter,
-        container_converter.ToPhysical(node_info.container_info.rect).offset,
-        candidate_writing_direction.GetWritingMode());
+        *anchor_query, container_converter, candidate_writing_direction,
+        container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else {
     anchor_evaluator_storage.emplace();
   }
