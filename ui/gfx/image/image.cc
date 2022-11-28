@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <ostream>
 #include <utility>
 #include <vector>
 
