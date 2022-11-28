@@ -4,8 +4,8 @@
 
 #include "base/trace_event/address_space_dump_provider.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/no_destructor.h"
@@ -38,10 +38,10 @@ class AddressSpaceStatsDumperImpl final
         address_space_stats->regular_pool_stats.usage * kSuperPageSize);
 
     // BRP pool usage is applicable with the appropriate buildflag.
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     dump->AddScalar("brp_pool_usage", MemoryAllocatorDump::kUnitsBytes,
                     address_space_stats->brp_pool_stats.usage * kSuperPageSize);
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
     // The configurable pool is only available on 64-bit platforms.
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -64,12 +64,12 @@ class AddressSpaceStatsDumperImpl final
         "regular_pool_largest_reservation", MemoryAllocatorDump::kUnitsBytes,
         address_space_stats->regular_pool_stats.largest_available_reservation *
             kSuperPageSize);
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     dump->AddScalar(
         "brp_pool_largest_reservation", MemoryAllocatorDump::kUnitsBytes,
         address_space_stats->brp_pool_stats.largest_available_reservation *
             kSuperPageSize);
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     dump->AddScalar("configurable_pool_largest_reservation",
                     MemoryAllocatorDump::kUnitsBytes,
                     address_space_stats->configurable_pool_stats
@@ -83,12 +83,14 @@ class AddressSpaceStatsDumperImpl final
 #endif  // BUILDFLAG(ENABLE_PKEYS)
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#if !defined(PA_HAS_64_BITS_POINTERS) && \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     dump->AddScalar("blocklist_size", MemoryAllocatorDump::kUnitsObjects,
                     address_space_stats->blocklist_size);
     dump->AddScalar("blocklist_hit_count", MemoryAllocatorDump::kUnitsObjects,
                     address_space_stats->blocklist_hit_count);
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return;
   }
 

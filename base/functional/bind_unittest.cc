@@ -13,6 +13,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/functional/callback.h"
 #include "base/functional/disallow_unretained.h"
 #include "base/memory/ptr_util.h"
@@ -1809,7 +1810,7 @@ TEST(BindDeathTest, BanFirstOwnerOfRefCountedType) {
   });
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
@@ -1950,7 +1951,7 @@ TEST_F(BindUnretainedDanglingDeathTest, UnretainedWeakReceiverDangling) {
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 }  // namespace
 }  // namespace base
