@@ -133,6 +133,29 @@ message RmDirResponseProto {
   optional int32 posix_error_code = 1;
 }
 
+// Truncate sets a file's size.
+
+message TruncateRequestProto {
+  optional string file_system_url = 3;
+  optional int64 length = 5;
+}
+
+message TruncateResponseProto {
+  optional int32 posix_error_code = 1;
+  optional DirEntryProto stat = 3;
+}
+
+// Unlink deletes a file, like "rm". It truly deletes (it does not "move to
+// trash", an undo-able operation).
+
+message UnlinkRequestProto {
+  optional string file_system_url = 3;
+}
+
+message UnlinkResponseProto {
+  optional int32 posix_error_code = 1;
+}
+
 // Write2 writes to a fuse_handle previously returned by Open2.
 
 message Write2RequestProto {

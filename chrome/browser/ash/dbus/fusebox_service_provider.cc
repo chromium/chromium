@@ -179,6 +179,16 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
   object->ExportMethod(fusebox::kFuseBoxServiceInterface,
+                       fusebox::kTruncateMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Truncate,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface,
+                       fusebox::kUnlinkMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Unlink,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface,
                        fusebox_staging::kWrite2Method,
                        base::BindRepeating(&FuseBoxServiceProvider::Write2,
                                            weak_ptr_factory_.GetWeakPtr()),
@@ -417,6 +427,47 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
 
   server_.Stat(fs_url_as_string,
                base::BindOnce(&ReplyToStat, method_call, std::move(sender)));
+}
+
+void FuseBoxServiceProvider::Truncate(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method_call);
+  fusebox_staging::TruncateRequestProto request_proto;
+  if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
+    fusebox_staging::TruncateResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    ReplyToProtoMethod(method_call, std::move(sender), response_proto);
+    return;
+  }
+
+  server_.Truncate(
+      request_proto,
+      base::BindOnce(
+          &ReplyToProtoMethod<fusebox_staging::TruncateResponseProto>,
+          method_call, std::move(sender)));
+}
+
+void FuseBoxServiceProvider::Unlink(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method_call);
+  fusebox_staging::UnlinkRequestProto request_proto;
+  if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
+    fusebox_staging::UnlinkResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    ReplyToProtoMethod(method_call, std::move(sender), response_proto);
+    return;
+  }
+
+  server_.Unlink(
+      request_proto,
+      base::BindOnce(&ReplyToProtoMethod<fusebox_staging::UnlinkResponseProto>,
+                     method_call, std::move(sender)));
 }
 
 void FuseBoxServiceProvider::Write2(
