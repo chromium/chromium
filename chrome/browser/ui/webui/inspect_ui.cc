@@ -717,10 +717,11 @@ void InspectUI::SetPortForwardingDefaults() {
   if (enabled.value() || !config->empty())
     return;
 
-  base::DictionaryValue default_config;
-  default_config.SetStringPath(kInspectUiPortForwardingDefaultPort,
-                               kInspectUiPortForwardingDefaultLocation);
-  prefs->Set(prefs::kDevToolsPortForwardingConfig, default_config);
+  base::Value::Dict default_config;
+  default_config.Set(kInspectUiPortForwardingDefaultPort,
+                     kInspectUiPortForwardingDefaultLocation);
+  prefs->SetDict(prefs::kDevToolsPortForwardingConfig,
+                 std::move(default_config));
 }
 
 const base::Value* InspectUI::GetPrefValue(const char* name) {
