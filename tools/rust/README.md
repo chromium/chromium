@@ -12,7 +12,7 @@ Rust toolchain (the Rust compiler, and also C++/Rust FFI tools like
 Like with Clang, Chromium uses bleeding edge Rust tooling. We track the upstream
 projects' latest development as closely as possible. However, Chromium cannot
 use official Rust builds for various reasons which require us to match the Rust
-LLVM backend version with the Clang we use. 
+LLVM backend version with the Clang we use.
 
 It would not be reasonable to build the tooling for every Chromium build, so we
 build it centrally (with the scripts here) and distribute it for all to use
@@ -92,6 +92,15 @@ new hash. Re-run the above and confirm it succeeds.
 
 This step is not strictly necessary since the CI tooling will catch any errors.
 But the CI build process is slow and this can save some time.
+
+To fetch the new Rust sources, and avoid errors during `gclient sync`:
+1. Ensure your `.gclient` file has `checkout_rust_toolchain_deps` set to `True`,
+but avoid setting `use_rust` to `True`. The latter will try to download the
+compiled rustc but as you've just updated the version there is no compiled rustc
+to download so it will fail.
+1. Additionally, to aid in testing, turn off rust support in GN, with
+`enable_rust = false`, since it requires the presence of a Rust toolchain, but
+building the toolchain destroys your local toolchain until the build succeeds.
 
 Running this will do a full build and provide a local toolchain that works for
 the host machine, albeit not the same as the CI-provided one:
@@ -231,4 +240,3 @@ Crubit is built on the bots, the tests are commented out in
 `//build/rust/tests/BUILD.gn`, but they should still be built and run before
 rolling Crubit.  TODO(https://crbug.com/1329611): Rephrase this paragraph
 after Crubit is built and tested on the bots.
-

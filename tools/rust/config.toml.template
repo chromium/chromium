@@ -29,6 +29,10 @@ description = "$PACKAGE_VERSION chromium"
 locked-deps = true
 vendor = true
 
+# We enable profiler so that PGO and coverage build options are available
+# with the rust compiler we build.
+profiler = true
+
 target = ["x86_64-unknown-linux-gnu"]
 
 [install]

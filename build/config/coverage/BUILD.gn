@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/coverage/coverage.gni")
+import("//build/config/rust.gni")
 
 config("default_coverage") {
   if (use_clang_coverage) {
@@ -25,6 +26,14 @@ config("default_coverage") {
       "-mllvm",
       "-limited-coverage-experimental=true",
     ]
+
+    # Rust coverage is gated on using the Chromium-built Rust toolchain as it
+    # needs to have a compatible LLVM version with the C++ compiler and the LLVM
+    # tools that will be used to process the coverage output. This is because
+    # the coverage file format is not stable.
+    if (use_chromium_rust_toolchain) {
+      rustflags = [ "-Cinstrument-coverage" ]
+    }
 
     if (is_linux || is_chromeos) {
       # TODO(crbug.com/1194301): Remove this flag.

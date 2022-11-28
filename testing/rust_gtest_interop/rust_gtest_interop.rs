@@ -63,26 +63,6 @@ pub type GtestFactoryFunction = unsafe extern "C" fn(
 #[doc(hidden)]
 pub struct OpaqueTestingTest(u8);
 
-/// Implements casting from a `&mut OpaqueTestingTest` to a `&mut T` when `T: TestSuite`.
-/// Implementing TestSuite for a Rust type `T` promises that `T` is an FFI wrapper around a C++
-/// class which subclasses `testing::Test`, which makes this casting okay.
-impl<T: TestSuite> AsMut<T> for OpaqueTestingTest {
-    fn as_mut(&mut self) -> &mut T {
-        // SAFETY: This horrible casting situation is okay because:
-        // 1) The Rust type is a wrapper around a C++ type. It's repr(C) and we can cast to the Rust
-        //    type.
-        // 2) OpaqueTestingTest is a placeholder pointer to represent `testing::Test` which is the
-        //    base class of the C++ type the Rust type is wrapping.
-        // 3) So this acts as a C++ downcast to the C++ type, and then a cast to the Rust wrapper
-        //    type.
-        // 4) We've been given a &mut reference, and we reborrow it. The reborrow sits higher on the
-        //    "borrow stack" and will be discarded first as well.
-        // 5) C++ wrapper types are not Unpin because C++ types are not Unpin, so the type we're
-        //    casting to won't be moved by Rust incorrectly.
-        unsafe { &mut *(self as *mut OpaqueTestingTest as *mut T) }
-    }
-}
-
 #[doc(hidden)]
 pub trait TestResult {
     fn into_error_message(self) -> Option<String>;
