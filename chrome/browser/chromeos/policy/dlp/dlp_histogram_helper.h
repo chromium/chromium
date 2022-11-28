@@ -56,6 +56,7 @@ constexpr char kReportedWarnProceedLevelRestriction[] =
 constexpr char kReportedEventStatus[] = "ReportedEventStatus";
 constexpr char kConfidentialContentsCount[] = "ConfidentialContentsCount";
 constexpr char kActiveFileEventsCount[] = "ActiveFileEventsCount";
+constexpr char kErrorsReportQueueNotReady[] = "Errors.ReportQueueNotReady";
 
 }  // namespace dlp
 

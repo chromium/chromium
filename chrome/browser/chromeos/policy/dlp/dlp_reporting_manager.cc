@@ -306,6 +306,7 @@ void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
 void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
+  DlpBooleanHistogram(dlp::kErrorsReportQueueNotReady, !report_queue_.get());
   if (!report_queue_.get()) {
     DLOG(WARNING) << "Report queue could not be initialized. DLP reporting "
                      "functionality will be disabled.";

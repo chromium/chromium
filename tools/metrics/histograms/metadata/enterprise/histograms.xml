@@ -1147,6 +1147,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.Errors.ReportQueueNotReady" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when a Data Leak Prevention event is not reported because of report
+    queue setup issues.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FileActionBlocked"
     enum="EnterpriseDlpPolicyFileAction" expires_after="2023-06-01">
   <owner>accorsi@google.com</owner>
