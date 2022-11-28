@@ -83,16 +83,15 @@ class StorageApiUnittest : public ApiUnitTest {
   // |out_value| with the string result.
   testing::AssertionResult RunGetFunction(const std::string& key,
                                           std::string* out_value) {
-    std::unique_ptr<base::Value> result = RunFunctionAndReturnValue(
+    absl::optional<base::Value> result = RunFunctionAndReturnValue(
         new StorageStorageAreaGetFunction(),
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
-    if (!result.get())
+    if (!result)
       return testing::AssertionFailure() << "No result";
 
     const base::Value::Dict* dict = result->GetIfDict();
     if (!dict) {
-      return testing::AssertionFailure() << result.get()
-                                         << " was not a dictionary.";
+      return testing::AssertionFailure() << *result << " was not a dictionary.";
     }
 
     const std::string* dict_value = dict->FindString(key);

@@ -40,9 +40,10 @@ TEST_F(SocketsUdpUnitTest, Create) {
   SocketsUdpCreateFunction* function = new SocketsUdpCreateFunction();
 
   // Run tests
-  std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
-      function, "[{\"persistent\": true, \"name\": \"foo\"}]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+      function, "[{\"persistent\": true, \"name\": \"foo\"}]");
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
 }
 
 }  // namespace api

@@ -57,46 +57,14 @@ void ApiUnitTest::CreateBackgroundPage() {
   }
 }
 
-std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
+absl::optional<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
     ExtensionFunction* function,
     const std::string& args) {
   function->set_extension(extension());
   if (contents_)
     function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
-  absl::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      function, args, browser_context());
-  if (result)
-    return std::make_unique<base::Value>(std::move(*result));
-  return nullptr;
-}
-
-std::unique_ptr<base::DictionaryValue>
-ApiUnitTest::RunFunctionAndReturnDictionary(ExtensionFunction* function,
-                                            const std::string& args) {
-  base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::DictionaryValue* dict = nullptr;
-
-  if (value && !value->GetAsDictionary(&dict))
-    delete value;
-
-  // We expect to either have successfully retrieved a dictionary from the
-  // value, or the value to have been NULL.
-  EXPECT_TRUE(dict || !value);
-  return std::unique_ptr<base::DictionaryValue>(dict);
-}
-
-std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnList(
-    ExtensionFunction* function,
-    const std::string& args) {
-  base::Value* value = RunFunctionAndReturnValue(function, args).release();
-
-  // We expect to either have successfully gotten a list value, or the value to
-  // have been NULL.
-  EXPECT_TRUE(!value || value->is_list());
-  if (value && !value->is_list())
-    delete value;
-
-  return std::unique_ptr<base::Value>(value);
+  return utils::RunFunctionAndReturnSingleResult(function, args,
+                                                 browser_context());
 }
 
 std::string ApiUnitTest::RunFunctionAndReturnError(ExtensionFunction* function,

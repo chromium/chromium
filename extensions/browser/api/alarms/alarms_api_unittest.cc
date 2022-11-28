@@ -80,8 +80,11 @@ class ExtensionAlarmsTest : public ApiUnitTest {
 
   // Takes a JSON result from a function and converts it to a vector of
   // JsAlarms.
-  std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(base::Value* value) {
+  std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(
+      const absl::optional<base::Value>& value) {
     std::vector<std::unique_ptr<JsAlarm>> list;
+    if (!value)
+      return list;
     for (const auto& item : value->GetList()) {
       std::unique_ptr<JsAlarm> alarm(new JsAlarm());
 
@@ -105,10 +108,9 @@ class ExtensionAlarmsTest : public ApiUnitTest {
         "[\"0\", {\"delayInMinutes\": 0}]",
     };
     for (size_t i = 0; i < num_alarms; ++i) {
-      std::unique_ptr<base::DictionaryValue> result(
-          RunFunctionAndReturnDictionary(new AlarmsCreateFunction(&test_clock_),
-                                         kCreateArgs[i]));
-      EXPECT_FALSE(result.get());
+      absl::optional<base::Value> result = RunFunctionAndReturnValue(
+          new AlarmsCreateFunction(&test_clock_), kCreateArgs[i]);
+      EXPECT_FALSE(result);
     }
   }
 
@@ -342,9 +344,9 @@ TEST_F(ExtensionAlarmsTest, Get) {
   // Get the default one.
   {
     JsAlarm alarm;
-    std::unique_ptr<base::DictionaryValue> result(
-        RunFunctionAndReturnDictionary(new AlarmsGetFunction(), "[null]"));
-    ASSERT_TRUE(result.get());
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[null]");
+    ASSERT_TRUE(result);
     EXPECT_TRUE(JsAlarm::Populate(*result, &alarm));
     EXPECT_EQ("", alarm.name);
     EXPECT_DOUBLE_EQ(4060, alarm.scheduled_time);
@@ -354,9 +356,9 @@ TEST_F(ExtensionAlarmsTest, Get) {
   // Get "7".
   {
     JsAlarm alarm;
-    std::unique_ptr<base::DictionaryValue> result(
-        RunFunctionAndReturnDictionary(new AlarmsGetFunction(), "[\"7\"]"));
-    ASSERT_TRUE(result.get());
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"7\"]");
+    ASSERT_TRUE(result);
     EXPECT_TRUE(JsAlarm::Populate(*result, &alarm));
     EXPECT_EQ("7", alarm.name);
     EXPECT_EQ(424000, alarm.scheduled_time);
@@ -365,19 +367,18 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get a non-existent one.
   {
-    std::unique_ptr<base::DictionaryValue> result(
-        RunFunctionAndReturnDictionary(new AlarmsGetFunction(),
-                                       "[\"nobody\"]"));
-    ASSERT_FALSE(result.get());
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"nobody\"]");
+    ASSERT_FALSE(result);
   }
 }
 
 TEST_F(ExtensionAlarmsTest, GetAll) {
   // Test getAll with 0 alarms.
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnList(new AlarmsGetAllFunction(), "[]"));
-    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result.get());
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[]");
+    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result);
     EXPECT_EQ(0u, alarms.size());
   }
 
@@ -385,9 +386,9 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   CreateAlarms(2);
 
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnList(new AlarmsGetAllFunction(), "[null]"));
-    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result.get());
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[null]");
+    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result);
     EXPECT_EQ(2u, alarms.size());
 
     // Test the "7" alarm.
@@ -432,8 +433,8 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, Clear) {
   // Clear a non-existent one.
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"nobody\"]"));
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"nobody\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_FALSE(result->GetBool());
   }
@@ -443,14 +444,14 @@ TEST_F(ExtensionAlarmsTest, Clear) {
 
   // Clear all but the 0.001-minute alarm.
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"7\"]"));
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"7\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"0\"]"));
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"0\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
@@ -481,8 +482,8 @@ void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, ClearAll) {
   // ClearAll with no alarms set.
   {
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnValue(new AlarmsClearAllFunction(), "[]"));
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnValue(new AlarmsClearAllFunction(), "[]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
