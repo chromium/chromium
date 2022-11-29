@@ -71,6 +71,8 @@ public class PrivacyGuideFragment extends Fragment {
     }
 
     private void displayMainFlow() {
+        // Record that the user clicked the next button on the welcome card
+        PrivacyGuideMetricsDelegate.recordMetricsForWelcomeCard();
         FrameLayout content = mView.findViewById(R.id.fragment_content);
         content.removeAllViews();
         getLayoutInflater().inflate(R.layout.privacy_guide_steps, content);

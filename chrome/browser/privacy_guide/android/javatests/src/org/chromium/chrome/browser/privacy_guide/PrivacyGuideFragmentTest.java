@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -28,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -51,6 +53,8 @@ public class PrivacyGuideFragmentTest {
 
     @Mock
     private SyncService mSyncService;
+
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
@@ -152,5 +156,19 @@ public class PrivacyGuideFragmentTest {
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         testButtons(true, false, false);
         onView(withId(R.id.close_menu_id)).perform(click());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testWelcomeCard_nextClickWelcomeUserAction() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+        // Welcome page -> MSBB page
+        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        // Verify that the user action is emitted when the next button is clicked on the welcome
+        // page
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickWelcome"));
     }
 }
