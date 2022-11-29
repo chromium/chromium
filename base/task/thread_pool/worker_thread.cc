@@ -147,6 +147,7 @@ WorkerThread::WorkerThread(ThreadType thread_type_hint,
   DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
          thread_type_hint_ != ThreadType::kBackground);
   wake_up_event_.declare_only_used_while_idle();
+  wake_up_event_.opt_out_of_wakeup_flow_events();
 }
 
 bool WorkerThread::Start(
@@ -205,6 +206,8 @@ void WorkerThread::WakeUp() {
   // WorkerThread cannot run more tasks.
   DCHECK(!join_called_for_testing_.IsSet());
   DCHECK(!should_exit_.IsSet());
+  TRACE_EVENT_INSTANT("wakeup.flow", "WorkerThread::WakeUp",
+                      perfetto::Flow::FromPointer(this));
   wake_up_event_.Signal();
 }
 
@@ -426,7 +429,8 @@ void WorkerThread::RunWorker() {
     // TODO(crbug.com/1021571): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
     delegate_->WaitForWork(&wake_up_event_);
-    TRACE_EVENT_BEGIN0("base", "WorkerThread active");
+    TRACE_EVENT_BEGIN("base", "WorkerThread active",
+                      perfetto::TerminatingFlow::FromPointer(this));
   }
   bool got_work_this_wakeup = false;
   while (!ShouldExit()) {
@@ -456,8 +460,10 @@ void WorkerThread::RunWorker() {
       PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
       hang_watch_scope.reset();
       delegate_->WaitForWork(&wake_up_event_);
-      TRACE_EVENT_BEGIN0("base", "WorkerThread active");
       got_work_this_wakeup = false;
+
+      TRACE_EVENT_BEGIN("base", "WorkerThread active",
+                        perfetto::TerminatingFlow::FromPointer(this));
       continue;
     }
 

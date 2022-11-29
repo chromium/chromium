@@ -118,6 +118,11 @@ class BASE_EXPORT WaitableEvent {
   // to be used by thread and thread pool impls.
   void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
 
+  // Declares that this WaitableEvent should not emit wakeup.flow trace events
+  // in order to prevent duplicate flow events when the owner is emitting their
+  // flow events more specifically.
+  void opt_out_of_wakeup_flow_events() { emit_wakeup_flow_ = false; }
+
   // Wait, synchronously, on multiple events.
   //   waitables: an array of WaitableEvent pointers
   //   count: the number of elements in @waitables
@@ -262,6 +267,10 @@ class BASE_EXPORT WaitableEvent {
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
+
+  // Whether this WaitableEvent should emit a wakeup.flow event on
+  // Signal => TimedWait.
+  bool emit_wakeup_flow_ = true;
 };
 
 }  // namespace base

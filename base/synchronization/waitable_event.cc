@@ -13,8 +13,10 @@ namespace base {
 void WaitableEvent::Signal() {
   // Must be ordered before SignalImpl() to guarantee it's emitted before the
   // matching TerminatingFlow in TimedWait().
-  TRACE_EVENT_INSTANT("wakeup.flow", "WaitableEvent::Signal",
-                      perfetto::Flow::FromPointer(this));
+  if (emit_wakeup_flow_) {
+    TRACE_EVENT_INSTANT("wakeup.flow", "WaitableEvent::Signal",
+                        perfetto::Flow::FromPointer(this));
+  }
   SignalImpl();
 }
 
@@ -40,7 +42,7 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
 
   const bool result = TimedWaitImpl(wait_delta);
 
-  if (result) {
+  if (result && emit_wakeup_flow_) {
     TRACE_EVENT_INSTANT("wakeup.flow", "WaitableEvent::Wait Complete",
                         perfetto::TerminatingFlow::FromPointer(this));
   }
