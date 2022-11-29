@@ -187,8 +187,7 @@ LocationBarView::LocationBarView(Browser* browser,
              !v->GetOmniboxPopupView()->IsOpen();
     });
 
-    views::FocusRing::Get(this)->SetPathGenerator(
-        std::make_unique<views::PillHighlightPathGenerator>());
+    views::InstallPillHighlightPathGenerator(this);
 
 #if BUILDFLAG(IS_MAC)
     geolocation_permission_observation_.Observe(
