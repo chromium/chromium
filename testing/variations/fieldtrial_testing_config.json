@@ -2848,12 +2848,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221116",
+                    "name": "Enabled_20221129",
                     "params": {
-                        "compile-in-parallel": "true",
-                        "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
-                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
                         "num-yields-with-default-budget": "2"
                     },
@@ -2862,7 +2859,6 @@
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
-                        "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
                         "SplitCompositorTask",
                         "TimedHTMLParserBudget"
@@ -2880,12 +2876,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221116",
+                    "name": "Enabled_20221129",
                     "params": {
-                        "compile-in-parallel": "true",
-                        "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
-                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "500ms",
                         "num-yields-with-default-budget": "6",
                         "prewarm_cursive": "false",
@@ -2899,7 +2892,6 @@
                         "AvoidEarlyExtensionScriptContextCreation",
                         "DecodeScriptSourceOffThread",
                         "OptimizeDataUrls",
-                        "PrecompileInlineScripts",
                         "PrewarmDefaultFontFamilies",
                         "TimedHTMLParserBudget"
                     ],
@@ -2915,12 +2907,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221116",
+                    "name": "Enabled_20221129",
                     "params": {
-                        "compile-in-parallel": "true",
-                        "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
-                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
                         "num-yields-with-default-budget": "2"
                     },
@@ -2928,7 +2917,6 @@
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
-                        "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
                         "TimedHTMLParserBudget"
                     ]
@@ -11000,13 +10988,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledMainFrame_20221116",
+                    "name": "EnabledMainFrame_20221129",
                     "params": {
+                        "compile-in-parallel": "true",
+                        "compile-strategy": "eager",
+                        "inline-script-timeout": "5ms",
                         "max-data-to-process": "1",
+                        "precompile-main-frame-only": "true",
                         "pretokenize-main-frame-only": "true",
                         "scan-main-frame-only": "true"
                     },
                     "enable_features": [
+                        "PrecompileInlineScripts",
                         "PretokenizeCSS",
                         "ThreadedBodyLoader",
                         "ThreadedPreloadScanner"
