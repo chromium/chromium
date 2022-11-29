@@ -18,6 +18,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -27,6 +28,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -94,11 +96,13 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -128,6 +132,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /** End-to-end tests for TabGridDialog component. */
@@ -146,6 +151,10 @@ public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
     private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
             "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
+    private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
+            "/chrome/test/data/android/share/link_share_https_canonical.html";
+    private static final String PAGE_WITH_HTTP_CANONICAL_URL =
+            "/chrome/test/data/android/share/link_share_http_canonical.html";
 
     private boolean mHasReceivedSourceRect;
     private TabSelectionEditorTestingRobot mSelectionEditorRobot =
@@ -191,6 +200,7 @@ public class TabGridDialogTest {
 
     @After
     public void tearDown() {
+        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
@@ -556,6 +566,128 @@ public class TabGridDialogTest {
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:enable_share/true"})
+    public void testDialogSelectionEditorV2_ShareActionView() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+
+        final String httpsCanonicalUrl =
+                mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        // Share tabs
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(1)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Share tab");
+
+        CriteriaHelper.pollUiThread(()
+                                            -> Criteria.checkThat("Share sheet was not shown.",
+                                                    mActivityTestRule.getActivity()
+                                                            .getRootUiCoordinatorForTesting()
+                                                            .getBottomSheetController(),
+                                                    notNullValue()));
+
+        intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
+                hasExtras(hasEntry(equalTo(Intent.EXTRA_INTENT),
+                        allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/plain"))))));
+    }
+
+    @Test
+    @MediumTest
+    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:enable_share/true"})
+    public void testDialogSelectionEditorV2_ShareActionTabs() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        final String httpsCanonicalUrl =
+                mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        mActivityTestRule.loadUrlInNewTab(httpsCanonicalUrl);
+
+        final String httpCanonicalUrl =
+                mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL);
+        mActivityTestRule.loadUrlInNewTab(httpCanonicalUrl);
+
+        ArrayList<String> urls = new ArrayList<String>();
+        urls.add(httpsCanonicalUrl);
+        urls.add(httpCanonicalUrl);
+
+        for (int i = 0; i < urls.size(); i++) {
+            urls.set(i, (i + 1) + ". " + urls.get(i));
+        }
+        urls.add("");
+
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 3, null);
+        openSelectionEditorV2AndVerify(cta, 3);
+
+        TabSelectionEditorShareAction.setIntentCallbackForTesting((result -> {
+            assertEquals(Intent.ACTION_SEND, result.getAction());
+            assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
+            assertEquals("text/plain", result.getType());
+            assertEquals("2 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
+        }));
+
+        // Share tabs
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Share tabs");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:enable_share/true"})
+    public void testDialogSelectionEditorV2_ShareActionAllFilterableTabs()
+            throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuButton();
+
+        // Check share tabs disabled
+        onView(withText("Share tabs")).check(matches(not(isClickable())));
     }
 
     @Test
