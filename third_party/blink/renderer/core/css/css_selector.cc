@@ -557,10 +557,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if (match == pseudo_type_map_end || match->string != name.GetString())
     return CSSSelector::kPseudoUnknown;
 
-  if (match->type == CSSSelector::kPseudoAutofill &&
-      !RuntimeEnabledFeatures::CSSPseudoAutofillEnabled())
-    return CSSSelector::kPseudoUnknown;
-
   if (match->type == CSSSelector::kPseudoDir &&
       !RuntimeEnabledFeatures::CSSPseudoDirEnabled())
     return CSSSelector::kPseudoUnknown;
