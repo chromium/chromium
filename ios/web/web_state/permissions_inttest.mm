@@ -4,18 +4,19 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/permissions/permissions.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
-#import "ios/web/web_state/ui/crw_wk_ui_handler.h"
-#import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -26,14 +27,10 @@
 #endif
 
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::SpinRunLoopWithMinDelay;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
-
-// This is the timeout used to wait for the WKUIDelegate's decision handler
-// block of the to respond to permissions requests. The web state's permission
-// states would only update after the decision handler blocks responds, so all
-// checks should be ran after this timeout.
-const CGFloat kWebViewDecisionHandlingTimeout = 0.1;
 
 // Mocks WebStateObserver callbacks.
 class WebStateObserverMock : public web::WebStateObserver {
@@ -55,37 +52,6 @@ ACTION_P3(VerifyPermissionState, web_state, permission, permission_state) {
 
 }  // namespace
 
-// Fake WKUIDelegate for WKWebView to override media permissions.
-API_AVAILABLE(ios(15.0))
-@interface FakeCRWWKUIHandler : CRWWKUIHandler
-
-@property(nonatomic, assign) WKPermissionDecision decision;
-@property(nonatomic, assign) BOOL decisionMade;
-
-@end
-
-@implementation FakeCRWWKUIHandler
-
-// Method for WKUIDelegate to allow media permissions when requested.
-- (void)webView:(WKWebView*)webView
-    requestMediaCapturePermissionForOrigin:(WKSecurityOrigin*)origin
-                          initiatedByFrame:(WKFrameInfo*)frame
-                                      type:(WKMediaCaptureType)type
-                           decisionHandler:
-                               (void (^)(WKPermissionDecision decision))
-                                   decisionHandler {
-  decisionHandler(self.decision);
-  // Adds timeout to make sure self.decisionMade is set after the decision
-  // handler completes.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                               kWebViewDecisionHandlingTimeout * NSEC_PER_SEC),
-                 dispatch_get_main_queue(), ^{
-                   self.decisionMade = YES;
-                 });
-}
-
-@end
-
 namespace web {
 
 // Tests fixture to test permissions handling for web state and its observer.
@@ -97,16 +63,8 @@ class PermissionsInttest : public WebTestWithWebController {
       // Turn on media permissions feature.
       scoped_feature_list_.InitWithFeatures(
           {features::kMediaPermissionsControl}, {});
-
-      // Switch actual objects to fakes/mocks for testing purposes.
-      handler_ = [[FakeCRWWKUIHandler alloc] init];
-      handler_.delegate = (id<CRWWKUIHandlerDelegate>)web_controller();
-      swizzler_ = std::make_unique<ScopedBlockSwizzler>(
-          [CRWWebController class], NSSelectorFromString(@"UIHandler"), ^{
-            return handler_;
-          });
-
       web_state()->AddObserver(&observer_);
+      web_state()->SetDelegate(&delegate_);
 
       // Set up test server.
       test_server_ = std::make_unique<net::EmbeddedTestServer>();
@@ -117,8 +75,23 @@ class PermissionsInttest : public WebTestWithWebController {
   }
 
   void TearDown() override {
+    delegate_.ClearLastRequestedPermissions();
+    web_state()->SetDelegate(nullptr);
     web_state()->RemoveObserver(&observer_);
     WebTestWithWebState::TearDown();
+  }
+
+  // Checks whether the delegate has handled the request for expected
+  // permissions.
+  void ExpectThatLastRequestedPermissionsMatchesPermissions(
+      NSArray<NSNumber*>* expected) {
+    NSArray<NSNumber*>* actual = delegate_.last_requested_permissions();
+    ASSERT_EQ([actual count], [expected count]);
+    NSArray<NSNumber*>* expected_sorted =
+        [expected sortedArrayUsingSelector:@selector(compare:)];
+    NSArray<NSNumber*>* actual_sorted =
+        [actual sortedArrayUsingSelector:@selector(compare:)];
+    EXPECT_TRUE([actual_sorted isEqualToArray:expected_sorted]);
   }
 
  protected:
@@ -126,16 +99,24 @@ class PermissionsInttest : public WebTestWithWebController {
   std::unique_ptr<ScopedBlockSwizzler> swizzler_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
   testing::NiceMock<WebStateObserverMock> observer_;
-  FakeCRWWKUIHandler* handler_ API_AVAILABLE(ios(15.0));
+  web::FakeWebStateDelegate delegate_;
 };
-
-using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Disabling tests on real devices as it would wait for a user to respond to
 // "ios_web_inttests Would Like to Access the Camera" prompt. This is currently
 // not supported by gtest. Related logic and behaviors would be tested on real
 // devices in integration tests.
 #if TARGET_OS_SIMULATOR
+  
+namespace {
+
+// This is the timeout used to wait for the WKUIDelegate's decision handler
+// block of the to respond to permissions requests. The web state's permission
+// states would only update after the decision handler blocks responds, so all
+// checks should be ran after this timeout.
+const base::TimeDelta kWebViewDecisionHandlingTimeout = base::Milliseconds(100);
+
+} // namespace
 
 // Tests that web state observer gets invoked for camera only when the website
 // only requests for camera permissions and changed via web_state() setter
@@ -151,21 +132,20 @@ TEST_F(PermissionsInttest,
     EXPECT_CALL(observer_,
                 PermissionStateChanged(web_state(), PermissionMicrophone))
         .Times(0);
+    delegate_.SetShouldGrantPermissions(YES);
 
     // Initial load.
-    handler_.decision = WKPermissionDecisionGrant;
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
 
     // Update permission through web state API.
     web_state()->SetStateForPermission(PermissionStateBlocked,
                                        PermissionCamera);
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return web_state()->GetStateForPermission(PermissionCamera) ==
-             PermissionStateBlocked;
-    }));
+    SpinRunLoopWithMinDelay(kWebViewDecisionHandlingTimeout);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
+              PermissionStateBlocked);
   }
 }
 
@@ -185,19 +165,18 @@ TEST_F(PermissionsInttest,
                                         PermissionStateAllowed));
 
     // Initial load.
-    handler_.decision = WKPermissionDecisionGrant;
+    delegate_.SetShouldGrantPermissions(YES);
     test::LoadUrl(web_state(), test_server_->GetURL("/microphone_only.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionMicrophone) ]);
 
     // Update permission through web state API.
     web_state()->SetStateForPermission(PermissionStateNotAccessible,
                                        PermissionMicrophone);
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return web_state()->GetStateForPermission(PermissionMicrophone) ==
-             PermissionStateNotAccessible;
-    }));
+    SpinRunLoopWithMinDelay(kWebViewDecisionHandlingTimeout);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionMicrophone),
+              PermissionStateNotAccessible);
   }
 }
 
@@ -218,20 +197,19 @@ TEST_F(PermissionsInttest,
                                         PermissionStateAllowed));
 
     // Initial load.
-    handler_.decision = WKPermissionDecisionGrant;
+    delegate_.SetShouldGrantPermissions(YES);
     test::LoadUrl(web_state(),
                   test_server_->GetURL("/camera_and_microphone.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera), @(PermissionMicrophone) ]);
 
     // Only block one of them (camera in this case).
     web_state()->SetStateForPermission(PermissionStateBlocked,
                                        PermissionCamera);
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return web_state()->GetStateForPermission(PermissionCamera) ==
-             PermissionStateBlocked;
-    }));
+    SpinRunLoopWithMinDelay(kWebViewDecisionHandlingTimeout);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
+              PermissionStateBlocked);
     EXPECT_EQ(web_state()->GetStateForPermission(PermissionMicrophone),
               PermissionStateAllowed);
   }
@@ -246,11 +224,11 @@ TEST_F(PermissionsInttest,
                 PermissionStateChanged(web_state(), PermissionCamera))
         .Times(0);
 
-    handler_.decision = WKPermissionDecisionDeny;
+    delegate_.SetShouldGrantPermissions(NO);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
     EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
               WKMediaCaptureStateNone);
   }
@@ -261,11 +239,11 @@ TEST_F(PermissionsInttest,
 TEST_F(PermissionsInttest,
        TestsThatWebStateShouldNotAlterPermissionIfNotAccessible) {
   if (@available(iOS 15.0, *)) {
-    handler_.decision = WKPermissionDecisionDeny;
+    delegate_.SetShouldGrantPermissions(NO);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
     web_state()->SetStateForPermission(PermissionStateAllowed,
                                        PermissionCamera);
     web_state()->SetStateForPermission(PermissionStateBlocked,
@@ -294,23 +272,25 @@ TEST_F(PermissionsInttest,
 TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load should allow permission.
-    handler_.decision = WKPermissionDecisionGrant;
+    delegate_.SetShouldGrantPermissions(YES);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return web_state()->GetStateForPermission(PermissionCamera) ==
-             PermissionStateAllowed;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
+              PermissionStateAllowed);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
 
     // Reload should reset permission. Handler should be called again, and
     // permission state should be NotAccessible.
-    handler_.decisionMade = NO;
-    handler_.decision = WKPermissionDecisionDeny;
+    delegate_.ClearLastRequestedPermissions();
+    delegate_.SetShouldGrantPermissions(NO);
     web_state()->GetNavigationManager()->Reload(ReloadType::NORMAL,
                                                 /*check_for_repost=*/false);
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return web_state()->GetStateForPermission(PermissionCamera) ==
-             PermissionStateNotAccessible;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
+              PermissionStateNotAccessible);
     EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
               WKMediaCaptureStateNone);
   }
@@ -321,25 +301,27 @@ TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
 TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load should allow permission.
-    handler_.decision = WKPermissionDecisionGrant;
+    delegate_.SetShouldGrantPermissions(YES);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return web_state()->GetStateForPermission(PermissionCamera) ==
              PermissionStateAllowed;
     }));
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera) ]);
 
     // Navigating to another page should reset permission. Handler should be
     // called again, permission state should be NotAccessible and the observer
     // should NOT be invoked.
-    handler_.decisionMade = NO;
-    handler_.decision = WKPermissionDecisionDeny;
+    delegate_.ClearLastRequestedPermissions();
+    delegate_.SetShouldGrantPermissions(NO);
     test::LoadUrl(web_state(),
                   test_server_->GetURL("/camera_and_microphone.html"));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return handler_.decisionMade &&
-             web_state()->GetStateForPermission(PermissionCamera) ==
-                 PermissionStateNotAccessible;
-    }));
+    SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera), @(PermissionMicrophone) ]);
+    EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
+              PermissionStateNotAccessible);
     EXPECT_EQ([web_controller() ensureWebViewCreated].cameraCaptureState,
               WKMediaCaptureStateNone);
     EXPECT_EQ([web_controller() ensureWebViewCreated].microphoneCaptureState,
@@ -353,12 +335,14 @@ TEST_F(PermissionsInttest,
        TestsThatMovingBackwardOrForwardResetsPermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load for both pages should allow permission.
-    handler_.decision = WKPermissionDecisionGrant;
+    delegate_.SetShouldGrantPermissions(YES);
     test::LoadUrl(web_state(), test_server_->GetURL("/microphone_only.html"));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return web_state()->GetStateForPermission(PermissionMicrophone) ==
              PermissionStateAllowed;
     }));
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionMicrophone) ]);
     test::LoadUrl(web_state(),
                   test_server_->GetURL("/camera_and_microphone.html"));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
@@ -367,13 +351,17 @@ TEST_F(PermissionsInttest,
              web_state()->GetStateForPermission(PermissionMicrophone) ==
                  PermissionStateAllowed;
     }));
+    ExpectThatLastRequestedPermissionsMatchesPermissions(
+        @[ @(PermissionCamera), @(PermissionMicrophone) ]);
     // To cover more cases, block microphone on the second page.
     web_state()->SetStateForPermission(PermissionStateBlocked,
                                        PermissionMicrophone);
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return [web_controller() ensureWebViewCreated].microphoneCaptureState ==
-             WKMediaCaptureStateMuted;
-    }));
+    EXPECT_TRUE(
+        WaitUntilConditionOrTimeout(kWebViewDecisionHandlingTimeout, ^bool {
+          return
+              [web_controller() ensureWebViewCreated].microphoneCaptureState ==
+              WKMediaCaptureStateMuted;
+        }));
 
     // Permissions should be reset when you go backward or forward.
 
@@ -383,7 +371,7 @@ TEST_F(PermissionsInttest,
     // WKMediaCaptureStateNone. The two following lines of code should be
     // uncommented when this is fixed.
 
-    // handler_.decisionMade = NO;
+    // delegate_.SetShouldGrantPermissions(NO);
     // handler_.decision = WKPermissionDecisionDeny;
     web_state()->GetNavigationManager()->GoBack();
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {

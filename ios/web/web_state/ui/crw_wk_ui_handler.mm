@@ -10,6 +10,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
@@ -85,34 +86,32 @@ enum class PermissionRequest {
                                (void (^)(WKPermissionDecision decision))
                                    decisionHandler API_AVAILABLE(ios(15.0)) {
   PermissionRequest request;
+  NSArray<NSNumber*>* permissionsRequested;
   switch (type) {
     case WKMediaCaptureTypeCamera:
       request = PermissionRequest::RequestCamera;
+      permissionsRequested = @[ @(web::PermissionCamera) ];
       break;
     case WKMediaCaptureTypeMicrophone:
       request = PermissionRequest::RequestMicrophone;
+      permissionsRequested = @[ @(web::PermissionMicrophone) ];
       break;
     case WKMediaCaptureTypeCameraAndMicrophone:
       request = PermissionRequest::RequestCameraAndMicrophone;
+      permissionsRequested =
+          @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ];
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
   if (web::features::IsFullscreenAPIEnabled()) {
-    __weak __typeof(self) weakSelf = self;
     [webView closeAllMediaPresentationsWithCompletionHandler:^{
-      web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
-      if (webStateImpl) {
-        web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
-            webStateImpl);
-      }
-      decisionHandler(WKPermissionDecisionPrompt);
+      [self displayPromptForPermissions:permissionsRequested
+                    withDecisionHandler:decisionHandler];
     }];
     return;
   }
-
-  web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
-      self.webStateImpl);
-  decisionHandler(WKPermissionDecisionPrompt);
+  [self displayPromptForPermissions:permissionsRequested
+                withDecisionHandler:decisionHandler];
 }
 
 - (WKWebView*)webView:(WKWebView*)webView
@@ -304,6 +303,28 @@ enum class PermissionRequest {
       base::BindOnce(^(bool success, NSString* input) {
         completionHandler(success, input);
       }));
+}
+
+// Helper that displays a prompt to the user that asks for access to
+// `permissions`.
+- (void)displayPromptForPermissions:(NSArray<NSNumber*>*)permissions
+                withDecisionHandler:
+                    (void (^)(WKPermissionDecision decision))handler
+    API_AVAILABLE(ios(15.0)) {
+  web::WebStateImpl* webStateImpl = self.webStateImpl;
+  if (!webStateImpl) {
+    // If the web state doesn't exist, it is likely that the web view isn't
+    // visible to the user, or that some other issue has happened. Deny
+    // permission.
+    handler(WKPermissionDecisionDeny);
+    return;
+  }
+  web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(webStateImpl);
+  if (web::features::IsMediaPermissionsControlEnabled()) {
+    webStateImpl->RequestPermissionsWithDecisionHandler(permissions, handler);
+  } else {
+    handler(WKPermissionDecisionPrompt);
+  }
 }
 
 @end

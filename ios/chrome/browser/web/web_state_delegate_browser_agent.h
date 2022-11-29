@@ -93,6 +93,11 @@ class WebStateDelegateBrowserAgent
       base::OnceCallback<void(bool)> callback) override;
   web::JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       web::WebState* source) override;
+  bool HandlePermissionsDecisionRequest(
+      web::WebState* source,
+      NSArray<NSNumber*>* permissions,
+      WebStatePermissionDecisionHandler handler) override
+      API_AVAILABLE(ios(15.0));
   void OnAuthRequired(web::WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,

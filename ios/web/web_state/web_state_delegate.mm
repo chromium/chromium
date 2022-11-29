@@ -46,6 +46,13 @@ JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(
   return nullptr;
 }
 
+bool WebStateDelegate::HandlePermissionsDecisionRequest(
+    WebState* source,
+    NSArray<NSNumber*>* permissions,
+    WebStatePermissionDecisionHandler handler) {
+  return false;
+}
+
 void WebStateDelegate::OnAuthRequired(WebState* source,
                                       NSURLProtectionSpace* protection_space,
                                       NSURLCredential* proposed_credential,

@@ -858,6 +858,24 @@ void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
   }
 }
 
+void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
+    NSArray<NSNumber*>* permissions,
+    PermissionDecisionHandler web_view_decision_handler) {
+  bool delegate_can_handle_decision = false;
+  if (delegate_) {
+    WebStateDelegate::WebStatePermissionDecisionHandler
+        web_state_decision_handler = ^(BOOL allowed) {
+          allowed ? web_view_decision_handler(WKPermissionDecisionGrant)
+                  : web_view_decision_handler(WKPermissionDecisionDeny);
+        };
+    delegate_can_handle_decision = delegate_->HandlePermissionsDecisionRequest(
+        owner_, permissions, web_state_decision_handler);
+  }
+  if (!delegate_can_handle_decision) {
+    web_view_decision_handler(WKPermissionDecisionPrompt);
+  }
+}
+
 #pragma mark - NavigationManagerDelegate implementation
 
 void WebStateImpl::RealizedWebState::ClearDialogs() {

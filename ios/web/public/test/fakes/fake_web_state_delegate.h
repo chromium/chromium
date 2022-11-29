@@ -87,6 +87,11 @@ class FakeWebStateDelegate : public WebStateDelegate {
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
                       AuthCallback callback) override;
+  bool HandlePermissionsDecisionRequest(
+      WebState* source,
+      NSArray<NSNumber*>* permissions,
+      WebStatePermissionDecisionHandler handler) override
+      API_AVAILABLE(ios(15.0));
 
   // Allows popups requested by a page with `opener_url`.
   void allow_popups(const GURL& opener_url) {
@@ -138,6 +143,22 @@ class FakeWebStateDelegate : public WebStateDelegate {
     last_authentication_request_.reset();
   }
 
+  // Returns the last requested permissions passed to
+  // `HandlePermissionsDecisionRequest`.
+  NSArray<NSNumber*>* last_requested_permissions() {
+    return last_requested_permissions_;
+  }
+
+  // Clears the last requested permissions passed to
+  // `HandlePermissionsDecisionRequest`.
+  void ClearLastRequestedPermissions() { last_requested_permissions_ = nil; }
+
+  // Sets that whether permissions should be granted or denied the next time
+  // `HandlePermissionsDecisionRequest` is called.
+  void SetShouldGrantPermissions(bool should_grant_permissions) {
+    should_grant_permissions_ = should_grant_permissions;
+  }
+
   // Sets the return value of `ShouldAllowAppLaunching`.
   void SetShouldAllowAppLaunching(bool should_allow_apps) {
     should_allow_app_launching_ = should_allow_apps;
@@ -158,7 +179,9 @@ class FakeWebStateDelegate : public WebStateDelegate {
   bool get_java_script_dialog_presenter_called_ = false;
   FakeJavaScriptDialogPresenter java_script_dialog_presenter_;
   std::unique_ptr<FakeAuthenticationRequest> last_authentication_request_;
+  NSArray<NSNumber*>* last_requested_permissions_;
   bool should_allow_app_launching_ = false;
+  bool should_grant_permissions_ = false;
 };
 
 }  // namespace web

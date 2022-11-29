@@ -231,6 +231,15 @@ WebStateDelegateBrowserAgent::GetJavaScriptDialogPresenter(
   return &java_script_dialog_presenter_;
 }
 
+bool WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
+    web::WebState* source,
+    NSArray<NSNumber*>* permissions,
+    WebStatePermissionDecisionHandler handler) {
+  // TODO(crbug.com/1356768): Show a custom prompt and invoke decision handler
+  // based on user input, and return true.
+  return false;
+}
+
 void WebStateDelegateBrowserAgent::OnAuthRequired(
     web::WebState* source,
     NSURLProtectionSpace* protection_space,
