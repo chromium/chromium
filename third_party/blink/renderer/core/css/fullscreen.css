@@ -1,9 +1,6 @@
 :not(:root):fullscreen {
     position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
+    inset: 0 !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
@@ -28,10 +25,7 @@ iframe:fullscreen {
    shared with dialog::backdrop (see html.css). */
 :not(:root):fullscreen::backdrop {
     position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     background: black;
 }
 

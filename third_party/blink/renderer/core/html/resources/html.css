@@ -1406,10 +1406,7 @@ dialog:modal {
    properties shared with :fullscreen::backdrop (see fullscreen.css). */
 dialog::backdrop {
     position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     background: rgba(0,0,0,0.1)
 }
