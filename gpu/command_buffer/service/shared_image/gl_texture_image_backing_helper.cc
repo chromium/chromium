@@ -15,7 +15,7 @@
 
 namespace gpu {
 
-ScopedPackState::ScopedPackState(int pack_row_length)
+ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
     : api_(gl::g_current_gl_context) {
   bool is_es3_capable = gl::g_current_gl_version->is_es3_capable;
 
@@ -28,7 +28,7 @@ ScopedPackState::ScopedPackState(int pack_row_length)
       api_->glBindBufferFn(GL_PIXEL_PACK_BUFFER, 0);
   }
 
-  pack_alignment_.emplace(GL_PACK_ALIGNMENT, 4);
+  pack_alignment_.emplace(GL_PACK_ALIGNMENT, pack_alignment);
 
   if (is_es3_capable) {
     pack_row_length_.emplace(GL_PACK_ROW_LENGTH, pack_row_length);
@@ -44,7 +44,9 @@ ScopedPackState::~ScopedPackState() {
     api_->glBindBufferFn(GL_PIXEL_PACK_BUFFER, pack_buffer_);
 }
 
-ScopedUnpackState::ScopedUnpackState(bool uploading_data, int unpack_row_length)
+ScopedUnpackState::ScopedUnpackState(bool uploading_data,
+                                     int unpack_row_length,
+                                     int unpack_alignment)
     : api_(gl::g_current_gl_context) {
   const auto* version_info = gl::g_current_gl_version;
   bool is_es3_capable = version_info->is_es3_capable;
@@ -58,7 +60,7 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data, int unpack_row_length)
       api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, 0);
   }
   if (uploading_data) {
-    unpack_alignment_.emplace(GL_UNPACK_ALIGNMENT, 4);
+    unpack_alignment_.emplace(GL_UNPACK_ALIGNMENT, unpack_alignment);
 
     if (is_es3_capable ||
         gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage) {

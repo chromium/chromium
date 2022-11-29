@@ -16,7 +16,7 @@ namespace gpu {
 // Sets GL state for readback.
 class ScopedPackState {
  public:
-  explicit ScopedPackState(int pack_row_length = 0);
+  explicit ScopedPackState(int pack_row_length = 0, int pack_alignment = 4);
 
   ScopedPackState(const ScopedPackState&) = delete;
   ScopedPackState& operator=(const ScopedPackState&) = delete;
@@ -36,7 +36,9 @@ class ScopedPackState {
 // Sets GL state for upload and copy.
 class ScopedUnpackState {
  public:
-  explicit ScopedUnpackState(bool uploading_data, int unpack_row_length = 0);
+  explicit ScopedUnpackState(bool uploading_data,
+                             int unpack_row_length = 0,
+                             int unpack_alignment = 4);
 
   ScopedUnpackState(const ScopedUnpackState&) = delete;
   ScopedUnpackState& operator=(const ScopedUnpackState&) = delete;

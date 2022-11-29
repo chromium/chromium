@@ -553,16 +553,16 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   SkBitmap bitmap;
   SkImageInfo info =
       SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-  size_t stride = base::bits::AlignUp<size_t>(info.minRowBytes(), 4);
-  bitmap.allocPixels(info, stride);
+  const size_t min_stride = info.minRowBytes64();
+  bitmap.allocPixels(info, min_stride);
   bitmap.eraseColor(SK_ColorRED);
 
   EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
 
-  // Allocate a bitmap with much larger stride that necessary. Upload from that
+  // Allocate a bitmap with much larger stride than necessary. Upload from that
   // bitmap should still work correctly.
   SkBitmap larger_bitmap;
-  size_t larger_stride = stride + 100;
+  const size_t larger_stride = min_stride + 25 * info.bytesPerPixel();
   larger_bitmap.allocPixels(info, larger_stride);
   larger_bitmap.eraseColor(SK_ColorRED);
 
@@ -601,32 +601,30 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   SkBitmap bitmap;
   SkImageInfo info =
       SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-  size_t stride = base::bits::AlignUp<size_t>(info.minRowBytes(), 4);
-  bitmap.allocPixels(info, stride);
+  const size_t min_stride = info.minRowBytes64();
+  bitmap.allocPixels(info, min_stride);
   bitmap.eraseColor(SK_ColorRED);
 
   EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
 
   {
+    // Do readback with same stride and validate pixels match what was uploaded.
     SkBitmap result_bitmap;
-    result_bitmap.allocPixels(info, stride);
+    result_bitmap.allocPixels(info, min_stride);
     SkPixmap result_pixmap;
     ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
-
-    // Do readback and validate pixels match what was uploaded.
     ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
     EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
                                   cc::ExactPixelComparator(false)));
   }
 
   {
-    SkBitmap result_bitmap;
-    result_bitmap.allocPixels(info, stride + 80);
-    SkPixmap result_pixmap;
-    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
-
     // Do readback into a bitmap with larger than required stride and validate
     // pixels match what was uploaded.
+    SkBitmap result_bitmap;
+    result_bitmap.allocPixels(info, min_stride + 25 * info.bytesPerPixel());
+    SkPixmap result_pixmap;
+    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
     ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
     EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
                                   cc::ExactPixelComparator(false)));
