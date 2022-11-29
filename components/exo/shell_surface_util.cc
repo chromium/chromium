@@ -11,7 +11,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/permission.h"

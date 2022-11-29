@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/region.h"
 #include "components/exo/buffer.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"

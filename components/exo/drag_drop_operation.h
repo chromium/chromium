@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"

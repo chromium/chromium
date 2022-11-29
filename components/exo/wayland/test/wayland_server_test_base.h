@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/test/exo_test_base.h"
 
 namespace exo {

@@ -660,7 +660,6 @@ void Buffer::MaybeRunPerCommitRelease(
   if (release_fence.is_null()) {
     std::move(buffer_release_callback).Run();
   } else {
-#if BUILDFLAG(IS_POSIX)
     // Watching the release fence's fd results in a context switch to the I/O
     // thread. That may steal thread time from other applications, which can
     // do something useful during that time. Moreover, most of the time the
@@ -681,9 +680,6 @@ void Buffer::MaybeRunPerCommitRelease(
         commit_id,
         BufferRelease(std::move(release_fence), std::move(controller),
                       std::move(buffer_release_callback)));
-#else
-    NOTREACHED();
-#endif
   }
 }
 

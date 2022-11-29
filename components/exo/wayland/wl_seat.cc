@@ -7,7 +7,6 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
-#include "build/chromeos_buildflags.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/pointer.h"
 #include "components/exo/touch.h"

@@ -10,7 +10,6 @@
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"

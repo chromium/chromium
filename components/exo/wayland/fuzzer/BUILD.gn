@@ -105,7 +105,6 @@ source_set("unit_tests") {
     ":actions",
     ":harness",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland",

@@ -56,7 +56,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
 #include "components/exo/wayland/content_type.h"

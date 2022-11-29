@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/key_state.h"
 #include "components/exo/ui_lock_controller.h"

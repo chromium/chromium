@@ -12,7 +12,6 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/seat.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"

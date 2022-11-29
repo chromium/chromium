@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer_delegate.h"

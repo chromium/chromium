@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/surface.h"

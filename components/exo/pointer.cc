@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"

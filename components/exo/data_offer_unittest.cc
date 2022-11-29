@@ -17,7 +17,6 @@
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/exo/data_device.h"
