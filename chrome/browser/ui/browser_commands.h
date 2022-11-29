@@ -257,8 +257,6 @@ void UnfollowSite(content::WebContents* web_contents);
 void RunScreenAIVisualAnnotation(Browser* browser);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-void ExecLensRegionSearch(Browser* browser);
-
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_H_
