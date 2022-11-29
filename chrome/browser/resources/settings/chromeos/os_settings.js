@@ -61,7 +61,7 @@ import './os_apps_page/app_management_page/pin_to_shelf_item.js';
 import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/pwa_detail_view.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_style.css.js';
-import './os_apps_page/app_management_page/shared_vars.js';
+import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.js';
 import './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 import './os_apps_page/app_management_page/supported_links_dialog.js';
 import './os_apps_page/app_management_page/supported_links_item.js';

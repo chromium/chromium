@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './app_management_cros_shared_style.css.js';
-import './shared_vars.js';
+import './app_management_cros_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
 import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

@@ -1,0 +1,18 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #import=chrome://resources/cr_components/app_management/shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+html {
+  --card-separator: 1px solid var(--cros-separator-color);
+  --header-text-color: var(--cros-text-color-secondary);
+  --primary-text-color: var(--cros-text-color-primary);
+  --secondary-text-color: var(--cros-text-color-secondary);
+  --app-management-controlled-by-spacing:
+      var(--settings-controlled-by-spacing);
+}
