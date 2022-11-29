@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -39,7 +40,8 @@ std::unique_ptr<message_center::Notification> CreateNotification(
 
   // TODO(crbug.com/1356101): Add "Don't show again" for managed sessions.
   return ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kMultiCaptureId,
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      base::StrCat({kMultiCaptureId, ":", host}),
       /*title=*/u"",
       /*message=*/
       l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE,
