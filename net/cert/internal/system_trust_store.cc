@@ -370,10 +370,17 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
+namespace {
+TrustStoreWin* GetGlobalTrustStoreWinForCRS() {
+  static base::NoDestructor<TrustStoreWin> static_trust_store_win;
+  return static_trust_store_win.get();
+}
+}  // namespace
+
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
-  return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root), std::make_unique<TrustStoreWin>());
+  return std::make_unique<SystemTrustStoreChromeWithUnOwnedSystemStore>(
+      std::move(chrome_root), GetGlobalTrustStoreWinForCRS());
 }
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED
