@@ -29,6 +29,11 @@ const char kSocketNotListeningString[] = "Socket is not listening.";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 
+// Attempt retry `n` after cooldown period |message_retry_cooldowns[n-1]|.
+const std::vector<base::TimeDelta> create_message_stream_retry_cooldowns_{
+    base::Seconds(2), base::Seconds(4), base::Seconds(8), base::Seconds(16),
+    base::Seconds(32)};
+
 const device::BluetoothUUID kMessageStreamUuid(
     "df21fe2c-2515-4fdb-8886-f12c4d67927c");
 
@@ -121,6 +126,8 @@ class MessageStreamFakeBluetoothDevice
     error_message_ = error_message;
   }
 
+  void SetConnectToServiceSuccess() { error_ = false; }
+
   int connect_to_service_count() { return connect_to_service_count_; }
 
   void DontInvokeCallback() { dont_invoke_callback_ = true; }
@@ -189,6 +196,8 @@ class MessageStreamLookupImplTest : public testing::Test,
     device_->SetConnectToServiceError(error_message);
   }
 
+  void SetConnectToServiceSuccess() { device_->SetConnectToServiceSuccess(); }
+
   MessageStream* GetMessageStream() {
     return message_stream_lookup_->GetMessageStream(kTestDeviceAddress);
   }
@@ -198,10 +207,41 @@ class MessageStreamLookupImplTest : public testing::Test,
     message_stream_ = message_stream;
   }
 
+  // Fast forwards in time between each attempt to create a message stream to
+  // test that the retries did in fact fail. Assumes that |device_| has been
+  // added to |adapter_| and that a service error has been set (probably via
+  // SetConnectToServiceError).
+  void UnsuccessfulAttemptCreateMessageStream(
+      size_t num_unsuccessful_attempts) {
+    if (!num_unsuccessful_attempts)
+      return;
+
+    if (num_unsuccessful_attempts > 5) {
+      LOG(WARNING)
+          << __func__
+          << ": the maximum message stream attempts before failure is 5. "
+          << std::to_string(num_unsuccessful_attempts)
+          << " were requested. 5 will be tested for failure.";
+      num_unsuccessful_attempts = 5;
+    }
+
+    base::RunLoop();
+    EXPECT_EQ(GetMessageStream(), nullptr);
+
+    for (size_t curr_attempts = 1; curr_attempts < num_unsuccessful_attempts;
+         curr_attempts++) {
+      base::RunLoop();
+      EXPECT_EQ(GetMessageStream(), nullptr);
+      task_environment_.FastForwardBy(
+          create_message_stream_retry_cooldowns_[curr_attempts - 1]);
+    }
+  }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_enviornment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   MessageStream* message_stream_ = nullptr;
   scoped_refptr<MessageStreamFakeBluetoothAdapter> adapter_;
@@ -569,6 +609,38 @@ TEST_F(MessageStreamLookupImplTest, InFlightConnections) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(device_->connect_to_service_count(), 1);
+}
+
+// There is a maximum of 5 retry attempts to establish a connection upon failing
+// to do so. This tests all possible number of retries followed by a successful
+// connection.
+TEST_F(MessageStreamLookupImplTest,
+       ConnectFailInitial_ConnectSuccessOnRetries) {
+  device_->AddUUID(kMessageStreamUuid);
+  for (size_t num_unsuccessful_attempts = 1; num_unsuccessful_attempts < 5;
+       num_unsuccessful_attempts++) {
+    SetConnectToServiceError(kMessageStreamConnectToServiceError);
+    DeviceAdded();
+    UnsuccessfulAttemptCreateMessageStream(num_unsuccessful_attempts);
+    SetConnectToServiceSuccess();
+    task_environment_.FastForwardBy(base::Seconds(33));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_NE(GetMessageStream(), nullptr);
+    DeviceRemoved();
+  }
+}
+
+// There is a maximum of 5 retry attempts to establish a connection upon failing
+// to do so. This tests a connection failure after failing all 6 attempts.
+TEST_F(MessageStreamLookupImplTest,
+       ConnectFailInitial_ConnectFailOnFiveRetries) {
+  device_->AddUUID(kMessageStreamUuid);
+  SetConnectToServiceError(kMessageStreamConnectToServiceError);
+  DeviceAdded();
+  UnsuccessfulAttemptCreateMessageStream(/*num_unsuccessful_attempts=*/5);
+  task_environment_.FastForwardBy(base::Seconds(33));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
 }  // namespace quick_pair

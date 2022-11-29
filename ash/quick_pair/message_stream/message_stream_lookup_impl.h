@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -95,6 +96,12 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
+  // Maps devices addresses to message stream attempt counts and retry timers,
+  // respectively.
+  base::flat_map<std::string, int> create_message_stream_attempts_;
+  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
+      create_message_stream_retry_timers_;
 
   base::ObserverList<MessageStreamLookup::Observer> observers_;
 
