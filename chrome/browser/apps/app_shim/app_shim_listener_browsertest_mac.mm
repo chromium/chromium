@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
@@ -31,14 +32,17 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/ipcz/include/ipcz/ipcz.h"
 
 // A test version of the AppShimController mojo client in chrome_main_app_mode.
 class TestShimClient : public chrome::mojom::AppShim {
@@ -88,15 +92,48 @@ class TestShimClient : public chrome::mojom::AppShim {
     shim_receiver_.Bind(std::move(app_shim_receiver));
   }
 
+  mojo::ScopedMessagePipeHandle ConnectIcpzToShim(
+      mojo::PlatformChannelEndpoint endpoint) {
+    // ipcz does not support nodes connecting to themselves, as these tests
+    // normally do. Instead for ipcz we set up a secondary broker node and use
+    // that to connect back to Mojo's global ipcz node in this process,
+    // effectively simulating an external shim process.
+    //
+    // Note that ipcz handles and Mojo handles are interchangeable types with
+    // ipcz enabled, so we can use scoped Mojo handles to manage ipcz object
+    // lifetime here.
+    const IpczAPI& ipcz = mojo::core::GetIpczAPIForMojo();
+    IpczHandle node;
+    IpczResult result = ipcz.CreateNode(
+        &mojo::core::GetIpczDriverForMojo(), IPCZ_INVALID_DRIVER_HANDLE,
+        IPCZ_CREATE_NODE_AS_BROKER, nullptr, &node);
+    CHECK_EQ(IPCZ_RESULT_OK, result);
+    secondary_ipcz_broker_.reset(mojo::Handle{node});
+
+    // MojoIpcz reserves the first portal on each invitation connection for
+    // internal services. We discard it here since it's not needed.
+    IpczHandle portals[2];
+    result = ipcz.ConnectNode(
+        secondary_ipcz_broker_->value(),
+        mojo::core::CreateIpczTransportFromEndpoint(
+            std::move(endpoint),
+            {.local_is_broker = true, .remote_is_broker = true}),
+        /*num_initial_portals=*/2, IPCZ_CONNECT_NODE_TO_BROKER,
+        /*options=*/nullptr, portals);
+    CHECK_EQ(IPCZ_RESULT_OK, result);
+    ipcz.Close(portals[0], IPCZ_NO_FLAGS, nullptr);
+    return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(portals[1]));
+  }
+
   mojo::IsolatedConnection mojo_connection_;
+  mojo::ScopedHandle secondary_ipcz_broker_;
   mojo::Receiver<chrome::mojom::AppShim> shim_receiver_{this};
   mojo::Remote<chrome::mojom::AppShimHost> host_;
   mojo::PendingReceiver<chrome::mojom::AppShimHost> host_receiver_;
   mojo::Remote<chrome::mojom::AppShimHostBootstrap> host_bootstrap_;
 };
 
-TestShimClient::TestShimClient()
-    : host_receiver_(host_.BindNewPipeAndPassReceiver()) {
+TestShimClient::TestShimClient() {
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
@@ -105,8 +142,32 @@ TestShimClient::TestShimClient()
        ".", base::MD5String(user_data_dir.value())});
   mojo::PlatformChannelEndpoint endpoint = ConnectToBrowser(name_fragment);
 
-  mojo::ScopedMessagePipeHandle message_pipe =
-      mojo_connection_.Connect(std::move(endpoint));
+  mojo::ScopedMessagePipeHandle message_pipe;
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // With MojoIpcz, we need to set up a secondary node in order to simulate an
+    // external shim connection.
+    message_pipe = ConnectIcpzToShim(std::move(endpoint));
+
+    // It's important for the AppShimHost interface portals to be created on the
+    // secondary node too, since the fake shim passes the receiver endpoint back
+    // to the host in a reply over the primordial AppShim interface connecting
+    // the two nodes.
+    const IpczAPI& ipcz = mojo::core::GetIpczAPIForMojo();
+    IpczHandle remote, receiver;
+    const IpczResult result =
+        ipcz.OpenPortals(secondary_ipcz_broker_->value(), IPCZ_NO_FLAGS,
+                         nullptr, &remote, &receiver);
+    CHECK_EQ(IPCZ_RESULT_OK, result);
+    host_.Bind(mojo::PendingRemote<chrome::mojom::AppShimHost>(
+        mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(remote)), 0));
+    host_receiver_ = mojo::PendingReceiver<chrome::mojom::AppShimHost>(
+        mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(receiver)));
+  } else {
+    // Non-ipcz Mojo supports processes establishing IsolatedConnections to
+    // themselves.
+    message_pipe = mojo_connection_.Connect(std::move(endpoint));
+    host_receiver_ = host_.BindNewPipeAndPassReceiver();
+  }
   host_bootstrap_ = mojo::Remote<chrome::mojom::AppShimHostBootstrap>(
       mojo::PendingRemote<chrome::mojom::AppShimHostBootstrap>(
           std::move(message_pipe), 0));
@@ -269,7 +330,10 @@ void AppShimListenerBrowserTestSymlink::TearDownInProcessBrowserTestFixture() {
 IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTestSymlink,
                        RunningChromeVersionCorrectlyWritten) {
   // Check that the RunningChromeVersion file is correctly written.
-  base::FilePath version;
-  EXPECT_TRUE(base::ReadSymbolicLink(version_path_, &version));
-  EXPECT_EQ(version_info::GetVersionNumber(), version.value());
+  base::FilePath encoded_config;
+  EXPECT_TRUE(base::ReadSymbolicLink(version_path_, &encoded_config));
+  auto config =
+      app_mode::ChromeConnectionConfig::DecodeFromPath(encoded_config);
+  EXPECT_EQ(version_info::GetVersionNumber(), config.framework_version);
+  EXPECT_EQ(mojo::core::IsMojoIpczEnabled(), config.is_mojo_ipcz_enabled);
 }

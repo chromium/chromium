@@ -9,10 +9,13 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/configuration.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo {
 namespace core {
@@ -58,6 +61,25 @@ COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) bool IsMojoIpczEnabled();
 // called before any shared memory allocation is attempted in the process.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
 void InstallMojoIpczBaseSharedMemoryHooks();
+
+// These functions expose the IpczAPI and IpczDriver structures used internally
+// by the Mojo Core implementation when MojoIpcz is enabled.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) const IpczAPI& GetIpczAPIForMojo();
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) const IpczDriver& GetIpczDriverForMojo();
+
+// Creates a new ipcz driver transport from `endpoint`. The caller must specify
+// whether each end of the transport will be attached to a broker node. If the
+// local endpoint is a broker, `process` identifies the remote process if
+// possible.
+struct TransportEndpointTypes {
+  bool local_is_broker;
+  bool remote_is_broker;
+};
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
+IpczDriverHandle CreateIpczTransportFromEndpoint(
+    mojo::PlatformChannelEndpoint endpoint,
+    const TransportEndpointTypes& endpoint_types,
+    base::Process remote_process = base::Process());
 
 }  // namespace core
 }  // namespace mojo

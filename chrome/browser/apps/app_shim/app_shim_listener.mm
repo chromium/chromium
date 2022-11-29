@@ -21,7 +21,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 
 AppShimListener::AppShimListener() {}
@@ -81,14 +80,16 @@ void AppShimListener::InitOnBackgroundThread() {
       std::make_unique<apps::MachBootstrapAcceptor>(name_fragment, this);
   mach_acceptor_->Start();
 
-  // Create a symlink containing the current version string. This allows the
-  // shim to load the same framework version as the currently running Chrome
-  // process.
+  // Create a symlink containing the current version string and a bit indicating
+  // whether or not the MojoIpcz feature is enabled. This allows the shim to
+  // load the same framework version as the currently running Chrome process,
+  // and it ensures that both processes are using the same IPC implementation.
   base::FilePath version_path =
       user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName);
+  const auto config =
+      app_mode::ChromeConnectionConfig::GenerateForCurrentProcess();
   base::DeleteFile(version_path);
-  base::CreateSymbolicLink(base::FilePath(version_info::GetVersionNumber()),
-                           version_path);
+  base::CreateSymbolicLink(config.EncodeAsPath(), version_path);
 }
 
 void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
