@@ -69,7 +69,7 @@ BASE_EXPORT void ClearAmIBundledCache();
 BASE_EXPORT bool IsBackgroundOnlyProcess();
 
 // Returns the path to a resource within the framework bundle.
-BASE_EXPORT FilePath PathForFrameworkBundleResource(CFStringRef resourceName);
+BASE_EXPORT FilePath PathForFrameworkBundleResource(const char* resource_name);
 
 // Returns the creator code associated with the CFBundleRef at bundle.
 OSType CreatorCodeForCFBundleRef(CFBundleRef bundle);

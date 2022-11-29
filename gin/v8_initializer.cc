@@ -30,7 +30,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -125,9 +124,7 @@ void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
   *path_out =
       base::FilePath(FILE_PATH_LITERAL("assets")).AppendASCII(file_name);
 #elif BUILDFLAG(IS_MAC)
-  base::ScopedCFTypeRef<CFStringRef> bundle_resource(
-      base::SysUTF8ToCFStringRef(file_name));
-  *path_out = base::mac::PathForFrameworkBundleResource(bundle_resource);
+  *path_out = base::mac::PathForFrameworkBundleResource(file_name);
 #else
   base::FilePath data_path;
   bool r = base::PathService::Get(base::DIR_ASSETS, &data_path);

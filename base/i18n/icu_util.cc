@@ -25,7 +25,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
 #include "third_party/icu/source/common/unicode/udata.h"
@@ -168,9 +167,7 @@ void LazyInitIcuDataFile() {
 
 #else  // !BUILDFLAG(IS_APPLE)
   // Assume it is in the framework bundle's Resources directory.
-  ScopedCFTypeRef<CFStringRef> data_file_name(
-      SysUTF8ToCFStringRef(kIcuDataFileName));
-  FilePath data_path = mac::PathForFrameworkBundleResource(data_file_name);
+  FilePath data_path = mac::PathForFrameworkBundleResource(kIcuDataFileName);
 #if BUILDFLAG(IS_IOS)
   FilePath override_data_path = ios::FilePathOfEmbeddedICU();
   if (!override_data_path.empty()) {
