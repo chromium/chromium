@@ -12,3 +12,4 @@ UNKNOWN focusable
 ++++++++++UNKNOWN hidden
 ++++++UNKNOWN hidden
 ++++++++STATIC_TEXT hidden label='No file chosen'
+++++++UNKNOWN hidden
