@@ -3257,7 +3257,6 @@ source_set("ash") {
     "//chromeos/ash/components/tether",
     "//chromeos/ash/components/timezone",
     "//chromeos/ash/components/trash_service/public/cpp",
-    "//chromeos/ash/services/auth_factor_config:auth_factor_config",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/device_sync/proto",

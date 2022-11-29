@@ -1262,10 +1262,7 @@ void WizardController::OnConsolidatedConsentScreenExit(
   }
 }
 
-void WizardController::OnCryptohomeRecoverySetupScreenExit(
-    CryptohomeRecoverySetupScreen::Result result) {
-  OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
-               CryptohomeRecoverySetupScreen::GetResultString(result));
+void WizardController::OnCryptohomeRecoverySetupScreenExit() {
   ShowFingerprintSetupScreen();
 }
 

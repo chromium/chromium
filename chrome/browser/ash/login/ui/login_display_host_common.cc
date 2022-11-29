@@ -503,10 +503,7 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
-  // TODO(b/239804500): Check if recovery screen should be skipped because of
-  // policy.
-  if (PinSetupScreen::ShouldSkipBecauseOfPolicy() &&
-      !chromeos::features::IsCryptohomeRecoverySetupEnabled())
+  if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
 
   wizard_context_->extra_factors_auth_session =
