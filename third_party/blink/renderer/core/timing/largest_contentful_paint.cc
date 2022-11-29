@@ -32,7 +32,7 @@ LargestContentfulPaint::LargestContentfulPaint(
 
 LargestContentfulPaint::~LargestContentfulPaint() = default;
 
-AtomicString LargestContentfulPaint::entryType() const {
+const AtomicString& LargestContentfulPaint::entryType() const {
   return performance_entry_names::kLargestContentfulPaint;
 }
 

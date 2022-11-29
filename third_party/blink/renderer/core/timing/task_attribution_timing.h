@@ -16,7 +16,7 @@ class TaskAttributionTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   AtomicString containerType() const;

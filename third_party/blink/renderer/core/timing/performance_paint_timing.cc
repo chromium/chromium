@@ -40,7 +40,7 @@ PerformancePaintTiming::PerformancePaintTiming(PaintType type,
 
 PerformancePaintTiming::~PerformancePaintTiming() = default;
 
-AtomicString PerformancePaintTiming::entryType() const {
+const AtomicString& PerformancePaintTiming::entryType() const {
   return performance_entry_names::kPaint;
 }
 

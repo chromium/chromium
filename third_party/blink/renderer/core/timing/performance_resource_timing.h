@@ -74,7 +74,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
                             ExecutionContext* context);
   ~PerformanceResourceTiming() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   // Related doc: https://goo.gl/uNecAj.

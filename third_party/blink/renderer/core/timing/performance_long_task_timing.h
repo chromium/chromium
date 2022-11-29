@@ -34,7 +34,7 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
                             const uint32_t navigation_id);
   ~PerformanceLongTaskTiming() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   TaskAttributionVector attribution() const;

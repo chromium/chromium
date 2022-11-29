@@ -16,7 +16,7 @@ VisibilityStateEntry::VisibilityStateEntry(AtomicString name,
 
 VisibilityStateEntry::~VisibilityStateEntry() = default;
 
-AtomicString VisibilityStateEntry::entryType() const {
+const AtomicString& VisibilityStateEntry::entryType() const {
   return performance_entry_names::kVisibilityState;
 }
 

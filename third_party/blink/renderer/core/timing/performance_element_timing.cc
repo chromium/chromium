@@ -61,7 +61,7 @@ PerformanceElementTiming::PerformanceElementTiming(
 
 PerformanceElementTiming::~PerformanceElementTiming() = default;
 
-AtomicString PerformanceElementTiming::entryType() const {
+const AtomicString& PerformanceElementTiming::entryType() const {
   return performance_entry_names::kElement;
 }
 

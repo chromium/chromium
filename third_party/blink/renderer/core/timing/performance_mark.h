@@ -68,7 +68,7 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
 
   ~PerformanceMark() override = default;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
   mojom::blink::PerformanceMarkOrMeasurePtr ToMojoPerformanceMarkOrMeasure()
       override;

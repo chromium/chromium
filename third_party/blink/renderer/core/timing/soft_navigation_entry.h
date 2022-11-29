@@ -19,7 +19,7 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
                       uint32_t navigation_id);
   ~SoftNavigationEntry() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 };
 

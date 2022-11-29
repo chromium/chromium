@@ -79,7 +79,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const AtomicString& name() const { return name_; }
   DOMHighResTimeStamp startTime() const;
   uint32_t navigationId() const;
-  virtual AtomicString entryType() const = 0;
+  virtual const AtomicString& entryType() const = 0;
   virtual PerformanceEntryType EntryTypeEnum() const = 0;
   // PerformanceNavigationTiming will override this due to
   // the nature of reporting it early, which means not having a

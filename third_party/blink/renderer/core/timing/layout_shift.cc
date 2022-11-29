@@ -36,7 +36,7 @@ LayoutShift::LayoutShift(double start_time,
 
 LayoutShift::~LayoutShift() = default;
 
-AtomicString LayoutShift::entryType() const {
+const AtomicString& LayoutShift::entryType() const {
   return performance_entry_names::kLayoutShift;
 }
 

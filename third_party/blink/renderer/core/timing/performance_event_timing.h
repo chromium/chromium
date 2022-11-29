@@ -39,7 +39,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          uint32_t navigation_id);
   ~PerformanceEventTiming() override;
 
-  AtomicString entryType() const override { return entry_type_; }
+  const AtomicString& entryType() const override { return entry_type_; }
   PerformanceEntryType EntryTypeEnum() const override;
 
   bool cancelable() const { return cancelable_; }

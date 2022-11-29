@@ -30,7 +30,7 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
                          uint32_t navigation_id);
   ~LargestContentfulPaint() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   uint64_t size() const { return size_; }

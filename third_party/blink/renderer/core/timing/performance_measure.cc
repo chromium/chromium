@@ -64,7 +64,7 @@ ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {
   return ScriptValue(isolate, value);
 }
 
-AtomicString PerformanceMeasure::entryType() const {
+const AtomicString& PerformanceMeasure::entryType() const {
   return performance_entry_names::kMeasure;
 }
 

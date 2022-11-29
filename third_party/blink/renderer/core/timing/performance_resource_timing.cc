@@ -151,7 +151,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
 
 PerformanceResourceTiming::~PerformanceResourceTiming() = default;
 
-AtomicString PerformanceResourceTiming::entryType() const {
+const AtomicString& PerformanceResourceTiming::entryType() const {
   return performance_entry_names::kResource;
 }
 

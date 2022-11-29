@@ -20,7 +20,7 @@ BackForwardCacheRestoration::BackForwardCacheRestoration(
       pageshow_event_start_(pageshow_event_start),
       pageshow_event_end_(pageshow_event_end) {}
 BackForwardCacheRestoration::~BackForwardCacheRestoration() = default;
-AtomicString BackForwardCacheRestoration::entryType() const {
+const AtomicString& BackForwardCacheRestoration::entryType() const {
   return performance_entry_names::kBackForwardCacheRestoration;
 }
 PerformanceEntryType BackForwardCacheRestoration::EntryTypeEnum() const {

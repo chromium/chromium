@@ -77,7 +77,7 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
 
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
 
-AtomicString PerformanceNavigationTiming::entryType() const {
+const AtomicString& PerformanceNavigationTiming::entryType() const {
   return performance_entry_names::kNavigation;
 }
 

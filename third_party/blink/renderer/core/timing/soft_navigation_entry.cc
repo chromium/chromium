@@ -16,7 +16,7 @@ SoftNavigationEntry::SoftNavigationEntry(AtomicString name,
 
 SoftNavigationEntry::~SoftNavigationEntry() = default;
 
-AtomicString SoftNavigationEntry::entryType() const {
+const AtomicString& SoftNavigationEntry::entryType() const {
   return performance_entry_names::kSoftNavigation;
 }
 

@@ -96,7 +96,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
       exception_state, navigation_id);
 }
 
-AtomicString PerformanceMark::entryType() const {
+const AtomicString& PerformanceMark::entryType() const {
   return performance_entry_names::kMark;
 }
 

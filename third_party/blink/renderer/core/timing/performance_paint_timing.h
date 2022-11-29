@@ -19,7 +19,7 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
   PerformancePaintTiming(PaintType, double start_time, uint32_t navigation_id);
   ~PerformancePaintTiming() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 };
 

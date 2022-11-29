@@ -19,7 +19,7 @@ class CORE_EXPORT VisibilityStateEntry final : public PerformanceEntry {
                        uint32_t navigation_id);
   ~VisibilityStateEntry() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 };
 

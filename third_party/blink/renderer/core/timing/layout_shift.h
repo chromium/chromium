@@ -42,7 +42,7 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
 
   ~LayoutShift() override;
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   double value() const { return value_; }

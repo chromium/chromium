@@ -61,7 +61,7 @@ class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
 
   ScriptValue detail(ScriptState*);
 
-  AtomicString entryType() const override;
+  const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
   mojom::blink::PerformanceMarkOrMeasurePtr ToMojoPerformanceMarkOrMeasure()
       override;
