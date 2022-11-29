@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/signin/fake_account_details_view_controller.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
@@ -58,91 +59,6 @@ void SetCachedAvatarForIdentity(id<SystemIdentity> identity, UIImage* avatar) {
 
 }  // anonymous namespace
 
-@interface FakeAccountDetailsViewController : UIViewController {
-  __weak id<SystemIdentity> _identity;
-  UIButton* _removeAccountButton;
-  UIButton* _closeAccountDetailsButton;
-}
-@end
-
-@implementation FakeAccountDetailsViewController
-
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    _identity = identity;
-  }
-  return self;
-}
-
-- (void)dealloc {
-  [_removeAccountButton removeTarget:self
-                              action:@selector(didTapRemoveAccount:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  [_closeAccountDetailsButton removeTarget:self
-                                    action:@selector(didTapCloseAccount:)
-                          forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-
-  // Obnoxious color, this is a test screen.
-  self.view.backgroundColor = [UIColor orangeColor];
-
-  _removeAccountButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self addButtonToSubviewWithTitle:@"Remove account"
-                             button:_removeAccountButton
-                             action:@selector(didTapRemoveAccount:)];
-
-  _closeAccountDetailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [self addButtonToSubviewWithTitle:@"Close account"
-                             button:_closeAccountDetailsButton
-                             action:@selector(didTapCloseAccount:)];
-}
-
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-
-  CGRect bounds = self.view.bounds;
-  [self sizeButtonToFitWithCenter:CGPointMake(CGRectGetMidX(bounds),
-                                              CGRectGetMinY(bounds))
-                           button:_removeAccountButton];
-  [self sizeButtonToFitWithCenter:CGPointMake(CGRectGetMidX(bounds),
-                                              CGRectGetMidY(bounds))
-                           button:_closeAccountDetailsButton];
-}
-
-#pragma mark - Private
-
-- (void)addButtonToSubviewWithTitle:(NSString*)title
-                             button:(UIButton*)button
-                             action:(SEL)action {
-  [button setTitle:title forState:UIControlStateNormal];
-  [button addTarget:self
-                action:action
-      forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:button];
-}
-
-- (void)sizeButtonToFitWithCenter:(CGPoint)center button:(UIButton*)button {
-  [button setCenter:center];
-  [button sizeToFit];
-}
-
-- (void)didTapRemoveAccount:(id)sender {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->ForgetIdentity(_identity, ^(NSError*) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-      });
-}
-
-- (void)didTapCloseAccount:(id)sender {
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-@end
-
 namespace ios {
 FakeChromeIdentityService::FakeChromeIdentityService()
     : identities_([[NSMutableArray alloc] init]),
@@ -177,6 +93,7 @@ FakeChromeIdentityService::PresentAccountDetailsController(
   [viewController presentViewController:accountDetailsViewController
                                animated:animated
                              completion:nil];
+
   return ^(BOOL dismissAnimated) {
     [accountDetailsViewController dismissViewControllerAnimated:dismissAnimated
                                                      completion:nil];

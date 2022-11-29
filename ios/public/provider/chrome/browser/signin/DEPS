@@ -13,6 +13,7 @@ specific_include_rules = {
   ],
   "fake_chrome_identity_service\.mm": [
     "+ios/chrome/browser/signin/fake_system_identity.h",
+    "+ios/chrome/browser/signin/fake_account_details_view_controller.h",
   ],
   "chrome_identity_service_unittest\.mm": [
     "+ios/chrome/browser/signin/fake_system_identity.h",
