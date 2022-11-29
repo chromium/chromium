@@ -554,6 +554,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av för en app}other{Av för # appar}}</translation>
 <translation id="4066027111132117168">På, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">medelstark signal</translation>
+<translation id="4086921558679520050">Aktivera det fysiska mikrofonreglaget på enheten</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
 <translation id="4114315158543974537">Aktivera Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4379531060876907730">Här är dina verktyg för e-penna</translation>
+<translation id="4381031910344220229">Detta tillåter mikrofonåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
 <translation id="439598569299422042">Pausad, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Det gick inte att spara screencast</translation>
@@ -728,6 +730,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4987738733603015246">Skrivbord 16</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Åtkomst till enhetens mikrofon har aktiverats</translation>
 <translation id="5030687792513154421">Tiden är slut</translation>
 <translation id="5033299697334913360">Klicka var som helst för att ta en bild av hela skärmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har anslutits till en ny mobil</translation>
@@ -959,9 +962,11 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> är en hanterad session som hanteras av <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> har anslutits</translation>
 <translation id="6351032674660237738">APPFÖRSLAG</translation>
+<translation id="6352082849089527770">Okända nätverk</translation>
 <translation id="6359587239691116345">Få de senaste funktionerna och säkerhetsförbättringarna. Om du inte godkänner uppdateringen kan det hända att enheten slutar fungerar som den ska och det kan uppstå säkerhets- och prestandaproblem.</translation>
 <translation id="6376931439017688372">Bluetooth är aktiverat</translation>
 <translation id="6381109794406942707">Lås upp enheten genom att ange pinkoden.</translation>
+<translation id="638716340450135524">Aktivera kameraåtkomst</translation>
 <translation id="639644700271529076">CAPS LOCK är av</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -969,6 +974,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="642644398083277086">Rensa alla aviseringar</translation>
 <translation id="643147933154517414">Klart</translation>
 <translation id="6431865393913628856">Skärminspelning</translation>
+<translation id="6442259747294754014">Åtkomst till enhetens mikrofon har inaktiverats</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> händelse</translation>
 <translation id="6449483711453944360">Linux-appar och inkognitofönster stöds inte för närvarande</translation>
@@ -1133,6 +1139,7 @@ Nyligen installerad</translation>
 <translation id="7360036564632145207">Prestandan kan förbättras om du ändrar inställningen för dataåtkomstskydd för kringutrustning</translation>
 <translation id="736045644501761622">Ställ in bakgrund och stil</translation>
 <translation id="7371404428569700291">Spela in fönster</translation>
+<translation id="737315737514430195">Detta tillåter mikrofonåtkomst för alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="7377169924702866686">Caps Lock är på.</translation>
 <translation id="7377481913241237033">Anslut med en kod</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
@@ -1201,12 +1208,14 @@ Nyligen installerad</translation>
 <translation id="7671610481353807627">Apparna har sorterats efter färg</translation>
 <translation id="7672095158465655885">Ansluten till <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Indata från kameran har ställts in på <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Detta tillåter mikrofonåtkomst för <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
 <translation id="7720400844887872976">På till <ph name="TIME" /></translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7742327441377685481">Inga aviseringar</translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
@@ -1363,6 +1372,7 @@ Nyligen installerad</translation>
 <translation id="8598235756057743477">Sortera apparna efter namn eller färg</translation>
 <translation id="8614517853887502247">Aviseringar från <ph name="APP_1_TITLE" /> och <ph name="APP_2_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="8627191004499078455">Ansluten till <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Inaktivera kameraåtkomst</translation>
 <translation id="8631727435199967028">Tillgänglighetsinställningar</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> återstår</translation>

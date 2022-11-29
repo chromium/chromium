@@ -31,7 +31,6 @@
 <translation id="1149401351239820326">Місяць закінчення терміну дії</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Сторінка недоступна в режимі офлайн: <ph name="VIOLATED_URL" /></translation>
-<translation id="1171770572613082465">Натисніть кнопку "Популярні сайти", щоб переглянути їх.</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1181037720776840403">Видалити</translation>
@@ -1379,7 +1378,6 @@
 <translation id="8352996530981010042">Не вдається завантажити реакції. Повторіть спробу.</translation>
 <translation id="8354977102499939946">Швидко шукайте за допомогою голосу. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
 <translation id="835847953965672673">Відновлено стільки завантажень: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
-<translation id="8364299278605033898">Перегляньте популярні сайти</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Як ми використовуємо ці дані<ph name="END_BOLD" />. Chrome оцінює ваші інтереси. Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про ваші інтереси, щоб персоналізувати для вас оголошення.</translation>
 <translation id="8387617938027387193">Підтвердьте свою особу</translation>

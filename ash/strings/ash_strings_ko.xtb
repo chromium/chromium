@@ -728,6 +728,7 @@
 <translation id="4987738733603015246">데스크 16</translation>
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5016558321564993266">마커를 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">기기 마이크 액세스 권한 부여됨</translation>
 <translation id="5030687792513154421">시간이 다 됨</translation>
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
@@ -962,6 +963,7 @@
 <translation id="6359587239691116345">최신 기능과 보안 개선 사항을 받습니다. 이 업데이트를 거부하면 기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
+<translation id="638716340450135524">카메라 액세스 권한 부여</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
@@ -969,6 +971,7 @@
 <translation id="642644398083277086">알림 모두 지우기</translation>
 <translation id="643147933154517414">완료</translation>
 <translation id="6431865393913628856">화면 녹화</translation>
+<translation id="6442259747294754014">기기 마이크 액세스 차단됨</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />에 <ph name="ROUTE_TITLE" /> 전송 중</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="6449483711453944360">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다.</translation>
@@ -1364,6 +1367,7 @@
 <translation id="8598235756057743477">이름 또는 색상별로 앱 정렬</translation>
 <translation id="8614517853887502247">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" /> 및 <ph name="APP_2_TITLE" /> 알림이 숨겨집니다.</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />에 연결됨</translation>
+<translation id="8630991711272431708">카메라 액세스 차단</translation>
 <translation id="8631727435199967028">접근성 설정</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> 남음</translation>

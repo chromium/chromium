@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> தேர்ந்தெடுக்கப்பட்டுள்ளது, <ph name="TOPIC_SOURCE" /> ஆல்பங்களைத் தேர்ந்தெடுக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="484790837831576105">(Android) DNS ரெசல்யூஷன்</translation>
 <translation id="4848429997038228357">நடைபெறுவது</translation>
+<translation id="4854586501323951986">உள்ளமைந்த டச்ஸ்கிரீன்</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} முயற்சி மீதமுள்ளது}other{<ph name="ERROR_MESSAGE" /> {0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="4873827928179867585">அங்கீகரிப்பு அல்காரிதம்</translation>
 <translation id="4880328057631981605">ஆக்சஸ் பாயிண்ட் நேம்</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">ஃபைலைச் சேர்</translation>
 <translation id="6410257289063177456">பட ஃபைல்கள்</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>
+<translation id="6412715219990689313">உள்ளமைந்த கீபோர்டு</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">ஃபைல் வகை</translation>
 <translation id="73631062356239394">கண்டறிதல் தரவைப் பகிர்தல்</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">உள்ளமைந்த டச்பேட்</translation>
 <translation id="7397270852490618635">லைட் தீமினை முடக்குதல்</translation>
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>

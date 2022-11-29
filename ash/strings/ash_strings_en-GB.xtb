@@ -730,6 +730,7 @@ Connect your device to power.</translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Next sentence</translation>
 <translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Device microphone access is on</translation>
 <translation id="5030687792513154421">Time is up</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
@@ -965,6 +966,7 @@ Connect your device to power.</translation>
 <translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
+<translation id="638716340450135524">Turn on camera access</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -972,6 +974,7 @@ Connect your device to power.</translation>
 <translation id="642644398083277086">Clear all notifications</translation>
 <translation id="643147933154517414">All finished</translation>
 <translation id="6431865393913628856">Screen record</translation>
+<translation id="6442259747294754014">Device microphone access is off</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
 <translation id="6449483711453944360">Linux apps and incognito windows aren’t currently supported</translation>
@@ -1369,6 +1372,7 @@ New install</translation>
 <translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Turn off camera access</translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> remaining</translation>

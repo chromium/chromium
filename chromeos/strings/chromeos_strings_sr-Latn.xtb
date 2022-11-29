@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Isprobajte korake za rešavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Povežite se na mrežu i ponovo učitajte stranicu da biste videli čuvar ekrana.</translation>
+<translation id="2056550196601855911">IPv4 ili IPv6</translation>
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2085089206770112532">Smanjite osvetljenost ekrana</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Algoritam komprimovanja</translation>
 <translation id="4794140124556169553">Pokretanje testa procesora može da utiče na učinak sistema</translation>
 <translation id="4800589996161293643">Chromebook zajednica</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4813136279048157860">Moje slike</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije leve slušalice.</translation>
 <translation id="4905998861748258752">Uključite funkciju da biste izabrali opcije čuvara ekrana</translation>
+<translation id="4910858703033903787">Tipovi naziva pristupne tačke</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
 <translation id="491791267030419270">Saveti za pisanje povratnih informacija</translation>
@@ -460,6 +463,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5358174242040570474">Došlo je do greške. Probajte ponovo da odaberete pozadinu ili otvorite ponovo aplikaciju.</translation>
 <translation id="5372659122375744710">WiFi mreža nije bezbedna</translation>
 <translation id="5376354385557966694">Automatski svetli režim</translation>
+<translation id="5378184552853359930">Tip IP adrese</translation>
 <translation id="5389159777326897627">Pozadina i stil</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
@@ -743,6 +747,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Prilog</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
@@ -831,6 +836,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
 <translation id="9028832514430399253">Uključite prekidač da biste izabrali opcije čuvara ekrana</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPV6</translation>
 <translation id="9062831201344759865">DNS razrešavanje ima veliko kašnjenje</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

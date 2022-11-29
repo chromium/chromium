@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1981118202195772574">Мобилни уређај</translation>
 <translation id="1989112275319619282">Прегледај</translation>
+<translation id="1990820278544963435">Пронађите</translation>
 <translation id="199425419756152024">Прикажи лозинку</translation>
 <translation id="2010008505735295285">Поново учитај</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
@@ -875,6 +876,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7531345132340165516">Тренутни сајт</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="7553234618121028547">Да бисте искључили, отворите <ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" /> и идите у Опције лозинки.</translation>
+<translation id="7554645225856321710">Затвори све</translation>
 <translation id="7554791636758816595">Нова картица</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -928,7 +930,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7966516440812255683">Сајтови могу да користе колачиће за побољшање доживљаја прегледања, на пример, да бисте остали пријављени или да би ставке у вашој корпи за куповину остале сачуване.
 
 Сајтови могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
-<translation id="7966904497916178308">Стандардна заштита је укључена</translation>
 <translation id="7971521879845308059">Блокирај искачуће прозоре</translation>
 <translation id="797413074872316787">Да бисте синхронизовали и персонализовали садржај на уређајима, укључите синхронизацију.</translation>
 <translation id="7978018860671536736">3. Додирните Аутоматски попуни лозинке</translation>
@@ -1089,6 +1090,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
 <translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Претражите картице…</translation>
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
 <translation id="941747855997058526">Изаберите лозинку…</translation>
 <translation id="952704832371081537">Откажи</translation>

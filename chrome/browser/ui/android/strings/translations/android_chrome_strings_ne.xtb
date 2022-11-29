@@ -31,7 +31,6 @@
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1154704303112745282">यो पृष्ठ अफलाइन मोडमा उपलब्ध छैन: <ph name="VIOLATED_URL" /></translation>
-<translation id="1171770572613082465">"शीर्ष साइटहरू" नामक बटनमा ट्याप गरी लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -1378,7 +1377,6 @@
 <translation id="8352996530981010042">प्रतिक्रियाहरू डाउनलोड गर्न सकिँदैन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8354977102499939946">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>
-<translation id="8364299278605033898">लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
 <translation id="8368001212524806591">मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />हामीले यो डेटा कसरी प्रयोग गर्छौँ:<ph name="END_BOLD" /> Chrome ले तपाईंका रुचिहरू पत्ता लगाउन सक्छ। तपाईंले यसपछि खोल्ने साइटले Chrome सँग तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्ने प्रयोजनका लागि तपाईंका रुचिहरू हेर्ने अनुमति माग्न सक्छ।</translation>
 <translation id="8387617938027387193">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>

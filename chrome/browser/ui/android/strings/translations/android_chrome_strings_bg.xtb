@@ -31,7 +31,6 @@
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Страницата не е достъпна офлайн: <ph name="VIOLATED_URL" /></translation>
-<translation id="1171770572613082465">Вижте популярните уебсайтове, като докоснете бутона „Водещи сайтове“</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -1379,7 +1378,6 @@
 <translation id="8352996530981010042">Реакциите не могат да се изтеглят. Опитайте отново.</translation>
 <translation id="8354977102499939946">Бързо търсене с гласа ви. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
-<translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Как използваме тези данни<ph name="END_BOLD" />: Chrome може да прогнозира интересите ви. По-късно посетен от вас сайт може да поиска от Chrome информация за интересите ви с цел да персонализира показваните ви реклами.</translation>
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>

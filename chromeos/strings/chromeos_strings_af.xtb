@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Probeer foutsporingstappe</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Koppel asseblief aan ’n netwerk en herlaai die bladsy om sluimerskerm te bekyk.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2085089206770112532">Verlaag skermhelderheid</translation>
 <translation id="2105810540595158374">Toestel is 'n speletjiebeheerder.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Saampersingalgoritme</translation>
 <translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
 <translation id="4800589996161293643">Chromebook-gemeenskap</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Ligtema</translation>
 <translation id="4813136279048157860">My prente</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in linkerknoppie.</translation>
 <translation id="4905998861748258752">Skakel die kenmerk aan om sluimerskermopsies te kies</translation>
+<translation id="4910858703033903787">APN-tipes</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="491791267030419270">Wenke oor hoe om terugvoer te skryf</translation>
@@ -460,6 +463,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5358174242040570474">Iets is fout. Probeer weer om 'n muurpapier te kies of maak die program weer oop.</translation>
 <translation id="5372659122375744710">Wi-fi-netwerk is nie veilig nie</translation>
 <translation id="5376354385557966694">Outomatiese ligmodus</translation>
+<translation id="5378184552853359930">IP-tipe</translation>
 <translation id="5389159777326897627">Muurpapier en Styl</translation>
 <translation id="5389224261615877010">Reënboog</translation>
 <translation id="5400907029458559844">Toestel koppel tans.</translation>
@@ -743,6 +747,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Kies <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Heg aan</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
@@ -831,6 +836,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="9025198690966128418">Gebruik as ’n persoonlike toestel</translation>
 <translation id="9028832514430399253">Skakel die wisselaar aan om die sluimerskermopsies te kies</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-resolusie het hoë traagheid</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

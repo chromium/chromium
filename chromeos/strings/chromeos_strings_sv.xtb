@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Anslut till ett nätverk och läs in sidan igen för att se skärmsläckaren.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
 <translation id="2105810540595158374">Enheten är en spelkontroll.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Komprimeringsalgoritm</translation>
 <translation id="4794140124556169553">Systemet kan bli långsammare när du kör ett CPU-test</translation>
 <translation id="4800589996161293643">Community för Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4809927044794281115">Ljust tema</translation>
 <translation id="4813136279048157860">Mina bilder</translation>
@@ -396,6 +398,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> har markerats. Välj album i <ph name="TOPIC_SOURCE" /> genom att trycka på Retur</translation>
 <translation id="484790837831576105">(Android) DNS-upplösning</translation>
 <translation id="4848429997038228357">KÖRS</translation>
+<translation id="4854586501323951986">Inbyggd pekskärm</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
 <translation id="4873827928179867585">Autentiseringsalgoritm</translation>
 <translation id="4880328057631981605">Namn på åtkomstpunkt (APN)</translation>
@@ -404,6 +407,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Batterinivån för vänster hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Aktivera funktionen om du vill välja alternativ för skärmsläckaren</translation>
+<translation id="4910858703033903787">APN-typer</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="491791267030419270">Tips för att skriva feedback</translation>
@@ -459,6 +463,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5358174242040570474">Något gick fel. Testa att välja en bakgrund igen eller öppna appen på nytt.</translation>
 <translation id="5372659122375744710">wifi-nätverket är inte säkert</translation>
 <translation id="5376354385557966694">Automatiskt ljust läge</translation>
+<translation id="5378184552853359930">IP-typ</translation>
 <translation id="5389159777326897627">Bakgrund och stil</translation>
 <translation id="5389224261615877010">Regnbåge</translation>
 <translation id="5400907029458559844">Enheter ansluter.</translation>
@@ -569,6 +574,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6394634179843537518">Lägg till en fil</translation>
 <translation id="6410257289063177456">Bildfiler</translation>
 <translation id="641081527798843608">Ämnesmatchning</translation>
+<translation id="6412715219990689313">Inbyggt tangentbord</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
@@ -667,6 +673,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="73631062356239394">Dela diagnostikdata</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Inbyggd styrplatta</translation>
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
 <translation id="741244894080940828">Räkna om</translation>
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
@@ -740,6 +747,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Välj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Bifoga</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Förmåner</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
@@ -828,6 +836,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="9025198690966128418">Använd som personlig enhet</translation>
 <translation id="9028832514430399253">Aktivera inställningen om du vill välja alternativ för skärmsläckaren</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-upplösningen har hög fördröjning</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -31,7 +31,6 @@
 <translation id="1149401351239820326">Месяц окончания срока действия</translation>
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Страница недоступна в офлайн-режиме: <ph name="VIOLATED_URL" />.</translation>
-<translation id="1171770572613082465">Чтобы перейти к списку популярных сайтов, нажмите кнопку "Топ сайтов"</translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -1379,7 +1378,6 @@
 <translation id="8352996530981010042">Не удалось скачать отклики. Повторите попытку.</translation>
 <translation id="8354977102499939946">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
-<translation id="8364299278605033898">Показать популярные сайты</translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> Chrome может определять ваши интересы. Сайты, которые вы посетите в дальнейшем, могут обращаться к Chrome, чтобы получать сведения о ваших интересах и показывать вам подходящую рекламу.</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>

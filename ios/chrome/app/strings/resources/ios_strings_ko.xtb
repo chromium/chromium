@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">고급</translation>
 <translation id="1981118202195772574">모바일</translation>
 <translation id="1989112275319619282">찾아보기</translation>
+<translation id="1990820278544963435">찾기</translation>
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="2010008505735295285">새로고침</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
@@ -928,7 +929,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7966516440812255683">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하는 데 쿠키를 사용할 수 있습니다.
 
 사이트에서 사용자의 다양한 사이트 탐색 활동 정보로 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 있습니다.</translation>
-<translation id="7966904497916178308">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="7971521879845308059">팝업 차단</translation>
 <translation id="797413074872316787">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요</translation>
 <translation id="7978018860671536736">3. AutoFill Passwords(비밀번호 자동 완성)를 탭합니다.</translation>
@@ -1089,6 +1089,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9188680907066685419">관리 계정에서 로그아웃</translation>
 <translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">탭 검색…</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
 <translation id="941747855997058526">비밀번호 선택...</translation>
 <translation id="952704832371081537">취소</translation>

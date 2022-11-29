@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Nooit gestoor nie</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Werkskermboekmerke</translation>
+<translation id="1067561478268651872">Die <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-beleid word nie gebruik nie, tensy die <ph name="SECURE_DNS_SALT" />-beleid gestel is.</translation>
 <translation id="1068672505746868501">Moet nooit bladsye in <ph name="SOURCE_LANGUAGE" /> vertaal nie</translation>
 <translation id="1070853536588271387">Hibried- en alternatiewe voertuie</translation>
 <translation id="1070901266639972381">Nag</translation>
@@ -2099,6 +2100,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6328786501058569169">Hierdie werf is misleidend</translation>
 <translation id="6337133576188860026">Maak minder as <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk op jou volgende besoek stadiger laai.</translation>
 <translation id="6337534724793800597">Filtreer beleide volgens naam</translation>
+<translation id="633770708279464947">Die <ph name="SECURE_DNS_SALT" />-waarde is ongeldig en sal nie gebruik word nie.</translation>
 <translation id="6340739886198108203">Administrateursbeleid beveel nie aan dat skermskote geneem of opnames gemaak word wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oplaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oplaai nie}}</translation>
 <translation id="6348220984832452017">Aktiewe variasies</translation>
@@ -2994,6 +2996,7 @@ Bykomende besonderhede:
 <translation id="8654126188050905496">55x91 mm</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="8666678546361132282">Engels</translation>
+<translation id="8671519637524426245">Die <ph name="SECURE_DNS_SALT" />-waarde voldoen nie aan die groottevereistes nie.</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8672264262457010862">Besigheid en nywerheid</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
@@ -3093,6 +3096,7 @@ Bykomende besonderhede:
 <translation id="8913778647360618320">Bestuur Betaalmetodes-knoppie; druk Enter om jou betalings- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="8922013791253848639">Laat advertensies altyd op hierdie werf toe</translation>
 <translation id="892588693504540538">Pons regs bo</translation>
+<translation id="8930098617363288380">Die <ph name="SECURE_DNS_SALT" />-waarde is nie relevant nie, en sal nie gebruik word nie, tensy die <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-beleid gestel is.</translation>
 <translation id="8930330541574156305">Eiendom</translation>
 <translation id="8931333241327730545">Wil jy hierdie kaart in jou Google-rekening stoor?</translation>
 <translation id="8932102934695377596">Jou horlosie is agter</translation>

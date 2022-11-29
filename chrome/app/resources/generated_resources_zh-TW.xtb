@@ -2075,7 +2075,6 @@
 <translation id="2852385257476173980">瀏覽網路時，你造訪的網站清單可能會顯示在這裡</translation>
 <translation id="285241945869362924">自動建立音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2856776373509145513">建立新容器</translation>
-<translation id="2858138569776157458">熱門網站</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
@@ -2362,6 +2361,7 @@
 <translation id="3129173833825111527">左邊界</translation>
 <translation id="3129215702932019810">啟動應用程式時發生錯誤</translation>
 <translation id="3130528281680948470">你的裝置將會進行重設，且所有使用者帳戶和本機資料都會遭到移除。這項操作無法復原。</translation>
+<translation id="3130863904455712965">歷史記錄和其他資料</translation>
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
@@ -2375,7 +2375,6 @@
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3143754809889689516">從頭播放</translation>
 <translation id="3144647712221361880">以其他身分開啟連結</translation>
-<translation id="3144896554017119333">擴充功能和其他項目</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3150693969729403281">立即執行安全檢查</translation>
 <translation id="3150927491400159470">強制重新載入</translation>

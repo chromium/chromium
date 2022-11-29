@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുത്തു, <ph name="TOPIC_SOURCE" /> ആൽബങ്ങൾ തിരഞ്ഞെടുക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="484790837831576105">(Android) DNS റെസല്യൂഷൻ</translation>
 <translation id="4848429997038228357">റൺ ചെയ്യുന്നു</translation>
+<translation id="4854586501323951986">ബിൽറ്റ് ഇൻ ടച്ച്‌സ്‌ക്രീൻ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="4873827928179867585">പരിശോധിച്ചുറപ്പിക്കൽ അൽഗോരിതം</translation>
 <translation id="4880328057631981605">ആ‌ക്‌സസ് പോയിന്‍റിന്‍റെ പേര്</translation>
@@ -568,6 +569,7 @@
 <translation id="6394634179843537518">ഫയൽ ചേർക്കുക</translation>
 <translation id="6410257289063177456">ചിത്ര ഫയലുകള്‍</translation>
 <translation id="641081527798843608">പൊരുത്തപ്പെടുന്ന വിഷയം</translation>
+<translation id="6412715219990689313">ബിൽറ്റ് ഇൻ കീബോർഡ്</translation>
 <translation id="6423239382391657905">VPNതുറക്കുക</translation>
 <translation id="6439505561246192797">ദുർബലം (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">അക്കൗണ്ട് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -666,6 +668,7 @@
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="73631062356239394">പ്രശ്നനിർണ്ണയ ഡാറ്റ പങ്കിടുക</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">ബിൽറ്റ് ഇൻ ടച്ച്‌പാഡ്</translation>
 <translation id="7397270852490618635">ലൈറ്റ് തീം ഓഫാക്കുക</translation>
 <translation id="741244894080940828">പരിവർത്തനം</translation>
 <translation id="7415801143053185905">വളരെ ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>

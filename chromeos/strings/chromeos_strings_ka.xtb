@@ -398,6 +398,7 @@
 <translation id="4847902821209177679">არჩეულია <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, <ph name="TOPIC_SOURCE" /> ალბომების ასარჩევად დააჭირეთ კლავიშზე Enter</translation>
 <translation id="484790837831576105">(Android) DNS-ის დარეგულირება</translation>
 <translation id="4848429997038228357">გაშვებულია</translation>
+<translation id="4854586501323951986">ჩაშენებული სენსორული ეკრანი</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}other{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}}</translation>
 <translation id="4873827928179867585">ავტორიზაციის ალგორითმი</translation>
 <translation id="4880328057631981605">წვდომის წერტილის სახელი</translation>
@@ -573,6 +574,7 @@
 <translation id="6394634179843537518">ფაილის დამატება</translation>
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
+<translation id="6412715219990689313">ჩაშენებული კლავიატურა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>
@@ -671,6 +673,7 @@
 <translation id="7359657277149375382">ფაილის ტიპი</translation>
 <translation id="73631062356239394">დიაგნოსტიკური მონაცემების გაზიარება</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">ჩაშენებული სენსორული პანელი</translation>
 <translation id="7397270852490618635">ღია თემის გამორთვა</translation>
 <translation id="741244894080940828">გარდაქმნა</translation>
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>

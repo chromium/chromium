@@ -133,6 +133,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Browse</translation>
+<translation id="1990820278544963435">Find</translation>
 <translation id="199425419756152024">View password</translation>
 <translation id="2010008505735295285">Reload</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
@@ -875,6 +876,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7531345132340165516">Current site</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="7553234618121028547">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Password options.</translation>
+<translation id="7554645225856321710">Close all</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
@@ -928,7 +930,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7966516440812255683">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
 Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
-<translation id="7966904497916178308">Standard protection is on</translation>
 <translation id="7971521879845308059">Block Pop-ups</translation>
 <translation id="797413074872316787">To sync and personalise across devices, turn on sync.</translation>
 <translation id="7978018860671536736">3. Tap auto-fill passwords</translation>
@@ -1089,6 +1090,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Search Tabs…</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
 <translation id="941747855997058526">Select password…</translation>
 <translation id="952704832371081537">Cancel</translation>

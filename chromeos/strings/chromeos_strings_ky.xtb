@@ -139,6 +139,7 @@
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
+<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
@@ -395,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> тандалды, <ph name="TOPIC_SOURCE" /> альбомдорун тандоо үчүн Enter баскычын басыңыз</translation>
 <translation id="484790837831576105">(Android) DNS дааналыгы</translation>
 <translation id="4848429997038228357">АТКАРЫЛУУДА</translation>
+<translation id="4854586501323951986">Кыстарылган сенсордук экран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
 <translation id="4873827928179867585">Аутентификациянын алгоритми</translation>
 <translation id="4880328057631981605">Жетки чекитинин аты</translation>
@@ -568,6 +570,7 @@
 <translation id="6394634179843537518">Файл кошуу</translation>
 <translation id="6410257289063177456">Сүрөт файлдары</translation>
 <translation id="641081527798843608">Темасы дал келди</translation>
+<translation id="6412715219990689313">Кыстарылган баскычтоп</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Начар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунттун параметрлерине өтүү</translation>
@@ -666,6 +669,7 @@
 <translation id="7359657277149375382">Файлдын түрү</translation>
 <translation id="73631062356239394">Мүчүлүштүктөрдү аныктоо маалыматын бөлүшүү</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Кыстарылган сенсордук такта</translation>
 <translation id="7397270852490618635">Жарык теманы өчүрүү</translation>
 <translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>

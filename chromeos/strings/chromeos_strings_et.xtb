@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Valitud on taust „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”. Vajutage sisestusklahvi, et valida tausta „<ph name="TOPIC_SOURCE" />” jaoks albumid</translation>
 <translation id="484790837831576105">(Android) DNS-lahendus</translation>
 <translation id="4848429997038228357">POOLELI</translation>
+<translation id="4854586501323951986">Sisseehitatud puuteekraan</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" /> {0} katset jäänud}}</translation>
 <translation id="4873827928179867585">Autendimise algoritm</translation>
 <translation id="4880328057631981605">Pääsupunkti nimi</translation>
@@ -569,6 +570,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6394634179843537518">Lisa fail</translation>
 <translation id="6410257289063177456">Pildifailid</translation>
 <translation id="641081527798843608">Teema vaste</translation>
+<translation id="6412715219990689313">Sisseehitatud klaviatuur</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Nõrk (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ava konto seaded</translation>
@@ -667,6 +669,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
 <translation id="73631062356239394">Diagnostikaandmete jagamine</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Sisseehitatud puuteplaat</translation>
 <translation id="7397270852490618635">Heleda teema väljalülitamine</translation>
 <translation id="741244894080940828">teisendus</translation>
 <translation id="7415801143053185905">Väga pikk HTTP latentsusaeg</translation>

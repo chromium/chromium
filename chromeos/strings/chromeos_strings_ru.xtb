@@ -396,6 +396,7 @@
 <translation id="4847902821209177679">Выбран вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />). Нажмите Ввод, чтобы выбрать альбомы отсюда: <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">DNS-преобразование (Android)</translation>
 <translation id="4848429997038228357">ВЫПОЛНЯЕТСЯ</translation>
+<translation id="4854586501323951986">Встроенный сенсорный экран</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="4873827928179867585">Алгоритм аутентификации</translation>
 <translation id="4880328057631981605">Название точки доступа</translation>
@@ -569,6 +570,7 @@
 <translation id="6394634179843537518">Добавить файл</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="641081527798843608">Совпадение тем</translation>
+<translation id="6412715219990689313">Встроенная клавиатура</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
@@ -667,6 +669,7 @@
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="73631062356239394">Поделиться данными диагностики</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Встроенная сенсорная панель</translation>
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>

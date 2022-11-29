@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Koble til et nettverk og last inn siden på nytt for å se skjermspareren.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
@@ -384,6 +385,7 @@
 <translation id="4793756956024303490">Algoritme for komprimering</translation>
 <translation id="4794140124556169553">Kjøring av en prosessortest kan påvirke systemets ytelse</translation>
 <translation id="4800589996161293643">Chromebook-fellesskapet</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Lyst tema</translation>
 <translation id="4813136279048157860">Mine bilder</translation>
@@ -404,6 +406,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i venstre øreplugg.</translation>
 <translation id="4905998861748258752">Slå på funksjonen for å velge alternativer for skjermsparer</translation>
+<translation id="4910858703033903787">APN-typer</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
 <translation id="491791267030419270">Tips om å skrive tilbakemeldinger</translation>
@@ -459,6 +462,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5358174242040570474">Noe gikk galt. Prøv å velge en bakgrunn igjen eller åpne appen på nytt.</translation>
 <translation id="5372659122375744710">Wifi-nettverket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys modus</translation>
+<translation id="5378184552853359930">IP-type</translation>
 <translation id="5389159777326897627">Bakgrunn og stil</translation>
 <translation id="5389224261615877010">Regnbue</translation>
 <translation id="5400907029458559844">Enheten kobler seg til.</translation>
@@ -742,6 +746,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Tilknytt</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
@@ -830,6 +835,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9025198690966128418">Bruk som personlig enhet</translation>
 <translation id="9028832514430399253">Slå på av/på-knappen for å velge skjermspareralternativene</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-oppslag har høy tidsforsinkelse</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

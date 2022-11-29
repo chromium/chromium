@@ -3223,13 +3223,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4030152268425532846">Inhabilitar el rescate de acceso automático</translation>
-<translation id="4041577849977347218">Si habilitas la política o no la estableces, se enviarán los archivos descargados para que la Navegación segura los analice, incluso cuando provengan de una fuente de confianza.
-
-      Si inhabilitas la política, no se enviarán los archivos descargados para que la Navegación segura los analice cuando provengan de una fuente de confianza.
-
-      Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o mediante la opción de descarga de vínculo del menú. No se aplican a las acciones de descargar o guardar la página que se muestra actualmente ni a la de guardar como PDF desde las opciones de impresión.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="4043796890723386527">Impedir que los usuarios creen o utilicen perfiles secundarios o usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
@@ -4172,6 +4165,15 @@ Si inhabilitas esta política o no la estableces, la API de window.webkitStorage
 
       Nota: También se pueden agregar elementos a esta lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Lista de usuarios con permiso para iniciar sesión</translation>
+<translation id="5069522005630249098">Esta configuración determina cuántos datos del usuario se conservan después de inhabilitar <ph name="LACROS_NAME" />.
+
+      Si estableces la política como <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> o no la estableces, no se llevará a cabo la migración de datos inversa.
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, se quitarán todos los datos del usuario. Esta es la opción más segura.
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se quitarán la mayoría de los datos del usuario. Solo se conservan los archivos independientes del navegador (como las descargas).
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos del usuario. Esta opción tiene un alto riesgo de falla, por lo tanto requiere usar Powerwash para recuperar los datos.</translation>
 <translation id="5071303485174858500">Inhabilitar la sesión de invitado administrada y restringida</translation>
 <translation id="5073609397321802133">Si se establece la política como falsa, los usuarios no podrán personalizar el fondo en la página Nueva pestaña. En caso de que haya un fondo personalizado, este se quitará de forma permanente, incluso si más tarde se establece la política como verdadera.
 

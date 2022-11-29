@@ -396,6 +396,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> dipilih, tekan Enter untuk memilih album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolusi DNS</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
+<translation id="4854586501323951986">Layar sentuh bawaan</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}other{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}}</translation>
 <translation id="4873827928179867585">Algoritme autentikasi</translation>
 <translation id="4880328057631981605">Nama titik akses</translation>
@@ -569,6 +570,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6410257289063177456">File Gambar</translation>
 <translation id="641081527798843608">Kecocokan subjek</translation>
+<translation id="6412715219990689313">Keyboard bawaan</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
@@ -667,6 +669,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="73631062356239394">Bagikan data diagnostik</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Touchpad bawaan</translation>
 <translation id="7397270852490618635">Nonaktifkan tema terang</translation>
 <translation id="741244894080940828">konversi</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>

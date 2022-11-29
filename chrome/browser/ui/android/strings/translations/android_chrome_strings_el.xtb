@@ -31,7 +31,6 @@
 <translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
-<translation id="1171770572613082465">Δείτε δημοφιλείς ιστοτόπους πατώντας το κουμπί "Κορυφαίοι ιστότοποι"</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -1379,7 +1378,6 @@
 <translation id="8352996530981010042">Δεν είναι δυνατή η λήψη των αντιδράσεων. Δοκιμάστε ξανά.</translation>
 <translation id="8354977102499939946">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="835847953965672673">Έγινε επαναφορά <ph name="NUMBER_OF_DOWNLOADS" /> λήψεων.</translation>
-<translation id="8364299278605033898">Δείτε δημοφιλείς ιστοτόπους</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Πώς χρησιμοποιούμε αυτά τα δεδομένα:<ph name="END_BOLD" /> Το Chrome μπορεί να κάνει εκτιμήσεις για τα ενδιαφέροντά σας. Αργότερα, ένας ιστότοπος που επισκέπτεστε μπορεί να ζητήσει από το Chrome να δει τα ενδιαφέροντά σας, προκειμένου να εξατομικεύσει τις διαφημίσεις που βλέπετε.</translation>
 <translation id="8387617938027387193">Επαλήθευση ταυτότητας</translation>

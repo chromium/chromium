@@ -140,6 +140,7 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
+<translation id="2184005227776731758">APN (nome do ponto de acesso)</translation>
 <translation id="2209788852729124853">Repor contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nomes</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -397,6 +398,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecionado. Prima Enter para selecionar álbuns do <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
+<translation id="4854586501323951986">Ecrã tátil incorporado</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticação</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
@@ -572,6 +574,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6394634179843537518">Adicionar ficheiro</translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
+<translation id="6412715219990689313">Teclado incorporado</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Aceda às definições da conta</translation>
@@ -670,6 +673,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Partilhar dados de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">Touchpad incorporado</translation>
 <translation id="7397270852490618635">Desativar tema claro</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
