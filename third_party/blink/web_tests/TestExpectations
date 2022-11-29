@@ -3004,6 +3004,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-009.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-010.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-011.xht [ Failure ]
+crbug.com/1378774 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-019.xht [ Timeout ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-020.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-192.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-193.xht [ Failure ]
@@ -6232,7 +6233,7 @@ crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextme
 
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
-crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure ]
+crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure Timeout ]
 crbug.com/1208173 [ Mac ] animations/missing-values-last-keyframe.html [ Failure ]
 crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
@@ -7609,6 +7610,7 @@ crbug.com/1392517 [ Debug Linux ] http/tests/serviceworker/postmessage-after-ter
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/cookie-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
+crbug.com/1375147 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/singletap-on-overlay-closes-overflow-menu.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
