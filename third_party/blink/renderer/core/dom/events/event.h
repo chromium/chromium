@@ -257,7 +257,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   const Event* UnderlyingEvent() const { return underlying_event_.Get(); }
   void SetUnderlyingEvent(const Event*);
 
-  bool HasEventPath() { return event_path_; }
+  bool HasEventPath() const { return event_path_; }
   EventPath& GetEventPath() const {
     DCHECK(event_path_);
     return *event_path_;

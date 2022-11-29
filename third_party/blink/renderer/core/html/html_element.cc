@@ -1781,28 +1781,26 @@ const HTMLElement* HTMLElement::NearestOpenAncestralPopover(
 }
 
 // static
-void HTMLElement::HandlePopoverLightDismiss(const Event& event) {
-  if (event.GetEventPath().IsEmpty())
+void HTMLElement::HandlePopoverLightDismiss(const Event& event,
+                                            const Node& target_node) {
+  DCHECK(event.isTrusted());
+  auto& document = target_node.GetDocument();
+  if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+          document.GetExecutionContext()))
     return;
-  DCHECK_NE(Event::PhaseType::kNone, event.eventPhase());
-  if (event.eventPhase() == Event::PhaseType::kBubblingPhase)
+  if (!document.TopmostPopover())
     return;
-  if (!event.isTrusted())
-    return;
-  // Ensure that shadow DOM event retargeting is considered when computing
-  // the event target node.
-  auto* target_node = event.GetEventPath()[0].Target()->ToNode();
-  if (!target_node)
-    return;
-  auto& document = target_node->GetDocument();
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      document.GetExecutionContext()));
-  DCHECK(document.TopmostPopover());
+
   const AtomicString& event_type = event.type();
   if (IsA<PointerEvent>(event)) {
+    // PointerEventManager will call this function before actually dispatching
+    // the event.
+    DCHECK(!event.HasEventPath());
+    DCHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+
     if (event_type == event_type_names::kPointerdown) {
       document.SetPopoverPointerdownTarget(NearestOpenAncestralPopover(
-          *target_node, PopoverAncestorType::kInclusive));
+          target_node, PopoverAncestorType::kInclusive));
     } else if (event_type == event_type_names::kPointerup) {
       // Hide everything up to the clicked element. We do this on pointerup,
       // rather than pointerdown or click, primarily for accessibility concerns.
@@ -1815,7 +1813,7 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event) {
       // text), the ancestral popover is stored in pointerdown and compared
       // here.
       auto* ancestor_popover = NearestOpenAncestralPopover(
-          *target_node, PopoverAncestorType::kInclusive);
+          target_node, PopoverAncestorType::kInclusive);
       bool same_target =
           ancestor_popover == document.PopoverPointerdownTarget();
       document.SetPopoverPointerdownTarget(nullptr);
@@ -1828,6 +1826,8 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event) {
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
+      DCHECK(!event.GetEventPath().IsEmpty());
+      DCHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
       // Escape key just pops the topmost popover off the stack.
       document.TopmostPopover()->HidePopoverInternal(
           HidePopoverFocusBehavior::kFocusPreviousElement,

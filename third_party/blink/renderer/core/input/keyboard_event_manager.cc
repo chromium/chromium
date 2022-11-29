@@ -573,6 +573,10 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
   }
 
+  auto* target_node = event->GetEventPath()[0].Target()->ToNode();
+  DCHECK(target_node);
+  HTMLElement::HandlePopoverLightDismiss(*event, *target_node);
+
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }
 
