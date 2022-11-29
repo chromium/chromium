@@ -37,10 +37,6 @@ class PasswordReuseManager : public KeyedService {
                     PasswordStoreInterface* profile_store,
                     PasswordStoreInterface* account_store) = 0;
 
-  // Clears existing cached passwords stored on the account store and schedules
-  // a request to re-fetch.
-  virtual void AccountStoreStateChanged() = 0;
-
   // Log whether a sync password hash saved.
   virtual void ReportMetrics(const std::string& username,
                              bool is_under_advanced_protection) = 0;

@@ -44,6 +44,17 @@ IsAccountStore TestPasswordStore::IsAccountStore() const {
   return fake_backend()->is_account_store();
 }
 
+base::CallbackListSubscription
+TestPasswordStore::AddSyncEnabledOrDisabledCallback(
+    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+  return sync_enabled_or_disabled_cbs_.Add(
+      std::move(sync_enabled_or_disabled_cb));
+}
+
+void TestPasswordStore::CallSyncEnabledOrDisabledCallbacks() {
+  sync_enabled_or_disabled_cbs_.Notify();
+}
+
 TestPasswordStore::~TestPasswordStore() = default;
 
 FakePasswordStoreBackend* TestPasswordStore::fake_backend() {

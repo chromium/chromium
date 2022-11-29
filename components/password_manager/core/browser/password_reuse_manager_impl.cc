@@ -141,14 +141,6 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
   }
 }
 
-void PasswordReuseManagerImpl::AccountStoreStateChanged() {
-  DCHECK(account_store_);
-  ScheduleTask(
-      base::BindOnce(&PasswordReuseDetector::ClearCachedAccountStorePasswords,
-                     base::Unretained(reuse_detector_)));
-  account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
-}
-
 void PasswordReuseManagerImpl::ReportMetrics(
     const std::string& username,
     bool is_under_advanced_protection) {
@@ -385,6 +377,14 @@ void PasswordReuseManagerImpl::OnLoginsRetained(
 bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {
   return background_task_runner_ &&
          background_task_runner_->PostTask(FROM_HERE, std::move(task));
+}
+
+void PasswordReuseManagerImpl::AccountStoreStateChanged() {
+  DCHECK(account_store_);
+  ScheduleTask(
+      base::BindOnce(&PasswordReuseDetector::ClearCachedAccountStorePasswords,
+                     base::Unretained(reuse_detector_)));
+  account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 }  // namespace password_manager

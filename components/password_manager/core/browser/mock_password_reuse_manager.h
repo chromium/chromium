@@ -22,7 +22,6 @@ class MockPasswordReuseManager : public PasswordReuseManager {
                PasswordStoreInterface* profile_store,
                PasswordStoreInterface* account_store),
               (override));
-  MOCK_METHOD(void, AccountStoreStateChanged, (), (override));
   MOCK_METHOD(void,
               ReportMetrics,
               (const std::string& username, bool is_under_advanced_protection),

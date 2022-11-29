@@ -431,7 +431,7 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
   RunUntilIdle();
 
   account_store()->Clear();
-  reuse_manager()->AccountStoreStateChanged();
+  account_store()->CallSyncEnabledOrDisabledCallbacks();
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
               OnReuseCheckDone(/* is_reuse_found=*/false, _, _, IsEmpty(),
