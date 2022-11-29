@@ -69,6 +69,9 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
                 @Override
                 public void onAllTabsClosed() {
                     onTabProviderTabUpdated();
+                    for (CustomTabTabObserver observer : mActivityTabObservers) {
+                        observer.onAllTabsClosed();
+                    }
                 }
             };
 
@@ -215,5 +218,13 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
          * @param tab The tab that the observer is now observing.
          */
         protected void onObservingDifferentTab(@NonNull Tab tab) {}
+
+        /**
+         * A notification that the observer has been removed from the tab, as all the tabs are
+         * closing and there's no active tabs left. This is useful when observers need to release
+         * related dependencies when observers are removed from the tab while the tab is still kept
+         * alive (e.g. during tab reparenting).
+         */
+        protected void onAllTabsClosed() {}
     }
 }
