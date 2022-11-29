@@ -39,6 +39,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -476,6 +477,12 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
   proxy_request.method = net::HttpRequestHeaders::kGetMethod;
   // Don't send cookies or HTTP authentication to the proxy server.
   proxy_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  std::string accept_header_value = network::kDefaultAcceptHeaderValue;
+  resource_request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
+                                     &accept_header_value);
+  proxy_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                  accept_header_value);
 
   content::StoragePartition* storage_partition = profile_->GetStoragePartition(
       url_info.storage_partition_config(profile_), /*can_create=*/false);

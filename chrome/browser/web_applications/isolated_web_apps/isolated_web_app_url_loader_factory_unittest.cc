@@ -33,6 +33,7 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -520,6 +521,45 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlRemovesOriginalRequestData) {
   EXPECT_THAT(url_handler().request()->credentials_mode,
               Eq(network::mojom::CredentialsMode::kOmit));
   EXPECT_THAT(url_handler().request()->request_initiator, Eq(absl::nullopt));
+}
+
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestCopiesAcceptHeader) {
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kDevWebBundleId + "/foo/bar.html");
+  request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "text/html");
+  CreateLoaderAndRun(std::move(request));
+
+  std::string accept_header_value;
+  ASSERT_THAT(url_handler().request()->headers.GetHeader(
+                  net::HttpRequestHeaders::kAccept, &accept_header_value),
+              IsTrue());
+  EXPECT_THAT(accept_header_value, Eq("text/html"));
+}
+
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDefaultsToAcceptingAll) {
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kDevWebBundleId + "/foo/bar.html");
+  CreateLoaderAndRun(std::move(request));
+
+  std::string accept_header_value;
+  ASSERT_THAT(url_handler().request()->headers.GetHeader(
+                  net::HttpRequestHeaders::kAccept, &accept_header_value),
+              IsTrue());
+  EXPECT_THAT(accept_header_value, Eq("*/*"));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
