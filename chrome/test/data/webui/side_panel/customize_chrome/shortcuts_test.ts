@@ -15,7 +15,7 @@ import {installMock} from './test_support.js';
 
 suite('ShortcutsTest', () => {
   let customizeShortcuts: ShortcutsElement;
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
