@@ -28,10 +28,6 @@ constexpr base::TimeDelta kDefaultNetworkTelemetryCollectionRate =
 constexpr base::TimeDelta kDefaultNetworkTelemetryEventCheckingRate =
     base::Minutes(10);
 
-// Default graphics telemetry collection rate.
-constexpr base::TimeDelta kDefaultGraphicsTelemetryCollectionRate =
-    base::Hours(3);
-
 // Default record upload frequency.
 constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 

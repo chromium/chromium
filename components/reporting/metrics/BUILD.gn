@@ -6,9 +6,7 @@ source_set("metrics_data_collection") {
   sources = [
     "collector_base.cc",
     "collector_base.h",
-    "configured_sampler.cc",
-    "configured_sampler.h",
-    "event_driven_telemetry_sampler_pool.h",
+    "event_driven_telemetry_collector_pool.h",
     "metric_event_observer.h",
     "metric_event_observer_manager.cc",
     "metric_event_observer_manager.h",
@@ -18,8 +16,6 @@ source_set("metrics_data_collection") {
     "metric_report_queue.h",
     "metric_reporting_controller.cc",
     "metric_reporting_controller.h",
-    "multi_samplers_collector.cc",
-    "multi_samplers_collector.h",
     "one_shot_collector.cc",
     "one_shot_collector.h",
     "periodic_collector.cc",
@@ -41,12 +37,10 @@ source_set("metrics_data_collection") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "configured_sampler_unittest.cc",
     "metric_event_observer_manager_unittest.cc",
     "metric_rate_controller_unittest.cc",
     "metric_report_queue_unittest.cc",
     "metric_reporting_controller_unittest.cc",
-    "multi_samplers_collector_unittest.cc",
     "one_shot_collector_unittest.cc",
     "periodic_collector_unittest.cc",
     "periodic_event_collector_unittest.cc",

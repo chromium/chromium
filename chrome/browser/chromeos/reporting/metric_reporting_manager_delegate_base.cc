@@ -4,11 +4,12 @@
 
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/metrics/collector_base.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/one_shot_collector.h"
@@ -72,11 +73,12 @@ MetricReportingManagerDelegateBase::CreatePeriodicCollector(
     bool setting_enabled_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
+    int rate_unit_to_ms,
+    base::TimeDelta init_delay) {
   return std::make_unique<PeriodicCollector>(
       sampler, metric_report_queue, reporting_settings, enable_setting_path,
       setting_enabled_default_value, rate_setting_path, default_rate,
-      rate_unit_to_ms);
+      rate_unit_to_ms, init_delay);
 }
 
 std::unique_ptr<CollectorBase>
@@ -85,10 +87,11 @@ MetricReportingManagerDelegateBase::CreateOneShotCollector(
     MetricReportQueue* metric_report_queue,
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
-    bool setting_enabled_default_value) {
+    bool setting_enabled_default_value,
+    base::TimeDelta init_delay) {
   return std::make_unique<OneShotCollector>(
       sampler, metric_report_queue, reporting_settings, enable_setting_path,
-      setting_enabled_default_value);
+      setting_enabled_default_value, init_delay);
 }
 
 std::unique_ptr<MetricEventObserverManager>
@@ -98,10 +101,12 @@ MetricReportingManagerDelegateBase::CreateEventObserverManager(
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
-    EventDrivenTelemetrySamplerPool* sampler_pool) {
+    EventDrivenTelemetryCollectorPool* collector_pool,
+    base::TimeDelta init_delay) {
   return std::make_unique<MetricEventObserverManager>(
       std::move(event_observer), metric_report_queue, reporting_settings,
-      enable_setting_path, setting_enabled_default_value, sampler_pool);
+      enable_setting_path, setting_enabled_default_value, collector_pool,
+      init_delay);
 }
 
 bool MetricReportingManagerDelegateBase::IsAffiliated(Profile* profile) const {

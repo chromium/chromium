@@ -12,13 +12,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
-#include "components/reporting/metrics/configured_sampler.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/fakes/fake_metric_event_observer.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
@@ -27,6 +29,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,7 +55,7 @@ class FakeMetricEventObserverManager : public MetricEventObserverManager {
             reporting_settings,
             /*enable_setting_path=*/"",
             /*setting_enabled_default_value=*/false,
-            /*sampler_pool=*/nullptr),
+            /*collector_pool=*/nullptr),
         observer_manager_count_(observer_manager_count) {
     ++(*observer_manager_count_);
   }
@@ -70,15 +73,23 @@ class FakeMetricEventObserverManager : public MetricEventObserverManager {
 
 class FakeCollector : public CollectorBase {
  public:
+  FakeCollector() : CollectorBase(/*sampler=*/nullptr) {}
+
   explicit FakeCollector(int* collector_count)
-      : CollectorBase(nullptr), collector_count_(collector_count) {
-    ++(*collector_count_);
+      : CollectorBase(/*sampler=*/nullptr), collector_count_(collector_count) {
+    if (collector_count_) {
+      ++(*collector_count_);
+    }
   }
 
   FakeCollector(const FakeCollector& other) = delete;
   FakeCollector& operator=(const FakeCollector& other) = delete;
 
-  ~FakeCollector() override { --(*collector_count_); }
+  ~FakeCollector() override {
+    if (collector_count_) {
+      --(*collector_count_);
+    }
+  }
 
  protected:
   // CollectorBase:
@@ -87,7 +98,7 @@ class FakeCollector : public CollectorBase {
   bool CanCollect() const override { return true; }
 
  private:
-  raw_ptr<int> collector_count_;
+  raw_ptr<int> collector_count_ = nullptr;
 };
 
 class MockDelegate : public MetricReportingManager::Delegate {
@@ -127,7 +138,8 @@ class MockDelegate : public MetricReportingManager::Delegate {
                MetricReportQueue* metric_report_queue,
                ReportingSettings* reporting_settings,
                const std::string& enable_setting_path,
-               bool setting_enabled_default_value),
+               bool setting_enabled_default_value,
+               base::TimeDelta init_delay),
               (override));
 
   MOCK_METHOD(std::unique_ptr<CollectorBase>,
@@ -139,7 +151,8 @@ class MockDelegate : public MetricReportingManager::Delegate {
                bool setting_enabled_default_value,
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
-               int rate_unit_to_ms),
+               int rate_unit_to_ms,
+               base::TimeDelta init_delay),
               (override));
 
   MOCK_METHOD(std::unique_ptr<MetricEventObserverManager>,
@@ -149,7 +162,8 @@ class MockDelegate : public MetricReportingManager::Delegate {
                ReportingSettings* reporting_settings,
                const std::string& enable_setting_path,
                bool setting_enabled_default_value,
-               EventDrivenTelemetrySamplerPool* sampler_pool),
+               EventDrivenTelemetryCollectorPool* collector_pool,
+               base::TimeDelta init_delay),
               (override));
 
   MOCK_METHOD(std::unique_ptr<Sampler>,
@@ -205,58 +219,52 @@ struct MetricReportingManagerTestCase {
   std::vector<base::test::FeatureRef> disabled_features;
   bool is_affiliated;
   MetricReportingSettingData setting_data;
+  bool has_init_delay;
   int expected_count_before_login;
   int expected_count_after_login;
-  int expected_count_after_login_delay;
 };
+
+test::FakeMetricReportQueue* CreateMockMetricReportQueueHelper(
+    ::testing::NiceMock<MockDelegate>* mock_delegate,
+    EventType event_type,
+    Destination destination,
+    Priority priority) {
+  auto metric_report_queue = std::make_unique<test::FakeMetricReportQueue>();
+  auto* metric_report_queue_ptr = metric_report_queue.get();
+  // Only one report queue should be created with the given args: `event_type`,
+  // `destination`, and `priority`.
+  ON_CALL(*mock_delegate,
+          CreateMetricReportQueue(event_type, destination, priority))
+      .WillByDefault(Return(ByMove(std::move(metric_report_queue))));
+  return metric_report_queue_ptr;
+}
 
 class MetricReportingManagerTest
     : public ::testing::TestWithParam<MetricReportingManagerTestCase> {
  protected:
   void SetUp() override {
-    auto info_queue = std::make_unique<test::FakeMetricReportQueue>();
-    info_queue_ptr_ = info_queue.get();
+    mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
+    info_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kDevice, Destination::INFO_METRIC,
+        Priority::SLOW_BATCH);
+    event_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kDevice, Destination::EVENT_METRIC,
+        Priority::SLOW_BATCH);
+    user_telemetry_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::TELEMETRY_METRIC,
+        Priority::MANUAL_BATCH);
+    peripheral_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::PERIPHERAL_EVENTS,
+        Priority::SECURITY);
+    user_event_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
+        Priority::SLOW_BATCH);
+
     auto telemetry_queue = std::make_unique<test::FakeMetricReportQueue>();
     telemetry_queue_ptr_ = telemetry_queue.get();
-    auto event_queue = std::make_unique<test::FakeMetricReportQueue>();
-    event_queue_ptr_ = event_queue.get();
-    auto user_telemetry_queue = std::make_unique<test::FakeMetricReportQueue>();
-    user_telemetry_queue_ptr_ = user_telemetry_queue.get();
-    auto peripheral_queue = std::make_unique<test::FakeMetricReportQueue>();
-    peripheral_queue_ptr_ = peripheral_queue.get();
-    auto user_event_queue = std::make_unique<test::FakeMetricReportQueue>();
-    user_event_queue_ptr_ = user_event_queue.get();
-
-    mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
-
-    ON_CALL(*mock_delegate_, CreateMetricReportQueue(EventType::kDevice,
-                                                     Destination::INFO_METRIC,
-                                                     Priority::SLOW_BATCH))
-        .WillByDefault(Return(ByMove(std::move(info_queue))));
-    ON_CALL(*mock_delegate_, CreateMetricReportQueue(EventType::kDevice,
-                                                     Destination::EVENT_METRIC,
-                                                     Priority::SLOW_BATCH))
-        .WillByDefault(Return(ByMove(std::move(event_queue))));
-    ON_CALL(*mock_delegate_,
-            CreatePeriodicUploadReportQueue(
-                EventType::kDevice, Destination::TELEMETRY_METRIC,
-                Priority::MANUAL_BATCH, _, ::ash::kReportUploadFrequency, _,
-                /*rate_unit_to_ms=*/1))
+    // Only one periodic upload report queue should be created.
+    ON_CALL(*mock_delegate_, CreatePeriodicUploadReportQueue)
         .WillByDefault(Return(ByMove(std::move(telemetry_queue))));
-    ON_CALL(
-        *mock_delegate_,
-        CreateMetricReportQueue(EventType::kUser, Destination::TELEMETRY_METRIC,
-                                Priority::MANUAL_BATCH))
-        .WillByDefault(Return(ByMove(std::move(user_telemetry_queue))));
-    ON_CALL(*mock_delegate_,
-            CreateMetricReportQueue(EventType::kUser,
-                                    Destination::PERIPHERAL_EVENTS,
-                                    Priority::SECURITY))
-        .WillByDefault(Return(ByMove(std::move(peripheral_queue))));
-    ON_CALL(*mock_delegate_,
-            CreateMetricReportQueue(EventType::kUser, Destination::EVENT_METRIC,
-                                    Priority::SLOW_BATCH))
-        .WillByDefault(Return(ByMove(std::move(user_event_queue))));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -275,7 +283,6 @@ class MetricReportingManagerTest
 TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
-  const auto init_delay = mock_delegate_->GetInitDelay();
   int one_shot_collector_count = 0;
   int periodic_collector_count = 0;
   int periodic_event_collector_count = 0;
@@ -298,16 +305,12 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  task_environment_.FastForwardBy(init_delay);
-
   EXPECT_EQ(one_shot_collector_count, 0);
   EXPECT_EQ(periodic_collector_count, 0);
   EXPECT_EQ(periodic_event_collector_count, 0);
   EXPECT_EQ(observer_manager_count, 0);
 
   metric_reporting_manager->OnLogin(nullptr);
-
-  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(one_shot_collector_count, 0);
   EXPECT_EQ(periodic_collector_count, 0);
@@ -319,12 +322,14 @@ class MetricReportingManagerInfoTest : public MetricReportingManagerTest {};
 
 TEST_P(MetricReportingManagerInfoTest, Default) {
   const MetricReportingManagerTestCase& test_case = GetParam();
+  const base::TimeDelta init_delay = test_case.has_init_delay
+                                         ? metrics::InitDelayParam::Get()
+                                         : base::TimeDelta();
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(test_case.enabled_features,
                                        test_case.disabled_features);
 
-  const auto init_delay = mock_delegate_->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int collector_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
@@ -332,22 +337,16 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
   ON_CALL(*mock_delegate_ptr,
           CreateOneShotCollector(
               _, info_queue_ptr_, _, test_case.setting_data.enable_setting_path,
-              test_case.setting_data.setting_enabled_default_value))
+              test_case.setting_data.setting_enabled_default_value, init_delay))
       .WillByDefault(
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  EXPECT_EQ(collector_count, 0);
-
-  task_environment_.FastForwardBy(init_delay);
-
   EXPECT_EQ(collector_count, test_case.expected_count_before_login);
 
   metric_reporting_manager->OnLogin(nullptr);
-
-  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(collector_count, test_case.expected_count_after_login);
 
@@ -365,30 +364,33 @@ INSTANTIATE_TEST_SUITE_P(
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, network_info_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
          {"CpuInfo",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
-          /*is_affiliated=*/false, cpu_info_settings,
+          /*is_affiliated=*/false, cpu_info_settings, /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
          {"MemoryInfo",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, memory_info_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
          {"BusInfo",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
-          /*is_affiliated=*/true, bus_info_settings,
+          /*is_affiliated=*/true, bus_info_settings, /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
          {"GraphicsInfo",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, graphics_info_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/2,
           /*expected_count_after_login=*/2}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
@@ -398,6 +400,9 @@ class MetricReportingManagerEventTest : public MetricReportingManagerTest {};
 
 TEST_P(MetricReportingManagerEventTest, Default) {
   const MetricReportingManagerTestCase& test_case = GetParam();
+  const base::TimeDelta init_delay = test_case.has_init_delay
+                                         ? metrics::InitDelayParam::Get()
+                                         : base::TimeDelta();
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(test_case.enabled_features,
@@ -405,7 +410,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
 
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
-  const auto init_delay = mock_delegate_->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int observer_manager_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
@@ -414,16 +418,17 @@ TEST_P(MetricReportingManagerEventTest, Default) {
       *mock_delegate_ptr,
       CreateEventObserverManager(
           _, event_queue_ptr_, _, test_case.setting_data.enable_setting_path,
-          test_case.setting_data.setting_enabled_default_value, _))
+          test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
       });
-  ON_CALL(*mock_delegate_ptr,
-          CreateEventObserverManager(
-              _, user_event_queue_ptr_, _,
-              test_case.setting_data.enable_setting_path,
-              test_case.setting_data.setting_enabled_default_value, _))
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateEventObserverManager(
+          _, user_event_queue_ptr_, _,
+          test_case.setting_data.enable_setting_path,
+          test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
@@ -438,10 +443,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
 
   EXPECT_EQ(observer_manager_count, test_case.expected_count_after_login);
 
-  task_environment_.FastForwardBy(init_delay);
-
-  EXPECT_EQ(observer_manager_count, test_case.expected_count_after_login_delay);
-
   ON_CALL(*mock_delegate_ptr, IsDeprovisioned).WillByDefault(Return(true));
   metric_reporting_manager->DeviceSettingsUpdated();
 
@@ -451,64 +452,70 @@ TEST_P(MetricReportingManagerEventTest, Default) {
 INSTANTIATE_TEST_SUITE_P(
     MetricReportingManagerEventTests,
     MetricReportingManagerEventTest,
-    ::testing::ValuesIn<MetricReportingManagerTestCase>({
-        {"NetworkEvent_Unaffiliated",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/false, network_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/0,
-         /*expected_count_after_login_delay=*/0},
-        {"NetworkEvent_Default",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/true, network_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/1,
-         /*expected_count_after_login_delay=*/2},
-        {"AudioEvent_Unaffiliated",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/false, audio_metric_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/0,
-         /*expected_count_after_login_delay=*/0},
-        {"AudioEvent_Default",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/true, audio_metric_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/1,
-         /*expected_count_after_login_delay=*/1},
-        {"AppEvents_Unaffiliated",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/false, app_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/0,
-         /*expected_count_after_login_delay=*/0},
-        {"AppEvents_Default",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/true, app_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/0,
-         /*expected_count_after_login_delay=*/0},
-        {"AppEvents_FeatureFlagEnabled",
-         /*enabled_features=*/{kEnableAppMetricsReporting},
-         /*disabled_features=*/{},
-         /*is_affiliated=*/true, app_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/1,
-         /*expected_count_after_login_delay=*/1},
-        {"AppEvents_FeatureFlagDisabled",
-         /*enabled_features=*/{},
-         /*disabled_features=*/{kEnableAppMetricsReporting},
-         /*is_affiliated=*/true, app_event_settings,
-         /*expected_count_before_login=*/0,
-         /*expected_count_after_login=*/0,
-         /*expected_count_after_login_delay=*/0},
-    }),
+    ::testing::ValuesIn<MetricReportingManagerTestCase>(
+        {{"NetworkEvent_Unaffiliated",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, network_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"NetworkEvent_Default",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, network_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"HttpsLatencyEvent_Default",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, network_event_settings,
+          /*has_init_delay=*/true,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"AudioEvent_Unaffiliated",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, audio_metric_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"AudioEvent_Default",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, audio_metric_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"AppEvents_Unaffiliated",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, app_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"AppEvents_Default",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, app_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"AppEvents_FeatureFlagEnabled",
+          /*enabled_features=*/{kEnableAppMetricsReporting},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, app_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"AppEvents_FeatureFlagDisabled",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kEnableAppMetricsReporting},
+          /*is_affiliated=*/true, app_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
 
@@ -519,6 +526,9 @@ class MetricReportingManagerPeripheralTest : public MetricReportingManagerTest {
 // queue.
 TEST_P(MetricReportingManagerPeripheralTest, Default) {
   const MetricReportingManagerTestCase& test_case = GetParam();
+  const base::TimeDelta init_delay = test_case.has_init_delay
+                                         ? metrics::InitDelayParam::Get()
+                                         : base::TimeDelta();
 
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
@@ -526,11 +536,12 @@ TEST_P(MetricReportingManagerPeripheralTest, Default) {
   int observer_manager_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
-  ON_CALL(*mock_delegate_ptr,
-          CreateEventObserverManager(
-              _, peripheral_queue_ptr_, _,
-              test_case.setting_data.enable_setting_path,
-              test_case.setting_data.setting_enabled_default_value, _))
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateEventObserverManager(
+          _, peripheral_queue_ptr_, _,
+          test_case.setting_data.enable_setting_path,
+          test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
@@ -559,12 +570,14 @@ INSTANTIATE_TEST_SUITE_P(
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, peripheral_metric_settings,
+          /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/0},
          {"PeripheralEvent_Default",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, peripheral_metric_settings,
+          /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
@@ -574,27 +587,24 @@ class MetricReportingManagerTelemetryTest : public MetricReportingManagerTest {
 };
 
 TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
-  const auto init_delay = mock_delegate_->GetInitDelay();
   const auto upload_delay = mock_delegate_->GetInitialUploadDelay();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int collector_count = 0;
 
   ON_CALL(*mock_delegate_ptr,
           CreateOneShotCollector(_, telemetry_queue_ptr_, _,
-                                 ::ash::kReportDeviceBootMode, true))
+                                 ::ash::kReportDeviceBootMode, true,
+                                 metrics::InitDelayParam::Get()))
       .WillByDefault(
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  EXPECT_EQ(collector_count, 0);
-
-  task_environment_.FastForwardBy(init_delay);
-
   EXPECT_EQ(collector_count, 1);
 
-  task_environment_.FastForwardBy(upload_delay);
+  task_environment_.FastForwardBy(upload_delay +
+                                  metrics::InitDelayParam::Get());
 
   EXPECT_EQ(telemetry_queue_ptr_->GetNumFlush(), 1);
 
@@ -606,12 +616,14 @@ TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
 
 TEST_P(MetricReportingManagerTelemetryTest, Default) {
   const MetricReportingManagerTestCase& test_case = GetParam();
+  const base::TimeDelta init_delay = test_case.has_init_delay
+                                         ? metrics::InitDelayParam::Get()
+                                         : base::TimeDelta();
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(test_case.enabled_features,
                                        test_case.disabled_features);
 
-  const auto init_delay = mock_delegate_->GetInitDelay();
   const auto upload_delay = mock_delegate_->GetInitialUploadDelay();
   auto* const mock_delegate_ptr = mock_delegate_.get();
   int collector_count = 0;
@@ -623,7 +635,7 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
               test_case.setting_data.enable_setting_path,
               test_case.setting_data.setting_enabled_default_value,
               test_case.setting_data.rate_setting_path, _,
-              test_case.setting_data.rate_unit_to_ms))
+              test_case.setting_data.rate_unit_to_ms, init_delay))
       .WillByDefault(
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
   ON_CALL(*mock_delegate_ptr,
@@ -632,18 +644,17 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
               test_case.setting_data.enable_setting_path,
               test_case.setting_data.setting_enabled_default_value,
               test_case.setting_data.rate_setting_path, _,
-              test_case.setting_data.rate_unit_to_ms))
+              test_case.setting_data.rate_unit_to_ms, init_delay))
       .WillByDefault(
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  task_environment_.FastForwardBy(init_delay);
-
   EXPECT_EQ(collector_count, test_case.expected_count_before_login);
 
-  task_environment_.FastForwardBy(upload_delay);
+  task_environment_.FastForwardBy(upload_delay +
+                                  metrics::InitDelayParam::Get());
 
   EXPECT_EQ(telemetry_queue_ptr_->GetNumFlush(), 1);
 
@@ -651,12 +662,9 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
 
   EXPECT_EQ(collector_count, test_case.expected_count_after_login);
 
-  task_environment_.FastForwardBy(init_delay);
-
-  EXPECT_EQ(collector_count, test_case.expected_count_after_login_delay);
-
   const int expected_login_flush_count = test_case.is_affiliated ? 1 : 0;
-  task_environment_.FastForwardBy(upload_delay);
+  task_environment_.FastForwardBy(upload_delay +
+                                  metrics::InitDelayParam::Get());
 
   EXPECT_EQ(telemetry_queue_ptr_->GetNumFlush(),
             1 + expected_login_flush_count);
@@ -674,79 +682,118 @@ INSTANTIATE_TEST_SUITE_P(
         {{"NetworkTelemetry_Unaffiliated", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, network_telemetry_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
-          /*expected_count_after_login_delay=*/0},
+          /*expected_count_after_login=*/0},
          {"NetworkTelemetry_Default", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, network_telemetry_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
           // 3 collectors should be created after login, network telemetry,
           // https latency, and network bandwidth.
-          /*expected_count_after_login_delay=*/3},
+          /*expected_count_after_login=*/3},
          {"AudioTelemetry_Unaffiliated", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, audio_metric_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
-          /*expected_count_after_login_delay=*/0},
+          /*expected_count_after_login=*/0},
          {"AudioTelemetry_Default", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, audio_metric_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
-          /*expected_count_after_login_delay=*/1},
+          /*expected_count_after_login=*/1},
          {"DisplaysTelemetry_Unaffiliated", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, displays_telemetry_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
-          /*expected_count_after_login_delay=*/0},
+          /*expected_count_after_login=*/0},
          {"DisplaysTelemetry_Default", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, displays_telemetry_settings,
+          /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0,
-          /*expected_count_after_login_delay=*/1}}),
+          /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<
         MetricReportingManagerTelemetryTest::ParamType>& info) {
       return info.param.test_name;
     });
 
-struct EventDrivenTelemetrySamplerPoolTestCase {
+struct EventDrivenTelemetryCollectorPoolTestCase {
   std::string test_name;
   MetricEventType event_type;
   std::string setting_name;
 };
 
-class EventDrivenTelemetrySamplerPoolTest
-    : public ::testing::TestWithParam<EventDrivenTelemetrySamplerPoolTestCase> {
+class EventDrivenTelemetryCollectorPoolTest
+    : public ::testing::TestWithParam<
+          EventDrivenTelemetryCollectorPoolTestCase> {
  protected:
   void SetUp() override {
+    auto https_latency_collector = std::make_unique<FakeCollector>();
+    https_latency_collector_ptr_ = https_latency_collector.get();
+    auto network_telemetry_collector = std::make_unique<FakeCollector>();
+    network_telemetry_collector_ptr_ = network_telemetry_collector.get();
+
     auto https_latency_sampler = std::make_unique<test::FakeSampler>();
-    https_latency_sampler_ptr_ = https_latency_sampler.get();
+    auto* const https_latency_sampler_ptr = https_latency_sampler.get();
     auto network_telemetry_sampler = std::make_unique<test::FakeSampler>();
-    network_telemetry_sampler_ptr_ = network_telemetry_sampler.get();
+    auto* const network_telemetry_sampler_ptr = network_telemetry_sampler.get();
 
     mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
+
+    // Info queue.
+    CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kDevice,
+                                      Destination::INFO_METRIC,
+                                      Priority::SLOW_BATCH);
+    // Event queue.
+    CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kDevice,
+                                      Destination::EVENT_METRIC,
+                                      Priority::SLOW_BATCH);
+    // User telemetry queue.
+    CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kUser,
+                                      Destination::TELEMETRY_METRIC,
+                                      Priority::MANUAL_BATCH);
+    // Peripherals queue.
+    CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kUser,
+                                      Destination::PERIPHERAL_EVENTS,
+                                      Priority::SECURITY);
+    // User event queue.
+    CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kUser,
+                                      Destination::EVENT_METRIC,
+                                      Priority::SLOW_BATCH);
+    // Telemetry queue.
+    ON_CALL(*mock_delegate_, CreatePeriodicUploadReportQueue)
+        .WillByDefault(
+            Return(ByMove(std::make_unique<test::FakeMetricReportQueue>())));
+
     ON_CALL(*mock_delegate_, GetHttpsLatencySampler)
         .WillByDefault(Return(ByMove(std::move(https_latency_sampler))));
     ON_CALL(*mock_delegate_, GetNetworkTelemetrySampler)
         .WillByDefault(Return(ByMove(std::move(network_telemetry_sampler))));
+    ON_CALL(*mock_delegate_,
+            CreatePeriodicCollector(network_telemetry_sampler_ptr, _, _, _, _,
+                                    _, _, _, _))
+        .WillByDefault(Return(ByMove(std::move(network_telemetry_collector))));
+    ON_CALL(*mock_delegate_, CreatePeriodicCollector(https_latency_sampler_ptr,
+                                                     _, _, _, _, _, _, _, _))
+        .WillByDefault(Return(ByMove(std::move(https_latency_collector))));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  Sampler* https_latency_sampler_ptr_;
-  Sampler* network_telemetry_sampler_ptr_;
+  raw_ptr<CollectorBase> https_latency_collector_ptr_;
+  raw_ptr<CollectorBase> network_telemetry_collector_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };
 
-TEST_P(EventDrivenTelemetrySamplerPoolTest,
+TEST_P(EventDrivenTelemetryCollectorPoolTest,
        SettingBasedTelemetry_AffiliatedOnly) {
-  EventDrivenTelemetrySamplerPoolTestCase test_case = GetParam();
+  EventDrivenTelemetryCollectorPoolTestCase test_case = GetParam();
 
   ash::ScopedTestingCrosSettings cros_settings;
   base::Value::List telemetry_list;
@@ -765,36 +812,31 @@ TEST_P(EventDrivenTelemetrySamplerPoolTest,
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  std::vector<ConfiguredSampler*> event_telemetry =
-      metric_reporting_manager->GetTelemetrySamplers(test_case.event_type);
+  std::vector<CollectorBase*> event_telemetry =
+      metric_reporting_manager->GetTelemetryCollectors(test_case.event_type);
 
   ASSERT_TRUE(event_telemetry.empty());
 
   metric_reporting_manager->OnLogin(nullptr);
 
   event_telemetry =
-      metric_reporting_manager->GetTelemetrySamplers(test_case.event_type);
+      metric_reporting_manager->GetTelemetryCollectors(test_case.event_type);
   ASSERT_THAT(event_telemetry, SizeIs(2));
-  EXPECT_THAT(event_telemetry[0]->GetSampler(),
-              Eq(network_telemetry_sampler_ptr_));
-  EXPECT_THAT(event_telemetry[0]->GetEnableSettingPath(),
-              StrEq(ash::kReportDeviceNetworkStatus));
-  EXPECT_THAT(event_telemetry[1]->GetSampler(), Eq(https_latency_sampler_ptr_));
-  EXPECT_THAT(event_telemetry[1]->GetEnableSettingPath(),
-              StrEq(ash::kReportDeviceNetworkStatus));
+  EXPECT_THAT(event_telemetry[0], Eq(network_telemetry_collector_ptr_));
+  EXPECT_THAT(event_telemetry[1], Eq(https_latency_collector_ptr_));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    EventDrivenTelemetrySamplerPoolTests,
-    EventDrivenTelemetrySamplerPoolTest,
-    ::testing::ValuesIn<EventDrivenTelemetrySamplerPoolTestCase>(
+    EventDrivenTelemetryCollectorPoolTests,
+    EventDrivenTelemetryCollectorPoolTest,
+    ::testing::ValuesIn<EventDrivenTelemetryCollectorPoolTestCase>(
         {{"SignalStrengthLow", MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW,
           ash::kReportDeviceSignalStrengthEventDrivenTelemetry},
          {"SignalStrengthRecovered",
           MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED,
           ash::kReportDeviceSignalStrengthEventDrivenTelemetry}}),
     [](const testing::TestParamInfo<
-        EventDrivenTelemetrySamplerPoolTest::ParamType>& info) {
+        EventDrivenTelemetryCollectorPoolTest::ParamType>& info) {
       return info.param.test_name;
     });
 
