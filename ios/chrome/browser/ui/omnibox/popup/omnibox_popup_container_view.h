@@ -7,8 +7,8 @@
 
 #include <UIKit/UIKit.h>
 
-// Container view for the popup view hierarchy. It overrides hit-testing so we
-// can dismiss hits on the PopupEmptySpaceView.
+/// Container view for the popup view hierarchy. It overrides hit-testing so we
+/// can dismiss hits on the PopupEmptySpaceView.
 @interface OmniboxPopupContainerView : UIView
 @end
 

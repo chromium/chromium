@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// An interface for a provider of an omnibox popup. Allows to get information
-// about the state of and configure the popup.
+/// An interface for a provider of an omnibox popup. Allows to get information
+/// about the state of and configure the popup.
 class OmniboxPopupProvider {
  public:
   virtual bool IsPopupOpen() = 0;

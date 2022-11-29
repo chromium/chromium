@@ -25,16 +25,16 @@
 
 namespace {
 
-// The color of the main text of a suggest cell.
+/// The color of the main text of a suggest cell.
 UIColor* SuggestionTextColor() {
   return [UIColor colorNamed:kTextPrimaryColor];
 }
-// The color of the detail text of a suggest cell.
+/// The color of the detail text of a suggest cell.
 UIColor* SuggestionDetailTextColor() {
   return [UIColor colorNamed:kTextSecondaryColor];
 }
-// The color of the text in the portion of a search suggestion that matches the
-// omnibox input text.
+/// The color of the text in the portion of a search suggestion that matches the
+/// omnibox input text.
 UIColor* DimColor() {
   return [UIColor colorWithWhite:(161 / 255.0) alpha:1.0];
 }
@@ -211,10 +211,10 @@ UIColor* DimColorIncognito() {
       initWithString:base::SysUTF16ToNSString(_match.fill_into_edit)];
 }
 
-// The primary purpose of this list is to omit the "what you typed" types, since
-// those are simply the input in the omnibox and copying the text back to the
-// omnibox would be a noop. However, this list also omits other types that are
-// deprecated or not launched on iOS.
+/// The primary purpose of this list is to omit the "what you typed" types,
+/// since those are simply the input in the omnibox and copying the text back to
+/// the omnibox would be a noop. However, this list also omits other types that
+/// are deprecated or not launched on iOS.
 - (BOOL)isAppendable {
   return _match.type == AutocompleteMatchType::BOOKMARK_TITLE ||
          _match.type == AutocompleteMatchType::CALCULATOR ||
@@ -280,7 +280,7 @@ UIColor* DimColorIncognito() {
 
 #pragma mark helpers
 
-// Create a string to display for an entire answer line.
+/// Create a string to display for an entire answer line.
 - (NSAttributedString*)
     attributedStringWithAnswerLine:(const SuggestionAnswer::ImageLine&)line
             useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
@@ -298,10 +298,10 @@ UIColor* DimColorIncognito() {
                    useDeemphasizedStyling:useDeemphasizedStyling];
 }
 
-// Adds the `additional_text` and `status_text` from `line` to the given
-// attributed string. This is necessary because answers get their main text
-// from the match contents instead of the ImageLine's text_fields. This is
-// because those fields contain server-provided formatting, which aren't used.
+/// Adds the `additional_text` and `status_text` from `line` to the given
+/// attributed string. This is necessary because answers get their main text
+/// from the match contents instead of the ImageLine's text_fields. This is
+/// because those fields contain server-provided formatting, which aren't used.
 - (NSAttributedString*)
     addExtraTextFromAnswerLine:(const SuggestionAnswer::ImageLine&)line
             toAttributedString:(NSAttributedString*)attributedString
@@ -328,8 +328,8 @@ UIColor* DimColorIncognito() {
   return result;
 }
 
-// Create a string to display for a textual part ("textfield") of a suggestion
-// answer.
+/// Create a string to display for a textual part ("textfield") of a suggestion
+/// answer.
 - (NSAttributedString*)
     attributedStringForTextfield:(const SuggestionAnswer::TextField*)field
           useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
@@ -346,10 +346,10 @@ UIColor* DimColorIncognito() {
                                          attributes:attributes];
 }
 
-// Return correct formatting attributes for the given style.
-// `useDeemphasizedStyling` is necessary because some styles (e.g. SUPERIOR)
-// should take their color from the surrounding line; they don't have a fixed
-// color.
+/// Return correct formatting attributes for the given style.
+/// `useDeemphasizedStyling` is necessary because some styles (e.g. SUPERIOR)
+/// should take their color from the surrounding line; they don't have a fixed
+/// color.
 - (NSDictionary<NSAttributedStringKey, id>*)
     formattingAttributesForSuggestionStyle:(SuggestionAnswer::TextStyle)style
                     useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
@@ -431,7 +431,7 @@ UIColor* DimColorIncognito() {
   }
 }
 
-// Create a formatted string given text and classifications.
+/// Create a formatted string given text and classifications.
 - (NSMutableAttributedString*)
     attributedStringWithString:(NSString*)text
                classifications:(const ACMatchClassifications*)classifications

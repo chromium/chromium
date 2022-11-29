@@ -17,7 +17,7 @@ class OmniboxPopupViewIOS;
 @class OmniboxTextFieldIOS;
 @protocol PopupMatchPreviewDelegate;
 
-// Coordinator for the Omnibox Popup.
+/// Coordinator for the Omnibox Popup.
 @interface OmniboxPopupCoordinator : ChromeCoordinator
 
 - (instancetype)
@@ -29,22 +29,22 @@ class OmniboxPopupViewIOS;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Positioner for the popup.
+/// Positioner for the popup.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> presenterDelegate;
-// Whether this coordinator has results to show.
+/// Whether this coordinator has results to show.
 @property(nonatomic, assign, readonly) BOOL hasResults;
-// Whether the popup is open.
+/// Whether the popup is open.
 @property(nonatomic, assign, readonly) BOOL isOpen;
 
-// Object implementing OmniboxReturnDelegate in OmniboxPopupCoordinator.
+/// Object implementing OmniboxReturnDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxReturnDelegate>
     popupReturnDelegate;
-// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
+/// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxKeyboardDelegate>
     KeyboardDelegate;
-// Delegate for OmniboxReturnDelegate used in OmniboxPopupCoordinator.
+/// Delegate for OmniboxReturnDelegate used in OmniboxPopupCoordinator.
 @property(nonatomic, weak) id<OmniboxReturnDelegate> acceptReturnDelegate;
-// Delegate for PopupMatchPreviewDelegate used in OmniboxPopupCoordinator.
+/// Delegate for PopupMatchPreviewDelegate used in OmniboxPopupCoordinator.
 @property(nonatomic, weak) id<PopupMatchPreviewDelegate>
     popupMatchPreviewDelegate;
 

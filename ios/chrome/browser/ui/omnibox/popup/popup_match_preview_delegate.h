@@ -7,9 +7,9 @@
 
 @protocol AutocompleteSuggestion;
 
-// Receives match previews for display.
-// Used by the popup to inform the omnibox textfield about the currently
-// highlighted suggestion; the textfield shows the suggestion text and image.
+/// Receives match previews for display.
+/// Used by the popup to inform the omnibox textfield about the currently
+/// highlighted suggestion; the textfield shows the suggestion text and image.
 @protocol PopupMatchPreviewDelegate
 
 /// Notifies the delegate of the suggestion to preview.

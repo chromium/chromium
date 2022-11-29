@@ -12,35 +12,35 @@
 
 @protocol OmniboxPopupPresenterDelegate
 
-// View to which the popup view should be added as subview.
+/// View to which the popup view should be added as subview.
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter;
 
-// The view controller that will parent the popup.
+/// The view controller that will parent the popup.
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter;
 
-// Alert the delegate that the popup opened.
+/// Alert the delegate that the popup opened.
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter;
 
-// Alert the delegate that the popup closed.
+/// Alert the delegate that the popup closed.
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter;
 
 @end
 
-// The UI Refresh implementation of the popup presenter.
-// TODO(crbug.com/936833): This class should be refactored to handle a nil
-// delegate.
+/// The UI Refresh implementation of the popup presenter.
+/// TODO(crbug.com/936833): This class should be refactored to handle a nil
+/// delegate.
 @interface OmniboxPopupPresenter : NSObject
 
-// Whether the popup is open
+/// Whether the popup is open
 @property(nonatomic, assign, getter=isOpen) BOOL open;
 
-// Uses the popup's intrinsic content size to add or remove the popup view
-// if necessary.
+/// Uses the popup's intrinsic content size to add or remove the popup view
+/// if necessary.
 - (void)updatePopup;
 
-// Only called when IsIpadPopoutOmniboxEnabled is true.
-// Tells the presenter to update, following a trait collection change.
+/// Only called when IsIpadPopoutOmniboxEnabled is true.
+/// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 
 - (instancetype)initWithPopupPresenterDelegate:

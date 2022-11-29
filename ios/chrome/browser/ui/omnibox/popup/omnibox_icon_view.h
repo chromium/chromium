@@ -11,17 +11,17 @@
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
 
-// This class is used to display `OmniboxIcon`s. It handles the multiple image
-// views neceesary to get the correct compositing behavior.
+/// This class is used to display `OmniboxIcon`s. It handles the multiple image
+/// views neceesary to get the correct compositing behavior.
 @interface OmniboxIconView : UIView
 
-// Used to fetch favicons.
+/// Used to fetch favicons.
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
-// Used to fetch other images (rich entities, answers, etc.)
+/// Used to fetch other images (rich entities, answers, etc.)
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
-// Used for testing to check whether this view is displaying anything.
+/// Used for testing to check whether this view is displaying anything.
 @property(nonatomic, readonly) UIImage* mainImage;
-// Same as UIImageView.
+/// Same as UIImageView.
 @property(nonatomic, getter=isHighlighted) BOOL highlighted;
 
 - (void)prepareForReuse;

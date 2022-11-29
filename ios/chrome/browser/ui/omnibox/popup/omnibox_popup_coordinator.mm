@@ -198,8 +198,8 @@
 
 #pragma mark - OmniboxPopupMediatorSharingDelegate
 
-// Triggers the URL sharing flow for the given `URL` and `title`, with the
-// origin `view` representing the UI component for that URL.
+/// Triggers the URL sharing flow for the given `URL` and `title`, with the
+/// origin `view` representing the UI component for that URL.
 - (void)popupMediator:(OmniboxPopupMediator*)mediator
              shareURL:(GURL)URL
                 title:(NSString*)title

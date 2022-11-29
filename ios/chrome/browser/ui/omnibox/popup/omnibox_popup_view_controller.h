@@ -22,13 +22,12 @@ class LargeIconService;
 @protocol ImageRetriever;
 @protocol PopupMatchPreviewDelegate;
 
-// View controller used to display a list of omnibox autocomplete matches in the
-// omnibox popup.
-// It implements up/down arrow handling to highlight autocomplete results.
-// Ideally, that should be implemented as key commands in this view controller,
-// but UITextField has standard handlers for up/down arrows, so when the omnibox
-// is the first responder, this view controller cannot receive these events.
-// Hence the delegation.
+/// View controller used to display a list of omnibox autocomplete matches in
+/// the omnibox popup. It implements up/down arrow handling to highlight
+/// autocomplete results. Ideally, that should be implemented as key commands in
+/// this view controller, but UITextField has standard handlers for up/down
+/// arrows, so when the omnibox is the first responder, this view controller
+/// cannot receive these events. Hence the delegation.
 @interface OmniboxPopupViewController
     : UIViewController <AutocompleteResultConsumer,
                         CarouselItemConsumer,
@@ -48,10 +47,10 @@ class LargeIconService;
 @property(nonatomic, assign) LargeIconCache* largeIconCache;
 @property(nonatomic, weak) id<CarouselItemMenuProvider> carouselMenuProvider;
 
-// View controller that displays debug information.
-// Must only be set when OmniboxDebuggingEnabled flag is set.
-// When set, this view controller will present `debugInfoViewController` when a
-// special debug gesture is executed.
+/// View controller that displays debug information.
+/// Must only be set when OmniboxDebuggingEnabled flag is set.
+/// When set, this view controller will present `debugInfoViewController` when a
+/// special debug gesture is executed.
 @property(nonatomic, strong) UIViewController* debugInfoViewController;
 
 @property(nonatomic, strong)

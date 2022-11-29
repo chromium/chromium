@@ -28,13 +28,13 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
 }  // namespace
 
 @interface OmniboxPopupPresenter ()
-// Constraint for the bottom anchor of the popup.
+/// Constraint for the bottom anchor of the popup.
 @property(nonatomic, strong) NSLayoutConstraint* bottomConstraint;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
 @property(nonatomic, strong) UIView* popupContainerView;
-// Separator for the bottom edge of the popup on iPad.
+/// Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;
 
 @end
@@ -169,11 +169,11 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
   }
 }
 
-// With popout omnibox, the popup might be in either of two states:
-// a) regular x regular state, where the popup matches OB width
-// b) compact state, where popup takes whole screen width
-// Therefore, on trait collection change, re-add the popup and recreate the
-// constraints to make sure the correct ones are used.
+/// With popout omnibox, the popup might be in either of two states:
+/// a) regular x regular state, where the popup matches OB width
+/// b) compact state, where popup takes whole screen width
+/// Therefore, on trait collection change, re-add the popup and recreate the
+/// constraints to make sure the correct ones are used.
 - (void)updatePopupAfterTraitCollectionChange {
   DCHECK(IsIpadPopoutOmniboxEnabled());
 
@@ -198,7 +198,7 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
 
 #pragma mark - Private
 
-// Layouts the popup when it is just added to the view hierarchy.
+/// Layouts the popup when it is just added to the view hierarchy.
 - (void)initialLayout {
   UIView* popup = self.popupContainerView;
   // Creates the constraints if the view is newly added to the view hierarchy.

@@ -19,8 +19,8 @@
 
 namespace {
 
-// Time interval for pedal debouncing. Pedal retrieval is async, use a timer to
-// avoid pedal flickering (cf. crbug.com/1316404).
+/// Time interval for pedal debouncing. Pedal retrieval is async, use a timer to
+/// avoid pedal flickering (cf. crbug.com/1316404).
 const NSTimeInterval kPedalDebouceTimer = 0.3;
 
 }  // namespace
@@ -28,7 +28,7 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 @interface PedalSectionExtractor ()
 
 @property(nonatomic, strong) id<AutocompleteSuggestionGroup> previousPedalGroup;
-// Timer for pedal debouncing.
+/// Timer for pedal debouncing.
 @property(nonatomic, strong) NSTimer* removePedalsTimer;
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestion>>* originalResult;
@@ -97,8 +97,8 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   }
 }
 
-// Removes pedals from suggestions. This is used to debouce pedal with a timer
-// to avoid pedal flickering.
+/// Removes pedals from suggestions. This is used to debouce pedal with a timer
+/// to avoid pedal flickering.
 - (void)expirePreviousPedals:(NSTimer*)timer {
   [self.removePedalsTimer invalidate];
   self.previousPedalGroup = nil;

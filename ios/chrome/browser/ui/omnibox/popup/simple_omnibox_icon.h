@@ -17,8 +17,8 @@
                         isAnswer:(BOOL)isAnswer
                         imageURL:(CrURL*)imageURL NS_DESIGNATED_INITIALIZER;
 
-// Whether the default search engine is Google impacts which icon is used in
-// some cases
+/// Whether the default search engine is Google impacts which icon is used in
+/// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 
 @end

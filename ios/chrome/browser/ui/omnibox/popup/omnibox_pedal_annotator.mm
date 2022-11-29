@@ -24,8 +24,8 @@
 
 namespace {
 
-// Hard-coded here to avoid dependency on //content. This needs to be kept in
-// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
+/// Hard-coded here to avoid dependency on //content. This needs to be kept in
+/// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
 const char kChromeUIScheme[] = "chrome";
 
 }

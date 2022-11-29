@@ -33,9 +33,9 @@ const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
 const CGFloat kTopGradientColorOpacity = 0.85;
 const CGFloat kTextSpacingActionsEnabled = 2.0f;
-// In Variation 2, the images and the text in the popup don't align with the
-// omnibox image. If Variation 2 becomes default, probably we don't need the
-// fancy layout guide setup and can get away with simple margins.
+/// In Variation 2, the images and the text in the popup don't align with the
+/// omnibox image. If Variation 2 becomes default, probably we don't need the
+/// fancy layout guide setup and can get away with simple margins.
 const CGFloat kImageOffsetVariation2 = 8.0f;
 const CGFloat kImageAdditionalOffsetVariation2PopoutOmnibox = 10.0f;
 const CGFloat kAdditionalTextOffsetVariation2 = 8.0f;
@@ -48,31 +48,31 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 @interface OmniboxPopupRowCell ()
 
-// The suggestion that this cell is currently displaying.
+/// The suggestion that this cell is currently displaying.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
-// Whether the cell is currently displaying in incognito mode or not.
+/// Whether the cell is currently displaying in incognito mode or not.
 @property(nonatomic, assign) BOOL incognito;
 
-// Stack view containing all text labels.
+/// Stack view containing all text labels.
 @property(nonatomic, strong) UIStackView* textStackView;
-// Truncating label for the main text.
+/// Truncating label for the main text.
 @property(nonatomic, strong) FadeTruncatingLabel* textTruncatingLabel;
-// Truncating label for the detail text.
+/// Truncating label for the detail text.
 @property(nonatomic, strong) FadeTruncatingLabel* detailTruncatingLabel;
-// Regular UILabel for the detail text when the suggestion is an answer.
-// Answers have slightly different display requirements, like possibility of
-// multiple lines and truncating with ellipses instead of a fade gradient.
+/// Regular UILabel for the detail text when the suggestion is an answer.
+/// Answers have slightly different display requirements, like possibility of
+/// multiple lines and truncating with ellipses instead of a fade gradient.
 @property(nonatomic, strong) UILabel* detailAnswerLabel;
-// Trailing button for appending suggestion into omnibox or switching to open
-// tab.
+/// Trailing button for appending suggestion into omnibox or switching to open
+/// tab.
 @property(nonatomic, strong) ExtendedTouchTargetButton* trailingButton;
-// Separator line for adjacent cells.
+/// Separator line for adjacent cells.
 @property(nonatomic, strong) UIView* separator;
 
-// Stores the extra constraints activated when the cell enters deletion mode.
+/// Stores the extra constraints activated when the cell enters deletion mode.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* deletingLayoutGuideConstraints;
-// Stores the extra constrants activated when the cell is not in deletion mode.
+/// Stores the extra constrants activated when the cell is not in deletion mode.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* nonDeletingLayoutGuideConstraints;
 
@@ -289,7 +289,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   ]];
 }
 
-// Add the trailing button as a subview and setup its constraints.
+/// Add the trailing button as a subview and setup its constraints.
 - (void)setupTrailingButtonLayout {
   [self.contentView addSubview:self.trailingButton];
   [NSLayoutConstraint activateConstraints:@[
@@ -381,12 +381,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
       activateConstraints:self.nonDeletingLayoutGuideConstraints];
 }
 
-// Freezes the position of any view that is positioned relative to the layout
-// guides. When the view enters deletion mode (swipe-to-delete), the layout
-// guides do not move. This means that the views in this cell positioned
-// relative to the layout guide also do not move with the swipe. This method
-// freezes those views with constraints relative to the cell content view so
-// they do move with the swipe-to-delete.
+/// Freezes the position of any view that is positioned relative to the layout
+/// guides. When the view enters deletion mode (swipe-to-delete), the layout
+/// guides do not move. This means that the views in this cell positioned
+/// relative to the layout guide also do not move with the swipe. This method
+/// freezes those views with constraints relative to the cell content view so
+/// they do move with the swipe-to-delete.
 - (void)freezeLayoutGuidePositions {
   [NSLayoutConstraint
       deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
@@ -414,9 +414,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   [NSLayoutConstraint activateConstraints:self.deletingLayoutGuideConstraints];
 }
 
-// Helper method for -freezeLayoutGuidePositions to calculate the actual
-// distance between the leading edge of a layout guide and the leading edge
-// of the cell's content view.
+/// Helper method for -freezeLayoutGuidePositions to calculate the actual
+/// distance between the leading edge of a layout guide and the leading edge
+/// of the cell's content view.
 - (CGFloat)leadingSpaceForLayoutGuide:(UILayoutGuide*)layoutGuide {
   CGRect layoutGuideFrame =
       [layoutGuide.owningView convertRect:layoutGuide.layoutFrame
@@ -438,9 +438,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   return leadingSpace;
 }
 
-// Unfreezes the position of any view that is positioned relative to a layout
-// guide. See the comment on -freezeLayoutGuidePositions for why that is
-// necessary.
+/// Unfreezes the position of any view that is positioned relative to a layout
+/// guide. See the comment on -freezeLayoutGuidePositions for why that is
+/// necessary.
 - (void)unfreezeLayoutGuidePositions {
   [NSLayoutConstraint
       deactivateConstraints:self.deletingLayoutGuideConstraints];
@@ -477,8 +477,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 #pragma mark - Cell setup with data
 
-// Use the given autocomplete suggestion and whether incognito is enabled to
-// layout the cell correctly for that data.
+/// Use the given autocomplete suggestion and whether incognito is enabled to
+/// layout the cell correctly for that data.
 - (void)setupWithAutocompleteSuggestion:(id<AutocompleteSuggestion>)suggestion
                               incognito:(BOOL)incognito {
   self.suggestion = suggestion;
@@ -487,8 +487,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   [self setupWithCurrentData];
 }
 
-// Returns the input string but painted white when the blue and white
-// highlighting is enabled in pedals. Returns the original string otherwise.
+/// Returns the input string but painted white when the blue and white
+/// highlighting is enabled in pedals. Returns the original string otherwise.
 - (NSAttributedString*)highlightedAttributedStringWithString:
     (NSAttributedString*)string {
   if (!IsOmniboxActionsEnabled()) {
@@ -543,8 +543,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   }
 }
 
-// Setup the trailing button. This includes both setting up the button's layout
-// and popuplating it with the correct image and color.
+/// Setup the trailing button. This includes both setting up the button's layout
+/// and popuplating it with the correct image and color.
 - (void)setupTrailingButton {
   if (self.window) {
     [self setupTrailingButtonLayout];

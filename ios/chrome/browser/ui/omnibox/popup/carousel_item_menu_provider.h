@@ -9,8 +9,8 @@
 
 @protocol CarouselItemMenuProvider <NSObject>
 
-// Creates a context menu configuration instance for the given `carouselItem`,
-// which is represented on the UI by `view`.
+/// Creates a context menu configuration instance for the given `carouselItem`,
+/// which is represented on the UI by `view`.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
                                    fromView:(UIView*)view;

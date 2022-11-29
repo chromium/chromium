@@ -12,7 +12,7 @@
 
 @implementation OmniboxPopupContainerView
 
-// Ignore user interaction with itself or PopupEmptySpaceView.
+/// Ignore user interaction with itself or PopupEmptySpaceView.
 - (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event {
   UIView* hitResult = [super hitTest:point withEvent:event];
 

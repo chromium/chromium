@@ -11,7 +11,7 @@
 @protocol OmniboxPedal;
 @class CrURL;
 
-// Copy of `SuggestTileType` enum in histograms.
+/// Copy of `SuggestTileType` enum in histograms.
 typedef NS_ENUM(NSUInteger, SuggestTileType) {
   kOther = 0,
   kURL = 1,
@@ -19,58 +19,58 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
   kCount = 3
 };
 
-// Represents an autocomplete suggestion in UI.
+/// Represents an autocomplete suggestion in UI.
 @protocol AutocompleteSuggestion <NSObject>
-// Some suggestions can be deleted with a swipe-to-delete gesture.
+/// Some suggestions can be deleted with a swipe-to-delete gesture.
 @property(nonatomic, readonly) BOOL supportsDeletion;
-// Some suggestions are answers that are displayed inline, such as for weather
-// or calculator.
+/// Some suggestions are answers that are displayed inline, such as for weather
+/// or calculator.
 @property(nonatomic, readonly) BOOL hasAnswer;
-// Some suggestions represent a URL, for example the ones from history.
+/// Some suggestions represent a URL, for example the ones from history.
 @property(nonatomic, readonly) BOOL isURL;
-// Some suggestions can be appended to omnibox text in order to refine the
-// query or URL.
+/// Some suggestions can be appended to omnibox text in order to refine the
+/// query or URL.
 @property(nonatomic, readonly) BOOL isAppendable;
-// Some suggestions are opened in an other tab.
+/// Some suggestions are opened in an other tab.
 @property(nonatomic, readonly) BOOL isTabMatch;
-// Some suggestions come from the clipboard provider.
+/// Some suggestions come from the clipboard provider.
 @property(nonatomic, readonly) BOOL isClipboardMatch;
-// Text of the suggestion.
+/// Text of the suggestion.
 @property(nonatomic, readonly) NSAttributedString* text;
-// Second line of text.
+/// Second line of text.
 @property(nonatomic, readonly) NSAttributedString* detailText;
-// Suggested number of lines to format `detailText`.
+/// Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
 
-// Either nil or NSNumber-wrapped omnibox::GroupId.
+/// Either nil or NSNumber-wrapped omnibox::GroupId.
 @property(nonatomic, readonly, strong) NSNumber* suggestionGroupId;
-// Either nil or NSNumber-wrapped omnibox::GroupSection.
+/// Either nil or NSNumber-wrapped omnibox::GroupSection.
 @property(nonatomic, readonly, strong) NSNumber* suggestionSectionId;
 
-// Text to use in the omnibox when the suggestion is highlighted.
-// Effectively an accessor for fill_into_edit.
+/// Text to use in the omnibox when the suggestion is highlighted.
+/// Effectively an accessor for fill_into_edit.
 @property(nonatomic, readonly) NSAttributedString* omniboxPreviewText;
 
 @property(nonatomic, readonly) id<OmniboxIcon> icon;
 
 @property(nonatomic, readonly) id<OmniboxPedal, OmniboxIcon> pedal;
 
-// Icon corresponding to the suggestion's autocomplete match type, e.g.
-// History, Search, or Stock.
-// Ignores `starred` status of the suggestion.
+/// Icon corresponding to the suggestion's autocomplete match type, e.g.
+/// History, Search, or Stock.
+/// Ignores `starred` status of the suggestion.
 @property(nonatomic, readonly) UIImage* matchTypeIcon;
-// Whether this is a search suggestion (as opposed to URL suggestion)
+/// Whether this is a search suggestion (as opposed to URL suggestion)
 @property(nonatomic, readonly, getter=isMatchTypeSearch) BOOL matchTypeSearch;
-// For URL suggestions, the URL that the match represents.
+/// For URL suggestions, the URL that the match represents.
 @property(nonatomic, readonly) CrURL* destinationUrl;
 
 #pragma mark tail suggest
 
-// Yes if this is a tail suggestion. Used by the popup to display according to
-// tail suggest standards.
+/// Yes if this is a tail suggestion. Used by the popup to display according to
+/// tail suggest standards.
 @property(nonatomic, readonly) BOOL isTailSuggestion;
 
-// Common prefix for tail suggestions. Empty otherwise.
+/// Common prefix for tail suggestions. Empty otherwise.
 @property(nonatomic, readonly) NSString* commonPrefix;
 
 @end
@@ -80,17 +80,17 @@ typedef NS_ENUM(NSUInteger, SuggestionGroupDisplayStyle) {
   SuggestionGroupDisplayStyleCarousel,  // Horizontal scrolling icons.
 };
 
-// A group of AutocompleteSuggestions with an optional section header.
+/// A group of AutocompleteSuggestions with an optional section header.
 @protocol AutocompleteSuggestionGroup
 
-// Optional title.
+/// Optional title.
 @property(nonatomic, copy, readonly) NSString* title;
 
-// Contained suggestions.
+/// Contained suggestions.
 @property(nonatomic, strong, readonly)
     NSArray<id<AutocompleteSuggestion>>* suggestions;
 
-// How suggestion are displayed.
+/// How suggestion are displayed.
 @property(nonatomic, readonly) SuggestionGroupDisplayStyle displayStyle;
 
 @end

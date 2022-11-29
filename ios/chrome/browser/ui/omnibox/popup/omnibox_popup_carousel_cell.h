@@ -21,36 +21,36 @@ NSString* OmniboxPopupCarouselCellReuseIdentifier = @"OmniboxPopupCarouselCell";
 
 }  // namespace
 
-// Delegate for actions happening in OmniboxPopupCarouselCell.
+/// Delegate for actions happening in OmniboxPopupCarouselCell.
 @protocol OmniboxPopupCarouselCellDelegate <NSObject>
 
-// User tapped on `carouselItem`.
+/// User tapped on `carouselItem`.
 - (void)carouselCell:(OmniboxPopupCarouselCell*)carouselCell
     didTapCarouselItem:(CarouselItem*)carouselItem;
-// Called when the cell has changed the number of items.
+/// Called when the cell has changed the number of items.
 - (void)carouselCellDidChangeItemCount:(OmniboxPopupCarouselCell*)carouselCell;
 
 @end
 
-// Cell used in omnibox popup table view to display suggestions in a carousel
-// (horizontal scrolling list).
+/// Cell used in omnibox popup table view to display suggestions in a carousel
+/// (horizontal scrolling list).
 @interface OmniboxPopupCarouselCell
     : UITableViewCell <CarouselItemConsumer,
                        OmniboxKeyboardDelegate,
                        OmniboxPopupCarouselControlDelegate>
 
-// Fill the carousel with `carouselItems`.
+/// Fill the carousel with `carouselItems`.
 - (void)setupWithCarouselItems:(NSArray<CarouselItem*>*)carouselItems;
 
-// Update the UI of `carouselItem` if it still exist.
+/// Update the UI of `carouselItem` if it still exist.
 - (void)updateCarouselItem:(CarouselItem*)carouselItem;
 
 @property(nonatomic, weak) id<OmniboxPopupCarouselCellDelegate> delegate;
-// Context menu provider for the carousel items.
+/// Context menu provider for the carousel items.
 @property(nonatomic, weak) id<CarouselItemMenuProvider> menuProvider;
-// Index of the highlighted index, or NSNotFound if no tile is highlighted.
-// The index is given from all the `carouselItems`, not just the ones that
-// aren't hidden.
+/// Index of the highlighted index, or NSNotFound if no tile is highlighted.
+/// The index is given from all the `carouselItems`, not just the ones that
+/// aren't hidden.
 @property(nonatomic, readonly, assign) NSInteger highlightedTileIndex;
 
 /// Indicates the number of items in the carousel.

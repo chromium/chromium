@@ -7,25 +7,25 @@
 
 #import <Foundation/Foundation.h>
 
-// Accessibility identifier for the Switch to Open Tab button.
+/// Accessibility identifier for the Switch to Open Tab button.
 extern NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
 
-// Accessibility identifier for the Append button.
+/// Accessibility identifier for the Append button.
 extern NSString* const kOmniboxPopupRowAppendAccessibilityIdentifier;
 
-// A11y identifier for the table view containing suggestions.
+/// A11y identifier for the table view containing suggestions.
 extern NSString* const kOmniboxPopupTableViewAccessibilityIdentifier;
 
-// A11y identifier for the carousel cell.
+/// A11y identifier for the carousel cell.
 extern NSString* const kOmniboxCarouselCellAccessibilityIdentifier;
 
-// A11y identifier for the label of Carousel Control.
+/// A11y identifier for the label of Carousel Control.
 extern NSString* const kOmniboxCarouselControlLabelAccessibilityIdentifier;
 
-// Helper to generate omnibox popup accessibility identifiers.
+/// Helper to generate omnibox popup accessibility identifiers.
 @interface OmniboxPopupAccessibilityIdentifierHelper : NSObject
 
-// Generate omnibox popup row accessibility identifier at `indexPath`.
+/// Generate omnibox popup row accessibility identifier at `indexPath`.
 + (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

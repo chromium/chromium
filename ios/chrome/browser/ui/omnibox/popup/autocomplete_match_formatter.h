@@ -12,27 +12,27 @@ struct AutocompleteMatch;
 
 @interface AutocompleteMatchFormatter : NSObject <AutocompleteSuggestion>
 
-// This is a temporary solution for coloring strings.
+/// This is a temporary solution for coloring strings.
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 @property(nonatomic, assign, getter=isStarred) BOOL starred;
 
-// Whether the default search engine is Google impacts which icon is used in
-// some cases
+/// Whether the default search engine is Google impacts which icon is used in
+/// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 
-// The pedal data for the underlying match.
+/// The pedal data for the underlying match.
 @property(nonatomic, strong) OmniboxPedalData* pedalData;
-// From <AutocompleteSuggestion>, redefined as readwrite.
+/// From <AutocompleteSuggestion>, redefined as readwrite.
 @property(nonatomic, strong) NSNumber* suggestionSectionId;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Convenience constuctor.
+/// Convenience constructor.
 + (instancetype)formatterWithMatch:(const AutocompleteMatch&)match;
 
-// Underlying match.
+/// Underlying match.
 - (const AutocompleteMatch&)autocompleteMatch;
 
 @end

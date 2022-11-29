@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-// An abstract consumer of omnibox popup debug info.
+/// An abstract consumer of omnibox popup debug info.
 @protocol PopupDebugInfoConsumer <NSObject>
 
-// Gives the consumer a new variation IDs string to display.
+/// Gives the consumer a new variation IDs string to display.
 - (void)setVariationIDString:(NSString*)string;
 
 @end

@@ -45,20 +45,20 @@
 
 namespace {
 const CGFloat kOmniboxIconSize = 16;
-// Maximum number of suggest tile types we want to record. Anything beyond this
-// will be reported in the overflow bucket.
+/// Maximum number of suggest tile types we want to record. Anything beyond this
+/// will be reported in the overflow bucket.
 const NSUInteger kMaxSuggestTileTypePosition = 15;
 }  // namespace
 
 @interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
 
-// Extracts pedals from AutocompleSuggestions.
+/// Extracts pedals from AutocompleSuggestions.
 @property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
-// List of suggestions without the pedal group. Used to debouce pedals.
+/// List of suggestions without the pedal group. Used to debouce pedals.
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
-// Index of the group containing AutocompleteSuggestion, first group to be
-// highlighted on down arrow key.
+/// Index of the group containing AutocompleteSuggestion, first group to be
+/// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
 
 @end
@@ -276,7 +276,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-// Logs selected tile index and type.
+/// Logs selected tile index and type.
 - (void)logSelectedAutocompleteTile:(const AutocompleteMatch&)match {
   DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
   for (size_t i = 0; i < match.suggest_tiles.size(); ++i) {
@@ -335,9 +335,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 #pragma mark - PedalSectionExtractorDelegate
 
-// Removes the pedal group from suggestions. Pedal are removed from suggestions
-// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
-// pedal group is removed.
+/// Removes the pedal group from suggestions. Pedal are removed from suggestions
+/// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
+/// pedal group is removed.
 - (void)invalidatePedals {
   if (self.nonPedalSuggestions) {
     [self.consumer updateMatches:self.nonPedalSuggestions
@@ -347,7 +347,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 #pragma mark - Private methods
 
-// Wraps `match` with AutocompleteMatchFormatter.
+/// Wraps `match` with AutocompleteMatchFormatter.
 - (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
                               fromResult:(const AutocompleteResult&)result {
   AutocompleteMatchFormatter* formatter =
@@ -465,8 +465,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   return groups;
 }
 
-// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
-// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
+/// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
+/// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
   NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSMutableArray alloc] init];
@@ -507,7 +507,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 #pragma mark - CarouselItemMenuProvider
 
-// Context Menu for carousel `item` in `view`.
+/// Context Menu for carousel `item` in `view`.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
                                    fromView:(UIView*)view {
@@ -578,7 +578,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 #pragma mark CarouselItemMenuProvider Private
 
-// Blocks `URL` so it won't appear in most visited URLs.
+/// Blocks `URL` so it won't appear in most visited URLs.
 - (void)blockMostVisitedURL:(GURL)URL {
   scoped_refptr<history::TopSites> top_sites = [self.protocolProvider topSites];
   if (top_sites) {
@@ -586,8 +586,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-// Blocks `URL` in most visited sites and hides `CarouselItem` if it still
-// exist.
+/// Blocks `URL` in most visited sites and hides `CarouselItem` if it still
+/// exist.
 - (void)removeMostVisitedForURL:(GURL)URL
                withCarouselItem:(CarouselItem*)carouselItem {
   if (!carouselItem) {

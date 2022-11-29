@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 
-// View controller used to display omnibox and popup related debug info.
+/// View controller used to display omnibox and popup related debug info.
 @interface PopupDebugInfoViewController
     : UIViewController <PopupDebugInfoConsumer>
 

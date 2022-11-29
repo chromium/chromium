@@ -20,16 +20,16 @@
 
 namespace {
 
-// Maximum number of item in the Carousel.
+/// Maximum number of item in the Carousel.
 const NSUInteger kCarouselCapacity = 10;
-// Margin of the StackView.
+/// Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
-// Minimum spacing between items in the StackView.
+/// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
-// Width of the gradient applied at the end of the carousel.
+/// Width of the gradient applied at the end of the carousel.
 const CGFloat kGradientWidth = 20.0f;
 
-// Horizontal UIScrollView used in OmniboxPopupCarouselCell.
+/// Horizontal UIScrollView used in OmniboxPopupCarouselCell.
 UIScrollView* CarouselScrollView() {
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -40,7 +40,7 @@ UIScrollView* CarouselScrollView() {
   return scrollView;
 }
 
-// Horizontal UIStackView used in OmniboxPopupCarouselCell.
+/// Horizontal UIStackView used in OmniboxPopupCarouselCell.
 UIStackView* CarouselStackView() {
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -53,8 +53,8 @@ UIStackView* CarouselStackView() {
   return stackView;
 }
 
-// CAGradientLayer used in OmniboxPopupCarouselCell with PopupVariation1 on
-// iPad.
+/// CAGradientLayer used in OmniboxPopupCarouselCell with PopupVariation1 on
+/// iPad.
 CAGradientLayer* CarouselGradientLayer() {
   CAGradientLayer* maskLayer = [CAGradientLayer layer];
   UIColor* opaqueColor = [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
@@ -72,23 +72,23 @@ CAGradientLayer* CarouselGradientLayer() {
 
 @interface OmniboxPopupCarouselCell ()
 
-// Horizontal UIScrollView for the Carousel.
+/// Horizontal UIScrollView for the Carousel.
 @property(nonatomic, strong) UIScrollView* scrollView;
-// Horizontal UIStackView containing CarouselItems.
+/// Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
-// Indicates whether the view's marginLayoutGuide should be used.
+/// Indicates whether the view's marginLayoutGuide should be used.
 @property(nonatomic, assign, readonly) BOOL shouldApplyLayoutMarginsGuide;
-// GradientLayer applied at the right edge of `scrollView`.
+/// GradientLayer applied at the right edge of `scrollView`.
 @property(nonatomic, strong) CAGradientLayer* gradientLayer;
 
 #pragma mark Dynamic Spacing
-// Number of that that can be fully visible. Apply dynamic spacing only when the
-// number of tiles exceeds `visibleTilesCapacity`.
+/// Number of that that can be fully visible. Apply dynamic spacing only when
+/// the number of tiles exceeds `visibleTilesCapacity`.
 @property(nonatomic, assign) NSInteger visibleTilesCapacity;
-// Spacing between tiles to have half a tile visible on the trailing edge,
-// indicating a scrollable view.
+/// Spacing between tiles to have half a tile visible on the trailing edge,
+/// indicating a scrollable view.
 @property(nonatomic, assign) CGFloat dynamicSpacing;
-// Caches the view width to compute dynamic spacing only when it changes.
+/// Caches the view width to compute dynamic spacing only when it changes.
 @property(nonatomic, assign) CGFloat viewWidth;
 
 @end
