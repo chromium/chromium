@@ -42,18 +42,15 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   static sk_sp<SkPromiseImageTexture> ProduceSkiaPromiseTextureMetal(
       SharedImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
-      gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane);
+      scoped_refptr<gl::GLImage> image);
   static std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
-      gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane);
+      scoped_refptr<gl::GLImage> image);
   static bool InitializePixels(SharedImageBacking* backing,
-                               gfx::ScopedIOSurface io_surface,
-                               uint32_t io_surface_plane,
+                               scoped_refptr<gl::GLImage> image,
                                const uint8_t* pixel_data);
 
   // It is used for migrating GLImage backing, for part that works with

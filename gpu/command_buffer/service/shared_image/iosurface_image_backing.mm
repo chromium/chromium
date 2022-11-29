@@ -20,6 +20,7 @@
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
@@ -258,9 +259,9 @@ OverlayIOSurfaceRepresentation::OverlayIOSurfaceRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    gfx::ScopedIOSurface io_surface)
+    scoped_refptr<gl::GLImage> gl_image)
     : OverlayImageRepresentation(manager, backing, tracker),
-      io_surface_(std::move(io_surface)) {}
+      gl_image_(gl_image) {}
 
 OverlayIOSurfaceRepresentation::~OverlayIOSurfaceRepresentation() = default;
 
@@ -280,7 +281,9 @@ void OverlayIOSurfaceRepresentation::EndReadAccess(
 }
 
 gfx::ScopedIOSurface OverlayIOSurfaceRepresentation::GetIOSurface() const {
-  return io_surface_;
+  if (gl_image_->GetType() != gl::GLImage::Type::IOSURFACE)
+    return gfx::ScopedIOSurface();
+  return static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface();
 }
 
 bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
@@ -290,7 +293,11 @@ bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
   if (backing()->usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     return false;
 
-  return IOSurfaceIsInUse(io_surface_);
+  if (gl_image_->GetType() != gl::GLImage::Type::IOSURFACE)
+    return false;
+
+  return IOSurfaceIsInUse(
+      static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -319,10 +326,6 @@ SharedEventAndSignalValue::~SharedEventAndSignalValue() {
 // IOSurfaceImageBacking
 
 IOSurfaceImageBacking::IOSurfaceImageBacking(
-    gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane,
-    gfx::BufferFormat io_surface_format,
-    gfx::GenericSharedMemoryId io_surface_id,
     scoped_refptr<gl::GLImage> image,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -342,15 +345,11 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
           usage,
           viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
           false /* is_thread_safe */),
-      io_surface_(std::move(io_surface)),
-      io_surface_plane_(io_surface_plane),
-      io_surface_format_(io_surface_format),
-      io_surface_id_(io_surface_id),
       image_(image),
       gl_params_(params),
       cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
-  DCHECK(io_surface_);
+  DCHECK(image_);
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
@@ -393,6 +392,7 @@ IOSurfaceImageBacking::RetainGLTexture() {
   // Set the GLImage to be initially unbound from the GL texture.
   gl_texture->SetEstimatedSize(
       viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
+  gl_texture->SetLevelImage(gl_params_.target, 0, image_.get());
   gl_texture->set_is_bind_pending(true);
 
   return new IOSurfaceBackingEGLState(this, egl_display, gl_params_.target,
@@ -459,44 +459,7 @@ void IOSurfaceImageBacking::OnMemoryDump(
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
     pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
   }
-
-  size_t size_bytes =
-      IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_) *
-      IOSurfaceGetHeightOfPlane(io_surface_, io_surface_plane_);
-
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(dump_name);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  static_cast<uint64_t>(size_bytes));
-
-  // The client tracing id is to identify the GpuMemoryBuffer client that
-  // created the allocation. For CVPixelBufferRefs, there is no corresponding
-  // GpuMemoryBuffer, so use an invalid client id.
-  if (usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) {
-    client_tracing_id =
-        base::trace_event::MemoryDumpManager::kInvalidTracingProcessId;
-  }
-
-  // Create an edge using the GMB GenericSharedMemoryId if the image is not
-  // anonymous. Otherwise, add another nested node to account for the anonymous
-  // IOSurface.
-  if (io_surface_id_.is_valid()) {
-    auto guid = GetGenericSharedGpuMemoryGUIDForTracing(client_tracing_id,
-                                                        io_surface_id_);
-    pmd->CreateSharedGlobalAllocatorDump(guid);
-    pmd->AddOwnershipEdge(dump->guid(), guid);
-  } else {
-    std::string anonymous_dump_name = dump_name + "/anonymous-iosurface";
-    base::trace_event::MemoryAllocatorDump* anonymous_dump =
-        pmd->CreateAllocatorDump(anonymous_dump_name);
-    anonymous_dump->AddScalar(
-        base::trace_event::MemoryAllocatorDump::kNameSize,
-        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-        static_cast<uint64_t>(size_bytes));
-    anonymous_dump->AddScalar("width", "pixels", size().width());
-    anonymous_dump->AddScalar("height", "pixels", size().height());
-  }
+  image_->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
 SharedImageBackingType IOSurfaceImageBacking::GetType() const {
@@ -530,7 +493,7 @@ std::unique_ptr<OverlayImageRepresentation>
 IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                       MemoryTypeTracker* tracker) {
   return std::make_unique<OverlayIOSurfaceRepresentation>(manager, this,
-                                                          tracker, io_surface_);
+                                                          tracker, image_);
 }
 
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
@@ -539,7 +502,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     WGPUDevice device,
     WGPUBackendType backend_type) {
   auto result = IOSurfaceImageBackingFactory::ProduceDawn(
-      manager, this, tracker, device, io_surface_, io_surface_plane_);
+      manager, this, tracker, device, image_);
   if (result)
     return result;
 
@@ -549,8 +512,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   }
 
   return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type, this,
-      /*use_passthrough=*/true);
+      factory(), manager, tracker, device, backend_type, this, IsPassthrough());
 }
 
 std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
@@ -569,7 +531,7 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
     if (context_state->GrContextIsMetal()) {
       promise_texture =
           IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
-              this, context_state, io_surface_, io_surface_plane_);
+              this, context_state, image_);
       DCHECK(promise_texture);
     } else {
       GrBackendTexture backend_texture;
@@ -679,9 +641,12 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   // Create the EGL surface to bind to the GL texture, if it doesn't exist
   // already.
   if (!egl_state->egl_surface_) {
+    auto* gl_image_io_surface =
+        static_cast<gl::GLImageIOSurface*>(image_.get());
     egl_state->egl_surface_ = gl::ScopedEGLSurfaceIOSurface::Create(
-        egl_state->egl_display_, egl_state->GetGLTarget(), io_surface_,
-        io_surface_plane_, io_surface_format_);
+        egl_state->egl_display_, egl_state->GetGLTarget(),
+        gl_image_io_surface->io_surface(),
+        gl_image_io_surface->io_surface_plane(), gl_image_io_surface->format());
     if (!egl_state->egl_surface_) {
       LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
       return false;
@@ -814,8 +779,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingDestroyed(
 void IOSurfaceImageBacking::InitializePixels(GLenum format,
                                              GLenum type,
                                              const uint8_t* data) {
-  if (IOSurfaceImageBackingFactory::InitializePixels(this, io_surface_,
-                                                     io_surface_plane_, data))
+  if (IOSurfaceImageBackingFactory::InitializePixels(this, image_, data))
     return;
 }
 

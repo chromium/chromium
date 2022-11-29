@@ -25,7 +25,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/mac/display_icc_profiles.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/buildflags.h"
@@ -81,6 +80,14 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
                                                    plane:0]);
   DCHECK(mtl_texture);
   return mtl_texture;
+}
+
+base::ScopedCFTypeRef<IOSurfaceRef> GetIOSurfaceFromImage(
+    scoped_refptr<gl::GLImage> image) {
+  base::ScopedCFTypeRef<IOSurfaceRef> result;
+  if (image->GetType() == gl::GLImage::Type::IOSURFACE)
+    result = static_cast<gl::GLImageIOSurface*>(image.get())->io_surface();
+  return result;
 }
 
 }  // anonymous namespace
@@ -241,10 +248,11 @@ sk_sp<SkPromiseImageTexture>
 IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
     SharedImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
-    gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane) {
+    scoped_refptr<gl::GLImage> image) {
   DCHECK(context_state->GrContextIsMetal());
-  DCHECK(!io_surface_plane);
+
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+      static_cast<gl::GLImageIOSurface*>(image.get())->io_surface();
 
   id<MTLDevice> mtl_device =
       context_state->metal_context_provider()->GetMTLDevice();
@@ -266,15 +274,17 @@ IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
                                           SharedImageBacking* backing,
                                           MemoryTypeTracker* tracker,
                                           WGPUDevice device,
-                                          gfx::ScopedIOSurface io_surface,
-                                          uint32_t io_surface_plane) {
-  DCHECK(!io_surface_plane);
+                                          scoped_refptr<gl::GLImage> image) {
 #if BUILDFLAG(USE_DAWN)
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
   viz::ResourceFormat actual_format = (backing->format()).resource_format();
   if (actual_format == viz::RGBA_8888)
     actual_format = viz::BGRA_8888;
+
+  auto io_surface = GetIOSurfaceFromImage(image);
+  if (!io_surface)
+    return nullptr;
 
   // TODO(crbug.com/1293514): Remove this if condition after using single
   // multiplanar mailbox and actual_format could report multiplanar format
@@ -297,16 +307,18 @@ IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
 // static
 bool IOSurfaceImageBackingFactory::InitializePixels(
     SharedImageBacking* backing,
-    gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane,
+    scoped_refptr<gl::GLImage> image,
     const uint8_t* src_data) {
+  auto io_surface = GetIOSurfaceFromImage(image);
+  if (!io_surface)
+    return false;
+
   IOReturn r = IOSurfaceLock(io_surface, kIOSurfaceLockAvoidSync, nullptr);
   DCHECK_EQ(kIOReturnSuccess, r);
 
-  uint8_t* dst_data = reinterpret_cast<uint8_t*>(
-      IOSurfaceGetBaseAddressOfPlane(io_surface, io_surface_plane));
-  size_t dst_stride =
-      IOSurfaceGetBytesPerRowOfPlane(io_surface, io_surface_plane);
+  uint8_t* dst_data =
+      reinterpret_cast<uint8_t*>(IOSurfaceGetBaseAddress(io_surface));
+  size_t dst_stride = IOSurfaceGetBytesPerRow(io_surface);
   const size_t src_stride =
       (BitsPerPixel(backing->format()) / 8) * backing->size().width();
 
@@ -454,13 +466,6 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     LOG(ERROR) << "Failed to create image.";
     return nullptr;
   }
-  gl::GLImageIOSurface* image_io_surface =
-      gl::GLImageIOSurface::FromGLImage(image.get());
-  if (!image_io_surface) {
-    LOG(ERROR) << "Created image was not IOSurface-backed.";
-    return nullptr;
-  }
-
   // If we decide to use GL_TEXTURE_2D at the target for a native buffer, we
   // would like to verify that it will actually work. If the image expects to be
   // copied, there is no way to do this verification here, because copying is
@@ -500,10 +505,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
   DCHECK(use_passthrough_);
   return std::make_unique<IOSurfaceImageBacking>(
-      image_io_surface->io_surface(), image_io_surface->io_surface_plane(),
-      image_io_surface->format(), image_io_surface->io_surface_id(), image,
-      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
-      usage, params);
+      image, mailbox, si_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, params);
 }
 
 scoped_refptr<gl::GLImage> IOSurfaceImageBackingFactory::MakeGLImage(
@@ -595,51 +598,58 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
 
+  scoped_refptr<gl::GLImage> image;
+
+  // TODO(piman): We pretend the texture was created in an ES2 context, so that
+  // it can be used in other ES2 contexts, and so we have to pass gl_format as
+  // the internal format in the LevelInfo. https://crbug.com/628064
+  GLuint level_info_internal_format = format_info.gl_format;
+  bool is_cleared = false;
+
   // |scoped_progress_reporter| will notify |progress_reporter_| upon
   // construction and destruction. We limit the scope so that progress is
   // reported immediately after allocation/upload and before other GL
   // operations.
-  gfx::ScopedIOSurface io_surface;
-  const uint32_t io_surface_plane = 0;
-  gfx::BufferFormat io_surface_format = buffer_format_info.buffer_format;
-  const gfx::GenericSharedMemoryId io_surface_id;
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-    const bool should_clear = false;
-    io_surface.reset(
-        gfx::CreateIOSurface(size, io_surface_format, should_clear));
-    if (!io_surface) {
-      LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
-      return nullptr;
-    }
+    image = image_factory_->CreateAnonymousImage(
+        size, buffer_format_info.buffer_format, gfx::BufferUsage::SCANOUT,
+        surface_handle, &is_cleared);
   }
-  if (color_space.IsValid()) {
-    base::ScopedCFTypeRef<CFDataRef> cf_data =
-        gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(
-            color_space);
-    if (cf_data)
-      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data);
-    else
-      IOSurfaceSetColorSpace(io_surface, color_space);
+  // Scanout images have different constraints than GL images and might fail
+  // to allocate even if GL images can be created.
+  if (!image) {
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+    // TODO(dcastagna): Use BufferUsage::GPU_READ_WRITE instead
+    // BufferUsage::GPU_READ once we add it.
+    image = image_factory_->CreateAnonymousImage(
+        size, buffer_format_info.buffer_format, gfx::BufferUsage::GPU_READ,
+        surface_handle, &is_cleared);
   }
+  // The allocated image should not require copy.
+  if (!image || image->ShouldBindOrCopy() != gl::GLImage::BIND) {
+    LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
+    return nullptr;
+  }
+  level_info_internal_format = image->GetInternalFormat();
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
 
   InitializeGLTextureParams params;
   params.target = target;
-  params.internal_format =
-      gl::BufferFormatToGLInternalFormat(io_surface_format);
+  params.internal_format = level_info_internal_format;
   params.format = format_info.gl_format;
   params.type = format_info.gl_type;
-  params.is_cleared = !pixel_data.empty();
-  params.has_immutable_storage = false;
+  params.is_cleared = pixel_data.empty() ? is_cleared : true;
+  params.has_immutable_storage = !image && format_info.supports_storage;
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   DCHECK(!format_info.swizzle);
   DCHECK(use_passthrough_);
   auto result = std::make_unique<IOSurfaceImageBacking>(
-      io_surface, io_surface_plane, io_surface_format, io_surface_id, nullptr,
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      params);
+      image, mailbox, format, size, color_space, surface_origin, alpha_type,
+      usage, params);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     result->InitializePixels(format_info.adjusted_format, format_info.gl_type,
