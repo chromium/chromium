@@ -5,6 +5,14 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 
+// build_config.h must come before BUILDFLAG()
+#include "build/build_config.h"
+
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
+#include <linux/media/vp8-ctrls-upstream.h>
+#endif
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -46,16 +54,21 @@ class Vp8Decoder : public VideoDecoder {
   // Reads next frame from IVF stream into |vp8_frame_header|
   ParseResult ReadNextFrame(Vp8FrameHeader& vp8_frame_header);
 
+  // Sets up per frame parameters |v4l2_frame_headers| needed for VP8 decoding
+  // with VIDIOC_S_EXT_CTRLS ioctl call.
+  // Syntax from VP8 specs: https://datatracker.ietf.org/doc/rfc6386/
+  struct v4l2_ctrl_vp8_frame SetupFrameHeaders(const Vp8FrameHeader& frame_hdr);
+
   // Refreshes |ref_frames_| slots and returns the CAPTURE buffers that
   // can be reused for VIDIOC_QBUF ioctl call.
-  std::set<int> RefreshReferenceSlots(Vp8FrameHeader const& frame_hdr,
+  std::set<int> RefreshReferenceSlots(const Vp8FrameHeader& frame_hdr,
                                       MmapedBuffer* buffer,
                                       std::set<uint32_t> queued_buffer_indexes);
 
   // Manages buffers holding reference frames and return buffer indexes
   // |reusable_buffer_slots| that can be reused in CAPTURE queue.
-  void UpdateReusableReferenceBufferSlots(Vp8FrameHeader const& frame_hdr,
-                                          size_t const curr_ref_frame_index,
+  void UpdateReusableReferenceBufferSlots(const Vp8FrameHeader& frame_hdr,
+                                          const size_t curr_ref_frame_index,
                                           std::set<int>& reusable_buffer_slots);
 
   // Parser for the IVF stream to decode.

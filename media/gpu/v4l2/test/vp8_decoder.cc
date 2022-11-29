@@ -134,95 +134,6 @@ struct v4l2_vp8_segment FillV4L2VP8SegmentationHeader(
   return v4l2_segment;
 }
 
-// Sets up per frame parameters |v4l2_frame_headers| needed for VP8 decoding
-// with VIDIOC_S_EXT_CTRLS ioctl call.
-// Syntax from VP8 specs: https://datatracker.ietf.org/doc/rfc6386/
-struct v4l2_ctrl_vp8_frame SetupFrameHeaders(
-    const media::Vp8FrameHeader& frame_hdr,
-    std::array<scoped_refptr<media::v4l2_test::MmapedBuffer>,
-               media::kNumVp8ReferenceBuffers> ref_frames_) {
-  struct v4l2_ctrl_vp8_frame v4l2_frame_headers = {};
-
-  v4l2_frame_headers.lf = FillV4L2VP8LoopFilterHeader(frame_hdr.loopfilter_hdr);
-  v4l2_frame_headers.quant =
-      FillV4L2Vp8QuantizationHeader(frame_hdr.quantization_hdr);
-
-  v4l2_frame_headers.coder_state.range = frame_hdr.bool_dec_range;
-  v4l2_frame_headers.coder_state.value = frame_hdr.bool_dec_value;
-  v4l2_frame_headers.coder_state.bit_count = frame_hdr.bool_dec_count;
-
-  v4l2_frame_headers.width = frame_hdr.width;
-  v4l2_frame_headers.height = frame_hdr.height;
-
-  v4l2_frame_headers.horizontal_scale = frame_hdr.horizontal_scale;
-  v4l2_frame_headers.vertical_scale = frame_hdr.vertical_scale;
-
-  v4l2_frame_headers.version = frame_hdr.version;
-  v4l2_frame_headers.prob_skip_false = frame_hdr.prob_skip_false;
-  v4l2_frame_headers.prob_intra = frame_hdr.prob_intra;
-  v4l2_frame_headers.prob_last = frame_hdr.prob_last;
-  v4l2_frame_headers.prob_gf = frame_hdr.prob_gf;
-  v4l2_frame_headers.num_dct_parts = frame_hdr.num_of_dct_partitions;
-
-  v4l2_frame_headers.first_part_size = frame_hdr.num_of_dct_partitions;
-  // https://lwn.net/Articles/793069/: macroblock_bit_offset is renamed to
-  // first_part_header_bits
-  v4l2_frame_headers.first_part_header_bits = frame_hdr.macroblock_bit_offset;
-
-  if (frame_hdr.frame_type == media::Vp8FrameHeader::KEYFRAME)
-    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_KEY_FRAME;
-  if (frame_hdr.show_frame)
-    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SHOW_FRAME;
-  if (frame_hdr.mb_no_skip_coeff)
-    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_MB_NO_SKIP_COEFF;
-  if (frame_hdr.sign_bias_golden)
-    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN;
-  if (frame_hdr.sign_bias_alternate)
-    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT;
-
-  static_assert(std::size(decltype(v4l2_frame_headers.dct_part_sizes){}) ==
-                    media::kMaxDCTPartitions,
-                "Invalid size of dct_part_sizes");
-
-  for (size_t i = 0; i < frame_hdr.num_of_dct_partitions &&
-                     i < std::size(v4l2_frame_headers.dct_part_sizes);
-       ++i) {
-    v4l2_frame_headers.dct_part_sizes[i] =
-        static_cast<size_t>(frame_hdr.dct_partition_sizes[i]);
-  }
-
-  v4l2_frame_headers.entropy = FillV4L2VP8EntropyHeader(frame_hdr.entropy_hdr);
-  v4l2_frame_headers.segment =
-      FillV4L2VP8SegmentationHeader(frame_hdr.segmentation_hdr);
-
-  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
-  // We need to convert a reference frame's frame_number() (in  microseconds)
-  // to reference ID (in nanoseconds). Technically, v4l2_timeval_to_ns() is
-  // suggested to be used to convert timestamp to nanoseconds, but multiplying
-  // the microseconds part of timestamp |tv_usec| by |kTimestampToNanoSecs| to
-  // make it nanoseconds is also known to work. This is how it is implemented
-  // in v4l2 video decode accelerator tests as well as in gstreamer.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
-  constexpr size_t kTimestampToNanoSecs = 1000;
-  v4l2_frame_headers.last_frame_ts =
-      ref_frames_[media::VP8_FRAME_LAST]
-          ? (ref_frames_[media::VP8_FRAME_LAST]->frame_number() *
-             kTimestampToNanoSecs)
-          : kInvalidSurface;
-  v4l2_frame_headers.golden_frame_ts =
-      ref_frames_[media::VP8_FRAME_GOLDEN]
-          ? (ref_frames_[media::VP8_FRAME_GOLDEN]->frame_number() *
-             kTimestampToNanoSecs)
-          : kInvalidSurface;
-  v4l2_frame_headers.alt_frame_ts =
-      ref_frames_[media::VP8_FRAME_ALTREF]
-          ? (ref_frames_[media::VP8_FRAME_ALTREF]->frame_number() *
-             kTimestampToNanoSecs)
-          : kInvalidSurface;
-
-  return v4l2_frame_headers;
-}
-
 // Checks if the buffer slot holding the reference frame is not used by other
 // frames
 bool IsBufferSlotInUse(
@@ -366,6 +277,90 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
   return base::WrapUnique(
       new Vp8Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+}
+
+struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
+    const Vp8FrameHeader& frame_hdr) {
+  struct v4l2_ctrl_vp8_frame v4l2_frame_headers = {};
+
+  v4l2_frame_headers.lf = FillV4L2VP8LoopFilterHeader(frame_hdr.loopfilter_hdr);
+  v4l2_frame_headers.quant =
+      FillV4L2Vp8QuantizationHeader(frame_hdr.quantization_hdr);
+
+  v4l2_frame_headers.coder_state.range = frame_hdr.bool_dec_range;
+  v4l2_frame_headers.coder_state.value = frame_hdr.bool_dec_value;
+  v4l2_frame_headers.coder_state.bit_count = frame_hdr.bool_dec_count;
+
+  v4l2_frame_headers.width = frame_hdr.width;
+  v4l2_frame_headers.height = frame_hdr.height;
+
+  v4l2_frame_headers.horizontal_scale = frame_hdr.horizontal_scale;
+  v4l2_frame_headers.vertical_scale = frame_hdr.vertical_scale;
+
+  v4l2_frame_headers.version = frame_hdr.version;
+  v4l2_frame_headers.prob_skip_false = frame_hdr.prob_skip_false;
+  v4l2_frame_headers.prob_intra = frame_hdr.prob_intra;
+  v4l2_frame_headers.prob_last = frame_hdr.prob_last;
+  v4l2_frame_headers.prob_gf = frame_hdr.prob_gf;
+  v4l2_frame_headers.num_dct_parts = frame_hdr.num_of_dct_partitions;
+
+  v4l2_frame_headers.first_part_size = frame_hdr.num_of_dct_partitions;
+  // https://lwn.net/Articles/793069/: macroblock_bit_offset is renamed to
+  // first_part_header_bits
+  v4l2_frame_headers.first_part_header_bits = frame_hdr.macroblock_bit_offset;
+
+  if (frame_hdr.frame_type == media::Vp8FrameHeader::KEYFRAME)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_KEY_FRAME;
+  if (frame_hdr.show_frame)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SHOW_FRAME;
+  if (frame_hdr.mb_no_skip_coeff)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_MB_NO_SKIP_COEFF;
+  if (frame_hdr.sign_bias_golden)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN;
+  if (frame_hdr.sign_bias_alternate)
+    v4l2_frame_headers.flags |= V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT;
+
+  static_assert(std::size(decltype(v4l2_frame_headers.dct_part_sizes){}) ==
+                    media::kMaxDCTPartitions,
+                "Invalid size of dct_part_sizes");
+
+  for (size_t i = 0; i < frame_hdr.num_of_dct_partitions &&
+                     i < std::size(v4l2_frame_headers.dct_part_sizes);
+       ++i) {
+    v4l2_frame_headers.dct_part_sizes[i] =
+        static_cast<size_t>(frame_hdr.dct_partition_sizes[i]);
+  }
+
+  v4l2_frame_headers.entropy = FillV4L2VP8EntropyHeader(frame_hdr.entropy_hdr);
+  v4l2_frame_headers.segment =
+      FillV4L2VP8SegmentationHeader(frame_hdr.segmentation_hdr);
+
+  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+  // We need to convert a reference frame's frame_number() (in  microseconds)
+  // to reference ID (in nanoseconds). Technically, v4l2_timeval_to_ns() is
+  // suggested to be used to convert timestamp to nanoseconds, but multiplying
+  // the microseconds part of timestamp |tv_usec| by |kTimestampToNanoSecs| to
+  // make it nanoseconds is also known to work. This is how it is implemented
+  // in v4l2 video decode accelerator tests as well as in gstreamer.
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
+  constexpr size_t kTimestampToNanoSecs = 1000;
+  v4l2_frame_headers.last_frame_ts =
+      ref_frames_[media::VP8_FRAME_LAST]
+          ? (ref_frames_[media::VP8_FRAME_LAST]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+  v4l2_frame_headers.golden_frame_ts =
+      ref_frames_[media::VP8_FRAME_GOLDEN]
+          ? (ref_frames_[media::VP8_FRAME_GOLDEN]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+  v4l2_frame_headers.alt_frame_ts =
+      ref_frames_[media::VP8_FRAME_ALTREF]
+          ? (ref_frames_[media::VP8_FRAME_ALTREF]->frame_number() *
+             kTimestampToNanoSecs)
+          : kInvalidSurface;
+
+  return v4l2_frame_headers;
 }
 
 void Vp8Decoder::UpdateReusableReferenceBufferSlots(
@@ -531,8 +526,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, OUTPUT_index))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
-  struct v4l2_ctrl_vp8_frame v4l2_frame_headers =
-      SetupFrameHeaders(frame_hdr, ref_frames_);
+  struct v4l2_ctrl_vp8_frame v4l2_frame_headers = SetupFrameHeaders(frame_hdr);
 
   // Set controls required by the OUTPUT format to enumerate the CAPTURE formats
   struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_VP8_FRAME,
