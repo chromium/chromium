@@ -916,6 +916,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&sl_codec, kVideoEncoderSettings));
 
+  constexpr size_t kNumEncodeFrames = 5u;
   class CodecSpecificVerifier : public webrtc::EncodedImageCallback {
    public:
     explicit CodecSpecificVerifier(const webrtc::VideoCodec& codec)
@@ -933,16 +934,23 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
           EXPECT_EQ(vp9_specific.height[i], codec_.spatialLayers[i].height);
         }
       }
+
+      if (encoded_image.Timestamp() == kNumEncodeFrames - 1 &&
+          codec_specific_info->end_of_picture) {
+        waiter_.Signal();
+      }
       return Result(Result::OK);
     }
 
+    void Wait() { waiter_.Wait(); }
+
    private:
     const webrtc::VideoCodec& codec_;
+    base::WaitableEvent waiter_;
   };
   CodecSpecificVerifier sl_verifier(sl_codec);
   rtc_encoder_->RegisterEncodeCompleteCallback(&sl_verifier);
 
-  size_t kNumEncodeFrames = 5u;
   EXPECT_CALL(*mock_vea_, Encode)
       .Times(kNumEncodeFrames)
       .WillRepeatedly(Invoke(
@@ -958,12 +966,13 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_timestamp_rtp(i)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
                                    &frame_types));
   }
+  sl_verifier.Wait();
   RunUntilIdle();
 }
 
