@@ -2770,7 +2770,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
 
   SetFoundFormEligibleForGeneration(
       password_generation_, GetMainFrame()->GetDocument(),
-      "password" /* new_password_id */, nullptr /* confirm_password_id*/);
+      /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
 
   // Generation event is triggered due to focus events.
   EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus())
@@ -2792,7 +2792,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   SetFoundFormEligibleForGeneration(
       password_generation_, GetMainFrame()->GetDocument(),
-      "password" /* new_password_id */, nullptr /* confirm_password_id*/);
+      /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   FocusElement(kPasswordName);
@@ -2813,7 +2813,7 @@ TEST_F(PasswordAutofillAgentTest,
   // A user generates password.
   SetFoundFormEligibleForGeneration(
       password_generation_, GetMainFrame()->GetDocument(),
-      "password" /* new_password_id */, nullptr /* confirm_password_id*/);
+      /*new_password_id=*/"password", /*confirm_password_id=*/nullptr);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   FocusElement(kPasswordName);
@@ -2878,10 +2878,10 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   SimulateOnFillPasswordForm(fill_data_);
 
   // Simulate generation triggering.
-  SetFoundFormEligibleForGeneration(
-      password_generation_, GetMainFrame()->GetDocument(),
-      "new_password" /* new_password_id */,
-      "confirm_password" /* confirm_password_id*/);
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/"new_password",
+                                    /*confirm_password_id=*/"confirm_password");
 
   // Simulate the field being clicked to start typing. This should trigger
   // generation but not password autofill.

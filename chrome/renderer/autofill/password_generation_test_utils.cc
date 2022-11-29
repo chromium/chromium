@@ -46,12 +46,12 @@ void SetFoundFormEligibleForGeneration(
     PasswordGenerationAgent* generation_agent,
     WebDocument document,
     const char* new_password_id,
-    const char* cofirm_password_id) {
+    const char* confirm_password_id) {
   PasswordFormGenerationData data;
   data.new_password_renderer_id = GetRendererId(document, new_password_id);
-  if (cofirm_password_id) {
+  if (confirm_password_id) {
     data.confirmation_password_renderer_id =
-        GetRendererId(document, cofirm_password_id);
+        GetRendererId(document, confirm_password_id);
   }
 
   generation_agent->FoundFormEligibleForGeneration(data);
