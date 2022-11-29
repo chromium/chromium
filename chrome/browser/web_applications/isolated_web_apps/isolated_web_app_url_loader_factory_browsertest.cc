@@ -113,16 +113,15 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
 
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      EXPECT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
+      CHECK(temp_dir_.CreateUniqueTempDir());
       base::FilePath web_bundle_path;
-      EXPECT_THAT(
-          CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path),
-          IsTrue());
-      EXPECT_THAT(
+      CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
+
+      CHECK_EQ(
           static_cast<size_t>(base::WriteFile(
               web_bundle_path, reinterpret_cast<char*>(signed_bundle.data()),
               signed_bundle.size())),
-          Eq(signed_bundle.size()));
+          signed_bundle.size());
 
       return web_bundle_path;
     }

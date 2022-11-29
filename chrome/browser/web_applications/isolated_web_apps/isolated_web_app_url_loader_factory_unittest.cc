@@ -725,13 +725,12 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
         web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair});
 
     base::FilePath web_bundle_path;
-    EXPECT_THAT(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path),
-                IsTrue());
-    EXPECT_THAT(
-        static_cast<size_t>(base::WriteFile(
-            web_bundle_path, reinterpret_cast<char*>(signed_bundle.data()),
-            signed_bundle.size())),
-        Eq(signed_bundle.size()));
+    CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
+
+    CHECK_EQ(static_cast<size_t>(base::WriteFile(
+                 web_bundle_path, reinterpret_cast<char*>(signed_bundle.data()),
+                 signed_bundle.size())),
+             signed_bundle.size());
 
     return web_bundle_path;
   }
