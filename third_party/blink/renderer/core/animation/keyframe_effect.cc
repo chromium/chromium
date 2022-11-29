@@ -783,11 +783,15 @@ ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
   if (removed)
     ApplyEffects();
 
+  auto property_pass_filter = [](const PropertyHandle& property) {
+    return property.IsCSSProperty();
+  };
+
   ActiveInterpolationsMap results = EffectStack::ActiveInterpolations(
       &target()->GetElementAnimations()->GetEffectStack(),
       /*new_animations=*/nullptr,
-      /*suppressed_animations=*/nullptr, kDefaultPriority,
-      /*property_pass_filter=*/nullptr, this);
+      /*suppressed_animations=*/nullptr, kDefaultPriority, property_pass_filter,
+      this);
 
   if (removed)
     ClearEffects();
