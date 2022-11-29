@@ -53,6 +53,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

@@ -18,8 +18,8 @@ import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.List;
 
@@ -86,16 +86,16 @@ public class AutofillAssistantClient {
         mAccessTokenUtil = accessTokenUtil;
 
         // Add listener for accessibility services with "FEEDBACK_SPOKEN" feedback type.
-        BrowserAccessibilityState.Listener listener = (unused) -> {
+        AccessibilityState.Listener listener = (unused) -> {
             if (mNativeClientAndroid == 0) return;
 
             AutofillAssistantClientJni.get().onSpokenFeedbackAccessibilityServiceChanged(
                     mNativeClientAndroid, AutofillAssistantClient.this,
-                    BrowserAccessibilityState.hasSpokenFeedbackServicePresent());
+                    AccessibilityState.hasSpokenFeedbackServicePresent());
         };
-        // BrowserAccessibilityState listeners are garbage-collected and automatically removed
+        // AccessibilityState listeners are garbage-collected and automatically removed
         // from the set of active listeners.
-        BrowserAccessibilityState.addListener(listener);
+        AccessibilityState.addListener(listener);
     }
 
     /**

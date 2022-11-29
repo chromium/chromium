@@ -78,6 +78,7 @@ static_library("android") {
     "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia",
+    "//ui/accessibility:ax_base_android",
     "//ui/base",
     "//url",
     "//url:gurl_android",

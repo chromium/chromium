@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.accessibility;
+package org.chromium.ui.accessibility;
 
 import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
-
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.TAG;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
@@ -37,11 +35,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Provides utility methods relating to measuring accessibility state on the current platform (i.e.
- * Android in this case). See content::BrowserAccessibilityStateImpl.
+ * Provides utility methods relating to measuring accessibility state on Android. See native
+ * counterpart in ui::accessibility::AccessibilityState.
  */
-@JNINamespace("content")
-public class BrowserAccessibilityState {
+@JNINamespace("ui")
+public class AccessibilityState {
     /**
      * An interface for classes that want to be notified whenever the accessibility
      * state has changed, which can happen when accessibility services start or stop.
@@ -49,6 +47,8 @@ public class BrowserAccessibilityState {
     public interface Listener {
         public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState);
     }
+
+    private static final String TAG = "A11yState";
 
     // Analysis of the most popular accessibility services on Android suggests
     // that any service that requests any of these three events is a screen reader
@@ -302,7 +302,7 @@ public class BrowserAccessibilityState {
             // {MAX_DELAY_MILLIS} has been reached, in which case send whatever we have.
             if (sNextDelayMillis < MAX_DELAY_MILLIS) {
                 ThreadUtils.getUiThreadHandler().postDelayed(
-                        BrowserAccessibilityState::updateAccessibilityServices, sNextDelayMillis);
+                        AccessibilityState::updateAccessibilityServices, sNextDelayMillis);
                 sNextDelayMillis *= 2;
                 return;
             }
@@ -325,7 +325,7 @@ public class BrowserAccessibilityState {
      */
     // TODO(mschillaci,jacklynch): Make this private and update current callers.
     @CalledByNative
-    protected static int getAccessibilityServiceEventTypeMask() {
+    public static int getAccessibilityServiceEventTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sEventTypeMask;
     }
@@ -377,10 +377,9 @@ public class BrowserAccessibilityState {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         ServicesObserver animationDurationScaleObserver =
                 new ServicesObserver(ThreadUtils.getUiThreadHandler(),
-                        () -> BrowserAccessibilityStateJni.get().onAnimatorDurationScaleChanged());
-        ServicesObserver accessibilityServiceObserver =
-                new ServicesObserver(ThreadUtils.getUiThreadHandler(),
-                        BrowserAccessibilityState::updateAccessibilityServices);
+                        () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
+        ServicesObserver accessibilityServiceObserver = new ServicesObserver(
+                ThreadUtils.getUiThreadHandler(), AccessibilityState::updateAccessibilityServices);
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
