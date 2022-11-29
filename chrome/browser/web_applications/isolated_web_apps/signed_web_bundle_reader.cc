@@ -302,15 +302,8 @@ void SignedWebBundleReader::FulfillWithError(
   state_ = State::kError;
 
   // This is an irrecoverable error state, thus we can safely delete `parser_`
-  // here to free up resources. We do so asynchronously, since this method might
-  // be called in response to `SafeWebBundleParser::OnDisconnect` if the parser
-  // disconnects while parsing the integrity block or metadata. Deleting
-  // `parser_` synchronously here might cause a use after free if `callback`
-  // deletes `this` in response to the error, because `parser_` would attempt to
-  // access its already freed instance variables when its `OnDisconnect` method
-  // continues execution after running this callback.
-  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE, std::move(parser_));
+  // here to free up resources.
+  parser_.reset();
 
   std::move(callback).Run(std::move(error));
 }

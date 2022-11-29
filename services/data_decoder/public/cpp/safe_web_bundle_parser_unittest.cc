@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/notreached.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -251,54 +251,86 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
 
   parser.ParseMetadata(/*offset=*/-1, base::DoNothing());
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
+  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 
   parser.ParseResponse(0u, 0u, base::DoNothing());
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
+  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 }
 
 TEST_F(SafeWebBundleParserTest, ConnectionError) {
-  SafeWebBundleParser parser;
+  auto parser = std::make_unique<SafeWebBundleParser>();
   MockFactory* raw_factory = InitializeMockFactory();
 
   mojo::PendingRemote<web_package::mojom::BundleDataSource> remote_data_source;
   auto data_source = std::make_unique<MockDataSource>(
       remote_data_source.InitWithNewPipeAndPassReceiver());
-  parser.OpenDataSource(std::move(remote_data_source));
+  parser->OpenDataSource(std::move(remote_data_source));
   ASSERT_TRUE(raw_factory->GetCreatedParser());
 
-  base::RunLoop run_loop;
-  bool parsed = false;
-  parser.ParseMetadata(
-      /*offset=*/-1,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, bool* parsed,
-             web_package::mojom::BundleMetadataPtr metadata,
-             web_package::mojom::BundleMetadataParseErrorPtr error) {
-            EXPECT_FALSE(metadata);
-            EXPECT_TRUE(error);
-            if (error)
-              EXPECT_EQ(kConnectionError, error->message);
-            *parsed = true;
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure(), &parsed));
+  base::test::TestFuture<void> disconnect_future;
+  parser->SetDisconnectCallback(disconnect_future.GetCallback());
+
+  base::test::TestFuture<web_package::mojom::BundleIntegrityBlockPtr,
+                         web_package::mojom::BundleIntegrityBlockParseErrorPtr>
+      integrity_block_future;
+  parser->ParseIntegrityBlock(base::BindLambdaForTesting(
+      [&parser, &integrity_block_future](
+          web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+          web_package::mojom::BundleIntegrityBlockParseErrorPtr
+              integrity_block_error) {
+        // Synchronously delete the `SafeWebBundleParser` from this callback.
+        // This tests that deleting it from a callback that runs as part of
+        // `SafeWebBundleParser::OnDisconnect` does not cause a use-after-free.
+        parser.reset();
+        integrity_block_future.SetValue(std::move(integrity_block),
+                                        std::move(integrity_block_error));
+      }));
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(parsed);
+
+  base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
+                         web_package::mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  parser->ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<web_package::mojom::BundleResponsePtr,
+                         web_package::mojom::BundleResponseParseErrorPtr>
+      response_future;
+  parser->ParseResponse(0u, 0u, response_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
+  EXPECT_FALSE(integrity_block_future.IsReady());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
+  EXPECT_FALSE(metadata_future.IsReady());
+  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
+  EXPECT_FALSE(response_future.IsReady());
 
   raw_factory->GetCreatedParser()->Disconnect();
-  run_loop.Run();
-  ASSERT_TRUE(parsed);
+  EXPECT_TRUE(disconnect_future.Wait());
 
-  // Passed callback is called by SafeWebBundleParser on the interface
-  // disconnection, but remote parser still holds the proxy callback.
-  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
+  auto [integrity_block, integrity_block_error] = integrity_block_future.Take();
+  EXPECT_FALSE(integrity_block);
+  EXPECT_EQ(integrity_block_error->type,
+            web_package::mojom::BundleParseErrorType::kParserInternalError);
+  EXPECT_EQ(integrity_block_error->message, kConnectionError);
+
+  auto [metadata, metadata_error] = metadata_future.Take();
+  EXPECT_FALSE(metadata);
+  EXPECT_EQ(metadata_error->type,
+            web_package::mojom::BundleParseErrorType::kParserInternalError);
+  EXPECT_EQ(metadata_error->message, kConnectionError);
+
+  auto [response, response_error] = response_future.Take();
+  EXPECT_FALSE(response);
+  EXPECT_EQ(response_error->type,
+            web_package::mojom::BundleParseErrorType::kParserInternalError);
+  EXPECT_EQ(response_error->message, kConnectionError);
 }
 
 TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {

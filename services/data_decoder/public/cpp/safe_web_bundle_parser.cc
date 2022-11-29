@@ -119,30 +119,36 @@ void SafeWebBundleParser::SetDisconnectCallback(base::OnceClosure callback) {
 
 void SafeWebBundleParser::OnDisconnect() {
   disconnected_ = true;
-  if (!integrity_block_callback_.is_null()) {
-    std::move(integrity_block_callback_)
+  // Any of these callbacks could delete `this`, hence we need to make sure to
+  // not access any instance variables after we run any of these callbacks.
+  auto integrity_block_callback = std::move(integrity_block_callback_);
+  auto metadata_callback = std::move(metadata_callback_);
+  auto response_callbacks = std::exchange(response_callbacks_, {});
+  auto disconnect_callback = std::move(disconnect_callback_);
+
+  if (!integrity_block_callback.is_null()) {
+    std::move(integrity_block_callback)
         .Run(nullptr,
              web_package::mojom::BundleIntegrityBlockParseError::New(
                  web_package::mojom::BundleParseErrorType::kParserInternalError,
                  kConnectionError));
   }
-  if (!metadata_callback_.is_null()) {
-    std::move(metadata_callback_)
+  if (!metadata_callback.is_null()) {
+    std::move(metadata_callback)
         .Run(nullptr,
              web_package::mojom::BundleMetadataParseError::New(
                  web_package::mojom::BundleParseErrorType::kParserInternalError,
                  kConnectionError));
   }
-  for (auto& callback : response_callbacks_) {
-    std::move(callback.second)
-        .Run(nullptr,
-             web_package::mojom::BundleResponseParseError::New(
-                 web_package::mojom::BundleParseErrorType::kParserInternalError,
-                 kConnectionError));
+  for (auto& [callback_id, callback] : response_callbacks) {
+    std::move(callback).Run(
+        nullptr,
+        web_package::mojom::BundleResponseParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            kConnectionError));
   }
-  response_callbacks_.clear();
-  if (disconnect_callback_)
-    std::move(disconnect_callback_).Run();
+  if (!disconnect_callback.is_null())
+    std::move(disconnect_callback).Run();
 }
 
 void SafeWebBundleParser::OnIntegrityBlockParsed(

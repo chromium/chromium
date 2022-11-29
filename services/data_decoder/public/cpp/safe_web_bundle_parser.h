@@ -17,6 +17,9 @@ namespace data_decoder {
 
 // A class to wrap remote web_package::mojom::WebBundleParserFactory and
 // web_package::mojom::WebBundleParser service.
+//
+// It is safe to delete this object from within the callbacks passed to its
+// methods.
 class SafeWebBundleParser {
  public:
   SafeWebBundleParser();
