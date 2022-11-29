@@ -38,35 +38,26 @@ class FuseBoxServiceProvider : public CrosDBusService::ServiceProviderInterface,
   // corresponds to the standard stat function described by "man 2 stat".
   void Close(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
-  void Close2(dbus::MethodCall* method_call,
-              dbus::ExportedObject::ResponseSender sender);
-  void Create(dbus::MethodCall* method_call,
-              dbus::ExportedObject::ResponseSender sender);
-  void MkDir(dbus::MethodCall* method_call,
-             dbus::ExportedObject::ResponseSender sender);
   void Open(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
-  void Open2(dbus::MethodCall* method_call,
-             dbus::ExportedObject::ResponseSender sender);
   void Read(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
-  void Read2(dbus::MethodCall* method_call,
-             dbus::ExportedObject::ResponseSender sender);
-  void ReadDir2(dbus::MethodCall* method_call,
-                dbus::ExportedObject::ResponseSender sender);
-  void RmDir(dbus::MethodCall* method_call,
-             dbus::ExportedObject::ResponseSender sender);
   void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
-  void Truncate(dbus::MethodCall* method_call,
-                dbus::ExportedObject::ResponseSender sender);
-  void Unlink(dbus::MethodCall* method_call,
-              dbus::ExportedObject::ResponseSender sender);
-  void Write2(dbus::MethodCall* method_call,
-              dbus::ExportedObject::ResponseSender sender);
 
-  void ListStorages(dbus::MethodCall* method_call,
-                    dbus::ExportedObject::ResponseSender sender);
+  template <typename RequestProto, typename ResponseProto>
+  using ServerMethodPtr = void (fusebox::Server::*)(
+      const RequestProto& request,
+      base::OnceCallback<void(const ResponseProto& response)> callback);
+
+  template <typename RequestProto, typename ResponseProto>
+  void ServeProtoMethod(ServerMethodPtr<RequestProto, ResponseProto> method,
+                        dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender sender);
+
+  template <typename RequestProto, typename ResponseProto>
+  void ExportProtoMethod(const std::string& method_name,
+                         ServerMethodPtr<RequestProto, ResponseProto> method);
 
   scoped_refptr<dbus::ExportedObject> exported_object_;
   fusebox::Server server_;
