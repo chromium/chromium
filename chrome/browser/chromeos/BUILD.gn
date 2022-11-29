@@ -1079,6 +1079,7 @@ source_set("unit_tests") {
     "//chromeos/login/login_state",
     "//chromeos/login/login_state:test_support",
     "//chromeos/services/machine_learning/public/cpp:stub",
+    "//chromeos/services/network_config:test_support",
     "//chromeos/system",
     "//chromeos/ui/frame:test_support",
     "//components/account_manager_core:test_support",

@@ -7,10 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chromeos/services/network_config/in_process_instance.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -32,6 +34,8 @@
 namespace policy {
 
 namespace {
+
+namespace mojom = chromeos::network_config::mojom;
 
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
@@ -72,6 +76,20 @@ const char kResultMessageFieldName[] = "message";
 // FAILURE_NOT_IDLE result code.
 const char kResultLastActivityFieldName[] = "lastActivitySec";
 
+// Helper method that DVLOGs all the given networks.
+void LogNetworks(
+    std::vector<mojom::NetworkStatePropertiesPtr>::const_iterator begin,
+    std::vector<mojom::NetworkStatePropertiesPtr>::const_iterator end,
+    const char* type) {
+  CRD_DVLOG(3) << "Found " << (end - begin) << " " << type << " networks:";
+  for (auto it = begin; it < end; it++) {
+    const mojom::NetworkStateProperties& network = *it->get();
+    CRD_DVLOG(3) << "   --> " << network.name << " (" << network.guid << "): "
+                 << " ONC source: " << network.source
+                 << ", Type: " << network.type;
+  }
+}
+
 ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
     const user_manager::UserManager* user_manager) {
   if (user_manager->IsLoggedInAsKioskApp())
@@ -96,7 +114,116 @@ void SendSessionTypeToUma(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType", session_type);
 }
 
+bool IsNetworkManagedByPolicy(
+    const mojom::NetworkStatePropertiesPtr& network_properties) {
+  return network_properties->source == mojom::OncSource::kDevicePolicy ||
+         network_properties->source == mojom::OncSource::kUserPolicy;
+}
+
+// Returns if the ChromeOS device is in a managed environment or not.
+// We consider our environment to be managed if there is a
+//      * active (connected) network
+//      * with an ONC source set (meaning the network is managed)
+//      * which is not cellular
+//
+// The reasoning is that these conditions will only be met if the device is in
+// an office building or store, and these conditions will not be met if the
+// device is in a private setting like an user's home.
+bool IsInManagedEnvironment(
+    std::vector<mojom::NetworkStatePropertiesPtr> active_networks) {
+  const auto begin = active_networks.begin();
+  auto end = active_networks.end();
+
+  LogNetworks(begin, end, "active");
+
+  // Filter out the unmanaged networks.
+  end = std::remove_if(begin, end, [](const auto& network) {
+    return !IsNetworkManagedByPolicy(network);
+  });
+
+  // Filter out cellular networks, as managed cellular networks might be found
+  // even at the user's home.
+  end = std::remove_if(begin, end, [](const auto& network) {
+    return network->type == mojom::NetworkType::kCellular;
+  });
+
+  LogNetworks(begin, end, "managed");
+
+  // Now if any networks remain we are in a managed environment.
+  bool is_empty = (begin == end);
+  return !is_empty;
+}
+
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// ManagedNetworkChecker
+////////////////////////////////////////////////////////////////////////////////
+
+// Helper class that asynchronously fetches the list of active (connected)
+// networks, and uses that information to decide if the admin is allowed to
+// start a curtained session.
+//
+// See `IsInManagedEnvironment()` for a more detailed description on the
+// algorithm used.
+class DeviceCommandStartCrdSessionJob::ManagedNetworkChecker {
+ public:
+  using SuccessCallback = base::OnceClosure;
+
+  ManagedNetworkChecker(SuccessCallback success_callback,
+                        ErrorCallback error_callback)
+      : success_callback_(std::move(success_callback)),
+        error_callback_(std::move(error_callback)) {}
+  ManagedNetworkChecker(const ManagedNetworkChecker&) = delete;
+  ManagedNetworkChecker& operator=(const ManagedNetworkChecker&) = delete;
+  ~ManagedNetworkChecker() = default;
+
+  void Start() {
+    BindMojomService();
+    GetActiveNetworksAsync(
+        base::BindOnce(&ManagedNetworkChecker::CheckIsInManagedEnvironment,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void BindMojomService() {
+    ash::network_config::BindToInProcessInstance(
+        network_service_.BindNewPipeAndPassReceiver());
+  }
+
+  void GetActiveNetworksAsync(
+      mojom::CrosNetworkConfig::GetNetworkStateListCallback on_success) {
+    CRD_DVLOG(1) << "Fetching active networks";
+    network_service_->GetNetworkStateList(
+        mojom::NetworkFilter::New(mojom::FilterType::kActive,  //
+                                  mojom::NetworkType::kAll,    //
+                                  mojom::kNoLimit),
+        std::move(on_success));
+  }
+
+  void CheckIsInManagedEnvironment(
+      std::vector<mojom::NetworkStatePropertiesPtr> networks) {
+    CRD_DVLOG(1) << "Received active networks";
+
+    if (IsInManagedEnvironment(std::move(networks))) {
+      std::move(success_callback_).Run();
+    } else {
+      std::move(error_callback_)
+          .Run(ResultCode::FAILURE_UNMANAGED_ENVIRONMENT, "");
+    }
+  }
+
+  mojo::Remote<mojom::CrosNetworkConfig> network_service_;
+
+  SuccessCallback success_callback_;
+  ErrorCallback error_callback_;
+
+  base::WeakPtrFactory<ManagedNetworkChecker> weak_factory_{this};
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// OAuthTokenFetcher
+////////////////////////////////////////////////////////////////////////////////
 
 // Helper class that asynchronously fetches the OAuth token, and passes it to
 // the given callback.
@@ -130,8 +257,6 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
     oauth_request_ = oauth_service_.StartAccessTokenRequest(scopes, this);
   }
 
-  bool is_running() const { return oauth_request_ != nullptr; }
-
  private:
   // OAuth2AccessTokenManager::Consumer implementation:
   void OnGetTokenSuccess(
@@ -159,6 +284,10 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
   // When deleted the token manager will cancel the request (and not call us).
   std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// ResultPayload
+////////////////////////////////////////////////////////////////////////////////
 
 class DeviceCommandStartCrdSessionJob::ResultPayload
     : public RemoteCommandJob::ResultPayload {
@@ -247,6 +376,10 @@ DeviceCommandStartCrdSessionJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// DeviceCommandStartCrdSessionJob
+////////////////////////////////////////////////////////////////////////////////
+
 void DeviceCommandStartCrdSessionJob::SetOAuthTokenForTest(
     const std::string& token) {
   oauth_token_for_test_ = token;
@@ -322,24 +455,44 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
     return;
   }
 
-  FetchOAuthTokenASync(
-      /*on_success=*/base::BindOnce(
-          &DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode,
-          weak_factory_.GetWeakPtr()),
-      /*on_error=*/base::BindOnce(
-          &DeviceCommandStartCrdSessionJob::FinishWithError,
-          weak_factory_.GetWeakPtr()));
+  // First perform managed network check,
+  CheckManagedNetworkASync(
+      // Then fetch the OAuth token
+      base::BindOnce(
+          &DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync,
+          weak_factory_.GetWeakPtr(),
+          // And finally start the CRD host.
+          base::BindOnce(
+              &DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode,
+              weak_factory_.GetWeakPtr())));
+}
+
+void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
+    base::OnceClosure on_success) {
+  DCHECK_EQ(managed_network_checker_, nullptr);
+
+  if (!curtain_local_user_session_) {
+    // No need to check for managed networks if we are not going to curtain
+    // off the local session.
+    std::move(on_success).Run();
+    return;
+  }
+
+  managed_network_checker_ = std::make_unique<ManagedNetworkChecker>(
+      /*on_success=*/std::move(on_success),
+      /*on_error=*/GetErrorCallback());
+
+  managed_network_checker_->Start();
 }
 
 void DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync(
-    OAuthTokenCallback on_success,
-    ErrorCallback on_error) {
-  DCHECK(!oauth_token_fetcher_ || !oauth_token_fetcher_->is_running());
+    OAuthTokenCallback on_success) {
+  DCHECK_EQ(oauth_token_fetcher_, nullptr);
   DCHECK(oauth_service());
 
   oauth_token_fetcher_ = std::make_unique<OAuthTokenFetcher>(
       *oauth_service(), std::move(oauth_token_for_test_), std::move(on_success),
-      std::move(on_error));
+      GetErrorCallback());
   oauth_token_fetcher_->Start();
 }
 
@@ -544,6 +697,12 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
   }
   NOTREACHED();
   return false;
+}
+
+DeviceCommandStartCrdSessionJob::ErrorCallback
+DeviceCommandStartCrdSessionJob::GetErrorCallback() {
+  return base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithError,
+                        weak_factory_.GetWeakPtr());
 }
 
 DeviceOAuth2TokenService* DeviceCommandStartCrdSessionJob::oauth_service()

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
@@ -23,7 +23,9 @@ namespace policy {
 // Affiliated Users and for Managed Guest Sessions.
 class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
-  // This enum can't be renumbered because its logged to UMA.
+  // This enum can't be renumbered because it's logged to UMA and because its
+  // values must match the values in the server side
+  // `DeviceCommandUtil::ClientResultCode` enum.
   enum ResultCode {
     // Successfully obtained access code.
     SUCCESS = 0,
@@ -46,7 +48,11 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
     // Failure during attempt to start CRD host and obtain CRD token.
     FAILURE_CRD_HOST_ERROR = 6,
 
-    kMaxValue = FAILURE_CRD_HOST_ERROR
+    // Failure to start a curtained session as we're not in a managed
+    // environment.
+    FAILURE_UNMANAGED_ENVIRONMENT = 7,
+
+    kMaxValue = FAILURE_UNMANAGED_ENVIRONMENT
   };
 
   using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
@@ -112,6 +118,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void TerminateImpl() override;
 
  private:
+  class ManagedNetworkChecker;
   class OAuthTokenFetcher;
   class ResultPayload;
 
@@ -126,8 +133,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   const char* UserTypeToString(UserType value) const;
 
-  void FetchOAuthTokenASync(OAuthTokenCallback on_success,
-                            ErrorCallback on_error);
+  void CheckManagedNetworkASync(base::OnceClosure on_success);
+  void FetchOAuthTokenASync(OAuthTokenCallback on_success);
   void StartCrdHostAndGetCode(const std::string& token);
   void FinishWithSuccess(const std::string& access_code);
   // Finishes command with error code and optional message.
@@ -147,9 +154,12 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;
 
+  ErrorCallback GetErrorCallback();
+
   DeviceOAuth2TokenService* oauth_service() const;
 
   std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
+  std::unique_ptr<ManagedNetworkChecker> managed_network_checker_;
 
   // The callback that will be called when the access code was successfully
   // obtained.
@@ -169,6 +179,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   // True if the admin requested a curtained remote access session.
   bool curtain_local_user_session_ = false;
+
+  // -- End of command parameters --
 
   // Fake OAuth token that will be used once the next time we need to fetch an
   // oauth token.
