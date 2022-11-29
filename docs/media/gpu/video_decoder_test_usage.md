@@ -83,6 +83,12 @@ Multiple command line arguments can be given to the command:
     --output_limit        limit the number of frames saved to disk.
     --output_folder       set the folder used to store frames, defaults to
                           "<testname>".
+    --use-gl              specify which GPU backend to use, possible values
+                          include desktop (GLX), egl (GLES w/ ANGLE), and
+                          swiftshader (software rendering)
+    --ozone-platform      specify which Ozone platform to use, possible values
+                          depend on build configuration but normally include
+                          x11, drm, wayland, and headless
     --disable_vaapi_lock  disable the global VA-API lock if applicable,
                           i.e., only on devices that use the VA-API with a libva
                           backend that's known to be thread-safe and only in

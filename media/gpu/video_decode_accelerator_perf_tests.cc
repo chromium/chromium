@@ -35,6 +35,7 @@ constexpr const char* usage_msg =
     R"(usage: video_decode_accelerator_perf_tests
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            ([--use-legacy]|[--use_vd_vda]) [--linear_output]
+           [--use-gl=<backend>] [--ozone-platform=<platform>]
            [--disable_vaapi_lock]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -69,6 +70,12 @@ The following arguments are supported:
                         processor internally. This flag only works in
                         conjunction with --use_vd_vda.
                         Disabled by default.
+  --use-gl              specify which GPU backend to use, possible values
+                        include desktop (GLX), egl (GLES w/ ANGLE), and
+                        swiftshader (software rendering)
+  --ozone-platform      specify which Ozone platform to use, possible values
+                        depend on build configuration but normally include
+                        x11, drm, wayland, and headless
   --disable_vaapi_lock  disable the global VA-API lock if applicable,
                         i.e., only on devices that use the VA-API with a libva
                         backend that's known to be thread-safe and only in
@@ -485,6 +492,8 @@ int main(int argc, char** argv) {
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
     if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
+        it->first == "ozone-platform" ||               // Handled by Chrome
+        it->first == "use-gl" ||                       // Handled by Chrome
         it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
       continue;
     }
