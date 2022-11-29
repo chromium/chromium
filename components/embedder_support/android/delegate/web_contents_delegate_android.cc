@@ -412,6 +412,15 @@ bool WebContentsDelegateAndroid::DoBrowserControlsShrinkRendererSize(
   return Java_WebContentsDelegateAndroid_controlsResizeView(env, obj);
 }
 
+int WebContentsDelegateAndroid::GetVirtualKeyboardHeight(
+    content::WebContents* contents) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_WebContentsDelegateAndroid_getVirtualKeyboardHeight(env, obj);
+}
+
 blink::mojom::DisplayMode WebContentsDelegateAndroid::GetDisplayMode(
     const content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();

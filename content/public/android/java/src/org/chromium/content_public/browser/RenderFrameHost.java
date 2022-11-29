@@ -174,4 +174,21 @@ public interface RenderFrameHost {
      */
     @LifecycleState
     int getLifecycleState();
+
+    /**
+     * Inserts a VisualStateCallback that's resolved once a visual update has been processed.
+     *
+     * The VisualStateCallback will be inserted in Blink and will be invoked when the contents of
+     * the DOM tree at the moment that the callback was inserted (or later) are submitted to the
+     * compositor in a CompositorFrame. In other words, the following events need to happen before
+     * the callback is invoked:
+     * 1. The DOM tree is committed becoming the pending tree - see ThreadProxy::BeginMainFrame
+     * 2. The pending tree is activated becoming the active tree
+     * 3. The compositor calls Draw and submits a new CompositorFrame to the Viz process.
+     * The callback is synchronously invoked if this is called while being destroyed.
+     *
+     * @param callback the callback to be inserted. The callback takes a single Boolean parameter
+     *     which will be true if the visual state update was successful or false if it was aborted.
+     */
+    void insertVisualStateCallback(Callback<Boolean> callback);
 }

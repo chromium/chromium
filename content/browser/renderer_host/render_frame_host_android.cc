@@ -240,4 +240,12 @@ jint RenderFrameHostAndroid::GetLifecycleState(
   return static_cast<jint>(render_frame_host_->GetLifecycleState());
 }
 
+void RenderFrameHostAndroid::InsertVisualStateCallback(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcallback) {
+  render_frame_host()->InsertVisualStateCallback(
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
 }  // namespace content

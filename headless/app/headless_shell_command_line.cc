@@ -215,13 +215,6 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
       return false;
   }
 
-  if (command_line.HasSwitch(switches::kHideScrollbars)) {
-    builder.SetOverrideWebPreferencesCallback(
-        base::BindRepeating([](blink::web_pref::WebPreferences* preferences) {
-          preferences->hide_scrollbars = true;
-        }));
-  }
-
   if (command_line.HasSwitch(switches::kUserAgent)) {
     std::string user_agent =
         command_line.GetSwitchValueASCII(switches::kUserAgent);

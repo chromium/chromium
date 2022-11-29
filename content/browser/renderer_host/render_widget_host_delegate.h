@@ -314,6 +314,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
                                  const gfx::Rect& initial_anchor_rect_in_dips) {
   }
 
+  // Returns the amount that this view has been resized by a showing virtual
+  // keyboard or 0 if the virtual keyboard is hidden or in a mode that doesn't
+  // resize the view.
+  virtual int GetVirtualKeyboardResizeHeight();
+
  protected:
   virtual ~RenderWidgetHostDelegate() {}
 };

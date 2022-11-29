@@ -1094,6 +1094,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
         gfx::Rect(view_->GetCompositorViewportPixelSize());
     visual_properties.window_controls_overlay_rect =
         delegate_->GetWindowsControlsOverlayRect();
+    visual_properties.virtual_keyboard_resize_height_physical_px =
+        delegate_->GetVirtualKeyboardResizeHeight();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;

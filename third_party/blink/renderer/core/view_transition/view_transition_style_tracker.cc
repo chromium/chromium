@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -1096,9 +1097,11 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
       top += controls.TopHeight() - controls.TopMinHeight();
     if (controls.BottomShownRatio())
       bottom += controls.BottomHeight() - controls.BottomMinHeight();
-  }
 
-  // TODO(bokan): Account for virtual-keyboard
+    bottom += document.GetFrame()
+                  ->GetWidgetForLocalRoot()
+                  ->GetVirtualKeyboardResizeHeight();
+  }
 
   // A left-side scrollbar (i.e. in an RTL writing-mode) should overlay the
   // snapshot viewport as well. This cannot currently happen in Chrome but it

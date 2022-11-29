@@ -41,9 +41,6 @@ const char kDiskCacheDir[] = "disk-cache-dir";
 // Instructs headless_shell to print document.body.innerHTML to stdout.
 const char kDumpDom[] = "dump-dom";
 
-// Hide scrollbars from screenshots.
-const char kHideScrollbars[] = "hide-scrollbars";
-
 // Specifies which encryption storage backend to use. Possible values are
 // kwallet, kwallet5, gnome, gnome-keyring, gnome-libsecret, basic. Any other
 // value will lead to Chrome detecting the best backend automatically.

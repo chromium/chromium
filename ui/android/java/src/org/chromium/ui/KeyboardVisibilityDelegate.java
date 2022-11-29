@@ -161,6 +161,16 @@ public class KeyboardVisibilityDelegate {
     }
 
     /**
+     * Returns the total keyboard widget height.
+     *
+     * In addition to the keyboard itself, this may include accessory bars and related widgets that
+     * behave as-if they're part of the keyboard if the embedder supports them.
+     */
+    public int calculateTotalKeyboardHeight(View rootView) {
+        return calculateKeyboardHeight(rootView);
+    }
+
+    /**
      * Returns whether the keyboard is showing.
      * @param context A {@link Context} instance.
      * @param view    A {@link View}.

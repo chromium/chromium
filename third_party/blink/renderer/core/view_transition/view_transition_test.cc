@@ -871,4 +871,90 @@ TEST_P(ViewTransitionTest, ObjectViewBoxDuringCapture) {
   UpdateAllLifecyclePhasesAndFinishDirectives();
 }
 
+TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotViewport) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .target {
+        contain: layout;
+        width: 100px;
+        height: 100px;
+        view-transition-name: target;
+      }
+    </style>
+    <div class="target">
+    </div>
+  )HTML");
+
+  // Simulate a content-resizing virtual keyboard appearing.
+  const int kVirtualKeyboardHeight = 50;
+  gfx::Size original_size = web_view_helper_->GetWebView()->Size();
+
+  ASSERT_GT(original_size.height(), kVirtualKeyboardHeight);
+  gfx::Size new_size = gfx::Size(
+      original_size.width(), original_size.height() - kVirtualKeyboardHeight);
+
+  web_view_helper_->Resize(new_size);
+  web_view_helper_->LocalMainFrame()
+      ->FrameWidgetImpl()
+      ->SetVirtualKeyboardResizeHeightForTesting(kVirtualKeyboardHeight);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  ViewTransition* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+
+  ASSERT_FALSE(exception_state.HadException());
+  UpdateAllLifecyclePhasesForTest();
+
+  // The snapshot rect should not have been shrunk by the virtual keyboard, even
+  // though it shrinks the WebView.
+  EXPECT_EQ(transition->GetSnapshotViewportRect().size(), original_size);
+
+  // The height style of the ::view-transition should come from the snapshot
+  // viewport rect.
+  {
+    const Length& height = GetDocument()
+                               .documentElement()
+                               ->EnsureComputedStyle(kPseudoIdViewTransition)
+                               ->Height();
+    EXPECT_EQ(height, Length::Fixed(original_size.height()));
+  }
+
+  // Finish the prepare phase, mutate the DOM and start the animation.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  // Simulate hiding the virtual keyboard.
+  web_view_helper_->Resize(original_size);
+  web_view_helper_->LocalMainFrame()
+      ->FrameWidgetImpl()
+      ->SetVirtualKeyboardResizeHeightForTesting(0);
+
+  // The snapshot rect should remain the same size.
+  EXPECT_EQ(transition->GetSnapshotViewportRect().size(), original_size);
+
+  // The start phase should generate pseudo elements for rendering new live
+  // content.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  // Finish the animations which should remove the pseudo element tree.
+  FinishTransition();
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
 }  // namespace blink

@@ -227,4 +227,10 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
      */
     void confirmOperation(String title, String message, Runnable confirmedCallback);
+
+    /**
+     * Returns the amount that the keyboard will be extended by the filling component when shown.
+     * i.e. The height of any accessories to be shown on top of the keyboard.
+     */
+    int getKeyboardExtensionHeight();
 }

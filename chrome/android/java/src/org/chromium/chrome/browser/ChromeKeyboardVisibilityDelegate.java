@@ -118,4 +118,13 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
     public @Px int calculateSoftKeyboardHeight(View rootView) {
         return calculateKeyboardHeight(rootView);
     }
+
+    @Override
+    public int calculateTotalKeyboardHeight(View rootView) {
+        int accessoryHeight = 0;
+        if (mManualFillingComponentSupplier.hasValue()) {
+            accessoryHeight = mManualFillingComponentSupplier.get().getKeyboardExtensionHeight();
+        }
+        return calculateKeyboardHeight(rootView) + accessoryHeight;
+    }
 }
