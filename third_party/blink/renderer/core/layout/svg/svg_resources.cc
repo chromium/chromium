@@ -184,6 +184,7 @@ class SVGElementResourceClient::FilterData final
   FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
       : last_effect_(last_effect), node_map_(node_map) {}
 
+  bool HasEffects() const { return last_effect_; }
   sk_sp<PaintFilter> BuildPaintFilter() {
     return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
   }
@@ -307,7 +308,7 @@ SVGElementResourceClient::CreateFilterDataWithNodeMap(
   auto* node_map = MakeGarbageCollected<SVGFilterGraphNodeMap>();
   Filter* filter =
       builder.BuildReferenceFilter(reference_filter, nullptr, node_map);
-  if (!filter || !filter->LastEffect())
+  if (!filter)
     return nullptr;
   paint_filter_builder::PopulateSourceGraphicImageFilters(
       filter->GetSourceGraphic(), kInterpolationSpaceSRGB);
@@ -338,11 +339,15 @@ void SVGElementResourceClient::UpdateFilterData(
     }
     operations.Clear();
     if (filter_data_) {
-      operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
-    } else {
-      // Filter construction failed. Create a filter chain that yields
-      // transparent black.
-      operations.AppendOpacityFilter(0);
+      // If the referenced filter exists but does not contain any primitives,
+      // then the rendering of the element should be disabled.
+      if (filter_data_->HasEffects()) {
+        // BuildPaintFilter() can return null which means pass-through.
+        operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+      } else {
+        // Create a filter chain that yields transparent black.
+        operations.AppendOpacityFilter(0);
+      }
     }
   } else {
     // Drop any existing filter data since the filter is no longer

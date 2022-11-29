@@ -504,16 +504,11 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     return nullptr;
   if (auto* resource_container = resource->ResourceContainerNoCycleCheck())
     resource_container->ClearInvalidationMask();
+
   gfx::RectF filter_region =
       SVGLengthContext::ResolveRectangle<SVGFilterElement>(
           filter_element, filter_element->filterUnits()->CurrentEnumValue(),
           reference_box_);
-  // TODO(fs): We rely on the presence of a node map here to opt-in to the
-  // check for an empty filter region. The reason for this is that we lack a
-  // viewport to resolve against for HTML content. This is crbug.com/512453.
-  if (node_map && filter_region.IsEmpty())
-    return nullptr;
-
   bool primitive_bounding_box_mode =
       filter_element->primitiveUnits()->CurrentEnumValue() ==
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox;
@@ -521,6 +516,15 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
       primitive_bounding_box_mode ? Filter::kBoundingBox : Filter::kUserSpace;
   auto* result = MakeGarbageCollected<Filter>(reference_box_, filter_region,
                                               zoom_, unit_scaling);
+  // TODO(fs): We rely on the presence of a node map here to opt-in to the
+  // check for an empty filter region. The reason for this is that we lack a
+  // viewport to resolve against for HTML content. This is crbug.com/512453.
+  // If the filter has an empty region, then return a Filter without any
+  // primitives since the behavior in these two cases (no primitives, empty
+  // region) should match.
+  if (node_map && filter_region.IsEmpty())
+    return result;
+
   if (!previous_effect)
     previous_effect = result->GetSourceGraphic();
   SVGFilterBuilder builder(previous_effect, node_map, fill_flags_,

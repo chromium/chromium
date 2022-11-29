@@ -551,9 +551,6 @@ crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-006.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
 
-crbug.com/1362524 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
-crbug.com/1362524 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
-
 # Could be addressed with fuzzy diff.
 crbug.com/910537 external/wpt/svg/painting/marker-006.svg [ Failure ]
 crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]

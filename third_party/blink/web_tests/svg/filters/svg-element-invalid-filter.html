@@ -21,9 +21,6 @@
 </style>
 
 <p id="test-root">
-
-<!-- SVG root element: the first three filters are valid, the rest are not. -->
-
 <svg style="filter: url(#filter)" viewBox="0 0 50 50">
   <filter id="filter">
     <feColorMatrix type="matrix" values="0 0 0 0 0, 1 0 0 0 0, 0 0 0 0 0, 0 0 0 1 0"/>
@@ -40,26 +37,23 @@
 </svg>
 
 <svg style="filter: url(#missing)" viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"/>
+  <rect fill="lime" x="0" y="0" height="50" width="50"/>
 </svg>
 
 <svg style="filter: url(invalid)" viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"/>
+  <rect fill="lime" x="0" y="0" height="50" width="50"/>
 </svg>
 
 <svg style="filter: url(invalid#missing)" viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"/>
+  <rect fill="lime" x="0" y="0" height="50" width="50"/>
 </svg>
 
 <svg style="filter: url(filter)" viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"/>
+  <rect fill="lime" x="0" y="0" height="50" width="50"/>
 </svg>
 </p>
 
 <p id="test-child">
-
-<!-- SVG child element: the first filter is valid, the rest are not. -->
-
 <svg viewBox="0 0 50 50">
   <rect fill="red" x="0" y="0" height="50" width="50"
        style="filter: url(#filter)"/>
@@ -76,22 +70,22 @@
 </svg>
 
 <svg viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"
+  <rect fill="lime" x="0" y="0" height="50" width="50"
        style="filter: url(#missing)"/>
 </svg>
 
 <svg viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"
+  <rect fill="lime" x="0" y="0" height="50" width="50"
        style="filter: url(invalid)"/>
 </svg>
 
 <svg viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"
+  <rect fill="lime" x="0" y="0" height="50" width="50"
        style="filter: url(invalid#missing)"/>
 </svg>
 
 <svg viewBox="0 0 50 50">
-  <rect fill="red" x="0" y="0" height="50" width="50"
+  <rect fill="lime" x="0" y="0" height="50" width="50"
        style="filter: url(filter)"/>
 </svg>
 </p>
