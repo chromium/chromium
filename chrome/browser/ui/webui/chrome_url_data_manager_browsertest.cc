@@ -307,6 +307,7 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://network-error",
     "chrome://network-errors",
     "chrome://new-tab-page",
+    "chrome://new-tab-page-third-party",
     "chrome://newtab",
     "chrome://ntp-tiles-internals",
     "chrome://omnibox",
