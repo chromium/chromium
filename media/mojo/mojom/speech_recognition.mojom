@@ -63,10 +63,11 @@ interface SpeechRecognitionRecognizer {
 [Stable]
 interface SpeechRecognitionRecognizerClient {
   // Triggered by speech recognition process on a speech recognition event.
-  // Returns whether the result was received successfully. Speech recognition
-  // will halt if this returns false.
+  //
+  // Returns false if the client wants to halt speech recognition e.g. in
+  // response to user input or in the case of an error.
   OnSpeechRecognitionRecognitionEvent@0(SpeechRecognitionResult result)
-      => (bool success);
+      => (bool continue_recognition);
 
   // Called when speech recognition stops.
   OnSpeechRecognitionStopped@1();
