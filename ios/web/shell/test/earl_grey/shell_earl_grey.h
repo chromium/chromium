@@ -7,9 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/time/time.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 #include "url/gurl.h"
 
+@protocol GREYMatcher;
 // Public macro to invoke helper methods in test methods (Test Process). Usage
 // example:
 //
@@ -38,6 +40,14 @@
 // Waits for the current web view to contain `text`. Raises EarlGrey exception
 // if the content does not show up within a timeout.
 - (void)waitForWebStateContainingText:(NSString*)text;
+
+// Waits for the matcher to not return any elements.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for the matcher to not return any elements. If the condition is not met
+// within the given `timeout` a GREYAssert is induced.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
+                                       timeout:(base::TimeDelta)timeout;
 
 @end
 
