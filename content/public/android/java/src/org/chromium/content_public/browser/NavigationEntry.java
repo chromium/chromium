@@ -19,7 +19,6 @@ public class NavigationEntry {
     private final GURL mUrl;
     private final GURL mOriginalUrl;
     private final GURL mVirtualUrl;
-    private final GURL mReferrerUrl;
     private final String mTitle;
     private Bitmap mFavicon;
     private int mTransition;
@@ -30,13 +29,12 @@ public class NavigationEntry {
      * Default constructor.
      */
     public NavigationEntry(int index, @NonNull GURL url, @NonNull GURL virtualUrl,
-            @NonNull GURL originalUrl, @NonNull GURL referrerUrl, String title, Bitmap favicon,
-            int transition, long timestamp, boolean isInitialEntry) {
+            @NonNull GURL originalUrl, String title, Bitmap favicon, int transition, long timestamp,
+            boolean isInitialEntry) {
         mIndex = index;
         mUrl = url;
         mVirtualUrl = virtualUrl;
         mOriginalUrl = originalUrl;
-        mReferrerUrl = referrerUrl;
         mTitle = title;
         mFavicon = favicon;
         mTransition = transition;
@@ -80,13 +78,6 @@ public class NavigationEntry {
      */
     public @NonNull GURL getOriginalUrl() {
         return mOriginalUrl;
-    }
-
-    /**
-     * @return The referring URL, can be empty.
-     */
-    public @NonNull GURL getReferrerUrl() {
-        return mReferrerUrl;
     }
 
     /**

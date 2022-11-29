@@ -335,10 +335,10 @@ import org.chromium.url.Origin;
 
     @CalledByNative
     private static NavigationEntry createNavigationEntry(int index, GURL url, GURL virtualUrl,
-            GURL originalUrl, GURL referrerUrl, String title, Bitmap favicon, int transition,
-            long timestamp, boolean isInitialEntry) {
-        return new NavigationEntry(index, url, virtualUrl, originalUrl, referrerUrl, title, favicon,
-                transition, timestamp, isInitialEntry);
+            GURL originalUrl, String title, Bitmap favicon, int transition, long timestamp,
+            boolean isInitialEntry) {
+        return new NavigationEntry(index, url, virtualUrl, originalUrl, title, favicon, transition,
+                timestamp, isInitialEntry);
     }
 
     @NativeMethods

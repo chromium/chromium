@@ -128,7 +128,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         if (!shouldUseIncognitoResources()) {
             mHistory.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
                     new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                    GURL.emptyGURL(), resources.getString(R.string.show_full_history), null, 0, 0,
+                    resources.getString(R.string.show_full_history), null, 0, 0,
                     /*isInitialEntry=*/false));
         }
 

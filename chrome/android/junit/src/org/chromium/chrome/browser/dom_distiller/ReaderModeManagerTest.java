@@ -375,7 +375,6 @@ public class ReaderModeManagerTest {
      * @return A new {@link NavigationEntry}.
      */
     private NavigationEntry createNavigationEntry(int index, GURL url) {
-        return new NavigationEntry(
-                index, url, url, url, url, "", null, 0, 0, /* isInitialEntry=*/false);
+        return new NavigationEntry(index, url, url, url, "", null, 0, 0, /* isInitialEntry=*/false);
     }
 }

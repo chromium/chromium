@@ -35,8 +35,8 @@ public class TabSuggestionTest {
     private static final String REFERRER_URL = "referrer_url";
     private static final long TIMESTAMP = 4352345L;
     private static final String VISIBLE_URL = "visible_url";
-    private static final TabContext.TabInfo TAB_INFO = new TabContext.TabInfo(
-            ID, TITLE, TAB_URL, ORIGINAL_URL, REFERRER_URL, TIMESTAMP, VISIBLE_URL);
+    private static final TabContext.TabInfo TAB_INFO =
+            new TabContext.TabInfo(ID, TITLE, TAB_URL, ORIGINAL_URL, TIMESTAMP, VISIBLE_URL);
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

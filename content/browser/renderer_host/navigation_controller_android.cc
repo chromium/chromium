@@ -61,8 +61,6 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
       url::GURLAndroid::FromNativeGURL(env, entry->GetOriginalRequestURL()));
   ScopedJavaLocalRef<jstring> j_title(
       ConvertUTF16ToJavaString(env, entry->GetTitle()));
-  ScopedJavaLocalRef<jobject> j_referrer_url(
-      url::GURLAndroid::FromNativeGURL(env, entry->GetReferrer().url));
   ScopedJavaLocalRef<jobject> j_bitmap;
   const content::FaviconStatus& status = entry->GetFavicon();
   if (status.valid && status.image.ToSkBitmap()->computeByteSize() > 0) {
@@ -72,9 +70,8 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
   jlong j_timestamp = entry->GetTimestamp().ToJavaTime();
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
-      env, index, j_url, j_virtual_url, j_original_url, j_referrer_url, j_title,
-      j_bitmap, entry->GetTransitionType(), j_timestamp,
-      entry->IsInitialEntry());
+      env, index, j_url, j_virtual_url, j_original_url, j_title, j_bitmap,
+      entry->GetTransitionType(), j_timestamp, entry->IsInitialEntry());
 }
 
 static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(

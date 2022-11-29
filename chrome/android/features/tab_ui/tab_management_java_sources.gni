@@ -79,5 +79,4 @@ tab_management_junit_java_sources = [
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsClientFetcherTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsOrchestratorTest.java",
-  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsServerFetcherUnitTest.java",
 ]

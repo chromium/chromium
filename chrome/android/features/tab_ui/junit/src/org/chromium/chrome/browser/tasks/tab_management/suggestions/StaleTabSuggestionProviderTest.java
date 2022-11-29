@@ -49,9 +49,9 @@ public class StaleTabSuggestionProviderTest {
     }
 
     private TabContext.TabInfo getMockTab(int id, String title, String url, String originalUrl,
-            String referrer, long timestamp, double siteEngagementScore) {
+            long timestamp, double siteEngagementScore) {
         TabContext.TabInfo tabInfo =
-                spy(new TabContext.TabInfo(id, title, url, originalUrl, referrer, timestamp, ""));
+                spy(new TabContext.TabInfo(id, title, url, originalUrl, timestamp, ""));
         doReturn(siteEngagementScore).when(tabInfo).getSiteEngagementScore();
         return tabInfo;
     }
@@ -69,17 +69,16 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_recent_title_1", "mock_recent_url_1",
-                "mock_recent_original_url_1", "mock_recent_referrer_1",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
+                "mock_recent_original_url_1", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5),
+                1.0));
         tabInfos.add(getMockTab(2, "mock_recent_title_2", "mock_recent_url_2",
-                "mock_recent_original_url_2", "mock_recent_referrer_2",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(20), 1.0));
+                "mock_recent_original_url_2", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(20),
+                1.0));
         tabInfos.add(getMockTab(3, "mock_recent_title_3", "mock_recent_url_3",
-                "mock_recent_original_url_3", "mock_recent_referrer_3",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(36), 1.0));
+                "mock_recent_original_url_3", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(36),
+                1.0));
         tabInfos.add(getMockTab(4, "mock_stale_title", "mock_stale_url_1",
-                "mock_stale_original_url", "mock_stale_referrer_url",
-                CURRENT_TIME_MILLIS - TimeUnit.DAYS.toMillis(4), 1.0));
+                "mock_stale_original_url", CURRENT_TIME_MILLIS - TimeUnit.DAYS.toMillis(4), 1.0));
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
 
         List<TabSuggestion> staleSuggestions = staleTabSuggestionProvider.suggest(mTabContext);
@@ -104,17 +103,17 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_recent_title_1", "mock_recent_url_1",
-                "mock_recent_original_url_1", "mock_recent_referrer_1",
+                "mock_recent_original_url_1",
                 System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5), 1.0));
         tabInfos.add(getMockTab(2, "mock_recent_title_2", "mock_recent_url_2",
-                "mock_recent_original_url_2", "mock_recent_referrer_2",
+                "mock_recent_original_url_2",
                 System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(20), 1.0));
         tabInfos.add(getMockTab(3, "mock_recent_title_3", "mock_recent_url_3",
-                "mock_recent_original_url_3", "mock_recent_referrer_3",
+                "mock_recent_original_url_3",
                 System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(36), 1.0));
-        tabInfos.add(getMockTab(4, "mock_stale_title", "mock_stale_url_1",
-                "mock_stale_original_url", "mock_stale_referrer_url",
-                System.currentTimeMillis() - TimeUnit.DAYS.toMillis(4), 1.0));
+        tabInfos.add(
+                getMockTab(4, "mock_stale_title", "mock_stale_url_1", "mock_stale_original_url",
+                        System.currentTimeMillis() - TimeUnit.DAYS.toMillis(4), 1.0));
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
 
         List<TabSuggestion> staleSuggestions = staleTabSuggestionProvider.suggest(mTabContext);
@@ -138,17 +137,15 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_very_engaged_title_1", "mock_very_engaged_url_1",
-                "mock_very_engaged_url_1", "mock_very_engaged_referrer_1",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 20.0));
+                "mock_very_engaged_url_1", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5),
+                20.0));
         tabInfos.add(getMockTab(2, "mock_very_engaged_title_2", "mock_very_engaged_url_2",
-                "mock_very_engaged_url_2", "mock_very_engaged_referrer_2",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 25.0));
+                "mock_very_engaged_url_2", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5),
+                25.0));
         tabInfos.add(getMockTab(3, "mock_medium_engaged_title", "mock_medium_engaged_url",
-                "mock_very_medium_url", "mock_very_engaged_referrer",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 10.0));
+                "mock_very_medium_url", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 10.0));
         tabInfos.add(getMockTab(4, "mock_low_engaged_title", "mock_low_engaged_url",
-                "mock_low_medium_url", "mock_low_engaged_referrer",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
+                "mock_low_medium_url", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
 
         List<TabSuggestion> staleSuggestions = staleTabSuggestionProvider.suggest(mTabContext);
@@ -174,19 +171,18 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_recent_title_1", "mock_recent_url_1",
-                "mock_recent_original_url_1", "mock_recent_referrer_1",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
+                "mock_recent_original_url_1", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5),
+                1.0));
         tabInfos.add(getMockTab(2, "mock_recent_title_2", "mock_recent_url_2",
-                "mock_recent_original_url_2", "mock_recent_referrer_2",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(20), 1.0));
+                "mock_recent_original_url_2", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(20),
+                1.0));
         tabInfos.add(getMockTab(3, "mock_recent_title_3", "mock_recent_url_3",
-                "mock_recent_original_url_3", "mock_recent_referrer_3",
-                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(36), 1.0));
+                "mock_recent_original_url_3", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(36),
+                1.0));
         tabInfos.add(getMockTab(4, "mock_stale_title", "mock_stale_url", "mock_stale_original_url",
-                "mock_stale_referrer_url", CURRENT_TIME_MILLIS - TimeUnit.DAYS.toMillis(4), 1.0));
+                CURRENT_TIME_MILLIS - TimeUnit.DAYS.toMillis(4), 1.0));
         tabInfos.add(getMockTab(5, "mock_stale_title_highly_engaged",
                 "mock_stale_url_highly_engaged", "mock_stale_original_url_highly_engaged",
-                "mock_stale_referrer_url_highly_engaged",
                 CURRENT_TIME_MILLIS - TimeUnit.DAYS.toMillis(4), 20.0));
 
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
@@ -211,7 +207,7 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_title", "mock_url", "mock_original_url",
-                "mock_recent_referrer", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
+                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
         List<TabSuggestion> staleSuggestions = staleTabSuggestionProvider.suggest(mTabContext);
         Assert.assertNull(staleSuggestions);
@@ -228,7 +224,7 @@ public class StaleTabSuggestionProviderTest {
 
         List<TabContext.TabInfo> tabInfos = new ArrayList<>();
         tabInfos.add(getMockTab(1, "mock_title", "mock_url", "mock_original_url",
-                "mock_recent_referrer_1", CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
+                CURRENT_TIME_MILLIS - TimeUnit.MINUTES.toMillis(5), 1.0));
         doReturn(tabInfos).when(mTabContext).getUngroupedTabs();
         List<TabSuggestion> staleSuggestions = staleTabSuggestionProvider.suggest(mTabContext);
         Assert.assertNull(staleSuggestions);

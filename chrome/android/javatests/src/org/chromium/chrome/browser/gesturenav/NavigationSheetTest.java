@@ -77,8 +77,8 @@ public class NavigationSheetTest {
     private static class TestNavigationEntry extends NavigationEntry {
         public TestNavigationEntry(int index, GURL url, GURL virtualUrl, GURL originalUrl,
                 String title, Bitmap favicon, int transition, long timestamp) {
-            super(index, url, virtualUrl, originalUrl, /*referrerUrl=*/null, title, favicon,
-                    transition, timestamp, /* isInitialEntry=*/false);
+            super(index, url, virtualUrl, originalUrl, title, favicon, transition, timestamp,
+                    /* isInitialEntry=*/false);
         }
     }
 
@@ -125,7 +125,6 @@ public class NavigationSheetTest {
             if (!isOffTheRecord) {
                 history.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
                         new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                        GURL.emptyGURL(),
                         mActivityTestRule.getActivity().getResources().getString(
                                 R.string.show_full_history),
                         null, 0, 0, /* isInitialEntry=*/false));
