@@ -403,8 +403,7 @@ window.onload = () => {
     assert_false(popover.matches(':closed'),'Not :closed until animations finish');
     assert_true(getComputedStyle(popover).opacity > 0.9,'Animations should start on hide');
     assert_throws_dom("InvalidStateError",() => popover.hidePopover(),'Calling hidePopover on a popover that is in the process of animating hide should throw InvalidStateError');
-    popover.showPopover(); // But showPopover should still be ok.
-    popover.hidePopover(); // Clean up
+    assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a popover that is in the process of animating hide should throw InvalidStateError');
     await finishAnimations(popover);
     assert_true(popover.matches(':closed'),':closed should match once animations finish');
   },'Exceptions are thrown even when show/hide are animated');

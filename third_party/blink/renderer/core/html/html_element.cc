@@ -1258,8 +1258,9 @@ const char* HTMLElement::IsPopoverNotReady(
   if (!isConnected()) {
     return "Invalid on disconnected popover elements";
   }
-  if (action == PopoverTriggerAction::kShow && popoverOpen()) {
-    return "Invalid on already-showing popover elements";
+  if (action == PopoverTriggerAction::kShow &&
+      GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
+    return "Invalid on popover elements which aren't hidden";
   }
   if (action == PopoverTriggerAction::kHide &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
@@ -1276,8 +1277,7 @@ const char* HTMLElement::IsPopoverNotReady(
   if (action == PopoverTriggerAction::kShow &&
       Fullscreen::IsFullscreenElement(*this)) {
     return "This element is already in fullscreen mode, and therefore cannot "
-           "be "
-           "opened as a popover.";
+           "be opened as a popover.";
   }
   return nullptr;
 }
