@@ -273,12 +273,6 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // timeout, user interaction, etc.)
     StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event);
 
-    // Specifies whether the step can refer to an element in any context.
-    // Not compatible with SetContext() or SetElementName(). Currently only
-    // supported for kShown events.
-    // Deprecated. Use SetContext() instead.
-    [[deprecated]] StepBuilder& SetFindElementInAnyContext(bool any_context);
-
     // Sets the callback called at the start of the step.
     StepBuilder& SetStartCallback(StepStartCallback start_callback);
 

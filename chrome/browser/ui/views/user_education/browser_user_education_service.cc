@@ -486,7 +486,7 @@ void MaybeRegisterChromeTutorials(
         HelpBubbleArrow::kTopLeft, ui::CustomElementEventType(), absl::nullopt,
         /* transition_only_on_event =*/false,
         user_education::TutorialDescription::NameElementsCallback(),
-        /* in_any_context =*/true);
+        TutorialDescription::ContextMode::kAny);
     side_panel_description.steps.emplace_back(add_current_tab_step);
 
     // When shown, name the element
@@ -502,7 +502,7 @@ void MaybeRegisterChromeTutorials(
                   element, base::StringPiece(kReadingListItemElementName));
               return true;
             }),
-        /* in_any_context =*/true);
+        TutorialDescription::ContextMode::kAny);
     side_panel_description.steps.emplace_back(new_reading_list_item_step);
 
     // Mark as read

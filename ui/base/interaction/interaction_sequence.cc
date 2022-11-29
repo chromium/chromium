@@ -263,12 +263,6 @@ InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
   return *this;
 }
 
-InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetFindElementInAnyContext(bool any_context) {
-  step_->context = any_context ? ContextMode::kAny : ContextMode::kInitial;
-  return *this;
-}
-
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetType(
     StepType step_type,
     CustomElementEventType event_type) {
