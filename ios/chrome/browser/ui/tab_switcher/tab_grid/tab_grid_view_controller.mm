@@ -1026,6 +1026,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   inset.right = self.scrollView.safeAreaInsets.right;
   inset.top += self.scrollView.safeAreaInsets.top;
   inset.bottom += self.scrollView.safeAreaInsets.bottom;
+
+  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.isHidden) {
+    CGFloat pinnedViewHeight =
+        self.pinnedTabsViewController.view.bounds.size.height;
+    switch (GetPinnedTabsPosition()) {
+      case PinnedTabsPosition::kBottomPosition:
+        inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
+        break;
+      case PinnedTabsPosition::kTopPosition:
+        inset.top += pinnedViewHeight + kPinnedViewTopPadding;
+        break;
+    }
+  }
+
   self.incognitoTabsViewController.gridView.contentInset = inset;
   self.regularTabsViewController.gridView.contentInset = inset;
 }
