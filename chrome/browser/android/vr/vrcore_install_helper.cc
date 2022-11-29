@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/android/features/vr/jni_headers/VrCoreInstallUtils_jni.h"
+#include "chrome/android/features/vr/split_jni_headers/VrCoreInstallUtils_jni.h"
 #include "chrome/browser/android/vr/vr_module_provider.h"
 #include "components/webxr/android/webxr_utils.h"
 

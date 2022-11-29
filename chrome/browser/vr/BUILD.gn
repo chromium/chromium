@@ -392,7 +392,7 @@ component("vr_base") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/android/features/vr:jni_headers" ]
+    deps += [ "//chrome/android/features/vr:split_jni_headers" ]
   }
 }
 

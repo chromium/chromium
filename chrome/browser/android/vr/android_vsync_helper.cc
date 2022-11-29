@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/logging.h"
-#include "chrome/android/features/vr/jni_headers/AndroidVSyncHelper_jni.h"
+#include "chrome/android/features/vr/split_jni_headers/AndroidVSyncHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

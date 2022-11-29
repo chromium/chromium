@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import android.os.Build;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.build.annotations.MainDex;
 
@@ -31,6 +33,10 @@ public class JNIUtils {
             if (isInstalled) {
                 return BundleUtils.getOrCreateSplitClassLoader(splitName);
             } else {
+                assert Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    : "Should not hit splitcompat mode for Android T+. You might have a "
+                                + "generate_jni() target that declares split_name, but includes "
+                                + "a .java file from the base split (https://crbug.com/1394148).";
                 // Split was installed by PlayCore in "compat" mode, meaning that our base module's
                 // ClassLoader was patched to add the splits' dex file to it.
             }

@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
-#include "chrome/android/features/vr/jni_headers/VrShellDelegate_jni.h"
+#include "chrome/android/features/vr/split_jni_headers/VrShellDelegate_jni.h"
 #include "chrome/browser/android/vr/vr_shell.h"
 #include "chrome/browser/android/vr/vrcore_install_helper.h"
 #include "chrome/browser/browser_process.h"

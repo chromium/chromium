@@ -7,7 +7,7 @@
 #include <cmath>
 
 #include "base/notreached.h"
-#include "chrome/android/features/vr/jni_headers/AndroidUiGestureTarget_jni.h"
+#include "chrome/android/features/vr/split_jni_headers/AndroidUiGestureTarget_jni.h"
 #include "chrome/browser/vr/input_event.h"
 
 using base::android::JavaParamRef;

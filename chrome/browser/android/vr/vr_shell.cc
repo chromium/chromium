@@ -21,7 +21,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/android/features/vr/jni_headers/VrShell_jni.h"
+#include "chrome/android/features/vr/split_jni_headers/VrShell_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/vr/android_ui_gesture_target.h"
 #include "chrome/browser/android/vr/autocomplete_controller.h"
