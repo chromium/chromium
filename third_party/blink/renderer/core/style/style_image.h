@@ -188,6 +188,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   static gfx::SizeF ImageSizeForSVGImage(const SVGImage&,
                                          float multiplier,
                                          const gfx::SizeF& default_object_size);
+  static bool HasIntrinsicDimensionsForSVGImage(const SVGImage&);
 };
 
 }  // namespace blink

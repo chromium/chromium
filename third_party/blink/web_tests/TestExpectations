@@ -900,8 +900,6 @@ crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004p.html [ Fa
 
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
-crbug.com/935057 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
-crbug.com/935057 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
 
 # Passes with the WPT runner but not the internal one. (???)
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1a.html [ Failure ]

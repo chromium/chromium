@@ -137,7 +137,10 @@ gfx::SizeF StyleFetchedImage::ImageSize(
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
-  return image_->GetImage()->HasIntrinsicSize();
+  const Image& image = *image_->GetImage();
+  if (auto* svg_image = DynamicTo<SVGImage>(image))
+    return HasIntrinsicDimensionsForSVGImage(*svg_image);
+  return image.HasIntrinsicSize();
 }
 
 void StyleFetchedImage::AddClient(ImageResourceObserver* observer) {

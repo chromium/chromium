@@ -320,6 +320,21 @@ bool SVGImage::GetIntrinsicSizingInfo(
   if (!layout_root)
     return false;
   layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
+
+  if (!intrinsic_sizing_info.has_width || !intrinsic_sizing_info.has_height) {
+    // We're not using an intrinsic aspect ratio to resolve a missing
+    // intrinsic width or height when preserveAspectRatio is none.
+    // (Ref: crbug.com/584172)
+    SVGSVGElement* svg = RootElement();
+    if (svg->preserveAspectRatio()->CurrentValue()->Align() ==
+        SVGPreserveAspectRatio::kSvgPreserveaspectratioNone) {
+      // Clear all the fields so that the concrete object size will equal the
+      // default object size.
+      intrinsic_sizing_info = IntrinsicSizingInfo();
+      intrinsic_sizing_info.has_width = false;
+      intrinsic_sizing_info.has_height = false;
+    }
+  }
   return true;
 }
 
@@ -332,14 +347,6 @@ gfx::SizeF SVGImage::ConcreteObjectSize(
   // https://www.w3.org/TR/css3-images/#default-sizing
   if (intrinsic_sizing_info.has_width && intrinsic_sizing_info.has_height)
     return intrinsic_sizing_info.size;
-
-  // We're not using an intrinsic aspect ratio to resolve a missing
-  // intrinsic width or height when preserveAspectRatio is none.
-  // (Ref: crbug.com/584172)
-  SVGSVGElement* svg = RootElement();
-  if (svg->preserveAspectRatio()->CurrentValue()->Align() ==
-      SVGPreserveAspectRatio::kSvgPreserveaspectratioNone)
-    return default_object_size;
 
   if (intrinsic_sizing_info.has_width) {
     if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
