@@ -995,6 +995,11 @@ EVENT_TYPE(URL_REQUEST_FILTERS_SET)
 EVENT_TYPE(HTTP_CACHE_GET_BACKEND)
 
 // Measures the time while getting a disk cache entry with OpenOrCreateEntry().
+// The following parameters are attached:
+//   {
+//     "net_error": <Network error code.  Only present on error>,
+//     "result": <"opened" or "created".  Only present on success>
+//   }
 EVENT_TYPE(HTTP_CACHE_OPEN_OR_CREATE_ENTRY)
 
 // Measures the time while opening a disk cache entry.

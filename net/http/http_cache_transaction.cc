@@ -1228,8 +1228,15 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // It is important that we go to STATE_ADD_TO_ENTRY whenever the result is
   // OK, otherwise the cache will end up with an active entry without any
   // transaction attached.
-  net_log_.EndEventWithNetErrorCode(
-      NetLogEventType::HTTP_CACHE_OPEN_OR_CREATE_ENTRY, result);
+  net_log_.EndEvent(NetLogEventType::HTTP_CACHE_OPEN_OR_CREATE_ENTRY, [&] {
+    base::Value::Dict params;
+    if (result == OK) {
+      params.Set("result", new_entry_->opened ? "opened" : "created");
+    } else {
+      params.Set("net_error", result);
+    }
+    return base::Value(std::move(params));
+  });
 
   cache_pending_ = false;
 
