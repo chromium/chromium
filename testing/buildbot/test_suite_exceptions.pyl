@@ -2844,10 +2844,6 @@
           'shards': 2,
         },
       },
-      # TODO (crbug.com/1278618) Re-enable once fixed
-      'mac-osxbeta-rel': {
-        'experiment_percentage': 0,
-      },
       'win-asan': {
         # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
