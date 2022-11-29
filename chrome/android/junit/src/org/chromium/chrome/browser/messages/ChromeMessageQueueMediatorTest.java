@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.messages;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -204,6 +205,28 @@ public class ChromeMessageQueueMediatorTest {
         modalDialogManagerSupplier.set(null);
     }
 
+    /**
+     * Test NPE is not thrown after destroy.
+     */
+    @Test
+    public void testThrowNothingAfterDestroy() {
+        OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
+                new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
+                new ObservableSupplierImpl<>();
+        mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
+                mMessageContainerCoordinator, mActivityTabProvider,
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
+                mActivityLifecycleDispatcher, mMessageDispatcher);
+        layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
+        modalDialogManagerSupplier.set(mModalDialogManager);
+        mMediator.onAnimationStart();
+        mMediator.onAnimationEnd();
+        verify(mMessageContainerCoordinator, times(1)).onAnimationEnd();
+        mMediator.destroy();
+        mMediator.onAnimationEnd();
+        verify(mMessageContainerCoordinator, times(1)).onAnimationEnd();
+    }
     /**
      * Test the queue can be suspended and resumed correctly on omnibox focus events.
      */
