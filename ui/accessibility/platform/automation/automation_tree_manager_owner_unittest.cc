@@ -200,10 +200,10 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutomationV8Router> router_;
   std::unique_ptr<AutomationV8Bindings> bindings_;
   std::unique_ptr<FakeAutomationTreeManagerOwner> tree_manager_owner_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AutomationTreeManagerOwnerTest, GetDesktop) {
