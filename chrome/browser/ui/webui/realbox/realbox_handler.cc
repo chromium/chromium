@@ -694,6 +694,8 @@ void RealboxHandler::OpenAutocompleteMatch(
 void RealboxHandler::OnNavigationLikely(
     uint8_t line,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
+  if (line > autocomplete_controller_->result().size())
+    return;
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
