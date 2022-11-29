@@ -392,6 +392,9 @@ void InteractiveDetector::OnLongTaskDetected(base::TimeTicks start_time,
 
 void InteractiveDetector::OnFirstContentfulPaint(
     base::TimeTicks first_contentful_paint) {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::OnFirstContentfulPaint");
+
   // Should not set FCP twice.
   DCHECK(page_event_times_.first_contentful_paint.is_null());
   page_event_times_.first_contentful_paint = first_contentful_paint;
@@ -405,6 +408,9 @@ void InteractiveDetector::OnFirstContentfulPaint(
 }
 
 void InteractiveDetector::OnDomContentLoadedEnd(base::TimeTicks dcl_end_time) {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::OnDomContentLoadedEnd");
+
   // InteractiveDetector should only receive the first DCL event.
   DCHECK(page_event_times_.dom_content_loaded_end.is_null());
   page_event_times_.dom_content_loaded_end = dcl_end_time;
@@ -433,6 +439,9 @@ void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
 }
 
 void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::TimeToInteractiveTimerFired");
+
   if (!GetSupplementable() || !interactive_time_.is_null())
     return;
 
@@ -534,6 +543,9 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
 }
 
 void InteractiveDetector::CheckTimeToInteractiveReached() {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::CheckTimeToInteractiveReached");
+
   // Already detected Time to Interactive.
   if (!interactive_time_.is_null())
     return;
@@ -542,6 +554,9 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
   if (page_event_times_.first_contentful_paint.is_null() ||
       page_event_times_.dom_content_loaded_end.is_null())
     return;
+
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::CheckTimeToInteractiveReached #1");
 
   const base::TimeTicks current_time = clock_->NowTicks();
   if (current_time - page_event_times_.first_contentful_paint <
