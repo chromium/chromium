@@ -116,6 +116,10 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
   arc::mojom::WindowInfoPtr predict_window_info =
       PredictAppWindowInfo(app_info, window_info.Clone());
 
+  // TODO(sstan): PredictAppWindowInfo should always return fulfilled info.
+  if (!predict_window_info || !predict_window_info->bounds.has_value())
+    return false;
+
   arc_task_handler->GetWindowPredictorArcAppRestoreHandler(launch_counter)
       ->LaunchGhostWindowWithApp(profile, arc_app_id, event_flags,
                                  GhostWindowType::kAppLaunch,

@@ -109,4 +109,20 @@ TEST_F(ArcAppSingleRestoreHandlerTest, PendingLaunchIfShelfHasReady) {
   ASSERT_FALSE(handler.IsAppPendingRestore(fake_app_id + "_not_equal_real_id"));
 }
 
+TEST_F(ArcAppSingleRestoreHandlerTest, NullBoundsNotCauseCrash) {
+  ArcAppSingleRestoreHandler handler;
+
+  const std::string fake_app_id = "not_exist_app_id";
+  auto window_info = arc::mojom::WindowInfo::New();
+  window_info->window_id = 100;
+  window_info->display_id = display::kInvalidDisplayId;
+  // leave the bounds null.
+
+  handler.OnShelfReady();
+  handler.ghost_window_handler_ = window_handler();
+  handler.LaunchGhostWindowWithApp(
+      profile(), fake_app_id, 0 /*event_flags*/, arc::GhostWindowType::kAppLaunch,
+      std::move(window_info));
+}
+
 }  // namespace ash::app_restore
