@@ -63,8 +63,8 @@ if (use_glib) {
       "gthread-2.0",
     ]
     defines = [
-      "GLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_40",
-      "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_40",
+      "GLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_56",
+      "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_56",
     ]
   }
 }
