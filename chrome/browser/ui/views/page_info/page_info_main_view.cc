@@ -179,12 +179,8 @@ void PageInfoMainView::EnsureCookieInfo() {
     }
     cookie_button_->SetProperty(views::kElementIdentifierKey,
                                 kCookieButtonElementId);
-
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxSettings3)) {
-      ads_personalization_section_ =
-          site_settings_view_->AddChildView(CreateContainerView());
-    }
+    ads_personalization_section_ =
+        site_settings_view_->AddChildView(CreateContainerView());
   }
 }
 

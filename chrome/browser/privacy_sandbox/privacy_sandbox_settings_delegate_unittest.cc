@@ -64,8 +64,6 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
        CapabilityRestrictionForSignedInUser) {
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
   // Sign the user in.
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -79,14 +77,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   SetPrivacySandboxAccountCapability(kTestEmail, false);
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
   SetPrivacySandboxAccountCapability(kTestEmail, true);
-  EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
-
-  // If the Privacy Sandbox Settings 3 feature is disabled the capability
-  // restriction should not apply.
-  feature_list()->Reset();
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
-  SetPrivacySandboxAccountCapability(kTestEmail, false);
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 }
 

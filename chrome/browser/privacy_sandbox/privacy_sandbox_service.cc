@@ -754,10 +754,6 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
     return PromptType::kNotice;
 
-  // If the release 3 feature is not enabled, no prompt is required.
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
-    return PromptType::kNone;
-
   // If neither consent or notice is required, no prompt is required.
   if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
       !privacy_sandbox::kPrivacySandboxSettings3NoticeRequired.Get()) {
