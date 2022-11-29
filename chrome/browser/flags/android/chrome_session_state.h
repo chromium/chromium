@@ -15,9 +15,6 @@ class PrefService;
 namespace chrome {
 namespace android {
 
-// TODO(b/182286787): A/B experiment monitoring session/activity resume order.
-BASE_DECLARE_FEATURE(kFixedUmaSessionResumeOrder);
-
 enum CustomTabsVisibilityHistogram {
   VISIBLE_CUSTOM_TAB,
   VISIBLE_CHROME_TAB,

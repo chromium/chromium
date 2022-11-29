@@ -32,11 +32,6 @@ const char kLastActivityTypePref[] =
 namespace chrome {
 namespace android {
 
-// TODO(b/182286787): A/B experiment monitoring session/activity resume order.
-BASE_FEATURE(kFixedUmaSessionResumeOrder,
-             "FixedUmaSessionResumeOrder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     ActivityType activity_type) {
   switch (activity_type) {
@@ -69,10 +64,8 @@ void SetActivityType(PrefService* local_state, ActivityType type) {
   ActivityType prev_activity_type = activity_type;
   activity_type = type;
 
-  // EmitActivityTypeHistograms on first SetActivityType call if using the fixed
-  // uma session restore order (b/182286787).
-  if (prev_activity_type == ActivityType::kUndeclared &&
-      base::FeatureList::IsEnabled(kFixedUmaSessionResumeOrder)) {
+  // EmitActivityTypeHistograms on first SetActivityType call.
+  if (prev_activity_type == ActivityType::kUndeclared) {
     EmitActivityTypeHistograms(activity_type);
     SaveActivityTypeToLocalState(local_state, activity_type);
   }
@@ -81,12 +74,6 @@ void SetActivityType(PrefService* local_state, ActivityType type) {
 }
 
 ActivityType GetActivityType() {
-  // TODO(b/182286787): With old session resume order, the initial state is
-  // kTabbed.
-  if (activity_type == ActivityType::kUndeclared &&
-      !base::FeatureList::IsEnabled(kFixedUmaSessionResumeOrder)) {
-    activity_type = ActivityType::kTabbed;
-  }
   return activity_type;
 }
 

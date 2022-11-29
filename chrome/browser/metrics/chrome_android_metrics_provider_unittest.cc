@@ -17,7 +17,6 @@ using chrome::android::ActivityType;
 using chrome::android::GetActivityType;
 using chrome::android::GetCustomTabsVisibleValue;
 using chrome::android::GetInitialActivityTypeForTesting;
-using chrome::android::kFixedUmaSessionResumeOrder;
 using chrome::android::SetActivityType;
 using chrome::android::SetInitialActivityTypeForTesting;
 
@@ -86,33 +85,7 @@ TEST_F(ChromeAndroidMetricsProviderTest,
   ASSERT_TRUE(uma_proto_.system_profile().os().has_dark_mode_state());
 }
 
-TEST_P(ChromeAndroidMetricsProviderTest,
-       OnDidCreateMetricsLog_CustomTabs_WithoutFix) {
-  // Validate that the "pre-fix" behaviour is as expected: disable the fix!
-  scoped_feature_list_.InitAndDisableFeature(kFixedUmaSessionResumeOrder);
-
-  // Seed the activity type.
-  SetInitialActivityTypeForTesting(activity_type());
-
-  // Call the method under test.
-  metrics_provider_.OnDidCreateMetricsLog();
-
-  // Expect 1 sample. Map kUndeclared to kTabbed for the activity type.
-  const auto expected_activity_type =
-      (activity_type() == ActivityType::kUndeclared) ? ActivityType::kTabbed
-                                                     : activity_type();
-  histogram_tester_.ExpectUniqueSample(
-      "CustomTabs.Visible", GetCustomTabsVisibleValue(expected_activity_type),
-      1);
-  histogram_tester_.ExpectUniqueSample("Android.ChromeActivity.Type",
-                                       expected_activity_type, 1);
-}
-
-TEST_P(ChromeAndroidMetricsProviderTest,
-       OnDidCreateMetricsLog_CustomTabs_WithFix) {
-  // Validate that the "fixed" behaviour is as expected: enable the fix!
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
-
+TEST_P(ChromeAndroidMetricsProviderTest, OnDidCreateMetricsLog_CustomTabs) {
   // Seed the activity type.
   SetInitialActivityTypeForTesting(activity_type());
 
@@ -126,27 +99,7 @@ TEST_P(ChromeAndroidMetricsProviderTest,
                                        activity_type(), 1);
 }
 
-TEST_P(ChromeAndroidMetricsProviderTest,
-       ProvideCurrentSessionData_CustomTabs_WithoutFix) {
-  // Validate that the "fixed" behaviour is as expected: disable the fix!
-  scoped_feature_list_.InitAndDisableFeature(kFixedUmaSessionResumeOrder);
-
-  // Seed the activity type.
-  SetInitialActivityTypeForTesting(activity_type());
-
-  // Call the method under test.
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
-
-  // No emission of activity type histograms in ProvideCurrentSessionData.
-  histogram_tester_.ExpectTotalCount("CustomTabs.Visible", 0);
-  histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 0);
-}
-
-TEST_P(ChromeAndroidMetricsProviderTest,
-       ProvideCurrentSessionData_CustomTabs_WithFix) {
-  // Validate that the "fixed" behaviour is as expected: enable the fix!
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
-
+TEST_P(ChromeAndroidMetricsProviderTest, ProvideCurrentSessionData_CustomTabs) {
   // Seed the activity type.
   SetInitialActivityTypeForTesting(activity_type());
 
@@ -159,34 +112,10 @@ TEST_P(ChromeAndroidMetricsProviderTest,
 }
 
 // Tests initial transition from kUndeclared to !kUndeclared.
-TEST_P(ChromeAndroidMetricsProviderTest,
-       SetActivityType_CustomTabs_WithoutFix) {
+TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs) {
   // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
   if (activity_type() == ActivityType::kUndeclared)
     return;
-
-  // Validate that the "pre-fix" behaviour is as expected: disable the fix!
-  scoped_feature_list_.InitAndDisableFeature(kFixedUmaSessionResumeOrder);
-
-  // Validating startup, so seed the activity type to kUndeclared,
-  SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
-
-  // Set the activity type as if a new tab was created..
-  SetActivityType(&pref_service_, activity_type());
-
-  // No emission of activity type histograms in SetActivityType.
-  histogram_tester_.ExpectTotalCount("CustomTabs.Visible", 0);
-  histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 0);
-}
-
-// Tests initial transition from kUndeclared to !kUndeclared.
-TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs_WithFix) {
-  // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kUndeclared)
-    return;
-
-  // Validate that the "pre-fix" behaviour is as expected: enable the fix!
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
 
   // Validating startup, so seed the activity type to kUndeclared,
   SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
@@ -204,9 +133,6 @@ TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs_WithFix) {
 
 // Tests initial warmup records, no tab becomes visible
 TEST_F(ChromeAndroidMetricsProviderTest, NoInitialTab) {
-  // Test the "fixed" behavior.
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
-
   // Validating startup, so seed the activity type to kUndeclared,
   SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
 
@@ -243,9 +169,6 @@ TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
   // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
   if (activity_type() == ActivityType::kUndeclared)
     return;
-
-  // Test the "fixed" behavior.
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
 
   // Validating startup, so seed the activity type to kUndeclared,
   SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
@@ -293,9 +216,6 @@ TEST_P(ChromeAndroidMetricsProviderTest, TabSwitching) {
   // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
   if (activity_type() == ActivityType::kUndeclared)
     return;
-
-  // Test the "fixed" behavior.
-  scoped_feature_list_.InitAndEnableFeature(kFixedUmaSessionResumeOrder);
 
   const auto first_activity_type = activity_type();
   const auto second_activity_type =
