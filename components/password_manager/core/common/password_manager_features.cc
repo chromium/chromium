@@ -153,20 +153,12 @@ BASE_FEATURE(kLeakDetectionUnauthenticated,
 // Enables automatic password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChange,
              "PasswordChange",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Enables password change flow from bulk leak check in settings.
 BASE_FEATURE(kPasswordChangeInSettings,
              "PasswordChangeInSettings",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Enables automatic password change for account store credentials.
 BASE_FEATURE(kPasswordChangeAccountStoreUsers,
@@ -182,11 +174,7 @@ BASE_FEATURE(kPasswordChangeWellKnown,
 // |PasswordChangeInSettings| and |PasswordChange| features.
 BASE_FEATURE(kPasswordDomainCapabilitiesFetching,
              "PasswordDomainCapabilitiesFetching",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Controls the ability to import passwords from Chrome's settings page.
 BASE_FEATURE(kPasswordImport,
