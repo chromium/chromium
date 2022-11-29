@@ -40,7 +40,6 @@ class CachedDexDeobfuscators:
     """
     if proguard_mapping_file_path is None:
       return {}
-    logging.debug('*' * 80)
     logging.debug('Parsing mapping file %s', proguard_mapping_file_path)
     with open(proguard_mapping_file_path, 'r') as fh:
       return _CreateClassDeobfuscationMap(fh)

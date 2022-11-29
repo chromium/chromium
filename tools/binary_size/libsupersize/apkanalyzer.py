@@ -8,6 +8,8 @@ Assumes that apk_path.mapping and apk_path.jar.info is available.
 """
 
 import collections
+import functools
+import itertools
 import logging
 import os
 import posixpath
@@ -15,13 +17,35 @@ import re
 import subprocess
 import zipfile
 
+import archive_util
+import dalvik_bytecode
+import dex_parser
 import models
 import path_util
 import parallel
-
+import string_extract
 
 _TOTAL_NODE_NAME = '<TOTAL>'
 _OUTLINED_PREFIX = '$$Outlined$'
+
+# A limit on the number of symbols a DEX string literal can have, before these
+# symbols are compacted into shared symbols. Increasing this value causes more
+# data to be stored .size files, but is also more expensive.
+# Effect as of Nov 2022 (run on TrichromeGoogle.ssargs with --java-only):
+# 1: shared syms = 117811 bytes, file size = 3385635 (33630 syms).
+# 2: shared syms = 39689 bytes, file size = 3408845 (36843 syms).
+# 3: shared syms = 17831 bytes, file size = 3419021 (38553 syms).
+# 5: shared syms = 6874 bytes, file size = 3425173 (40097 syms).
+# 6: shared syms = 5098 bytes, file size = 3427458 (40597 syms).
+# 8: shared syms = 3370 bytes, file size = 3429819 (41208 syms).
+# 10: shared syms = 2250 bytes, file size = 3431944 (41720 syms).
+# 20: shared syms = 587 bytes, file size = 3435466 (42983 syms).
+# 40: shared syms = 204 bytes, file size = 3439084 (43909 syms).
+# max: shared syms = 0 bytes, file size = 3446275 (46315 syms).
+# Going with 6, i.e., strings literals with > 6 aliases are combined into a
+# shared symbol. So 46315 - 40597 = 5718, or ~12% of original syms are removed,
+# at the cost leaving ~5100 byte in binary sizes unresolved into aliases).
+_DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT = 6
 
 
 def _ParseJarInfoFile(file_name):
@@ -322,13 +346,147 @@ def _SymbolsFromNodes(nodes, source_map):
   return symbol_buckets
 
 
-def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
-                     size_info_prefix):
+def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
+  """Emit strings used in code_items and associate them with classes.
+
+  Args:
+    dexfile: A DexFile instance.
+    class_deobfuscation_map: Map from obfuscated names to class names.
+
+  Yields:
+    size: Number of bytes taken by string, including pointer.
+    decoded_string: The decoded string.
+    class_names: List of class names
+  """
+  if not dexfile or not dexfile.code_item_list:
+    return
+
+  # Helper to deobfuscate class names while converting 'LFoo;' -> 'Foo'.
+  num_bad_name = 0
+  num_deobfus_names = 0
+  num_failed_deobfus = 0
+
+  @functools.lru_cache(None)
+  def LookupDeobfuscatedClassNames(class_def_idx):
+    nonlocal num_bad_name, num_deobfus_names, num_failed_deobfus
+    class_def_item = dexfile.class_def_item_list[class_def_idx]
+    name = dexfile.GetTypeString(class_def_item.class_idx)
+    if not (name.startswith('L') and name.endswith(';')):
+      num_bad_name += 1
+      return name
+    name = name[1:-1]
+    deobfuscated_name = class_deobfuscation_map.get(name, None)
+    if deobfuscated_name is not None:
+      name = deobfuscated_name
+      num_deobfus_names += 1
+    elif '/' in name:
+      # Has path: Assume not obfuscated, and convert to class name.
+      name = name.replace('/', '.')
+    else:
+      num_failed_deobfus += 1
+    return name
+
+  # Precompute map from code item offsets to set of string id used.
+  code_off_to_used_string_ids = {
+      code_item.offset: set(dexfile.IterAllStringIdsUsedByCodeItem(code_item))
+      for code_item in dexfile.code_item_list
+  }
+  code_off_to_used_string_ids[0] = set()  # Offset 0 = No code.
+
+  # Walk code for each class, each methods, mark string usages.
+  string_idx_to_class_idxs = collections.defaultdict(set)
+  for i, class_item in enumerate(dexfile.class_def_item_list):
+    string_idxs_used_by_class = set()
+    class_data_item = dexfile.GetClassDataItemByOffset(
+        class_item.class_data_off)
+    if class_data_item:
+      for encoded_method in itertools.chain(class_data_item.direct_methods,
+                                            class_data_item.virtual_methods):
+        code_off = encoded_method.code_off
+        string_idxs_used_by_class |= code_off_to_used_string_ids[code_off]
+    for string_idx in string_idxs_used_by_class:
+      string_idx_to_class_idxs[string_idx].add(i)
+
+  # Emit each string used by code, with names of classes that use it. Both are
+  # sorted to maintain consitency.
+  for string_idx in sorted(string_idx_to_class_idxs):
+    string_item = dexfile.string_data_item_list[string_idx]
+    size = string_item.byte_size + 4  # +4 for pointer.
+    decoded_string = string_item.data
+    class_idxs = string_idx_to_class_idxs[string_idx]
+    class_names = sorted(LookupDeobfuscatedClassNames(i) for i in class_idxs)
+    yield size, decoded_string, class_names
+
+  logging.info('Deobfuscated %d / %d classes (%d failures)', num_deobfus_names,
+               len(dexfile.class_def_item_list), num_failed_deobfus)
+  if num_bad_name > 0:
+    logging.warn('Found %d class names not formatted as "L.*;".' % num_bad_name)
+
+
+def _MakeFakeSourcePath(class_name):
+  class_path = class_name.replace('.', '/')
+  return f'{models.APK_PREFIX_PATH}/{class_path}'
+
+
+def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
+                              class_deobfuscation_map):
+  if not dexfile:
+    return [], 0
+  logging.info('Extractng string symbols from %s', apk_path)
+  lambda_normalizer = LambdaNormalizer()
+  object_path = str(apk_path)
+  dex_string_data_size = 0
+  dex_string_symbols = []
+  string_iter = _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map)
+  for size, decoded_string, string_user_class_names in string_iter:
+    dex_string_data_size += size
+    num_aliases = len(string_user_class_names)
+    aliases = []
+    for class_name in string_user_class_names:
+      outer_class, _ = lambda_normalizer.ExtractOuterClassAndDesugarLambda(
+          class_name)
+      full_name = string_extract.GetNameOfStringLiteralBytes(
+          decoded_string.encode('utf-8'))
+      source_path = (source_map.get(outer_class, '')
+                     or _MakeFakeSourcePath(class_name))
+      sym = models.Symbol(models.SECTION_DEX,
+                          size,
+                          full_name=full_name,
+                          object_path=object_path,
+                          source_path=source_path,
+                          aliases=aliases if num_aliases > 1 else None)
+      aliases.append(sym)
+    assert num_aliases == len(aliases)
+    dex_string_symbols += aliases
+  return dex_string_symbols, dex_string_data_size
+
+
+def _ParseMainDexfileInApk(apk_path):
+  with zipfile.ZipFile(apk_path) as src_zip:
+    dex_infos = [
+        info for info in src_zip.infolist() if
+        info.filename.startswith('classes') and info.filename.endswith('.dex')
+    ]
+    if len(dex_infos) != 0:
+      if len(dex_infos) > 1:
+        logging.warning(
+            'Found multiple .dex files in %s: Only the first will be used.',
+            apk_path)
+      dex_data = src_zip.read(dex_infos[0])
+      return dex_parser.DexFile(dex_data)
+
+  return None
+
+
+def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
+                     class_deobfuscation_map, size_info_prefix):
   """Creates DEX symbols given apk_analyzer output.
 
   Args:
+    apk_path: Path to the APK containing the DEX file.
     apk_analyzer_async_result: Return value from RunApkAnalyzerAsync().
     dex_total_size: Sum of the sizes of all .dex files in the apk.
+    class_deobfuscation_map: Map from obfuscated names to class names.
     size_info_prefix: Path such as: out/Release/size-info/BaseName.
 
   Returns:
@@ -357,10 +515,21 @@ def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
 
   dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
 
+  dexfile = _ParseMainDexfileInApk(apk_path)
+  # TODO(huangs): Handle the case where an APK contains multiple DEX files.
+  dex_string_symbols, dex_string_data_size = _StringSymbolsFromDexFile(
+      apk_path, dexfile, source_map, class_deobfuscation_map)
+  if dex_string_symbols:
+    logging.info('Converting excessive DEX string aliases into shared-path '
+                 'symbols')
+    archive_util.CompactLargeAliasesIntoSharedSymbols(
+        dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
+
   dex_method_size = round(sum(s.pss for s in dex_method_symbols))
   dex_other_size = round(sum(s.pss for s in dex_other_symbols))
 
-  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
+  unattributed_dex = (dex_total_size - dex_method_size - dex_other_size -
+                      dex_string_data_size)
   # Compare against -5 instead of 0 to guard against round-off errors.
   assert unattributed_dex >= -5, (
       'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
@@ -382,4 +551,5 @@ def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
   }
 
   dex_other_symbols.extend(dex_method_symbols)
+  dex_other_symbols.extend(dex_string_symbols)
   return section_ranges, dex_other_symbols

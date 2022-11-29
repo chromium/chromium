@@ -21,6 +21,7 @@ import apkanalyzer
 import archive_util
 import data_quality
 import describe
+import dex_deobfuscate
 import dir_metadata
 import file_format
 import function_signature
@@ -304,7 +305,8 @@ def _CreatePakSymbols(*, pak_spec, pak_id_map, apk_spec, output_directory):
 
 
 def _CreateContainerSymbols(container_spec, apk_file_manager,
-                            apk_analyzer_results, pak_id_map):
+                            apk_analyzer_results, pak_id_map,
+                            dex_deobfuscator_cache):
   container_name = container_spec.container_name
   apk_spec = container_spec.apk_spec
   pak_spec = container_spec.pak_spec
@@ -374,9 +376,12 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
     dex_total_size = sum(i.file_size for i in apk_infolist
                          if i.filename.endswith('.dex'))
     if dex_total_size > 0:
+      mapping_path = apk_spec.mapping_path  # May be None.
+      class_deobfuscation_map = (
+          dex_deobfuscator_cache.GetForMappingFile(mapping_path))
       add_syms(*apkanalyzer.CreateDexSymbols(
-          apk_analyzer_results[container_name], dex_total_size,
-          apk_spec.size_info_prefix))
+          apk_spec.apk_path, apk_analyzer_results[container_name],
+          dex_total_size, class_deobfuscation_map, apk_spec.size_info_prefix))
   if pak_spec:
     add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
                                 pak_id_map=pak_id_map,
@@ -1074,9 +1079,11 @@ def CreateSizeInfo(container_specs, build_config, apk_file_manager):
 
   raw_symbols_list = []
   pak_id_map = pakfile.PakIdMap()
+  dex_deobfuscator_cache = dex_deobfuscate.CachedDexDeobfuscators()
   for container_spec in container_specs:
     raw_symbols = _CreateContainerSymbols(container_spec, apk_file_manager,
-                                          apk_analyzer_results, pak_id_map)
+                                          apk_analyzer_results, pak_id_map,
+                                          dex_deobfuscator_cache)
     assert raw_symbols, f'{container_spec.container_name} had no symbols.'
     raw_symbols_list.append(raw_symbols)
 

@@ -453,6 +453,16 @@ class DexFile:
   def GetCodeItemByOffset(self, offset):
     return self._code_item_by_offset.get(offset)
 
+  def IterAllStringIdsUsedByCodeItem(self, code_item):
+    if not code_item:
+      return
+    for bytecode in dalvik_bytecode.Split(code_item.insns):
+      if bytecode[0] in (0x1a, 0x1b):
+        # 1a 21c  const-string vAA, string@BBBB
+        # 1b 31c  const-string/jumbo vAA, string@BBBBBBBB
+        fmt = '<H' if bytecode[0] == 0x1a else '<Q'
+        yield struct.unpack_from(fmt, bytecode, 2)[0]
+
   @staticmethod
   def ResolveClassAccessFlags(access_flags):
     return tuple(flag_string
