@@ -26,6 +26,7 @@
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -147,7 +148,7 @@ class ThreadDestructionObserver
 };
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
-ConnectionParams CreateSyncNodeConnectionParams(
+absl::optional<ConnectionParams> CreateSyncNodeConnectionParams(
     const base::Process& target_process,
     ConnectionParams connection_params,
     const ProcessErrorCallback& process_error_callback,
@@ -181,9 +182,10 @@ ConnectionParams CreateSyncNodeConnectionParams(
   PlatformChannel node_channel;
   node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
   node_connection_params.set_is_untrusted_process(is_untrusted_process);
-  bool channel_ok = broker_host->SendChannel(
-      node_channel.TakeRemoteEndpoint().TakePlatformHandle());
-  DCHECK(channel_ok);
+  if (!broker_host->SendChannel(
+          node_channel.TakeRemoteEndpoint().TakePlatformHandle())) {
+    return absl::nullopt;
+  }
 
   return node_connection_params;
 }
@@ -428,9 +430,17 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
     // |BIND_SYNC_BROKER| message from the invited client.
     node_connection_params = std::move(connection_params);
   } else {
-    node_connection_params = CreateSyncNodeConnectionParams(
+    absl::optional<ConnectionParams> params = CreateSyncNodeConnectionParams(
         target_process, std::move(connection_params), process_error_callback,
         handle_policy);
+    if (!params) {
+      if (process_error_callback) {
+        process_error_callback.Run("Unable to establish Mojo channel");
+      }
+      return;
+    }
+
+    node_connection_params = std::move(*params);
   }
 
   scoped_refptr<NodeChannel> channel = NodeChannel::Create(

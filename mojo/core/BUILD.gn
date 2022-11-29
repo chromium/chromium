@@ -147,6 +147,7 @@ template("core_impl_source_set") {
       "//mojo/public/c/system:headers",
       "//mojo/public/cpp/bindings:mojo_buildflags",
       "//mojo/public/cpp/platform",
+      "//third_party/abseil-cpp:absl",
       "//third_party/ipcz/src:ipcz_chromium",
     ]
 
