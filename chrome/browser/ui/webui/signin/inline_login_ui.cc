@@ -242,7 +242,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
       ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()
           ? false
           : profile->GetPrefs()->GetBoolean(
-                chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
+                ash::prefs::kShouldSkipInlineLoginWelcomePage));
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     int message_id =
         profiles::IsGuestModeEnabled()

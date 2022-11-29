@@ -24,7 +24,7 @@ class AccountManager;
 
 namespace ash {
 
-// Listens to changes to chromeos::prefs::kEduCoexistenceToSVersion policy
+// Listens to changes to prefs::kEduCoexistenceToSVersion policy
 // preference and invalidates secondary edu accounts with outdated terms of
 // service version.
 class EduCoexistenceConsentInvalidationController {
@@ -43,7 +43,7 @@ class EduCoexistenceConsentInvalidationController {
   ~EduCoexistenceConsentInvalidationController();
 
   // Accesses the list from AccountManager to update the list of accounts stored
-  // in chromeos::prefs::kEduCoexistenceToSAcceptedVersion.
+  // in prefs::kEduCoexistenceToSAcceptedVersion.
   void Init();
 
  private:
@@ -51,7 +51,7 @@ class EduCoexistenceConsentInvalidationController {
   // been removed as a secondary account.
   // Secondary edu accounts may have already been added to device prior to M88.
   // Therefore, it updates the
-  // chromeos::prefs::kEduCoexistenceToSAcceptedVersion pref to include those
+  // prefs::kEduCoexistenceToSAcceptedVersion pref to include those
   // accounts.
   void UpdateEduAccountsInTermsOfServicePref(
       const std::vector<::account_manager::Account>& accounts);

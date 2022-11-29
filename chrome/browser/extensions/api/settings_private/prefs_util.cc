@@ -371,11 +371,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   (*s_allowlist)[::prefs::kLanguageImeMenuActivated] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::prefs::kAssistPersonalInfoEnabled] =
+  (*s_allowlist)[ash::prefs::kAssistPersonalInfoEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::prefs::kAssistPredictiveWritingEnabled] =
+  (*s_allowlist)[ash::prefs::kAssistPredictiveWritingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::prefs::kEmojiSuggestionEnabled] =
+  (*s_allowlist)[ash::prefs::kEmojiSuggestionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kLacrosProxyControllingExtension] =
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
@@ -672,7 +672,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::metrics::prefs::kMetricsUserConsent] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::chromeos::prefs::kSuggestedContentEnabled] =
+  (*s_allowlist)[ash::prefs::kSuggestedContentEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::kAttestationForContentProtectionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

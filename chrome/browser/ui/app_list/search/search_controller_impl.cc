@@ -411,7 +411,7 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
     }
   }
 
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kLauncherResultEverLaunched,
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kLauncherResultEverLaunched,
                                    true);
 
   // CrOS action recorder.

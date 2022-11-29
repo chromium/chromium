@@ -40,8 +40,8 @@ base::FilePath ReparentToDriveMount(
 // Sets on the specified profile whether to use a long delay duration in the
 // query for drive file suggest data.
 void SetUseLongDelayInDriveSuggestQuery(Profile* profile, bool use_long_delay) {
-  profile->GetPrefs()->SetBoolean(
-      chromeos::prefs::kLauncherUseLongContinueDelay, use_long_delay);
+  profile->GetPrefs()->SetBoolean(ash::prefs::kLauncherUseLongContinueDelay,
+                                  use_long_delay);
 }
 
 // Filters out the files that exceed the max last modified time.

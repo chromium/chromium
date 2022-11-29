@@ -26,14 +26,13 @@ void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
   // new ToS version. We use string data here for the ToS version to be more
   // future proof. In the future we might add a prefix to indicate the flow
   // where the ToS were accepted (OOBE or Settings flow).
-  registry->RegisterStringPref(chromeos::prefs::kEduCoexistenceToSVersion,
+  registry->RegisterStringPref(prefs::kEduCoexistenceToSVersion,
                                edu_coexistence::kMinTOSVersionNumber);
 
   // |kEduCoexistenceToSAcceptedVersion| is a dictionary associating the
   // edu accounts present in account manager to the accepted terms of service
   // version.
-  registry->RegisterDictionaryPref(
-      chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+  registry->RegisterDictionaryPref(prefs::kEduCoexistenceToSAcceptedVersion);
 }
 
 EduCoexistenceConsentInvalidationController::
@@ -62,7 +61,7 @@ void EduCoexistenceConsentInvalidationController::Init() {
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      chromeos::prefs::kEduCoexistenceToSVersion,
+      prefs::kEduCoexistenceToSVersion,
       base::BindRepeating(&EduCoexistenceConsentInvalidationController::
                               TermsOfServicePrefChanged,
                           weak_factory_.GetWeakPtr()));
@@ -115,8 +114,8 @@ void EduCoexistenceConsentInvalidationController::
 }
 
 void EduCoexistenceConsentInvalidationController::TermsOfServicePrefChanged() {
-  std::string new_version = profile_->GetPrefs()->GetString(
-      chromeos::prefs::kEduCoexistenceToSVersion);
+  std::string new_version =
+      profile_->GetPrefs()->GetString(prefs::kEduCoexistenceToSVersion);
 
   std::vector<edu_coexistence::UserConsentInfo> infos =
       edu_coexistence::GetUserConsentInfoListForProfile(profile_);

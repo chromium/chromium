@@ -73,12 +73,12 @@ bool IsDisabledByPolicy(const Profile* profile) {
 
 base::Time GetLastRequestTime(Profile* profile) {
   return profile->GetPrefs()->GetTime(
-      chromeos::prefs::kLauncherLastContinueRequestTime);
+      ash::prefs::kLauncherLastContinueRequestTime);
 }
 
 void SetLastRequestTime(Profile* profile, const base::Time& time) {
-  profile->GetPrefs()->SetTime(
-      chromeos::prefs::kLauncherLastContinueRequestTime, time);
+  profile->GetPrefs()->SetTime(ash::prefs::kLauncherLastContinueRequestTime,
+                               time);
 }
 
 //------------------
@@ -251,7 +251,7 @@ std::string ItemSuggestCache::GetRequestBody() {
 
 base::TimeDelta ItemSuggestCache::GetDelay() {
   bool use_long_delay = profile_->GetPrefs()->GetBoolean(
-      chromeos::prefs::kLauncherUseLongContinueDelay);
+      ash::prefs::kLauncherUseLongContinueDelay);
   return base::Minutes(use_long_delay ? kLongDelayMinutes.Get()
                                       : kShortDelayMinutes);
 }

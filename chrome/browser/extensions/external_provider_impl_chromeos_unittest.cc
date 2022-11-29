@@ -268,7 +268,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
 
   // OOBE screen completed with OS sync enabled.
   PrefService* prefs = profile()->GetPrefs();
-  prefs->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
+  prefs->SetBoolean(ash::prefs::kSyncOobeCompleted, true);
 
   TestExtensionRegistryObserver observer(registry());
 

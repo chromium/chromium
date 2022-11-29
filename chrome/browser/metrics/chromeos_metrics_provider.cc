@@ -151,7 +151,7 @@ void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
   UMA_HISTOGRAM_BOOLEAN(
       "Apps.AppList.SuggestedContent.Enabled",
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSuggestedContentEnabled));
+          ash::prefs::kSuggestedContentEnabled));
 }
 
 void ChromeOSMetricsProvider::ProvideStabilityMetrics(

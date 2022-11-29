@@ -19,10 +19,10 @@ IN_PROC_BROWSER_TEST_F(SuggestedContentPolicyTest, SuggestedContentEnabled) {
   // Verify Suggested Content pref behavior before policy.
   PrefService* prefs = browser()->profile()->GetPrefs();
   EXPECT_FALSE(
-      prefs->IsManagedPreference(chromeos::prefs::kSuggestedContentEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
-  prefs->SetBoolean(chromeos::prefs::kSuggestedContentEnabled, false);
-  EXPECT_FALSE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
+      prefs->IsManagedPreference(ash::prefs::kSuggestedContentEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
+  prefs->SetBoolean(ash::prefs::kSuggestedContentEnabled, false);
+  EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
 
   // Verify that Suggested Content can be force disabled.
   PolicyMap policies;
@@ -30,22 +30,20 @@ IN_PROC_BROWSER_TEST_F(SuggestedContentPolicyTest, SuggestedContentEnabled) {
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(
-      prefs->IsManagedPreference(chromeos::prefs::kSuggestedContentEnabled));
-  EXPECT_FALSE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
-  prefs->SetBoolean(chromeos::prefs::kSuggestedContentEnabled, true);
-  EXPECT_FALSE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
+  EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kSuggestedContentEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
+  prefs->SetBoolean(ash::prefs::kSuggestedContentEnabled, true);
+  EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
 
   // Verify that Suggested Content can be force enabled.
   policies.Set(key::kSuggestedContentEnabled, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(
-      prefs->IsManagedPreference(chromeos::prefs::kSuggestedContentEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
-  prefs->SetBoolean(chromeos::prefs::kSuggestedContentEnabled, false);
-  EXPECT_TRUE(prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled));
+  EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kSuggestedContentEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
+  prefs->SetBoolean(ash::prefs::kSuggestedContentEnabled, false);
+  EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));
 }
 
 }  // namespace policy

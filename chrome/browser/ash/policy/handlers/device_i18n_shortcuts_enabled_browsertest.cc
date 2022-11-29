@@ -45,7 +45,7 @@ class DeviceI18nShortcutsEnabledPolicyTest
         base::BindRepeating(
             &DeviceI18nShortcutsEnabledPolicyTest::OnPreferenceChanged,
             base::Unretained(this));
-    pref_change_registrar.Add(chromeos::prefs::kDeviceI18nShortcutsEnabled,
+    pref_change_registrar.Add(ash::prefs::kDeviceI18nShortcutsEnabled,
                               pref_changed_callback);
 
     run_loop_ = std::make_unique<base::RunLoop>();

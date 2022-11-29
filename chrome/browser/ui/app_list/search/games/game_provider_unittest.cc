@@ -157,14 +157,12 @@ TEST_P(GameProviderTest, Policy) {
   SetUpTestingIndex();
 
   // Results should exist if Suggested Content is enabled.
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                   true);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kSuggestedContentEnabled, true);
   StartSearch(u"first");
   EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
 
   // If Suggested Content is disabled, only show results if the override is on.
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                   false);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kSuggestedContentEnabled, false);
   StartSearch(u"first");
   bool enabled_override = GetParam();
   if (enabled_override) {

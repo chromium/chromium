@@ -126,7 +126,7 @@ void AccountManagerEducoexistenceControllerTest::
 
 void AccountManagerEducoexistenceControllerTest::UpdateEduCoexistenceToSVersion(
     const std::string& new_version) {
-  profile()->GetPrefs()->SetString(chromeos::prefs::kEduCoexistenceToSVersion,
+  profile()->GetPrefs()->SetString(prefs::kEduCoexistenceToSVersion,
                                    new_version);
 }
 

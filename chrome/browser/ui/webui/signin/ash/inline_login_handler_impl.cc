@@ -468,7 +468,7 @@ void InlineLoginHandlerImpl::HandleSkipWelcomePage(
   CHECK(!args.empty());
   const bool skip = args.front().GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
-      chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
+      prefs::kShouldSkipInlineLoginWelcomePage, skip);
 }
 
 void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(

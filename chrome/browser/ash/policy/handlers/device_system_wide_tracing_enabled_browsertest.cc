@@ -47,7 +47,7 @@ class DeviceSystemWideTracingEnabledPolicyTest
         base::BindRepeating(
             &DeviceSystemWideTracingEnabledPolicyTest::OnPreferenceChanged,
             base::Unretained(this));
-    pref_change_registrar.Add(chromeos::prefs::kDeviceSystemWideTracingEnabled,
+    pref_change_registrar.Add(ash::prefs::kDeviceSystemWideTracingEnabled,
                               pref_changed_callback);
 
     run_loop_ = std::make_unique<base::RunLoop>();

@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
           .GetValue(key::kAudioOutputAllowed, base::Value::Type::BOOLEAN));
   const PrefService::Preference* pref =
       g_browser_process->local_state()->FindPreference(
-          chromeos::prefs::kAudioOutputAllowed);
+          ash::prefs::kAudioOutputAllowed);
   EXPECT_FALSE(pref->IsManaged());
   EXPECT_TRUE(pref->GetValue()->GetBool());
 
