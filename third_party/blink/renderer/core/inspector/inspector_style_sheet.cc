@@ -614,6 +614,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kPage:
       case StyleRule::kFontFace:
       case StyleRule::kKeyframe:
+      case StyleRule::kFontFeature:
         result->push_back(data);
         break;
       case StyleRule::kMedia:
@@ -622,6 +623,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kKeyframes:
       case StyleRule::kContainer:
       case StyleRule::kLayerBlock:
+      case StyleRule::kFontFeatureValues:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -674,6 +676,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kFontFaceRule:
       case CSSRule::kViewportRule:
       case CSSRule::kKeyframeRule:
+      case CSSRule::kFontFeatureRule:
         result->push_back(rule);
         break;
       case CSSRule::kMediaRule:
@@ -682,6 +685,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kKeyframesRule:
       case CSSRule::kContainerRule:
       case CSSRule::kLayerBlockRule:
+      case CSSRule::kFontFeatureValuesRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;

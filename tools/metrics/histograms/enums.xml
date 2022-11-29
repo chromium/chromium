@@ -41675,6 +41675,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4401" label="SoftNavigationHeuristics"/>
   <int value="4402" label="MathMLMathElement"/>
   <int value="4403" label="MathMLMathElementInDocument"/>
+  <int value="4404" label="CSSAtRuleStylistic"/>
+  <int value="4405" label="CSSAtRuleStyleset"/>
+  <int value="4406" label="CSSAtRuleCharacterVariant"/>
+  <int value="4407" label="CSSAtRuleSwash"/>
+  <int value="4408" label="CSSAtRuleOrnaments"/>
+  <int value="4409" label="CSSAtRuleAnnotation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

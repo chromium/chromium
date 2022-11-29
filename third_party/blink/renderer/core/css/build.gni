@@ -661,6 +661,8 @@ blink_core_sources_css = [
   "style_rule_css_style_declaration.h",
   "style_rule_font_palette_values.cc",
   "style_rule_font_palette_values.h",
+  "style_rule_font_feature_values.cc",
+  "style_rule_font_feature_values.h",
   "style_rule_import.cc",
   "style_rule_import.h",
   "style_rule_keyframe.cc",

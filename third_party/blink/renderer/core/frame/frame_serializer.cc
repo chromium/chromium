@@ -456,6 +456,8 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     // Rules in which no external resources can be referenced
     case CSSRule::kCharsetRule:
     case CSSRule::kFontPaletteValuesRule:
+    case CSSRule::kFontFeatureRule:
+    case CSSRule::kFontFeatureValuesRule:
     case CSSRule::kPageRule:
     case CSSRule::kPropertyRule:
     case CSSRule::kKeyframesRule:

@@ -62,6 +62,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kNamespaceRule = 10,
     kCounterStyleRule = 11,
     kSupportsRule = 12,
+    kFontFeatureValuesRule = 14,
     kViewportRule = 15,
     // CSSOM constants are deprecated [1], and there will be no new
     // web-exposed values.
@@ -77,6 +78,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kScopeRule = 21,
     kPositionFallbackRule = 22,
     kTryRule = 23,
+    kFontFeatureRule = 24,
   };
 
   virtual Type GetType() const = 0;

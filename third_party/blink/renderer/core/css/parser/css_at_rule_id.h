@@ -31,6 +31,14 @@ enum class CSSAtRuleID {
   kCSSAtRuleSupports,
   kCSSAtRuleTry,
   kCSSAtRuleWebkitKeyframes,
+  // Font-feature-values related at-rule ids below:
+  kCSSAtRuleAnnotation,
+  kCSSAtRuleCharacterVariant,
+  kCSSAtRuleFontFeatureValues,
+  kCSSAtRuleOrnaments,
+  kCSSAtRuleStylistic,
+  kCSSAtRuleStyleset,
+  kCSSAtRuleSwash
 };
 
 CSSAtRuleID CssAtRuleID(StringView name);

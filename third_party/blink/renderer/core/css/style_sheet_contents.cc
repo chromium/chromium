@@ -597,6 +597,8 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kLayerStatement:
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kFontPaletteValues:
+      case StyleRuleBase::kFontFeatureValues:
+      case StyleRuleBase::kFontFeature:
       case StyleRuleBase::kPositionFallback:
       case StyleRuleBase::kTry:
         break;

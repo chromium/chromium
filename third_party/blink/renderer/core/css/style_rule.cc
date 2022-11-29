@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
@@ -92,6 +93,12 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kFontPaletteValues:
       To<StyleRuleFontPaletteValues>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kFontFeatureValues:
+      To<StyleRuleFontFeatureValues>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kFontFeature:
+      To<StyleRuleFontFeature>(this)->TraceAfterDispatch(visitor);
       return;
     case kMedia:
       To<StyleRuleMedia>(this)->TraceAfterDispatch(visitor);
@@ -156,6 +163,12 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kFontPaletteValues:
       To<StyleRuleFontPaletteValues>(this)->~StyleRuleFontPaletteValues();
       return;
+    case kFontFeatureValues:
+      To<StyleRuleFontFeatureValues>(this)->~StyleRuleFontFeatureValues();
+      return;
+    case kFontFeature:
+      To<StyleRuleFontFeature>(this)->~StyleRuleFontFeature();
+      return;
     case kMedia:
       To<StyleRuleMedia>(this)->~StyleRuleMedia();
       return;
@@ -211,6 +224,10 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleFontFace>(this)->Copy();
     case kFontPaletteValues:
       return To<StyleRuleFontPaletteValues>(this)->Copy();
+    case kFontFeatureValues:
+      return To<StyleRuleFontFeatureValues>(this)->Copy();
+    case kFontFeature:
+      return To<StyleRuleFontFeature>(this)->Copy();
     case kMedia:
       return To<StyleRuleMedia>(this)->Copy();
     case kScope:
@@ -317,6 +334,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSPositionFallbackRule>(
           To<StyleRulePositionFallback>(self), parent_sheet);
       break;
+    case kFontFeature:
+    case kFontFeatureValues:
+      // TODO(drott): CSSOM implementation follows.
+      return nullptr;
     case kTry:
     case kKeyframe:
     case kCharset:
@@ -450,6 +471,8 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kProperty:
     case kFontFace:
     case kFontPaletteValues:
+    case kFontFeatureValues:
+    case kFontFeature:
     case kImport:
     case kKeyframes:
     case kLayerStatement:

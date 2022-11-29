@@ -3742,6 +3742,12 @@ enum WebFeature {
   kSoftNavigationHeuristics = 4401,
   kMathMLMathElement = 4402,
   kMathMLMathElementInDocument = 4403,
+  kCSSAtRuleStylistic = 4404,
+  kCSSAtRuleStyleset = 4405,
+  kCSSAtRuleCharacterVariant = 4406,
+  kCSSAtRuleSwash = 4407 ,
+  kCSSAtRuleOrnaments = 4408,
+  kCSSAtRuleAnnotation = 4409,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
