@@ -10,16 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
 
 class GURL;
-class ReadingListModel;
-class ScopedReadingListBatchUpdate;
+class ReadingListModelObserver;
 
 namespace syncer {
 class ModelTypeSyncBridge;
@@ -33,6 +28,9 @@ class ReadingListModel : public KeyedService {
  public:
   class ScopedReadingListBatchUpdate;
 
+  ReadingListModel() = default;
+  ~ReadingListModel() override = default;
+
   ReadingListModel(const ReadingListModel&) = delete;
   ReadingListModel& operator=(const ReadingListModel&) = delete;
 
@@ -41,7 +39,7 @@ class ReadingListModel : public KeyedService {
   virtual bool loaded() const = 0;
 
   // Returns true if the model is performing batch updates right now.
-  bool IsPerformingBatchUpdates() const;
+  virtual bool IsPerformingBatchUpdates() const = 0;
 
   // Returns the ModelTypeSyncBridge responsible for handling sync message.
   virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
@@ -52,10 +50,7 @@ class ReadingListModel : public KeyedService {
   // Returns a scoped batch update object that should be retained while the
   // batch update is performed. Deallocating this object will inform model that
   // the batch update has completed.
-  std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates();
-
-  // Creates a batch token that will freeze the model while in scope.
-  virtual std::unique_ptr<ScopedReadingListBatchUpdate> CreateBatchToken();
+  virtual std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() = 0;
 
   // Returns a vector of URLs in the model. The order of the URL is not
   // specified and can vary on successive calls.
@@ -149,50 +144,23 @@ class ReadingListModel : public KeyedService {
   virtual void SetContentSuggestionsExtra(
       const GURL& url,
       const reading_list::ContentSuggestionsExtra& extra) = 0;
+
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.
-  void AddObserver(ReadingListModelObserver* observer);
-  void RemoveObserver(ReadingListModelObserver* observer);
+  virtual void AddObserver(ReadingListModelObserver* observer) = 0;
+  virtual void RemoveObserver(ReadingListModelObserver* observer) = 0;
 
   // Helper class that is used to scope batch updates.
-  class ScopedReadingListBatchUpdate : public ReadingListModelObserver {
+  class ScopedReadingListBatchUpdate {
    public:
-    explicit ScopedReadingListBatchUpdate(ReadingListModel* model);
+    ScopedReadingListBatchUpdate() = default;
 
     ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
     ScopedReadingListBatchUpdate& operator=(
         const ScopedReadingListBatchUpdate&) = delete;
 
-    ~ScopedReadingListBatchUpdate() override;
-
-    void ReadingListModelLoaded(const ReadingListModel* model) override;
-    void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
-
-   private:
-    raw_ptr<ReadingListModel> model_;
+    virtual ~ScopedReadingListBatchUpdate() = default;
   };
-
- protected:
-  ReadingListModel();
-  ~ReadingListModel() override;
-
-  // The observers.
-  base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
-
-  // Tells model that batch updates have completed. Called from
-  // ReadingListBatchUpdateToken dtor.
-  virtual void EndBatchUpdates();
-
-  // Called when model is entering batch update mode.
-  virtual void EnteringBatchUpdates();
-
-  // Called when model is leaving batch update mode.
-  virtual void LeavingBatchUpdates();
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  unsigned int current_batch_updates_count_;
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_H_

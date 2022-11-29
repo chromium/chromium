@@ -10,7 +10,6 @@ source_set("core") {
     "offline_url_utils.h",
     "reading_list_entry.cc",
     "reading_list_entry.h",
-    "reading_list_model.cc",
     "reading_list_model.h",
     "reading_list_model_impl.cc",
     "reading_list_model_impl.h",
@@ -32,6 +31,20 @@ source_set("core") {
     "//url",
   ]
   public_deps = [ "//components/reading_list/core/proto" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_reading_list_model.cc",
+    "fake_reading_list_model.h",
+  ]
+
+  public_deps = [
+    ":core",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

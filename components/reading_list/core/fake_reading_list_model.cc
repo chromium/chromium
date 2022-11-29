@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/reading_list/fake_reading_list_model.h"
+#include "components/reading_list/core/fake_reading_list_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "base/notreached.h"
+#include "components/reading_list/core/reading_list_model_observer.h"
 
 FakeReadingListModel::FakeReadingListModel() = default;
 
@@ -16,7 +15,17 @@ bool FakeReadingListModel::loaded() const {
   return loaded_;
 }
 
+bool FakeReadingListModel::IsPerformingBatchUpdates() const {
+  return false;
+}
+
 syncer::ModelTypeSyncBridge* FakeReadingListModel::GetModelTypeSyncBridge() {
+  NOTREACHED();
+  return nullptr;
+}
+
+std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
+FakeReadingListModel::BeginBatchUpdates() {
   NOTREACHED();
   return nullptr;
 }
@@ -138,6 +147,17 @@ void FakeReadingListModel::SetContentSuggestionsExtra(
     const GURL& url,
     const reading_list::ContentSuggestionsExtra& extra) {
   NOTREACHED();
+}
+
+void FakeReadingListModel::AddObserver(ReadingListModelObserver* observer) {
+  observers_.AddObserver(observer);
+  if (loaded()) {
+    observer->ReadingListModelLoaded(this);
+  }
+}
+
+void FakeReadingListModel::RemoveObserver(ReadingListModelObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void FakeReadingListModel::SetEntry(ReadingListEntry entry) {
