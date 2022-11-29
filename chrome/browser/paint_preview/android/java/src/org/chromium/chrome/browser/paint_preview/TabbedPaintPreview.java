@@ -121,6 +121,12 @@ public class TabbedPaintPreview implements UserData {
         if (mIsAttachedToTab) return true;
         TraceEvent.begin("TabbedPaintPreview.maybeShow");
 
+        boolean allowedToShow = PaintPreviewTabService.tabAllowedForPaintPreview(mTab);
+        if (!allowedToShow) {
+            TraceEvent.end("TabbedPaintPreview.maybeShow");
+            return false;
+        }
+
         // Check if a capture exists. This is a quick check using a cache.
         boolean hasCapture = getService().hasCaptureForTab(mTab.getId());
         if (!hasCapture) {

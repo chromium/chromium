@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -40,6 +41,16 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     private Runnable mAuditRunnable;
     private long mNativePaintPreviewBaseService;
     private long mNativePaintPreviewTabService;
+
+    /**
+     * Whether the tab qualifies for capture or display of the paint preview.
+     * @param tab The tab to check.
+     */
+    public static boolean tabAllowedForPaintPreview(Tab tab) {
+        return !tab.isIncognito() && !tab.isNativePage() && !tab.isShowingErrorPage()
+                && UrlUtilities.isHttpOrHttps(tab.getUrl())
+                && !UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec());
+    }
 
     private class CaptureTriggerListener extends TabModelSelectorTabObserver
             implements ApplicationStatus.ApplicationStateListener {
@@ -84,15 +95,9 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         }
 
         private boolean qualifiesForCapture(Tab tab) {
-            String scheme = tab.getUrl().getScheme();
-            boolean schemeAllowed = scheme.equals("http") || scheme.equals("https");
-            return !tab.isIncognito() && !tab.isNativePage() && !tab.isShowingErrorPage()
-                    && tab.getWebContents() != null && !tab.isLoading() && schemeAllowed
-                    && allowIfSrp(tab);
-        }
-
-        private boolean allowIfSrp(Tab tab) {
-            return !UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec());
+            // Check the usual parameters and ensure the page is actually alive and loaded.
+            return PaintPreviewTabService.tabAllowedForPaintPreview(tab)
+                    && tab.getWebContents() != null && !tab.isLoading();
         }
     }
 
