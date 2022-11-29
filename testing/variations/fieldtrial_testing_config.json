@@ -8004,7 +8004,7 @@
             ]
         }
     ],
-    "PartitionAllocUseAlternateDistribution": [
+    "PartitionAllocatorAlternateBucketDist": [
         {
             "platforms": [
                 "android",
@@ -8019,7 +8019,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Denser_V4",
+                    "name": "Denser_V5",
                     "params": {
                         "mode": "denser"
                     },
