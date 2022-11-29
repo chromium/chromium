@@ -7,6 +7,10 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
@@ -36,6 +40,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -59,6 +64,8 @@ class KeyCommandsProviderTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               base::BindRepeating(BuildFakeTabRestoreService));
+    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
+                              ios::BookmarkModelFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     web_state_list_ = browser_->GetWebStateList();
@@ -66,6 +73,9 @@ class KeyCommandsProviderTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+    bookmark_model_ =
+        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   }
   ~KeyCommandsProviderTest() override {}
@@ -151,6 +161,7 @@ class KeyCommandsProviderTest : public PlatformTest {
   WebStateList* web_state_list_;
   SceneState* scene_state_;
   base::UserActionTester user_action_tester_;
+  bookmarks::BookmarkModel* bookmark_model_;
   KeyCommandsProvider* provider_;
 };
 
@@ -886,6 +897,50 @@ TEST_F(KeyCommandsProviderTest, ValidateCommands) {
       EXPECT_TRUE([command.discoverabilityTitle
           isEqualToString:l10n_util::GetNSStringWithFixup(
                               IDS_IOS_KEYBOARD_FIRST_TAB)]);
+    }
+  }
+}
+
+TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
+  // Open a tab with a URL.
+  GURL url = GURL("https://test/url");
+  auto web_state = CreateFakeWebStateWithURL(url);
+  browser_->GetWebStateList()->InsertWebState(
+      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  for (UIKeyCommand* command in provider_.keyCommands) {
+    [provider_ validateCommand:command];
+    if (command.action == @selector(keyCommand_addToBookmarks)) {
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS));
+    }
+  }
+
+  // Bookmark the page.
+  const bookmarks::BookmarkNode* bookmark_bar =
+      bookmark_model_->bookmark_bar_node();
+  const bookmarks::BookmarkNode* bookmark =
+      bookmark_model_->AddURL(bookmark_bar, 0, u"", url);
+
+  for (UIKeyCommand* command in provider_.keyCommands) {
+    [provider_ validateCommand:command];
+    if (command.action == @selector(keyCommand_addToBookmarks)) {
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK));
+    }
+  }
+
+  // Remove the bookmark.
+  bookmark_model_->Remove(bookmark);
+
+  for (UIKeyCommand* command in provider_.keyCommands) {
+    [provider_ validateCommand:command];
+    if (command.action == @selector(keyCommand_addToBookmarks)) {
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS));
     }
   }
 }

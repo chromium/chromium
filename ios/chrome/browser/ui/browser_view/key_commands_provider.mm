@@ -8,8 +8,10 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -244,9 +246,14 @@ using base::UserMetricsAction;
   if (command.action == @selector(keyCommand_select1)) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
-  } else {
-    return [super validateCommand:command];
   }
+  if (command.action == @selector(keyCommand_addToBookmarks)) {
+    if ([self isBookmarkedPage]) {
+      command.discoverabilityTitle =
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK);
+    }
+  }
+  return [super validateCommand:command];
 }
 
 #pragma mark - Key Command Actions
@@ -591,6 +598,20 @@ using base::UserMetricsAction;
 
   const GURL& url = currentWebState->GetLastCommittedURL();
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+}
+
+- (BOOL)isBookmarkedPage {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return NO;
+  }
+
+  const GURL& url = currentWebState->GetLastCommittedURL();
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  return bookmarkModel->IsBookmarked(url);
 }
 
 @end
