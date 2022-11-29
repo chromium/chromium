@@ -42,6 +42,7 @@ const tests = [
   ['InputKeyTest', 'input_key_test.js'],
   ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
   ['ShortcutUtils', 'shortcut_utils_test.js'],
+  ['TextAcceleratorTest', 'text_accelerator_test.js'],
 ];
 
 tests.forEach(test => registerTest(...test));

@@ -32,10 +32,15 @@
 <div id="container">
   <div id="descriptionText">[[description]]</div>
   <div id="acceleratorViewList">
-    <template is="dom-repeat" items=[[acceleratorInfos]]>
-      <accelerator-view class="acceleratorItem" accelerator-info=[[item]]
-          action=[[action]] source=[[source]]>
-      </accelerator-view>
+    <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
+      <template is="dom-repeat" items="[[acceleratorInfos]]">
+        <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
+            action="[[action]]" source="[[source]]">
+        </accelerator-view>
+      </template>
+    </template>
+    <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
+      <text-accelerator text="[[acceleratorText]]"></text-accelerator>
     </template>
   </div>
   <div id="lockIconContainer" hidden="[[!shouldShowLockIcon_(isLocked_)]]">

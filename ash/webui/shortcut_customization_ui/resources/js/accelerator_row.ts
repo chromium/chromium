@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_view.js';
+import './text_accelerator.js';
 import '../strings.m.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -12,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface} from './shortcut_types.js';
 import {isCustomizationDisabled} from './shortcut_utils.js';
 
 export type ShowEditDialogEvent = CustomEvent<{
@@ -51,6 +52,16 @@ export class AcceleratorRowElement extends PolymerElement {
         value: () => {},
       },
 
+      acceleratorText: {
+        type: String,
+        value: '',
+      },
+
+      layoutStyle: {
+        type: Object,
+        value: () => {},
+      },
+
       isLocked_: {
         type: Boolean,
         value: false,
@@ -71,6 +82,9 @@ export class AcceleratorRowElement extends PolymerElement {
 
   description: string;
   acceleratorInfos: AcceleratorInfo[];
+  /** The text to display when layoutStyle == kText. */
+  acceleratorText?: string;
+  layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
   private isLocked_: boolean;
@@ -92,6 +106,14 @@ export class AcceleratorRowElement extends PolymerElement {
             this.addEventListener('click', () => this.showDialog_());
           }
         });
+  }
+
+  private isDefaultLayout(): boolean {
+    return this.layoutStyle === LayoutStyle.kDefault;
+  }
+
+  private isTextLayout(): boolean {
+    return this.layoutStyle === LayoutStyle.kText;
   }
 
   private shouldShowLockIcon_(): boolean {

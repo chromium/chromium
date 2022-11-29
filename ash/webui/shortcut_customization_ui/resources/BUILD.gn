@@ -44,6 +44,7 @@ web_component_files = [
   "js/shortcut_customization_app.ts",
   "js/shortcut_input.ts",
   "js/shortcuts_page.ts",
+  "js/text_accelerator.ts",
 ]
 
 html_files = []

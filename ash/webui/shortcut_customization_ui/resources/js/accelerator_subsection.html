@@ -16,8 +16,10 @@
     <template id="list" is="dom-repeat" items="[[accelRowDataArray]]">
       <accelerator-row
           accelerator-infos="[[item.acceleratorInfos]]"
+          accelerator-text="TODO(cambickel) add text from mojo when implemented"
           action="[[item.layoutInfo.action]]"
           description="[[item.layoutInfo.description]]"
+          layout-style="[[item.layoutInfo.style]]"
           source="[[item.layoutInfo.source]]">
       </accelerator-row>
     </template>

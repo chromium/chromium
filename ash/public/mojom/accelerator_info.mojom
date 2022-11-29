@@ -55,9 +55,13 @@ enum AcceleratorState {
 };
 
 // Represents the style of layout for an accelerator.
-// TODO(jimmyxgong): Add alternate layout styles.
 enum AcceleratorLayoutStyle {
+  // Used for shortcuts containing zero or more modifiers and one key,
+  // e.g. "Ctrl+T", "Ctrl+Shift+T", "<Refresh Icon>", etc.
   kDefault = 0,
+  // Used to display arbitrary text with optional modifiers/keys interspersed,
+  // e.g. "Hold <Ctrl> and click on a link" or "Drag link to bookmarks bar".
+  kText = 1,
 };
 
 // Enum of top-level accelerator categories. Used in the UI for categorization.
