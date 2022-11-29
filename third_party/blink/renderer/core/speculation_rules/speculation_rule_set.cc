@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -208,12 +209,45 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
 }  // namespace
 
+// ---- SpeculationRuleSet::Source implementation ----
+
+SpeculationRuleSet::Source::Source(const String& source_text,
+                                   Document& document)
+    : source_text_(source_text),
+      base_url_(absl::nullopt),
+      document_(document) {}
+
+SpeculationRuleSet::Source::Source(const String& source_text,
+                                   const KURL& base_url)
+    : source_text_(source_text), base_url_(base_url), document_(nullptr) {}
+
+const String& SpeculationRuleSet::Source::GetSourceText() const {
+  return source_text_;
+}
+
+KURL SpeculationRuleSet::Source::GetBaseURL() const {
+  if (base_url_) {
+    DCHECK(!document_);
+    return base_url_.value();
+  }
+  DCHECK(document_);
+  return document_->BaseURL();
+}
+
+void SpeculationRuleSet::Source::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
+}
+
+// ---- SpeculationRuleSet implementation ----
+
 // static
-SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
-                                              const KURL& base_url,
+SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
                                               ExecutionContext* context,
                                               String* out_error) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-speculation-rules
+
+  const String& source_text = source->GetSourceText();
+  const KURL& base_url = source->GetBaseURL();
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.
@@ -232,6 +266,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
 
   // Let result be an empty speculation rule set.
   SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>();
+  result->source_ = source;
 
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
@@ -288,6 +323,7 @@ void SpeculationRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(prefetch_rules_);
   visitor->Trace(prefetch_with_subresources_rules_);
   visitor->Trace(prerender_rules_);
+  visitor->Trace(source_);
 }
 
 }  // namespace blink

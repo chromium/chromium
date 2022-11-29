@@ -80,9 +80,10 @@ void SpeculationRuleLoader::NotifyFinished() {
 
   const auto& source_text = resource_->DecodedText();
   String parse_error;
+  auto* source =
+      MakeGarbageCollected<SpeculationRuleSet::Source>(source_text, base_url_);
   if (auto* rule_set = SpeculationRuleSet::Parse(
-          source_text, base_url_, document_->GetExecutionContext(),
-          &parse_error)) {
+          source, document_->GetExecutionContext(), &parse_error)) {
     DocumentSpeculationRules::From(*document_).AddRuleSet(rule_set);
   }
   if (!parse_error.IsNull()) {

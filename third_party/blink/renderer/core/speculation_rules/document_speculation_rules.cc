@@ -248,6 +248,23 @@ void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::DocumentBaseURLChanged() {
+  // Replace every existing rule set with a new copy that is parsed using the
+  // updated document base URL.
+  for (Member<SpeculationRuleSet>& rule_set : rule_sets_) {
+    SpeculationRuleSet::Source* source = rule_set->source();
+    String parse_error;
+    rule_set = SpeculationRuleSet::Parse(
+        source, GetSupplementable()->GetExecutionContext(), &parse_error);
+    // There should not be any parsing errors as these rule sets have already
+    // been parsed once without errors, and an updated base URL should not cause
+    // new errors.
+    DCHECK(parse_error.empty());
+  }
+  InvalidateAllLinks();
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);

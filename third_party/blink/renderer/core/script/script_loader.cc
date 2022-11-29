@@ -1012,8 +1012,10 @@ PendingScript* ScriptLoader::PrepareScript(
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
         String parse_error;
-        if (auto* rule_set = SpeculationRuleSet::Parse(
-                source_text, base_url, context_window, &parse_error)) {
+        auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+            source_text, element_document);
+        if (auto* rule_set = SpeculationRuleSet::Parse(source, context_window,
+                                                       &parse_error)) {
           speculation_rule_set_ = rule_set;
           DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
         }
