@@ -107,9 +107,8 @@ v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
       V8ObjectConstructor::NewInstance(isolate_, interface_object)
           .ToLocalChecked();
 
-  TraceWrapperV8Reference<v8::Object> traced_wrapper;
-  traced_wrapper.Reset(isolate_, instance_template);
-  wrapper_boilerplates_.insert(type, traced_wrapper);
+  wrapper_boilerplates_.insert(
+      type, TraceWrapperV8Reference<v8::Object>(isolate_, instance_template));
 
   return instance_template->Clone();
 }
@@ -131,9 +130,8 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
           type, context, world, isolate_, parent_interface_object,
           V8ObjectConstructor::CreationMode::kInstallConditionalFeatures);
 
-  TraceWrapperV8Reference<v8::Function> traced_wrapper;
-  traced_wrapper.Reset(isolate_, interface_object);
-  constructor_map_.insert(type, traced_wrapper);
+  constructor_map_.insert(
+      type, TraceWrapperV8Reference<v8::Function>(isolate_, interface_object));
 
   return interface_object;
 }
