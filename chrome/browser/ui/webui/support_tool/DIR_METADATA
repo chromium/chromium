@@ -1,0 +1,8 @@
+buganizer {
+  component_id: 1111615
+}
+buganizer_public {
+    component_id: 1199457
+}
+team_email: "chromeos-commercial-supportability@google.com"
+
