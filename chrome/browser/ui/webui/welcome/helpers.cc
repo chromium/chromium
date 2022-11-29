@@ -257,7 +257,7 @@ std::string FilterModules(const std::string& requested_modules,
   return base::JoinString(filtered_modules, ",");
 }
 
-base::DictionaryValue GetModules(Profile* profile) {
+base::Value::Dict GetModules(Profile* profile) {
   // This function should not be called when feature is not on.
   DCHECK(welcome::IsEnabled(profile));
 
@@ -274,11 +274,10 @@ base::DictionaryValue GetModules(Profile* profile) {
 
   std::vector<std::string> available_modules = GetAvailableModules(profile);
 
-  base::DictionaryValue modules;
-  modules.SetStringKey("new-user",
-                       FilterModules(new_user_modules, available_modules));
-  modules.SetStringKey("returning-user", FilterModules(returning_user_modules,
-                                                       available_modules));
+  base::Value::Dict modules;
+  modules.Set("new-user", FilterModules(new_user_modules, available_modules));
+  modules.Set("returning-user",
+              FilterModules(returning_user_modules, available_modules));
   return modules;
 }
 

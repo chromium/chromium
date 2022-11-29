@@ -7,11 +7,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/values.h"
 #include "build/build_config.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace policy {
 class PolicyMap;
@@ -33,7 +30,7 @@ bool IsAppVariationEnabled();
 
 bool HasModulesToShow(Profile* profile);
 
-base::DictionaryValue GetModules(Profile* profile);
+base::Value::Dict GetModules(Profile* profile);
 
 // Exposed for testing.
 BASE_DECLARE_FEATURE(kForceEnabled);

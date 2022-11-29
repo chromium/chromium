@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -163,10 +164,10 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 
   html_source->AddString(
       "newUserModules",
-      welcome::GetModules(profile).FindKey("new-user")->GetString());
+      welcome::GetModules(profile).Find("new-user")->GetString());
   html_source->AddString(
       "returningUserModules",
-      welcome::GetModules(profile).FindKey("returning-user")->GetString());
+      welcome::GetModules(profile).Find("returning-user")->GetString());
   html_source->AddBoolean(
       "signinAllowed", profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
   html_source->SetRequestFilter(
