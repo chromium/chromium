@@ -90,8 +90,12 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
           static_cast<const CGDisplayMode*>(
               CFArrayGetValueAtIndex(modes, index)));
       int depth = 0;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      // TODO(https://crbug.com/1394415): Find non-deprecated replacement.
       base::ScopedCFTypeRef<CFStringRef> encoding(
           CGDisplayModeCopyPixelEncoding(mode));
+#pragma clang diagnostic pop
       if (CFStringCompare(encoding, CFSTR(IO32BitDirectPixels),
                           kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
         depth = 32;
