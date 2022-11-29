@@ -503,16 +503,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.CorruptExtensionBecameDisabled" units="units"
-    expires_after="M85">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Fired each time an extension was detected to be corrupted (contents not
-    matching an expected content hash from the webstore) and was disabled.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.CorruptExtensionDisabledReason"
     enum="CorruptExtensionDisabledReason" expires_after="2022-12-01">
   <owner>lazyboy@chromium.org</owner>
@@ -534,16 +524,6 @@ chromium-metrics-reviews@google.com.
     Logged once at startup, this is the value of a counter that is incremented
     anytime we disable a corrupted extension because its content didn't match an
     expected content hash.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.CorruptExtensionWouldBeDisabled" units="units"
-    expires_after="M85">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Simiar to Extensions.CorruptExtensionBecameDisabled, but fires when we're in
-    a bootstrapping mode and would have disabled an extension.
   </summary>
 </histogram>
 
