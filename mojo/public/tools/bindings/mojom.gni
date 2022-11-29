@@ -44,9 +44,6 @@ declare_args() {
   # corresponding "foo_js_library_for_compile" target generated.
   enable_mojom_closure_compile = enable_js_type_check && optimize_webui
 
-  # Enables generating Typescript bindings and compiling them to JS bindings.
-  enable_typescript_bindings = true
-
   # Enables generating javascript fuzzing-related code and the bindings for the
   # MojoLPM fuzzer targets. Off by default.
   enable_mojom_fuzzer = false
@@ -1752,7 +1749,7 @@ template("mojom") {
   }
 
   use_typescript_for_target =
-      enable_typescript_bindings && defined(invoker.use_typescript_sources) &&
+      defined(invoker.use_typescript_sources) &&
       invoker.use_typescript_sources && defined(invoker.webui_module_path)
 
   if (!use_typescript_for_target && defined(invoker.use_typescript_sources)) {
