@@ -2715,6 +2715,7 @@ if (!is_android) {
         "../browser/chrome_multiprofile_startup_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
         "../browser/profiles/avatar_menu_browsertest.cc",
+        "../browser/profiles/delete_profile_helper_browsertest.cc",
         "../browser/profiles/profile_keyed_service_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",

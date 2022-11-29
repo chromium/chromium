@@ -64,6 +64,7 @@ class DeleteProfileHelper {
   // last non-supervised profile. In the Mac, loads the next non-supervised
   // profile if the profile to be deleted is the active profile.
   void EnsureActiveProfileExistsBeforeDeletion(
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
       ProfileLoadedCallback callback,
       const base::FilePath& profile_dir);
 

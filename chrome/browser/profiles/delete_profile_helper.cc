@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -88,6 +89,13 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
   DCHECK(profiles::IsMultipleProfilesEnabled());
   DCHECK(!IsProfileDirectoryMarkedForDeletion(profile_dir));
 
+  // When this is called all browser windows may be about to be destroyed
+  // (but still exist in BrowserList), which means shutdown may be about to
+  // start. Use a KeepAlive to ensure shutdown doesn't start.
+  std::unique_ptr<ScopedKeepAlive> keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::PROFILE_MANAGER,
+                                        KeepAliveRestartOption::DISABLED);
+
   Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
   if (profile) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -108,10 +116,12 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
         profile,
         base::BindRepeating(
             &DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion,
-            base::Unretained(this), base::Passed(std::move(callback))),
+            base::Unretained(this), base::Passed(std::move(keep_alive)),
+            base::Passed(std::move(callback))),
         base::BindRepeating(&CancelProfileDeletion), false);
   } else {
-    EnsureActiveProfileExistsBeforeDeletion(std::move(callback), profile_dir);
+    EnsureActiveProfileExistsBeforeDeletion(std::move(keep_alive),
+                                            std::move(callback), profile_dir);
   }
 }
 
@@ -215,8 +225,10 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
 }
 
 void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
     ProfileLoadedCallback callback,
     const base::FilePath& profile_dir) {
+  DCHECK(keep_alive);
   // In case we delete non-active profile and current profile is valid, proceed.
   const base::FilePath last_used_profile_path =
       profile_manager_->GetLastUsedProfileDir();
@@ -237,7 +249,7 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
     if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
       OnNewActiveProfileInitialized(profile_dir, cur_path, std::move(callback),
-                                    nullptr, profile);
+                                    std::move(keep_alive), profile);
       return;
     }
   }
@@ -268,12 +280,6 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
         ProfileMetrics::ADD_NEW_USER_LAST_DELETED);
   }
 
-  // When this is called all browser windows may be about to be destroyed
-  // (but still exist in BrowserList), which means shutdown may be about to
-  // start. Use a KeepAlive to ensure shutdown doesn't start.
-  std::unique_ptr<ScopedKeepAlive> keep_alive =
-      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::PROFILE_MANAGER,
-                                        KeepAliveRestartOption::DISABLED);
   // Create and/or load fallback profile.
   profile_manager_->CreateProfileAsync(
       fallback_profile_path,
@@ -373,13 +379,14 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     ProfileLoadedCallback callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     Profile* loaded_profile) {
+  DCHECK(keep_alive);
   DCHECK(loaded_profile);
   if (IsProfileDirectoryMarkedForDeletion(new_active_profile_path)) {
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load
     // the next available profile.
-    EnsureActiveProfileExistsBeforeDeletion(std::move(callback),
-                                            profile_to_delete_path);
+    EnsureActiveProfileExistsBeforeDeletion(
+        std::move(keep_alive), std::move(callback), profile_to_delete_path);
     return;
   }
 
