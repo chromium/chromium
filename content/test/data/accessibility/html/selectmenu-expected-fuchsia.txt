@@ -5,7 +5,7 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
 ++++++++++++UNKNOWN actions='{DEFAULT}'
-++++++++++++++STATIC_TEXT label='Option 1'
+++++++++++++++STATIC_TEXT label='Option 1' actions='{DEFAULT}'
 ++++++++++++++++UNKNOWN label='Option 1'
 ++++++++++++UNKNOWN hidden
 ++++++++UNKNOWN hidden
@@ -13,7 +13,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN actions='{DEFAULT}' value='Custom selectmenu button'
-++++++++++++STATIC_TEXT label='Custom selectmenu button'
+++++++++++++STATIC_TEXT label='Custom selectmenu button' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN label='Custom selectmenu button'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden

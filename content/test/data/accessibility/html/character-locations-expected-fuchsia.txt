@@ -8,7 +8,7 @@ UNKNOWN focusable has_input_focus label='Character Locations'
 ++++++++STATIC_TEXT label='Paragraph'
 ++++++++++UNKNOWN label='Paragraph'
 ++++++BUTTON focusable label='Button' actions='{DEFAULT}'
-++++++++STATIC_TEXT label='Button'
+++++++++STATIC_TEXT label='Button' actions='{DEFAULT}'
 ++++++++++UNKNOWN label='Button'
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='Input'
 ++++++++UNKNOWN

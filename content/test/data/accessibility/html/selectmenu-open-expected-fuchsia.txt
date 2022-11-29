@@ -4,7 +4,7 @@ UNKNOWN focusable
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN actions='{DEFAULT}' value='Custom selectmenu button'
-++++++++++++STATIC_TEXT label='Custom selectmenu button'
+++++++++++++STATIC_TEXT label='Custom selectmenu button' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN label='Custom selectmenu button'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN actions='{DEFAULT}'
