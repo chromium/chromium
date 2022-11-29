@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task_runner.h"
@@ -191,6 +192,12 @@ class SharedRemoteBase
 
     void DeleteOnCorrectThread() const {
       if (!task_runner_->RunsTasksInCurrentSequence()) {
+        // Sequenced task runners don't support posting tasks at non-deterministic
+        // points when recording/replaying, so leak the remote instead.
+        if (recordreplay::AreEventsDisallowed()) {
+          return;
+        }
+
         // NOTE: This is only called when there are no more references to
         // |this|, so binding it unretained is both safe and necessary.
         task_runner_->PostTask(
