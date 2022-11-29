@@ -17,14 +17,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID) &&                                         \
-    ((defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
-     defined(ARCH_CPU_ARM64))
-#define ANDROID_UNWINDING_SUPPORTED 1
-#else
-#define ANDROID_UNWINDING_SUPPORTED 0
-#endif
-
 namespace {
 
 using ::testing::_;
@@ -118,7 +110,7 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &false_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
 
-#if ANDROID_UNWINDING_SUPPORTED
+#if defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
     {version_info::Channel::CANARY, &true_mock_delegate, true},
     {version_info::Channel::DEV, &true_mock_delegate, true},
     {version_info::Channel::BETA, &true_mock_delegate, true},
@@ -133,14 +125,14 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else   // ANDROID_UNWINDING_SUPPORTED
-    // Unwinding on any other platforms is not currently supported for Android.
+#else   // defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+    // Unwinding on non-ARM32 platforms is not currently supported for Android.
     {version_info::Channel::CANARY, &true_mock_delegate, false},
     {version_info::Channel::DEV, &true_mock_delegate, false},
     {version_info::Channel::BETA, &true_mock_delegate, false},
     {version_info::Channel::STABLE, &true_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #else   // BUILDFLAG(IS_ANDROID)
     // Non-Android platforms' unwinders do not need any specific prerequisites
     // beyond what is already bundled and available with Chrome. Therefore,
