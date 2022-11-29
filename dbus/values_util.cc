@@ -24,21 +24,19 @@ bool IsExactlyRepresentableByDouble(T value) {
 }
 
 // Pops values from |reader| and appends them to |list_value|.
-bool PopListElements(MessageReader* reader, base::Value* list_value) {
-  DCHECK(list_value->is_list());
+bool PopListElements(MessageReader* reader, base::Value::List& list_value) {
   while (reader->HasMoreData()) {
     base::Value element_value = PopDataAsValue(reader);
     if (element_value.is_none())
       return false;
-    list_value->Append(std::move(element_value));
+    list_value.Append(std::move(element_value));
   }
   return true;
 }
 
 // Pops dict-entries from |reader| and sets them to |dictionary_value|
 bool PopDictionaryEntries(MessageReader* reader,
-                          base::Value* dictionary_value) {
-  DCHECK(dictionary_value->is_dict());
+                          base::Value::Dict& dictionary_value) {
   while (reader->HasMoreData()) {
     DCHECK_EQ(Message::DICT_ENTRY, reader->GetDataType());
     MessageReader entry_reader(nullptr);
@@ -62,7 +60,7 @@ bool PopDictionaryEntries(MessageReader* reader,
     base::Value value = PopDataAsValue(&entry_reader);
     if (value.is_none())
       return false;
-    dictionary_value->SetKey(key_string, std::move(value));
+    dictionary_value.Set(key_string, std::move(value));
   }
   return true;
 }
@@ -185,13 +183,13 @@ base::Value PopDataAsValue(MessageReader* reader) {
         // Value with type base::Value::Type::DICTIONARY, otherwise create a
         // Value with type base::Value::Type::LIST.
         if (sub_reader.GetDataType() == Message::DICT_ENTRY) {
-          auto dictionary_value = base::Value(base::Value::Type::DICTIONARY);
-          if (PopDictionaryEntries(&sub_reader, &dictionary_value))
-            result = std::move(dictionary_value);
+          base::Value::Dict dictionary_value;
+          if (PopDictionaryEntries(&sub_reader, dictionary_value))
+            result = base::Value(std::move(dictionary_value));
         } else {
-          auto list_value = base::Value(base::Value::Type::LIST);
-          if (PopListElements(&sub_reader, &list_value))
-            result = std::move(list_value);
+          base::Value::List list_value;
+          if (PopListElements(&sub_reader, list_value))
+            result = base::Value(std::move(list_value));
         }
       }
       break;
@@ -199,9 +197,9 @@ base::Value PopDataAsValue(MessageReader* reader) {
     case Message::STRUCT: {
       MessageReader sub_reader(nullptr);
       if (reader->PopStruct(&sub_reader)) {
-        auto list_value = base::Value(base::Value::Type::LIST);
-        if (PopListElements(&sub_reader, &list_value))
-          result = std::move(list_value);
+        base::Value::List list_value;
+        if (PopListElements(&sub_reader, list_value))
+          result = base::Value(std::move(list_value));
       }
       break;
     }
