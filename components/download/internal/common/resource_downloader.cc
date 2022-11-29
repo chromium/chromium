@@ -285,10 +285,11 @@ void ResourceDownloader::OnUploadProgress(uint64_t bytes_uploaded) {
 void ResourceDownloader::Destroy() {
   if (wake_lock_)
     wake_lock_->CancelWakeLock();
+  // TODO(crbug.com/1394491): Use Weak Pointers instead.
   delegate_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UrlDownloadHandler::Delegate::OnUrlDownloadStopped,
-                     delegate_, base::UnsafeDanglingUntriaged(this)));
+                     delegate_, reinterpret_cast<UrlDownloadHandlerID>(this)));
 }
 
 void ResourceDownloader::RequestWakeLock(

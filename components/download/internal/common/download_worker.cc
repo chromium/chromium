@@ -155,7 +155,7 @@ void DownloadWorker::OnUrlDownloadStarted(
                                 std::move(create_info));
 }
 
-void DownloadWorker::OnUrlDownloadStopped(UrlDownloadHandler* downloader) {
+void DownloadWorker::OnUrlDownloadStopped(UrlDownloadHandlerID downloader) {
   // Release the |url_download_handler_|, the object will be deleted on IO
   // thread.
   url_download_handler_.reset();

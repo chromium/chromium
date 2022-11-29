@@ -243,10 +243,10 @@ void InProgressDownloadManager::OnUrlDownloadStarted(
 }
 
 void InProgressDownloadManager::OnUrlDownloadStopped(
-    UrlDownloadHandler* downloader) {
+    UrlDownloadHandlerID downloader) {
   for (auto ptr = url_download_handlers_.begin();
        ptr != url_download_handlers_.end(); ++ptr) {
-    if (ptr->get() == downloader) {
+    if (reinterpret_cast<UrlDownloadHandlerID>(ptr->get()) == downloader) {
       url_download_handlers_.erase(ptr);
       return;
     }
@@ -698,7 +698,7 @@ void InProgressDownloadManager::AddInProgressDownloadForTest(
 void InProgressDownloadManager::CancelUrlDownload(
     UrlDownloadHandler* downloader,
     bool user_cancel) {
-  OnUrlDownloadStopped(downloader);
+  OnUrlDownloadStopped(reinterpret_cast<UrlDownloadHandlerID>(downloader));
 }
 
 }  // namespace download
