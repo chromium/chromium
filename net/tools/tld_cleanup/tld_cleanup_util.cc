@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
@@ -69,59 +70,47 @@ std::string RulesToGperf(const RuleMap& rules) {
 // canonicalizes it using GURL. Returns kSuccess if the rule is interpreted as
 // valid; logs a warning and returns kWarning if it is probably invalid; and
 // logs an error and returns kError if the rule is (almost) certainly invalid.
-NormalizeResult NormalizeRule(std::string* domain, Rule* rule) {
+NormalizeResult NormalizeRule(std::string& domain, Rule& rule) {
   NormalizeResult result = NormalizeResult::kSuccess;
 
   // Strip single leading and trailing dots.
-  if (domain->at(0) == '.')
-    domain->erase(0, 1);
-  if (domain->empty()) {
-    LOG(WARNING) << "Ignoring empty rule";
-    return NormalizeResult::kWarning;
-  }
-  if (domain->at(domain->size() - 1) == '.')
-    domain->erase(domain->size() - 1, 1);
-  if (domain->empty()) {
-    LOG(WARNING) << "Ignoring empty rule";
-    return NormalizeResult::kWarning;
-  }
+  if (base::StartsWith(domain, "."))
+    domain.erase(0, 1);
+  if (base::EndsWith(domain, "."))
+    domain.pop_back();
 
   // Allow single leading '*.' or '!', saved here so it's not canonicalized.
-  size_t start_offset = 0;
-  if (domain->at(0) == '!') {
-    domain->erase(0, 1);
-    rule->exception = true;
-  } else if (domain->find("*.") == 0) {
-    domain->erase(0, 2);
-    rule->wildcard = true;
+  if (base::StartsWith(domain, "!")) {
+    domain.erase(0, 1);
+    rule.exception = true;
+  } else if (base::StartsWith(domain, "*.")) {
+    domain.erase(0, 2);
+    rule.wildcard = true;
   }
-  if (domain->empty()) {
+  if (domain.empty()) {
     LOG(WARNING) << "Ignoring empty rule";
     return NormalizeResult::kWarning;
   }
 
   // Warn about additional '*.' or '!'.
-  if (domain->find("*.", start_offset) != std::string::npos ||
-      domain->find('!', start_offset) != std::string::npos) {
-    LOG(WARNING) << "Keeping probably invalid rule: " << *domain;
+  if (base::Contains(domain, "*.") || base::Contains(domain, '!')) {
+    LOG(WARNING) << "Keeping probably invalid rule: " << domain;
     result = NormalizeResult::kWarning;
   }
 
   // Make a GURL and normalize it, then get the host back out.
-  std::string url = "http://";
-  url.append(*domain);
-  GURL gurl(url);
+  GURL gurl(base::StrCat({"http://", domain}));
   const std::string& spec = gurl.possibly_invalid_spec();
   url::Component host = gurl.parsed_for_possibly_invalid_spec().host;
   if (!host.is_valid()) {
-    LOG(ERROR) << "Ignoring rule that couldn't be normalized: " << *domain;
+    LOG(ERROR) << "Ignoring rule that couldn't be normalized: " << domain;
     return NormalizeResult::kError;
   }
   if (!gurl.is_valid()) {
-    LOG(WARNING) << "Keeping rule that GURL says is invalid: " << *domain;
+    LOG(WARNING) << "Keeping rule that GURL says is invalid: " << domain;
     result = NormalizeResult::kWarning;
   }
-  domain->assign(spec.substr(host.begin, host.len));
+  domain.assign(spec.substr(host.begin, host.len));
 
   return result;
 }
@@ -162,7 +151,7 @@ NormalizeResult NormalizeDataToRuleMap(const std::string& data,
 
     Rule rule{/*exception=*/false, /*wildcard=*/false,
               /*is_private=*/in_private_section};
-    NormalizeResult new_result = NormalizeRule(&domain, &rule);
+    NormalizeResult new_result = NormalizeRule(domain, rule);
     result = std::max(result, new_result);
     if (new_result == NormalizeResult::kError) {
       continue;
