@@ -47,6 +47,7 @@ void InitLogging() {
 
 constexpr char kSwitchHelp[] = "h";
 constexpr char kSwitchSamplers[] = "samplers";
+constexpr char kSwitchInitialSample[] = "initial-sample";
 constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
 constexpr char kSwitchTimeout[] = "timeout";
@@ -63,6 +64,7 @@ in CSV or JSON format.
 
 Options:
   --samplers=<samplers>           Comma separated list of samplers.
+  --initial-sample                Sample on launch.
   --sample-interval=<num>         Sample on a <num> second interval.
   --sample-every-nth-notification        Sample on power manager notifications.
       Respond to every nth notification only.
@@ -367,18 +369,24 @@ int main(int argc, char** argv) {
                        },
                        run_loop.QuitClosure()));
 
-  if (!event_source->Start(BindRepeating(
-          [](power_sampler::SamplingController* controller,
-             base::OnceClosure quit_closure) {
-            if (controller->OnSamplingEvent())
-              std::move(quit_closure).Run();
-          },
-          base::Unretained(&controller), run_loop.QuitClosure()))) {
+  auto sample_closure = BindRepeating(
+      [](power_sampler::SamplingController* controller,
+         base::OnceClosure quit_closure) {
+        if (controller->OnSamplingEvent())
+          std::move(quit_closure).Run();
+      },
+      base::Unretained(&controller), run_loop.QuitClosure());
+
+  controller.StartSession();
+
+  if (!event_source->Start(sample_closure)) {
     PrintUsage("Could not start the sampling event source.");
     return kStatusRuntimeError;
   }
 
-  controller.StartSession();
+  if (command_line.HasSwitch(kSwitchInitialSample)) {
+    sample_closure.Run();
+  }
 
   run_loop.Run();
 

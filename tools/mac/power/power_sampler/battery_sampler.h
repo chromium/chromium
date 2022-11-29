@@ -15,26 +15,36 @@
 
 namespace power_sampler {
 
-// The battery sampler provides data retrieved from the IOPMPowerSource.
-// The |GetSample| method is ideally invoked on change notification from the
+// The battery sampler provides data retrieved from the IOPMPowerSource. The
+// |GetSample| method is ideally invoked on change notification from the
 // IOPMPowerSource in order to sample new power data immediately.
 //
 // The sampler provides battery voltage, as well as the "max capacity" and
 // "current capacity" of the battery.
 //
 // This sampler also provides an average power consumption estimate when
-// possible, which is when the net "current capacity" of the battery has
-// changed from a previous sample. This may not occur every time GetSample is
-// invoked, as the "capacity" data is in integral units of 1mAh, which
-// represents a fair bit of energy. For a three-cell LiIon battery with a
-// nominal voltage of 3*3.7V or 11.1V, a single mAh consumed over the period
-// of one minute represents (1mAh * 11.1V)/60s or ~0.67W average power
-// consumption. The M1 MacBooks, in particular, have been observed to consume
-// much lower power than this when the backlight is turned down, and so it may
-// take multiple sampling intervals for a capacity change of 1mAh to accrue.
-// To estimate the average power consumption, this class uses simple linear
-// interpolation over the interval in question, e.g. the assumption is that
-// the battery voltage changes linearly from the start to the end of the
+// possible, which is when the net "current capacity" of the battery has changed
+// from a previous sample. This may not occur every time GetSample is invoked,
+// as the "capacity" data is in integral units of 1mAh, which represents a fair
+// bit of energy. For a three-cell LiIon battery with a nominal voltage of
+// 3*3.7V or 11.1V, a single mAh consumed over the period of one minute
+// represents (1mAh * 11.1V)/60s or ~0.67W average power consumption. The M1
+// MacBooks, in particular, have been observed to consume much lower power than
+// this when the backlight is turned down, and so it may take multiple sampling
+// intervals for a capacity change of 1mAh to accrue. To estimate the average
+// power consumption, this class uses simple linear interpolation over the
+// interval in question, e.g. the assumption is that the battery voltage changes
+// linearly from the start to the end of the interval.
+//
+// This sampler assumes that the battery capacity reported by macOS has changed
+// just before the first call to GetSample(). If it isn't the case, the computed
+// average power consumption will be incorrect. For example:
+//  t = -2 minute : current capacity = 51, max capacity = 60
+//  t = -1 minute : current capacity = 50, max capacity = 60
+//  t =  0 minute : current capacity = 50, max capacity = 60 -> GetSample
+//  t =  1 minute : current capacity = 49, max capacity = 60 -> GetSample
+// The 2nd call to GetSample() will assume that current capacity decreased by 1
+// over a 1 minute interval, but it really decreased by 1 over a 2 minutes
 // interval.
 class BatterySampler : public Sampler {
  public:
@@ -115,9 +125,6 @@ class BatterySampler : public Sampler {
   // consumption.
   base::TimeTicks prev_battery_sample_time_ = base::TimeTicks::Min();
   absl::optional<BatteryData> prev_battery_data_;
-  // Consumed capacity sampled at the time of creation, used to determine
-  // eligibility of early samples for power estimates.
-  const int64_t initial_consumed_mah_;
 };
 
 }  // namespace power_sampler

@@ -113,14 +113,7 @@ Sampler::Sample BatterySampler::GetSample(base::TimeTicks sample_time) {
   sample.emplace("sample_age", get_seconds_since_epoch_fn_() -
                                    new_data.update_time_seconds_since_epoch);
 
-  // Store the battery state only if the consumed capacity is different from the
-  // initial state. If the consumed capacity is identical to the initial state,
-  // it would be incorrect to use it for power estimate because it's unknown for
-  // how long it hasn't changed (and therefore it's unknown what time interval
-  // should be used to compute the power estimate).
-  if (!prev_battery_data_.has_value() &&
-      (new_data.max_capacity_mah - new_data.current_capacity_mah) >
-          initial_consumed_mah_) {
+  if (!prev_battery_data_.has_value()) {
     // Store an initial sample.
     StoreBatteryData(sample_time, new_data);
   }
@@ -223,9 +216,7 @@ BatterySampler::BatterySampler(
     BatteryData initial_battery_data)
     : maybe_get_battery_data_fn_(maybe_get_battery_data_fn),
       get_seconds_since_epoch_fn_(get_seconds_since_epoch_fn),
-      power_source_(std::move(power_source)),
-      initial_consumed_mah_(initial_battery_data.max_capacity_mah -
-                            initial_battery_data.current_capacity_mah) {}
+      power_source_(std::move(power_source)) {}
 
 void BatterySampler::StoreBatteryData(base::TimeTicks sample_time,
                                       const BatteryData& battery_data) {

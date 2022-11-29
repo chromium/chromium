@@ -189,18 +189,19 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
   set_battery_data(battery_data);
   set_seconds_since_epoch(46);
   constexpr base::TimeDelta kOneMinute = base::Minutes(1);
-
   now += kOneMinute;
   datums = sampler->GetSample(now);
-  // There's no power estimate because the consumed capacity in the previous
-  // sample is identical to the initial state. Since the consumed capacity in
-  // this sample is different than the initial state, it will be considered for
-  // a power estimate in a future sample.
+  double expected_power_w =
+      (11.1 + 11.1) / 2.0 *      // Average voltage (V).
+      (1.0 * 3600.0 / 1000.0) /  // Current consumption (As).
+      60.0;                      // 1 minute (s).
   ExpectSampleMatchesArray(
       datums,
       {std::make_pair("external_connected", true),
        std::make_pair("voltage", 11.1), std::make_pair("current_capacity", 2),
-       std::make_pair("max_capacity", 5.225), std::make_pair("sample_age", 2)});
+       std::make_pair("max_capacity", 5.225),
+       std::make_pair("avg_power", expected_power_w),
+       std::make_pair("sample_age", 2)});
 
   battery_data.voltage_mv = 11200;  // 11.2V.
   battery_data.update_time_seconds_since_epoch = 47;
@@ -222,10 +223,9 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
   now += kOneMinute;
   datums = sampler->GetSample(now);
 
-  double expected_power_w =
-      (11.1 + 11.2) / 2.0 *      // Average voltage (V).
-      (1.0 * 3600.0 / 1000.0) /  // Current consumption (As).
-      120.0;                     // 2 minutes (s).
+  expected_power_w = (11.1 + 11.2) / 2.0 *      // Average voltage (V).
+                     (1.0 * 3600.0 / 1000.0) /  // Current consumption (As).
+                     120.0;                     // 2 minutes (s).
   // The above makes roughly 330mW.
   EXPECT_DOUBLE_EQ(expected_power_w, 0.3345);
   ExpectSampleMatchesArray(datums,
