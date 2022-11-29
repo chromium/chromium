@@ -358,7 +358,7 @@ void PermissionsUpdater::RevokeRuntimePermissions(
       extension.permissions_data()->active_permissions();
 
   // Unlike adding permissions, we should know that any permissions we remove
-  // are a superset of the permissions the extension has active (because we only
+  // are a subset of the permissions the extension has active (because we only
   // allow removal origins and the extension can't have a broader origin than
   // what it has granted). Because of this, we can just look for any patterns
   // contained in both sets.
@@ -367,8 +367,7 @@ void PermissionsUpdater::RevokeRuntimePermissions(
           active, permissions,
           URLPatternSet::IntersectionBehavior::kPatternsContainedByBoth);
 
-  CHECK(extension.permissions_data()->active_permissions().Contains(
-      *active_permissions_to_remove))
+  CHECK(active.Contains(*active_permissions_to_remove))
       << "Cannot remove permissions that are not active.";
   CHECK(GetRevokablePermissions(&extension)->Contains(permissions))
       << "Cannot remove non-revokable permissions.";

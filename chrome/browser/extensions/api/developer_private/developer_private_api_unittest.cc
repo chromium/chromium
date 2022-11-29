@@ -9,10 +9,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -216,6 +218,37 @@ auto MatchMatchingExtensionInfo(
       testing::Field(
           &api::developer_private::MatchingExtensionInfo::site_access,
           host_access));
+}
+
+api::developer_private::ExtensionSiteAccessUpdate CreateSiteAccessUpdate(
+    const std::string& id,
+    api::developer_private::HostAccess access) {
+  api::developer_private::ExtensionSiteAccessUpdate update;
+  update.id = id;
+  update.site_access = access;
+  return update;
+}
+
+void UpdateSiteAccess(
+    Profile* profile,
+    const std::string& site,
+    const std::vector<api::developer_private::ExtensionSiteAccessUpdate>&
+        updates) {
+  base::Value::List update_entries;
+  update_entries.reserve(updates.size());
+  for (const auto& update : updates) {
+    update_entries.Append(update.ToValue());
+  }
+  std::string updates_arg;
+  EXPECT_TRUE(base::JSONWriter::Write(update_entries, &updates_arg));
+
+  scoped_refptr<ExtensionFunction> function =
+      base::MakeRefCounted<api::DeveloperPrivateUpdateSiteAccessFunction>();
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(R"(["%s", %s])", site.c_str(), updates_arg.c_str()),
+      profile))
+      << function->GetError();
 }
 
 }  // namespace
@@ -2412,6 +2445,183 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
                          developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+}
+
+// Tests the UpdateSiteAccess function when called on an extension with no
+// withheld host permissions.
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateUpdateSiteAccess_NoWithheldHostPermissions) {
+  namespace developer = api::developer_private;
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test")
+          .AddPermission("http://a.example.com/*")
+          .AddPermission("*://b.example.com/*")
+          .AddPermission("http://google.com/*")
+          .Build();
+  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
+
+  // Change state from ON_ALL_SITES to ON_CLICK.
+  std::vector<developer::ExtensionSiteAccessUpdate> updates;
+  updates.push_back(
+      CreateSiteAccessUpdate(extension->id(), developer::HOST_ACCESS_ON_CLICK));
+  UpdateSiteAccess(profile(), "http://google.com/*", updates);
+
+  // Check that all host permissions are withheld when the site access is
+  // changed to ON_CLICK if there are no withheld host permissions.
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
+  EXPECT_EQ(PermissionSet(),
+            *extension_prefs->GetRuntimeGrantedPermissions(extension->id()));
+
+  // Change state from ON_CLICK to ON_ALL_SITES.
+  updates.clear();
+  updates.push_back(CreateSiteAccessUpdate(
+      extension->id(), developer::HOST_ACCESS_ON_ALL_SITES));
+  UpdateSiteAccess(profile(), "http://google.com/*", updates);
+
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
+
+  // Change state from ON_ALL_SITES to ON_SPECIFIC_SITES.
+  updates.clear();
+  updates.push_back(CreateSiteAccessUpdate(
+      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+  UpdateSiteAccess(profile(), "*://*.example.com/*", updates);
+
+  // Check that the pattern is added as-is to the extension's runtime granted
+  // permissions when the site access is changed to ON_SPECIFIC_SITES if there
+  // are no withheld host permissions.
+  URLPattern example_pattern(Extension::kValidHostPermissionSchemes,
+                             "*://*.example.com/*");
+  EXPECT_EQ(URLPatternSet({example_pattern}),
+            (*extension_prefs->GetRuntimeGrantedPermissions(extension->id()))
+                .effective_hosts());
+
+  // Check that the extension's actual active host permissions is an
+  // intersection of their manifest and runtime granted hosts.
+  URLPattern a_example_pattern(Extension::kValidHostPermissionSchemes,
+                               "http://a.example.com/*");
+  URLPattern b_example_pattern(Extension::kValidHostPermissionSchemes,
+                               "*://b.example.com/*");
+  EXPECT_EQ(
+      URLPatternSet({a_example_pattern, b_example_pattern}),
+      extension->permissions_data()->active_permissions().effective_hosts());
+}
+
+// Tests the UpdateSiteAccess function when called on an extension with withheld
+// host permissions. In particular, test that if the site access is set to
+// ON_CLICK, all host permissions that match the specified site will be revoked.
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateUpdateSiteAccess_WitheldHostPermissions) {
+  namespace developer = api::developer_private;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test")
+          .AddPermission("*://*.example.com/*")
+          .AddPermission("*://*.google.com/*")
+          .Build();
+  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
+
+  // Change state from ON_ALL_SITES to ON_SPECIFIC_SITES.
+  std::vector<developer::ExtensionSiteAccessUpdate> updates;
+  updates.push_back(CreateSiteAccessUpdate(
+      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+  UpdateSiteAccess(profile(), "http://google.com/*", updates);
+  UpdateSiteAccess(profile(), "*://mail.google.com/*", updates);
+  UpdateSiteAccess(profile(), "https://maps.google.com/*", updates);
+  UpdateSiteAccess(profile(), "*://example.com/*", updates);
+
+  // Confirm that all four sites have been added to runtime granted host
+  // permissions.
+  const GURL kGoogleCom("http://google.com");
+  const GURL kMailGoogleCom("https://mail.google.com/");
+  const GURL kMapsGoogleCom("https://maps.google.com/");
+  const GURL kExampleCom("http://example.com/");
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMailGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMapsGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
+
+  // Change state from ON_SPECIFIC_SITES to ON_CLICK. This will revoke
+  // "http://google.com/*", "https://maps.google.com/*", and
+  // "*://mail.google.com/*" as they match the pattern "http://*.google.com/*"
+  // that is being removed.
+  updates.clear();
+  updates.push_back(
+      CreateSiteAccessUpdate(extension->id(), developer::HOST_ACCESS_ON_CLICK));
+  UpdateSiteAccess(profile(), "http://*.google.com/*", updates);
+
+  // The sites `kGoogleCom` and `kMailGoogleCom` match previously granted
+  // patterns that were revoked when they matched "http://*.google.com/*" that
+  // was called in UpdateSiteAccess. As such, they should no longer be granted.
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                             kMailGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMapsGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
+
+  // Change state from ON_CLICK to ON_SPECIFIC_SITES.
+  updates.clear();
+  updates.push_back(CreateSiteAccessUpdate(
+      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+  UpdateSiteAccess(profile(), "*://mail.google.com/*", updates);
+  // `kMailGoogleCom` matches the pattern "*://mail.google.com/*" that is being
+  // added, so it should be granted again.
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMailGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMapsGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
+}
+
+// Test that the UpdateSiteAccess function can be applied to multiple
+// extensions.
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateUpdateSiteAccess_MultipleExtensions) {
+  namespace developer = api::developer_private;
+
+  scoped_refptr<const Extension> extension_1 =
+      ExtensionBuilder("test_1").AddPermission("<all_urls>").Build();
+  scoped_refptr<const Extension> extension_2 =
+      ExtensionBuilder("test_2").AddPermission("<all_urls>").Build();
+  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension_1));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension_2));
+
+  std::vector<developer::ExtensionSiteAccessUpdate> updates;
+  updates.push_back(CreateSiteAccessUpdate(
+      extension_1->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+  updates.push_back(CreateSiteAccessUpdate(extension_2->id(),
+                                           developer::HOST_ACCESS_ON_CLICK));
+  UpdateSiteAccess(profile(), "http://google.com/*", updates);
+
+  // Confirm that `extension_1` can still access `kGoogleCom` but `extension_2`
+  // cannot.
+  const GURL kGoogleCom("http://google.com");
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension_1, kGoogleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension_2, kGoogleCom));
 }
 
 class DeveloperPrivateApiAllowlistUnitTest

@@ -484,6 +484,14 @@ chrome.developerPrivate.SiteGroup;
 chrome.developerPrivate.MatchingExtensionInfo;
 
 /**
+ * @typedef {{
+ *   id: string,
+ *   siteAccess: !chrome.developerPrivate.HostAccess
+ * }}
+ */
+chrome.developerPrivate.ExtensionSiteAccessUpdate;
+
+/**
  * @enum {string}
  */
 chrome.developerPrivate.PackStatus = {
@@ -875,6 +883,13 @@ chrome.developerPrivate.getUserAndExtensionSitesByEtld = function(callback) {};
  *     callback
  */
 chrome.developerPrivate.getMatchingExtensionsForSite = function(site, callback) {};
+
+/**
+ * @param {string} site
+ * @param {!Array<!chrome.developerPrivate.ExtensionSiteAccessUpdate>} updates
+ * @param {function(): void=} callback
+ */
+chrome.developerPrivate.updateSiteAccess = function(site, updates, callback) {};
 
 /**
  * @param {string} id
