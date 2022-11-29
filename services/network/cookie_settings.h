@@ -16,6 +16,7 @@
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
@@ -109,20 +110,79 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // It may be set to kPartitionedStateAllowedOnly if the request allows
   // partitioned state to be sent over the connection, but unpartitioned
   // state should be blocked.
+  // DEPRECATED: Use IsPrivacyModeEnabled(GURL, SiteForCookies, Origin,
+  // SamePartyContext::Type, bool).
+  // TODO(crbug.com/1386190): Update callers and remove.
   net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
-      net::SamePartyContext::Type same_party_context_type) const;
+      net::SamePartyContext::Type same_party_context_type) const {
+    return IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
+                                same_party_context_type,
+                                net::CookieSettingOverrides());
+  }
+
+  // Returns kStateDisallowed iff the given |url| has to be requested over
+  // connection that is not tracked by the server. Usually is kStateAllowed,
+  // unless user privacy settings block cookies from being get or set.
+  // It may be set to kPartitionedStateAllowedOnly if the request allows
+  // partitioned state to be sent over the connection, but unpartitioned
+  // state should be blocked.
+  net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      net::SamePartyContext::Type same_party_context_type,
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true if the given cookie is accessible according to user
   // cookie-blocking settings. Assumes that the cookie is otherwise accessible
   // (i.e. that the cookie is otherwise valid with no other exclusion reasons).
+  // DEPRECATED: Use IsCookieAccessible(CanonicalCookie, GURL, SiteForCookies,
+  // Origin, bool).
+  // TODO(crbug.com/1386190): Update callers and remove.
   bool IsCookieAccessible(
       const net::CanonicalCookie& cookie,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const;
+      const absl::optional<url::Origin>& top_frame_origin) const {
+    return IsCookieAccessible(cookie, url, site_for_cookies, top_frame_origin,
+                              net::CookieSettingOverrides());
+  }
+
+  // Returns true if the given cookie is accessible according to user
+  // cookie-blocking settings. Assumes that the cookie is otherwise accessible
+  // (i.e. that the cookie is otherwise valid with no other exclusion reasons).
+  bool IsCookieAccessible(const net::CanonicalCookie& cookie,
+                          const GURL& url,
+                          const net::SiteForCookies& site_for_cookies,
+                          const absl::optional<url::Origin>& top_frame_origin,
+                          net::CookieSettingOverrides overrides) const;
+
+  // Annotates `maybe_included_cookies` and `excluded_cookies` with
+  // ExclusionReasons if needed, per user's cookie blocking settings, and
+  // ensures that all excluded cookies from `maybe_included_cookies` are moved
+  // to `excluded_cookies`.  Returns false if the CookieSettings blocks access
+  // to all cookies; true otherwise. Does not change the relative ordering of
+  // the cookies in `maybe_included_cookies`, since this order is important when
+  // building the cookie line.
+  // DEPRECATED: Use AnnotateAndMoveUserBlockedCookies(GURL, SiteForCookies,
+  // Origin, FirstPartySetMetadata, bool, CookieAccessResultList,
+  // CookieAccessResultList).
+  // TODO(crbug.com/1386190): Update callers and remove.
+  bool AnnotateAndMoveUserBlockedCookies(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin* top_frame_origin,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies) const {
+    return AnnotateAndMoveUserBlockedCookies(
+        url, site_for_cookies, top_frame_origin, first_party_set_metadata,
+        net::CookieSettingOverrides(), maybe_included_cookies,
+        excluded_cookies);
+  }
 
   // Annotates `maybe_included_cookies` and `excluded_cookies` with
   // ExclusionReasons if needed, per user's cookie blocking settings, and
@@ -136,6 +196,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) const;
 
@@ -156,6 +217,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
       content_settings::SettingSource* source,
       QueryReason query_reason) const override;
 
@@ -173,6 +235,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     // Access to unpartitioned cookies is blocked in this context, but access to
     // partitioned cookies is allowed.
     kPartitionedStateAllowed,
+    // Access to cookies is blocked in this context, but they are forced to
+    // allowed by some mechanism, eg. user bypass.
+    kForceAllowed,
   };
 
   struct CookieSettingWithMetadata {
@@ -182,21 +247,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     ThirdPartyBlockingOutcome third_party_blocking_outcome;
   };
 
-  // Determines whether cookie access should be blocked due to the
-  // third-party-cookie-blocking setting and any relevant Storage Access
-  // permission grants. Does not distinguish between access to unpartitioned
-  // state and access to partitioned state.
-  bool BlockDueToThirdPartyCookieBlockingSetting(
-      bool is_third_party_request,
-      const GURL& url,
-      const GURL& first_party_url,
-      ContentSetting cookie_setting,
-      QueryReason query_reason) const;
-
   // Determines the scope of third-party-cookie-blocking, i.e. whether it
   // applies to all cookies or just unpartitioned cookies. Assumes that
-  // BlockDueToThirdpartyCookieBlockingSetting has been called and returned
-  // true.
+  // checks have already determined to block third-party cookies.
   ThirdPartyBlockingOutcome GetThirdPartyBlockingScope(
       const GURL& first_party_url) const;
 
@@ -207,6 +260,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
       QueryReason query_reason) const;
 
   // An overload of the above, which determines `first_party_url` and
@@ -215,6 +269,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
+      net::CookieSettingOverrides overrides,
       QueryReason query_reason) const;
 
   // Returns whether the given cookie should be allowed to be sent, according to

@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "net/cookies/cookie_setting_override.h"
 
 class GURL;
 class PrefService;
@@ -167,6 +168,7 @@ class CookieSettings : public CookieSettingsBase,
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
       content_settings::SettingSource* source,
       QueryReason query_reason) const override;
 

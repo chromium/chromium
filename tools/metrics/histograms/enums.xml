@@ -96057,6 +96057,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Storage access blocked"/>
   <int value="1" label="Storage access allowed"/>
   <int value="2" label="Access grant used to allow access"/>
+  <int value="3"
+      label="Storage access allowed by force-allowed third-party-cookies"/>
 </enum>
 
 <enum name="StoragePartitionRemoverTasks">

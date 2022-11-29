@@ -25,6 +25,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -71,7 +72,13 @@ class CookieSettingsObserver : public CookieSettings::Observer {
       scoped_observation_{this};
 };
 
-class CookieSettingsTest : public testing::TestWithParam<bool> {
+struct TestCase {
+  std::string test_name;
+  bool storage_access_api_enabled;
+  bool force_allow_third_party_cookies;
+};
+
+class CookieSettingsTest : public testing::TestWithParam<TestCase> {
  public:
   CookieSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -122,13 +129,45 @@ class CookieSettingsTest : public testing::TestWithParam<bool> {
     task_environment_.FastForwardBy(delta);
   }
 
-  bool IsStorageAccessAPIEnabled() const { return GetParam(); }
+  bool IsStorageAccessAPIEnabled() const {
+    return GetParam().storage_access_api_enabled;
+  }
+
+  bool IsForceAllowThirdPartyCookies() const {
+    return GetParam().force_allow_third_party_cookies;
+  }
+
+  net::CookieSettingOverrides GetCookieSettingOverrides() const {
+    net::CookieSettingOverrides overrides;
+    if (IsForceAllowThirdPartyCookies()) {
+      overrides.Put(net::CookieSettingOverride::kForceThirdPartyByUser);
+    }
+    return overrides;
+  }
 
   // Assumes that cookie access would be blocked if not for a Storage Access API
-  // grant.
-  ContentSetting SettingWithStorageAccessGrantOverride() const {
-    return IsStorageAccessAPIEnabled() ? CONTENT_SETTING_ALLOW
-                                       : CONTENT_SETTING_BLOCK;
+  // grant or force allow.
+  ContentSetting SettingWithEitherOverride() const {
+    return IsStorageAccessAPIEnabled() || IsForceAllowThirdPartyCookies()
+               ? CONTENT_SETTING_ALLOW
+               : CONTENT_SETTING_BLOCK;
+  }
+
+  ContentSetting SettingWithForceAllowThirdPartyCookies() const {
+    return IsForceAllowThirdPartyCookies() ? CONTENT_SETTING_ALLOW
+                                           : CONTENT_SETTING_BLOCK;
+  }
+
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithEitherOverride() const {
+    if (IsStorageAccessAPIEnabled()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    }
+    if (IsForceAllowThirdPartyCookies()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
  protected:
@@ -263,9 +302,18 @@ TEST_P(ImprovedCookieControlsDisabledCookieSettingsTest,
   EXPECT_TRUE(cookie_settings_incognito_->IsFullCookieAccessAllowed(
       kBlockedSite, kFirstPartySite, QueryReason::kCookies));
 }
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         ImprovedCookieControlsDisabledCookieSettingsTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ImprovedCookieControlsDisabledCookieSettingsTest,
+    testing::ValuesIn<TestCase>({
+        {"disable_SAA", false, false},
+        {"enable_SAA", true, false},
+        {"disable_SAA_force_3PCs", false, true},
+        {"enable_SAA_force_3PCs", true, true},
+    }),
+    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 #endif
 
 TEST_P(CookieSettingsTest, CookiesAllowThirdParty) {
@@ -491,8 +539,9 @@ TEST_P(CookieSettingsTest, GetCookieSettingAllowedTelemetry) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
@@ -520,32 +569,31 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            SettingWithStorageAccessGrantOverride());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithEitherOverride());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(
-          IsStorageAccessAPIEnabled()
-              ? net::cookie_util::StorageAccessResult::
-                    ACCESS_ALLOWED_STORAGE_ACCESS_GRANT
-              : net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
-      1);
+      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(top_level_url, url, nullptr,
-                                               QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(top_level_url, url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
 
   // Invalid pairs where a |third_url| is used.
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, third_url, nullptr,
-                                               QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(third_url, top_level_url,
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, third_url,
+                                               GetCookieSettingOverrides(),
                                                nullptr, QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(third_url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
 }
 
 // Subdomains of the granted resource url should not gain access if a valid
@@ -562,16 +610,18 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            SettingWithStorageAccessGrantOverride());
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(GURL(kHttpsSubdomainSite),
-                                               top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(GURL(kHttpSite), top_level_url,
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
                                                nullptr, QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
+            SettingWithEitherOverride());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                GURL(kHttpsSubdomainSite), top_level_url,
+                GetCookieSettingOverrides(), nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(GURL(kHttpSite), top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
 }
 
 // Subdomains of the granted top level url should not grant access if a valid
@@ -588,15 +638,18 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            SettingWithStorageAccessGrantOverride());
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, GURL(kHttpsSubdomainSite),
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
                                                nullptr, QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, GURL(kHttpSite), nullptr,
-                                               QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
+            SettingWithEitherOverride());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, GURL(kHttpsSubdomainSite),
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, GURL(kHttpSite),
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
 }
 
 // Explicit settings should be respected regardless of whether Storage Access
@@ -612,8 +665,9 @@ TEST_P(CookieSettingsTest, GetCookieSettingRespectsExplicitSettings) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -635,16 +689,18 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   // When requesting our setting for the url/top-level combination our grant is
   // for access should be allowed iff SAA is enabled. For any other domain pairs
   // access should still be blocked.
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            SettingWithStorageAccessGrantOverride());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithEitherOverride());
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
   FastForwardTime(base::Seconds(101));
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr,
-                                               QueryReason::kCookies),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
 }
 #endif
 
@@ -811,7 +867,18 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */, CookieSettingsTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    CookieSettingsTest,
+    testing::ValuesIn<TestCase>({
+        {"disable_SAA", false, false},
+        {"enable_SAA", true, false},
+        {"disable_SAA_force_3PCs", false, true},
+        {"enable_SAA_force_3PCs", true, true},
+    }),
+    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 

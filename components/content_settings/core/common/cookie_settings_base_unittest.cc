@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +51,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
       content_settings::SettingSource* source,
       QueryReason query_reason) const override {
     return callback_.Run(url);

@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -118,10 +120,31 @@ class CookieSettingsBase {
   // is used to determine third-party-ness of |url|.
   //
   // This may be called on any thread.
-  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, GURL, Origin).
+  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, SiteForCookies,
+  // Origin, bool, QueryRason).
+  // TODO(crbug.com/1386190): Update callers and remove.
   bool IsFullCookieAccessAllowed(const GURL& url,
                                  const GURL& first_party_url,
                                  QueryReason query_reason) const;
+
+  // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
+  // to specify a separate `site_for_cookies`, which is used to determine
+  // whether a request is in a third_party context and `top_frame_origin`, which
+  // is used to check if there are any content_settings exceptions.
+  // `top_frame_origin` should at least be specified when `site_for_cookies` is
+  // non-empty.
+  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, SiteForCookies,
+  // Origin, bool, QueryReason)
+  // TODO(crbug.com/1386190): Update callers and remove.
+  bool IsFullCookieAccessAllowed(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      QueryReason query_reason) const {
+    return IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin,
+                                     net::CookieSettingOverrides(),
+                                     query_reason);
+  }
 
   // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
   // to specify a separate `site_for_cookies`, which is used to determine
@@ -133,6 +156,7 @@ class CookieSettingsBase {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
+      net::CookieSettingOverrides overrides,
       QueryReason query_reason) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
@@ -143,8 +167,21 @@ class CookieSettingsBase {
   bool IsCookieSessionOnly(const GURL& url, QueryReason query_reason) const;
 
   // A helper for applying third party cookie blocking rules.
+  // DEPRECATED: Replace with GetCookieSetting(GURL, GURL, bool, SettingSource,
+  // QueryReason).
+  // TODO(crbug.com/1386190): Update callers and remove.
   ContentSetting GetCookieSetting(const GURL& url,
                                   const GURL& first_party_url,
+                                  content_settings::SettingSource* source,
+                                  QueryReason query_reason) const {
+    return GetCookieSetting(url, first_party_url, net::CookieSettingOverrides(),
+                            source, query_reason);
+  }
+
+  // A helper for applying third party cookie blocking rules.
+  ContentSetting GetCookieSetting(const GURL& url,
+                                  const GURL& first_party_url,
+                                  net::CookieSettingOverrides overrides,
                                   content_settings::SettingSource* source,
                                   QueryReason query_reason) const;
 
@@ -152,8 +189,6 @@ class CookieSettingsBase {
   // cookies on the given domain. The |cookie_domain| can be provided as the
   // direct output of CanonicalCookie::Domain(), i.e. any leading dot does not
   // have to be removed.
-  //
-  // This may be called on any thread.
   //
   // Legacy access means we treat "SameSite unspecified" as if it were
   // SameSite=None. Also, we don't require SameSite=None cookies to be Secure.
@@ -231,6 +266,7 @@ class CookieSettingsBase {
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
+      net::CookieSettingOverrides overrides,
       content_settings::SettingSource* source,
       QueryReason query_reason) const = 0;
 

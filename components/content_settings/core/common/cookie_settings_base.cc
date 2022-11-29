@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
@@ -84,12 +85,13 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
 ContentSetting CookieSettingsBase::GetCookieSetting(
     const GURL& url,
     const GURL& first_party_url,
+    net::CookieSettingOverrides overrides,
     content_settings::SettingSource* source,
     QueryReason query_reason) const {
   return GetCookieSettingInternal(
       url, first_party_url,
       IsThirdPartyRequest(url, net::SiteForCookies::FromUrl(first_party_url)),
-      source, query_reason);
+      overrides, source, query_reason);
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
@@ -101,19 +103,22 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
   // content settings on IOS, so it does not matter.
   DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;
 #endif
-  return IsAllowed(
-      GetCookieSetting(url, first_party_url, nullptr, query_reason));
+  return IsAllowed(GetCookieSetting(url, first_party_url,
+                                    net::CookieSettingOverrides(), nullptr,
+                                    query_reason));
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
+    net::CookieSettingOverrides overrides,
     QueryReason query_reason) const {
   ContentSetting setting = GetCookieSettingInternal(
       url,
       GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
-      IsThirdPartyRequest(url, site_for_cookies), nullptr, query_reason);
+      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr,
+      query_reason);
   return IsAllowed(setting);
 }
 

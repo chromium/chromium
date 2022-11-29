@@ -14,11 +14,13 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
@@ -169,6 +171,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& url,
     const GURL& first_party_url,
     bool is_third_party_request,
+    net::CookieSettingOverrides overrides,
     content_settings::SettingSource* source,
     QueryReason query_reason) const {
   // Auto-allow in extensions or for WebUI embedding a secure origin.
@@ -218,6 +221,13 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     }
   }
 #endif
+
+  if (block && is_third_party_request &&
+      overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
+    block = false;
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
+  }
 
   if (block) {
     FireStorageAccessHistogram(
