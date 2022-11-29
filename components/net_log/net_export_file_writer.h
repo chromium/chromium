@@ -126,7 +126,8 @@ class NetExportFileWriter {
   // log; it's for adding additional info to the log that aren't events.
   void StopNetLog(base::Value::Dict polled_data = base::Value::Dict());
 
-  // Creates a DictionaryValue summary of the state of the NetExportFileWriter
+  // Creates a `base::Value::Dict` summary of the state of the
+  // `NetExportFileWriter`.
   base::Value::Dict GetState() const;
 
   // Gets the log filepath. |path_callback| will be used to notify the caller

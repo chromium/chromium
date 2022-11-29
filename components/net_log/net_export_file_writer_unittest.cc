@@ -40,6 +40,7 @@
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -167,7 +168,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 
 [[nodiscard]] ::testing::AssertionResult ReadCompleteLogFile(
     const base::FilePath& log_path,
-    std::unique_ptr<base::DictionaryValue>* root) {
+    std::unique_ptr<base::Value::Dict>* root) {
   DCHECK(!log_path.empty());
 
   if (!base::PathExists(log_path)) {
@@ -211,23 +212,24 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
     return ::testing::AssertionFailure()
            << log_path.value() << " could not be read.";
   }
-  *root =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(log_string));
-  if (!*root) {
+  absl::optional<base::Value> log_parsed = base::JSONReader::Read(log_string);
+  if (!log_parsed || !log_parsed->is_dict()) {
     return ::testing::AssertionFailure()
            << "Contents of " << log_path.value()
            << " do not form valid JSON dictionary.";
   }
+
+  *root = std::make_unique<base::Value::Dict>(std::move(log_parsed->GetDict()));
   // Make sure the "constants" section exists
-  base::DictionaryValue* constants;
-  if (!(*root)->GetDictionary("constants", &constants)) {
+  const base::Value::Dict* constants = (*root)->FindDict("constants");
+  if (!constants) {
     root->reset();
     return ::testing::AssertionFailure()
            << log_path.value() << " is missing constants.";
   }
   // Make sure the "events" section exists
-  base::ListValue* events;
-  if (!(*root)->GetList("events", &events)) {
+  base::Value::List* events = (*root)->FindList("events");
+  if (!events) {
     root->reset();
     return ::testing::AssertionFailure()
            << log_path.value() << " is missing events list.";
@@ -444,7 +446,7 @@ class NetExportFileWriterTest : public ::testing::Test {
     }
 
     // Make sure the generated log file is valid.
-    std::unique_ptr<base::DictionaryValue> root;
+    std::unique_ptr<base::Value::Dict> root;
     result = ReadCompleteLogFile(expected_log_path, &root);
     if (!result) {
       return ::testing::AssertionFailure()
@@ -706,19 +708,21 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
                                             kCaptureModeDefaultString));
 
   // Read polledData from log file.
-  std::unique_ptr<base::DictionaryValue> root;
+  std::unique_ptr<base::Value::Dict> root;
   ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
-  base::DictionaryValue* polled_data;
-  ASSERT_TRUE(root->GetDictionary("polledData", &polled_data));
+  const base::Value::Dict* polled_data = root->FindDict("polledData");
+  ASSERT_TRUE(polled_data);
 
   // Check that it contains the field from the polled data that was passed in.
-  std::string dummy_string;
-  ASSERT_TRUE(polled_data->GetString(kDummyPolledDataPath, &dummy_string));
-  EXPECT_EQ(kDummyPolledDataString, dummy_string);
+  const std::string* dummy_string =
+      polled_data->FindString(kDummyPolledDataPath);
+  ASSERT_TRUE(dummy_string);
+  EXPECT_EQ(kDummyPolledDataString, *dummy_string);
 
   // Check that it also contains something from net::GetNetInfo.
-  base::DictionaryValue* http_cache_info;
-  ASSERT_TRUE(polled_data->GetDictionary("httpCacheInfo", &http_cache_info));
+  const base::Value::Dict* http_cache_info =
+      polled_data->FindDict("httpCacheInfo");
+  ASSERT_TRUE(http_cache_info);
 }
 
 // Test with requests in flight. This is done by going through a sequence of a
@@ -789,18 +793,18 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(
       base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
   // Read events from log file.
-  std::unique_ptr<base::DictionaryValue> root;
+  std::unique_ptr<base::Value::Dict> root;
   ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
-  base::ListValue* events;
-  ASSERT_TRUE(root->GetList("events", &events));
+  const base::Value::List* events = root->FindList("events");
+  ASSERT_TRUE(events);
 
   // Check there is at least one event as a result of the ongoing request.
-  ASSERT_GE(events->GetList().size(), 1u);
+  ASSERT_GE(events->size(), 1u);
 
   // Check the URL in the params of the first event.
-  base::Value::Dict* event = events->GetList()[0].GetIfDict();
+  const base::Value::Dict* event = (*events)[0].GetIfDict();
   EXPECT_TRUE(event);
-  base::Value::Dict* event_params = event->FindDict("params");
+  const base::Value::Dict* event_params = event->FindDict("params");
   EXPECT_TRUE(event_params);
   EXPECT_EQ(test_server.GetURL(kRedirectURL),
             *(event_params->FindString("url")));
