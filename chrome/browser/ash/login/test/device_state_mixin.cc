@@ -116,6 +116,7 @@ void DeviceStateMixin::SetUpLocalState() {
       local_state->SetBoolean(::prefs::kEnrollmentRecoveryRequired, false);
       break;
     case DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
+    case DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
       local_state->SetBoolean(prefs::kOobeComplete, true);
       local_state->SetInteger(::prefs::kDeviceRegistered, 0);
       local_state->SetBoolean(::prefs::kEnrollmentRecoveryRequired, false);
@@ -160,25 +161,30 @@ void DeviceStateMixin::SetDeviceState() {
   DCHECK(domain_.empty() || state_ == State::OOBE_COMPLETED_CLOUD_ENROLLED);
   is_setup_ = true;
 
-  WriteInstallAttrFile();
+  WriteInstallAttrFile(state_);
   WriteOwnerKey();
 }
 
-void DeviceStateMixin::WriteInstallAttrFile() {
+void DeviceStateMixin::WriteInstallAttrFile(State state) {
   base::FilePath user_data_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
   base::FilePath install_attrs_file =
       user_data_dir.Append("stub_install_attributes.pb");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
   if (base::PathExists(install_attrs_file)) {
     return;
   }
 
   std::string device_mode, domain, realm, device_id;
-  switch (state_) {
+  switch (state) {
     case DeviceStateMixin::State::BEFORE_OOBE:
     case DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
       // No file at all.
       return;
+    case DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
+      // File with version only. This will prevent Chrome from attempting to
+      // take consumer ownership and automatically advancing to the next state.
     case DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED:
       // File with version only.
       break;
@@ -209,6 +215,7 @@ void DeviceStateMixin::WriteOwnerKey() {
   switch (state_) {
     case DeviceStateMixin::State::BEFORE_OOBE:
     case DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
+    case DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
     case DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED:
       return;
     case DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED:
@@ -230,6 +237,7 @@ bool DeviceStateMixin::IsEnrolledState() const {
   switch (state_) {
     case DeviceStateMixin::State::BEFORE_OOBE:
     case DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
+    case DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
     case DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED:
       return false;
     case DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED:

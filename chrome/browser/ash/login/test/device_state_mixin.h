@@ -37,6 +37,7 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   enum class State {
     BEFORE_OOBE,
     OOBE_COMPLETED_UNOWNED,
+    OOBE_COMPLETED_PERMANENTLY_UNOWNED,
     OOBE_COMPLETED_CLOUD_ENROLLED,
     OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED,
     OOBE_COMPLETED_CONSUMER_OWNED,
@@ -90,9 +91,15 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
     skip_initial_policy_setup_ = value;
   }
 
+  // Writes the install attributes file if it doesn't exist yet (i.e. the mixin
+  // should be instantiated with OOBE_COMPLETED_UNOWNED). Primarily useful for
+  // tests that want to simulate the device locking event. The created file will
+  // contain the data corresponding to the requested `state`.
+  void WriteInstallAttrFile(State state);
+
  private:
   void SetDeviceState();
-  void WriteInstallAttrFile();
+
   void WriteOwnerKey();
 
   // Whether `state_` value indicates enrolled state.

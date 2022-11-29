@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -137,6 +138,9 @@ class ManagementTransitionScreenTest
   LoggedInUserMixin& logged_in_user_mixin() { return logged_in_user_mixin_; }
 
  private:
+  DeviceStateMixin device_state_{
+      &mixin_host_,
+      DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
                                           GetTargetUserType(),
                                           embedded_test_server(),

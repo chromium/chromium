@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -106,6 +107,11 @@ class DeviceIDTest : public OobeBaseTest,
                     const std::string& gaia_id) {
     WaitForGaiaPageLoad();
 
+    // On a real device the first user would create the install attributes file,
+    // emulate that, so the following users don't try to establish ownership.
+    device_state_.WriteInstallAttrFile(
+        DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
+
     FakeGaia::MergeSessionParams params;
     params.email = user_id;
     params.refresh_token = refresh_token;
@@ -170,6 +176,8 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   std::unique_ptr<base::RunLoop> user_removal_loop_;
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
