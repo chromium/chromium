@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
-import android.os.Build;
 import android.util.Pair;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -187,57 +186,55 @@ class BitmapUtils {
      * Returns the rotation matrix from the Exif information in the file descriptor (on Nougat and
      * up only).
      * @param descriptor The FileDescriptor containing the Exif information.
-     * @return The resulting rotation matrix (or null, if Android < N).
+     * @return The resulting rotation matrix.
      */
     private static Matrix getRotationMatrix(FileDescriptor descriptor) {
         Matrix matrix = new Matrix();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                ExifInterface exif = new ExifInterface(descriptor);
-                int rotation = exif.getAttributeInt(
-                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-                switch (rotation) {
-                    case ExifInterface.ORIENTATION_NORMAL:
-                        recordExifHistogram(EXIF_ORIENTATION_NORMAL);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        matrix.postRotate(90);
-                        recordExifHistogram(EXIF_ORIENTATION_ROTATE_90);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        matrix.postRotate(180);
-                        recordExifHistogram(EXIF_ORIENTATION_ROTATE_180);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        matrix.postRotate(-90);
-                        recordExifHistogram(EXIF_ORIENTATION_ROTATE_270);
-                        break;
-                    case ExifInterface.ORIENTATION_TRANSPOSE:
-                        matrix.setRotate(90);
-                        matrix.postScale(-1, 1);
-                        recordExifHistogram(EXIF_ORIENTATION_TRANSPOSE);
-                        break;
-                    case ExifInterface.ORIENTATION_TRANSVERSE:
-                        matrix.setRotate(-90);
-                        matrix.postScale(-1, 1);
-                        recordExifHistogram(EXIF_ORIENTATION_TRANSVERSE);
-                        break;
-                    case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                        matrix.setScale(-1, 1);
-                        recordExifHistogram(EXIF_ORIENTATION_FLIP_HORIZONTAL);
-                        break;
-                    case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                        matrix.setScale(1, -1);
-                        recordExifHistogram(EXIF_ORIENTATION_FLIP_VERTICAL);
-                        break;
-                    case ExifInterface.ORIENTATION_UNDEFINED:
-                        recordExifHistogram(EXIF_ORIENTATION_UNDEFINED);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (IOException e) {
+        try {
+            ExifInterface exif = new ExifInterface(descriptor);
+            int rotation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            switch (rotation) {
+                case ExifInterface.ORIENTATION_NORMAL:
+                    recordExifHistogram(EXIF_ORIENTATION_NORMAL);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    recordExifHistogram(EXIF_ORIENTATION_ROTATE_90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    recordExifHistogram(EXIF_ORIENTATION_ROTATE_180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(-90);
+                    recordExifHistogram(EXIF_ORIENTATION_ROTATE_270);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    matrix.setRotate(90);
+                    matrix.postScale(-1, 1);
+                    recordExifHistogram(EXIF_ORIENTATION_TRANSPOSE);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    matrix.setRotate(-90);
+                    matrix.postScale(-1, 1);
+                    recordExifHistogram(EXIF_ORIENTATION_TRANSVERSE);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                    matrix.setScale(-1, 1);
+                    recordExifHistogram(EXIF_ORIENTATION_FLIP_HORIZONTAL);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    matrix.setScale(1, -1);
+                    recordExifHistogram(EXIF_ORIENTATION_FLIP_VERTICAL);
+                    break;
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                    recordExifHistogram(EXIF_ORIENTATION_UNDEFINED);
+                    break;
+                default:
+                    break;
             }
+        } catch (IOException e) {
         }
         return matrix;
     }
@@ -271,11 +268,8 @@ class BitmapUtils {
      */
     private static Bitmap rotateAndFitToMaxWidth(
             Bitmap bitmap, int maxWidth, FileDescriptor descriptor) {
-        Bitmap rotated = bitmap;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                    getRotationMatrix(descriptor), true);
-        }
+        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                getRotationMatrix(descriptor), true);
         float ratio = (float) maxWidth / rotated.getWidth();
         int height = (int) (rotated.getHeight() * ratio);
         return Bitmap.createScaledBitmap(rotated, maxWidth, height, true);
