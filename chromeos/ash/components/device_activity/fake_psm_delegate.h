@@ -16,7 +16,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) FakePsmDelegate
  public:
   FakePsmDelegate(const std::string& ec_cipher_key,
                   const std::string& seed,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
+                  const std::vector<private_membership::rlwe::RlwePlaintextId>
                       plaintext_ids);
   FakePsmDelegate(const FakePsmDelegate&) = delete;
   FakePsmDelegate& operator=(const FakePsmDelegate&) = delete;

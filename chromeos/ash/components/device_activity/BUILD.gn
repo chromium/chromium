@@ -91,7 +91,12 @@ source_set("unit_tests") {
     "//third_party/private_membership:private_membership",
   ]
 
-  data = [ "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb" ]
+  data = [
+    "//chromeos/ash/components/device_activity/testing/private_computing_service_test_data.binarypb",
+
+    # TODO(crbug/1393862): Script should binarypb from textpb.
+    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+  ]
 }
 
 proto_library("fresnel_service_proto") {

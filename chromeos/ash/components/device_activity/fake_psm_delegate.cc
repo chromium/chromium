@@ -11,7 +11,7 @@ namespace psm_rlwe = private_membership::rlwe;
 FakePsmDelegate::FakePsmDelegate(
     const std::string& ec_cipher_key,
     const std::string& seed,
-    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids)
+    const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids)
     : ec_cipher_key_(ec_cipher_key),
       seed_(seed),
       plaintext_ids_(plaintext_ids) {}

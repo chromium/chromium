@@ -155,7 +155,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   State GetState() const;
 
-  // Used for testing.
   std::vector<DeviceActiveUseCase*> GetUseCases() const;
 
   DeviceActiveUseCase* GetUseCasePtr(
