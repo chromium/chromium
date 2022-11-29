@@ -14,7 +14,7 @@ import './print_management_shared.css.js';
 import './strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -380,7 +380,6 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         return loadTimeData.getString('completionStatusPrinted');
       default:
         assertNotReached();
-        return loadTimeData.getString('unknownPrinterError');
     }
   }
 
@@ -500,7 +499,6 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         return loadTimeData.getString('clientUnauthorized');
       default:
         assertNotReached();
-        return loadTimeData.getString('unknownPrinterError');
     }
   }
 
@@ -536,10 +534,8 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
         return loadTimeData.getString('clientUnauthorized');
       case PrinterErrorCode.kPrinterUnreachable:
         assertNotReached();
-        return loadTimeData.getString('unknownPrinterErrorStopped');
       default:
         assertNotReached();
-        return loadTimeData.getString('unknownPrinterErrorStopped');
     }
   }
 }
