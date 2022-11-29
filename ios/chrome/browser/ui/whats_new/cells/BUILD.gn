@@ -18,6 +18,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new/resources:hero_image_background_color",
     "//ios/chrome/browser/ui/whats_new/resources:whats_new_icon_tile",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",

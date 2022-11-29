@@ -24,6 +24,7 @@
 namespace {
 
 constexpr CGFloat kDefaultMargin = 32;
+constexpr CGFloat kSubtitleTopMargin = 8;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kContentWidthMultiplier = 0.8;
 constexpr CGFloat kButtonHorizontalMargin = 4;
@@ -201,7 +202,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     // Subtitle contraints.
     [self.subtitleLabel.topAnchor
         constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                       constant:kDefaultMargin],
+                       constant:kSubtitleTopMargin],
     [self.subtitleLabel.centerXAnchor
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor

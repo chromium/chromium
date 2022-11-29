@@ -22,8 +22,6 @@ const CGFloat kStackViewMargin = 16.0;
 const CGFloat kItemLeadingMargin = 16.0;
 // The height of the image.
 const CGFloat kImageViewHeight = 220.0;
-// The width of the image.
-const CGFloat kImageViewWidth = 343.0;
 // The size of the space between each items in the stack view.
 const CGFloat kStackViewVerticalSpacings = 10.0;
 // The size of the margin between the stack view and the content top view.
@@ -103,9 +101,10 @@ const CGFloat kTopMargin = 24.0;
     _bannerImageView = [[UIImageView alloc] init];
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _isBannerAtBottom = NO;
+    _bannerImageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.bannerView addSubview:_bannerImageView];
     self.bannerView.backgroundColor =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
+        [UIColor colorNamed:@"hero_image_background_color"];
 
     // Text label.
     _textLabel = [[UILabel alloc] init];
@@ -168,7 +167,6 @@ const CGFloat kTopMargin = 24.0;
           constraintEqualToAnchor:self.bannerView.centerXAnchor],
       [_bannerImageView.heightAnchor
           constraintEqualToConstant:kImageViewHeight],
-      [_bannerImageView.widthAnchor constraintEqualToConstant:kImageViewWidth],
 
       // Section text label constraints.
       [_sectionTextLabel.leadingAnchor
