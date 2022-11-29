@@ -73,6 +73,7 @@ function createTarget(className, style, match, cb) {
   if (className)
     target.classList.add(className);
   target.style = style;
+  target.dataset.name = style;
   target.dataset.match = match;
   cb.appendChild(target);
 }
@@ -96,7 +97,7 @@ for (const target of document.querySelectorAll('.target')) {
         assert_equals(anchor.offsetTop + anchor.offsetHeight, target.offsetTop);
         break;
     }
-  }, `${cb.classList}/${target.classList}/${target.style.cssText}`);
+  }, `${cb.classList}/${target.classList}/${target.dataset.name}`);
 }
 </script>
 </body>
