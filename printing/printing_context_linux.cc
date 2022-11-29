@@ -44,7 +44,7 @@ PrintingContextLinux::~PrintingContextLinux() {
   ReleaseContext();
 
   if (print_dialog_)
-    print_dialog_->ReleaseDialog();
+    print_dialog_.ExtractAsDangling()->ReleaseDialog();
 }
 
 void PrintingContextLinux::AskUserForSettings(int max_pages,
