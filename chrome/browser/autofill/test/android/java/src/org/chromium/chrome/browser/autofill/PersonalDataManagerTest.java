@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
+
 import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
@@ -140,13 +142,6 @@ public class PersonalDataManagerTest {
 
         mHelper.deleteProfile(profileOneGUID);
         Assert.assertEquals(0, mHelper.getNumberOfProfilesForSettings());
-    }
-
-    private CreditCard createLocalCreditCard(
-            String name, String number, String month, String year) {
-        return new CreditCard("" /*guid*/, "" /*origin*/, true /* isLocal */, false /* isCached */,
-                name, number, "" /*obfuscatedNumber*/, month, year, "" /* basicCardIssuerNetwork */,
-                0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
     }
 
     @Test
