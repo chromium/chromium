@@ -630,7 +630,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  [self tappedItemAtIndexPath:indexPath];
+  if (@available(iOS 16, *)) {
+    // This is handled by
+    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16. The
+    // method comment should be updated once iOS 15 is dropped.
+    return YES;
+  } else {
+    [self tappedItemAtIndexPath:indexPath];
+  }
   // Tapping on a non-selected cell should not select it immediately. The
   // delegate will trigger a transition to show the item.
   return NO;
@@ -638,9 +645,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldDeselectItemAtIndexPath:(NSIndexPath*)indexPath {
-  [self tappedItemAtIndexPath:indexPath];
+  if (@available(iOS 16, *)) {
+    // This is handled by
+    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16.
+  } else {
+    [self tappedItemAtIndexPath:indexPath];
+  }
   // Tapping on the current selected cell should not deselect it.
   return NO;
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
+  [self tappedItemAtIndexPath:indexPath];
 }
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
