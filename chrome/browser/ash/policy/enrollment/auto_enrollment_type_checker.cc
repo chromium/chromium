@@ -133,9 +133,19 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
   // check if the device was never owned. If VPD is broken, continue with FRE
   // check.
   switch (statistics_provider->GetVpdStatus()) {
+    // If RO_VPD is broken, state keys are not available and FRE check
+    // cannot start. To not to get stuck with forced re-enrollment, do not
+    // enforce it and let users cancel in case of permanent error.
+    case ash::system::StatisticsProvider::VpdStatus::kInvalid:
+      // Both RO and RW VPDs are broken and state keys are not available.
+      // Require re-enrollment but do not force it.
+      LOG(WARNING) << "RO_VPD and RW_VPD are broken.";
+      return FRERequirement::kRequired;
     case ash::system::StatisticsProvider::VpdStatus::kRoInvalid:
-      LOG(WARNING) << "RO_VPD is borken, but RW_VPD is valid. "
-                      "Proceeding with ownership check.";
+      // RO_VPD is broken, but RW_VPD is valid. `kActivateDateKey` indicating
+      // ownership is available and trustworthy. Proceed with with ownership
+      // check and require  re-enrollment if the device was owned.
+      LOG(WARNING) << "RO_VPD is broken. Proceeding with ownership check.";
       [[fallthrough]];
     case ash::system::StatisticsProvider::VpdStatus::kValid:
       if (!statistics_provider->GetMachineStatistic(
@@ -146,7 +156,6 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
       }
       return FRERequirement::kRequired;
     case ash::system::StatisticsProvider::VpdStatus::kRwInvalid:
-    case ash::system::StatisticsProvider::VpdStatus::kInvalid:
       // VPD is in invalid state and FRE flag cannot be assessed. Force FRE
       // check to prevent enrollment escapes.
       LOG(ERROR) << "VPD could not be read, forcing auto-enrollment check.";

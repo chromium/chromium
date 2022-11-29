@@ -266,7 +266,7 @@ class AutoEnrollmentWithStatistics : public AutoEnrollmentEmbeddedPolicyServer {
     fake_statistics_provider_.ClearMachineStatistic(
         system::kSerialNumberKeyForTest);
     fake_statistics_provider_.SetVpdStatus(
-        system::StatisticsProvider::VpdStatus::kInvalid);
+        system::StatisticsProvider::VpdStatus::kRwInvalid);
   }
 
  private:

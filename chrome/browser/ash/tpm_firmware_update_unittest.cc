@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -161,12 +162,15 @@ TEST_F(TPMFirmwareUpdateModesTest, FRERequired) {
   EXPECT_TRUE(callback_modes_.empty());
 }
 
-TEST_F(TPMFirmwareUpdateModesTest, FRERequiredDueToInvalidVPDStatus) {
+TEST_F(TPMFirmwareUpdateModesTest, FRERequiredDueToInvalidRwVpdStatus) {
   statistics_provider_.SetVpdStatus(
-      system::StatisticsProvider::VpdStatus::kInvalid);
-  GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
-  EXPECT_TRUE(callback_received_);
-  EXPECT_TRUE(callback_modes_.empty());
+      system::StatisticsProvider::VpdStatus::kRwInvalid);
+  base::test::TestFuture<std::set<Mode>> future;
+  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
+                          base::TimeDelta());
+
+  const auto& modes = future.Get();
+  EXPECT_TRUE(modes.empty());
 }
 
 TEST_F(TPMFirmwareUpdateModesTest, Pending) {
@@ -182,6 +186,28 @@ TEST_F(TPMFirmwareUpdateModesTest, Available) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_received_);
   EXPECT_EQ(kAllModes, callback_modes_);
+}
+
+TEST_F(TPMFirmwareUpdateModesTest, AvailableWithInvalidVpdStatus) {
+  statistics_provider_.SetVpdStatus(
+      system::StatisticsProvider::VpdStatus::kInvalid);
+  base::test::TestFuture<std::set<Mode>> future;
+  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
+                          base::TimeDelta());
+
+  const auto& modes = future.Get();
+  EXPECT_EQ(kAllModes, modes);
+}
+
+TEST_F(TPMFirmwareUpdateModesTest, AvailableWithInvalidRoVpdStatus) {
+  statistics_provider_.SetVpdStatus(
+      system::StatisticsProvider::VpdStatus::kRoInvalid);
+  base::test::TestFuture<std::set<Mode>> future;
+  GetAvailableUpdateModes(future.GetCallback<const std::set<Mode>&>(),
+                          base::TimeDelta());
+
+  const auto& modes = future.Get();
+  EXPECT_EQ(kAllModes, modes);
 }
 
 TEST_F(TPMFirmwareUpdateModesTest, AvailableAfterWaiting) {
