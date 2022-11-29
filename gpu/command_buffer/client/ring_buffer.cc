@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"

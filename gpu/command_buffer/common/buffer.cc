@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <ostream>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
