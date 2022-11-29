@@ -3310,6 +3310,22 @@ constexpr FeatureEntry::FeatureVariation
         {" with minimized state", kPasswordStrengthIndicatorMinimizedVariation,
          std::size(kPasswordStrengthIndicatorMinimizedVariation), nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kOsIntegrationSubManagersWriteConfig[] = {
+    {"stage", "write_config"}};
+const FeatureEntry::FeatureParam
+    kOsIntegrationSubManagersExecuteAndWriteConfig[] = {
+        {"stage", "execute_and_write_config"}};
+
+const FeatureEntry::FeatureVariation
+    kOsIntegrationSubManagersConfigVariations[] = {
+        {"Write Config only", kOsIntegrationSubManagersWriteConfig,
+         std::size(kOsIntegrationSubManagersWriteConfig), nullptr},
+        {"Execute and Write Config",
+         kOsIntegrationSubManagersExecuteAndWriteConfig,
+         std::size(kOsIntegrationSubManagersExecuteAndWriteConfig), nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -4438,6 +4454,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-cast-streaming-vp9", flag_descriptions::kCastStreamingVp9Name,
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingVp9)},
+
+    {"enable-os-integration-sub-managers",
+     flag_descriptions::kEnableOsIntegrationSubManagersName,
+     flag_descriptions::kEnableOsIntegrationSubManagersDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOsIntegrationSubManagers,
+                                    kOsIntegrationSubManagersConfigVariations,
+                                    "OsIntegrationSubManagers")},
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -255,6 +255,22 @@ BASE_FEATURE(kPreinstalledWebAppInstallation,
 BASE_FEATURE(kPreinstalledWebAppDuplicationFixer,
              "PreinstalledWebAppDuplicationFixer",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables OS Integration sub managers to execute the
+// registration/unregistration functionality and write the new OS states to the
+// DB.
+BASE_FEATURE(kOsIntegrationSubManagers,
+             "OsIntegrationSubManagers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<OsIntegrationSubManagersStage>::Option
+    sub_manager_stages[] = {
+        {OsIntegrationSubManagersStage::kWriteConfig, "write_config"},
+        {OsIntegrationSubManagersStage::kExecuteAndWriteConfig,
+         "execute_and_write_config"}};
+const base::FeatureParam<OsIntegrationSubManagersStage>
+    kOsIntegrationSubManagersStageParam{
+        &kOsIntegrationSubManagers, "stage",
+        OsIntegrationSubManagersStage::kWriteConfig, &sub_manager_stages};
 #endif
 
 // Generates customised default offline page that is shown when web app is

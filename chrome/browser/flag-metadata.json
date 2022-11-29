@@ -2718,6 +2718,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-os-integration-sub-managers",
+    "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-palm-max-touch-major",
     "owners": [ "robsc", "napper", "adlr" ],
     // Added feature to possibly disable/enable this functionality, combined

@@ -1539,6 +1539,13 @@ const char kContextualPageActionsReaderModeName[] =
 const char kContextualPageActionsReaderModeDescription[] =
     "Enables reader mode as a contextual page action.";
 
+const char kEnableOsIntegrationSubManagersName[] =
+    "OS Integration sub managers";
+const char kEnableOsIntegrationSubManagersDescription[] =
+    "Enable OS integration sub managers to either just write new OS "
+    "integration states to DB or execute on the OS integration states before "
+    "writing to the DB";
+
 const char kHandwritingGestureEditingName[] = "Handwriting Gestures Editing";
 const char kHandwritingGestureEditingDescription[] =
     "Enables editing with handwriting gestures within the virtual keyboard.";

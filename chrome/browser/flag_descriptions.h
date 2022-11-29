@@ -861,6 +861,9 @@ extern const char kContextualPageActionsPriceTrackingDescription[];
 extern const char kContextualPageActionsReaderModeName[];
 extern const char kContextualPageActionsReaderModeDescription[];
 
+extern const char kEnableOsIntegrationSubManagersName[];
+extern const char kEnableOsIntegrationSubManagersDescription[];
+
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 

@@ -63370,6 +63370,7 @@ from previous Chrome versions.
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>
+  <int value="1634273054" label="OsIntegrationSubManagers:enabled"/>
   <int value="1634732103" label="PassiveDocumentWheelEventListeners:enabled"/>
   <int value="1634884226"
       label="AutofillAlwaysReturnCloudTokenizedCard:enabled"/>
@@ -63443,6 +63444,7 @@ from previous Chrome versions.
   <int value="1671021713" label="AutofillImportDynamicForms:disabled"/>
   <int value="1671985641" label="WebViewVulkan:enabled"/>
   <int value="1672062546" label="PasswordStrengthIndicator:disabled"/>
+  <int value="1672637465" label="OsIntegrationSubManagers:disabled"/>
   <int value="1673185316" label="EarlyCodeCache:enabled"/>
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1673776797"
