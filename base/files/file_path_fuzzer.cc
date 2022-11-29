@@ -36,6 +36,10 @@ bool IsValidExtension(const FilePath::StringType& text) {
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > 10 * 1000) {
+    // Bail out on huge inputs to avoid spurious timeout or OOM reports.
+    return 0;
+  }
   FuzzedDataProvider provider(data, size);
 
   // Create a random path. Smoke-test its getters.
