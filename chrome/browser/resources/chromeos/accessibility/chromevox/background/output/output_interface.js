@@ -86,13 +86,6 @@ export class OutputInterface {
 
   /**
    * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatJoinedDescendants_(data, token, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
    */
   formatListNestedLevel_(data) {}
 

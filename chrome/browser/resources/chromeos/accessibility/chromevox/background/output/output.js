@@ -671,25 +671,6 @@ export class Output {
   }
 
   /** @override */
-  formatJoinedDescendants_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    const unjoined = [];
-    formatLog.write('joinedDescendants {');
-    this.format_({
-      node,
-      outputFormat: '$descendants',
-      outputBuffer: unjoined,
-      outputFormatLogger: formatLog,
-    });
-    this.append_(buff, unjoined.join(' '), options);
-    formatLog.write(
-        '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
-  }
-
-  /** @override */
   formatRole_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;

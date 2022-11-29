@@ -78,7 +78,7 @@ export class OutputFormatter {
     } else if (token === 'descendants') {
       this.formatDescendants_(this.params_, token);
     } else if (token === 'joinedDescendants') {
-      this.output_.formatJoinedDescendants_(this.params_, token, options);
+      this.formatJoinedDescendants_(this.params_, token, options);
     } else if (token === 'role') {
       if (localStorage['useVerboseMode'] === String(false)) {
         return true;
@@ -334,6 +334,30 @@ export class OutputFormatter {
       this.output_.append_(buff, String(count));
       formatLog.writeTokenWithValue(token, String(count));
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatJoinedDescendants_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const unjoined = [];
+    formatLog.write('joinedDescendants {');
+    this.output_.format_({
+      node,
+      outputFormat: '$descendants',
+      outputBuffer: unjoined,
+      outputFormatLogger: formatLog,
+    });
+    this.output_.append_(buff, unjoined.join(' '), options);
+    formatLog.write(
+        '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
   }
 
   /**
