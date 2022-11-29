@@ -42,7 +42,7 @@ import java.util.List;
  * Implementation of {@link IBrowser}.
  */
 @JNINamespace("weblayer")
-public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChangeListener {
+public class BrowserImpl extends IBrowser.Stub {
     private final ObserverList<VisibleSecurityStateObserver> mVisibleSecurityStateObservers =
             new ObserverList<VisibleSecurityStateObserver>();
 
@@ -178,9 +178,14 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         mWindowAndroid = windowAndroid;
         mEmbedderActivityContext = embedderAppContext;
         mViewController = new BrowserViewController(
-                windowAndroid, this, mViewControllerState, mInConfigurationChangeAndWasAttached);
+                windowAndroid, mViewControllerState, mInConfigurationChangeAndWasAttached);
         mLocaleReceiver = new LocaleChangedBroadcastReceiver(windowAndroid.getContext().get());
         mPasswordEchoEnabled = null;
+        mViewAttachedToWindow = true;
+        if (mFragmentStarted) {
+            mInConfigurationChangeAndWasAttached = false;
+            mForcedVisible = false;
+        }
     }
 
     public void onFragmentAttached(
@@ -614,24 +619,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     long getNativeBrowser() {
         return mNativeBrowser;
-    }
-
-    @Override
-    public void onViewAttachedToWindow(View v) {
-        mViewAttachedToWindow = true;
-        if (mFragmentStarted) {
-            mInConfigurationChangeAndWasAttached = false;
-            mForcedVisible = false;
-        }
-        updateAllTabsViewAttachedState();
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(View v) {
-        // Note this separate state is needed because v.isAttachedToWindow()
-        // still returns true inside this call.
-        mViewAttachedToWindow = false;
-        updateAllTabsViewAttachedState();
     }
 
     public MediaRouteDialogFragmentImpl createMediaRouteDialogFragment() {

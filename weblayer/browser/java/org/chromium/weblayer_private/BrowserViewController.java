@@ -79,7 +79,6 @@ public final class BrowserViewController
     private final FrameLayout mWebContentsOverlayView;
 
     private final FragmentWindowAndroid mWindowAndroid;
-    private final View.OnAttachStateChangeListener mOnAttachedStateChangeListener;
     private final ModalDialogManager mModalDialogManager;
 
     private final ScrimCoordinator mScrim;
@@ -106,14 +105,11 @@ public final class BrowserViewController
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
-    public BrowserViewController(FragmentWindowAndroid windowAndroid,
-            View.OnAttachStateChangeListener listener, @Nullable State savedState,
+    public BrowserViewController(FragmentWindowAndroid windowAndroid, @Nullable State savedState,
             boolean recreateForConfigurationChange) {
         mWindowAndroid = windowAndroid;
-        mOnAttachedStateChangeListener = listener;
         Context context = mWindowAndroid.getContext().get();
         mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
-        mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
         mContentViewRenderView.onNativeLibraryLoaded(mWindowAndroid);
         mTopControlsContainerView =
@@ -248,7 +244,6 @@ public final class BrowserViewController
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
-        mContentViewRenderView.removeOnAttachStateChangeListener(mOnAttachedStateChangeListener);
         mTopControlsContainerView.destroy();
         mBottomControlsContainerView.destroy();
         mContentViewRenderView.destroy();
