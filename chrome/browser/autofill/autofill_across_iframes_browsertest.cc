@@ -832,16 +832,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
 
 // Tests that a deeply nested form where some iframes don't even contain any
 // fields (but their subframes do) is extracted and filled correctly.
-// TODO(crbug.com/1393990): flaky on linux-ubsan-vptr.
-#if defined(UNDEFINED_SANITIZER) && BUILDFLAG(IS_LINUX)
-#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
-    DISABLED_FlattenFormEvenAcrossFramesWithoutFields
-#else
-#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
-    FlattenFormEvenAcrossFramesWithoutFields
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
-                       MAYBE_FlattenFormEvenAcrossFramesWithoutFields) {
+                       // TODO(crbug.com/1393990): Re-enable this test
+                       DISABLED_FlattenFormEvenAcrossFramesWithoutFields) {
   SetUrlContent("/", MakeCss(3) +
                          R"(<iframe src="$4/3.html"></iframe>
                             <iframe src="$3/3.html"></iframe>
