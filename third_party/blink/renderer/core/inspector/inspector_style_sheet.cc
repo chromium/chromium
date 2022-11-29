@@ -1069,11 +1069,16 @@ InspectorStyle::LonghandProperties(
     auto result =
         std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
     for (auto longhand_property : longhand_properties) {
+      String value = longhand_property.Value()->CssText();
       std::unique_ptr<protocol::CSS::CSSProperty> longhand =
           protocol::CSS::CSSProperty::create()
               .setName(longhand_property.Name().ToAtomicString())
-              .setValue(longhand_property.Value()->CssText())
+              .setValue(value)
               .build();
+      if (property_entry.important) {
+        longhand->setValue(value + " !important");
+        longhand->setImportant(true);
+      }
       result->emplace_back(std::move(longhand));
     }
     return result;

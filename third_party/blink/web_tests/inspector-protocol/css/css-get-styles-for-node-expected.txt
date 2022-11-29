@@ -175,16 +175,19 @@ checking parsed longhand components from shorthand properties
 ]
 [
     [0] : {
+        important : true
         name : flex-grow
-        value : 1
+        value : 1 !important
     }
     [1] : {
+        important : true
         name : flex-shrink
-        value : 1
+        value : 1 !important
     }
     [2] : {
+        important : true
         name : flex-basis
-        value : 0%
+        value : 0% !important
     }
 ]
 
