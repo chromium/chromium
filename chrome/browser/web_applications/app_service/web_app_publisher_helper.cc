@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -1299,8 +1300,14 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       user_display_mode = UserDisplayMode::kTabbed;
       break;
   }
-  provider_->sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
-                                                 /*is_user_action=*/true);
+  provider_->scheduler().ScheduleCallbackWithLock(
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
+      base::BindOnce(
+          [](AppId app_id, UserDisplayMode user_display_mode, AppLock& lock) {
+            lock.sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
+                                                     /*is_user_action=*/true);
+          },
+          app_id, std::move(user_display_mode)));
 }
 
 void WebAppPublisherHelper::SetRunOnOsLoginMode(

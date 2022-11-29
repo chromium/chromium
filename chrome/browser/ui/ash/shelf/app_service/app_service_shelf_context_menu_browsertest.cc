@@ -21,8 +21,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_features.h"
@@ -111,6 +113,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  web_app::WebAppProvider::GetForTest(profile)
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
             1);
@@ -136,6 +141,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       app_id, ash::USE_LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  web_app::WebAppProvider::GetForTest(profile)
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tabbed"),
             1);
@@ -160,6 +168,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_REGULAR);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  web_app::WebAppProvider::GetForTest(profile)
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tab"), 1);
 }
@@ -186,6 +197,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
     const auto label_from_submenu =
         launch_new_submodel->GetLabelAt(launch_new_item_index);
     launch_new_submodel->ActivatedAt(launch_new_item_index);
+    web_app::WebAppProvider::GetForTest(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
     EXPECT_TRUE(launch_new_submodel->IsItemCheckedAt(launch_new_item_index));
 
     // Parent `LAUNCH_NEW` item label and icon change dynamically after

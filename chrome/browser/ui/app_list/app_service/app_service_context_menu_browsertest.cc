@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -74,6 +76,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceContextMenuBrowserTest,
     const auto label_from_submenu =
         launch_new_submodel->GetLabelAt(launch_new_item_index);
     launch_new_submodel->ActivatedAt(launch_new_item_index);
+    web_app::WebAppProvider::GetForTest(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
     EXPECT_TRUE(launch_new_submodel->IsItemCheckedAt(launch_new_item_index));
 
     // Parent `LAUNCH_NEW` item label and icon change dynamically after
