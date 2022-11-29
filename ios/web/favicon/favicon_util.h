@@ -16,7 +16,7 @@ namespace web {
 // structured as containing a list of favicons containing the href, rel and
 // sizes attributes of the favicons. Returns whether the extraction was
 // completely successful or not.
-bool ExtractFaviconURL(const base::Value::ConstListView& favicons,
+bool ExtractFaviconURL(const base::Value::List& favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* out_parameter);
 

@@ -18,7 +18,7 @@
 
 namespace web {
 
-bool ExtractFaviconURL(const base::Value::ConstListView& favicons,
+bool ExtractFaviconURL(const base::Value::List& favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
   BOOL has_favicon = NO;
@@ -26,26 +26,24 @@ bool ExtractFaviconURL(const base::Value::ConstListView& favicons,
     if (!favicon.is_dict())
       return false;
 
-    const base::Value* href_value =
-        favicon.FindKeyOfType("href", base::Value::Type::STRING);
+    const base::Value::Dict& favicon_dict = favicon.GetDict();
+    const std::string* href_value = favicon_dict.FindString("href");
     if (!href_value) {
       DLOG(WARNING) << "JS message parameter not found: href";
       return false;
     }
-    auto href = href_value->GetString();
+    auto href = *href_value;
 
-    const base::Value* rel_value =
-        favicon.FindKeyOfType("rel", base::Value::Type::STRING);
+    const std::string* rel_value = favicon_dict.FindString("rel");
     if (!rel_value) {
       DLOG(WARNING) << "JS message parameter not found: rel";
       return false;
     }
-    auto rel = rel_value->GetString();
+    auto rel = *rel_value;
 
     std::vector<gfx::Size> sizes;
-    if (const base::Value* size_value =
-            favicon.FindKeyOfType("sizes", base::Value::Type::STRING)) {
-      auto sizes_string = size_value->GetString();
+    if (const std::string* size_value = favicon_dict.FindString("sizes")) {
+      auto sizes_string = *size_value;
       // Parse the sizes attribute. It should consist of one or multiple
       // elements of the form "76x76", separated by a whitespace. So "76x76" or
       // "120x120 192x192" are legit.
