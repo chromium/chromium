@@ -249,7 +249,7 @@ void RegexRulesMatcher::InitializeMatcher() {
 }
 
 bool RegexRulesMatcher::IsEmpty() const {
-  return regex_list_->Length() == 0;
+  return regex_list_->size() == 0;
 }
 
 const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
