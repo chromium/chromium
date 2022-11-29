@@ -133,6 +133,17 @@ message RmDirResponseProto {
   optional int32 posix_error_code = 1;
 }
 
+// Stat2 returns file state.
+
+message Stat2RequestProto {
+  optional string file_system_url = 3;
+}
+
+message Stat2ResponseProto {
+  optional int32 posix_error_code = 1;
+  optional DirEntryProto stat = 3;
+}
+
 // Truncate sets a file's size.
 
 message TruncateRequestProto {

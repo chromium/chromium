@@ -72,7 +72,7 @@ struct ParseResult {
   // fusebox::kMonikerSubdir (also known as "moniker"). There is no
   // FileSystemURL registered for "moniker" (as opposed to for
   // "moniker/1234etc"), so ParseFileSystemURL (which returns a valid
-  // FileSystemURL on success) must return an error. However, Stat or ReadDir2
+  // FileSystemURL on success) must return an error. However, Stat2 or ReadDir2
   // on "moniker" should succeed (but return an empty directory).
   bool is_moniker_root = false;
 };
@@ -161,6 +161,16 @@ ParseResult ParseFileSystemURL(const fusebox::MonikerMap& moniker_map,
 // looks unused, but we need to keep the storage::FileSystemContext reference
 // alive until the callbacks are run.
 
+void FillInDirEntryProto(fusebox_staging::DirEntryProto* dir_entry_proto,
+                         const base::File::Info& info,
+                         bool read_only) {
+  dir_entry_proto->set_mode_bits(
+      Server::MakeModeBits(info.is_directory, read_only));
+  dir_entry_proto->set_size(info.size);
+  dir_entry_proto->set_mtime(
+      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+}
+
 void RunCreateAndThenStatCallback(
     Server::CreateCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -182,11 +192,7 @@ void RunCreateAndThenStatCallback(
 
   fusebox_staging::CreateResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);
-  fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
-  stat->set_mode_bits(Server::MakeModeBits(info.is_directory, read_only));
-  stat->set_size(info.size);
-  stat->set_mtime(
-      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
 
@@ -246,11 +252,7 @@ void RunMkDirAndThenStatCallback(
   }
 
   fusebox_staging::MkDirResponseProto response_proto;
-  fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
-  stat->set_mode_bits(Server::MakeModeBits(info.is_directory, read_only));
-  stat->set_size(info.size);
-  stat->set_mtime(
-      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
 
@@ -376,11 +378,7 @@ void RunTruncateAndThenStatCallback(
   }
 
   fusebox_staging::TruncateResponseProto response_proto;
-  fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
-  stat->set_mode_bits(Server::MakeModeBits(info.is_directory, read_only));
-  stat->set_size(info.size);
-  stat->set_mtime(
-      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
 
@@ -502,6 +500,27 @@ void RunStatCallback(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::move(callback).Run(FileErrorToErrno(error_code), info, read_only);
+}
+
+void RunStat2Callback(
+    Server::Stat2Callback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    bool read_only,
+    base::File::Error error_code,
+    const base::File::Info& info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  int posix_error_code = FileErrorToErrno(error_code);
+  if (posix_error_code) {
+    fusebox_staging::Stat2ResponseProto response_proto;
+    response_proto.set_posix_error_code(posix_error_code);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  fusebox_staging::Stat2ResponseProto response_proto;
+  FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
+  std::move(callback).Run(response_proto);
 }
 
 std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
@@ -1184,6 +1203,49 @@ void Server::Stat(const std::string& fs_url_as_string, StatCallback callback) {
   auto outer_callback =
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&RunStatCallback, std::move(callback),
+                                        common.fs_context, common.read_only));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata),
+          // Unretained is safe: common.fs_context owns its operation_runner.
+          base::Unretained(common.fs_context->operation_runner()),
+          common.fs_url, metadata_fields, std::move(outer_callback)));
+}
+
+void Server::Stat2(const fusebox_staging::Stat2RequestProto& request_proto,
+                   Stat2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string fs_url_as_string = request_proto.has_file_system_url()
+                                     ? request_proto.file_system_url()
+                                     : std::string();
+
+  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  if (common.is_moniker_root) {
+    constexpr bool is_directory = true;
+    constexpr bool read_only = true;
+    fusebox_staging::Stat2ResponseProto response_proto;
+    fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
+    stat->set_mode_bits(Server::MakeModeBits(is_directory, read_only));
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (common.error_code != base::File::Error::FILE_OK) {
+    fusebox_staging::Stat2ResponseProto response_proto;
+    response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  constexpr auto metadata_fields =
+      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
+      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
+      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+
+  auto outer_callback =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(&RunStat2Callback, std::move(callback),
                                         common.fs_context, common.read_only));
 
   content::GetIOThreadTaskRunner({})->PostTask(

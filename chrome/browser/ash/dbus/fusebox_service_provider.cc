@@ -14,6 +14,14 @@
 // This file provides the "D-Bus protocol logic" half of the FuseBox server,
 // coupled with the "business logic" half in fusebox_server.cc.
 
+// The "fusebox_staging" concept is described in
+// chrome/browser/ash/fusebox/fusebox_staging.proto
+//
+// TODO(b/255520194): remove this section.
+namespace fusebox_staging {
+const char kStat2Method[] = "Stat2";
+}  // namespace fusebox_staging
+
 namespace ash {
 
 namespace {
@@ -122,9 +130,8 @@ FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
   exported_object_ = object;
 
-  // TODO(b/255520194): make a protobuf-speaking Stat-like method (called
-  // Stat2) and remove Stat and the deprecated Open, Read and Close methods.
-  // The latter three have already been replaced by Open2, Read2 and Close2.
+  // TODO(b/255520194): remove the deprecated Stat, Open, Read and Close
+  // methods. They have been replaced by Stat2, Open2, Read2 and Close2.
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kCloseMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::Close,
                                            weak_ptr_factory_.GetWeakPtr()),
@@ -149,6 +156,7 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
   ExportProtoMethod(fusebox::kRead2Method, &fusebox::Server::Read2);
   ExportProtoMethod(fusebox::kReadDir2Method, &fusebox::Server::ReadDir2);
   ExportProtoMethod(fusebox::kRmDirMethod, &fusebox::Server::RmDir);
+  ExportProtoMethod(fusebox_staging::kStat2Method, &fusebox::Server::Stat2);
   ExportProtoMethod(fusebox::kTruncateMethod, &fusebox::Server::Truncate);
   ExportProtoMethod(fusebox::kUnlinkMethod, &fusebox::Server::Unlink);
   ExportProtoMethod(fusebox::kWrite2Method, &fusebox::Server::Write2);
