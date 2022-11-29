@@ -34,6 +34,15 @@ extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const Function
 extern void FunctionCallbackRecordReplayAddNewScriptHandler(const FunctionCallbackInfo<Value>& args);
 extern void FunctionCallbackRecordReplayGetScriptSource(const FunctionCallbackInfo<Value>& args);
 
+namespace internal {
+
+extern int RecordReplayObjectId(v8::Isolate* isolate, v8::Local<v8::Context> cx,
+                                v8::Local<v8::Value> object, bool allow_create);
+extern void RecordReplayConfirmObjectHasId(v8::Isolate* isolate, v8::Local<v8::Context> cx,
+                                           v8::Local<v8::Value> object);
+
+} // namespace internal
+
 } // namespace v8
 
 namespace blink {
@@ -1106,8 +1115,12 @@ Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
   }
 });
 
+let uidCounter = 0;
+
 function inject(renderer) {
+  const id = ++uidCounter;
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "inject");
+  return id;
 }
 
 function onCommitFiberUnmount(rendererID, fiber) {
@@ -1301,6 +1314,25 @@ static void AddRecordingEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   std::ofstream stream(filename.c_str(), std::ofstream::app);
   stream << *content << "\n";
   stream.close();
+}
+
+static void GetPersistentId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() >= 1 && recordreplay::HasDivergedFromRecording()) {
+    int id = v8::internal::RecordReplayObjectId(args.GetIsolate(),
+                                                args.GetIsolate()->GetCurrentContext(),
+                                                args[0], /* allow_create */ false);
+    if (id) {
+      args.GetReturnValue().Set(v8::Number::New(args.GetIsolate(), id));
+    }
+  }
+}
+
+static void CheckPersistentId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() >= 1) {
+    v8::internal::RecordReplayConfirmObjectHasId(args.GetIsolate(),
+                                                 args.GetIsolate()->GetCurrentContext(),
+                                                 args[0]);
+  }
 }
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -1685,6 +1717,10 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplayAddNewScriptHandler);
   SetFunctionProperty(isolate, args, "getScriptSource",
                       v8::FunctionCallbackRecordReplayGetScriptSource);
+  SetFunctionProperty(isolate, args, "getPersistentId",
+                      GetPersistentId);
+  SetFunctionProperty(isolate, args, "checkPersistentId",
+                      CheckPersistentId);
 
   // This URL will prevent the script from being reported to the recorder.
   const char* InternalScriptURL = "record-replay-internal";
@@ -1694,17 +1730,21 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
     RunScript(isolate, context, gSourceMapScript, InternalScriptURL);
   }
 
+  if (recordreplay::IsReplaying()) {
+    recordreplay::AutoDisallowEvents disallow;
+    RunScript(isolate, context, gReplayScript, InternalScriptURL);
+  }
+}
+
+void RunInitialRecordReplayScripts(v8::Isolate* isolate) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
   if (recordreplay::FeatureEnabled("react-devtools-backend") &&
       !TestEnv("RECORD_REPLAY_DISABLE_REACT_DEVTOOLS")) {
     // Note: We use a special URL for the react devtools as this script needs
     // to be reported to the recorder so that evaluations can be performed in
     // its frames.
     RunScript(isolate, context, gReactDevtoolsScript, "record-replay-react-devtools");
-  }
-
-  if (recordreplay::IsReplaying()) {
-    recordreplay::AutoDisallowEvents disallow;
-    RunScript(isolate, context, gReplayScript, InternalScriptURL);
   }
 }
 
