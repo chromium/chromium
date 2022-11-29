@@ -245,10 +245,10 @@ void DeviceInfoService::GetMachineStatisticsInfo(
 
   auto stat_info = mojom::MachineStatisticsInfo::New();
 
-  std::string value;
-  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey, &value)) {
-    stat_info->hwid = std::move(value);
+  if (const absl::optional<base::StringPiece> hwid =
+          chromeos::system::StatisticsProvider::GetInstance()
+              ->GetMachineStatistic(chromeos::system::kHardwareClassKey)) {
+    stat_info->hwid = std::string(hwid.value());
   }
 
   std::move(callback).Run(std::move(stat_info));
