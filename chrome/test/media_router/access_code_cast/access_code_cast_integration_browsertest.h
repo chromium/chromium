@@ -146,6 +146,8 @@ class AccessCodeCastIntegrationBrowserTest
 
   raw_ptr<AccessCodeCastPrefUpdater> GetPrefUpdater();
 
+  void AddScreenplayTag(const std::string& screenplay_tag);
+
   MockCastMediaSinkServiceImpl* mock_cast_media_sink_service_impl() {
     return impl_;
   }
@@ -154,6 +156,11 @@ class AccessCodeCastIntegrationBrowserTest
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile));
   }
+
+  static constexpr char kAccessCodeCastNewDeviceScreenplayTag[] =
+      "screenplay-a7ecd49d-f138-40b0-a830-3c1ebb4f4c5a";
+  static constexpr char kAccessCodeCastSavedDeviceScreenplayTag[] =
+      "screenplay-5aba818e-1cca-4c41-811a-4bf704cbe820";
 
  private:
   base::test::ScopedFeatureList feature_list_;

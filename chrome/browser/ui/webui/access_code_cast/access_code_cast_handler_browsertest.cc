@@ -45,6 +45,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
                        ReturnSuccessfulResponse) {
+  AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
+                       kAccessCodeCastNewDeviceScreenplayTag);
+
   const char kEndpointResponseSuccess[] =
       R"({
       "device": {

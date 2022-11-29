@@ -4,8 +4,11 @@
 
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
+#include <map>
+
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -567,6 +570,14 @@ raw_ptr<AccessCodeCastPrefUpdater>
 AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
   return AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
       ->pref_updater_.get();
+}
+
+void AccessCodeCastIntegrationBrowserTest::AddScreenplayTag(
+    const std::string& screenplay_tag) {
+  static base::NoDestructor<std::map<std::string, std::string>> tag;
+  tag->insert(
+      std::pair<std::string, std::string>("feature_id", screenplay_tag));
+  RecordPropertyFromMap(*tag);
 }
 
 }  // namespace media_router

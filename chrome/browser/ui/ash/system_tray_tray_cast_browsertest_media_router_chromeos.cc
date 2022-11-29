@@ -418,6 +418,9 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
 
 IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
                        SimulateValidCastingWorkflow) {
+  AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
+                       kAccessCodeCastNewDeviceScreenplayTag);
+
   const ash::UserContext user_context =
       CreateUserContext(account_id2_, "password");
 

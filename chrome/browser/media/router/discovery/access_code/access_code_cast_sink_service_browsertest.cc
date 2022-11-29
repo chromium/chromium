@@ -157,6 +157,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 #endif
   // This pre test adds a device successfully to the browser. The next test then
   // ensures the devices was saved when the browsertest starts up again.
+  AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
+                       kAccessCodeCastSavedDeviceScreenplayTag);
 
   // Mock a successful fetch from our server.
   SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
