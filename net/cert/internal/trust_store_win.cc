@@ -80,7 +80,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
 }  // namespace
 
 // TODO(https://crbug.com/1239268): support CTLs.
-std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
+TrustStoreWin::TrustStoreWin() {
   crypto::ScopedHCERTSTORE root_cert_store(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_cert_store(
@@ -91,7 +91,7 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   if (!root_cert_store.get() || !intermediate_cert_store.get() ||
       !all_certs_store.get() || !disallowed_cert_store.get()) {
-    return nullptr;
+    return;
   }
 
   // Add intermediate and root cert stores to the all_cert_store collection so
@@ -101,11 +101,11 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
   if (!CertAddStoreToCollection(all_certs_store.get(),
                                 intermediate_cert_store.get(),
                                 /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
-    return nullptr;
+    return;
   }
   if (!CertAddStoreToCollection(all_certs_store.get(), root_cert_store.get(),
                                 /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
-    return nullptr;
+    return;
   }
 
   // Grab the user-added roots.
@@ -167,9 +167,10 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
     PLOG(ERROR) << "Error enabling CERT_STORE_CTRL_AUTO_RESYNC";
   }
 
-  return base::WrapUnique(new TrustStoreWin(
-      std::move(root_cert_store), std::move(intermediate_cert_store),
-      std::move(disallowed_cert_store), std::move(all_certs_store)));
+  root_cert_store_ = std::move(root_cert_store);
+  intermediate_cert_store_ = std::move(intermediate_cert_store);
+  disallowed_cert_store_ = std::move(disallowed_cert_store);
+  all_certs_store_ = std::move(all_certs_store);
 }
 
 std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
@@ -178,19 +179,15 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
     crypto::ScopedHCERTSTORE disallowed_cert_store) {
   crypto::ScopedHCERTSTORE all_certs_store(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-  if (!root_cert_store.get() || !intermediate_cert_store.get() ||
-      !all_certs_store.get() || !disallowed_cert_store.get()) {
-    return nullptr;
-  }
 
-  if (!CertAddStoreToCollection(all_certs_store.get(),
-                                intermediate_cert_store.get(),
-                                /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
-    return nullptr;
+  if (all_certs_store.get() && intermediate_cert_store.get()) {
+    CertAddStoreToCollection(all_certs_store.get(),
+                             intermediate_cert_store.get(),
+                             /*dwUpdateFlags=*/0, /*dwPriority=*/0);
   }
-  if (!CertAddStoreToCollection(all_certs_store.get(), root_cert_store.get(),
-                                /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
-    return nullptr;
+  if (all_certs_store.get() && root_cert_store.get()) {
+    CertAddStoreToCollection(all_certs_store.get(), root_cert_store.get(),
+                             /*dwUpdateFlags=*/0, /*dwPriority=*/0);
   }
 
   return base::WrapUnique(new TrustStoreWin(
@@ -214,6 +211,10 @@ TrustStoreWin::~TrustStoreWin() = default;
 
 void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
                                      ParsedCertificateList* issuers) {
+  if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
+      !all_certs_store_.get() || !disallowed_cert_store_.get()) {
+    return;
+  }
   base::span<const uint8_t> issuer_span = cert->issuer_tlv().AsSpan();
 
   CERT_NAME_BLOB cert_issuer_blob;
@@ -269,6 +270,11 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 CertificateTrust TrustStoreWin::GetTrust(
     const ParsedCertificate* cert,
     base::SupportsUserData* debug_data) const {
+  if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
+      !all_certs_store_.get() || !disallowed_cert_store_.get()) {
+    return CertificateTrust::ForUnspecified();
+  }
+
   base::span<const uint8_t> cert_span = cert->der_cert().AsSpan();
   base::SHA1Digest cert_hash = base::SHA1HashSpan(cert_span);
   CRYPT_HASH_BLOB cert_hash_blob;

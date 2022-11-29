@@ -19,13 +19,14 @@ namespace net {
 // TODO(https://crbug.com/1239270): confirm this is thread safe.
 class NET_EXPORT TrustStoreWin : public TrustStore {
  public:
+  // Creates a TrustStoreWin by reading user settings from Windows system
+  // CertStores. If there are errors, will return a TrustStoreWin object
+  // that may not read all Windows system CertStores.
+  TrustStoreWin();
+
   ~TrustStoreWin() override;
   TrustStoreWin(const TrustStoreWin& other) = delete;
   TrustStoreWin& operator=(const TrustStoreWin& other) = delete;
-
-  // Creates a TrustStoreWin by reading user settings from Windows system
-  // CertStores. Returns nullptr on failure.
-  static std::unique_ptr<TrustStoreWin> Create();
 
   // Creates a TrustStoreWin for testing, which will treat `root_cert_store`
   // as if it's the source of truth for roots for `GetTrust,

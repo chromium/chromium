@@ -389,8 +389,8 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
-  return std::make_unique<SystemTrustStoreChrome>(std::move(chrome_root),
-                                                  TrustStoreWin::Create());
+  return std::make_unique<SystemTrustStoreChrome>(
+      std::move(chrome_root), std::make_unique<TrustStoreWin>());
 }
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED

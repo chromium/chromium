@@ -118,6 +118,19 @@ std::unique_ptr<TrustStoreWin> CreateTrustStoreWin() {
                                          std::move(disallowed_store));
 }
 
+TEST(TrustStoreWin, GetTrustInitializationError) {
+  // Simulate an initialization error by using null stores.
+  std::unique_ptr<TrustStoreWin> trust_store_win =
+      TrustStoreWin::CreateForTesting(crypto::ScopedHCERTSTORE(),
+                                      crypto::ScopedHCERTSTORE(),
+                                      crypto::ScopedHCERTSTORE());
+  ASSERT_TRUE(trust_store_win);
+  auto parsed_cert = ParseCertFromFile(kMultiRootDByD);
+  CertificateTrust trust =
+      trust_store_win->GetTrust(parsed_cert.get(), nullptr);
+  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+}
+
 TEST(TrustStoreWin, GetTrust) {
   std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
   ASSERT_TRUE(trust_store_win);
@@ -292,6 +305,21 @@ MATCHER_P(ParsedCertEq, expected_cert, "") {
   return arg && expected_cert &&
          base::ranges::equal(arg->der_cert().AsSpan(),
                              expected_cert->der_cert().AsSpan());
+}
+
+TEST(TrustStoreWin, GetIssuersInitializationError) {
+  // Simulate an initialization error by using null stores.
+  std::unique_ptr<TrustStoreWin> trust_store_win =
+      TrustStoreWin::CreateForTesting(crypto::ScopedHCERTSTORE(),
+                                      crypto::ScopedHCERTSTORE(),
+                                      crypto::ScopedHCERTSTORE());
+  ASSERT_TRUE(trust_store_win);
+  ParsedCertificateList issuers;
+  scoped_refptr<ParsedCertificate> cert =
+      ParseCertFromFile("multi-root-B-by-F.pem");
+  ASSERT_TRUE(cert);
+  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
+  ASSERT_EQ(0U, issuers.size());
 }
 
 TEST(TrustStoreWin, GetIssuersNoIssuerFound) {
