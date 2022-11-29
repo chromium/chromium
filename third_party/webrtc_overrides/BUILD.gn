@@ -14,6 +14,7 @@ webrtc_configs = [ "//third_party/webrtc:common_config" ]
 webrtc_public_configs = [ "//third_party/webrtc:common_inherited_config" ]
 
 webrtc_public_deps = [
+  ":bridge_ice_controller",
   ":init_webrtc",
   ":metrics",
   ":task_queue_factory",
@@ -255,4 +256,26 @@ source_set("system_time") {
   # visibility = [ ":*" ]
   sources = [ "rtc_base/system_time.cc" ]
   deps = [ "//base" ]
+}
+
+source_set("bridge_ice_controller") {
+  visibility = [ ":*" ]
+  sources = [
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/bridge_ice_controller_test.cc
+    "p2p/base/bridge_ice_controller.cc",
+    "p2p/base/bridge_ice_controller.h",
+    "p2p/base/bridge_ice_transport_factory.cc",
+    "p2p/base/bridge_ice_transport_factory.h",
+  ]
+  configs += [ "//third_party/webrtc:library_impl_config" ]
+  deps = [
+    "//base",
+    "//third_party/webrtc/api:ice_transport_interface",
+    "//third_party/webrtc/api:make_ref_counted",
+    "//third_party/webrtc/api:scoped_refptr",
+    "//third_party/webrtc/p2p:rtc_p2p",
+    "//third_party/webrtc/rtc_base:logging",
+    "//third_party/webrtc/rtc_base/system:rtc_export",
+  ]
 }

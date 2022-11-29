@@ -2154,6 +2154,7 @@ source_set("blink_platform_unittests_sources") {
     "mojo/string16_mojom_traits_test.cc",
     "p2p/filtering_network_manager_test.cc",
     "p2p/ipc_network_manager_test.cc",
+    "peerconnection/bridge_ice_controller_test.cc",
     "peerconnection/coalesced_tasks_test.cc",
     "peerconnection/linear_histogram_test.cc",
     "peerconnection/low_precision_timer_test.cc",
