@@ -541,6 +541,20 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-noise"
        }])json"},
+      {EventLevelResult::kReportWindowPassed,
+       /*replaced_event_level_report=*/absl::nullopt,
+       /*new_event_level_report=*/absl::nullopt,
+       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
+       /*dropped_event_level_report=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-event-report-window-passed"
+       }])json"},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {
@@ -702,6 +716,18 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
            "source_site": "https://impression.test"
          },
          "type": "trigger-aggregate-deduplicated"
+       }])json"},
+      {AggregatableResult::kReportWindowPassed,
+       /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
+       /*source_debug_key=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-aggregate-report-window-passed"
        }])json"},
   };
 

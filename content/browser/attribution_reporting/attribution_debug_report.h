@@ -40,10 +40,12 @@ class CONTENT_EXPORT AttributionDebugReport {
     kTriggerEventLowPriority,
     kTriggerEventExcessiveReports,
     kTriggerEventStorageLimit,
+    kTriggerEventReportWindowPassed,
     kTriggerAggregateDeduplicated,
     kTriggerAggregateNoContributions,
     kTriggerAggregateInsufficientBudget,
     kTriggerAggregateStorageLimit,
+    kTriggerAggregateReportWindowPassed,
     kTriggerUnknownError,
   };
 

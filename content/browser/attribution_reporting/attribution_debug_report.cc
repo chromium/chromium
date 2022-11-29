@@ -61,7 +61,6 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kSuccess:
     case EventLevelResult::kProhibitedByBrowserPolicy:
     case EventLevelResult::kSuccessDroppedLowerPriority:
-    case EventLevelResult::kReportWindowPassed:
       return absl::nullopt;
     case EventLevelResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
@@ -99,6 +98,9 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kExcessiveReports:
       return DataTypeIfCookieSet(DebugDataType::kTriggerEventExcessiveReports,
                                  is_debug_cookie_set);
+    case EventLevelResult::kReportWindowPassed:
+      return DataTypeIfCookieSet(DebugDataType::kTriggerEventReportWindowPassed,
+                                 is_debug_cookie_set);
   }
 }
 
@@ -108,7 +110,6 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kSuccess:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
-    case AggregatableResult::kReportWindowPassed:
       return absl::nullopt;
     case AggregatableResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
@@ -138,6 +139,10 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kInsufficientBudget:
       return DataTypeIfCookieSet(
           DebugDataType::kTriggerAggregateInsufficientBudget,
+          is_debug_cookie_set);
+    case AggregatableResult::kReportWindowPassed:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerAggregateReportWindowPassed,
           is_debug_cookie_set);
   }
 }
@@ -172,6 +177,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-event-excessive-reports";
     case DebugDataType::kTriggerEventStorageLimit:
       return "trigger-event-storage-limit";
+    case DebugDataType::kTriggerEventReportWindowPassed:
+      return "trigger-event-report-window-passed";
     case DebugDataType::kTriggerAggregateDeduplicated:
       return "trigger-aggregate-deduplicated";
     case DebugDataType::kTriggerAggregateNoContributions:
@@ -180,6 +187,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-aggregate-insufficient-budget";
     case DebugDataType::kTriggerAggregateStorageLimit:
       return "trigger-aggregate-storage-limit";
+    case DebugDataType::kTriggerAggregateReportWindowPassed:
+      return "trigger-aggregate-report-window-passed";
     case DebugDataType::kTriggerUnknownError:
       return "trigger-unknown-error";
   }
@@ -239,10 +248,12 @@ base::Value::Dict GetReportDataBody(
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
     case DebugDataType::kTriggerEventStorageLimit:
+    case DebugDataType::kTriggerEventReportWindowPassed:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
     case DebugDataType::kTriggerAggregateInsufficientBudget:
     case DebugDataType::kTriggerAggregateStorageLimit:
+    case DebugDataType::kTriggerAggregateReportWindowPassed:
     case DebugDataType::kTriggerUnknownError:
       NOTREACHED();
       return base::Value::Dict();
@@ -269,8 +280,10 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventDeduplicated:
     case DebugDataType::kTriggerEventNoMatchingConfigurations:
     case DebugDataType::kTriggerEventNoise:
+    case DebugDataType::kTriggerEventReportWindowPassed:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
+    case DebugDataType::kTriggerAggregateReportWindowPassed:
     case DebugDataType::kTriggerUnknownError:
       break;
     case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
