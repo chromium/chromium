@@ -34,7 +34,7 @@ std::string GetDisplayBaseName(const base::FilePath& path) {
     return path.BaseName().value();
 
   CFStringRef str;
-  if (LSCopyDisplayNameForURL(url, &str) != noErr)
+  if (!CFURLCopyResourcePropertyForKey(url, kCFURLLocalizedNameKey, &str, NULL))
     return path.BaseName().value();
 
   std::string result(base::SysCFStringRefToUTF8(str));
