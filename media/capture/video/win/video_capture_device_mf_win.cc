@@ -107,10 +107,6 @@ class MFPhotoCallback final
       buffer->Unlock();
       if (blob) {
         std::move(callback_).Run(std::move(blob));
-        LogWindowsImageCaptureOutcome(
-            VideoCaptureWinBackend::kMediaFoundation,
-            ImageCaptureOutcome::kSucceededUsingPhotoStream,
-            IsHighResolution(format_));
 
         // What is it supposed to mean if there is more than one buffer sent to
         // us as a response to requesting a single still image? Are we supposed
@@ -124,14 +120,7 @@ class MFPhotoCallback final
 
  private:
   friend class base::RefCountedThreadSafe<MFPhotoCallback>;
-  ~MFPhotoCallback() {
-    if (callback_) {
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kMediaFoundation,
-          ImageCaptureOutcome::kFailedUsingPhotoStream,
-          IsHighResolution(format_));
-    }
-  }
+  ~MFPhotoCallback() = default;
 
   VideoCaptureDevice::TakePhotoCallback callback_;
   const VideoCaptureFormat format_;
@@ -935,16 +924,7 @@ VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
 
 VideoCaptureDeviceMFWin::~VideoCaptureDeviceMFWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!video_stream_take_photo_callbacks_.empty()) {
-    for (size_t k = 0; k < video_stream_take_photo_callbacks_.size(); k++) {
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kMediaFoundation,
-          ImageCaptureOutcome::kFailedUsingVideoStream,
-          selected_video_capability_
-              ? IsHighResolution(selected_video_capability_->supported_format)
-              : false);
-    }
-  }
+
   if (video_callback_) {
     video_callback_->Shutdown();
   }
@@ -1835,18 +1815,10 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
         RotateAndBlobify(locked_buffer.data(), locked_buffer.length(),
                          selected_video_capability_->supported_format, 0);
     if (!blob) {
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kMediaFoundation,
-          ImageCaptureOutcome::kFailedUsingVideoStream,
-          IsHighResolution(selected_video_capability_->supported_format));
       continue;
     }
 
     std::move(cb).Run(std::move(blob));
-    LogWindowsImageCaptureOutcome(
-        VideoCaptureWinBackend::kMediaFoundation,
-        ImageCaptureOutcome::kSucceededUsingVideoStream,
-        IsHighResolution(selected_video_capability_->supported_format));
   }
 }
 

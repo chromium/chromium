@@ -72,7 +72,6 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
-#include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -1218,8 +1217,6 @@ MediaStreamManager::MediaStreamManager(
               std::move(device_task_runner),
               base::BindRepeating(&SendVideoCaptureLogMessage)));
     } else {
-      video_capture::uma::LogVideoCaptureServiceEvent(
-          video_capture::uma::BROWSER_USING_LEGACY_CAPTURE);
       video_capture_provider = InProcessVideoCaptureProvider::CreateInstance(
           std::make_unique<media::VideoCaptureSystemImpl>(
               media::CreateVideoCaptureDeviceFactory(

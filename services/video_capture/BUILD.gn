@@ -46,7 +46,6 @@ source_set("lib") {
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
-    "//services/video_capture/public/uma",
     "//services/viz/public/cpp/gpu",
   ]
 

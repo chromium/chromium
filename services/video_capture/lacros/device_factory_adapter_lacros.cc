@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/lacros/device_proxy_lacros.h"
-#include "services/video_capture/public/uma/video_capture_service_event.h"
 
 namespace video_capture {
 
@@ -142,9 +141,6 @@ void DeviceFactoryAdapterLacros::RegisterVirtualDevicesChangedObserver(
 
 void DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose(
     std::string device_id) {
-  video_capture::uma::LogVideoCaptureServiceEvent(
-      video_capture::uma::SERVICE_LOST_CONNECTION_TO_BROWSER);
-
   devices_.erase(device_id);
 }
 

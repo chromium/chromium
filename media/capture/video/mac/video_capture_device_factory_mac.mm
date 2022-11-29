@@ -19,7 +19,6 @@
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
-#include "services/video_capture/public/uma/video_capture_service_event.h"
 
 namespace {
 
@@ -198,11 +197,6 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
 
   // Also retrieve Blackmagic devices, if present, via DeckLink SDK API.
   VideoCaptureDeviceDeckLinkMac::EnumerateDevices(&devices_info);
-
-  if ([capture_devices count] > 0 && devices_info.empty()) {
-    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
-        video_capture::uma::AVF_DROPPED_DESCRIPTORS_AT_FACTORY);
-  }
 
   std::move(callback).Run(std::move(devices_info));
 }

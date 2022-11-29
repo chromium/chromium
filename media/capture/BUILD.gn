@@ -199,7 +199,6 @@ component("capture_lib") {
     ]
     deps += [
       "//components/crash/core/common:crash_key",
-      "//services/video_capture/public/uma",
       "//third_party/decklink",
     ]
     frameworks = [

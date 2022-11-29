@@ -333,15 +333,6 @@ VideoCaptureDeviceWin::~VideoCaptureDeviceWin() {
 
   if (capture_graph_builder_.Get())
     capture_graph_builder_.Reset();
-
-  if (!take_photo_callbacks_.empty()) {
-    for (size_t k = 0; k < take_photo_callbacks_.size(); k++) {
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kDirectShow,
-          ImageCaptureOutcome::kFailedUsingVideoStream,
-          IsHighResolution(capture_format_));
-    }
-  }
 }
 
 bool VideoCaptureDeviceWin::Init() {
@@ -909,15 +900,6 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
     mojom::BlobPtr blob = RotateAndBlobify(buffer, length, format, 0);
     if (blob) {
       std::move(cb).Run(std::move(blob));
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kDirectShow,
-          ImageCaptureOutcome::kSucceededUsingVideoStream,
-          IsHighResolution(format));
-    } else {
-      LogWindowsImageCaptureOutcome(
-          VideoCaptureWinBackend::kDirectShow,
-          ImageCaptureOutcome::kFailedUsingVideoStream,
-          IsHighResolution(format));
     }
   }
 }

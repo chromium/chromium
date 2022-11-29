@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/device_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
-#include "services/video_capture/public/uma/video_capture_service_event.h"
 
 namespace {
 
@@ -273,9 +272,6 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
 
 void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
     const std::string& device_id) {
-  video_capture::uma::LogVideoCaptureServiceEvent(
-      video_capture::uma::SERVICE_LOST_CONNECTION_TO_BROWSER);
-
   auto active_device_iter = active_devices_by_id_.find(device_id);
   if (active_device_iter != active_devices_by_id_.end()) {
     active_device_iter->second.device->Stop();

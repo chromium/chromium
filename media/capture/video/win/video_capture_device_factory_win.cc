@@ -337,14 +337,6 @@ VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
       com_thread_("Windows Video Capture COM Thread") {
   if (use_media_foundation_ && !PlatformSupportsMediaFoundation()) {
     use_media_foundation_ = false;
-    LogVideoCaptureWinBackendUsed(
-        VideoCaptureWinBackendUsed::kUsingDirectShowAsFallback);
-  } else if (use_media_foundation_) {
-    LogVideoCaptureWinBackendUsed(
-        VideoCaptureWinBackendUsed::kUsingMediaFoundationAsDefault);
-  } else {
-    LogVideoCaptureWinBackendUsed(
-        VideoCaptureWinBackendUsed::kUsingDirectShowAsDefault);
   }
 }
 

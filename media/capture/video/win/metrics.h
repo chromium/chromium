@@ -34,12 +34,6 @@ enum class MediaFoundationFunctionRequiringRetry {
   kGetAvailableDeviceMediaType
 };
 
-bool IsHighResolution(const VideoCaptureFormat& format);
-
-void LogVideoCaptureWinBackendUsed(VideoCaptureWinBackendUsed value);
-void LogWindowsImageCaptureOutcome(VideoCaptureWinBackend backend_type,
-                                   ImageCaptureOutcome value,
-                                   bool is_high_res);
 void LogNumberOfRetriesNeededToWorkAroundMFInvalidRequest(
     MediaFoundationFunctionRequiringRetry function,
     int retry_count);

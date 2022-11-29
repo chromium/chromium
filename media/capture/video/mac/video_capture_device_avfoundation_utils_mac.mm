@@ -13,7 +13,6 @@
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
-#include "services/video_capture/public/uma/video_capture_service_event.h"
 
 namespace media {
 namespace {
@@ -81,12 +80,9 @@ void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
     return;
   }
   static int attempt_since_process_start_counter = 0;
-  static int device_count_at_last_attempt = 0;
   static bool has_seen_zero_device_count = false;
   const int attempt_count_since_process_start =
       ++attempt_since_process_start_counter;
-  const int retry_count =
-      media::VideoCaptureDeviceFactoryMac::GetGetDevicesInfoRetryCount();
   const int device_count = number_of_devices + number_of_suspended_devices;
   UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.MacBook.NumberOfDevices",
                           device_count);
@@ -101,39 +97,6 @@ void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
       has_seen_zero_device_count = true;
     }
   }
-
-  if (attempt_count_since_process_start == 1) {
-    if (retry_count == 0) {
-      video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
-          device_count == 0
-              ? video_capture::uma::
-                    AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT
-              : video_capture::uma::
-                    AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT);
-    } else {
-      video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
-          device_count == 0
-              ? video_capture::uma::AVF_RECEIVED_ZERO_INFOS_RETRY
-              : video_capture::uma::AVF_RECEIVED_NONZERO_INFOS_RETRY);
-    }
-    // attempt count > 1
-  } else if (retry_count == 0) {
-    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
-        device_count == 0
-            ? video_capture::uma::
-                  AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT
-            : video_capture::uma::
-                  AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT);
-  }
-  if (attempt_count_since_process_start > 1 &&
-      device_count != device_count_at_last_attempt) {
-    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
-        device_count == 0
-            ? video_capture::uma::AVF_DEVICE_COUNT_CHANGED_FROM_POSITIVE_TO_ZERO
-            : video_capture::uma::
-                  AVF_DEVICE_COUNT_CHANGED_FROM_ZERO_TO_POSITIVE);
-  }
-  device_count_at_last_attempt = device_count;
 }
 
 base::scoped_nsobject<NSDictionary> GetDeviceNames() {
