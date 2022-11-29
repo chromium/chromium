@@ -3307,18 +3307,41 @@ void AutofillMetrics::LogAutocompletePredictionCollisionState(
 
 // static
 void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
+    AutocompleteState autocomplete_state,
     ServerFieldType server_type,
     ServerFieldType heuristic_type) {
-  const std::string kHistogramName =
-      "Autofill.Autocomplete.PredictionCollisionType.";
-  if (server_type != NO_SERVER_DATA) {
-    base::UmaHistogramEnumeration(kHistogramName + "Server", server_type,
-                                  ServerFieldType::MAX_VALID_FIELD_TYPE);
+  // Convert `autocomplete_state` to a string for the metric's name.
+  std::string autocomplete_suffix;
+  switch (autocomplete_state) {
+    case AutocompleteState::kNone:
+      autocomplete_suffix = "None";
+      break;
+    case AutocompleteState::kValid:
+      autocomplete_suffix = "Valid";
+      break;
+    case AutocompleteState::kGarbage:
+      autocomplete_suffix = "Garbage";
+      break;
+    case AutocompleteState::kOff:
+      autocomplete_suffix = "Off";
+      break;
+    default:
+      NOTREACHED();
   }
-  base::UmaHistogramEnumeration(kHistogramName + "Heuristics", heuristic_type,
-                                ServerFieldType::MAX_VALID_FIELD_TYPE);
+
+  // Log the metric for heuristic and server type.
+  std::string kHistogramName =
+      "Autofill.Autocomplete.PredictionCollisionType2.";
+  if (server_type != NO_SERVER_DATA) {
+    base::UmaHistogramEnumeration(
+        kHistogramName + "Server." + autocomplete_suffix, server_type,
+        ServerFieldType::MAX_VALID_FIELD_TYPE);
+  }
   base::UmaHistogramEnumeration(
-      kHistogramName + "ServerOrHeuristics",
+      kHistogramName + "Heuristics." + autocomplete_suffix, heuristic_type,
+      ServerFieldType::MAX_VALID_FIELD_TYPE);
+  base::UmaHistogramEnumeration(
+      kHistogramName + "ServerOrHeuristics." + autocomplete_suffix,
       server_type != NO_SERVER_DATA ? server_type : heuristic_type,
       ServerFieldType::MAX_VALID_FIELD_TYPE);
 }

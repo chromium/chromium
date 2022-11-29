@@ -1070,8 +1070,8 @@ class AutofillMetrics {
     kNone = 0,
     kValid = 1,
     kGarbage = 2,
-    kIgnored = 3,
-    kMaxValue = kIgnored
+    kOff = 3,
+    kMaxValue = kOff
   };
 
   AutofillMetrics() = delete;
@@ -1796,9 +1796,10 @@ class AutofillMetrics {
       PredictionState prediction_state,
       AutocompleteState autocomplete_state);
 
-  // Logs a field's server and heuristic type on form submit. This is only used
-  // for fields with autocomplete=garbage.
+  // Logs a field's server and heuristic type on form submit into a histogram
+  // corresponding to the field's `autocomplete_state`.
   static void LogAutocompletePredictionCollisionTypes(
+      AutocompleteState autocomplete_state,
       ServerFieldType server_type,
       ServerFieldType heuristic_types);
 

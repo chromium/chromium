@@ -6377,7 +6377,7 @@ others/histograms.xml -->
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>
   <int value="2" label="Garbage"/>
-  <int value="3" label="Ignored"/>
+  <int value="3" label="Off"/>
 </enum>
 
 <enum name="AutofillAwGSuggestionAvailability">

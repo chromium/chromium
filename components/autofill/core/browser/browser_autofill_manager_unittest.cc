@@ -8855,14 +8855,20 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
         "Autofill.Autocomplete.PredictionCollisionState", i, 1);
   }
 
-  // The PredictionCollisionType metric is collected for every field with
-  // autocomplete=garbage. This amounts 1 vote per `kTypeClass` here.
-  // Fields NO_SERVER_DATA are ignored for the .Server metric.
+  // A separate PredictionCollisionType metric exists for every prediction-type
+  // autocomplete status combination. Above, we created four fields per
+  // `kAutocompleteValues` - so we expect 4 samples in every bucket.
+  // The exception is the .Server metric, which is not emitted for
+  // NO_SERVER_DATA and hence expects only three samples.
   const std::string kTypeHistogram =
-      "Autofill.Autocomplete.PredictionCollisionType.";
-  histogram_tester.ExpectTotalCount(kTypeHistogram + "Heuristics", 4);
-  histogram_tester.ExpectTotalCount(kTypeHistogram + "Server", 3);
-  histogram_tester.ExpectTotalCount(kTypeHistogram + "ServerOrHeuristics", 4);
+      "Autofill.Autocomplete.PredictionCollisionType2.";
+  for (const char* suffix : {"Garbage", "None", "Off", "Valid"}) {
+    histogram_tester.ExpectTotalCount(kTypeHistogram + "Heuristics." + suffix,
+                                      4);
+    histogram_tester.ExpectTotalCount(kTypeHistogram + "Server." + suffix, 3);
+    histogram_tester.ExpectTotalCount(
+        kTypeHistogram + "ServerOrHeuristics." + suffix, 4);
+  }
 }
 
 struct ContextMenuImpressionTestCase {
@@ -8901,7 +8907,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Off Autocomplete attribute
         ContextMenuImpressionTestCase{
             "off", ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
-            AutofillMetrics::AutocompleteState::kIgnored, EMAIL_ADDRESS}));
+            AutofillMetrics::AutocompleteState::kOff, EMAIL_ADDRESS}));
 
 // Tests that metrics are emitted correctly on form submission for the fields
 // from where the context menu was triggered.
