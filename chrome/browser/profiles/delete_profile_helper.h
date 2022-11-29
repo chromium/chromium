@@ -1,0 +1,93 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
+#define CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class FilePath;
+}
+
+class Profile;
+class ProfileManager;
+class ScopedKeepAlive;
+
+// This class offers a few helper functions for profile deletion. Note that the
+// `DeleteProfileHelper` does not delete actual C++ Profile objects, as this is
+// done through the `ScopedProfileKeepAlive` mechanism and
+// `ProfileManager::RemoveProfile()`.
+// The `DeleteProfileHelper` is responsible for:
+// - deleting the profile as a user-visible concept: removes it from the
+//   `ProfileAttributesStorage` and deletes the user data on disk.
+// - creates or loads another profile before the last profile is deleted.
+class DeleteProfileHelper {
+ public:
+  using ProfileLoadedCallback = base::OnceCallback<void(Profile*)>;
+
+  explicit DeleteProfileHelper(ProfileManager& profile_manager);
+
+  ~DeleteProfileHelper();
+
+  DeleteProfileHelper(const DeleteProfileHelper&) = delete;
+  DeleteProfileHelper& operator=(const DeleteProfileHelper&) = delete;
+
+  // Schedules the profile at the given path to be deleted on shutdown. If we're
+  // deleting the last profile, a new one will be created in its place, and in
+  // that case the callback will be called when profile creation is complete.
+  // Silently exits if profile is either scheduling or marked for deletion.
+  void MaybeScheduleProfileForDeletion(
+      const base::FilePath& profile_dir,
+      ProfileLoadedCallback callback,
+      ProfileMetrics::ProfileDelete deletion_source);
+
+  // Schedules the ephemeral profile at the given path to be deleted on
+  // shutdown. New profiles will not be created.
+  void ScheduleEphemeralProfileForDeletion(const base::FilePath& profile_dir);
+
+  // Checks if any ephemeral profiles are left behind (e.g. because of a browser
+  // crash) and schedule them for deletion.
+  void CleanUpEphemeralProfiles();
+
+  // Checks if files of deleted profiles are left behind (e.g. because of a
+  // browser crash) and delete them in case they still exist.
+  void CleanUpDeletedProfiles();
+
+ private:
+  // Continues the scheduled profile deletion after closing all the profile's
+  // browsers tabs. Creates a new profile if the profile to be deleted is the
+  // last non-supervised profile. In the Mac, loads the next non-supervised
+  // profile if the profile to be deleted is the active profile.
+  void EnsureActiveProfileExistsBeforeDeletion(
+      ProfileLoadedCallback callback,
+      const base::FilePath& profile_dir);
+
+  // Schedules the profile at the given path to be deleted on shutdown,
+  // and marks the new profile as active.
+  void FinishDeletingProfile(const base::FilePath& profile_dir,
+                             const base::FilePath& new_active_profile_dir);
+  void OnLoadProfileForProfileDeletion(const base::FilePath& profile_dir,
+                                       Profile* profile);
+
+  // If the `loaded_profile` has been loaded successfully and isn't already
+  // scheduled for deletion, then finishes adding `profile_to_delete_dir` to the
+  // queue of profiles to be deleted, and updates the kProfileLastUsed
+  // preference based on `last_non_supervised_profile_path`. `keep_alive` may be
+  // null and is used to ensure shutdown does not start.
+  void OnNewActiveProfileInitialized(
+      const base::FilePath& profile_to_delete_path,
+      const base::FilePath& last_non_supervised_profile_path,
+      ProfileLoadedCallback callback,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      Profile* loaded_profile);
+
+  const raw_ref<ProfileManager>
+      profile_manager_;  // Owns the `DeleteProfileHelper`.
+};
+
+#endif  // CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_

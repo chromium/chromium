@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -65,8 +66,11 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   EXPECT_EQ(1, browser->tab_strip_model()->count());
 
   // Profile deletion closes the browser.
-  g_browser_process->profile_manager()->ScheduleProfileForDeletion(
-      new_profile->GetPath(), base::DoNothing());
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .MaybeScheduleProfileForDeletion(
+          new_profile->GetPath(), base::DoNothing(),
+          ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   ui_test_utils::WaitForBrowserToClose(browser);
   EXPECT_FALSE(chrome::FindBrowserWithProfile(new_profile));
 

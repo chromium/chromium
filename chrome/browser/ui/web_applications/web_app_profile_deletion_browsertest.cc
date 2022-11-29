@@ -8,7 +8,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -29,8 +31,11 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void ScheduleCurrentProfileForDeletion() {
-    g_browser_process->profile_manager()->ScheduleProfileForDeletion(
-        profile()->GetPath(), base::DoNothing());
+    g_browser_process->profile_manager()
+        ->GetDeleteProfileHelper()
+        .MaybeScheduleProfileForDeletion(
+            profile()->GetPath(), base::DoNothing(),
+            ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   }
 };
 

@@ -203,6 +203,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #else
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"
@@ -1156,9 +1157,13 @@ void ChromeBrowserMainParts::PreProfileInit() {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Ephemeral profiles may have been left behind if the browser crashed.
-  g_browser_process->profile_manager()->CleanUpEphemeralProfiles();
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .CleanUpEphemeralProfiles();
   // Files of deleted profiles can also be left behind after a crash.
-  g_browser_process->profile_manager()->CleanUpDeletedProfiles();
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .CleanUpDeletedProfiles();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/add_account_helper.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -510,9 +511,11 @@ AccountProfileMapper::RemoveStaleAccounts() {
       // profile.
       // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
       // profile deletion.
-      g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
-          entry->GetPath(), base::DoNothing(),
-          ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS);
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .MaybeScheduleProfileForDeletion(
+              entry->GetPath(), base::DoNothing(),
+              ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS);
     }
   }
   return removed_ids;
