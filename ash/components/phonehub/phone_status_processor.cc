@@ -412,6 +412,16 @@ void PhoneStatusProcessor::OnHostStatusChanged(
   MaybeSetPhoneModelName(host_device_with_status.second);
 }
 
+void PhoneStatusProcessor::OnAppListUpdateReceived(
+    const proto::AppListUpdate app_list_update) {
+  if (!app_list_update.has_all_apps())
+    return;
+
+  if (features::IsEcheSWAEnabled() && features::IsEcheLauncherEnabled()) {
+    GenerateAppListWithIcons(app_list_update.all_apps());
+  }
+}
+
 void PhoneStatusProcessor::GenerateAppListWithIcons(
     const proto::StreamableApps& streamable_apps) {
   if (streamable_apps.apps_size() == 0) {

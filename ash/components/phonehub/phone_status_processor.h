@@ -69,6 +69,8 @@ class PhoneStatusProcessor
       proto::PhoneStatusUpdate phone_status_update) override;
   void OnAppStreamUpdateReceived(
       const proto::AppStreamUpdate app_stream_update) override;
+  void OnAppListUpdateReceived(
+      const proto::AppListUpdate app_list_update) override;
 
   // MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(
