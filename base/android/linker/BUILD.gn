@@ -12,8 +12,7 @@ shared_library("chromium_android_linker") {
     "linker_jni.cc",
     "linker_jni.h",
     "linker_jni_onload.cc",
-    "modern_linker_jni.cc",
-    "modern_linker_jni.h",
+    "linker_minimal_libcxx.cc",
   ]
 
   # The NDK contains the crazy_linker here:

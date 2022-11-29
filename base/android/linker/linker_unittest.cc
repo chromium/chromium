@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <link.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/utsname.h>
 
 #include "base/android/linker/linker_jni.h"
-#include "base/android/linker/modern_linker_jni.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
@@ -131,20 +131,18 @@ int LibraryRangeFinder::VisitLibraryPhdrs(dl_phdr_info* info,
 // These tests get linked with base_unittests and leave JNI uninitialized. The
 // tests must not execute any parts relying on initialization with JNI_Onload().
 
-class ModernLinkerTest : public testing::Test {
+class LinkerTest : public testing::Test {
  public:
-  ModernLinkerTest() = default;
-  ~ModernLinkerTest() override = default;
+  LinkerTest() = default;
+  ~LinkerTest() override = default;
 };
 
 // Checks that NativeLibInfo::CreateSharedRelroFd() creates a shared memory
 // region that is 'sealed' as read-only.
-TEST_F(ModernLinkerTest, CreatedRegionIsSealed) {
+TEST_F(LinkerTest, CreatedRegionIsSealed) {
   if (!NativeLibInfo::SharedMemoryFunctionsSupportedForTesting()) {
-    // The ModernLinker uses functions from libandroid.so that are not available
-    // on old Android releases. TODO(pasko): Add a fallback to ashmem for L-M,
-    // as it is done in crazylinker and enable the testing below for these
-    // devices.
+    // The Linker uses functions from libandroid.so that are not available
+    // on Android releases before O. Disable unittests for old releases.
     return;
   }
 
@@ -184,7 +182,7 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealed) {
             mmap(nullptr, kRelroSize, PROT_WRITE, MAP_PRIVATE, relro_fd, 0));
 }
 
-TEST_F(ModernLinkerTest, FindReservedMemoryRegion) {
+TEST_F(LinkerTest, FindReservedMemoryRegion) {
   size_t address, size;
 
   // Find the existing reservation in the current process. The unittest runner
@@ -219,7 +217,7 @@ TEST_F(ModernLinkerTest, FindReservedMemoryRegion) {
   munmap(synthetic_region_start, kSize);
 }
 
-TEST_F(ModernLinkerTest, FindLibraryRanges) {
+TEST_F(LinkerTest, FindLibraryRanges) {
   static int var_inside = 3;
 
   NativeLibInfo lib_info = {0, 0};
@@ -239,7 +237,7 @@ TEST_F(ModernLinkerTest, FindLibraryRanges) {
             lib_info.load_address() + lib_info.get_load_size_for_testing());
 }
 
-TEST_F(ModernLinkerTest, FindLibraryRangesWhenLoadAddressWasReset) {
+TEST_F(LinkerTest, FindLibraryRangesWhenLoadAddressWasReset) {
   NativeLibInfo other_lib_info = {0, 0};
   uintptr_t executable_start = reinterpret_cast<uintptr_t>(&__executable_start);
   other_lib_info.set_load_address(executable_start);
@@ -251,7 +249,7 @@ TEST_F(ModernLinkerTest, FindLibraryRangesWhenLoadAddressWasReset) {
 // Check that discovering RELRO segment address ranges and the DSO ranges agrees
 // with the method based on dl_iterate_phdr(3). The check is performed on the
 // test library, not on libmonochrome.
-TEST_F(ModernLinkerTest, LibraryRangesViaIteratePhdr) {
+TEST_F(LinkerTest, LibraryRangesViaIteratePhdr) {
   // Find the ranges using dl_iterate_phdr().
   if (!dl_iterate_phdr) {
     ASSERT_TRUE(false) << "dl_iterate_phdr() not found";

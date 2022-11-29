@@ -20,7 +20,7 @@ AndroidHardwareBufferCompat::AndroidHardwareBufferCompat() {
   // be incompatible with pre-Oreo devices, this is unlikely to happen in the
   // foreseeable future, so just unconditionally use dynamic loading.
 
-  // cf. base/android/linker/modern_linker_jni.cc
+  // cf. base/android/linker/linker_jni.cc
   void* main_dl_handle = dlopen(nullptr, RTLD_NOW);
 
   *reinterpret_cast<void**>(&allocate_) =

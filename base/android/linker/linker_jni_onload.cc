@@ -10,22 +10,8 @@
 #include <jni.h>
 
 #include "base/android/linker/linker_jni.h"
-#include "base/android/linker/modern_linker_jni.h"
 
 namespace chromium_android_linker {
-namespace {
-
-bool LinkerJNIInit(JavaVM* vm, JNIEnv* env) {
-  // Find LibInfo field ids.
-  LOG_INFO("Caching field IDs");
-  if (!s_lib_info_fields.Init(env)) {
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
 
 // JNI_OnLoad() is called when the linker library is loaded through the regular
 // System.LoadLibrary) API. This shall save the Java VM handle and initialize
@@ -37,9 +23,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     LOG_ERROR("Could not create JNIEnv");
     return -1;
   }
-  if (!LinkerJNIInit(vm, env) || !ModernLinkerJNIInit(vm, env)) {
+  if (!LinkerJNIInit(vm, env))
     return -1;
-  }
   LOG_INFO("Done");
   return JNI_VERSION_1_4;
 }
