@@ -37,10 +37,6 @@ class LocalPrinter;
 }  // namespace crosapi
 #endif
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace content {
 class WebContents;
 }
@@ -94,7 +90,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                           int request_id);
 
   // Send the default page layout
-  void SendPageLayoutReady(const base::DictionaryValue& layout,
+  void SendPageLayoutReady(base::Value::Dict layout,
                            bool has_custom_page_size_style,
                            int request_id);
 

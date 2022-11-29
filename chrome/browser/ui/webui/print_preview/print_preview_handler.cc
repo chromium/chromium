@@ -1033,14 +1033,13 @@ void PrintPreviewHandler::SendPageCountReady(int page_count,
                     base::Value(request_id), base::Value(fit_to_page_scaling));
 }
 
-void PrintPreviewHandler::SendPageLayoutReady(
-    const base::DictionaryValue& layout,
-    bool has_custom_page_size_style,
-    int request_id) {
+void PrintPreviewHandler::SendPageLayoutReady(base::Value::Dict layout,
+                                              bool has_custom_page_size_style,
+                                              int request_id) {
   if (!ShouldReceiveRendererMessage(request_id))
     return;
 
-  FireWebUIListener("page-layout-ready", layout,
+  FireWebUIListener("page-layout-ready", std::move(layout),
                     base::Value(has_custom_page_size_style));
 }
 
