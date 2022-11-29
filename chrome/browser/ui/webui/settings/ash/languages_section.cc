@@ -154,7 +154,7 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
 }
 
 bool IsAssistivePersonalInfoAllowed() {
-  return !features::IsGuestModeActive() &&
+  return !IsGuestModeActive() &&
          base::FeatureList::IsEnabled(ash::features::kAssistPersonalInfo);
 }
 

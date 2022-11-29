@@ -30,7 +30,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace ash::settings::calculator {
+namespace ash::settings {
 
 namespace {
 
@@ -425,4 +425,4 @@ void OtherUsersSizeCalculator::OnGetOtherUserSize(
   NotifySizeCalculated(other_users_total_bytes);
 }
 
-}  // namespace ash::settings::calculator
+}  // namespace ash::settings

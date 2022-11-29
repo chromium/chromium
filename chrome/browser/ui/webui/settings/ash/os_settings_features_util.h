@@ -7,7 +7,7 @@
 
 class Profile;
 
-namespace ash::settings::features {
+namespace ash::settings {
 
 bool IsGuestModeActive();
 
@@ -19,6 +19,6 @@ bool ShouldShowParentalControlSettings(const Profile* profile);
 // shown for |profile|.
 bool ShouldShowExternalStorageSettings(const Profile* profile);
 
-}  // namespace ash::settings::features
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_FEATURES_UTIL_H_

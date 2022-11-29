@@ -44,7 +44,7 @@ const int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public arc::ArcSessionManagerObserver,
                        public disks::DiskMountManager::Observer,
-                       public calculator::SizeCalculator::Observer {
+                       public SizeCalculator::Observer {
  public:
   StorageHandler(Profile* profile, content::WebUIDataSource* html_source);
 
@@ -67,10 +67,9 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
       MountError error_code,
       const disks::DiskMountManager::MountPoint& mount_info) override;
 
-  // calculator::SizeCalculator::Observer:
-  void OnSizeCalculated(
-      const calculator::SizeCalculator::CalculationType& calculation_type,
-      int64_t total_bytes) override;
+  // SizeCalculator::Observer:
+  void OnSizeCalculated(const SizeCalculator::CalculationType& calculation_type,
+                        int64_t total_bytes) override;
 
   // Removes the handler from the list of observers of every observed instances.
   void StopObservingEvents();
@@ -85,7 +84,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
   // Updates storage row on the UI.
   void UpdateStorageItem(
-      const calculator::SizeCalculator::CalculationType& calculation_type);
+      const SizeCalculator::CalculationType& calculation_type);
 
   // Updates global storage statistics: total, in use and available space.
   void UpdateOverallStatistics();
@@ -102,21 +101,20 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   bool IsEligibleForAndroidStorage(std::string source_path);
 
   // Instances calculating the size of each storage items.
-  calculator::TotalDiskSpaceCalculator total_disk_space_calculator_;
-  calculator::FreeDiskSpaceCalculator free_disk_space_calculator_;
-  calculator::MyFilesSizeCalculator my_files_size_calculator_;
-  calculator::BrowsingDataSizeCalculator browsing_data_size_calculator_;
-  calculator::AppsSizeCalculator apps_size_calculator_;
-  calculator::CrostiniSizeCalculator crostini_size_calculator_;
-  calculator::OtherUsersSizeCalculator other_users_size_calculator_;
+  TotalDiskSpaceCalculator total_disk_space_calculator_;
+  FreeDiskSpaceCalculator free_disk_space_calculator_;
+  MyFilesSizeCalculator my_files_size_calculator_;
+  BrowsingDataSizeCalculator browsing_data_size_calculator_;
+  AppsSizeCalculator apps_size_calculator_;
+  CrostiniSizeCalculator crostini_size_calculator_;
+  OtherUsersSizeCalculator other_users_size_calculator_;
 
   // Controls if the size of each storage item has been calculated.
-  std::bitset<calculator::SizeCalculator::kCalculationTypeCount>
-      calculation_state_;
+  std::bitset<SizeCalculator::kCalculationTypeCount> calculation_state_;
 
   // Keeps track of the size of each storage item.
-  int64_t storage_items_total_bytes_
-      [calculator::SizeCalculator::kCalculationTypeCount] = {0};
+  int64_t storage_items_total_bytes_[SizeCalculator::kCalculationTypeCount] = {
+      0};
 
   Profile* const profile_;
   const std::string source_name_;

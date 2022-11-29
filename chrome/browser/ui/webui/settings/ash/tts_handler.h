@@ -9,10 +9,10 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "content/public/browser/tts_controller.h"
 
-namespace settings {
+namespace ash::settings {
 
 // Chrome "/manageAccessibility/tts/*" settings page UI handler.
-class TtsHandler : public SettingsPageUIHandler,
+class TtsHandler : public ::settings::SettingsPageUIHandler,
                    public content::VoicesChangedDelegate,
                    public content::UtteranceEventDelegate {
  public:
@@ -53,6 +53,6 @@ class TtsHandler : public SettingsPageUIHandler,
   base::WeakPtrFactory<TtsHandler> weak_factory_{this};
 };
 
-}  // namespace settings
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_TTS_HANDLER_H_

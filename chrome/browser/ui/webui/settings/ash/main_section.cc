@@ -173,7 +173,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("searchFeedbackEnabled",
                           ash::features::IsOsSettingsSearchFeedbackEnabled());
 
-  html_source->AddBoolean("isGuest", features::IsGuestModeActive());
+  html_source->AddBoolean("isGuest", IsGuestModeActive());
   html_source->AddBoolean(
       "isKioskModeActive",
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());

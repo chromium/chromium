@@ -940,7 +940,7 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<AccessibilityHandler>(profile()));
   web_ui->AddMessageHandler(
       std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
-  web_ui->AddMessageHandler(std::make_unique<::settings::TtsHandler>());
+  web_ui->AddMessageHandler(std::make_unique<TtsHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));
   web_ui->AddMessageHandler(

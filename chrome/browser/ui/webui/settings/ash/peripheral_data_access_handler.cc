@@ -59,7 +59,7 @@ PeripheralDataAccessHandler::PeripheralDataAccessHandler() {
   DCHECK(pref);
   // If the user has a managed policy or is a guest profile, prevent user
   // configuration of the setting.
-  is_user_configurable_ = !pref->IsManaged() && !features::IsGuestModeActive();
+  is_user_configurable_ = !pref->IsManaged() && !IsGuestModeActive();
 
   peripheral_data_access_subscription_ =
       CrosSettings::Get()->AddSettingsObserver(

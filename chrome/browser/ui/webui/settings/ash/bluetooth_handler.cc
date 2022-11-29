@@ -11,15 +11,14 @@
 #include "content/public/browser/web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace ash {
+namespace ash::settings {
+
 namespace {
 
 const char kRequestFastPairDeviceSupport[] =
     "requestFastPairDeviceSupportStatus";
 
 }  // namespace
-
-namespace settings {
 
 BluetoothHandler::BluetoothHandler() {
   device::BluetoothAdapterFactory::Get()->GetAdapter(
@@ -54,5 +53,4 @@ void BluetoothHandler::HandleRequestFastPairDeviceSupport(
   FireWebUIListener("fast-pair-device-supported-status", is_supported);
 }
 
-}  // namespace settings
-}  // namespace ash
+}  // namespace ash::settings

@@ -24,8 +24,9 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace settings {
-TtsHandler::TtsHandler() {}
+namespace ash::settings {
+
+TtsHandler::TtsHandler() = default;
 
 TtsHandler::~TtsHandler() {
   RemoveTtsControllerDelegates();
@@ -216,4 +217,4 @@ void TtsHandler::RemoveTtsControllerDelegates() {
   content::TtsController::GetInstance()->RemoveUtteranceEventDelegate(this);
 }
 
-}  // namespace settings
+}  // namespace ash::settings

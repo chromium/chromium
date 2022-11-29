@@ -479,7 +479,7 @@ PeopleSection::PeopleSection(Profile* profile,
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
   // No search tags are registered if in guest mode.
-  if (features::IsGuestModeActive())
+  if (IsGuestModeActive())
     return;
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
@@ -506,7 +506,7 @@ PeopleSection::PeopleSection(Profile* profile,
 
   // Parental control search tags are added if necessary and do not update
   // dynamically during a user session.
-  if (features::ShouldShowParentalControlSettings(profile))
+  if (ShouldShowParentalControlSettings(profile))
     updater.AddSearchTags(GetParentalSearchConcepts());
 }
 
@@ -584,9 +584,9 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddSetupPinDialogStrings(html_source);
   AddSyncControlsStrings(html_source);
   AddUsersStrings(html_source);
-  AddParentalControlStrings(
-      html_source, features::ShouldShowParentalControlSettings(profile()),
-      supervised_user_service_);
+  AddParentalControlStrings(html_source,
+                            ShouldShowParentalControlSettings(profile()),
+                            supervised_user_service_);
 
   ::settings::AddSyncControlsStrings(html_source);
   ::settings::AddSyncAccountControlStrings(html_source);
@@ -614,7 +614,7 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<FingerprintHandler>(profile()));
 
   if (!profile()->IsGuestSession() &&
-      features::ShouldShowParentalControlSettings(profile())) {
+      ShouldShowParentalControlSettings(profile())) {
     web_ui->AddMessageHandler(
         std::make_unique<ParentalControlsHandler>(profile()));
   }

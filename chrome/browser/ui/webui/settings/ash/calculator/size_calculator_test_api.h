@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::settings::calculator {
+namespace ash::settings {
 
 class TotalDiskSpaceTestAPI {
  public:
@@ -154,6 +154,6 @@ class OtherUsersSizeTestAPI {
   OtherUsersSizeCalculator other_users_size_calculator_;
 };
 
-}  // namespace ash::settings::calculator
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_

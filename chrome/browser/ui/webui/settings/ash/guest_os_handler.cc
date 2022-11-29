@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace ash {
+namespace ash::settings {
 
 namespace {
 
@@ -41,8 +41,6 @@ base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
 }
 
 }  // namespace
-
-namespace settings {
 
 GuestOsHandler::GuestOsHandler(Profile* profile) : profile_(profile) {}
 
@@ -150,5 +148,4 @@ void GuestOsHandler::OnUsbDevicesChanged() {
                     GetSharableUsbDevices(detector));
 }
 
-}  // namespace settings
-}  // namespace ash
+}  // namespace ash::settings

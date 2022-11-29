@@ -32,7 +32,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/event_constants.h"
 
-namespace ash {
+namespace ash::settings {
 
 namespace {
 
@@ -58,8 +58,6 @@ bool IsVpnConfigAllowed() {
 }
 
 }  // namespace
-
-namespace settings {
 
 InternetHandler::InternetHandler(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
@@ -280,5 +278,4 @@ void InternetHandler::SetGmsCoreNotificationsStateTrackerForTesting(
   gms_core_notifications_state_tracker_->AddObserver(this);
 }
 
-}  // namespace settings
-}  // namespace ash
+}  // namespace ash::settings

@@ -839,7 +839,7 @@ DeviceSection::DeviceSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDeviceSearchConcepts());
 
-  if (features::ShouldShowExternalStorageSettings(profile))
+  if (ShouldShowExternalStorageSettings(profile))
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
 
   chromeos::PowerManagerClient* power_manager_client =
@@ -919,8 +919,8 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
-  AddDeviceStorageStrings(
-      html_source, features::ShouldShowExternalStorageSettings(profile()));
+  AddDeviceStorageStrings(html_source,
+                          ShouldShowExternalStorageSettings(profile()));
   AddDevicePowerStrings(html_source);
 
   html_source->AddBoolean("isAdaptiveChargingEnabled",
