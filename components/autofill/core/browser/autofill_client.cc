@@ -172,10 +172,6 @@ void AutofillClient::CloseAutofillProgressDialog(
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
-bool AutofillClient::IsAutofillAssistantShowing() {
-  return false;
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

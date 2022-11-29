@@ -713,9 +713,6 @@ class AutofillClient : public RiskDataLoader {
   virtual void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing);
 
-  // Returns true if the Autofill Assistant UI is currently being shown.
-  virtual bool IsAutofillAssistantShowing();
-
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 

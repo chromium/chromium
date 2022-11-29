@@ -210,7 +210,6 @@ class ChromeAutofillClient
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing) override;
-  bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(

@@ -72,9 +72,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/autofill_assistant/browser/features.h"
-#include "components/autofill_assistant/browser/public/prefs.h"
-#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
@@ -696,14 +693,6 @@ bool ChromeAutofillClient::IsFastCheckoutSupported() {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          autofill_assistant::features::kAutofillAssistant)) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because AutofillAssistant flag is disabled.";
-    return false;
-  }
-
   // Not supported if MakeSearchesAndBrowsingBetter is not enabled. This has
   // been done to allow for consequent hash dances during consent-less flows.
   if (!GetPrefs()->GetBoolean(
@@ -786,14 +775,6 @@ bool ChromeAutofillClient::ShowFastCheckout(
     return false;
   }
 
-  // Don't show Fast Checkout surface while Autofill Assistant's UI is shown.
-  if (IsAutofillAssistantShowing()) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because Autofill Assistant UI is already showing.";
-    return false;
-  }
-
   const GURL& url = web_contents()->GetLastCommittedURL();
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
       ->Start(delegate, url);
@@ -825,10 +806,6 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard* const> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  // Don't show TTF surface while Autofill Assistant's UI is shown.
-  if (IsAutofillAssistantShowing())
-    return false;
-
   return touch_to_fill_credit_card_controller_.Show(
       std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
       std::move(cards_to_suggest));
@@ -855,11 +832,6 @@ void ChromeAutofillClient::ShowAutofillPopup(
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (!has_focus_)
     return;
-
-  // Don't show any popups while Autofill Assistant's UI is shown.
-  if (IsAutofillAssistantShowing()) {
-    return;
-  }
 
   // Convert element_bounds to be in screen space.
   gfx::Rect client_area = web_contents()->GetContainerBounds();
@@ -1035,13 +1007,6 @@ void ChromeAutofillClient::CloseAutofillProgressDialog(
   DCHECK(autofill_progress_dialog_controller_);
   autofill_progress_dialog_controller_->DismissDialog(
       show_confirmation_before_closing);
-}
-
-bool ChromeAutofillClient::IsAutofillAssistantShowing() {
-  auto* assistant_runtime_manager =
-      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
-  return assistant_runtime_manager && assistant_runtime_manager->GetState() ==
-                                          autofill_assistant::UIState::kShown;
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {

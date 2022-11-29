@@ -736,10 +736,6 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
     return false;
   }
 
-  // Do not offer credit card save at all if Autofill Assistant is running.
-  if (client_->IsAutofillAssistantShowing())
-    return false;
-
   if (ShouldOfferVirtualCardEnrollment(credit_card_import_candidate,
                                        fetched_card_instrument_id_)) {
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(

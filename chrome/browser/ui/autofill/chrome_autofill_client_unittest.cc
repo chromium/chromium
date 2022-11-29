@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/autofill_assistant/browser/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,22 +123,9 @@ TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {
 }
 
 TEST_F(ChromeAutofillClientTest,
-       IsFastCheckoutSupportedWithDisabledAssistantFeature) {
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {::features::kFastCheckout},
-      {autofill_assistant::features::kAutofillAssistant});
-
-  EXPECT_FALSE(client()->IsFastCheckoutSupported());
-}
-
-TEST_F(ChromeAutofillClientTest,
        IsFastCheckoutSupportedWithDisabledPersonalDataManager) {
   ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {::features::kFastCheckout,
-       autofill_assistant::features::kAutofillAssistant},
-      {});
+  feature_list.InitWithFeatures({::features::kFastCheckout}, {});
 
   personal_data_manager()->SetAutofillCreditCardEnabled(false);
   EXPECT_FALSE(client()->IsFastCheckoutSupported());
@@ -151,10 +137,7 @@ TEST_F(ChromeAutofillClientTest,
 
 TEST_F(ChromeAutofillClientTest, NoFastCheckoutSupportWithDisabledMSBB) {
   ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {::features::kFastCheckout,
-       autofill_assistant::features::kAutofillAssistant},
-      {});
+  feature_list.InitWithFeatures({::features::kFastCheckout}, {});
 
   // If MSBB has been explicitly turned off, Fast Checkout is not supported.
   profile()->GetPrefs()->SetBoolean(
