@@ -2510,11 +2510,13 @@ class ConfigObserver : public TraceLog::EnabledStateObserver {
     tracing_enabled.Signal();
   }
 
-  void OnTraceLogDisabled() override {}
+  void OnTraceLogDisabled() override { tracing_disabled.Signal(); }
 
   TraceConfig observed_config;
   WaitableEvent tracing_enabled{WaitableEvent::ResetPolicy::AUTOMATIC,
                                 WaitableEvent::InitialState::NOT_SIGNALED};
+  WaitableEvent tracing_disabled{WaitableEvent::ResetPolicy::AUTOMATIC,
+                                 WaitableEvent::InitialState::NOT_SIGNALED};
 };
 
 // Test that GetCurrentTraceConfig() returns the correct config when tracing
@@ -2538,6 +2540,7 @@ TEST_F(TraceEventTestFixture, GetCurrentTraceConfig) {
 
   observer.tracing_enabled.Wait();
   tracing_session->Stop();
+  observer.tracing_disabled.Wait();
 
   EXPECT_EQ(actual_config.ToString(), observer.observed_config.ToString());
 }
