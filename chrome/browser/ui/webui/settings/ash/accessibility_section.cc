@@ -48,7 +48,6 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kAccessibilitySectionPath;
 using ::chromeos::settings::mojom::kAudioAndCaptionsSubpagePath;
-using ::chromeos::settings::mojom::kCaptionsSubpagePath;
 using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
@@ -176,11 +175,11 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT3,
         IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT4}},
       {IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS,
-       mojom::kCaptionsSubpagePath,
+       mojom::kAudioAndCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kCaptions}},
+       {.subpage = mojom::Subpage::kAudioAndCaptions}},
       {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR,
        mojom::kCursorAndTouchpadSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -394,7 +393,7 @@ const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
 const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION,
-       mojom::kCaptionsSubpagePath,
+       mojom::kAudioAndCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -1061,6 +1060,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kLargeCursor,
       mojom::Setting::kHighlightCursorWhileMoving,
       mojom::Setting::kTabletNavigationButtons,
+      mojom::Setting::kLiveCaption,
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
       mojom::Setting::kEnableCursorColor,
@@ -1095,17 +1095,6 @@ void AccessibilitySection::RegisterHierarchy(
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSwitchAccessOptions,
                             kSwitchAccessSettings, generator);
-
-  // Caption preferences.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_CAPTIONS, mojom::Subpage::kCaptions,
-      mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kCaptionsSubpagePath);
-  static constexpr mojom::Setting kCaptionsSettings[] = {
-      mojom::Setting::kLiveCaption,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kCaptions, kCaptionsSettings,
-                            generator);
 }
 
 void AccessibilitySection::OnVoicesChanged() {

@@ -66,7 +66,6 @@ import {Route} from '../router.js';
  *   KNOWN_NETWORKS: !Route,
  *   LOCK_SCREEN: !Route,
  *   MANAGE_ACCESSIBILITY: !Route,
- *   MANAGE_CAPTION_SETTINGS: !Route,
  *   MANAGE_SWITCH_ACCESS_SETTINGS: !Route,
  *   MANAGE_TTS_SETTINGS: !Route,
  *   MULTIDEVICE: !Route,

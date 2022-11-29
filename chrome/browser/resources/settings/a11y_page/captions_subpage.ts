@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview 'settings-captions' is a component for showing captions
- * settings subpage (chrome://settings/captions, and
- * chrome://os-settings/manageAccessibility/captions on Chrome OS).
+ * settings subpage (chrome://settings/captions, and a component of
+ * chrome://os-settings/audioAndCaptions on Chrome OS).
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
@@ -25,7 +25,7 @@ import {getTemplate} from './captions_subpage.html.js';
 
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
-class SettingsCaptionsElement extends SettingsCaptionsElementBase {
+export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   static get is() {
     return 'settings-captions';
   }

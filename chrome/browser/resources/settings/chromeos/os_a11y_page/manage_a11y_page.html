@@ -384,13 +384,6 @@
 </template>
 
 <h2>$i18n{audioAndCaptionsHeading}</h2>
-<template is="dom-if" if="[[!isKioskModeActive_]]">
-  <cr-link-row id="captionsSubpageButton" class="first"
-      label="$i18n{captionsTitle}"
-      on-click="onCaptionsClick_"
-      role-description="$i18n{subpageArrowRoleDescription}">
-  </cr-link-row>
-</template>
 <settings-toggle-button
     class="hr"
     pref="{{prefs.settings.a11y.mono_audio}}"

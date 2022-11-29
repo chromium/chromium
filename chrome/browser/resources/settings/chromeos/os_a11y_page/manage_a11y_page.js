@@ -462,7 +462,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
     const r = routes;
     this.addFocusConfig(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
-    this.addFocusConfig(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
     this.addFocusConfig(
         r.MANAGE_SWITCH_ACCESS_SETTINGS, '#switchAccessSubpageButton');
     this.addFocusConfig(r.DISPLAY, '#displaySubpageButton');
@@ -562,11 +561,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   /** @private */
   onChromeVoxTutorialTap_() {
     this.manageBrowserProxy_.showChromeVoxTutorial();
-  }
-
-  /** @private */
-  onCaptionsClick_() {
-    Router.getInstance().navigateTo(routes.MANAGE_CAPTION_SETTINGS);
   }
 
   /** @private */

@@ -23,7 +23,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
@@ -90,6 +90,7 @@ class SettingsAudioAndCaptionsPageElement extends
         value: () => new Set([
           Setting.kMonoAudio,
           Setting.kStartupSound,
+          Setting.kLiveCaption,
         ]),
       },
     };
@@ -118,6 +119,30 @@ class SettingsAudioAndCaptionsPageElement extends
         (startupSoundEnabled: boolean) =>
             this.onAudioAndCaptionsPageReady_(startupSoundEnabled));
     this.audioAndCaptionsBrowserProxy_.audioAndCaptionsPageReady();
+  }
+
+  /**
+   * Overridden from DeepLinkingBehavior.
+   */
+  override beforeDeepLinkAttempt(settingId: Setting): boolean {
+    if (settingId === Setting.kLiveCaption) {
+      afterNextRender(this, () => {
+        const captionsSubpage =
+            this.shadowRoot!.querySelector('settings-captions');
+        const toggle = captionsSubpage?.getLiveCaptionToggle();
+        if (toggle) {
+          this.showDeepLinkElement(toggle);
+          return;
+        }
+        console.warn(`Element with deep link id ${settingId} not focusable.`);
+      });
+
+      // Stop deep link attempt since we completed it manually.
+      return false;
+    }
+
+    // Continue with deep linking attempt.
+    return true;
   }
 
   /**

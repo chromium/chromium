@@ -8,7 +8,6 @@
  * a subpage with Accessibility settings for ChromeOS.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../../a11y_page/captions_subpage.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
@@ -25,7 +24,7 @@ import './tts_subpage.js';
 
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -189,33 +188,8 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     this.browserProxy_.a11yPageReady();
   }
 
-  /**
-   * Overridden from DeepLinkingBehavior.
-   */
-  override beforeDeepLinkAttempt(settingId: Setting): boolean {
-    if (settingId === Setting.kLiveCaption) {
-      afterNextRender(this, () => {
-        const captionsSubpage =
-            this.shadowRoot!.querySelector('settings-captions');
-        const captionToggle = captionsSubpage?.getLiveCaptionToggle();
-        if (captionToggle) {
-          this.showDeepLinkElement(captionToggle);
-          return;
-        }
-        console.warn(`Element with deep link id ${settingId} not focusable.`);
-      });
-
-      // Stop deep link attempt since we completed it manually.
-      return false;
-    }
-
-    // Continue with deep linking attempt.
-    return true;
-  }
-
   override currentRouteChanged(route: Route) {
-    if (route === routes.OS_ACCESSIBILITY ||
-        route === routes.MANAGE_CAPTION_SETTINGS) {
+    if (route === routes.OS_ACCESSIBILITY) {
       this.attemptDeepLink();
     }
   }

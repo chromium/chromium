@@ -148,7 +148,7 @@ enum Subpage {
   kManageAccessibility = 1500,
   kTextToSpeech = 1502,
   kSwitchAccessOptions = 1503,
-  kCaptions = 1504,
+  // 1504 was used for kCaptions. Do not reuse.
   kTextToSpeechPage = 1505,
   kDisplayAndMagnification = 1506,
   kKeyboardAndTextInput = 1507,
@@ -286,7 +286,6 @@ const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
-const string kCaptionsSubpagePath = "manageAccessibility/captions";
 
 // Reset section.
 const string kResetSectionPath = "osReset";
