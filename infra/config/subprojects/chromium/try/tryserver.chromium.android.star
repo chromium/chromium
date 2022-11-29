@@ -620,7 +620,7 @@ try_.builder(
 try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    cores = 16,
+    cores = "8|16",
     mirrors = [
         "ci/Android arm Builder (dbg)",
     ],
