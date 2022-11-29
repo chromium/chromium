@@ -3518,8 +3518,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 // This test is a reproducer for https://crbug.com/1305394.
+// This test is flaky on Mac: https://crbug.com/1319301
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrossOriginIframeCoopBypass DISABLED_CrossOriginIframeCoopBypass
+#else
+#define MAYBE_CrossOriginIframeCoopBypass CrossOriginIframeCoopBypass
+#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIframeCoopBypass) {
+                       MAYBE_CrossOriginIframeCoopBypass) {
   // This test requires that a cross-origin iframe be placed in its own
   // process. It is irrelevant without strict site isolation.
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
@@ -3549,19 +3555,15 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(initial_main_si, popup_si);
   RenderProcessHost* process_A = initial_main_si->GetProcess();
 
-  // The popup then navigates the opener to a COOP page. This should trigger a
-  // BrowsingInstance swap. The main frame gets a new unrelated SiteInstance,
-  // and clears the opener.
-  RenderFrameDeletedObserver swapped_out_main_rfh(initial_main_rfh);
+  // The popup then navigates the opener to a COOP page.
   EXPECT_TRUE(ExecJs(popup_rfh, JsReplace("opener.location = $1", coop_page)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
+  // This should trigger a BrowsingInstance swap. The main frame gets a new
+  // unrelated BrowsingInstance, and clears the opener.
   // Note: We need to wait for the `blink::WebView` deletion to be propagated in
-  // the renderer for window.opener to be cleared. This should be done once the
-  // main RenderFrameHost gets deleted.
-  swapped_out_main_rfh.WaitUntilDeleted();
-  EXPECT_EQ(true, EvalJs(popup_rfh, "opener == null"));
-
+  // the renderer for window.opener to be cleared. To avoid flakes, we check the
+  // opener at the end of this test.
   RenderFrameHostImpl* main_rfh = current_frame_host();
   SiteInstanceImpl* main_si = main_rfh->GetSiteInstance();
   RenderProcessHost* process_B = main_si->GetProcess();
@@ -3613,7 +3615,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                     ->GetAllProxyHostsForTesting()
                     .size());
 
-  // The opener should not be reachable from the popup iframe.
+  // The opener should not be reachable either from the popup main frame nor the
+  // popup iframe.
+  EXPECT_EQ(true, EvalJs(popup_rfh, "opener == null"));
   EXPECT_EQ(true, EvalJs(iframe_rfh, "parent.opener == null"));
 }
 
