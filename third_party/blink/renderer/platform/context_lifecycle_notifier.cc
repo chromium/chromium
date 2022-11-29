@@ -26,11 +26,21 @@ ContextLifecycleNotifier::~ContextLifecycleNotifier() {
 
 void ContextLifecycleNotifier::AddContextLifecycleObserver(
     ContextLifecycleObserver* observer) {
+  // https://linear.app/replay/issue/RUN-806
+  recordreplay::Assert("ContextLifecycleNotifier::AddContextLifecycleObserver %d %d",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(observer));
+
   observers_.AddObserver(observer);
 }
 
 void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
     ContextLifecycleObserver* observer) {
+  // https://linear.app/replay/issue/RUN-806
+  recordreplay::Assert("ContextLifecycleNotifier::RemoveContextLifecycleObserver %d %d",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(observer));
+
   DCHECK(observers_.HasObserver(observer));
   observers_.RemoveObserver(observer);
 }
