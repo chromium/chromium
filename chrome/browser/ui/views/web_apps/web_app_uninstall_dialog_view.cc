@@ -109,14 +109,18 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   set_margins(insets +
               gfx::Insets::TLBR(0, insets.left() + kIconSizeInDip, 0, 0));
 
-  std::u16string checkbox_label = l10n_util::GetStringFUTF16(
-      IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
-      url_formatter::FormatUrlForSecurityDisplay(
-          app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  // For IWAs checkbox will not be displayed, removal of
+  // storage is automatically enforced.
+  if (!provider->registrar().IsIsolated(app_id_)) {
+    std::u16string checkbox_label = l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
+        url_formatter::FormatUrlForSecurityDisplay(
+            app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
-  auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
-  checkbox->SetMultiLine(true);
-  checkbox_ = AddChildView(std::move(checkbox));
+    auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
+    checkbox->SetMultiLine(true);
+    checkbox_ = AddChildView(std::move(checkbox));
+  }
 
   uninstall_source_ = uninstall_source;
 }
@@ -130,15 +134,21 @@ void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   if (!dialog_)
     return;
 
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  DCHECK(provider);
+  bool is_isolated_web_app = provider->registrar().IsIsolated(app_id_);
+
   HistogramCloseAction action =
-      checkbox_->GetChecked()
+      is_isolated_web_app || (checkbox_ && checkbox_->GetChecked())
           ? HistogramCloseAction::kUninstallAndCheckboxChecked
           : HistogramCloseAction::kUninstall;
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action);
 
   Uninstall();
-  if (checkbox_->GetChecked())
+
+  if (is_isolated_web_app || (checkbox_ && checkbox_->GetChecked())) {
     ClearWebAppSiteData();
+  }
 }
 
 void WebAppUninstallDialogDelegateView::OnDialogCanceled() {
