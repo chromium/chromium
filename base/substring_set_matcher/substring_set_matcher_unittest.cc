@@ -198,4 +198,26 @@ TEST(SubstringSetMatcherTest, TestEmptyMatcher) {
   EXPECT_TRUE(matcher.IsEmpty());
 }
 
+// Test a case where we have more than 256 edges from one node
+// (the “a” node gets one for each possible ASCII bytes, and then
+// one for the output link).
+TEST(SubstringSetMatcherTest, LotsOfEdges) {
+  std::vector<MatcherStringPattern> patterns;
+  for (int i = 0; i < 256; ++i) {
+    std::string str;
+    str.push_back('a');
+    str.push_back(static_cast<char>(i));
+    patterns.emplace_back(str, i);
+  }
+
+  {
+    std::string str;
+    str.push_back('a');
+    patterns.emplace_back(str, 256);
+  }
+
+  SubstringSetMatcher matcher;
+  matcher.Build(patterns);
+}
+
 }  // namespace base
