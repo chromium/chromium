@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -484,6 +485,11 @@ void ExtensionsMetricsProvider::ProvideExtensionInstallsMetrics(
       g_browser_process->profile_manager()->GetLoadedProfiles();
   last_sample_time_ = base::Time::Now();
   for (Profile* profile : profiles) {
+    if (extensions::ChromeContentBrowserClientExtensionsPart::
+            AreExtensionsDisabledForProfile(profile)) {
+      continue;
+    }
+
     std::vector<ExtensionInstallProto> installs =
         GetInstallsForProfile(profile, last_sample_time_);
     for (ExtensionInstallProto& install : installs)
