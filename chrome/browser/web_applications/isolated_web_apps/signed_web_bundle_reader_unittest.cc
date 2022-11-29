@@ -209,6 +209,8 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
 
   histogram_tester.ExpectTotalCount(
       "WebApp.Isolated.SignatureVerificationDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "WebApp.Isolated.SignatureVerificationFileLength", 1);
 }
 
 TEST_F(SignedWebBundleReaderTest,

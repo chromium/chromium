@@ -197,15 +197,46 @@ void SignedWebBundleReader::VerifySignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](scoped_refptr<web_package::SharedFile> file)
+              -> base::expected<uint64_t, base::File::Error> {
+            int64_t length = (*file)->GetLength();
+            if (length < 0) {
+              return base::unexpected((*file)->GetLastFileError());
+            }
+            return static_cast<uint64_t>(length);
+          },
+          file_),
+      base::BindOnce(&SignedWebBundleReader::OnFileLengthRead,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(integrity_block),
+                     std::move(callback)));
+}
+
+void SignedWebBundleReader::OnFileLengthRead(
+    web_package::SignedWebBundleIntegrityBlock integrity_block,
+    ReadErrorCallback callback,
+    base::expected<uint64_t, base::File::Error> file_length) {
+  if (!file_length.has_value()) {
+    FulfillWithError(
+        std::move(callback),
+        web_package::mojom::BundleIntegrityBlockParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            base::File::ErrorToString(file_length.error())));
+    return;
+  }
+
   signature_verifier_->VerifySignatures(
       file_, std::move(integrity_block),
       base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     std::move(callback)));
+                     *file_length, std::move(callback)));
 }
 
 void SignedWebBundleReader::OnSignaturesVerified(
     const base::TimeTicks& verification_start_time,
+    uint64_t file_length,
     ReadErrorCallback callback,
     absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
         verification_error) {
@@ -215,6 +246,10 @@ void SignedWebBundleReader::OnSignaturesVerified(
   base::UmaHistogramMediumTimes(
       "WebApp.Isolated.SignatureVerificationDuration",
       base::TimeTicks::Now() - verification_start_time);
+  // Measure file length in MiB up to ~10GiB.
+  base::UmaHistogramCounts10000(
+      "WebApp.Isolated.SignatureVerificationFileLength",
+      base::saturated_cast<int>(std::round(file_length / (1024.0 * 1024.0))));
 
   if (verification_error.has_value()) {
     FulfillWithError(std::move(callback), *verification_error);

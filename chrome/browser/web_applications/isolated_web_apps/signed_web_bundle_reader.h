@@ -251,8 +251,14 @@ class SignedWebBundleReader {
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       ReadErrorCallback callback);
 
+  void OnFileLengthRead(
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      ReadErrorCallback callback,
+      base::expected<uint64_t, base::File::Error> file_length);
+
   void OnSignaturesVerified(
       const base::TimeTicks& verification_start_time,
+      uint64_t file_length,
       ReadErrorCallback callback,
       absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
           verification_error);
