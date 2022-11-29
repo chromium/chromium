@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/features.h"
+#include "content/public/common/content_switches.h"
 
 #if !BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
 #include "base/system/sys_info.h"
@@ -19,6 +21,10 @@ namespace {
 namespace service_manager = ::ash::mojo_service_manager;
 
 base::ScopedClosureRunner CreateRealConnectionAndPassCloser() {
+  CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kDisableMojoBroker))
+      << "Mojo broker must be disabled to use the ChromeOS mojo service "
+         "manager.";
   CHECK(service_manager::BootstrapServiceManagerConnection())
       << "Cannot connect to ChromeOS mojo service manager after retries. "
          "This result in the ash don't have a mojo broker and will not be "
@@ -42,6 +48,9 @@ void ResetFakeConnection(
 }
 
 base::ScopedClosureRunner CreateFakeConnectionAndPassCloser() {
+  CHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kDisableMojoBroker))
+      << "Mojo broker must be enabled in browser tests.";
   auto fake_service_manager =
       std::make_unique<service_manager::FakeMojoServiceManager>();
   service_manager::SetServiceManagerRemoteForTesting(

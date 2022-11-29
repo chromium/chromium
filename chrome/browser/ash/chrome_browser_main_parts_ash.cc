@@ -713,11 +713,9 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
       std::move(feature_list_accessor_));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAshUseCrOSMojoServiceManager)) {
-    DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-        ::switches::kDisableMojoBroker))
-        << "Mojo broker must be disabled to use the ChromeOS mojo service "
-           "manager.";
+          switches::kAshUseCrOSMojoServiceManager) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kBrowserTest)) {
     // Initialize mojo service manager. Note that this depends on the
     // |mojo_ipc_support_| in |content::BrowserMainLoop| to be created.
     mojo_service_manager_closer_ =
