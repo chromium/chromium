@@ -81,6 +81,11 @@ struct BundleIntegrityBlock {
   array<BundleIntegrityBlockSignatureStackEntry> signature_stack;
 };
 
+// Mapped to `web_package::Ed25519PublicKey`
+struct Ed25519PublicKey {
+  array<uint8, 32> bytes;
+};
+
 struct BundleIntegrityBlockSignatureStackEntry {
   // The CBOR of this signature stack entry.
   // This is needed for verification of more than one signature later, because
@@ -90,7 +95,7 @@ struct BundleIntegrityBlockSignatureStackEntry {
   // The CBOR of the attributes of this signature stack entry.
   array<uint8> attributes_cbor;
   // The public key of this signature stack entry.
-  array<uint8> public_key;
+  Ed25519PublicKey public_key;
   // The signature of this signature stack entry.
   array<uint8> signature;
 };

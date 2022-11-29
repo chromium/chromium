@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_package {
@@ -40,14 +41,13 @@ constexpr uint8_t kAttributesCbor1[] = {'a', 1, 1, 1};
 constexpr uint8_t kAttributesCbor2[] = {'a', 2, 2, 2};
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
-    base::span<const uint8_t> public_key,
+    base::span<const uint8_t, 32> public_key,
     base::span<const uint8_t> signature,
     base::span<const uint8_t> complete_entry_cbor,
     base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  raw_signature_stack_entry->public_key =
-      std::vector(std::begin(public_key), std::end(public_key));
+  raw_signature_stack_entry->public_key = Ed25519PublicKey::Create(public_key);
   raw_signature_stack_entry->signature =
       std::vector(std::begin(signature), std::end(signature));
   raw_signature_stack_entry->complete_entry_cbor = std::vector(
@@ -78,25 +78,6 @@ TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
   ASSERT_FALSE(integrity_block.has_value());
   EXPECT_EQ(integrity_block.error(),
             "Cannot create an integrity block without any signatures.");
-}
-
-TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidPublicKey) {
-  std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
-      raw_signature_stack;
-  raw_signature_stack.push_back(MakeSignatureStackEntry(
-      {}, kEd25519Signature1, kCompleteEntryCbor1, kAttributesCbor1));
-
-  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
-  raw_integrity_block->size = 42;
-  raw_integrity_block->signature_stack = std::move(raw_signature_stack);
-
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_FALSE(integrity_block.has_value());
-  EXPECT_EQ(integrity_block.error(),
-            "Error while parsing signature stack entry: Invalid public key: "
-            "The Ed25519 public key does not have the correct length. Expected "
-            "32 bytes, but received 0 bytes.");
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidSignature) {

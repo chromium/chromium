@@ -23,6 +23,7 @@
 #include "components/cbor/values.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/shared_file.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
@@ -94,7 +95,7 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
   raw_signature_stack_entry->public_key =
-      std::vector(std::begin(public_key), std::end(public_key));
+      *web_package::Ed25519PublicKey::Create(public_key);
   raw_signature_stack_entry->signature =
       std::vector(std::begin(signature), std::end(signature));
   raw_signature_stack_entry->complete_entry_cbor = std::vector(

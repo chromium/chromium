@@ -18,15 +18,12 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
 namespace {
-
-using testing::ElementsAreArray;
 
 constexpr char kPrimaryUrl[] = "https://test.example.com/";
 constexpr char kValidityUrl[] =
@@ -225,7 +222,7 @@ SignedWebBundleAndKeys SignBundle(
 void CheckIfSignatureStackEntryIsValid(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry,
     const Ed25519PublicKey& public_key) {
-  EXPECT_THAT(entry->public_key, ElementsAreArray(public_key.bytes()));
+  EXPECT_EQ(entry->public_key, public_key);
 
   EXPECT_EQ(entry->signature.size(), 64ul);
   // The signature should also be present at the very end of
@@ -1105,8 +1102,8 @@ TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyLength) {
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
   EXPECT_EQ(error->message,
-            "The public key does not have the correct length, expected 32 "
-            "bytes.");
+            "The Ed25519 public key does not have the correct length. Expected "
+            "32 bytes, but received 33 bytes.");
 }
 
 TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {

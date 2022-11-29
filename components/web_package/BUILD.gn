@@ -10,8 +10,6 @@ static_library("web_package") {
     "input_reader.h",
     "shared_file.cc",
     "shared_file.h",
-    "signed_web_bundles/ed25519_public_key.cc",
-    "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/ed25519_signature.cc",
     "signed_web_bundles/ed25519_signature.h",
     "signed_web_bundles/integrity_block_parser.cc",
@@ -45,12 +43,27 @@ static_library("web_package") {
     "//services/network/public/mojom",
   ]
 
-  public_deps = [ "//components/web_package/mojom" ]
+  public_deps = [
+    "//components/web_package:mojom_mapped_types",
+    "//components/web_package/mojom",
+  ]
+}
+
+source_set("mojom_mapped_types") {
+  visibility = [ "./*" ]
+
+  sources = [
+    "signed_web_bundles/ed25519_public_key.cc",
+    "signed_web_bundles/ed25519_public_key.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "mojom/web_bundle_parser_mojom_traits_unittest.cc",
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/ed25519_signature_unittest.cc",
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",
@@ -68,6 +81,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/cbor",
     "//components/web_package/test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]
 }

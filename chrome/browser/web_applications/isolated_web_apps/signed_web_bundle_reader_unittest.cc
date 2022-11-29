@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "content/public/test/browser_task_environment.h"
@@ -80,8 +81,8 @@ class SignedWebBundleReaderTest : public testing::Test {
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =
             web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
-    signature_stack_entry->public_key =
-        std::vector(std::begin(kEd25519PublicKey), std::end(kEd25519PublicKey));
+    signature_stack_entry->public_key = web_package::Ed25519PublicKey::Create(
+        base::make_span(kEd25519PublicKey));
     signature_stack_entry->signature =
         std::vector(std::begin(kEd25519Signature), std::end(kEd25519Signature));
 

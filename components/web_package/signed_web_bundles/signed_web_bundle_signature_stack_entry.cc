@@ -13,11 +13,6 @@ namespace web_package {
 base::expected<SignedWebBundleSignatureStackEntry, std::string>
 SignedWebBundleSignatureStackEntry::Create(
     const mojom::BundleIntegrityBlockSignatureStackEntryPtr entry) {
-  auto public_key = Ed25519PublicKey::Create(entry->public_key);
-  if (!public_key.has_value()) {
-    return base::unexpected(base::StringPrintf("Invalid public key: %s",
-                                               public_key.error().c_str()));
-  }
   auto signature = Ed25519Signature::Create(entry->signature);
   if (!signature.has_value()) {
     return base::unexpected(
@@ -25,8 +20,8 @@ SignedWebBundleSignatureStackEntry::Create(
   }
 
   return SignedWebBundleSignatureStackEntry(entry->complete_entry_cbor,
-                                            entry->attributes_cbor, *public_key,
-                                            *signature);
+                                            entry->attributes_cbor,
+                                            entry->public_key, *signature);
 }
 
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(

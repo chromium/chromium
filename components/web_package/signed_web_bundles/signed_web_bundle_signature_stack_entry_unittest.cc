@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_package {
@@ -23,12 +25,11 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
-    base::span<const uint8_t> public_key,
+    base::span<const uint8_t, 32> public_key,
     base::span<const uint8_t> signature) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  raw_signature_stack_entry->public_key =
-      std::vector(std::begin(public_key), std::end(public_key));
+  raw_signature_stack_entry->public_key = Ed25519PublicKey::Create(public_key);
   raw_signature_stack_entry->signature =
       std::vector(std::begin(signature), std::end(signature));
   return raw_signature_stack_entry;
@@ -46,16 +47,6 @@ TEST(SignedWebBundleSignatureStackEntryTest, TestValidSignatureStackEntry) {
                                   kEd25519PublicKey));
   EXPECT_TRUE(base::ranges::equal(signature_stack_entry->signature().bytes(),
                                   kEd25519Signature));
-}
-
-TEST(SignedWebBundleSignatureStackEntryTest, TestInvalidPublicKey) {
-  auto signature_stack_entry = SignedWebBundleSignatureStackEntry::Create(
-      MakeSignatureStackEntry({}, kEd25519Signature));
-
-  ASSERT_FALSE(signature_stack_entry.has_value());
-  EXPECT_EQ(signature_stack_entry.error(),
-            "Invalid public key: The Ed25519 public key does not have the "
-            "correct length. Expected 32 bytes, but received 0 bytes.");
 }
 
 TEST(SignedWebBundleSignatureStackEntryTest, TestInvalidSignature) {

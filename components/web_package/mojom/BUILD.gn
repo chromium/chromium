@@ -12,6 +12,26 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "web_package.mojom.Ed25519PublicKey"
+          cpp = "::web_package::Ed25519PublicKey"
+        },
+      ]
+      traits_headers =
+          [ "//components/web_package/mojom/web_bundle_parser_mojom_traits.h" ]
+      traits_sources =
+          [ "//components/web_package/mojom/web_bundle_parser_mojom_traits.cc" ]
+      traits_deps = [
+        "//base",
+        "//components/web_package:mojom_mapped_types",
+        "//mojo/public/mojom/base",
+      ]
+    },
+  ]
+
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
