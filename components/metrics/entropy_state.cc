@@ -12,6 +12,11 @@
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "components/metrics/jni_headers/LowEntropySource_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace metrics {
 
 namespace {
@@ -22,10 +27,16 @@ namespace {
 // new low entropy source value to prefs multiple times, it stays the same
 // value.
 int GenerateLowEntropySource() {
+#if BUILDFLAG(IS_ANDROID)
+  // Note: As in the non-Android case below, the Java implementation also uses
+  // a static cache, so subsequent invocations will return the same value.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_LowEntropySource_generateLowEntropySource(env);
+#else
   static const int low_entropy_source =
       base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
-  ;
   return low_entropy_source;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Generates a new non-identifying low entropy source using the same method
@@ -33,10 +44,16 @@ int GenerateLowEntropySource() {
 // used for statistical validation, and *not* for randomization or experiment
 // assignment.
 int GeneratePseudoLowEntropySource() {
+#if BUILDFLAG(IS_ANDROID)
+  // Note: As in the non-Android case below, the Java implementation also uses
+  // a static cache, so subsequent invocations will return the same value.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_LowEntropySource_generatePseudoLowEntropySource(env);
+#else
   static const int pseudo_low_entropy_source =
       base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
-  ;
   return pseudo_low_entropy_source;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

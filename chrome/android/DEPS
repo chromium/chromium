@@ -44,6 +44,7 @@ include_rules = [
   "+components/javascript_dialogs/android",
   "+components/media_router/browser/android",
   "+components/messages/android",
+  "+components/metrics",
   "+components/page_info/android/java",
   "+components/permissions/android/nfc",
   "+components/policy",

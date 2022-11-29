@@ -9,6 +9,55 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (is_android) {
+  generate_jni("jni_headers") {
+    namespace = "metrics"
+    sources = [
+      "android/java/src/org/chromium/components/metrics/LowEntropySource.java",
+    ]
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":foo_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//components/metrics/metrics_features.cc" ]
+    template =
+        "//components/metrics/android/java_templates/MetricsFeatures.java.tmpl"
+  }
+
+  java_cpp_strings("java_switches_srcjar") {
+    # External code should depend on ":metrics_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//components/metrics/metrics_switches.cc" ]
+    template =
+        "//components/metrics/android/java_templates/MetricsSwitches.java.tmpl"
+  }
+
+  java_cpp_enum("java_enum_srcjar") {
+    # External code should depend on ":metrics_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "stability_metrics_helper.h" ]
+  }
+
+  android_library("metrics_java") {
+    # Right now, this only includes the Java switches. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [
+      ":java_enum_srcjar",
+      ":java_features_srcjar",
+      ":java_switches_srcjar",
+    ]
+    sources = [
+      "android/java/src/org/chromium/components/metrics/LowEntropySource.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+}
+
 static_library("metrics") {
   sources = [
     "android_metrics_provider.cc",
@@ -149,6 +198,7 @@ static_library("metrics") {
 
   if (is_android) {
     sources += [ "drive_metrics_provider_android.cc" ]
+    deps += [ ":jni_headers" ]
   }
 
   if (is_ios) {
@@ -202,41 +252,6 @@ static_library("metrics") {
       "motherboard_metrics_provider.cc",
       "motherboard_metrics_provider.h",
     ]
-  }
-}
-
-if (is_android) {
-  java_cpp_features("java_features_srcjar") {
-    # External code should depend on ":foo_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "//components/metrics/metrics_features.cc" ]
-    template =
-        "//components/metrics/android/java_templates/MetricsFeatures.java.tmpl"
-  }
-
-  java_cpp_strings("java_switches_srcjar") {
-    # External code should depend on ":metrics_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "//components/metrics/metrics_switches.cc" ]
-    template =
-        "//components/metrics/android/java_templates/MetricsSwitches.java.tmpl"
-  }
-
-  java_cpp_enum("java_enum_srcjar") {
-    # External code should depend on ":metrics_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "stability_metrics_helper.h" ]
-  }
-
-  android_library("metrics_java") {
-    # Right now, this only includes the Java switches. But if we need more Java
-    # files, they should be added here as necessary.
-    srcjar_deps = [
-      ":java_enum_srcjar",
-      ":java_features_srcjar",
-      ":java_switches_srcjar",
-    ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
 
