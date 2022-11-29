@@ -47,6 +47,13 @@ struct IPCZ_ALIGN(8) DataPipeHeader {
 // Attempts to put a single (32-bit) integer into the given `portal`. Returns
 // true if successful, or false to indicate that the peer portal is closed.
 bool SendPeerUpdate(IpczHandle portal, size_t num_bytes) {
+  if (num_bytes == 0) {
+    // Do not send messages for empty reads or writes. This ensures that
+    // endpoints can reliably infer new (non-zero) data or capacity by the mere
+    // presence of one or more unread parcels.
+    return true;
+  }
+
   const uint32_t num_bytes_checked = base::checked_cast<uint32_t>(num_bytes);
   const IpczResult result =
       GetIpczAPI().Put(portal, &num_bytes_checked, sizeof(num_bytes_checked),
@@ -103,6 +110,10 @@ DrainResult DrainPeerUpdates(IpczHandle portal) {
         end_get(sizeof(value));
         continue;
       }
+
+      case IPCZ_RESULT_ALREADY_EXISTS:
+        // Unlikely: we raced with a flush on another thread. Try again.
+        continue;
 
       default:
         // Unexpected behavior. Treat as if closed.
@@ -214,6 +225,7 @@ MojoResult DataPipe::WriteData(const void* elements,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
+  FlushUpdatesFromPeer();
   const base::span<const uint8_t> input_bytes =
       base::make_span(static_cast<const uint8_t*>(elements), num_bytes);
   scoped_refptr<PortalWrapper> portal;
@@ -230,7 +242,6 @@ MojoResult DataPipe::WriteData(const void* elements,
       return MOJO_RESULT_FAILED_PRECONDITION;
     }
 
-    FlushUpdatesFromPeer();
     if (flags & MOJO_WRITE_DATA_FLAG_ALL_OR_NONE) {
       if (!data_.WriteAll(input_bytes)) {
         return input_bytes.empty() ? MOJO_RESULT_SHOULD_WAIT
@@ -257,6 +268,7 @@ MojoResult DataPipe::WriteData(const void* elements,
 MojoResult DataPipe::BeginWriteData(void*& data,
                                     uint32_t& num_bytes,
                                     MojoBeginWriteDataFlags flags) {
+  FlushUpdatesFromPeer();
   base::AutoLock lock(lock_);
   if (two_phase_writer_) {
     return MOJO_RESULT_BUSY;
@@ -265,7 +277,6 @@ MojoResult DataPipe::BeginWriteData(void*& data,
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 
-  FlushUpdatesFromPeer();
   RingBuffer::DirectWriter writer(data_);
   if (writer.bytes().empty()) {
     return MOJO_RESULT_SHOULD_WAIT;
@@ -327,13 +338,13 @@ MojoResult DataPipe::ReadData(void* elements,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
+  FlushUpdatesFromPeer();
   const base::span<uint8_t> output_bytes =
       base::make_span(static_cast<uint8_t*>(elements), num_bytes);
   size_t read_size = num_bytes;
   scoped_refptr<PortalWrapper> portal;
   {
     base::AutoLock lock(lock_);
-    FlushUpdatesFromPeer();
     const size_t data_size = data_.data_size();
     if (query) {
       num_bytes = base::checked_cast<uint32_t>(data_size);
@@ -388,6 +399,7 @@ MojoResult DataPipe::ReadData(void* elements,
 
 MojoResult DataPipe::BeginReadData(const void*& buffer,
                                    uint32_t& buffer_num_bytes) {
+  FlushUpdatesFromPeer();
   base::AutoLock lock(lock_);
   if (two_phase_reader_) {
     return MOJO_RESULT_BUSY;
@@ -397,7 +409,6 @@ MojoResult DataPipe::BeginReadData(const void*& buffer,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  FlushUpdatesFromPeer();
   RingBuffer::DirectReader reader(data_);
   if (reader.bytes().empty()) {
     return is_peer_closed_ ? MOJO_RESULT_FAILED_PRECONDITION
@@ -539,14 +550,24 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
   return endpoint;
 }
 
-MojoHandleSignalsState DataPipe::Flush() {
+MojoHandleSignalsState DataPipe::GetSignals() {
   MojoHandleSignalsState signals_state = {};
   MojoHandleSignals& satisfied = signals_state.satisfied_signals;
   MojoHandleSignals& satisfiable = signals_state.satisfiable_signals;
 
   base::AutoLock lock(lock_);
-  FlushUpdatesFromPeer();
-  satisfiable |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+  IpczPortalStatus status = {.size = sizeof(status)};
+  const IpczResult result = GetIpczAPI().QueryPortalStatus(
+      portal_->handle(), IPCZ_NO_FLAGS, nullptr, &status);
+  if (result != IPCZ_RESULT_OK) {
+    return signals_state;
+  }
+
+  if ((status.flags & IPCZ_PORTAL_STATUS_DEAD) != 0) {
+    is_peer_closed_ = true;
+  }
+
+  satisfiable = MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   if (is_peer_closed_) {
     satisfied |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   } else {
@@ -554,21 +575,32 @@ MojoHandleSignalsState DataPipe::Flush() {
   }
 
   if (is_consumer()) {
+    const bool new_data_available =
+        has_new_data_ || status.num_local_parcels > 0;
+    if (new_data_available) {
+      has_new_data_ = true;
+      satisfied |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+      satisfiable |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+    }
+
+    const bool any_data_available = new_data_available || data_.data_size() > 0;
+    if (any_data_available) {
+      satisfiable |= MOJO_HANDLE_SIGNAL_READABLE;
+      satisfied |= MOJO_HANDLE_SIGNAL_READABLE;
+    }
+
     if (!is_peer_closed_) {
       satisfiable |=
           MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
     }
-    if (data_.data_size() > 0) {
-      satisfiable |=
-          MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
-      satisfied |= MOJO_HANDLE_SIGNAL_READABLE;
-      if (has_new_data_) {
-        satisfied |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
-      }
-    }
-  } else if (!is_peer_closed_) {
+
+    return signals_state;
+  }
+
+  DCHECK(is_producer());
+  if (!is_peer_closed_) {
     satisfiable |= MOJO_HANDLE_SIGNAL_WRITABLE;
-    if (data_.available_capacity() > 0) {
+    if (data_.available_capacity() > 0 || status.num_local_parcels > 0) {
       satisfied |= MOJO_HANDLE_SIGNAL_WRITABLE;
     }
   }
@@ -577,15 +609,20 @@ MojoHandleSignalsState DataPipe::Flush() {
 }
 
 void DataPipe::FlushUpdatesFromPeer() {
-  lock_.AssertAcquired();
-  DCHECK(portal_);
-  if (in_transit_) {
-    // Once an endpoint has begun serialization we must not read its portal,
-    // lest we potentially lose updates.
-    return;
+  scoped_refptr<PortalWrapper> portal;
+  {
+    base::AutoLock lock(lock_);
+    if (!portal_ || in_transit_) {
+      // Once an endpoint has begun serialization we must not read its portal,
+      // lest we potentially lose updates.
+      return;
+    }
+    portal = portal_;
   }
 
-  DrainResult result = DrainPeerUpdates(portal_->handle());
+  DrainResult result = DrainPeerUpdates(portal->handle());
+
+  base::AutoLock lock(lock_);
   if (result.dead) {
     is_peer_closed_ = true;
   }

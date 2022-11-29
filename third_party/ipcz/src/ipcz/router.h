@@ -27,6 +27,7 @@ namespace ipcz {
 class NodeLink;
 class RemoteRouterLink;
 struct RouterLinkState;
+class TrapEventDispatcher;
 
 // The Router is the main primitive responsible for routing parcels between ipcz
 // portals. This class is thread-safe.
@@ -164,7 +165,8 @@ class Router : public RefCounted {
   // consuming some (possibly all) bytes and handles from that parcel. Once a
   // parcel is fully consumed, it's removed from the inbound queue.
   IpczResult CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
-                                         absl::Span<IpczHandle> handles);
+                                         absl::Span<IpczHandle> handles,
+                                         TrapEventDispatcher& dispatcher);
 
   // Attempts to install a new trap on this Router, to invoke `handler` as soon
   // as one or more conditions in `conditions` is met. This method effectively
