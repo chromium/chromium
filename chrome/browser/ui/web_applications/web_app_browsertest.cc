@@ -286,8 +286,6 @@ class WebAppBrowserTest_DetailedInstallDialog : public WebAppBrowserTest {
 using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
 #endif
 
-using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
-
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
   {
     const SkColor theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
@@ -763,48 +761,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   EXPECT_EQ(new_browser->window()->GetBounds(), bounds);
 }
 
-// Tests that desktop PWAs are reopened at the correct size.
-// TODO(crbug.com/1065748): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ReopenedPWASizeIsCorrectlyRestored \
-  DISABLED_ReopenedPWASizeIsCorrectlyRestored
-#else
-#define MAYBE_ReopenedPWASizeIsCorrectlyRestored \
-  ReopenedPWASizeIsCorrectlyRestored
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
-                       MAYBE_ReopenedPWASizeIsCorrectlyRestored) {
-  const GURL app_url = GetSecureAppURL();
-  const AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
-
-  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
-  NavigateToURLAndWait(app_browser, app_url);
-
-  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
-  app_browser->window()->SetBounds(bounds);
-  CloseAndWait(app_browser);
-
-  content::WebContentsAddedObserver new_contents_observer;
-
-  sessions::TabRestoreService* const service =
-      TabRestoreServiceFactory::GetForProfile(profile());
-  ASSERT_GT(service->entries().size(), 0U);
-  sessions::TabRestoreService::Entry* entry = service->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  const auto* entry_win =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
-  EXPECT_EQ(bounds, entry_win->bounds);
-
-  service->RestoreMostRecentEntry(nullptr);
-
-  content::WebContents* const restored_web_contents =
-      new_contents_observer.GetWebContents();
-  Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
-  EXPECT_EQ(restored_browser->override_bounds(), bounds);
-}
-
 // Tests that using window.open to create a popup window out of scope results in
 // a correctly sized window.
 // TODO(crbug.com/1234260): Stabilize the test.
@@ -885,55 +841,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   // The popup window should be the size we specified.
   EXPECT_EQ(size, popup_browser->window()->GetContentsSize());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Tests that app windows are correctly restored.
-IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
-  const GURL app_url = GetSecureAppURL();
-  const AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
-
-  ASSERT_TRUE(app_browser->is_type_app());
-  CloseAndWait(app_browser);
-
-  content::WebContentsAddedObserver new_contents_observer;
-
-  sessions::TabRestoreService* const service =
-      TabRestoreServiceFactory::GetForProfile(profile());
-  service->RestoreMostRecentEntry(nullptr);
-
-  content::WebContents* const restored_web_contents =
-      new_contents_observer.GetWebContents();
-  Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
-
-  EXPECT_TRUE(restored_browser->is_type_app());
-}
-
-// Tests that app popup windows are correctly restored.
-IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
-  const GURL app_url = GetSecureAppURL();
-  const AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = web_app::LaunchWebAppBrowserAndWait(
-      profile(), app_id, WindowOpenDisposition::NEW_POPUP);
-
-  ASSERT_TRUE(app_browser->is_type_app_popup());
-  CloseAndWait(app_browser);
-
-  content::WebContentsAddedObserver new_contents_observer;
-
-  sessions::TabRestoreService* const service =
-      TabRestoreServiceFactory::GetForProfile(profile());
-  service->RestoreMostRecentEntry(nullptr);
-
-  content::WebContents* const restored_web_contents =
-      new_contents_observer.GetWebContents();
-  Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
-
-  EXPECT_TRUE(restored_browser->is_type_app_popup());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Test navigating to an out of scope url on the same origin causes the url
 // to be shown to the user.

@@ -330,4 +330,10 @@ bool WebAppNavigationBrowserTest::TestTabActionDoesNotOpenAppWindow(
                                         std::move(action));
 }
 
+const GURL& WebAppNavigationBrowserTest::test_web_app_start_url() {
+  auto* const provider = WebAppProvider::GetForWebApps(profile());
+  const WebAppRegistrar& registrar = provider->registrar();
+  return registrar.GetAppStartUrl(test_web_app_);
+}
+
 }  // namespace web_app

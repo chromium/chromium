@@ -120,6 +120,8 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
 
   const AppId& test_web_app_id() const { return test_web_app_; }
 
+  const GURL& test_web_app_start_url();
+
  private:
   net::EmbeddedTestServer https_server_;
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
