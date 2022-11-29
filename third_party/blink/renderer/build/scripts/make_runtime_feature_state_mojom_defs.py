@@ -14,17 +14,12 @@ class RuntimeFeatureStateMojomWriter(
         self._outputs = {
             (self.file_basename + '.mojom'): self.generate_mojom_definition
         }
-        self._browser_read_access_features = util.browser_read_access(
-            self._features)
-        self._browser_write_access_features = util.browser_write_access(
-            self._features)
+        self._overridable_features = util.overridable_features(self._features)
 
     def _template_inputs(self):
         return {
             'features': self._features,
-            'browser_read_access_features': self._browser_read_access_features,
-            'browser_write_access_features':
-            self._browser_write_access_features,
+            'overridable_features': self._overridable_features,
             'platforms': self._platforms(),
             'input_files': self._input_files,
             'header_guard': self._header_guard,
@@ -32,12 +27,7 @@ class RuntimeFeatureStateMojomWriter(
 
     @template_expander.use_jinja(f'templates/{file_basename}.mojom.tmpl')
     def generate_mojom_definition(self):
-        return {
-            'browser_read_access_features': self._browser_read_access_features,
-            'browser_write_access_features':
-            self._browser_write_access_features,
-            'input_files': self._input_files,
-        }
+        return self._template_inputs()
 
 
 if __name__ == '__main__':
