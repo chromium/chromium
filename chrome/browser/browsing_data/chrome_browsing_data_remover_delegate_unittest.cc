@@ -2142,6 +2142,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestInMemoryCacheClear) {
+  using CacheEntry = ZeroSuggestCacheService::CacheEntry;
+
   // Enable in-memory ZPS caching.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(omnibox::kZeroSuggestInMemoryCaching);
@@ -2151,8 +2153,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestInMemoryCacheClear) {
 
   ZeroSuggestCacheService* zero_suggest_cache_service =
       ZeroSuggestCacheServiceFactory::GetForProfile(GetProfile());
-  zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, response);
-  zero_suggest_cache_service->StoreZeroSuggestResponse("", response);
+  zero_suggest_cache_service->StoreZeroSuggestResponse(page_url,
+                                                       CacheEntry(response));
+  zero_suggest_cache_service->StoreZeroSuggestResponse("",
+                                                       CacheEntry(response));
 
   // Verify that the cache is initially non-empty.
   EXPECT_FALSE(zero_suggest_cache_service->IsCacheEmpty());

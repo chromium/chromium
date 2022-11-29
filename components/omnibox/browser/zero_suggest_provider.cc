@@ -251,8 +251,8 @@ bool StoreRemoteResponse(const std::string& response_json,
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
     auto* zero_suggest_cache_service = client->GetZeroSuggestCacheService();
     if (zero_suggest_cache_service != nullptr) {
-      zero_suggest_cache_service->StoreZeroSuggestResponse(page_url,
-                                                           response_json);
+      ZeroSuggestCacheService::CacheEntry entry(response_json);
+      zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, entry);
       LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
     }
   } else {
@@ -290,8 +290,9 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
     auto* zero_suggest_cache_service = client->GetZeroSuggestCacheService();
     if (zero_suggest_cache_service != nullptr) {
-      response_json =
+      ZeroSuggestCacheService::CacheEntry entry =
           zero_suggest_cache_service->ReadZeroSuggestResponse(page_url);
+      response_json = entry.response_json;
     }
   } else {
     response_json = omnibox::GetUserPreferenceForZeroSuggestCachedResponse(

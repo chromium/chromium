@@ -15,11 +15,28 @@
 
 class ZeroSuggestCacheService : public KeyedService {
  public:
+  struct CacheEntry {
+    CacheEntry();
+    explicit CacheEntry(const std::string& response_json);
+    CacheEntry(const CacheEntry& entry);
+
+    CacheEntry& operator=(const CacheEntry& entry) = default;
+
+    ~CacheEntry();
+
+    // JSON response received from the remote Suggest service.
+    std::string response_json;
+
+    // Estimates dynamic memory usage.
+    // See base/trace_event/memory_usage_estimator.h for more info.
+    size_t EstimateMemoryUsage() const;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Notifies listeners when a particular cache entry has been updated.
     virtual void OnZeroSuggestResponseUpdated(const std::string& page_url,
-                                              const std::string& response) {}
+                                              const CacheEntry& response) {}
   };
 
   explicit ZeroSuggestCacheService(size_t cache_size);
@@ -30,9 +47,9 @@ class ZeroSuggestCacheService : public KeyedService {
   ~ZeroSuggestCacheService() override;
 
   // Read/write zero suggest cache entries.
-  std::string ReadZeroSuggestResponse(const std::string& page_url) const;
+  CacheEntry ReadZeroSuggestResponse(const std::string& page_url) const;
   void StoreZeroSuggestResponse(const std::string& page_url,
-                                const std::string& response);
+                                const CacheEntry& response);
 
   // Remove all zero suggest cache entries.
   void ClearCache();
@@ -49,7 +66,7 @@ class ZeroSuggestCacheService : public KeyedService {
   // (serialized JSON). |mutable| is used here because reading from the cache,
   // while logically const, will actually modify the internal recency list of
   // the HashingLRUCache object.
-  mutable base::HashingLRUCache<std::string, std::string> cache_;
+  mutable base::HashingLRUCache<std::string, CacheEntry> cache_;
   base::ObserverList<Observer> observers_;
 };
 

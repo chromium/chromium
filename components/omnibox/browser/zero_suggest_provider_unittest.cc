@@ -42,6 +42,7 @@
 #include "url/gurl.h"
 
 using testing::_;
+using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 
 namespace {
 
@@ -1605,7 +1606,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsNTP) {
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
-  cache_svc->StoreZeroSuggestResponse("", json_response);
+  cache_svc->StoreZeroSuggestResponse("", CacheEntry(json_response));
 
   AutocompleteInput input = OnFocusInputForNTP();
   provider_->Start(input, false);
@@ -1663,7 +1664,8 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsNTP) {
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
   // Expect the new results to have been stored.
-  EXPECT_EQ(json_response2, cache_svc->ReadZeroSuggestResponse(""));
+  EXPECT_EQ(json_response2,
+            cache_svc->ReadZeroSuggestResponse("").response_json);
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
@@ -1773,7 +1775,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
   AutocompleteInput input = OnClobberInputForSRP();
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
   cache_svc->StoreZeroSuggestResponse(input.current_url().spec(),
-                                      json_response);
+                                      CacheEntry(json_response));
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -1833,7 +1835,8 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
 
   // Expect the new results to have been stored.
   EXPECT_EQ(json_response2,
-            cache_svc->ReadZeroSuggestResponse(input.current_url().spec()));
+            cache_svc->ReadZeroSuggestResponse(input.current_url().spec())
+                .response_json);
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
@@ -1943,7 +1946,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   AutocompleteInput input = OnClobberInputForWeb();
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
   cache_svc->StoreZeroSuggestResponse(input.current_url().spec(),
-                                      json_response);
+                                      CacheEntry(json_response));
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -2003,7 +2006,8 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
 
   // Expect the new results to have been stored.
   EXPECT_EQ(json_response2,
-            cache_svc->ReadZeroSuggestResponse(input.current_url().spec()));
+            cache_svc->ReadZeroSuggestResponse(input.current_url().spec())
+                .response_json);
 }
 
 TEST_F(ZeroSuggestProviderTest,
@@ -2871,8 +2875,9 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsInMemoryCache) {
       R"({"du": "https://www.google.com/s3"}]}])");
 
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
-  cache_svc->StoreZeroSuggestResponse("", json_response);
-  cache_svc->StoreZeroSuggestResponse("https://www.google.com", json_response);
+  cache_svc->StoreZeroSuggestResponse("", CacheEntry(json_response));
+  cache_svc->StoreZeroSuggestResponse("https://www.google.com",
+                                      CacheEntry(json_response));
 
   AutocompleteInput input = OnFocusInputForNTP();
   provider_->Start(input, false);
@@ -2886,9 +2891,9 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsInMemoryCache) {
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
   // Ensure that both cache entries have non-empty values.
-  ASSERT_FALSE(cache_svc->ReadZeroSuggestResponse("").empty());
-  ASSERT_FALSE(
-      cache_svc->ReadZeroSuggestResponse("https://www.google.com").empty());
+  ASSERT_FALSE(cache_svc->ReadZeroSuggestResponse("").response_json.empty());
+  ASSERT_FALSE(cache_svc->ReadZeroSuggestResponse("https://www.google.com")
+                   .response_json.empty());
 
   provider_->DeleteMatch(provider_->matches()[0]);
 

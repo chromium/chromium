@@ -7,20 +7,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
+using CacheEntry = ZeroSuggestCacheService::CacheEntry;
+
 ZeroSuggestCacheService::ZeroSuggestCacheService(size_t cache_size)
     : cache_(cache_size) {}
 
 ZeroSuggestCacheService::~ZeroSuggestCacheService() = default;
 
-std::string ZeroSuggestCacheService::ReadZeroSuggestResponse(
+CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
     const std::string& page_url) const {
   const auto it = cache_.Get(page_url);
-  return it != cache_.end() ? it->second : std::string();
+  return it != cache_.end() ? it->second : CacheEntry();
 }
 
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
-    const std::string& response) {
+    const CacheEntry& response) {
   cache_.Put(page_url, response);
   base::UmaHistogramCounts1M("Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
                              base::trace_event::EstimateMemoryUsage(cache_));
@@ -44,4 +46,17 @@ void ZeroSuggestCacheService::AddObserver(Observer* observer) {
 
 void ZeroSuggestCacheService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+CacheEntry::CacheEntry() = default;
+
+CacheEntry::CacheEntry(const std::string& response_json)
+    : response_json(response_json) {}
+
+CacheEntry::CacheEntry(const CacheEntry& entry) = default;
+
+CacheEntry::~CacheEntry() = default;
+
+size_t CacheEntry::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(response_json);
 }
