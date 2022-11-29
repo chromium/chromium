@@ -7,7 +7,18 @@ import '../../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {routes} from '../../route.js';
+import {Router} from '../../router.js';
+
 import {getTemplate} from './privacy_sandbox_page.html.js';
+
+export interface SettingsPrivacySandboxPageElement {
+  $: {
+    privacySandboxAdMeasurementLinkRow: HTMLElement,
+    privacySandboxFledgeLinkRow: HTMLElement,
+    privacySandboxTopicsLinkRow: HTMLElement,
+  };
+}
 
 export class SettingsPrivacySandboxPageElement extends PolymerElement {
   static get is() {
@@ -30,17 +41,23 @@ export class SettingsPrivacySandboxPageElement extends PolymerElement {
     return 'Enabled Duis scelerisque a mi eget ultricies';
   }
 
-  private computePrivacySandboxMeasurementSublabel_(): string {
+  private computePrivacySandboxAdMeasurementSublabel_(): string {
     // TODO(b/254412652): Change sublabel based on the respective toggle being
     // enabled.
     return 'Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.';
   }
 
-  private onPrivacySandboxTopicsClick_() {}
+  private onPrivacySandboxTopicsClick_() {
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+  }
 
-  private onPrivacySandboxFledgeClick_() {}
+  private onPrivacySandboxFledgeClick_() {
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_FLEDGE);
+  }
 
-  private onPrivacySandboxMeasurementClick_() {}
+  private onPrivacySandboxAdMeasurementClick_() {
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+  }
 }
 
 declare global {

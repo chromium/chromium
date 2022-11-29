@@ -29,6 +29,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
+    r.PRIVACY_SANDBOX_TOPICS =
+        r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
+    r.PRIVACY_SANDBOX_FLEDGE =
+        r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
+    r.PRIVACY_SANDBOX_AD_MEASUREMENT =
+        r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
   }
 
   // <if expr="use_nss_certs">

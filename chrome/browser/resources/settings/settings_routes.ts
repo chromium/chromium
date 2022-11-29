@@ -40,6 +40,9 @@ export interface SettingsRoutes {
   PRIVACY: Route;
   PRIVACY_GUIDE: Route;
   PRIVACY_SANDBOX: Route;
+  PRIVACY_SANDBOX_AD_MEASUREMENT: Route;
+  PRIVACY_SANDBOX_FLEDGE: Route;
+  PRIVACY_SANDBOX_TOPICS: Route;
   RESET: Route;
   RESET_DIALOG: Route;
   SAFETY_CHECK: Route;

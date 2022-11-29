@@ -598,6 +598,27 @@ TEST_F(
       runMochaSuite('PrivacySandbox4Enabled');
     });
 
+var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_sandbox_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacySandboxPageTest', 'PrivacySandboxPageTests', function() {
+      runMochaSuite('PrivacySandboxPageTests');
+    });
+
 var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

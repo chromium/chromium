@@ -1849,6 +1849,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_2},
       {"privacySandboxSpamAndFraudDialogDescription3",
        IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_3},
+      {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE},
+      {"topicsPageTitle", IDS_SETTINGS_TOPICS_PAGE_TITLE},
+      {"fledgePageTitle", IDS_SETTINGS_FLEDGE_PAGE_TITLE},
+      {"adMeasurementPageTitle", IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

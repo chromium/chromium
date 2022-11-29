@@ -1773,6 +1773,26 @@
     Private state tokens improve privacy on the web and can't be used to find out who you are.
   </message>
 
+  <!-- Privacy Sandbox Settings 4 - Ad Privacy Page -->
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences page.">
+    Donec semper
+  </message>
+
+  <!-- Privacy Sandbox Settings 4 - Topics Page -->
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page.">
+    Mauris interdum lectus vitae lacinia
+  </message>
+
+  <!-- Privacy Sandbox Settings 4 - Fledge Page -->
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
+    Aenean erat leo
+  </message>
+
+  <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
+    Vestibulum augue
+  </message>
+
   <!-- Privacy Guide -->
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the 'Privacy Guide'. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
     Privacy Guide
