@@ -11,7 +11,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.accessibility.hierarchysnapshotter.HierarchySnapshotter;
@@ -66,9 +65,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
             }
-
-            ApplicationStatus.registerStateListenerForAllActivities(
-                    ChromePowerModeVoter.getInstance());
 
             // Initializes the support for dynamic feature modules (browser only).
             ModuleUtil.initApplication();

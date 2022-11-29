@@ -1389,7 +1389,6 @@ group("dependencies") {
     "//components/about_ui",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
-    "//components/power_scheduler",
     "//components/services/heap_profiling",
     "//components/startup_metric_utils/browser",
     "//components/sync",

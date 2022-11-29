@@ -26,7 +26,6 @@ include_rules = [
   "+components/error_page/common",
   "+components/media_router/common",
   "+components/omnibox/common",
-  "+components/power_scheduler",
   "+components/services/heap_profiling/public",
   "+components/url_formatter",
   "+components/variations",

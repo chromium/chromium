@@ -37,7 +37,6 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
-import org.chromium.chrome.browser.ChromePowerModeVoter;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
@@ -148,7 +147,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -665,13 +663,6 @@ public class RootUiCoordinator
 
     @Override
     public void onInflationComplete() {
-        // Allow the ChromePowerModeVoter instance to observe any touch events on the view
-        // hierarchy, so that we can avoid power throttling while the user interacts with Java views
-        // in the main Chrome activity.
-        ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
-        ((CoordinatorLayoutForPointer) coordinator)
-                .setTouchEventCallback(ChromePowerModeVoter.getInstance().getTouchEventCallback());
-
         mScrimCoordinator = buildScrimWidget();
 
         initFindToolbarManager();

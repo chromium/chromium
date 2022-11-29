@@ -181,7 +181,6 @@ static_library("test_support") {
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",
-    "//components/power_scheduler",
     "//components/startup_metric_utils/browser",
     "//content/public/app",
     "//content/public/common",
