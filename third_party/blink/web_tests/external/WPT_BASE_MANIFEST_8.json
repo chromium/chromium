@@ -369675,7 +369675,7 @@
        []
       ],
       "utils.sub.js": [
-       "f532f35450e12f982a950c2d7cb423d93f06bcc3",
+       "b29dd6bba134a2bab4e03ef3f7ecfee5276474ee",
        []
       ]
      },
@@ -407039,8 +407039,35 @@
     }
    },
    "clipboard-apis": {
+    "async-custom-formats-write-fail.tentative.https.html": [
+     "8b1b42ec78d64d1366b80b14f3181200cc22082d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "async-custom-formats-write-read-web-prefix.tentative.https.html": [
+     "9a6e5da6fff1888045903d418c8191a17875586d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "async-custom-formats-write-read-without-web-prefix.tentative.https.html": [
+     "8b9d4de0a1f9e7b7a5ea4d254814c26fabcb8467",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "async-custom-formats-write-read.tentative.https.html": [
-     "b0b78d0243247ac3b1e63c66e82e92cc12802286",
+     "a005f8c98f02f6e492b8e08baccd56257e6e4b39",
      [
       null,
       {
@@ -419058,7 +419085,7 @@
       ]
      ],
      "anchor-position-writing-modes-002.html": [
-      "15a9a639e24082c3b53bf98cadf23fa4b88232da",
+      "660e8c99b3d53b1e65569ec217556f1b1596d96a",
       [
        null,
        {}
@@ -487900,7 +487927,7 @@
      ]
     ],
     "idlharness.https.window.js": [
-     "57cbf59d208a5c9744bdbcb73e183268bb16bf97",
+     "eadd6b7a4fbce9a286821bb9ad4243292fb6458a",
      [
       "geolocation-API/idlharness.https.window.html",
       {
@@ -530558,7 +530585,7 @@
        ]
       ],
       "popover-top-layer-combinations.tentative.html": [
-       "d4529b9e39c87a42aa9f15cd44ab84516c653d25",
+       "0e04f30481be3f95e5e29085c4ee7bcaac2feffe",
        [
         null,
         {
@@ -584336,6 +584363,37 @@
        }
       ]
      ],
+     "document-rules.https.html": [
+      "a5030f6938b0dd993554aafdd5872ae3aa7aea9e",
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=and",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=defaultPredicate",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=hrefMatches",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=invalidPredicate",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=linkInShadowTree",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=not",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=or",
+       {}
+      ]
+     ],
      "duplicate-urls.https.html": [
       "179bbdfd68d2c900aa51f753aafee25cb09df359",
       [
@@ -584504,7 +584562,7 @@
       ]
      ],
      "referrer-policy-from-rules.https.html": [
-      "01e32ba1400d45e9462f692b5cd207da9335cb98",
+      "ce3db0f999ac5db488a845370d6020c54d8d71c0",
       [
        "speculation-rules/prefetch/referrer-policy-from-rules.https.html?1-1",
        {}
@@ -584522,7 +584580,11 @@
        {}
       ],
       [
-       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?5-last",
+       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?5-5",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?6-last",
        {}
       ]
      ],
@@ -584534,7 +584596,7 @@
       ]
      ],
      "referrer-policy.https.html": [
-      "aaeae161e3ce0797ac5f2dde3d5ce9015d69cab6",
+      "1987d2e2ff439d6a8f4458b394a11fe3d2913715",
       [
        "speculation-rules/prefetch/referrer-policy.https.html?1-1",
        {}
@@ -584544,7 +584606,11 @@
        {}
       ],
       [
-       "speculation-rules/prefetch/referrer-policy.https.html?3-last",
+       "speculation-rules/prefetch/referrer-policy.https.html?3-3",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy.https.html?4-last",
        {}
       ]
      ],
