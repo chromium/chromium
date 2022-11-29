@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/hash.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -214,23 +213,22 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  StartWebAppAndDisconnect(web_contents,
-                           "/banners/no_sw_fetch_handler_test_page.html");
-  WaitForLoadStop(web_contents);
+  StartWebAppAndDisconnect(web_contents, "/favicon/title2_with_favicon.html");
 
   if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    // Expect that the icon on the default offline page is showing.
-    EXPECT_EQ(
-        "You're offline",
+    // Expect that the icon on default offline page is showing.
+    EXPECT_TRUE(
         EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg').textContent")
-            .ExtractString());
-    EXPECT_EQ("Manifest test app",
-              EvalJs(web_contents, "document.title").ExtractString());
-    EXPECT_EQ(4064523964u,
-              base::PersistentHash(
-                  EvalJs(web_contents, "document.getElementById('icon').src")
-                      .ExtractString()));
+               "document.getElementById('default-web-app-msg') !== null")
+            .ExtractBool());
+    EXPECT_EQ(EvalJs(web_contents, "document.getElementById('icon').src")
+                  .ExtractString(),
+              "data:image/"
+              "png;base64,"
+              "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAYElEQVQ4jd2SKxLA"
+              "MAhEXzKdweFyp97/"
+              "DHVxOFQrGjr9iCY2qAX2LYbEujNSecg9GeD9gEPtYCpsJ2Ag4CCxs49wKM2Qm1Xj"
+              "DqEraEyuLMjIo/+tpeXdGYMSQt9AmuCXDpHoFE1lEw9DAAAAAElFTkSuQmCC");
   } else {
     // Expect that the default offline page is not showing.
     EXPECT_TRUE(
