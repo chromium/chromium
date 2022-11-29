@@ -4673,12 +4673,6 @@ const char kAppDiscoveryForOobeName[] =
 const char kAppDiscoveryForOobeDescription[] =
     "Use the App Discovery Service to request recommended apps for OOBE.";
 
-const char kAppProvisioningStaticName[] =
-    "App Provisioning with static server setup.";
-const char kAppProvisioningStaticDescription[] =
-    "Enables pulling apps from a static server setup to enable new app serving "
-    "possibilities. ";
-
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =

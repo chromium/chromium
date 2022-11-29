@@ -8874,11 +8874,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVariableRefreshRateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableVariableRefreshRate)},
 
-    {"enable-app-provisioning-static-server",
-     flag_descriptions::kAppProvisioningStaticName,
-     flag_descriptions::kAppProvisioningStaticDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppProvisioningStatic)},
-
     {"enable-projector", flag_descriptions::kProjectorName,
      flag_descriptions::kProjectorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjector)},

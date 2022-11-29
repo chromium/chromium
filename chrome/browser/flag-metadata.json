@@ -1647,11 +1647,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-app-provisioning-static-server",
-    "owners": ["melzhang", "mxcai", "chromeos-apps-foundation-team"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-app-service-in-kiosk",
     "owners": ["yixie", "chromeos-kiosk-eng@google.com"],
     "expiry_milestone": 130
