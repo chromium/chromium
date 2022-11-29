@@ -39,6 +39,7 @@ class RTCEncodedVideoFrameDelegate
   absl::optional<uint8_t> PayloadType() const;
   const webrtc::VideoFrameMetadata* GetMetadata() const;
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> PassWebRtcFrame();
+  std::unique_ptr<webrtc::TransformableVideoFrameInterface> CloneWebRtcFrame();
 
  private:
   mutable base::Lock lock_;

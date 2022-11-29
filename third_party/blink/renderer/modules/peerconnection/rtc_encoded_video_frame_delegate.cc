@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/webrtc/api/frame_transformer_factory.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
@@ -97,6 +98,12 @@ std::unique_ptr<webrtc::TransformableVideoFrameInterface>
 RTCEncodedVideoFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);
   return std::move(webrtc_frame_);
+}
+
+std::unique_ptr<webrtc::TransformableVideoFrameInterface>
+RTCEncodedVideoFrameDelegate::CloneWebRtcFrame() {
+  base::AutoLock lock(lock_);
+  return webrtc::CloneVideoFrame(webrtc_frame_.get());
 }
 
 }  // namespace blink

@@ -1375,6 +1375,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter data
 [Worker]     getter timestamp
 [Worker]     getter type
+[Worker]     method clone
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method toString

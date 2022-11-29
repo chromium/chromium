@@ -83,6 +83,13 @@ String RTCEncodedVideoFrame::toString() const {
   return sb.ToString();
 }
 
+RTCEncodedVideoFrame* RTCEncodedVideoFrame::clone() const {
+  std::unique_ptr<webrtc::TransformableVideoFrameInterface> new_webrtc_frame =
+      delegate_->CloneWebRtcFrame();
+  return MakeGarbageCollected<RTCEncodedVideoFrame>(
+      std::move(new_webrtc_frame));
+}
+
 void RTCEncodedVideoFrame::SyncDelegate() const {
   delegate_->SetData(frame_data_);
 }

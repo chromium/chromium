@@ -7005,6 +7005,7 @@ interface RTCEncodedVideoFrame
     getter data
     getter timestamp
     getter type
+    method clone
     method constructor
     method getMetadata
     method toString

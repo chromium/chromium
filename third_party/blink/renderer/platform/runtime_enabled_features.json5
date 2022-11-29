@@ -2337,6 +2337,11 @@
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
     },
+    {
+      name: "RTCEncodedVideoFrameClone",
+      status: "experimental",
+      base_feature: "RTCEncodedVideoFrameClone",
+    },
     // Enables the use of the RTCIceTransport with extensions.
     {
       name: "RTCIceTransportExtension",
