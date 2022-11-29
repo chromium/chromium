@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,6 +93,13 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
     auto error = OnGetNextPage(&items);
     std::move(callback).Run(error, std::move(items));
   }
+
+  MOCK_METHOD(void,
+              SetPinned,
+              (const base::FilePath&,
+               bool,
+               base::OnceCallback<void(drive::FileError)>),
+              (override));
 
  private:
   mojo::Receiver<mojom::SearchQuery> search_receiver_{this};
@@ -240,22 +248,60 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
   run_loop.Run();
 }
 
-TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsContributeToTheRequiredSpace) {
+TEST_F(DriveFsPinManagerTest, FailingToPinOneItemShouldFailCompletely) {
   base::MockOnceCallback<void(PinError)> mock_callback;
   auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
-  // Mock Drive search to return 4 files of which the total will exceed the
-  // mocked available space of 1MB, however, 3 of them are pinned so this should
-  // not be a problem still pinning the remaining.
-  std::vector<DriveItem> expected_drive_items = {{.size = 768},
-                                                 {.size = 768, .pinned = true},
-                                                 {.size = 768, .pinned = true},
-                                                 {.size = 768, .pinned = true}};
+  std::vector<DriveItem> expected_drive_items = {{.size = 128}, {.size = 128}};
 
-  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      // Results returned whilst calculating free disk space.
+      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      // Results returned when actually performing the pinning, don't return a
+      // final empty list as this should be aborted due to one of the pinning
+      // operations being mock failed.
+      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+                      Return(drive::FileError::FILE_ERROR_OK)));
+  EXPECT_CALL(mock_callback, Run(PinError::kErrorFailedToPinItem))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+  EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
+      // Mock the first file to successfully get pinned.
+      .WillOnce(RunOnceCallback<2>(drive::FILE_ERROR_OK))
+      // Mock the second file to unsuccessfully get pinned.
+      .WillOnce(RunOnceCallback<2>(drive::FILE_ERROR_FAILED));
+
+  auto manager = std::make_unique<DriveFsPinManager>(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      std::move(mock_free_disk_space));
+  manager->Start(mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsShouldGetPinned) {
+  base::MockOnceCallback<void(PinError)> mock_callback;
+  auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
+
+  base::RunLoop run_loop;
+
+  std::vector<DriveItem> expected_drive_items = {
+      {.size = 128}, {.size = 128}, {.size = 128, .pinned = true}};
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      // Results returned whilst calculating free disk space.
+      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      // Results returned when actually performing the pinning.
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
@@ -264,6 +310,11 @@ TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsContributeToTheRequiredSpace) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
+  EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
+      // SetPinned should only be called twice with the third file being ignored
+      // as it is already pinned.
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<2>(drive::FILE_ERROR_OK));
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,

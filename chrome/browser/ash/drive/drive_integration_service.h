@@ -290,6 +290,8 @@ class DriveIntegrationService : public KeyedService,
   // Manages passing changes in team drives to the drive notification manager.
   class NotificationManager;
 
+  void OnBulkPinningFinished(drivefs::pinning::PinError status);
+
   // Returns true if Drive is enabled.
   // Must be called on UI thread.
   bool IsDriveEnabled();

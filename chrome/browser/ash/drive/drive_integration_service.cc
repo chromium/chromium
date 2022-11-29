@@ -449,6 +449,7 @@ class DriveIntegrationService::PreferenceWatcher
       return;
     }
 
+    VLOG(1) << "Updating the bulk pinning state";
     integration_service_->SetBulkPinningEnabled(
         pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
   }
@@ -683,12 +684,6 @@ DriveIntegrationService::DriveIntegrationService(
   }
 
   SetEnabled(drive::util::IsDriveEnabledForProfile(profile));
-
-  if (ash::features::IsDriveFsBulkPinningEnabled()) {
-    pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
-        profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
-        profile->GetPath(), GetDriveFsInterface());
-  }
 }
 
 DriveIntegrationService::~DriveIntegrationService() {
@@ -1442,11 +1437,30 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
 
 void DriveIntegrationService::SetBulkPinningEnabled(bool enabled) {
   if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
-      !GetDriveFsInterface() || pin_manager_) {
+      !GetDriveFsInterface()) {
     return;
   }
 
+  if (!pin_manager_) {
+    VLOG(1) << "Lazily creating the pin manager";
+    pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
+        profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
+        profile_->GetPath(), GetDriveFsInterface());
+  }
+
+  VLOG(1) << "Setting bulk pinning enabled: " << enabled;
   pin_manager_->SetBulkPinningEnabled(enabled);
+
+  if (enabled) {
+    pin_manager_->Start(
+        base::BindOnce(&DriveIntegrationService::OnBulkPinningFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void DriveIntegrationService::OnBulkPinningFinished(
+    drivefs::pinning::PinError status) {
+  LOG(ERROR) << "Finished with status: " << static_cast<int>(status);
 }
 
 //===================== DriveIntegrationServiceFactory =======================

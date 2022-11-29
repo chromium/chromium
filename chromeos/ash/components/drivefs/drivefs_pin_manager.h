@@ -31,6 +31,9 @@ enum class PinError {
   kErrorRetrievingSearchResults = 3,
   kErrorResultsReturnedInvalid = 4,
   kErrorNotEnoughFreeSpace = 5,
+  kErrorRetrievingSearchResultsForPinning = 6,
+  kErrorResultsReturnedInvalidForPinning = 7,
+  kErrorFailedToPinItem = 8,
 };
 
 // A delegate to aid in mocking the free disk scenarios for testing, in non-test
@@ -44,6 +47,11 @@ class FreeDiskSpaceDelegate {
       base::OnceCallback<void(int64_t)> callback) = 0;
 
   virtual ~FreeDiskSpaceDelegate() = default;
+};
+
+struct DrivePathAndStatus {
+  base::FilePath path;
+  drive::FileError status;
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:
@@ -88,6 +96,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
   void OnSearchResultForSizeCalculation(
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+
+  // When the pinning has finished, this ensures appropriate cleanup happens on
+  // the underlying search query mojo connection.
+  void Complete(PinError status);
+
+  // Once the verification that the files to pin will not exceed available disk
+  // space, the files to pin can be batch pinned.
+  void StartBatchPinning();
+
+  void OnSearchResultsForPinning(
+      drive::FileError error,
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+
+  void OnFilesPinned(std::vector<DrivePathAndStatus> pinned_files);
 
   bool enabled_ = false;
   int64_t size_required_ = 0;
