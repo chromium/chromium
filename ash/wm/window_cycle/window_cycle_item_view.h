@@ -43,6 +43,7 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   gfx::Size GetPreviewViewSize() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 };
 
 }  // namespace ash
