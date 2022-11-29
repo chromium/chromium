@@ -78,6 +78,8 @@ TEST_F(CommerceHintAgentRendererTest, IsAddToCartButton) {
         Add to cart
       </button>
 
+      <input class="correct-button" value="Add To Cart"></input>
+
       <!-- Wrong Buttons -->
       <button class="add-to-cart-button wrong-button"> Add to cat </button>
 
@@ -98,6 +100,8 @@ TEST_F(CommerceHintAgentRendererTest, IsAddToCartButton) {
         <button class="wrong-button"> </button>
         Add to cart
       </button>
+
+      <input class="wrong-button" value="Move To Cart"></input>
     </body>
   )HTML";
 

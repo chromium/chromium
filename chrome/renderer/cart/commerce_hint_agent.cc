@@ -59,6 +59,8 @@ constexpr char kAmazonDomain[] = "amazon.com";
 constexpr char kEbayDomain[] = "ebay.com";
 constexpr char kElectronicExpressDomain[] = "electronicexpress.com";
 constexpr char kGStoreHost[] = "store.google.com";
+constexpr char kInputType[] = "INPUT";
+constexpr char kValueAttributeName[] = "value";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
 #if !BUILDFLAG(IS_ANDROID)
@@ -757,6 +759,12 @@ bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
     }
     base::TrimWhitespaceASCII(element.TextContent().Ascii(), base::TRIM_ALL,
                               &button_text);
+    if (button_text.empty() && element.TagName().Ascii() == kInputType &&
+        !element.GetAttribute(kValueAttributeName).IsEmpty()) {
+      base::TrimWhitespaceASCII(
+          element.GetAttribute(kValueAttributeName).Ascii(), base::TRIM_ALL,
+          &button_text);
+    }
     if (!button_text.empty())
       break;
     element = element.ParentNode().To<blink::WebElement>();
