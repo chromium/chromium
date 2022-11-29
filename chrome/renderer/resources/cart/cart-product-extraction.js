@@ -219,11 +219,11 @@ function getAbsoluteUrlOfSrcSet(image) {
 }
 
 function extractUrl(item) {
-  // Some sites doesn't use <a> tag or explicitly state href. E.g. samsclub.com
-  // triggers JS to initiate navigation instead of <a>, and ae.com shows side
-  // panel after clicking on each item instead of directing to product page.
-  if (document.URL.includes("samsclub.com")
-      || document.URL.includes("ae.com")
+  // Some sites doesn't use <a> tag or explicitly state href. E.g. ae.com
+  // shows side panel after clicking on each item instead of directing to
+  // product page, and some sites might trigger JS to initiate navigation
+  // instead of <a>.
+  if (document.URL.includes("ae.com")
       || document.URL.includes("kiehls.com")
       || document.URL.includes("discounttiredirect.com")) {
     return "";
@@ -530,9 +530,15 @@ function extractPrice(item) {
   // Generic heuristic to search for price elements.
   let captured_prices = [];
   for (const price of item.querySelectorAll(
-    'span, b, p, div, h3, td, li, em, strong')) {
+    'span, b, p, div, h3, td, li, em, strong, ins')) {
     let candidate = price.innerText.trim();
-    if (document.URL.includes("thecompanystore.com")) {
+  if (window.location.hostname.endsWith("urbanoutfitters.com")) {
+    priceParts = candidate.split("\n");
+    if (priceParts.length >= 2){
+      candidate = priceParts[1];
+    }
+  }
+  if (window.location.hostname.endsWith("thecompanystore.com")) {
       candidate = candidate.split("\n")[0];
     }
     if (!candidate.match(priceRegexFull))
@@ -962,9 +968,7 @@ async function extractAllItems(root) {
     }
   }
   let skipFiltering = true;
-  if (document.URL.includes("samsclub.com")) {
-    items = root.querySelectorAll(".sc-cart-item-shipping");
-  } else if (document.URL.includes("kiehls.com")
+  if (document.URL.includes("kiehls.com")
     || document.URL.includes("laroche-posay.us")) {
     items = root.querySelectorAll(".c-product-table__row");
   } else if (document.URL.includes("americastire.com")
