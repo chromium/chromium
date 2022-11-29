@@ -44,12 +44,6 @@ void AddCdmHostFilePaths(
 
 #if BUILDFLAG(IS_WIN)
 
-  // Signature files and kBrowserResourcesDll are typically in a
-  // separate versioned directory, but may be the same directory as
-  // kBrowserProcessExecutableName (e.g. for a local build of Chrome).
-  // DIR_ASSETS sorts this out for us.
-  base::FilePath chrome_assets_dir;
-
   // Find where kBrowserProcessExecutableName is installed. Signature file is
   // in the assets directory. FILE_EXE may not be kBrowserProcessExecutableName,
   // e.g. browser_tests.exe, which is fine since we don't verify those
@@ -57,7 +51,13 @@ void AddCdmHostFilePaths(
   base::FilePath dir_exe;
   CHECK(base::PathService::Get(base::DIR_EXE, &dir_exe));
   base::FilePath chrome_exe =
-      dir_exe.DirName().Append(chrome::kBrowserProcessExecutableName);
+      dir_exe.Append(chrome::kBrowserProcessExecutableName);
+
+  // Signature files and kBrowserResourcesDll are typically in a
+  // separate versioned directory, but may be the same directory as
+  // kBrowserProcessExecutableName (e.g. for a local build of Chrome).
+  // DIR_ASSETS sorts this out for us.
+  base::FilePath chrome_assets_dir;
   CHECK(base::PathService::Get(base::DIR_ASSETS, &chrome_assets_dir));
   const auto chrome_exe_sig = GetSigFilePath(
       chrome_assets_dir.Append(chrome::kBrowserProcessExecutableName));
