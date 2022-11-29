@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
+
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+
+namespace autofill::autofill_metrics {
+
+// Struct that groups some metadata related information together. Used for
+// metrics logging.
+struct CardMetadataLoggingContext {
+  bool card_metadata_available = false;
+  bool card_product_description_shown = false;
+  bool card_art_image_shown = false;
+};
+
+// Log the latency between suggestions being shown and a suggestion was
+// selected, in milliseconds. Only logged when at least one card in the
+// suggestion list has available card metadata.
+void LogCardSuggestionAcceptanceLatencyMetric(
+    base::TimeDelta latency,
+    const CardMetadataLoggingContext& context);
+
+}  // namespace autofill::autofill_metrics
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_
