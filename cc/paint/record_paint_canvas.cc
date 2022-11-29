@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
@@ -18,14 +17,24 @@
 
 namespace cc {
 
-RecordPaintCanvas::RecordPaintCanvas(DisplayItemList* list) : list_(list) {
-  DCHECK(list_);
-}
-
+RecordPaintCanvas::RecordPaintCanvas() = default;
 RecordPaintCanvas::~RecordPaintCanvas() = default;
 
+sk_sp<PaintRecord> RecordPaintCanvas::ReleaseAsRecord() {
+  // Some users expect that their saves are automatically closed for them.
+  // Maybe we could remove this assumption and just have callers do it.
+  // canvas_ is not reset in case it can be reused for the next recording.
+  restoreToCount(1);
+
+  needs_flush_ = false;
+
+  sk_sp<PaintRecord> result = buffer_.MoveRetainingBufferIfPossible();
+  buffer_.Reset();
+  return result;
+}
+
 template <typename T, typename... Args>
-size_t RecordPaintCanvas::push(Args&&... args) {
+void RecordPaintCanvas::push(Args&&... args) {
 #if DCHECK_IS_ON()
   // The following check fails if client code does not check and handle
   // NeedsFlush() before issuing draw calls.
@@ -37,7 +46,7 @@ size_t RecordPaintCanvas::push(Args&&... args) {
          (std::is_same<T, RestoreOp>::value) ||
          (std::is_same<T, SetNodeIdOp>::value));
 #endif
-  return list_->push<T>(std::forward<Args>(args)...);
+  buffer_.push<T>(std::forward<Args>(args)...);
 }
 
 void* RecordPaintCanvas::accessTopLayerPixels(SkImageInfo* info,
@@ -357,9 +366,8 @@ void RecordPaintCanvas::setNodeId(int node_id) {
 }
 
 InspectableRecordPaintCanvas::InspectableRecordPaintCanvas(
-    DisplayItemList* list,
     const gfx::Size& size)
-    : RecordPaintCanvas(list), canvas_(size.width(), size.height()) {}
+    : canvas_(size.width(), size.height()) {}
 
 InspectableRecordPaintCanvas::~InspectableRecordPaintCanvas() = default;
 

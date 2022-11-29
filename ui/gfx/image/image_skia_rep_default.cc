@@ -76,19 +76,9 @@ sk_sp<cc::PaintRecord> ImageSkiaRep::GetPaintRecord() const {
 
   // If this ImageRep was generated using a bitmap then it may not have a
   // paint record generated for it yet. We would have to generate it now.
-  scoped_refptr<cc::DisplayItemList> display_item_list =
-      base::MakeRefCounted<cc::DisplayItemList>(
-          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
-
-  cc::RecordPaintCanvas record_canvas(display_item_list.get());
-
-  display_item_list->StartPaint();
+  cc::RecordPaintCanvas record_canvas;
   record_canvas.drawImage(paint_image(), 0, 0);
-  display_item_list->EndPaintOfPairedEnd();
-  display_item_list->Finalize();
-
-  paint_record_ = display_item_list->ReleaseAsRecord();
-  return paint_record_;
+  return record_canvas.ReleaseAsRecord();
 }
 
 const SkBitmap& ImageSkiaRep::GetBitmap() const {

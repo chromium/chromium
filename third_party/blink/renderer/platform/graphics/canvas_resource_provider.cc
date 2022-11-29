@@ -1649,7 +1649,7 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
 }
 
 bool CanvasResourceProvider::HasRecordedDrawOps() const {
-  return recorder_ && recorder_->ListHasDrawOps();
+  return recorder_ && recorder_->HasRecordedDrawOps();
 }
 
 void CanvasResourceProvider::TearDownSkSurface() {
