@@ -261,8 +261,8 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
     void SetStart(AXPositionInstance new_start);
     void SetEnd(AXPositionInstance new_end);
 
-    void AddObserver(const AXTreeID tree_id);
-    void RemoveObserver(const AXTreeID tree_id);
+    void AddObserver(const AXPositionInstance& position);
+    void RemoveObserver(const AXPositionInstance& position);
     void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
     void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;

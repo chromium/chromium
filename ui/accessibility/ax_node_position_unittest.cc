@@ -3361,7 +3361,7 @@ TEST_F(AXPositionTest, AsTreePositionWithTreePosition) {
   TestPositionType test_position = tree_position->AsTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(root_.id, test_position->anchor_id());
   EXPECT_EQ(1, test_position->child_index());
   EXPECT_EQ(AXNodePosition::INVALID_OFFSET, test_position->text_offset());
@@ -3376,7 +3376,7 @@ TEST_F(AXPositionTest, AsTreePositionWithTextPosition) {
   TestPositionType test_position = text_position->AsTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   // The created tree position should point to the second static text node
   // inside the text field.
@@ -3392,7 +3392,7 @@ TEST_F(AXPositionTest, AsTreePositionWithTextPosition) {
   test_position = text_position->AsTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
   EXPECT_EQ(0, test_position->text_offset());
@@ -3405,7 +3405,7 @@ TEST_F(AXPositionTest, AsTreePositionWithTextPosition) {
   test_position = text_position->AsTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
   EXPECT_EQ(6, test_position->text_offset());
@@ -3428,7 +3428,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
   TestPositionType test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   // The created text position should point to the 6th character inside the text
   // field, i.e. the line break.
@@ -3446,7 +3446,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
   test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
@@ -3458,7 +3458,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
   test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
   EXPECT_EQ(0, test_position->child_index());
@@ -3473,7 +3473,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTextPosition) {
   TestPositionType test_position = text_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3497,7 +3497,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
   TestPositionType test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3508,7 +3508,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
   test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3519,7 +3519,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
   test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 }
@@ -3534,7 +3534,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   TestPositionType test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -3555,7 +3555,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3566,7 +3566,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3577,7 +3577,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3592,7 +3592,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -3605,7 +3605,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -3617,7 +3617,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3629,7 +3629,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -3641,7 +3641,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -3653,7 +3653,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   test_position = text_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 }
@@ -3675,7 +3675,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
   TestPositionType test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3687,7 +3687,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
   test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3699,7 +3699,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
   test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3734,7 +3734,7 @@ TEST_F(AXPositionTest,
   TestPositionType test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(empty_div_data2.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3745,7 +3745,7 @@ TEST_F(AXPositionTest,
   test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(empty_div_data2.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3762,7 +3762,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   TestPositionType test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3773,7 +3773,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3784,7 +3784,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3795,7 +3795,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3810,7 +3810,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3824,7 +3824,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3837,7 +3837,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3850,7 +3850,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3863,7 +3863,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(6, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3876,7 +3876,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(3, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3889,7 +3889,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(3, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3937,7 +3937,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   TestPositionType test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_data.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -3948,7 +3948,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   test_position = text_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(text_data.id, test_position->anchor_id());
   EXPECT_EQ(9, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
@@ -5996,7 +5996,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6006,7 +6006,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6017,7 +6017,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6028,7 +6028,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6038,7 +6038,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6048,7 +6048,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6059,7 +6059,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6070,7 +6070,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6081,7 +6081,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6092,7 +6092,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6103,7 +6103,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
@@ -6114,7 +6114,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 }
@@ -6157,7 +6157,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6168,7 +6168,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6180,7 +6180,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6192,7 +6192,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6203,7 +6203,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6214,7 +6214,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6226,7 +6226,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6238,7 +6238,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6250,7 +6250,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6262,7 +6262,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6274,7 +6274,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6286,7 +6286,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 }
@@ -6356,7 +6356,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6366,7 +6366,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6377,7 +6377,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6388,7 +6388,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6398,7 +6398,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6408,7 +6408,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6419,7 +6419,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6430,7 +6430,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6441,7 +6441,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6452,7 +6452,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6463,7 +6463,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6474,7 +6474,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 }
@@ -6515,7 +6515,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6526,7 +6526,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6538,7 +6538,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6550,7 +6550,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6561,7 +6561,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6572,7 +6572,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -6584,7 +6584,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -6596,7 +6596,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -6608,7 +6608,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -6620,7 +6620,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -6632,7 +6632,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(13, test_position->text_offset());
 
@@ -6644,7 +6644,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAXTreeWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(iframe_tree_id, test_position->tree_id());
+  EXPECT_EQ(iframe_tree_id, test_position->GetTreeID());
   EXPECT_EQ(iframe_root.id, test_position->anchor_id());
   EXPECT_EQ(13, test_position->text_offset());
 }
@@ -6714,7 +6714,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6724,7 +6724,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6735,7 +6735,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6746,7 +6746,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6756,7 +6756,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6766,7 +6766,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6777,7 +6777,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6788,7 +6788,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6799,7 +6799,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6810,7 +6810,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6821,7 +6821,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -6832,7 +6832,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 }
@@ -6874,7 +6874,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6885,7 +6885,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6897,7 +6897,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6909,7 +6909,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6920,7 +6920,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6931,7 +6931,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(window.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6943,7 +6943,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6955,7 +6955,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6967,7 +6967,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6979,7 +6979,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -6991,7 +6991,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7003,7 +7003,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtStartOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(root_web_area.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 }
@@ -7073,7 +7073,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7083,7 +7083,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7094,7 +7094,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7105,7 +7105,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7115,7 +7115,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7125,7 +7125,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7136,7 +7136,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7147,7 +7147,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7158,7 +7158,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7169,7 +7169,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7180,7 +7180,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
@@ -7191,7 +7191,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTreePosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 }
@@ -7233,7 +7233,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7244,7 +7244,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7256,7 +7256,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7268,7 +7268,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7279,7 +7279,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7290,7 +7290,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(views_tree_id, test_position->tree_id());
+  EXPECT_EQ(views_tree_id, test_position->GetTreeID());
   EXPECT_EQ(address_bar.id, test_position->anchor_id());
   EXPECT_EQ(8, test_position->text_offset());
 
@@ -7302,7 +7302,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -7314,7 +7314,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -7326,7 +7326,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -7338,7 +7338,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -7350,7 +7350,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 
@@ -7362,7 +7362,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfContentWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_TRUE(test_position->AtEndOfContent());
-  EXPECT_EQ(webpage_tree_id, test_position->tree_id());
+  EXPECT_EQ(webpage_tree_id, test_position->GetTreeID());
   EXPECT_EQ(paragraph.id, test_position->anchor_id());
   EXPECT_EQ(12, test_position->text_offset());
 }
@@ -8614,7 +8614,7 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
       check_box_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(check_box_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8627,7 +8627,7 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   test_position = root_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8638,28 +8638,28 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   test_position = button_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(check_box_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8673,7 +8673,7 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   test_position = text_field_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8686,7 +8686,7 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   test_position = root_position2->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(3, test_position->text_offset());
 }
@@ -8700,7 +8700,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
       text_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8711,28 +8711,28 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
   test_position = before_text_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(line_break_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(check_box_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
   test_position = test_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8746,7 +8746,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
   test_position = text_field_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(check_box_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8759,7 +8759,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
   test_position = check_box_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
@@ -8772,7 +8772,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
   test_position = root_position2->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), test_position->tree_id());
+  EXPECT_EQ(GetTreeID(), test_position->GetTreeID());
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(3, test_position->text_offset());
 }
@@ -11260,18 +11260,18 @@ TEST_F(AXPositionTest, Swap) {
 
   swap(*tree_position1, *tree_position2);
   EXPECT_TRUE(tree_position1->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), tree_position1->tree_id());
+  EXPECT_EQ(GetTreeID(), tree_position1->GetTreeID());
   EXPECT_EQ(text_field_.id, tree_position1->anchor_id());
   EXPECT_EQ(3, tree_position1->child_index());
   EXPECT_TRUE(tree_position1->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), tree_position2->tree_id());
+  EXPECT_EQ(GetTreeID(), tree_position2->GetTreeID());
   EXPECT_EQ(root_.id, tree_position2->anchor_id());
   EXPECT_EQ(2, tree_position2->child_index());
 
   swap(*tree_position1, *null_position1);
   EXPECT_TRUE(tree_position1->IsNullPosition());
   EXPECT_TRUE(null_position1->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), null_position1->tree_id());
+  EXPECT_EQ(GetTreeID(), null_position1->GetTreeID());
   EXPECT_EQ(text_field_.id, null_position1->anchor_id());
   EXPECT_EQ(3, null_position1->child_index());
 
@@ -11281,12 +11281,12 @@ TEST_F(AXPositionTest, Swap) {
 
   swap(*text_position, *null_position1);
   EXPECT_TRUE(null_position1->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), text_position->tree_id());
+  EXPECT_EQ(GetTreeID(), text_position->GetTreeID());
   EXPECT_EQ(line_break_.id, null_position1->anchor_id());
   EXPECT_EQ(1, null_position1->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, null_position1->affinity());
   EXPECT_TRUE(text_position->IsTreePosition());
-  EXPECT_EQ(GetTreeID(), text_position->tree_id());
+  EXPECT_EQ(GetTreeID(), text_position->GetTreeID());
   EXPECT_EQ(text_field_.id, text_position->anchor_id());
   EXPECT_EQ(3, text_position->child_index());
 }
@@ -12123,7 +12123,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   text_position = generic_container_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, text_position);
   EXPECT_TRUE(text_position->IsTextPosition());
-  EXPECT_EQ(GetTreeID(), text_position->tree_id());
+  EXPECT_EQ(GetTreeID(), text_position->GetTreeID());
   EXPECT_EQ(button_14.id, text_position->anchor_id());
 }
 

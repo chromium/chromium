@@ -435,7 +435,7 @@ class AXRange {
     if (IsCollapsed() && range_start->IsInTextObject()) {
       AXOffscreenResult offscreen_result;
       gfx::Rect degenerate_range_rect = delegate->GetInnerTextRangeBoundsRect(
-          range_start->tree_id(), range_start->anchor_id(),
+          range_start->GetTreeID(), range_start->anchor_id(),
           range_start->text_offset(), range_end->text_offset(),
           ui::AXClippingBehavior::kUnclipped, &offscreen_result);
       if (offscreen_result == AXOffscreenResult::kOnscreen) {
@@ -464,12 +464,12 @@ class AXRange {
           (current_line_start->GetAnchor()->IsLineBreak() ||
            current_line_start->IsInTextObject())
               ? delegate->GetInnerTextRangeBoundsRect(
-                    current_line_start->tree_id(),
+                    current_line_start->GetTreeID(),
                     current_line_start->anchor_id(),
                     current_line_start->text_offset(),
                     current_line_end->text_offset(),
                     ui::AXClippingBehavior::kClipped, &offscreen_result)
-              : delegate->GetBoundsRect(current_line_start->tree_id(),
+              : delegate->GetBoundsRect(current_line_start->GetTreeID(),
                                         current_line_start->anchor_id(),
                                         &offscreen_result);
 

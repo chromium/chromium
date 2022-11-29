@@ -4580,7 +4580,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
 
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kSetSelection;
-  action_data.target_tree_id = start_position->tree_id();
+  action_data.target_tree_id = start_position->GetTreeID();
   int start_offset = start_position->IsTextPosition()
                          ? start_position->text_offset()
                          : start_position->child_index();

@@ -663,12 +663,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_FALSE(position->AtEndOfAXTree());
   ui::AXNodePosition::AXPositionInstance test_position =
       position->CreatePositionAtStartOfAXTree();
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 0);
   EXPECT_TRUE(test_position->AtStartOfAXTree());
   EXPECT_FALSE(test_position->AtEndOfAXTree());
   test_position = position->CreatePositionAtEndOfAXTree();
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 17);
   EXPECT_FALSE(test_position->AtStartOfAXTree());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
@@ -676,16 +676,16 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   // Test inside iframe.
   position = text_in_iframe->CreateTextPositionAt(3);
   EXPECT_EQ(position->text_offset(), 3);
-  EXPECT_NE(test_position->tree_id(), position->tree_id());
+  EXPECT_NE(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_FALSE(position->AtStartOfAXTree());
   EXPECT_FALSE(position->AtEndOfAXTree());
   test_position = position->CreatePositionAtStartOfAXTree();
   EXPECT_TRUE(test_position->AtStartOfAXTree());
   EXPECT_FALSE(test_position->AtEndOfAXTree());
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 0);
   test_position = position->CreatePositionAtEndOfAXTree();
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 14);
   EXPECT_FALSE(test_position->AtStartOfAXTree());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
@@ -694,14 +694,14 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   position = text_after_iframe->CreateTextPositionAt(3);
   EXPECT_FALSE(position->AtStartOfAXTree());
   EXPECT_FALSE(position->AtEndOfAXTree());
-  EXPECT_NE(test_position->tree_id(), position->tree_id());
+  EXPECT_NE(test_position->GetTreeID(), position->GetTreeID());
   test_position = position->CreatePositionAtStartOfAXTree();
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 0);
   EXPECT_TRUE(test_position->AtStartOfAXTree());
   EXPECT_FALSE(test_position->AtEndOfAXTree());
   test_position = position->CreatePositionAtEndOfAXTree();
-  EXPECT_EQ(test_position->tree_id(), position->tree_id());
+  EXPECT_EQ(test_position->GetTreeID(), position->GetTreeID());
   EXPECT_EQ(test_position->text_offset(), 17);
   EXPECT_FALSE(test_position->AtStartOfAXTree());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
