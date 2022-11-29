@@ -97,9 +97,7 @@ class PasswordCheckDelegate
 
  private:
   // password_manager::SavedPasswordsPresenter::Observer:
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
   // password_manager::InsecureCredentialsManager::Observer:
   // Invokes PasswordsPrivateEventRouter::OnInsecureCredentialsChanged if

@@ -181,14 +181,16 @@ void PasswordCheckManager::PasswordCheckProgress::OnProcessed(
   remaining_in_queue_ -= num_matching;
 }
 
-void PasswordCheckManager::OnSavedPasswordsChanged(
-    password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords) {
+void PasswordCheckManager::OnSavedPasswordsChanged() {
+  size_t passwords_count =
+      saved_passwords_presenter_.GetSavedPasswords().size();
+
   if (!IsPreconditionFulfilled(kSavedPasswordsAvailable)) {
-    observer_->OnSavedPasswordsFetched(passwords.size());
+    observer_->OnSavedPasswordsFetched(passwords_count);
     FulfillPrecondition(kSavedPasswordsAvailable);
   }
 
-  if (passwords.empty()) {
+  if (passwords_count == 0) {
     observer_->OnPasswordCheckStatusChanged(
         PasswordCheckUIStatus::kErrorNoPasswords);
     was_start_requested_ = false;

@@ -124,7 +124,7 @@ using password_manager::prefs::kCredentialsEnableService;
   // correct initial value for `canExportPasswords` or else the export button
   // will not behave correctly on load.
   self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
-  [self savedPasswordsDidChange:_savedPasswordsPresenter->GetSavedPasswords()];
+  [self savedPasswordsDidChange];
 
   [self.consumer setSavePasswordsEnabled:_passwordManagerEnabled.value];
 
@@ -208,9 +208,9 @@ using password_manager::prefs::kCredentialsEnableService;
 
 #pragma mark - SavedPasswordsPresenterObserver
 
-- (void)savedPasswordsDidChange:
-    (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords {
-  self.hasSavedPasswords = !passwords.empty();
+- (void)savedPasswordsDidChange {
+  self.hasSavedPasswords =
+      !_savedPasswordsPresenter->GetSavedPasswords().empty();
   [self pushExportStateToConsumerAndUpdate];
 }
 

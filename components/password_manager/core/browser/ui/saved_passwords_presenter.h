@@ -58,7 +58,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     // the underlying password store happens. This might be due to a call to
     // EditPassword(), but can also happen if passwords are added or removed due
     // to other reasons.
-    virtual void OnSavedPasswordsChanged(SavedPasswordsView passwords) {}
+    virtual void OnSavedPasswordsChanged() {}
   };
 
   // Result of EditSavedCredentials.

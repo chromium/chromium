@@ -365,8 +365,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 #pragma mark - SavedPasswordsPresenterObserver
 
-- (void)savedPasswordsDidChange:
-    (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords {
+- (void)savedPasswordsDidChange {
   [self providePasswordsToConsumer];
 }
 

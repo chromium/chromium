@@ -78,8 +78,6 @@ using password_manager::PasswordScriptsFetcher;
 using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using ui::TimeFormat;
 
-using SavedPasswordsView =
-    password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckService::State;
 
 std::string GetChangePasswordUrl(const GURL& url) {
@@ -424,7 +422,7 @@ PasswordCheckDelegate::GetInsecureCredentialsManager() {
   return &insecure_credentials_manager_;
 }
 
-void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
+void PasswordCheckDelegate::OnSavedPasswordsChanged() {
   // Getting the first notification about a change in saved passwords implies
   // that the delegate is initialized, and start check callbacks can be invoked,
   // if any.

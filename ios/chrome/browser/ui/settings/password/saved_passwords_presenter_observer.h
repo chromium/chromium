@@ -12,8 +12,7 @@
 
 @protocol SavedPasswordsPresenterObserver
 
-- (void)savedPasswordsDidChange:
-    (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords;
+- (void)savedPasswordsDidChange;
 
 @end
 
@@ -26,9 +25,7 @@ class SavedPasswordsPresenterObserverBridge
       password_manager::SavedPasswordsPresenter* presenter);
   ~SavedPasswordsPresenterObserverBridge() override;
 
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
  private:
   __weak id<SavedPasswordsPresenterObserver> delegate_ = nil;

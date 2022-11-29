@@ -24,8 +24,6 @@ namespace {
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
-using SavedPasswordsView =
-    password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckServiceInterface::State;
 
 // Key used to attach UserData to a LeakCheckCredential.
@@ -160,8 +158,7 @@ IOSChromePasswordCheckManager::GetUnmutedCompromisedCredentials() const {
   return compromised_crendentials;
 }
 
-void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
-    SavedPasswordsView) {
+void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {
   // Observing saved passwords to update possible kNoPasswords state.
   NotifyPasswordCheckStatusChanged();
   if (!std::exchange(is_initialized_, true) && start_check_on_init_) {

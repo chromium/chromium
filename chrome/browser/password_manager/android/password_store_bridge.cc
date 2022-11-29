@@ -16,8 +16,6 @@
 
 namespace {
 using password_manager::PasswordForm;
-using SavedPasswordsView =
-    password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 
 PasswordForm ConvertJavaObjectToPasswordForm(
     JNIEnv* env,
@@ -109,12 +107,13 @@ void PasswordStoreBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PasswordStoreBridge::OnSavedPasswordsChanged(
-    SavedPasswordsView passwords) {
+void PasswordStoreBridge::OnSavedPasswordsChanged() {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Notifies java counter side that a new set of credentials is available.
   Java_PasswordStoreBridge_passwordListAvailable(
-      env, java_bridge_, static_cast<int>(passwords.size()));
+      env, java_bridge_,
+      static_cast<int>(
+          saved_passwords_presenter_.GetSavedCredentials().size()));
 }
 
 void PasswordStoreBridge::OnEdited(const PasswordForm& form) {

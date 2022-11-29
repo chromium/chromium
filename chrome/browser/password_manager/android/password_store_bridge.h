@@ -54,9 +54,7 @@ class PasswordStoreBridge
 
  private:
   // SavedPasswordsPresenter::Observer:
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
   void OnEdited(const password_manager::PasswordForm& form) override;
 

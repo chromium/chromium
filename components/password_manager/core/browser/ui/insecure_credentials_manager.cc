@@ -200,8 +200,7 @@ void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
 
 // Re-computes the list of insecure credentials with passwords after obtaining a
 // new list of saved passwords.
-void InsecureCredentialsManager::OnSavedPasswordsChanged(
-    SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
+void InsecureCredentialsManager::OnSavedPasswordsChanged() {
   NotifyInsecureCredentialsChanged();
 }
 

@@ -116,8 +116,7 @@ void SavedPasswordsCapabilitiesFetcher::OnEdited(const PasswordForm& form) {
   NOTREACHED();
 }
 
-void SavedPasswordsCapabilitiesFetcher::OnSavedPasswordsChanged(
-    SavedPasswordsPresenter::SavedPasswordsView passwords) {
+void SavedPasswordsCapabilitiesFetcher::OnSavedPasswordsChanged() {
   // If there is still a pending update from the `SavedPasswordsPresenter`,
   // return early and perform the updates once that is in.
   if (saved_passwords_presenter_->IsWaitingForPasswordStore())

@@ -83,9 +83,7 @@ class IOSChromePasswordCheckManager
   ~IOSChromePasswordCheckManager() override;
 
   // password_manager::SavedPasswordsPresenter::Observer:
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
   // password_manager::InsecureCredentialsManager::Observer:
   void OnInsecureCredentialsChanged() override;

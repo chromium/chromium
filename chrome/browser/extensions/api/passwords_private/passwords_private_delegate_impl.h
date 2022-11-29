@@ -139,9 +139,7 @@ class PasswordsPrivateDelegateImpl
 
  private:
   // password_manager::SavedPasswordsPresenter::Observer implementation.
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
   // Called after the lists are fetched. Once both lists have been set, the
   // class is considered initialized and any queued functions (which could

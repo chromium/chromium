@@ -489,7 +489,7 @@ void SavedPasswordsPresenter::NotifyEdited(const PasswordForm& password) {
 
 void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
   for (auto& observer : observers_)
-    observer.OnSavedPasswordsChanged(passwords_);
+    observer.OnSavedPasswordsChanged();
 }
 
 void SavedPasswordsPresenter::OnLoginsChanged(

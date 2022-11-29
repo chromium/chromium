@@ -129,9 +129,7 @@ class PasswordUIViewAndroid
   enum class State { ALIVE, ALIVE_SERIALIZATION_PENDING, DELETION_PENDING };
 
   // password_manager::SavedPasswordsPresenter::Observer implementation.
-  void OnSavedPasswordsChanged(
-      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
-      override;
+  void OnSavedPasswordsChanged() override;
 
   void UpdatePasswordLists();
 
