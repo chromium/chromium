@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
+
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -19,7 +21,8 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledNotSet) {
 
   policy_map.Set(policy::key::kBrowsingDataLifetime,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, base::ListValue(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(base::Value::Type::LIST), nullptr);
 
   BrowsingDataLifetimePolicyHandler handler(
       policy::key::kBrowsingDataLifetime,
@@ -39,7 +42,8 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledFalse) {
 
   policy_map.Set(policy::key::kBrowsingDataLifetime,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, base::ListValue(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(base::Value::Type::LIST), nullptr);
   policy_map.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                  base::Value(false), nullptr);
@@ -62,7 +66,8 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledTrue) {
 
   policy_map.Set(policy::key::kBrowsingDataLifetime,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, base::ListValue(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(base::Value::Type::LIST), nullptr);
   policy_map.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                  base::Value(true), nullptr);
