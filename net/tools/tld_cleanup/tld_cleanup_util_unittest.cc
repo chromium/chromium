@@ -30,7 +30,24 @@ TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead) {
   std::string private_domains = "";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
+      NormalizeResult::kSuccess);
+  EXPECT_THAT(
+      rules,
+      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                   /*is_private=*/false}),
+                  Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
+                                   /*is_private=*/false})));
+}
+
+TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead_WindowsEndings) {
+  std::string icann_domains =
+      "foo\r\n"
+      "bar\r\n";
+  std::string private_domains = "";
+  RuleMap rules;
+  ASSERT_EQ(
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
@@ -45,7 +62,7 @@ TEST(TldCleanupUtilTest, RealTldAutomaticallyAddedForSubdomain) {
   std::string private_domains = "";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
@@ -62,7 +79,7 @@ TEST(TldCleanupUtilTest, PrivateTldMarkedAsPrivate) {
   std::string private_domains = "baz\n";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
@@ -79,7 +96,7 @@ TEST(TldCleanupUtilTest, PrivateDomainMarkedAsPrivate) {
   std::string private_domains = "foo.bar\n";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
@@ -96,7 +113,7 @@ TEST(TldCleanupUtilTest, ExtraTldRuleIsNotMarkedPrivate) {
   std::string private_domains = "qux.bar\n";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
@@ -117,7 +134,7 @@ TEST(TldCleanupUtilTest, WildcardAndExceptionParsedCorrectly) {
   std::string private_domains = "!baz.bar\n";
   RuleMap rules;
   ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), &rules),
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
       NormalizeResult::kSuccess);
   EXPECT_THAT(
       rules,
