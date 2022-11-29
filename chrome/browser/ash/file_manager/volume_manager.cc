@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/file_manager/fusebox_mounter.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -688,7 +687,6 @@ VolumeManager::VolumeManager(
       disk_mount_manager_(disk_mount_manager),
       file_system_provider_service_(file_system_provider_service),
       get_mtp_storage_info_callback_(get_mtp_storage_info_callback),
-      fusebox_mounter_(new FuseBoxMounter()),
       snapshot_manager_(new SnapshotManager(profile_)),
       documents_provider_root_manager_(
           std::make_unique<DocumentsProviderRootManager>(
@@ -724,7 +722,7 @@ void VolumeManager::Initialize() {
     return;
   }
 
-  fusebox_mounter_->Mount(disk_mount_manager_);
+  fusebox_mounter_.Mount(disk_mount_manager_);
 
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
@@ -803,7 +801,7 @@ void VolumeManager::Shutdown() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  fusebox_mounter_->Unmount(disk_mount_manager_);
+  fusebox_mounter_.Unmount(disk_mount_manager_);
   snapshot_manager_.reset();
   pref_change_registrar_.RemoveAll();
   disk_mount_manager_->RemoveObserver(this);
@@ -1322,7 +1320,7 @@ void VolumeManager::OnProvidedFileSystemMount(
 
   // Attach the FSP storage device to the fusebox daemon.
   const std::string subdir = FuseBoxSubdirFSP(file_system_info);
-  fusebox_mounter_->AttachStorage(subdir, url, !file_system_info.writable());
+  fusebox_mounter_.AttachStorage(subdir, url, !file_system_info.writable());
 
   // Create a Volume for the fusebox FSP storage device.
   const base::FilePath mount_path =
@@ -1387,7 +1385,7 @@ void VolumeManager::OnProvidedFileSystemUnmount(
       {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid}));
 
   // Detach the fusebox FSP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(subdir);
+  fusebox_mounter_.DetachStorage(subdir);
 }
 
 void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(
@@ -1559,7 +1557,7 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Attach the MTP storage device to the fusebox daemon.
   std::string subdir = FuseBoxSubdirMTP(info.device_id());
-  fusebox_mounter_->AttachStorage(subdir, url, read_only);
+  fusebox_mounter_.AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox MTP storage device.
   const base::FilePath mount_path =
@@ -1619,7 +1617,7 @@ void VolumeManager::OnRemovableStorageDetached(
       base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
 
   // Detach the fusebox MTP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(subdir);
+  fusebox_mounter_.DetachStorage(subdir);
 }
 
 void VolumeManager::OnDocumentsProviderRootAdded(
@@ -1647,7 +1645,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
 
   // Attach the ADP storage device to the fusebox daemon.
   std::string subdir = FuseBoxSubdirADP(authority, root_id);
-  fusebox_mounter_->AttachStorage(subdir, url, read_only);
+  fusebox_mounter_.AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox ADP storage device.
   std::unique_ptr<Volume> volume =
@@ -1687,7 +1685,7 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
       base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
 
   // Detach the fusebox ADP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(subdir);
+  fusebox_mounter_.DetachStorage(subdir);
 }
 
 void VolumeManager::AddSmbFsVolume(const base::FilePath& mount_point,
