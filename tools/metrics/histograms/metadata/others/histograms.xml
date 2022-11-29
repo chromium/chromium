@@ -2905,6 +2905,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ClientHints.Viewport.IsDeviceScaleFactorOne" enum="Boolean"
+    expires_after="2023-03-29">
+  <owner>curranmax@chromium.org</owner>
+  <summary>
+    This records whether or not the device scale factor was exactly 1.0 or not
+    when sending either of the viewport height or viewport width client hint.
+    There was a bug (see crbug.com/1394231) where the device scale factor was
+    being applied twice to the viewport values. This histogram can be used to
+    estimate the impact of that bug.
+  </summary>
+</histogram>
+
 <histogram
     name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
     units="BooleanSuccess" expires_after="2022-12-15">

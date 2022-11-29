@@ -300,8 +300,12 @@ gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
     return cached_viewport_size;
   }
 
-  // Finally, use the display size if neither of the above methods work.
-  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+  // Finally, use the display size if neither of the above methods work. Applies
+  // the device scale factor in this case, which is implicitly applied to other
+  // viewport sizes already.
+  return ScaleToRoundedSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+      1.0 / GetDeviceScaleFactor());
 }
 
 gfx::Size GetScaledViewportSize(BrowserContext* context,
@@ -327,9 +331,12 @@ gfx::Size GetScaledViewportSize(BrowserContext* context,
   }
 #endif
 
-  double scale_factor = GetZoomFactor(context, url) * GetDeviceScaleFactor();
-  if (scale_factor > 0) {
-    viewport_size = ScaleToRoundedSize(viewport_size, 1.0 / scale_factor);
+  base::UmaHistogramBoolean("ClientHints.Viewport.IsDeviceScaleFactorOne",
+                            GetDeviceScaleFactor() == 1.0);
+
+  double zoom_factor = GetZoomFactor(context, url);
+  if (zoom_factor > 0) {
+    viewport_size = ScaleToRoundedSize(viewport_size, 1.0 / zoom_factor);
   }
   return viewport_size;
 }
