@@ -392,13 +392,19 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
     node.deps
         .iter()
         .map(|node_dep| {
-            // Each NodeDep has information about the package depended on, as well
-            // as the kinds of dependence: as a normal, build script, or test
-            // dependency. For each kind there is an optional platform filter.
+            // Each NodeDep has information about the package depended on, as
+            // well as the kinds of dependence: as a normal, build script, or
+            // test dependency. For each kind there is an optional platform
+            // filter.
             //
             // Filter out kinds for unsupported platforms while mapping the
             // dependency edges to our own type.
-            node_dep.dep_kinds.iter().filter_map(|dep_kind_info| {
+            //
+            // Cargo may also have duplicates in the dep_kinds list, which may
+            // or may not be a Cargo bug, but we want to filter them out too.
+            // See crbug.com/1393600.
+            let mut seen = HashSet::new();
+            node_dep.dep_kinds.iter().filter_map(move |dep_kind_info| {
                 // Filter if it's for a platform we don't support.
                 match &dep_kind_info.target {
                     None => (),
@@ -408,6 +414,11 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
                         }
                     }
                 };
+
+                if seen.contains(&(&dep_kind_info.kind, &dep_kind_info.target)) {
+                    return None;
+                }
+                seen.insert((&dep_kind_info.kind, &dep_kind_info.target));
 
                 Some(DependencyEdge {
                     pkg: &node_dep.pkg,
