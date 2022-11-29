@@ -211,6 +211,9 @@ ExternalTexture CreateExternalTexture(
             device->GetDawnControlClient(), device->GetHandle(),
             WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
             media_video_frame);
+    if (!mailbox_texture) {
+      return {};
+    }
 
     WGPUTextureViewDescriptor view_desc = {
         .format = WGPUTextureFormat_R8Unorm,

@@ -116,6 +116,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
     WGPUDevice device,
     WGPUTextureUsage usage,
     scoped_refptr<media::VideoFrame> video_frame) {
+  auto context_provider = dawn_control_client->GetContextProviderWeakPtr();
+  if (!context_provider ||
+      context_provider->ContextProvider()->IsContextLost()) {
+    return nullptr;
+  }
+
   auto finished_access_callback = base::BindOnce(
       [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
          media::VideoFrame* frame, const gpu::SyncToken& sync_token) {
@@ -126,8 +132,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
           frame->UpdateReleaseSyncToken(&client);
         }
       },
-      dawn_control_client->GetContextProviderWeakPtr(),
-      base::RetainedRef(video_frame));
+      context_provider, base::RetainedRef(video_frame));
 
   WGPUTextureDescriptor desc = {};
   desc.usage = WGPUTextureUsage_TextureBinding;
