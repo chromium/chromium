@@ -71,12 +71,14 @@ void FindAppsForUrl(
     const GURL& url,
     base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback) {
   auto append_apps =
-      [](base::WeakPtr<content::WebContents> web_contents,
-         IntentPickerTabHelper* helper, int commit_count, const GURL& url,
+      [](base::WeakPtr<content::WebContents> web_contents, int commit_count,
+         const GURL& url,
          base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback,
          std::vector<IntentPickerAppInfo> apps) {
         if (!web_contents)
           return;
+        IntentPickerTabHelper* helper =
+            IntentPickerTabHelper::FromWebContents(web_contents.get());
         if (helper->commit_count() != commit_count)
           return;
 
@@ -102,13 +104,13 @@ void FindAppsForUrl(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(get_mac_app, url),
-      base::BindOnce(append_apps, web_contents->GetWeakPtr(), helper,
-                     commit_count, url, std::move(callback)));
+      base::BindOnce(append_apps, web_contents->GetWeakPtr(), commit_count, url,
+                     std::move(callback)));
 #else
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(append_apps, web_contents->GetWeakPtr(), helper,
-                                commit_count, url, std::move(callback),
-                                std::vector<IntentPickerAppInfo>()));
+      FROM_HERE,
+      base::BindOnce(append_apps, web_contents->GetWeakPtr(), commit_count, url,
+                     std::move(callback), std::vector<IntentPickerAppInfo>()));
 #endif  // BUILDFLAG(IS_MAC)
 }
 
