@@ -32,6 +32,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/signin/signin_features.h"
+#endif
+
 namespace {
 
 class NavigationObserver : public content::WebContentsObserver {
@@ -159,6 +163,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 #if !BUILDFLAG(IS_CHROMEOS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
+#endif
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    enabled_features.push_back(kForYouFre);
 #endif
     enabled_features.push_back(media::kUseMediaHistoryStore);
     feature_list_.InitWithFeatures(enabled_features, {});
@@ -390,6 +397,7 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+    "chrome://intro",
     "chrome://signin-email-confirmation",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

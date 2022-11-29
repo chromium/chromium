@@ -58,14 +58,14 @@ const TestParam kTestParams[] = {
 };
 
 const char kMakeCardDescriptionLongerJsString[] =
-    "(async () => {"
-    "const introApp = document.querySelector('intro-app');"
-    "const signInPromo = introApp.shadowRoot.querySelector('sign-in-promo');"
-    "const cardDescriptions = "
-    "Array.from(signInPromo.shadowRoot.querySelectorAll('.benefit-card-"
-    "description'));"
-    "cardDescriptions[0].innerHTML = cardDescriptions[0].innerHTML.repeat(20);"
-    "return true;"
+    "(() => {"
+    "  const introApp = document.querySelector('intro-app');"
+    "  const signInPromo = introApp.shadowRoot.querySelector('sign-in-promo');"
+    "  const cardDescriptions = signInPromo.shadowRoot.querySelectorAll("
+    "      '.benefit-card-description');"
+    "  cardDescriptions[0].textContent = "
+    "      cardDescriptions[0].textContent.repeat(20);"
+    "  return true;"
     "})();";
 
 }  // namespace
