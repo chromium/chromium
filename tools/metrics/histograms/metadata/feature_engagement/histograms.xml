@@ -262,6 +262,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="TutorialID">
   <variant name="" summary="any tutorial"/>
+  <variant name=".SidePanelReadingList"
+      summary="the tutorial for the side panel reading list"/>
   <variant name=".TabGroup" summary="the tutorial for tab groups"/>
 </variants>
 
