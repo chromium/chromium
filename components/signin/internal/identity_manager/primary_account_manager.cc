@@ -27,6 +27,41 @@
 
 using signin::PrimaryAccountChangeEvent;
 
+// A wrapper around PrefService that sets prefs only when updated. It can be
+// configured to commit writes for the updated values on destruction.
+class PrimaryAccountManager::ScopedPrefCommit {
+ public:
+  ScopedPrefCommit(PrefService* pref_service, bool commit_on_destroy)
+      : pref_service_(pref_service), commit_on_destroy_(commit_on_destroy) {}
+
+  ~ScopedPrefCommit() {
+    if (commit_on_destroy_ && need_commit_) {
+      pref_service_->CommitPendingWrite();
+    }
+  }
+
+  void SetBoolean(const std::string& path, bool value) {
+    if (pref_service_->GetBoolean(path) == value)
+      return;
+
+    need_commit_ = true;
+    pref_service_->SetBoolean(path, value);
+  }
+
+  void SetString(const std::string& path, const std::string& value) {
+    if (pref_service_->GetString(path) == value)
+      return;
+
+    need_commit_ = true;
+    pref_service_->SetString(path, value);
+  }
+
+ private:
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  bool need_commit_ = false;
+  bool commit_on_destroy_ = false;
+};
+
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
@@ -72,8 +107,10 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
   // clear their login info also (not valid to be logged in without any
   // tokens).
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy*/ false);
   if (cmd_line->HasSwitch(switches::kClearTokenService))
-    SetPrimaryAccountInternal(CoreAccountInfo(), false);
+    SetPrimaryAccountInternal(CoreAccountInfo(), false, scoped_pref_commit);
 
   std::string pref_account_id =
       client_->GetPrefs()->GetString(prefs::kGoogleServicesAccountId);
@@ -113,10 +150,11 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
     DCHECK(!account_info.account_id.empty());
     // First reset the state, because SetSyncPrimaryAccountInternal() can
     // only be called if there is no primary account.
-    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false);
+    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                              scoped_pref_commit);
     SetSyncPrimaryAccountInternal(account_info);
   } else {
-    SetPrimaryAccountInternal(account_info, consented);
+    SetPrimaryAccountInternal(account_info, consented, scoped_pref_commit);
   }
 
   // It is important to only load credentials after starting to observe the
@@ -166,7 +204,10 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
       return;
     case signin::ConsentLevel::kSignin:
       bool account_changed = account_info != primary_account_info();
-      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
+      ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                          /*commit_on_destroy*/ false);
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
+                                scoped_pref_commit);
       if (account_changed)
         FirePrimaryAccountChanged(previous_state);
       return;
@@ -192,35 +233,37 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   }
 #endif  // DCHECK_IS_ON()
 
-  SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true);
+  // Commit primary sync account info immediately so that it does not get lost
+  // if Chrome crashes before the next commit interval.
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy*/ true);
+  SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
+                            scoped_pref_commit);
 
   // Go ahead and update the last signed in account info here as well. Once a
   // user is signed in the corresponding preferences should match. Doing it here
   // as opposed to on signin allows us to catch the upgrade scenario.
-  client_->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
-                                 account_info.gaia);
-  client_->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
-                                 account_info.email);
-
-  // Commit primary sync account info immediately so that it does not get lost
-  // if Chrome crashes before the next commit interval.
-  client_->GetPrefs()->CommitPendingWrite();
+  scoped_pref_commit.SetString(prefs::kGoogleServicesLastGaiaId,
+                               account_info.gaia);
+  scoped_pref_commit.SetString(prefs::kGoogleServicesLastUsername,
+                               account_info.email);
 }
 
 void PrimaryAccountManager::SetPrimaryAccountInternal(
     const CoreAccountInfo& account_info,
-    bool consented_to_sync) {
+    bool consented_to_sync,
+    ScopedPrefCommit& scoped_pref_commit) {
   primary_account_info_ = account_info;
 
-  PrefService* prefs = client_->GetPrefs();
   const std::string& account_id = primary_account_info_.account_id.ToString();
   if (account_id.empty()) {
     DCHECK(!consented_to_sync);
-    prefs->ClearPref(prefs::kGoogleServicesAccountId);
-    prefs->ClearPref(prefs::kGoogleServicesConsentedToSync);
+    scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, "");
+    scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   } else {
-    prefs->SetString(prefs::kGoogleServicesAccountId, account_id);
-    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, consented_to_sync);
+    scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
+    scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
+                                  consented_to_sync);
   }
 }
 
@@ -328,10 +371,13 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   // Revoke all tokens before sending signed_out notification, because there
   // may be components that don't listen for token service events when the
   // profile is not connected to an account.
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy*/ false);
   switch (remove_option) {
     case RemoveAccountsOption::kRemoveAllAccounts:
       VLOG(0) << "Revoking all refresh tokens on server. Reason: sign out";
-      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false);
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                                scoped_pref_commit);
       token_service_->RevokeAllCredentials(
           signin_metrics::SourceForRefreshTokenOperation::
               kPrimaryAccountManager_ClearAccount);
@@ -344,7 +390,8 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
         return;
       }
       SetPrimaryAccountInternal(primary_account_info(),
-                                /*consented_to_sync=*/false);
+                                /*consented_to_sync=*/false,
+                                scoped_pref_commit);
       break;
   }
 

@@ -126,6 +126,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void RemoveObserver(Observer* observer);
 
  private:
+  class ScopedPrefCommit;
+
   // Sets the primary account id, when the user has consented to sync.
   // If the user has consented for sync with the same account, then this method
   // is a no-op.
@@ -136,7 +138,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Sets |primary_account_info_| and updates the associated preferences.
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
-                                 bool consented_to_sync);
+                                 bool consented_to_sync,
+                                 ScopedPrefCommit& scoped_pref_commit);
 
   // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
