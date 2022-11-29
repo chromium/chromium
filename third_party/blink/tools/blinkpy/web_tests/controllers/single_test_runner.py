@@ -602,27 +602,30 @@ class SingleTestRunner(object):
         # Do a dry run upload to Skia Gold, ignoring any of its output, for
         # data collection to see if we can switch to using Gold for web tests
         # in the future.
-        try:
-            gold_keys = self._port.skia_gold_json_keys()
-            gold_session = (
-                self._port.skia_gold_session_manager().GetSkiaGoldSession(
-                    gold_keys, corpus=SKIA_GOLD_CORPUS))
-            gold_properties = self._port.skia_gold_properties()
-            use_luci = not gold_properties.local_pixel_tests
-            img_path = self._filesystem.join(
-                str(self._port.skia_gold_temp_dir()),
-                '%s.png' % self._test_name.replace('/', '_'))
-            self._filesystem.write_binary_file(img_path, driver_output.image)
-            status, error = gold_session.RunComparison(name=self._test_name,
-                                                       png_file=img_path,
-                                                       use_luci=use_luci)
-            _log.debug('Ran Skia Gold dry run, got status %s and error %s',
-                       status, error)
-        except Exception as e:
-            _log.warning(
-                'Got exception while dry running Skia Gold. This can be '
-                'safely ignored unless you are actively working with Gold: %s',
-                e)
+        # This is currently not run since other options besides Gold are being
+        # investigated and this code can make local runs slow, see
+        # crbug.com/1394307.
+        # try:
+        #     gold_keys = self._port.skia_gold_json_keys()
+        #     gold_session = (
+        #         self._port.skia_gold_session_manager().GetSkiaGoldSession(
+        #             gold_keys, corpus=SKIA_GOLD_CORPUS))
+        #     gold_properties = self._port.skia_gold_properties()
+        #     use_luci = not gold_properties.local_pixel_tests
+        #     img_path = self._filesystem.join(
+        #         str(self._port.skia_gold_temp_dir()),
+        #         '%s.png' % self._test_name.replace('/', '_'))
+        #     self._filesystem.write_binary_file(img_path, driver_output.image)
+        #     status, error = gold_session.RunComparison(name=self._test_name,
+        #                                                png_file=img_path,
+        #                                                use_luci=use_luci)
+        #     _log.debug('Ran Skia Gold dry run, got status %s and error %s',
+        #                status, error)
+        # except Exception as e:
+        #     _log.warning(
+        #         'Got exception while dry running Skia Gold. This can be '
+        #         'safely ignored unless you are actively working with Gold: %s',
+        #         e)
 
         if driver_output.image_hash != expected_driver_output.image_hash:
             max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
