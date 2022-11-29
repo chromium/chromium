@@ -16,7 +16,13 @@
 
 namespace vr {
 
-TEST_F(UiPixelTest, DrawVrBrowsingMode) {
+// TODO(crbug.com/1394319): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_DrawVrBrowsingMode DISABLED_DrawVrBrowsingMode
+#else
+#define MAYBE_DrawVrBrowsingMode DrawVrBrowsingMode
+#endif
+TEST_F(UiPixelTest, MAYBE_DrawVrBrowsingMode) {
 #if BUILDFLAG(IS_WIN)
   // VR is not supported on Windows 7.
   if (base::win::GetVersion() <= base::win::Version::WIN7)
