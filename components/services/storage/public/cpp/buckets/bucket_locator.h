@@ -32,6 +32,8 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   BucketLocator& operator=(const BucketLocator&);
   BucketLocator& operator=(BucketLocator&&) noexcept;
 
+  bool is_null() const { return *this == BucketLocator(); }
+
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator==(const BucketLocator& lhs, const BucketLocator& rhs);
 

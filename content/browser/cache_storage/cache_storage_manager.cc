@@ -11,6 +11,7 @@
 #include <set>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/bind.h"
@@ -675,14 +676,27 @@ void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
     return;
   }
 
+  // If we weren't able to lookup a bucket ID that corresponds to this
+  // CacheStorage instance, skip reporting usage information about it.
+  int non_null_count = std::count_if(
+      usage_tuples.begin(), usage_tuples.end(),
+      [](const std::tuple<storage::BucketLocator,
+                          storage::mojom::StorageUsageInfoPtr>& usage_tuple) {
+        const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
+        return !bucket_locator.is_null();
+      });
+
   const auto barrier_callback =
       base::BarrierCallback<storage::mojom::StorageUsageInfoPtr>(
-          usage_tuples.size(),
+          non_null_count,
           base::BindOnce(&AllStorageKeySizesReported, std::move(callback)));
 
   for (const auto& usage_tuple : usage_tuples) {
     const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
     const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
+    if (bucket_locator.is_null()) {
+      continue;
+    }
     if (info->total_size_bytes != CacheStorage::kSizeUnknown ||
         !IsValidQuotaStorageKey(bucket_locator.storage_key)) {
       scheduler_task_runner_->PostTask(
@@ -831,7 +845,7 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
         storage_key != bucket_locator.storage_key) {
       continue;
     }
-    if (bucket_locator.id) {
+    if (!bucket_locator.is_null()) {
       // The bucket locator is fully formed, so use the same steps to delete as
       // `DeleteBucketData()`.
       DeleteBucketDataDidGetExists(owner, barrier_callback, bucket_locator,
