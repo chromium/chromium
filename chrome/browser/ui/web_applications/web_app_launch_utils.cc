@@ -270,8 +270,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // entered the app's scope. The minimal-ui Back button will be initially
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile)->registrar();
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  WebAppRegistrar& registrar = provider->registrar();
   const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app)
     return nullptr;
@@ -303,7 +303,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromOmnibox);
       params.override_url = launch_url;
       content::WebContents* new_web_contents =
-          WebAppLaunchProcess(*profile, params).Run();
+          WebAppLaunchProcess::CreateAndRun(
+              *profile, registrar, provider->os_integration_manager(), params);
       contents->Close();
       return chrome::FindBrowserWithWebContents(new_web_contents);
     }

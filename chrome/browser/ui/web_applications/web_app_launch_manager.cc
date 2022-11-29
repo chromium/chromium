@@ -56,7 +56,12 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   if (GetOpenApplicationCallbackForTesting())
     return GetOpenApplicationCallbackForTesting().Run(std::move(params));
 
-  return WebAppLaunchProcess(*profile_, params).Run();
+  WebAppProvider* provider =
+      WebAppProvider::GetForLocalAppsUnchecked(profile_.get());
+  DCHECK(provider);
+  return WebAppLaunchProcess::CreateAndRun(*profile_, provider->registrar(),
+                                           provider->os_integration_manager(),
+                                           params);
 }
 
 void WebAppLaunchManager::LaunchApplication(

@@ -26,8 +26,9 @@ class WebContents;
 
 namespace web_app {
 
+class OsIntegrationManager;
 class WebApp;
-class WebAppProvider;
+class WebAppRegistrar;
 
 // Used by WebAppLaunchManager, this executes an individual launch of a web app
 // from any entry point (OS launcher, file handler, protocol handler,
@@ -37,12 +38,21 @@ class WebAppProvider;
 // https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 class WebAppLaunchProcess {
  public:
-  WebAppLaunchProcess(Profile& profile, const apps::AppLaunchParams& params);
   WebAppLaunchProcess(const WebAppLaunchProcess&) = delete;
 
-  content::WebContents* Run();
+  static content::WebContents* CreateAndRun(
+      Profile& profile,
+      WebAppRegistrar& registrar,
+      OsIntegrationManager& os_integration_manager,
+      const apps::AppLaunchParams& params);
 
  private:
+  WebAppLaunchProcess(Profile& profile,
+                      WebAppRegistrar& registrar,
+                      OsIntegrationManager& os_integration_manager,
+                      const apps::AppLaunchParams& params);
+  content::WebContents* Run();
+
   const apps::ShareTarget* MaybeGetShareTarget() const;
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
       const apps::ShareTarget* share_target) const;
@@ -69,7 +79,8 @@ class WebAppLaunchProcess {
                                    bool started_new_navigation);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<WebAppProvider> provider_;
+  const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<OsIntegrationManager> os_integration_manager_;
   const raw_ref<const apps::AppLaunchParams> params_;
   const raw_ptr<const WebApp> web_app_;
 };
