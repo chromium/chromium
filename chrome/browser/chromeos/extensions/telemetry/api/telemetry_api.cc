@@ -11,7 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
@@ -22,6 +23,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
+
+namespace telemetry = api::os_telemetry;
 
 // TelemetryApiFunctionBase ----------------------------------------------------
 
@@ -43,11 +46,6 @@ bool TelemetryApiFunctionBase::IsCrosApiAvailable() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // OsTelemetryGetBatteryInfoFunction -------------------------------------------
-
-OsTelemetryGetBatteryInfoFunction::OsTelemetryGetBatteryInfoFunction() =
-    default;
-OsTelemetryGetBatteryInfoFunction::~OsTelemetryGetBatteryInfoFunction() =
-    default;
 
 void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetBatteryInfoFunction::OnResult, this);
@@ -71,24 +69,17 @@ void OsTelemetryGetBatteryInfoFunction::OnResult(
     serial_number = std::move(battery_info->serial_number);
   }
 
-  api::os_telemetry::BatteryInfo result =
-      converters::ConvertPtr<api::os_telemetry::BatteryInfo>(
-          std::move(battery_info));
+  telemetry::BatteryInfo result =
+      converters::ConvertPtr<telemetry::BatteryInfo>(std::move(battery_info));
 
   if (serial_number && !serial_number->empty()) {
     result.serial_number = std::move(serial_number);
   }
 
-  Respond(
-      ArgumentList(api::os_telemetry::GetBatteryInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetBatteryInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetNonRemovableBlockDevicesInfoFunction --------------------------
-
-OsTelemetryGetNonRemovableBlockDevicesInfoFunction::
-    OsTelemetryGetNonRemovableBlockDevicesInfoFunction() = default;
-OsTelemetryGetNonRemovableBlockDevicesInfoFunction::
-    ~OsTelemetryGetNonRemovableBlockDevicesInfoFunction() = default;
 
 void OsTelemetryGetNonRemovableBlockDevicesInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(
@@ -108,21 +99,17 @@ void OsTelemetryGetNonRemovableBlockDevicesInfoFunction::OnResult(
   }
   auto& block_device_info = ptr->block_device_result->get_block_device_info();
 
-  auto infos = converters::ConvertPtrVector<
-      api::os_telemetry::NonRemovableBlockDeviceInfo>(
-      std::move(block_device_info));
-  api::os_telemetry::NonRemovableBlockDeviceInfoResponse result;
+  auto infos =
+      converters::ConvertPtrVector<telemetry::NonRemovableBlockDeviceInfo>(
+          std::move(block_device_info));
+  telemetry::NonRemovableBlockDeviceInfoResponse result;
   result.device_infos = std::move(infos);
 
   Respond(ArgumentList(
-      api::os_telemetry::GetNonRemovableBlockDevicesInfo::Results::Create(
-          result)));
+      telemetry::GetNonRemovableBlockDevicesInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetCpuInfoFunction -----------------------------------------------
-
-OsTelemetryGetCpuInfoFunction::OsTelemetryGetCpuInfoFunction() = default;
-OsTelemetryGetCpuInfoFunction::~OsTelemetryGetCpuInfoFunction() = default;
 
 void OsTelemetryGetCpuInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetCpuInfoFunction::OnResult, this);
@@ -140,24 +127,19 @@ void OsTelemetryGetCpuInfoFunction::OnResult(
 
   const auto& cpu_info = ptr->cpu_result->get_cpu_info();
 
-  api::os_telemetry::CpuInfo result;
+  telemetry::CpuInfo result;
   if (cpu_info->num_total_threads) {
     result.num_total_threads = cpu_info->num_total_threads->value;
   }
   result.architecture = converters::Convert(cpu_info->architecture);
   result.physical_cpus =
-      converters::ConvertPtrVector<api::os_telemetry::PhysicalCpuInfo>(
+      converters::ConvertPtrVector<telemetry::PhysicalCpuInfo>(
           std::move(cpu_info->physical_cpus));
 
-  Respond(ArgumentList(api::os_telemetry::GetCpuInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetCpuInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetInternetConnectivityInfoFunction ------------------------------
-
-OsTelemetryGetInternetConnectivityInfoFunction::
-    OsTelemetryGetInternetConnectivityInfoFunction() = default;
-OsTelemetryGetInternetConnectivityInfoFunction::
-    ~OsTelemetryGetInternetConnectivityInfoFunction() = default;
 
 void OsTelemetryGetInternetConnectivityInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(
@@ -176,7 +158,7 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
   }
   auto& network_info = ptr->network_result->get_network_health();
 
-  api::os_telemetry::InternetConnectivityInfo result;
+  telemetry::InternetConnectivityInfo result;
   for (auto& network : network_info->networks) {
     absl::optional<std::string> mac_address;
     if (extension()->permissions_data()->HasAPIPermission(
@@ -186,28 +168,23 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
     }
 
     auto converted_network =
-        converters::ConvertPtr<api::os_telemetry::NetworkInfo>(
-            std::move(network));
+        converters::ConvertPtr<telemetry::NetworkInfo>(std::move(network));
 
     if (mac_address && !mac_address->empty()) {
       converted_network.mac_address = std::move(mac_address);
     }
 
     // Don't include networks with an undefined type.
-    if (converted_network.type !=
-        api::os_telemetry::NetworkType::NETWORK_TYPE_NONE) {
+    if (converted_network.type != telemetry::NetworkType::NETWORK_TYPE_NONE) {
       result.networks.push_back(std::move(converted_network));
     }
   }
 
   Respond(ArgumentList(
-      api::os_telemetry::GetInternetConnectivityInfo::Results::Create(result)));
+      telemetry::GetInternetConnectivityInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetMemoryInfoFunction --------------------------------------------
-
-OsTelemetryGetMemoryInfoFunction::OsTelemetryGetMemoryInfoFunction() = default;
-OsTelemetryGetMemoryInfoFunction::~OsTelemetryGetMemoryInfoFunction() = default;
 
 void OsTelemetryGetMemoryInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetMemoryInfoFunction::OnResult, this);
@@ -223,7 +200,7 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
     return;
   }
 
-  api::os_telemetry::MemoryInfo result;
+  telemetry::MemoryInfo result;
 
   const auto& memory_info = ptr->memory_result->get_memory_info();
   if (memory_info->total_memory_kib) {
@@ -240,14 +217,10 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
         memory_info->page_faults_since_last_boot->value;
   }
 
-  Respond(
-      ArgumentList(api::os_telemetry::GetMemoryInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetMemoryInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetOemDataFunction -----------------------------------------------
-
-OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
-OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
 void OsTelemetryGetOemDataFunction::RunIfAllowed() {
   // Protect accessing the serial number by a permission.
@@ -271,18 +244,13 @@ void OsTelemetryGetOemDataFunction::OnResult(
     return;
   }
 
-  api::os_telemetry::OemData result;
+  telemetry::OemData result;
   result.oem_data = std::move(ptr->oem_data);
 
-  Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetOemData::Results::Create(result)));
 }
 
 // OsTelemetryGetOsVersionInfoFunction -----------------------------------------
-
-OsTelemetryGetOsVersionInfoFunction::OsTelemetryGetOsVersionInfoFunction() =
-    default;
-OsTelemetryGetOsVersionInfoFunction::~OsTelemetryGetOsVersionInfoFunction() =
-    default;
 
 void OsTelemetryGetOsVersionInfoFunction::RunIfAllowed() {
   auto cb =
@@ -307,20 +275,14 @@ void OsTelemetryGetOsVersionInfoFunction::OnResult(
     return;
   }
 
-  api::os_telemetry::OsVersionInfo result =
-      converters::ConvertPtr<api::os_telemetry::OsVersionInfo>(
+  telemetry::OsVersionInfo result =
+      converters::ConvertPtr<telemetry::OsVersionInfo>(
           std::move(system_info->os_info->os_version));
 
-  Respond(ArgumentList(
-      api::os_telemetry::GetOsVersionInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetOsVersionInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetStatefulPartitionInfoFunction ---------------------------------
-
-OsTelemetryGetStatefulPartitionInfoFunction::
-    OsTelemetryGetStatefulPartitionInfoFunction() = default;
-OsTelemetryGetStatefulPartitionInfoFunction::
-    ~OsTelemetryGetStatefulPartitionInfoFunction() = default;
 
 void OsTelemetryGetStatefulPartitionInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(
@@ -340,18 +302,15 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
   auto& stateful_part_info =
       ptr->stateful_partition_result->get_partition_info();
 
-  api::os_telemetry::StatefulPartitionInfo result =
-      converters::ConvertPtr<api::os_telemetry::StatefulPartitionInfo>(
+  telemetry::StatefulPartitionInfo result =
+      converters::ConvertPtr<telemetry::StatefulPartitionInfo>(
           std::move(stateful_part_info));
 
   Respond(ArgumentList(
-      api::os_telemetry::GetStatefulPartitionInfo::Results::Create(result)));
+      telemetry::GetStatefulPartitionInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetTpmInfoFunction -----------------------------------------------
-
-OsTelemetryGetTpmInfoFunction::OsTelemetryGetTpmInfoFunction() = default;
-OsTelemetryGetTpmInfoFunction::~OsTelemetryGetTpmInfoFunction() = default;
 
 void OsTelemetryGetTpmInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetTpmInfoFunction::OnResult, this);
@@ -368,16 +327,13 @@ void OsTelemetryGetTpmInfoFunction::OnResult(
   }
   auto& tpm_info = ptr->tpm_result->get_tpm_info();
 
-  api::os_telemetry::TpmInfo result =
-      converters::ConvertPtr<api::os_telemetry::TpmInfo>(std::move(tpm_info));
+  telemetry::TpmInfo result =
+      converters::ConvertPtr<telemetry::TpmInfo>(std::move(tpm_info));
 
-  Respond(ArgumentList(api::os_telemetry::GetTpmInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetTpmInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetVpdInfoFunction -----------------------------------------------
-
-OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
-OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
 void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
@@ -393,7 +349,7 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
     return;
   }
 
-  api::os_telemetry::VpdInfo result;
+  telemetry::VpdInfo result;
 
   const auto& vpd_info = ptr->vpd_result->get_vpd_info();
   result.activate_date = vpd_info->first_power_date;
@@ -406,7 +362,7 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
     result.serial_number = vpd_info->serial_number;
   }
 
-  Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
+  Respond(ArgumentList(telemetry::GetVpdInfo::Results::Create(result)));
 }
 
 }  // namespace chromeos

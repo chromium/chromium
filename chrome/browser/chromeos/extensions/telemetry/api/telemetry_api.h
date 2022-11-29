@@ -38,39 +38,24 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
 };
 
 class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getBatteryInfo",
                              OS_TELEMETRY_GETBATTERYINFO)
-
-  OsTelemetryGetBatteryInfoFunction();
-  OsTelemetryGetBatteryInfoFunction(const OsTelemetryGetBatteryInfoFunction&) =
-      delete;
-  OsTelemetryGetBatteryInfoFunction& operator=(
-      const OsTelemetryGetBatteryInfoFunction&) = delete;
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 
  private:
-  ~OsTelemetryGetBatteryInfoFunction() override;
+  ~OsTelemetryGetBatteryInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
-
-  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetNonRemovableBlockDevicesInfoFunction
     : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getNonRemovableBlockDevicesInfo",
                              OS_TELEMETRY_GETNONREMOVABLEBLOCKDEVICESINFO)
 
-  OsTelemetryGetNonRemovableBlockDevicesInfoFunction();
-  OsTelemetryGetNonRemovableBlockDevicesInfoFunction(
-      const OsTelemetryGetNonRemovableBlockDevicesInfoFunction&) = delete;
-  OsTelemetryGetNonRemovableBlockDevicesInfoFunction& operator=(
-      const OsTelemetryGetNonRemovableBlockDevicesInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetNonRemovableBlockDevicesInfoFunction() override;
+  ~OsTelemetryGetNonRemovableBlockDevicesInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -79,16 +64,10 @@ class OsTelemetryGetNonRemovableBlockDevicesInfoFunction
 };
 
 class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getCpuInfo", OS_TELEMETRY_GETCPUINFO)
 
-  OsTelemetryGetCpuInfoFunction();
-  OsTelemetryGetCpuInfoFunction(const OsTelemetryGetCpuInfoFunction&) = delete;
-  OsTelemetryGetCpuInfoFunction& operator=(
-      const OsTelemetryGetCpuInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetCpuInfoFunction() override;
+  ~OsTelemetryGetCpuInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -98,18 +77,11 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
 
 class OsTelemetryGetInternetConnectivityInfoFunction
     : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getInternetConnectivityInfo",
                              OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO)
 
-  OsTelemetryGetInternetConnectivityInfoFunction();
-  OsTelemetryGetInternetConnectivityInfoFunction(
-      const OsTelemetryGetInternetConnectivityInfoFunction&) = delete;
-  OsTelemetryGetInternetConnectivityInfoFunction& operator=(
-      const OsTelemetryGetInternetConnectivityInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetInternetConnectivityInfoFunction() override;
+  ~OsTelemetryGetInternetConnectivityInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -118,18 +90,11 @@ class OsTelemetryGetInternetConnectivityInfoFunction
 };
 
 class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",
                              OS_TELEMETRY_GETMEMORYINFO)
 
-  OsTelemetryGetMemoryInfoFunction();
-  OsTelemetryGetMemoryInfoFunction(const OsTelemetryGetMemoryInfoFunction&) =
-      delete;
-  OsTelemetryGetMemoryInfoFunction& operator=(
-      const OsTelemetryGetMemoryInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetMemoryInfoFunction() override;
+  ~OsTelemetryGetMemoryInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -138,16 +103,10 @@ class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
 };
 
 class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getOemData", OS_TELEMETRY_GETOEMDATA)
 
-  OsTelemetryGetOemDataFunction();
-  OsTelemetryGetOemDataFunction(const OsTelemetryGetOemDataFunction&) = delete;
-  OsTelemetryGetOemDataFunction& operator=(
-      const OsTelemetryGetOemDataFunction&) = delete;
-
  private:
-  ~OsTelemetryGetOemDataFunction() override;
+  ~OsTelemetryGetOemDataFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -156,18 +115,11 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
 };
 
 class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getOsVersionInfo",
                              OS_TELEMETRY_GETOSVERSIONINFO)
 
-  OsTelemetryGetOsVersionInfoFunction();
-  OsTelemetryGetOsVersionInfoFunction(
-      const OsTelemetryGetOsVersionInfoFunction&) = delete;
-  OsTelemetryGetOsVersionInfoFunction& operator=(
-      const OsTelemetryGetOsVersionInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetOsVersionInfoFunction() override;
+  ~OsTelemetryGetOsVersionInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -176,16 +128,10 @@ class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
 };
 
 class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
 
-  OsTelemetryGetVpdInfoFunction();
-  OsTelemetryGetVpdInfoFunction(const OsTelemetryGetVpdInfoFunction&) = delete;
-  OsTelemetryGetVpdInfoFunction& operator=(
-      const OsTelemetryGetVpdInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetVpdInfoFunction() override;
+  ~OsTelemetryGetVpdInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -195,18 +141,11 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
 
 class OsTelemetryGetStatefulPartitionInfoFunction
     : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getStatefulPartitionInfo",
                              OS_TELEMETRY_GETSTATEFULPARTITIONINFO)
 
-  OsTelemetryGetStatefulPartitionInfoFunction();
-  OsTelemetryGetStatefulPartitionInfoFunction(
-      const OsTelemetryGetStatefulPartitionInfoFunction&) = delete;
-  OsTelemetryGetStatefulPartitionInfoFunction& operator=(
-      const OsTelemetryGetStatefulPartitionInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetStatefulPartitionInfoFunction() override;
+  ~OsTelemetryGetStatefulPartitionInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -215,16 +154,10 @@ class OsTelemetryGetStatefulPartitionInfoFunction
 };
 
 class OsTelemetryGetTpmInfoFunction : public TelemetryApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getTpmInfo", OS_TELEMETRY_GETTPMINFO)
 
-  OsTelemetryGetTpmInfoFunction();
-  OsTelemetryGetTpmInfoFunction(const OsTelemetryGetTpmInfoFunction&) = delete;
-  OsTelemetryGetTpmInfoFunction& operator=(
-      const OsTelemetryGetTpmInfoFunction&) = delete;
-
  private:
-  ~OsTelemetryGetTpmInfoFunction() override;
+  ~OsTelemetryGetTpmInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

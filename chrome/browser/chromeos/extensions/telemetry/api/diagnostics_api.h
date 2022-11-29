@@ -22,14 +22,16 @@ class DiagnosticsApiFunctionBase
  public:
   DiagnosticsApiFunctionBase();
 
-  DiagnosticsApiFunctionBase(const DiagnosticsApiFunctionBase&) = delete;
-  DiagnosticsApiFunctionBase& operator=(const DiagnosticsApiFunctionBase&) =
-      delete;
-
  protected:
   ~DiagnosticsApiFunctionBase() override;
 
   mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService();
+
+  // Gets the parameters passed to the JavaScript call and tries to convert it
+  // to the `Params` type. If the `Params` can't be created, this resolves the
+  // corresponding JavaScript call with an error and returns `nullptr`.
+  template <class Params>
+  std::unique_ptr<Params> GetParams();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsCrosApiAvailable() override;
@@ -42,18 +44,10 @@ class DiagnosticsApiFunctionBase
 
 class OsDiagnosticsGetAvailableRoutinesFunction
     : public DiagnosticsApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.getAvailableRoutines",
                              OS_DIAGNOSTICS_GETAVAILABLEROUTINES)
-
-  OsDiagnosticsGetAvailableRoutinesFunction();
-  OsDiagnosticsGetAvailableRoutinesFunction(
-      const OsDiagnosticsGetAvailableRoutinesFunction&) = delete;
-  OsDiagnosticsGetAvailableRoutinesFunction& operator=(
-      const OsDiagnosticsGetAvailableRoutinesFunction&) = delete;
-
  private:
-  ~OsDiagnosticsGetAvailableRoutinesFunction() override;
+  ~OsDiagnosticsGetAvailableRoutinesFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -64,18 +58,10 @@ class OsDiagnosticsGetAvailableRoutinesFunction
 
 class OsDiagnosticsGetRoutineUpdateFunction
     : public DiagnosticsApiFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.getRoutineUpdate",
                              OS_DIAGNOSTICS_GETROUTINEUPDATE)
-
-  OsDiagnosticsGetRoutineUpdateFunction();
-  OsDiagnosticsGetRoutineUpdateFunction(
-      const OsDiagnosticsGetRoutineUpdateFunction&) = delete;
-  OsDiagnosticsGetRoutineUpdateFunction& operator=(
-      const OsDiagnosticsGetRoutineUpdateFunction&) = delete;
-
  private:
-  ~OsDiagnosticsGetRoutineUpdateFunction() override;
+  ~OsDiagnosticsGetRoutineUpdateFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -85,33 +71,23 @@ class OsDiagnosticsGetRoutineUpdateFunction
 
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
  public:
-  DiagnosticsApiRunRoutineFunctionBase();
-
-  DiagnosticsApiRunRoutineFunctionBase(
-      const DiagnosticsApiRunRoutineFunctionBase&) = delete;
-  DiagnosticsApiRunRoutineFunctionBase& operator=(
-      const DiagnosticsApiRunRoutineFunctionBase&) = delete;
-
   void OnResult(crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr);
 
  protected:
-  ~DiagnosticsApiRunRoutineFunctionBase() override;
+  ~DiagnosticsApiRunRoutineFunctionBase() override = default;
+
+  // Returns a callback that resolves the corresponding JavaScript call with
+  // the response passed to the callback.
+  base::OnceCallback<void(crosapi::mojom::DiagnosticsRunRoutineResponsePtr)>
+  GetOnResult();
 };
 
 class OsDiagnosticsRunAcPowerRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runAcPowerRoutine",
                              OS_DIAGNOSTICS_RUNACPOWERROUTINE)
-
-  OsDiagnosticsRunAcPowerRoutineFunction();
-  OsDiagnosticsRunAcPowerRoutineFunction(
-      const OsDiagnosticsRunAcPowerRoutineFunction&) = delete;
-  OsDiagnosticsRunAcPowerRoutineFunction& operator=(
-      const OsDiagnosticsRunAcPowerRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunAcPowerRoutineFunction() override;
+  ~OsDiagnosticsRunAcPowerRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -119,18 +95,10 @@ class OsDiagnosticsRunAcPowerRoutineFunction
 
 class OsDiagnosticsRunBatteryCapacityRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryCapacityRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE)
-
-  OsDiagnosticsRunBatteryCapacityRoutineFunction();
-  OsDiagnosticsRunBatteryCapacityRoutineFunction(
-      const OsDiagnosticsRunBatteryCapacityRoutineFunction&) = delete;
-  OsDiagnosticsRunBatteryCapacityRoutineFunction& operator=(
-      const OsDiagnosticsRunBatteryCapacityRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunBatteryCapacityRoutineFunction() override;
+  ~OsDiagnosticsRunBatteryCapacityRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -138,18 +106,10 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
 
 class OsDiagnosticsRunBatteryChargeRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryChargeRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYCHARGEROUTINE)
-
-  OsDiagnosticsRunBatteryChargeRoutineFunction();
-  OsDiagnosticsRunBatteryChargeRoutineFunction(
-      const OsDiagnosticsRunBatteryChargeRoutineFunction&) = delete;
-  OsDiagnosticsRunBatteryChargeRoutineFunction& operator=(
-      const OsDiagnosticsRunBatteryChargeRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunBatteryChargeRoutineFunction() override;
+  ~OsDiagnosticsRunBatteryChargeRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -157,18 +117,10 @@ class OsDiagnosticsRunBatteryChargeRoutineFunction
 
 class OsDiagnosticsRunBatteryDischargeRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryDischargeRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYDISCHARGEROUTINE)
-
-  OsDiagnosticsRunBatteryDischargeRoutineFunction();
-  OsDiagnosticsRunBatteryDischargeRoutineFunction(
-      const OsDiagnosticsRunBatteryDischargeRoutineFunction&) = delete;
-  OsDiagnosticsRunBatteryDischargeRoutineFunction& operator=(
-      const OsDiagnosticsRunBatteryDischargeRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunBatteryDischargeRoutineFunction() override;
+  ~OsDiagnosticsRunBatteryDischargeRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -176,18 +128,10 @@ class OsDiagnosticsRunBatteryDischargeRoutineFunction
 
 class OsDiagnosticsRunBatteryHealthRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryHealthRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYHEALTHROUTINE)
-
-  OsDiagnosticsRunBatteryHealthRoutineFunction();
-  OsDiagnosticsRunBatteryHealthRoutineFunction(
-      const OsDiagnosticsRunBatteryHealthRoutineFunction&) = delete;
-  OsDiagnosticsRunBatteryHealthRoutineFunction& operator=(
-      const OsDiagnosticsRunBatteryHealthRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunBatteryHealthRoutineFunction() override;
+  ~OsDiagnosticsRunBatteryHealthRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -195,18 +139,10 @@ class OsDiagnosticsRunBatteryHealthRoutineFunction
 
 class OsDiagnosticsRunCpuCacheRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuCacheRoutine",
                              OS_DIAGNOSTICS_RUNCPUCACHEROUTINE)
-
-  OsDiagnosticsRunCpuCacheRoutineFunction();
-  OsDiagnosticsRunCpuCacheRoutineFunction(
-      const OsDiagnosticsRunCpuCacheRoutineFunction&) = delete;
-  OsDiagnosticsRunCpuCacheRoutineFunction& operator=(
-      const OsDiagnosticsRunCpuCacheRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunCpuCacheRoutineFunction() override;
+  ~OsDiagnosticsRunCpuCacheRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -214,19 +150,11 @@ class OsDiagnosticsRunCpuCacheRoutineFunction
 
 class OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION(
       "os.diagnostics.runCpuFloatingPointAccuracyRoutine",
       OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE)
-
-  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction();
-  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction(
-      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
-  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction& operator=(
-      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() override;
+  ~OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -234,18 +162,10 @@ class OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction
 
 class OsDiagnosticsRunCpuPrimeSearchRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuPrimeSearchRoutine",
                              OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE)
-
-  OsDiagnosticsRunCpuPrimeSearchRoutineFunction();
-  OsDiagnosticsRunCpuPrimeSearchRoutineFunction(
-      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
-  OsDiagnosticsRunCpuPrimeSearchRoutineFunction& operator=(
-      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() override;
+  ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -253,18 +173,10 @@ class OsDiagnosticsRunCpuPrimeSearchRoutineFunction
 
 class OsDiagnosticsRunCpuStressRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuStressRoutine",
                              OS_DIAGNOSTICS_RUNCPUSTRESSROUTINE)
-
-  OsDiagnosticsRunCpuStressRoutineFunction();
-  OsDiagnosticsRunCpuStressRoutineFunction(
-      const OsDiagnosticsRunCpuStressRoutineFunction&) = delete;
-  OsDiagnosticsRunCpuStressRoutineFunction& operator=(
-      const OsDiagnosticsRunCpuStressRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunCpuStressRoutineFunction() override;
+  ~OsDiagnosticsRunCpuStressRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -272,18 +184,10 @@ class OsDiagnosticsRunCpuStressRoutineFunction
 
 class OsDiagnosticsRunDiskReadRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDiskReadRoutine",
                              OS_DIAGNOSTICS_RUNDISKREADROUTINE)
-
-  OsDiagnosticsRunDiskReadRoutineFunction();
-  OsDiagnosticsRunDiskReadRoutineFunction(
-      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
-  OsDiagnosticsRunDiskReadRoutineFunction& operator=(
-      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunDiskReadRoutineFunction() override;
+  ~OsDiagnosticsRunDiskReadRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -291,18 +195,10 @@ class OsDiagnosticsRunDiskReadRoutineFunction
 
 class OsDiagnosticsRunDnsResolutionRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDnsResolutionRoutine",
                              OS_DIAGNOSTICS_RUNDNSRESOLUTIONROUTINE)
-
-  OsDiagnosticsRunDnsResolutionRoutineFunction();
-  OsDiagnosticsRunDnsResolutionRoutineFunction(
-      const OsDiagnosticsRunDnsResolutionRoutineFunction&) = delete;
-  OsDiagnosticsRunDnsResolutionRoutineFunction& operator=(
-      const OsDiagnosticsRunDnsResolutionRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunDnsResolutionRoutineFunction() override;
+  ~OsDiagnosticsRunDnsResolutionRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -310,18 +206,10 @@ class OsDiagnosticsRunDnsResolutionRoutineFunction
 
 class OsDiagnosticsRunDnsResolverPresentRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDnsResolverPresentRoutine",
                              OS_DIAGNOSTICS_RUNDNSRESOLVERPRESENTROUTINE)
-
-  OsDiagnosticsRunDnsResolverPresentRoutineFunction();
-  OsDiagnosticsRunDnsResolverPresentRoutineFunction(
-      const OsDiagnosticsRunDnsResolverPresentRoutineFunction&) = delete;
-  OsDiagnosticsRunDnsResolverPresentRoutineFunction& operator=(
-      const OsDiagnosticsRunDnsResolverPresentRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunDnsResolverPresentRoutineFunction() override;
+  ~OsDiagnosticsRunDnsResolverPresentRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -348,18 +236,10 @@ class OsDiagnosticsRunFingerprintAliveRoutineFunction
 
 class OsDiagnosticsRunGatewayCanBePingedRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runGatewayCanBePingedRoutine",
                              OS_DIAGNOSTICS_RUNGATEWAYCANBEPINGEDROUTINE)
-
-  OsDiagnosticsRunGatewayCanBePingedRoutineFunction();
-  OsDiagnosticsRunGatewayCanBePingedRoutineFunction(
-      const OsDiagnosticsRunGatewayCanBePingedRoutineFunction&) = delete;
-  OsDiagnosticsRunGatewayCanBePingedRoutineFunction& operator=(
-      const OsDiagnosticsRunGatewayCanBePingedRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunGatewayCanBePingedRoutineFunction() override;
+  ~OsDiagnosticsRunGatewayCanBePingedRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -367,18 +247,10 @@ class OsDiagnosticsRunGatewayCanBePingedRoutineFunction
 
 class OsDiagnosticsRunLanConnectivityRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runLanConnectivityRoutine",
                              OS_DIAGNOSTICS_RUNLANCONNECTIVITYROUTINE)
-
-  OsDiagnosticsRunLanConnectivityRoutineFunction();
-  OsDiagnosticsRunLanConnectivityRoutineFunction(
-      const OsDiagnosticsRunLanConnectivityRoutineFunction&) = delete;
-  OsDiagnosticsRunLanConnectivityRoutineFunction& operator=(
-      const OsDiagnosticsRunLanConnectivityRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunLanConnectivityRoutineFunction() override;
+  ~OsDiagnosticsRunLanConnectivityRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -386,18 +258,10 @@ class OsDiagnosticsRunLanConnectivityRoutineFunction
 
 class OsDiagnosticsRunMemoryRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runMemoryRoutine",
                              OS_DIAGNOSTICS_RUNMEMORYROUTINE)
-
-  OsDiagnosticsRunMemoryRoutineFunction();
-  OsDiagnosticsRunMemoryRoutineFunction(
-      const OsDiagnosticsRunMemoryRoutineFunction&) = delete;
-  OsDiagnosticsRunMemoryRoutineFunction& operator=(
-      const OsDiagnosticsRunMemoryRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunMemoryRoutineFunction() override;
+  ~OsDiagnosticsRunMemoryRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -405,18 +269,10 @@ class OsDiagnosticsRunMemoryRoutineFunction
 
 class OsDiagnosticsRunNvmeSelfTestRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeSelfTestRoutine",
                              OS_DIAGNOSTICS_RUNNVMESELFTESTROUTINE)
-
-  OsDiagnosticsRunNvmeSelfTestRoutineFunction();
-  OsDiagnosticsRunNvmeSelfTestRoutineFunction(
-      const OsDiagnosticsRunNvmeSelfTestRoutineFunction&) = delete;
-  OsDiagnosticsRunNvmeSelfTestRoutineFunction& operator=(
-      const OsDiagnosticsRunNvmeSelfTestRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunNvmeSelfTestRoutineFunction() override;
+  ~OsDiagnosticsRunNvmeSelfTestRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -424,18 +280,10 @@ class OsDiagnosticsRunNvmeSelfTestRoutineFunction
 
 class OsDiagnosticsRunNvmeWearLevelRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeWearLevelRoutine",
                              OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE)
-
-  OsDiagnosticsRunNvmeWearLevelRoutineFunction();
-  OsDiagnosticsRunNvmeWearLevelRoutineFunction(
-      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
-  OsDiagnosticsRunNvmeWearLevelRoutineFunction& operator=(
-      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override;
+  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -443,18 +291,10 @@ class OsDiagnosticsRunNvmeWearLevelRoutineFunction
 
 class OsDiagnosticsRunSensitiveSensorRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSensitiveSensorRoutine",
                              OS_DIAGNOSTICS_RUNSENSITIVESENSORROUTINE)
-
-  OsDiagnosticsRunSensitiveSensorRoutineFunction();
-  OsDiagnosticsRunSensitiveSensorRoutineFunction(
-      const OsDiagnosticsRunSensitiveSensorRoutineFunction&) = delete;
-  OsDiagnosticsRunSensitiveSensorRoutineFunction& operator=(
-      const OsDiagnosticsRunSensitiveSensorRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunSensitiveSensorRoutineFunction() override;
+  ~OsDiagnosticsRunSensitiveSensorRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -462,18 +302,10 @@ class OsDiagnosticsRunSensitiveSensorRoutineFunction
 
 class OsDiagnosticsRunSignalStrengthRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSignalStrengthRoutine",
                              OS_DIAGNOSTICS_RUNSIGNALSTRENGTHROUTINE)
-
-  OsDiagnosticsRunSignalStrengthRoutineFunction();
-  OsDiagnosticsRunSignalStrengthRoutineFunction(
-      const OsDiagnosticsRunSignalStrengthRoutineFunction&) = delete;
-  OsDiagnosticsRunSignalStrengthRoutineFunction& operator=(
-      const OsDiagnosticsRunSignalStrengthRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunSignalStrengthRoutineFunction() override;
+  ~OsDiagnosticsRunSignalStrengthRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -481,18 +313,10 @@ class OsDiagnosticsRunSignalStrengthRoutineFunction
 
 class OsDiagnosticsRunSmartctlCheckRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSmartctlCheckRoutine",
                              OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE)
-
-  OsDiagnosticsRunSmartctlCheckRoutineFunction();
-  OsDiagnosticsRunSmartctlCheckRoutineFunction(
-      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
-  OsDiagnosticsRunSmartctlCheckRoutineFunction& operator=(
-      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunSmartctlCheckRoutineFunction() override;
+  ~OsDiagnosticsRunSmartctlCheckRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
