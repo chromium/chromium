@@ -37,7 +37,7 @@ declare_args() {
 
   # Platforms where the cert verifier comparison trial is supported.
   # See https://crbug.com/649026.
-  trial_comparison_cert_verifier_supported = is_mac || is_win
+  trial_comparison_cert_verifier_supported = is_mac || is_win || is_android
 
   # Platforms for which certificate verification can be performed using the
   # builtin cert verifier with the Chrome Root Store, and this can be
@@ -45,5 +45,5 @@ declare_args() {
   # flag is false, verification may be done with the platform verifier or the
   # builtin verifier using platform roots, depending on the platform.
   # See https://crbug.com/1216547 for status.
-  chrome_root_store_supported = is_win || is_mac
+  chrome_root_store_supported = is_win || is_mac || is_android
 }

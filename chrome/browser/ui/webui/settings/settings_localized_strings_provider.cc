@@ -1711,7 +1711,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   html_source->AddBoolean(
       "showChromeRootStoreCertificates",
-      GetChromeCertVerifierServiceParams()->use_chrome_root_store);
+      GetChromeCertVerifierServiceParams(/*localstate=*/nullptr)
+          ->use_chrome_root_store);
 
   html_source->AddString("chromeRootStoreHelpCenterURL",
                          chrome::kChromeRootStoreSettingsHelpCenterURL);

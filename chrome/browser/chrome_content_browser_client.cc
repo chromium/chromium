@@ -3378,7 +3378,13 @@ ChromeContentBrowserClient::GetGeneratedCodeCacheSettings(
 
 cert_verifier::mojom::CertVerifierServiceParamsPtr
 ChromeContentBrowserClient::GetCertVerifierServiceParams() {
-  return GetChromeCertVerifierServiceParams();
+  PrefService* local_state;
+  if (g_browser_process) {
+    local_state = g_browser_process->local_state();
+  } else {
+    local_state = startup_data_.chrome_feature_list_creator()->local_state();
+  }
+  return GetChromeCertVerifierServiceParams(local_state);
 }
 
 void ChromeContentBrowserClient::AllowCertificateError(

@@ -899,7 +899,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   bool is_trial_comparison_supported = !in_memory;
 
   cert_verifier::mojom::CertVerifierServiceParamsPtr
-      cert_verifier_configuration = GetChromeCertVerifierServiceParams();
+      cert_verifier_configuration =
+          GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
   DCHECK(cert_verifier_configuration);
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   is_trial_comparison_supported &=

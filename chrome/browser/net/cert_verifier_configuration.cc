@@ -44,12 +44,14 @@ bool ShouldUseChromeRootStore(PrefService* local_state) {
 // https://crbug.com/1340420.)
 class CertVerifierServiceConfigurationStorage {
  public:
-  CertVerifierServiceConfigurationStorage() {
+  explicit CertVerifierServiceConfigurationStorage(PrefService* local_state) {
     params_ = cert_verifier::mojom::CertVerifierServiceParams::New();
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    params_->use_chrome_root_store =
-        ShouldUseChromeRootStore(g_browser_process->local_state());
+    if (!local_state) {
+      local_state = g_browser_process->local_state();
+    }
+    params_->use_chrome_root_store = ShouldUseChromeRootStore(local_state);
 #endif
   }
   ~CertVerifierServiceConfigurationStorage() = delete;
@@ -65,8 +67,9 @@ class CertVerifierServiceConfigurationStorage {
 }  // namespace
 
 cert_verifier::mojom::CertVerifierServiceParamsPtr
-GetChromeCertVerifierServiceParams() {
-  static base::NoDestructor<CertVerifierServiceConfigurationStorage> storage;
+GetChromeCertVerifierServiceParams(PrefService* local_state) {
+  static base::NoDestructor<CertVerifierServiceConfigurationStorage> storage(
+      local_state);
 
   return storage->Params();
 }

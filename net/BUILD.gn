@@ -1404,6 +1404,12 @@ component("net") {
         "third_party/mozilla_win/cert/win_util.h",
       ]
     }
+    if (is_android) {
+      sources += [
+        "cert/internal/trust_store_android.cc",
+        "cert/internal/trust_store_android.h",
+      ]
+    }
   }
 
   if (use_nss_certs) {

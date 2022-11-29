@@ -49,6 +49,8 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #elif BUILDFLAG(IS_WIN)
 #include "net/cert/internal/trust_store_win.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "net/cert/internal/trust_store_android.h"
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
@@ -372,6 +374,24 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(chrome_root), std::make_unique<TrustStoreWin>());
+}
+
+#endif  // CHROME_ROOT_STORE_SUPPORTED
+
+#elif BUILDFLAG(IS_ANDROID)
+
+// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
+// Android.
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
+  return std::make_unique<DummySystemTrustStore>();
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
+    std::unique_ptr<TrustStoreChrome> chrome_root) {
+  return std::make_unique<SystemTrustStoreChrome>(
+      std::move(chrome_root), std::make_unique<TrustStoreAndroid>());
 }
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED

@@ -64,7 +64,8 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // If the Chrome Root Store is enabled as part of the default verifier, the
   // trial does not make sense.
-  if (GetChromeCertVerifierServiceParams()->use_chrome_root_store)
+  if (GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
+          ->use_chrome_root_store)
     return false;
 #endif
 

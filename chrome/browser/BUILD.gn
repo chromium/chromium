@@ -4653,6 +4653,13 @@ static_library("browser") {
         "component_updater/hyphenation_component_installer.h",
       ]
     }
+
+    if (chrome_root_store_supported) {
+      sources += [
+        "feedback/system_logs/log_sources/chrome_root_store_log_source.cc",
+        "feedback/system_logs/log_sources/chrome_root_store_log_source.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -7842,13 +7849,6 @@ static_library("browser") {
     sources += [
       "net/trial_comparison_cert_verifier_controller.cc",
       "net/trial_comparison_cert_verifier_controller.h",
-    ]
-  }
-
-  if (chrome_root_store_supported) {
-    sources += [
-      "feedback/system_logs/log_sources/chrome_root_store_log_source.cc",
-      "feedback/system_logs/log_sources/chrome_root_store_log_source.h",
     ]
   }
 

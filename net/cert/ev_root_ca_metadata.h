@@ -16,7 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
-#if BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+#if BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_FUCHSIA)
 // When not defined, the EVRootCAMetadata singleton is a dumb placeholder
 // implementation that will fail all EV lookup operations.

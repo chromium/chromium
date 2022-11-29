@@ -54,7 +54,7 @@ class CertVerifierServiceChromeRootStoreFeaturePolicyTest
   void ExpectUseChromeRootStoreCorrect(bool use_chrome_root_store) {
     {
       cert_verifier::mojom::CertVerifierServiceParamsPtr params =
-          GetChromeCertVerifierServiceParams();
+          GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
       ASSERT_TRUE(params);
       EXPECT_EQ(use_chrome_root_store, params->use_chrome_root_store);
     }
@@ -64,7 +64,7 @@ class CertVerifierServiceChromeRootStoreFeaturePolicyTest
     SetPolicyValue(!use_chrome_root_store);
     {
       cert_verifier::mojom::CertVerifierServiceParamsPtr params =
-          GetChromeCertVerifierServiceParams();
+          GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
       ASSERT_TRUE(params);
       EXPECT_EQ(use_chrome_root_store, params->use_chrome_root_store);
     }
