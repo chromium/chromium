@@ -2586,12 +2586,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
   waiter->Wait();
   waiter.reset();
 
-  // Force navigation to another page, which should force logging of histograms
-  // persisted at the end of the page load lifetime.
-  GURL url = embedded_test_server()->GetURL("/title1.html");
-  prerender_helper().NavigatePrerenderedPage(host_id, url);
-
-  // Navigation to another page in prerendering causes canceling it.
+  prerender_helper().CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
 
   // Ensure that prerendering doesn't have metrics by

@@ -422,13 +422,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   const int host_id = prerender_helper_.AddPrerender(prerender_url);
 
-  // Start a navigation in the prerender frame tree that will cancel the
-  // initiator's prerendering.
   content::test::PrerenderHostObserver observer(*web_contents(), host_id);
-
-  GURL hung_url = embedded_test_server()->GetURL("/hung");
-  prerender_helper_.NavigatePrerenderedPage(host_id, hung_url);
-
+  prerender_helper_.CancelPrerenderedPage(host_id);
   observer.WaitForDestroyed();
 
   // Force navigation to another page, which should force logging of histograms

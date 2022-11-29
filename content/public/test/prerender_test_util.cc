@@ -410,6 +410,11 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
       ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl));
 }
 
+void PrerenderTestHelper::CancelPrerenderedPage(int host_id) {
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
+  registry.CancelHost(host_id, PrerenderFinalStatus::kDestroyed);
+}
+
 // static
 void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
                                               const GURL& gurl) {

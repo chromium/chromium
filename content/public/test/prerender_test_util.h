@@ -148,6 +148,9 @@ class PrerenderTestHelper {
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 
+  // This cancels the prerendered page.
+  void CancelPrerenderedPage(int host_id);
+
   // Navigates the primary page to the URL and waits until the completion of
   // the navigation.
   //
