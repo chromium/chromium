@@ -11,7 +11,7 @@ import "ash/components/arc/mojom/gfx.mojom";
 // Represents the type of text input field currently focused.
 [Extensible]
 enum TextInputType {
-  NONE,
+  [Default] NONE,
   TEXT,
   PASSWORD,
   SEARCH,
