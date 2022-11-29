@@ -441,8 +441,8 @@ class AX_EXPORT AXNode final : public base::SupportsWeakPtr<AXNode> {
   // PosInSet and SetSize public methods.
   bool IsOrderedSetItem() const;
   bool IsOrderedSet() const;
-  absl::optional<int> GetPosInSet();
-  absl::optional<int> GetSetSize();
+  absl::optional<int> GetPosInSet() const;
+  absl::optional<int> GetSetSize() const;
 
   // Helpers for GetPosInSet and GetSetSize.
   // Returns true if the role of ordered set matches the role of item.

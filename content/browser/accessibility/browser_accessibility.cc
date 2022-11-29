@@ -1915,13 +1915,11 @@ bool BrowserAccessibility::ShouldIgnoreHoveredStateForTesting() {
 }
 
 absl::optional<int> BrowserAccessibility::GetPosInSet() const {
-  // TODO(nektar): Make `AXNode::GetPosInSet()` const and remove const_cast.
-  return const_cast<ui::AXNode*>(node())->GetPosInSet();
+  return node()->GetPosInSet();
 }
 
 absl::optional<int> BrowserAccessibility::GetSetSize() const {
-  // TODO(nektar): Make `AXNode::GetSetSize()` const and remove const_cast.
-  return const_cast<ui::AXNode*>(node())->GetSetSize();
+  return node()->GetSetSize();
 }
 
 bool BrowserAccessibility::IsInListMarker() const {

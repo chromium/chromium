@@ -1674,12 +1674,12 @@ bool AXNode::IsOrderedSet() const {
 }
 
 // Uses AXTree's cache to calculate node's PosInSet.
-absl::optional<int> AXNode::GetPosInSet() {
+absl::optional<int> AXNode::GetPosInSet() const {
   return tree_->GetPosInSet(*this);
 }
 
 // Uses AXTree's cache to calculate node's SetSize.
-absl::optional<int> AXNode::GetSetSize() {
+absl::optional<int> AXNode::GetSetSize() const {
   return tree_->GetSetSize(*this);
 }
 
