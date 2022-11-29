@@ -9,7 +9,6 @@ PASS Setting 'list-style-type' to a time throws TypeError
 PASS Setting 'list-style-type' to an angle throws TypeError
 PASS Setting 'list-style-type' to a flexible length throws TypeError
 PASS Setting 'list-style-type' to a number throws TypeError
-PASS Setting 'list-style-type' to a position throws TypeError
 PASS Setting 'list-style-type' to a URL throws TypeError
 PASS Setting 'list-style-type' to a transform throws TypeError
 PASS 'list-style-type' does not supported '"Note: "'

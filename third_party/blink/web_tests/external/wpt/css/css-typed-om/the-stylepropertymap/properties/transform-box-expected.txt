@@ -10,7 +10,6 @@ PASS Setting 'transform-box' to a time throws TypeError
 PASS Setting 'transform-box' to an angle throws TypeError
 PASS Setting 'transform-box' to a flexible length throws TypeError
 PASS Setting 'transform-box' to a number throws TypeError
-PASS Setting 'transform-box' to a position throws TypeError
 PASS Setting 'transform-box' to a URL throws TypeError
 PASS Setting 'transform-box' to a transform throws TypeError
 Harness: the test ran to completion.

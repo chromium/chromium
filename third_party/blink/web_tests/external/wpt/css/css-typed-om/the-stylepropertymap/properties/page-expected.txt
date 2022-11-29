@@ -9,7 +9,6 @@ PASS Setting 'page' to a time throws TypeError
 PASS Setting 'page' to an angle throws TypeError
 PASS Setting 'page' to a flexible length throws TypeError
 PASS Setting 'page' to a number throws TypeError
-PASS Setting 'page' to a position throws TypeError
 PASS Setting 'page' to a URL throws TypeError
 PASS Setting 'page' to a transform throws TypeError
 Harness: the test ran to completion.

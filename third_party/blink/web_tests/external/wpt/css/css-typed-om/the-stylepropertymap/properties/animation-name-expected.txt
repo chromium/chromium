@@ -9,7 +9,6 @@ PASS Setting 'animation-name' to a time throws TypeError
 PASS Setting 'animation-name' to an angle throws TypeError
 PASS Setting 'animation-name' to a flexible length throws TypeError
 PASS Setting 'animation-name' to a number throws TypeError
-PASS Setting 'animation-name' to a position throws TypeError
 PASS Setting 'animation-name' to a URL throws TypeError
 PASS Setting 'animation-name' to a transform throws TypeError
 FAIL 'animation-name' does not supported '"foo"' assert_not_equals: Unsupported value must not be null got disallowed value null

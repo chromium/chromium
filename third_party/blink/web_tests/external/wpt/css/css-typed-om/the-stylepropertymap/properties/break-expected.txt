@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 62 tests; 57 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 59 tests; 54 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Can set 'break-after' to CSS-wide keywords
 PASS Can set 'break-after' to var() references
 PASS Can set 'break-after' to the 'auto' keyword
@@ -20,7 +20,6 @@ PASS Setting 'break-after' to a time throws TypeError
 PASS Setting 'break-after' to an angle throws TypeError
 PASS Setting 'break-after' to a flexible length throws TypeError
 PASS Setting 'break-after' to a number throws TypeError
-PASS Setting 'break-after' to a position throws TypeError
 PASS Setting 'break-after' to a URL throws TypeError
 PASS Setting 'break-after' to a transform throws TypeError
 PASS Can set 'break-before' to CSS-wide keywords
@@ -43,7 +42,6 @@ PASS Setting 'break-before' to a time throws TypeError
 PASS Setting 'break-before' to an angle throws TypeError
 PASS Setting 'break-before' to a flexible length throws TypeError
 PASS Setting 'break-before' to a number throws TypeError
-PASS Setting 'break-before' to a position throws TypeError
 PASS Setting 'break-before' to a URL throws TypeError
 PASS Setting 'break-before' to a transform throws TypeError
 PASS Can set 'break-inside' to CSS-wide keywords
@@ -59,7 +57,6 @@ PASS Setting 'break-inside' to a time throws TypeError
 PASS Setting 'break-inside' to an angle throws TypeError
 PASS Setting 'break-inside' to a flexible length throws TypeError
 PASS Setting 'break-inside' to a number throws TypeError
-PASS Setting 'break-inside' to a position throws TypeError
 PASS Setting 'break-inside' to a URL throws TypeError
 PASS Setting 'break-inside' to a transform throws TypeError
 Harness: the test ran to completion.

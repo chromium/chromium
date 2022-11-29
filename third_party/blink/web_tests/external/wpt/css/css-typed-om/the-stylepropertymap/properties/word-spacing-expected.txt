@@ -8,7 +8,6 @@ PASS Setting 'word-spacing' to a time throws TypeError
 PASS Setting 'word-spacing' to an angle throws TypeError
 PASS Setting 'word-spacing' to a flexible length throws TypeError
 PASS Setting 'word-spacing' to a number throws TypeError
-PASS Setting 'word-spacing' to a position throws TypeError
 PASS Setting 'word-spacing' to a URL throws TypeError
 PASS Setting 'word-spacing' to a transform throws TypeError
 Harness: the test ran to completion.

@@ -16,7 +16,6 @@ PASS Setting 'clip-path' to a time throws TypeError
 PASS Setting 'clip-path' to an angle throws TypeError
 PASS Setting 'clip-path' to a flexible length throws TypeError
 PASS Setting 'clip-path' to a number throws TypeError
-PASS Setting 'clip-path' to a position throws TypeError
 PASS Setting 'clip-path' to a transform throws TypeError
 FAIL 'clip' does not supported 'inset(22% 12% 15px 35px)' assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.

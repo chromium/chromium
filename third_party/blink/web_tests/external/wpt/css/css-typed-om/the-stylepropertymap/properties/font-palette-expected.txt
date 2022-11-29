@@ -10,7 +10,6 @@ PASS Setting 'font-palette' to a time throws TypeError
 PASS Setting 'font-palette' to an angle throws TypeError
 PASS Setting 'font-palette' to a flexible length throws TypeError
 PASS Setting 'font-palette' to a number throws TypeError
-PASS Setting 'font-palette' to a position throws TypeError
 PASS Setting 'font-palette' to a URL throws TypeError
 PASS Setting 'font-palette' to a transform throws TypeError
 FAIL 'font-palette' does not supported 'Augusta' assert_not_equals: Unsupported value must not be null got disallowed value null

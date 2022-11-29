@@ -13,7 +13,6 @@ PASS Setting 'scroll-snap-type' to a time throws TypeError
 PASS Setting 'scroll-snap-type' to an angle throws TypeError
 PASS Setting 'scroll-snap-type' to a flexible length throws TypeError
 PASS Setting 'scroll-snap-type' to a number throws TypeError
-PASS Setting 'scroll-snap-type' to a position throws TypeError
 PASS Setting 'scroll-snap-type' to a URL throws TypeError
 PASS Setting 'scroll-snap-type' to a transform throws TypeError
 PASS 'scroll-snap-type' does not supported 'x mandatory'

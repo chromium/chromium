@@ -14,7 +14,6 @@ PASS Setting 'text-decoration-line' to a time throws TypeError
 PASS Setting 'text-decoration-line' to an angle throws TypeError
 PASS Setting 'text-decoration-line' to a flexible length throws TypeError
 PASS Setting 'text-decoration-line' to a number throws TypeError
-PASS Setting 'text-decoration-line' to a position throws TypeError
 PASS Setting 'text-decoration-line' to a URL throws TypeError
 PASS Setting 'text-decoration-line' to a transform throws TypeError
 Harness: the test ran to completion.

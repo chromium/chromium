@@ -17,7 +17,6 @@ PASS Setting 'outline-style' to a time throws TypeError
 PASS Setting 'outline-style' to an angle throws TypeError
 PASS Setting 'outline-style' to a flexible length throws TypeError
 PASS Setting 'outline-style' to a number throws TypeError
-PASS Setting 'outline-style' to a position throws TypeError
 PASS Setting 'outline-style' to a URL throws TypeError
 PASS Setting 'outline-style' to a transform throws TypeError
 Harness: the test ran to completion.

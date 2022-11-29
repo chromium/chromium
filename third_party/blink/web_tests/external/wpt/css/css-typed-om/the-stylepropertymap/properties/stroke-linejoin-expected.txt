@@ -13,7 +13,6 @@ PASS Setting 'stroke-linejoin' to a time throws TypeError
 PASS Setting 'stroke-linejoin' to an angle throws TypeError
 PASS Setting 'stroke-linejoin' to a flexible length throws TypeError
 PASS Setting 'stroke-linejoin' to a number throws TypeError
-PASS Setting 'stroke-linejoin' to a position throws TypeError
 PASS Setting 'stroke-linejoin' to a URL throws TypeError
 PASS Setting 'stroke-linejoin' to a transform throws TypeError
 FAIL 'stroke-linejoin' does not supported 'crop bevel' assert_not_equals: Unsupported value must not be null got disallowed value null

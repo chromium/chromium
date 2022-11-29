@@ -11,7 +11,6 @@ PASS Setting 'paint-order' to a time throws TypeError
 PASS Setting 'paint-order' to an angle throws TypeError
 PASS Setting 'paint-order' to a flexible length throws TypeError
 PASS Setting 'paint-order' to a number throws TypeError
-PASS Setting 'paint-order' to a position throws TypeError
 PASS Setting 'paint-order' to a URL throws TypeError
 PASS Setting 'paint-order' to a transform throws TypeError
 PASS 'paint-order' does not supported 'fill stroke'

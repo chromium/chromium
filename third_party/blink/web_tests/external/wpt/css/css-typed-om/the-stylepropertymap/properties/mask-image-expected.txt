@@ -9,7 +9,6 @@ PASS Setting 'mask-image' to a time throws TypeError
 PASS Setting 'mask-image' to an angle throws TypeError
 PASS Setting 'mask-image' to a flexible length throws TypeError
 PASS Setting 'mask-image' to a number throws TypeError
-PASS Setting 'mask-image' to a position throws TypeError
 PASS Setting 'mask-image' to a URL throws TypeError
 PASS Setting 'mask-image' to a transform throws TypeError
 Harness: the test ran to completion.

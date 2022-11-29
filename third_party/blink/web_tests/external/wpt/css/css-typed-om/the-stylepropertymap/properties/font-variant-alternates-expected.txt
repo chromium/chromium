@@ -9,7 +9,6 @@ PASS Setting 'font-variant-alternates' to a time throws TypeError
 PASS Setting 'font-variant-alternates' to an angle throws TypeError
 PASS Setting 'font-variant-alternates' to a flexible length throws TypeError
 PASS Setting 'font-variant-alternates' to a number throws TypeError
-PASS Setting 'font-variant-alternates' to a position throws TypeError
 PASS Setting 'font-variant-alternates' to a URL throws TypeError
 PASS Setting 'font-variant-alternates' to a transform throws TypeError
 PASS 'font-variant-alternates' does not supported 'stylistic(foo)'

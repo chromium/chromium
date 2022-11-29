@@ -7,7 +7,6 @@ PASS Setting 'border-top-left-radius' to a time throws TypeError
 PASS Setting 'border-top-left-radius' to an angle throws TypeError
 PASS Setting 'border-top-left-radius' to a flexible length throws TypeError
 PASS Setting 'border-top-left-radius' to a number throws TypeError
-PASS Setting 'border-top-left-radius' to a position throws TypeError
 PASS Setting 'border-top-left-radius' to a URL throws TypeError
 PASS Setting 'border-top-left-radius' to a transform throws TypeError
 PASS Can set 'border-top-right-radius' to CSS-wide keywords
@@ -18,7 +17,6 @@ PASS Setting 'border-top-right-radius' to a time throws TypeError
 PASS Setting 'border-top-right-radius' to an angle throws TypeError
 PASS Setting 'border-top-right-radius' to a flexible length throws TypeError
 PASS Setting 'border-top-right-radius' to a number throws TypeError
-PASS Setting 'border-top-right-radius' to a position throws TypeError
 PASS Setting 'border-top-right-radius' to a URL throws TypeError
 PASS Setting 'border-top-right-radius' to a transform throws TypeError
 PASS Can set 'border-bottom-left-radius' to CSS-wide keywords
@@ -29,7 +27,6 @@ PASS Setting 'border-bottom-left-radius' to a time throws TypeError
 PASS Setting 'border-bottom-left-radius' to an angle throws TypeError
 PASS Setting 'border-bottom-left-radius' to a flexible length throws TypeError
 PASS Setting 'border-bottom-left-radius' to a number throws TypeError
-PASS Setting 'border-bottom-left-radius' to a position throws TypeError
 PASS Setting 'border-bottom-left-radius' to a URL throws TypeError
 PASS Setting 'border-bottom-left-radius' to a transform throws TypeError
 PASS Can set 'border-bottom-right-radius' to CSS-wide keywords
@@ -40,7 +37,6 @@ PASS Setting 'border-bottom-right-radius' to a time throws TypeError
 PASS Setting 'border-bottom-right-radius' to an angle throws TypeError
 PASS Setting 'border-bottom-right-radius' to a flexible length throws TypeError
 PASS Setting 'border-bottom-right-radius' to a number throws TypeError
-PASS Setting 'border-bottom-right-radius' to a position throws TypeError
 PASS Setting 'border-bottom-right-radius' to a URL throws TypeError
 PASS Setting 'border-bottom-right-radius' to a transform throws TypeError
 PASS 'border-radius' does not supported '30px'

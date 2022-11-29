@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 tests; 59 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 tests; 54 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Can set 'margin-top' to CSS-wide keywords
 PASS Can set 'margin-top' to var() references
 PASS Can set 'margin-top' to the 'auto' keyword
@@ -9,7 +9,6 @@ PASS Setting 'margin-top' to a time throws TypeError
 PASS Setting 'margin-top' to an angle throws TypeError
 PASS Setting 'margin-top' to a flexible length throws TypeError
 PASS Setting 'margin-top' to a number throws TypeError
-PASS Setting 'margin-top' to a position throws TypeError
 PASS Setting 'margin-top' to a URL throws TypeError
 PASS Setting 'margin-top' to a transform throws TypeError
 PASS Can set 'margin-left' to CSS-wide keywords
@@ -21,7 +20,6 @@ PASS Setting 'margin-left' to a time throws TypeError
 PASS Setting 'margin-left' to an angle throws TypeError
 PASS Setting 'margin-left' to a flexible length throws TypeError
 PASS Setting 'margin-left' to a number throws TypeError
-PASS Setting 'margin-left' to a position throws TypeError
 PASS Setting 'margin-left' to a URL throws TypeError
 PASS Setting 'margin-left' to a transform throws TypeError
 PASS Can set 'margin-right' to CSS-wide keywords
@@ -33,7 +31,6 @@ PASS Setting 'margin-right' to a time throws TypeError
 PASS Setting 'margin-right' to an angle throws TypeError
 PASS Setting 'margin-right' to a flexible length throws TypeError
 PASS Setting 'margin-right' to a number throws TypeError
-PASS Setting 'margin-right' to a position throws TypeError
 PASS Setting 'margin-right' to a URL throws TypeError
 PASS Setting 'margin-right' to a transform throws TypeError
 PASS Can set 'margin-bottom' to CSS-wide keywords
@@ -45,7 +42,6 @@ PASS Setting 'margin-bottom' to a time throws TypeError
 PASS Setting 'margin-bottom' to an angle throws TypeError
 PASS Setting 'margin-bottom' to a flexible length throws TypeError
 PASS Setting 'margin-bottom' to a number throws TypeError
-PASS Setting 'margin-bottom' to a position throws TypeError
 PASS Setting 'margin-bottom' to a URL throws TypeError
 PASS Setting 'margin-bottom' to a transform throws TypeError
 FAIL Can set 'margin' to CSS-wide keywords assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
@@ -56,7 +52,6 @@ PASS Setting 'margin' to a time throws TypeError
 PASS Setting 'margin' to an angle throws TypeError
 PASS Setting 'margin' to a flexible length throws TypeError
 PASS Setting 'margin' to a number throws TypeError
-PASS Setting 'margin' to a position throws TypeError
 PASS Setting 'margin' to a URL throws TypeError
 PASS Setting 'margin' to a transform throws TypeError
 PASS 'margin' does not supported '1px'

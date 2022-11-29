@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: '<position>' is not a valid CSS component
+PASS Can set 'offset-position' to CSS-wide keywords
+PASS Can set 'offset-position' to var() references
+PASS Can set 'offset-position' to the 'auto' keyword
+Harness: the test ran to completion.
+

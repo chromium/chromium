@@ -212116,7 +212116,7 @@
       ]
      },
      "compute-kind-widget-no-fallback-props-001.html": [
-      "e688ab8a9d91b910fba31964874bba336bf91ff7",
+      "0533da654ff80145e5706bbd5e0fc048d9b49cbb",
       [
        null,
        [
@@ -246481,6 +246481,58 @@
          [
           [
            "/html/semantics/forms/the-input-element/range-setattribute-value-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "range-tick-marks-01.html": [
+        "225422dc4d4f8fbbe96feeb4b2c21277336492b3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/range-tick-marks-01-notref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "range-tick-marks-02.html": [
+        "453e650b2f633b00903eec74e2ee6ca85f1e42e2",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/range-tick-marks-02-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "range-tick-marks-03.html": [
+        "e067013bdd7c2fec3eda49d21f43f0f6fe89f6ca",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/range-tick-marks-03-notref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "range-tick-marks-04.html": [
+        "6fb0e930a1c733a888bc4e04e899212b09cca157",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/range-tick-marks-04-ref.html",
            "=="
           ]
          ],
@@ -313137,6 +313189,10 @@
       "a448fc800d26f26f7976bb9358251a5c392262e1",
       []
      ],
+     "historical-expected.txt": [
+      "b53d7d1fbce7b381f65fb9482b610339d7f4e011",
+      []
+     ],
      "idlharness-expected.txt": [
       "53d0394bfc4d5bcb19a64085aa505a743e1352b4",
       []
@@ -313147,7 +313203,7 @@
      ],
      "resources": {
       "testhelper.js": [
-       "89849a7cc2fa5a1570f3668e84c011f9267f8c58",
+       "c22a963a938f4222bce796e5e5d3578ef3626165",
        []
       ]
      },
@@ -313214,7 +313270,7 @@
      "the-stylepropertymap": {
       "properties": {
        "accent-color-expected.txt": [
-        "3c4e773a36c0e76f69f2bf48f49428b0c6c31338",
+        "08f9287a96c5c59b34948f10cbf7f92f711058fd",
         []
        ],
        "accent-color.html.ini": [
@@ -313222,7 +313278,7 @@
         []
        ],
        "alignment-baseline-expected.txt": [
-        "bfa1f080ecaefe71d6a26a0287860569d72f0296",
+        "a30a92f46fca6f79da48d46185659b08b3ce28a2",
         []
        ],
        "alignment-baseline.html.ini": [
@@ -313230,7 +313286,7 @@
         []
        ],
        "all-expected.txt": [
-        "d27c2d7f120cb59f0d25eed0727a76e94b634b96",
+        "6c675b791ffb82b5baf63d4849b798a157ac7239",
         []
        ],
        "all.html.ini": [
@@ -313238,7 +313294,7 @@
         []
        ],
        "animation-name-expected.txt": [
-        "da7a382e75a0473a396ce3eba18804faa05d5124",
+        "2982aecdc77e578208aa5afa9dd0180bc382bfad",
         []
        ],
        "animation-name.html.ini": [
@@ -313246,11 +313302,11 @@
         []
        ],
        "background-expected.txt": [
-        "3125a8d6527903dc685eb325a9bf56fff7695a0d",
+        "fdf2474a67270c5544aebf0445ac57b597e72ee2",
         []
        ],
        "background-position-expected.txt": [
-        "4d785e6fe3a4a8d8cbf4dbfe62751bc124e95877",
+        "ce6027b291c076e2021e474a63643c124ee4e336",
         []
        ],
        "background-position.html.ini": [
@@ -313258,7 +313314,7 @@
         []
        ],
        "background-repeat-expected.txt": [
-        "bb8bbf55229c87ed9c75a15f95803547c5199f14",
+        "2ac07b76710594ee3182ba7eab3fda89b3e11db1",
         []
        ],
        "background-repeat.html.ini": [
@@ -313270,7 +313326,7 @@
         []
        ],
        "border-radius-expected.txt": [
-        "015a855ebce6d58d5d65f5021fe54e22ec022dbd",
+        "7c9503536f27655ece43717afbcd6d603fe1a0da",
         []
        ],
        "border-radius.html.ini": [
@@ -313278,7 +313334,7 @@
         []
        ],
        "break-expected.txt": [
-        "1a0fa0acec0e3a4bf536ab9cef3b111d31df2c6b",
+        "043fdeeeb10d9797414de13629fc7b48c12adf76",
         []
        ],
        "break.html.ini": [
@@ -313286,7 +313342,7 @@
         []
        ],
        "clip-path-expected.txt": [
-        "de80b40399280b99029ae20d9f043fed34a1795d",
+        "a1ea808c4b5d181327158b55dea7884d724e1bda",
         []
        ],
        "clip-path.html.ini": [
@@ -313294,7 +313350,7 @@
         []
        ],
        "container-name-expected.txt": [
-        "dbc1cf66b6db3fdfc335fb2ee171108ff16de26a",
+        "55177c51700a9cb880c88c057058774d1e05f0fc",
         []
        ],
        "container-name.html.ini": [
@@ -313302,7 +313358,7 @@
         []
        ],
        "dominant-baseline-expected.txt": [
-        "b61e9c7db19b6713b4c00758870af00f8fa615cb",
+        "ad29e04ffeb7affc08ef0969d14a68564627f6bf",
         []
        ],
        "dominant-baseline.html.ini": [
@@ -313310,7 +313366,7 @@
         []
        ],
        "fill-color-expected.txt": [
-        "8029ebc0d160e7300952a7f242126cca9ad007e7",
+        "9e54337273a9f04323e2cdcb15129617a6db02a7",
         []
        ],
        "fill-color.html.ini": [
@@ -313326,7 +313382,7 @@
         []
        ],
        "font-language-override-expected.txt": [
-        "ffb963d6f410b18ad1247f6a96b5293447b5a19c",
+        "07387f64ec785e50dbeea77bcc3f38bb18227671",
         []
        ],
        "font-language-override.html.ini": [
@@ -313334,7 +313390,7 @@
         []
        ],
        "font-palette-expected.txt": [
-        "574dd465a8735a4efd05485d100137ff23c304dd",
+        "c3a442fbfc54a7591ef2dc4dc198297082983825",
         []
        ],
        "font-palette.html.ini": [
@@ -313342,7 +313398,7 @@
         []
        ],
        "font-presentation-expected.txt": [
-        "00c50b1cb679f78b2ece3a6d80d3ebab2ef91313",
+        "1ca793c020a3584d3583a0a1b3899f92c53addaa",
         []
        ],
        "font-presentation.html.ini": [
@@ -313350,7 +313406,7 @@
         []
        ],
        "font-size-expected.txt": [
-        "f616c590d77a4c371ac86a1eb6a81a351616a707",
+        "d5c4f10399ddaa7086761f1979fa03602756dd82",
         []
        ],
        "font-size.html.ini": [
@@ -313358,7 +313414,7 @@
         []
        ],
        "font-stretch-expected.txt": [
-        "6a4426acdec5be58c3ad95bfcd9f7d39359136cc",
+        "4ab9d8b3a82943b9c264e6a024bd765dc4220064",
         []
        ],
        "font-stretch.html.ini": [
@@ -313366,7 +313422,7 @@
         []
        ],
        "font-style-expected.txt": [
-        "4b09d7ceed421652cc7a0746f5bd6939c6bbc3d3",
+        "865fce542aecfedea807465fb153b91b0c449228",
         []
        ],
        "font-style.html.ini": [
@@ -313374,7 +313430,7 @@
         []
        ],
        "font-variant-alternates-expected.txt": [
-        "9f053193d004c6566bed2423a762c3f5932b483a",
+        "d68d44af74c7b921682c551600014a65303aed99",
         []
        ],
        "font-variant-alternates.html.ini": [
@@ -313382,7 +313438,7 @@
         []
        ],
        "font-variant-emoji-expected.txt": [
-        "9c7189eaf3d3b13d79577f2f5ad0c6198a2afecc",
+        "eb685a48262cda657f8a5e2a9fbb385116cd0aca",
         []
        ],
        "font-variant-emoji.html.ini": [
@@ -313390,7 +313446,7 @@
         []
        ],
        "font-weight-expected.txt": [
-        "87f94502c0baf64c4f5f8677c9ea581b5ff0cff3",
+        "1e36de6b3117fe97dd5694d978e5c71bbfe3e653",
         []
        ],
        "font-weight.html.ini": [
@@ -313406,7 +313462,7 @@
         []
        ],
        "image-rendering-expected.txt": [
-        "00e659a204d28ece90629c8b9ccdb89957d60f04",
+        "f4868950ecfff310b0c4f5840e63c2e095805ff9",
         []
        ],
        "image-rendering.html.ini": [
@@ -313414,7 +313470,7 @@
         []
        ],
        "letter-spacing-expected.txt": [
-        "6c333c8729651864d39733b039a6d36796632e77",
+        "15cc7d7ffa8c740e162f1d1e630472d64b0dc132",
         []
        ],
        "letter-spacing.html.ini": [
@@ -313422,7 +313478,7 @@
         []
        ],
        "line-height-expected.txt": [
-        "0a3178952f6073fe4b859aa223a43e4e94d2a13a",
+        "3dc0cdfe6daf53b7c4f0feb5b6ec3da2d5e7a340",
         []
        ],
        "line-height.html.ini": [
@@ -313430,7 +313486,7 @@
         []
        ],
        "list-style-type-expected.txt": [
-        "59617c5d72914839cb9b0d5200a38219f64167bc",
+        "03465d6414be3db40a701c28e68282ab7f7e4bb6",
         []
        ],
        "list-style-type.html.ini": [
@@ -313438,7 +313494,7 @@
         []
        ],
        "logical-expected.txt": [
-        "69d7dd27831a7ee7ff8a220e158463377d55699c",
+        "f9a30fc3790d2beeb254cbde182da68afd83f50c",
         []
        ],
        "logical.html.ini": [
@@ -313446,7 +313502,7 @@
         []
        ],
        "margin-expected.txt": [
-        "be788697a0fc9f09152ea59fad2a63be5f03be44",
+        "2d19bdaad0b50fec5a95526ecc1d9f86423caac2",
         []
        ],
        "margin.html.ini": [
@@ -313454,15 +313510,27 @@
         []
        ],
        "mask-image-expected.txt": [
-        "ce642b4d1cc36cb426eb6291488b4147da401a94",
+        "fc9e038f38118eb4a54ecdc08e62635732fb618f",
         []
        ],
        "mask-image.html.ini": [
         "f8a283eb2de139522cefaeddabc2bfa48bc6e118",
         []
        ],
+       "object-position-expected.txt": [
+        "63f0d72bb0e18c44ea95543770f14197d1823abe",
+        []
+       ],
+       "offset-anchor-expected.txt": [
+        "9d299239befd9068d689a1f11ea7105a6256c9f0",
+        []
+       ],
+       "offset-position-expected.txt": [
+        "3a89566ec622b59df7a7ae40cde8ece5e4a3f65c",
+        []
+       ],
        "offset-rotate-expected.txt": [
-        "d941ef06ba1a56a81c68499f5f339dbbbdb82cf7",
+        "1252eba6f77a2dcb5adf6c30b1b7a7938b880128",
         []
        ],
        "offset-rotate.html.ini": [
@@ -313470,7 +313538,7 @@
         []
        ],
        "outline-style-expected.txt": [
-        "fb9ee73ef5d9006a3376173647ce41c178856b35",
+        "03c29c10ad6b362893c471c43b3859fc3262903c",
         []
        ],
        "outline-style.html.ini": [
@@ -313478,7 +313546,7 @@
         []
        ],
        "overflow-wrap-expected.txt": [
-        "f49bd673eca458403ff44c667f900bda8db2642a",
+        "d60ce8637e6557ab5907e17b76e5f6e7da0a3433",
         []
        ],
        "overflow-wrap.html.ini": [
@@ -313486,7 +313554,7 @@
         []
        ],
        "page-expected.txt": [
-        "a885a2149617e7c037feefcc5fa780f4e413a00e",
+        "1394a995a3233f5f480026260803356341076e6e",
         []
        ],
        "page.html.ini": [
@@ -313494,7 +313562,7 @@
         []
        ],
        "paint-order-expected.txt": [
-        "9e96f0efb99ee2b5e28e2ae3484ea87c84d2b7bf",
+        "495cb6eca35b6cbd7075d971a4c846bfc6785f43",
         []
        ],
        "paint-order.html.ini": [
@@ -313502,7 +313570,7 @@
         []
        ],
        "perspective-origin-expected.txt": [
-        "eabef3c49d4cdb31ca589fa67d358d8bdf5a1a7d",
+        "544361493c5ac05a9c54cf68024edfb2ee251aec",
         []
        ],
        "perspective-origin.html.ini": [
@@ -313511,12 +313579,12 @@
        ],
        "resources": {
         "testsuite.js": [
-         "0ec25662c2392d4d80b1c67c19eacc3dc138bae0",
+         "1f4195353d1d5dc0e2fe3c75ac7701032930d095",
          []
         ]
        },
        "scroll-snap-align-expected.txt": [
-        "b63254e6ef994b3d1ffe567b3fdd4e07646de844",
+        "34bbe3f5a5ef9f01e38aa912d5b2d2ea453f6085",
         []
        ],
        "scroll-snap-align.html.ini": [
@@ -313524,7 +313592,7 @@
         []
        ],
        "scroll-snap-type-expected.txt": [
-        "fff447e08c01b59aa673c7e268dce2a51c17f99c",
+        "44302c7c83f62f538e2fd16ef0b212449d76dd25",
         []
        ],
        "scroll-snap-type.html.ini": [
@@ -313532,7 +313600,7 @@
         []
        ],
        "shape-outside-expected.txt": [
-        "72618e302d16970fb511275394e163a066372050",
+        "47ad5375a71c6d628ec90c1dac2dd4726208fca7",
         []
        ],
        "shape-outside.html.ini": [
@@ -313540,7 +313608,7 @@
         []
        ],
        "speak-expected.txt": [
-        "739f06d5874db0da8ddd467489d1db7ff4c213a7",
+        "11e61feceab036a666e0cfe496660e57f27ee9ec",
         []
        ],
        "speak.html.ini": [
@@ -313552,7 +313620,7 @@
         []
        ],
        "stroke-linejoin-expected.txt": [
-        "b5d99d9092b050440fff3c829c654ec651fb616a",
+        "9933a6f8f701691578cbe217419d58cb1586f614",
         []
        ],
        "stroke-linejoin.html.ini": [
@@ -313564,7 +313632,7 @@
         []
        ],
        "text-combine-upright-expected.txt": [
-        "29f05e783c61cb39e9cd65e4c3fc7cd043bc9527",
+        "2768a30eaef11f353d86b125e76d1e1e8d2c2570",
         []
        ],
        "text-combine-upright.html.ini": [
@@ -313572,7 +313640,7 @@
         []
        ],
        "text-decoration-line-expected.txt": [
-        "094ea523e862fb775835b7797e5934c43171eb88",
+        "345f6d5c62345b15302cce978819cb2b7ee7a8bd",
         []
        ],
        "text-decoration-line.html.ini": [
@@ -313580,7 +313648,7 @@
         []
        ],
        "text-decoration-skip-expected.txt": [
-        "f2fa17c018cf834a1009b06b84fdedce6f2242cc",
+        "2a64dcc47d5370b15db44b18fe3d7da098e14275",
         []
        ],
        "text-decoration-skip.html.ini": [
@@ -313600,7 +313668,7 @@
         []
        ],
        "text-overflow-expected.txt": [
-        "8e062a46ee65a6f90153d3599b8abb53e3a60032",
+        "71ce9ef61f952f2c2d3978687f6e66951d06ccef",
         []
        ],
        "text-overflow.html.ini": [
@@ -313608,7 +313676,7 @@
         []
        ],
        "text-size-adjust-expected.txt": [
-        "a871e157be61e13c4ef22a4c4235de8883097ddf",
+        "a8d1f57bd7d14d15338fd648d4d0d6f5afc40367",
         []
        ],
        "text-size-adjust.html.ini": [
@@ -313616,7 +313684,7 @@
         []
        ],
        "text-transform-expected.txt": [
-        "63ddb1d1b5ef494d69ecb4d31c48d6544c91bc44",
+        "937ef198079865e89a6c703a82fba891e4c0a9f7",
         []
        ],
        "text-transform.html.ini": [
@@ -313624,7 +313692,7 @@
         []
        ],
        "transform-box-expected.txt": [
-        "8348d7b8d52f1bb8262f0f4cfac6b384e96bc142",
+        "a52e46b1a20c7aaac066b077d0a169e7fd8f5262",
         []
        ],
        "transform-box.html.ini": [
@@ -313632,7 +313700,7 @@
         []
        ],
        "transform-style-expected.txt": [
-        "f5d45af3863479d746732b69c1608b85893116a8",
+        "de2e5e1ce4eac00d64fdf218a2b0e645256d0731",
         []
        ],
        "transform-style.html.ini": [
@@ -313648,7 +313716,7 @@
         []
        ],
        "user-select-expected.txt": [
-        "c0de658bf855f21b9e3a3ae8f200a80f2883df45",
+        "5f63479e6a55086719f8b1e3e1d1ed9d8d8a3ed0",
         []
        ],
        "user-select.html.ini": [
@@ -313656,7 +313724,7 @@
         []
        ],
        "word-spacing-expected.txt": [
-        "4a7160f19faea8d624fd680d938c6c2d5bf12ba5",
+        "9be80a7b0bba808996a05c9d68ed5fb20743883d",
         []
        ],
        "word-spacing.html.ini": [
@@ -313664,7 +313732,7 @@
         []
        ],
        "word-wrap-expected.txt": [
-        "6daf30a530d779b8d8250601b51863b1097551aa",
+        "a19c49bbcee9bfd44e5f8280ba445e81afe6891e",
         []
        ],
        "word-wrap.html.ini": [
@@ -313672,7 +313740,7 @@
         []
        ],
        "writing-mode-expected.txt": [
-        "680c674152b1e8aeab7d314824ec64feabdf66a2",
+        "8c5213aa1ac1da2b3437ed75a91e7cfb61289cbc",
         []
        ],
        "writing-mode.html.ini": [
@@ -348179,6 +348247,22 @@
        ],
        "range-setattribute-value-ref.html": [
         "71a44cdf2fad8c0657821c7c23af77296bdfea2f",
+        []
+       ],
+       "range-tick-marks-01-notref.html": [
+        "58192bec8e6af537ac89d8be6b032956b34b3099",
+        []
+       ],
+       "range-tick-marks-02-ref.html": [
+        "3d5b323470fe4bb73668d90c88a29187f74e6f5f",
+        []
+       ],
+       "range-tick-marks-03-notref.html": [
+        "5c15233a316e076007647cfae3c4fb3e352ccd62",
+        []
+       ],
+       "range-tick-marks-04-ref.html": [
+        "a6afaff7eefb12eb8b5c401aeb9ca7ebc1501876",
         []
        ],
        "resources": {
@@ -441952,6 +442036,13 @@
        {}
       ]
      ],
+     "historical.html": [
+      "ceb4dfe56772e26c10b88a01b37470751014bdc7",
+      [
+       null,
+       {}
+      ]
+     ],
      "idlharness.html": [
       "aaff3a13922632082bfff307b605696233895af4",
       [
@@ -441992,13 +442083,6 @@
       ],
       "normalize-tokens.tentative.html": [
        "c83e093e62280b0ea4276c2db38273b78e1e5a70",
-       [
-        null,
-        {}
-       ]
-      ],
-      "positionvalue-normalization.tentative.html": [
-       "8631c054da99cd834a92b40bb68b2254d14cf421",
        [
         null,
         {}
@@ -442059,13 +442143,6 @@
       ],
       "cssMathValue.tentative.html": [
        "7ee4e8137e9a235b5f08df6a869a58ed56ddb118",
-       [
-        null,
-        {}
-       ]
-      ],
-      "cssPositionValue.html": [
-       "c93b2f1a9b40c3936cafc8b7209858360e316a54",
        [
         null,
         {}
@@ -442159,20 +442236,6 @@
       ],
       "cssPerspective.tentative.html": [
        "e2d01e32e8ea5e3dcbb29dd8ee5e64e61dc001eb",
-       [
-        null,
-        {}
-       ]
-      ],
-      "cssPositionValue-invalid.html": [
-       "9ff9f014e19f9780f09191f3b879126a91c4efff",
-       [
-        null,
-        {}
-       ]
-      ],
-      "cssPositionValue.html": [
-       "a780a86e0b2cbed974d7358524e31229199f18f8",
        [
         null,
         {}
@@ -453709,7 +453772,7 @@
        ]
       ],
       "scrollend-event-fired-to-element-with-overscroll-behavior.html": [
-       "fd9418eb7037bfe2c55df804c0ee8ac961661d8a",
+       "acad168e56c995dea4e70f4124b4ec97f8b90c15",
        [
         null,
         {
@@ -612763,6 +612826,15 @@
    "webrtc-encoded-transform": {
     "RTCEncodedAudioFrame-serviceworker-failure.https.html": [
      "d6d8578dbdf5385f4f1ba85f68f610ce3727cd38",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "RTCEncodedVideoFrame-clone.https.html": [
+     "29330729dcc778e0b0f816a6999aee25cdc6a424",
      [
       null,
       {

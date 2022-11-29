@@ -10,7 +10,6 @@ PASS Setting 'transform-style' to a time throws TypeError
 PASS Setting 'transform-style' to an angle throws TypeError
 PASS Setting 'transform-style' to a flexible length throws TypeError
 PASS Setting 'transform-style' to a number throws TypeError
-PASS Setting 'transform-style' to a position throws TypeError
 PASS Setting 'transform-style' to a URL throws TypeError
 PASS Setting 'transform-style' to a transform throws TypeError
 Harness: the test ran to completion.

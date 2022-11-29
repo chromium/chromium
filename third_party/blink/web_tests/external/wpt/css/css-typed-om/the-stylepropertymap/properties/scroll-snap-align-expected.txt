@@ -11,7 +11,6 @@ PASS Setting 'scroll-snap-align' to a time throws TypeError
 PASS Setting 'scroll-snap-align' to an angle throws TypeError
 PASS Setting 'scroll-snap-align' to a flexible length throws TypeError
 PASS Setting 'scroll-snap-align' to a number throws TypeError
-PASS Setting 'scroll-snap-align' to a position throws TypeError
 PASS Setting 'scroll-snap-align' to a URL throws TypeError
 PASS Setting 'scroll-snap-align' to a transform throws TypeError
 PASS 'scroll-snap-align' does not supported 'none center'

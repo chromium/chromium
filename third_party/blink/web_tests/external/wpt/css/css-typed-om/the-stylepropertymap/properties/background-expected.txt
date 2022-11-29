@@ -7,7 +7,6 @@ PASS Setting 'background' to a time throws TypeError
 PASS Setting 'background' to an angle throws TypeError
 PASS Setting 'background' to a flexible length throws TypeError
 PASS Setting 'background' to a number throws TypeError
-PASS Setting 'background' to a position throws TypeError
 PASS Setting 'background' to a URL throws TypeError
 PASS Setting 'background' to a transform throws TypeError
 PASS 'background' does not supported 'green'

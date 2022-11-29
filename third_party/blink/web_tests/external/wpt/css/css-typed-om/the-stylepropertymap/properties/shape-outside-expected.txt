@@ -13,7 +13,6 @@ PASS Setting 'shape-outside' to a time throws TypeError
 PASS Setting 'shape-outside' to an angle throws TypeError
 PASS Setting 'shape-outside' to a flexible length throws TypeError
 PASS Setting 'shape-outside' to a number throws TypeError
-PASS Setting 'shape-outside' to a position throws TypeError
 PASS Setting 'shape-outside' to a URL throws TypeError
 PASS Setting 'shape-outside' to a transform throws TypeError
 PASS 'shape-outside' does not supported 'inset(22% 12% 15px 35px)'

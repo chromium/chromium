@@ -9,7 +9,6 @@ PASS Setting 'accent-color' to a time throws TypeError
 PASS Setting 'accent-color' to an angle throws TypeError
 PASS Setting 'accent-color' to a flexible length throws TypeError
 PASS Setting 'accent-color' to a number throws TypeError
-PASS Setting 'accent-color' to a position throws TypeError
 PASS Setting 'accent-color' to a URL throws TypeError
 PASS Setting 'accent-color' to a transform throws TypeError
 PASS 'accent-color' does not supported 'red'

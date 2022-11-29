@@ -18,7 +18,6 @@ PASS Setting 'alignment-baseline' to a time throws TypeError
 PASS Setting 'alignment-baseline' to an angle throws TypeError
 PASS Setting 'alignment-baseline' to a flexible length throws TypeError
 PASS Setting 'alignment-baseline' to a number throws TypeError
-PASS Setting 'alignment-baseline' to a position throws TypeError
 PASS Setting 'alignment-baseline' to a URL throws TypeError
 PASS Setting 'alignment-baseline' to a transform throws TypeError
 Harness: the test ran to completion.

@@ -12,7 +12,6 @@ PASS Setting 'user-select' to a time throws TypeError
 PASS Setting 'user-select' to an angle throws TypeError
 PASS Setting 'user-select' to a flexible length throws TypeError
 PASS Setting 'user-select' to a number throws TypeError
-PASS Setting 'user-select' to a position throws TypeError
 PASS Setting 'user-select' to a URL throws TypeError
 PASS Setting 'user-select' to a transform throws TypeError
 Harness: the test ran to completion.

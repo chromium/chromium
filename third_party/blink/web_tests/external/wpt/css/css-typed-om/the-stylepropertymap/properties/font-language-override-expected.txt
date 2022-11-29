@@ -8,7 +8,6 @@ PASS Setting 'font-language-override' to a time throws TypeError
 PASS Setting 'font-language-override' to an angle throws TypeError
 PASS Setting 'font-language-override' to a flexible length throws TypeError
 PASS Setting 'font-language-override' to a number throws TypeError
-PASS Setting 'font-language-override' to a position throws TypeError
 PASS Setting 'font-language-override' to a URL throws TypeError
 PASS Setting 'font-language-override' to a transform throws TypeError
 FAIL 'font-language-override' does not supported '"SRB"' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-language-override

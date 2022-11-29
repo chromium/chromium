@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: '<position>' is not a valid CSS component
+PASS Can set 'object-position' to CSS-wide keywords
+PASS Can set 'object-position' to var() references
+Harness: the test ran to completion.
+

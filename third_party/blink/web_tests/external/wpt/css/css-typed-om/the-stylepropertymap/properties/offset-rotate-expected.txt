@@ -9,7 +9,6 @@ PASS Setting 'offset-rotate' to a percent throws TypeError
 PASS Setting 'offset-rotate' to a time throws TypeError
 PASS Setting 'offset-rotate' to a flexible length throws TypeError
 PASS Setting 'offset-rotate' to a number throws TypeError
-PASS Setting 'offset-rotate' to a position throws TypeError
 PASS Setting 'offset-rotate' to a URL throws TypeError
 PASS Setting 'offset-rotate' to a transform throws TypeError
 PASS 'offset-rotate' does not supported 'auto 90deg'

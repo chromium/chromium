@@ -10,7 +10,6 @@ PASS Setting 'font-presentation' to a time throws TypeError
 PASS Setting 'font-presentation' to an angle throws TypeError
 PASS Setting 'font-presentation' to a flexible length throws TypeError
 PASS Setting 'font-presentation' to a number throws TypeError
-PASS Setting 'font-presentation' to a position throws TypeError
 PASS Setting 'font-presentation' to a URL throws TypeError
 PASS Setting 'font-presentation' to a transform throws TypeError
 Harness: the test ran to completion.

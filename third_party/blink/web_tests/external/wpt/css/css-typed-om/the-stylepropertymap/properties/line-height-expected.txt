@@ -8,7 +8,6 @@ FAIL Can set 'line-height' to a percent assert_class_string: relative lengths mu
 PASS Setting 'line-height' to a time throws TypeError
 PASS Setting 'line-height' to an angle throws TypeError
 PASS Setting 'line-height' to a flexible length throws TypeError
-PASS Setting 'line-height' to a position throws TypeError
 PASS Setting 'line-height' to a URL throws TypeError
 PASS Setting 'line-height' to a transform throws TypeError
 Harness: the test ran to completion.

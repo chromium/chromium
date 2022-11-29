@@ -16,7 +16,6 @@ PASS Setting 'font-stretch' to a time throws TypeError
 PASS Setting 'font-stretch' to an angle throws TypeError
 PASS Setting 'font-stretch' to a flexible length throws TypeError
 PASS Setting 'font-stretch' to a number throws TypeError
-PASS Setting 'font-stretch' to a position throws TypeError
 PASS Setting 'font-stretch' to a URL throws TypeError
 PASS Setting 'font-stretch' to a transform throws TypeError
 Harness: the test ran to completion.
