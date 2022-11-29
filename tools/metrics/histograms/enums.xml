@@ -41698,6 +41698,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4408" label="CSSAtRuleOrnaments"/>
   <int value="4409" label="CSSAtRuleAnnotation"/>
   <int value="4410" label="ServiceWorkerBypassFetchHandlerForMainResource"/>
+  <int value="4411" label="V8Document_HasPrivateStateToken_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

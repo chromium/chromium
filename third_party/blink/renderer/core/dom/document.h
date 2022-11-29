@@ -1206,11 +1206,16 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
   FragmentDirective& fragmentDirective() const;
 
-  // Sends a query via Mojo to ask whether the user has any trust tokens. This
-  // can reject on permissions errors (e.g. associating |issuer| with the
-  // top-level origin would exceed the top-level origin's limit on the number of
-  // associated issuers) or on other internal errors (e.g. the network service
-  // is unavailable).
+  // Sends a query via Mojo to ask whether the user has any private state
+  // tokens. This can reject on permissions errors (e.g. associating |issuer|
+  // with the top-level origin would exceed the top-level origin's limit on the
+  // number of associated issuers) or on other internal errors (e.g. the network
+  // service is unavailable).
+  ScriptPromise hasPrivateStateToken(ScriptState* script_state,
+                                     const String& issuer,
+                                     ExceptionState&);
+  // Being renamed to hasPrivateStateToken, will remove after all users have
+  // changed to new name.
   ScriptPromise hasTrustToken(ScriptState* script_state,
                               const String& issuer,
                               ExceptionState&);
@@ -2127,7 +2132,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void DisplayNoneChangedForFrame();
 
   // Handles a connection error to |trust_token_query_answerer_| by rejecting
-  // all pending promises created by |hasTrustToken| and |hasRedemptionRecord|.
+  // all pending promises created by |hasPrivateStateToken| and
+  // |hasRedemptionRecord|.
   void TrustTokenQueryAnswererConnectionError();
 
   void RunPostPrerenderingActivationSteps();
