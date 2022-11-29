@@ -181,28 +181,28 @@ bool IsPipe(const std::wstring& path) {
   return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
 }
 
-bool ResolveRegistryName(std::wstring name, std::wstring* resolved_name) {
+absl::optional<std::wstring> ResolveRegistryName(std::wstring name) {
   for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name.find(kKnownKey[i].name) == 0) {
       HKEY key;
       DWORD disposition;
       if (ERROR_SUCCESS != ::RegCreateKeyEx(kKnownKey[i].key, L"", 0, nullptr,
                                             0, MAXIMUM_ALLOWED, nullptr, &key,
-                                            &disposition))
-        return false;
+                                            &disposition)) {
+        return absl::nullopt;
+      }
 
-      bool result = GetPathFromHandle(key, resolved_name);
+      auto result = GetPathFromHandle(key);
       ::RegCloseKey(key);
 
       if (!result)
-        return false;
+        return absl::nullopt;
 
-      *resolved_name += name.substr(wcslen(kKnownKey[i].name));
-      return true;
+      result->append(name.substr(wcslen(kKnownKey[i].name)));
+      return result;
     }
   }
-
-  return false;
+  return absl::nullopt;
 }
 
 // |full_path| can have any of the following forms:
@@ -265,8 +265,8 @@ bool SameObject(HANDLE handle, const wchar_t* full_path) {
   if (IsPipe(full_path))
     return true;
 
-  std::wstring actual_path;
-  if (!GetPathFromHandle(handle, &actual_path))
+  auto actual_path = GetPathFromHandle(handle);
+  if (!actual_path)
     return false;
 
   std::wstring path(full_path);
@@ -277,8 +277,8 @@ bool SameObject(HANDLE handle, const wchar_t* full_path) {
   if (path.back() == kBackslash)
     path = path.substr(0, path.length() - 1);
 
-  // Perfect match (case-insesitive check).
-  if (EqualPath(actual_path, path))
+  // Perfect match (case-insensitive check).
+  if (EqualPath(actual_path.value(), path))
     return true;
 
   bool nt_path = IsNTPath(path, &path);
@@ -286,10 +286,10 @@ bool SameObject(HANDLE handle, const wchar_t* full_path) {
 
   if (!has_drive && nt_path) {
     std::wstring simple_actual_path;
-    if (!IsDevicePath(actual_path, &simple_actual_path))
+    if (!IsDevicePath(actual_path.value(), &simple_actual_path))
       return false;
 
-    // Perfect match (case-insesitive check).
+    // Perfect match (case-insensitive check).
     return (EqualPath(simple_actual_path, path));
   }
 
@@ -310,15 +310,15 @@ bool SameObject(HANDLE handle, const wchar_t* full_path) {
   vol_length = static_cast<DWORD>(wcslen(vol_name));
 
   // The two paths should be the same length.
-  if (vol_length + path.size() - 2 != actual_path.size())
+  if (vol_length + path.size() - 2 != actual_path->size())
     return false;
 
   // Check up to the drive letter.
-  if (!EqualPath(actual_path, vol_name, vol_length))
+  if (!EqualPath(actual_path.value(), vol_name, vol_length))
     return false;
 
   // Check the path after the drive letter.
-  if (!EqualPath(actual_path, vol_length, path, 2))
+  if (!EqualPath(actual_path.value(), vol_length, path, 2))
     return false;
 
   return true;
@@ -418,40 +418,39 @@ bool ConvertToLongPath(std::wstring* native_path,
   return false;
 }
 
-bool GetPathFromHandle(HANDLE handle, std::wstring* path) {
+absl::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
   using LengthType = decltype(OBJECT_NAME_INFORMATION::ObjectName.Length);
   std::vector<char> buffer(sizeof(OBJECT_NAME_INFORMATION) +
                            std::numeric_limits<LengthType>::max());
   if (!QueryObjectInformation(handle, ObjectNameInformation, buffer))
-    return false;
+    return absl::nullopt;
   OBJECT_NAME_INFORMATION* name =
       reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer.data());
-  path->assign(name->ObjectName.Buffer,
-               name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
-  return true;
+  return std::wstring(
+      name->ObjectName.Buffer,
+      name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
 }
 
-bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path) {
+absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
       nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
   if (!file.IsValid())
-    return false;
-  return GetPathFromHandle(file.Get(), nt_path);
+    return absl::nullopt;
+  return GetPathFromHandle(file.Get());
 }
 
-bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name) {
+absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
   // No typename is currently longer than 32 characters on Windows 11, so use an
   // upper bound of 128 characters.
   std::vector<char> buffer(sizeof(OBJECT_TYPE_INFORMATION) +
                            128 * sizeof(WCHAR));
   if (!QueryObjectInformation(handle, ObjectTypeInformation, buffer))
-    return false;
+    return absl::nullopt;
   OBJECT_TYPE_INFORMATION* name =
       reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer.data());
-  type_name->assign(name->Name.Buffer,
-                    name->Name.Length / sizeof(name->Name.Buffer[0]));
-  return true;
+  return std::wstring(name->Name.Buffer,
+                      name->Name.Length / sizeof(name->Name.Buffer[0]));
 }
 
 bool WriteProtectedChildMemory(HANDLE child_process,
@@ -566,9 +565,9 @@ absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
   size_t count = return_length / sizeof(uint32_t);
   for (size_t index = 0; index < count; ++index) {
     HANDLE handle = base::win::Uint32ToHandle(handle_values[index]);
-    std::wstring type_name;
-    if (GetTypeNameFromHandle(handle, &type_name))
-      handle_map[type_name].push_back(handle);
+    auto type_name = GetTypeNameFromHandle(handle);
+    if (type_name)
+      handle_map[type_name.value()].push_back(handle);
   }
   return handle_map;
 }

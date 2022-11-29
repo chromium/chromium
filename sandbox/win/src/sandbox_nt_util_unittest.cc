@@ -261,9 +261,9 @@ TEST(SandboxNtUtil, NtGetPathFromHandle) {
                              base::CompareCase::INSENSITIVE_ASCII));
 
   // Compare to GetNtPathFromWin32Path for extra check.
-  std::wstring nt_path;
-  EXPECT_TRUE(GetNtPathFromWin32Path(exe.value(), &nt_path));
-  EXPECT_STREQ(path.get(), nt_path.c_str());
+  auto nt_path = GetNtPathFromWin32Path(exe.value());
+  EXPECT_TRUE(nt_path);
+  EXPECT_STREQ(path.get(), nt_path->c_str());
 }
 
 TEST(SandboxNtUtil, CopyNameAndAttributes) {

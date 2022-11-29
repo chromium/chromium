@@ -161,10 +161,9 @@ bool HandleCloserAgent::CloseHandles() {
     for (HANDLE handle : result->second) {
       // Empty set means close all handles of this type; otherwise check name.
       if (!names.empty()) {
-        std::wstring handle_name;
+        auto handle_name = GetPathFromHandle(handle);
         // Move on to the next handle if this name doesn't match.
-        if (!GetPathFromHandle(handle, &handle_name) ||
-            !names.count(handle_name)) {
+        if (!handle_name || !names.count(handle_name.value())) {
           continue;
         }
       }

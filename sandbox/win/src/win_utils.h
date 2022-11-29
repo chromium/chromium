@@ -70,21 +70,21 @@ DWORD IsReparsePoint(const std::wstring& full_path);
 // Returns true if the handle corresponds to the object pointed by this path.
 bool SameObject(HANDLE handle, const wchar_t* full_path);
 
-// Resolves a handle to an nt path. Returns true if the handle can be resolved.
-bool GetPathFromHandle(HANDLE handle, std::wstring* path);
+// Resolves a handle to an nt path or nullopt if the path cannot be resolved.
+absl::optional<std::wstring> GetPathFromHandle(HANDLE handle);
 
 // Resolves a win32 path to an nt path using GetPathFromHandle. The path must
-// exist. Returns true if the translation was successful.
-bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path);
+// exist. Returns the path if the translation was successful.
+absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
 
-// Resolves a handle to its type name. Returns true if successful.
-bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name);
+// Resolves a handle to its type name. Returns the typename if successful.
+absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 
 // Resolves a user-readable registry path to a system-readable registry path.
 // For example, HKEY_LOCAL_MACHINE\\Software\\microsoft is translated to
-// \\registry\\machine\\software\\microsoft. Returns false if the path
+// \\registry\\machine\\software\\microsoft. Returns nullopt if the path
 // cannot be resolved.
-bool ResolveRegistryName(std::wstring name, std::wstring* resolved_name);
+absl::optional<std::wstring> ResolveRegistryName(std::wstring name);
 
 // Writes |length| bytes from the provided |buffer| into the address space of
 // |child_process|, at the specified |address|, preserving the original write

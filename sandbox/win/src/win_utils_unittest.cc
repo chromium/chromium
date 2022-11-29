@@ -69,16 +69,17 @@ std::wstring GetRandomName() {
 
 void CompareHandlePath(const base::win::ScopedHandle& handle,
                        const std::wstring& expected_path) {
-  std::wstring path;
-  ASSERT_TRUE(GetPathFromHandle(handle.Get(), &path));
-  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(path, expected_path));
+  auto path = GetPathFromHandle(handle.Get());
+  ASSERT_TRUE(path.has_value());
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(path.value(), expected_path));
 }
 
 void CompareHandleType(const base::win::ScopedHandle& handle,
                        const std::wstring& expected_type) {
-  std::wstring type_name;
-  ASSERT_TRUE(GetTypeNameFromHandle(handle.Get(), &type_name));
-  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(type_name, expected_type));
+  auto type_name = GetTypeNameFromHandle(handle.Get());
+  ASSERT_TRUE(type_name);
+  EXPECT_TRUE(
+      base::EqualsCaseInsensitiveASCII(type_name.value(), expected_type));
 }
 
 void FindHandle(const ProcessHandleMap& handle_map,
@@ -276,9 +277,9 @@ TEST(WinUtils, ConvertToLongPath) {
   // it was disabled in the filesystem setup.
   EXPECT_NE(temp_path.value().length(), ::wcslen(short_path));
 
-  std::wstring short_form_native_path;
-  EXPECT_TRUE(sandbox::GetNtPathFromWin32Path(std::wstring(short_path),
-                                              &short_form_native_path));
+  auto short_form_native_path =
+      sandbox::GetNtPathFromWin32Path(std::wstring(short_path));
+  EXPECT_TRUE(short_form_native_path);
   // NT short path: "\Device\HarddiskVolume4\PROGRA~3\%TEMP%\TEST_C~1.EXE"
 
   // Test 1: convert win32 short path to long:
@@ -289,24 +290,21 @@ TEST(WinUtils, ConvertToLongPath) {
 
   // Test 2: convert native short path to long:
   std::wstring drive_letter = temp_path.value().substr(0, 3);
-  std::wstring test2(short_form_native_path);
+  std::wstring test2(short_form_native_path.value());
   EXPECT_TRUE(sandbox::ConvertToLongPath(&test2, &drive_letter));
 
-  size_t index = short_form_native_path.find_first_of(
+  size_t index = short_form_native_path->find_first_of(
       L'\\', ::wcslen(L"\\Device\\HarddiskVolume"));
   EXPECT_TRUE(index != std::wstring::npos);
-  std::wstring expected_result = short_form_native_path.substr(0, index + 1);
+  std::wstring expected_result = short_form_native_path->substr(0, index + 1);
   expected_result.append(temp_path.value().substr(3));
   EXPECT_TRUE(::wcsicmp(expected_result.c_str(), test2.c_str()) == 0);
   // Expected result: "\Device\HarddiskVolumeX\ProgramData\%TEMP%\test_calc.exe"
 }
 
 TEST(WinUtils, GetPathAndTypeFromHandle) {
-  std::wstring invalid_handle;
-  EXPECT_FALSE(GetPathFromHandle(nullptr, &invalid_handle));
-  EXPECT_TRUE(invalid_handle.empty());
-  EXPECT_FALSE(GetTypeNameFromHandle(nullptr, &invalid_handle));
-  EXPECT_TRUE(invalid_handle.empty());
+  EXPECT_FALSE(GetPathFromHandle(nullptr));
+  EXPECT_FALSE(GetTypeNameFromHandle(nullptr));
   std::wstring random_name = GetRandomName();
   ASSERT_FALSE(random_name.empty());
   std::wstring event_name = L"Global\\" + random_name;

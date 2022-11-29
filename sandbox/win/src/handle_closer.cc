@@ -51,10 +51,14 @@ ResultCode HandleCloser::AddHandle(const wchar_t* handle_type,
 
   std::wstring resolved_name;
   if (handle_name) {
-    resolved_name = handle_name;
-    if (handle_type == std::wstring(L"Key"))
-      if (!ResolveRegistryName(resolved_name, &resolved_name))
+    if (handle_type == std::wstring(L"Key")) {
+      auto resolved_reg_path = ResolveRegistryName(handle_name);
+      if (!resolved_reg_path)
         return SBOX_ERROR_BAD_PARAMS;
+      resolved_name = resolved_reg_path.value();
+    } else {
+      resolved_name = handle_name;
+    }
   }
 
   HandleMap::iterator names = handles_to_close_.find(handle_type);

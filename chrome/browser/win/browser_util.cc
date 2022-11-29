@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/win/scoped_localalloc.h"
 #include "sandbox/win/src/win_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_util {
 
@@ -40,15 +41,16 @@ bool IsBrowserAlreadyRunning() {
     // probably broken already if this API is failing.
     return false;
   }
-  std::wstring nt_dir_name;
-  if (!sandbox::GetNtPathFromWin32Path(exe_dir_path.value(), &nt_dir_name)) {
+  absl::optional<std::wstring> nt_dir_name =
+      sandbox::GetNtPathFromWin32Path(exe_dir_path.value());
+  if (!nt_dir_name) {
     // See above for why false is returned here.
     return false;
   }
-  std::replace(nt_dir_name.begin(), nt_dir_name.end(), '\\', '!');
-  std::transform(nt_dir_name.begin(), nt_dir_name.end(), nt_dir_name.begin(),
+  std::replace(nt_dir_name->begin(), nt_dir_name->end(), '\\', '!');
+  std::transform(nt_dir_name->begin(), nt_dir_name->end(), nt_dir_name->begin(),
                  tolower);
-  nt_dir_name = L"Global\\" + nt_dir_name;
+  nt_dir_name = L"Global\\" + nt_dir_name.value();
   if (handle != NULL)
     ::CloseHandle(handle);
 
@@ -76,7 +78,7 @@ bool IsBrowserAlreadyRunning() {
   }
   base::win::ScopedLocalAlloc scoped_sd(attributes.lpSecurityDescriptor);
 
-  handle = ::CreateEventW(&attributes, TRUE, TRUE, nt_dir_name.c_str());
+  handle = ::CreateEventW(&attributes, TRUE, TRUE, nt_dir_name->c_str());
   int error = ::GetLastError();
   return (error == ERROR_ALREADY_EXISTS || error == ERROR_ACCESS_DENIED);
 }
