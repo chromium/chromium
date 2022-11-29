@@ -323,20 +323,9 @@ bool SavedDeskItemView::IsNameBeingModified() const {
   return name_view_->HasFocus();
 }
 
-void SavedDeskItemView::MaybeRemoveNameNumber(
-    const std::u16string& saved_desk_name) {
-  // When there is a matched `saved_desk_name` and existing Template name (ie.
-  // "Desk 1"), creating a new template from "Desk 1" will get auto generated
-  // template name from the frontend as "Desk 1 (1)". To prevent template
-  // duplication, we show the template view name to be "Desk 1" by removing the
-  // appended name number. Saving the template under the new name will trigger
-  // the template replace dialog.
-  if (saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
-          saved_desk_name, desk_template().type(), uuid())) {
-    // Replace the name number.
-    name_view_->SetTemporaryName(saved_desk_name);
-    name_view_->SetViewName(saved_desk_name);
-  }
+void SavedDeskItemView::SetDisplayName(const std::u16string& saved_desk_name) {
+  name_view_->SetTemporaryName(saved_desk_name);
+  name_view_->SetViewName(saved_desk_name);
 }
 
 void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
@@ -361,10 +350,11 @@ void SavedDeskItemView::ReplaceTemplate(const base::GUID& uuid) {
   // get template name collisions. Passing `nullopt` as `record_for_type` since
   // we only record the delete operation when the user specifically deletes an
   // entry.
-  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
-      uuid, /*record_for_type=*/absl::nullopt);
-  UpdateTemplateName();
-  RecordReplaceSavedDeskHistogram(desk_template_->type());
+  if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
+    presenter->DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    UpdateTemplateName();
+    RecordReplaceSavedDeskHistogram(desk_template_->type());
+  }
 }
 
 void SavedDeskItemView::RevertTemplateName() {
@@ -540,9 +530,12 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
   // still being activated. In this case, we don't want to show the dialog and
   // activate its associated widget until after the desks bar widget is finished
   // activating. See https://crbug.com/1301759.
-  auto* template_to_replace =
-      saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
-          name_view_->GetText(), desk_template().type(), uuid());
+  auto* presenter = saved_desk_util::GetSavedDeskPresenter();
+  if (!presenter)
+    return;
+
+  auto* template_to_replace = presenter->FindOtherEntryWithName(
+      name_view_->GetText(), desk_template().type(), uuid());
   if (template_to_replace) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
@@ -580,9 +573,11 @@ void SavedDeskItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
-  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
-      /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
-      desk_template_->Clone());
+  if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
+    presenter->SaveOrUpdateDeskTemplate(
+        /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
+        desk_template_->Clone());
+  }
 }
 
 void SavedDeskItemView::OnHoverAnimationEnded() {
@@ -714,8 +709,8 @@ views::View* SavedDeskItemView::TargetForRect(views::View* root,
 }
 
 void SavedDeskItemView::OnDeleteTemplate() {
-  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(desk_template_->uuid(),
-                                                        desk_template_->type());
+  if (auto* presenter = saved_desk_util::GetSavedDeskPresenter())
+    presenter->DeleteEntry(desk_template_->uuid(), desk_template_->type());
 }
 
 void SavedDeskItemView::OnDeleteButtonPressed() {
@@ -741,8 +736,10 @@ void SavedDeskItemView::MaybeLaunchTemplate() {
     return;
   }
 
-  saved_desk_util::GetSavedDeskPresenter()->LaunchSavedDesk(
-      desk_template_->Clone(), GetWidget()->GetNativeWindow()->GetRootWindow());
+  if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
+    presenter->LaunchSavedDesk(desk_template_->Clone(),
+                               GetWidget()->GetNativeWindow()->GetRootWindow());
+  }
 }
 
 void SavedDeskItemView::OnTemplateNameChanged(const std::u16string& new_name) {

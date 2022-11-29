@@ -29,7 +29,7 @@ ASH_EXPORT bool IsSavedDesksEnabled();
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();
 
-// Will DCHECK if overview mode is not active.
+// Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
 
 }  // namespace saved_desk_util

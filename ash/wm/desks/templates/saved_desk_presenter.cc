@@ -502,7 +502,14 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
       if (!item_view)
         continue;
 
-      item_view->MaybeRemoveNameNumber(saved_desk_name);
+      if (FindOtherEntryWithName(saved_desk_name,
+                                 item_view->desk_template().type(),
+                                 item_view->uuid())) {
+        // When we are here, the item view will contain "{saved_desk_name} (n)",
+        // so what we are doing here is just setting the contained name view to
+        // exactly "{saved_desk_name}" before activating the entry.
+        item_view->SetDisplayName(saved_desk_name);
+      }
       if (library_view->GetWidget()->GetNativeWindow()->GetRootWindow() ==
           root_window) {
         item_view->name_view()->RequestFocus();
@@ -644,7 +651,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                                  root_window);
       if (SavedDeskItemView* item_view =
               library_view->GetItemForUUID(desk_template->uuid())) {
-        item_view->MaybeRemoveNameNumber(saved_desk_name);
+        if (FindOtherEntryWithName(saved_desk_name, desk_template->type(),
+                                   desk_template->uuid())) {
+          item_view->SetDisplayName(saved_desk_name);
+        }
         item_view->name_view()->RequestFocus();
       }
     }
