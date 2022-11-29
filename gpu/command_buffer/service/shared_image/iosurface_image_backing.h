@@ -155,7 +155,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   OverlayIOSurfaceRepresentation(SharedImageManager* manager,
                                  SharedImageBacking* backing,
                                  MemoryTypeTracker* tracker,
-                                 scoped_refptr<gl::GLImage> gl_image);
+                                 gfx::ScopedIOSurface io_surface);
   ~OverlayIOSurfaceRepresentation() override;
 
  private:
@@ -164,7 +164,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   gfx::ScopedIOSurface GetIOSurface() const override;
   bool IsInUseByWindowServer() const override;
 
-  scoped_refptr<gl::GLImage> gl_image_;
+  gfx::ScopedIOSurface io_surface_;
 };
 
 class MemoryIOSurfaceRepresentation : public MemoryImageRepresentation {
@@ -211,6 +211,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       public IOSurfaceBackingEGLState::Client {
  public:
   IOSurfaceImageBacking(
+      gfx::ScopedIOSurface io_surface,
+      uint32_t io_surface_plane,
+      gfx::BufferFormat io_surface_format,
+      gfx::GenericSharedMemoryId io_surface_id,
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -277,6 +281,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   bool IsPassthrough() const { return true; }
 
+  gfx::ScopedIOSurface io_surface_;
+  const uint32_t io_surface_plane_;
+  const gfx::BufferFormat io_surface_format_;
+  const gfx::GenericSharedMemoryId io_surface_id_;
   scoped_refptr<gl::GLImage> image_;
 
   // Used to determine whether to release the texture in EndAccess() in use
