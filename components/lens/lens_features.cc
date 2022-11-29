@@ -30,6 +30,10 @@ BASE_FEATURE(kEnableLatencyLogging,
              "LensImageLatencyLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableRegionSearchKeyboardShortcut,
+             "LensEnableRegionSearchKeyboardShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableRegionSearchOnPdfViewer,
              "LensEnableRegionSearchOnPdfViewer",
              base::FEATURE_ENABLED_BY_DEFAULT);

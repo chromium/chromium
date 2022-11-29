@@ -36,6 +36,10 @@ BASE_DECLARE_FEATURE(kLensSearchImageInScreenshotSharing);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableLatencyLogging);
 
+// Enable keyboard shortcut for the Lens Region Search feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
+
 // Enable the Lens Region Search feature on the PDF viewer.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableRegionSearchOnPdfViewer);

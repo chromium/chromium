@@ -107,8 +107,23 @@ class LensRegionSearchController : public content::WebContentsObserver {
   base::WeakPtrFactory<LensRegionSearchController> weak_factory_{this};
 };
 
-// Class to associate region search data with Profile across navigation. Used to
-// support region search on a static WebUI page.
+// Class to associate region search controller data with Profile across
+// navigation. Used to support region search via keyboard shortcut.
+class LensRegionSearchControllerData : public base::SupportsUserData::Data {
+ public:
+  LensRegionSearchControllerData();
+  ~LensRegionSearchControllerData() override;
+  LensRegionSearchControllerData(const LensRegionSearchControllerData&) =
+      delete;
+  LensRegionSearchControllerData& operator=(
+      const LensRegionSearchControllerData&) = delete;
+
+  static constexpr char kDataKey[] = "lens_region_search_controller_data";
+  std::unique_ptr<LensRegionSearchController> lens_region_search_controller;
+};
+
+// Class to associate region search captured data with Profile across
+// navigation. Used to support region search on a static WebUI page.
 class RegionSearchCapturedData : public base::SupportsUserData::Data {
  public:
   RegionSearchCapturedData();

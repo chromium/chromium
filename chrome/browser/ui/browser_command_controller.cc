@@ -57,6 +57,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -943,6 +944,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
+      ExecLensRegionSearch(browser_);
+      break;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1237,6 +1244,14 @@ void BrowserCommandController::InitCommandState() {
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE_DETAILS,
                                           true);
   }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(
+          lens::features::kEnableRegionSearchKeyboardShortcut)) {
+    command_updater_.UpdateCommandEnabled(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, true);
+  }
+#endif
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
