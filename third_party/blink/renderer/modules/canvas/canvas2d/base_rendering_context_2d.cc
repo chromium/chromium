@@ -392,11 +392,11 @@ void BaseRenderingContext2D::IdentifiabilityUpdateForStyleUnion(
       break;
     case V8CanvasStyleType::kGradient:
       identifiability_study_helper_.UpdateBuilder(
-          style.style->GetCanvasGradient()->GetIdentifiableToken());
+          style.gradient->GetIdentifiableToken());
       break;
     case V8CanvasStyleType::kPattern:
       identifiability_study_helper_.UpdateBuilder(
-          style.style->GetCanvasPattern()->GetIdentifiableToken());
+          style.pattern->GetIdentifiableToken());
       break;
     case V8CanvasStyleType::kString:
       identifiability_study_helper_.UpdateBuilder(
@@ -439,26 +439,33 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
   UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
       v8_style, CanvasOps::kSetStrokeStyle);
 
-  if (v8_style.type == V8CanvasStyleType::kString) {
-    if (v8_style.string == GetState().UnparsedStrokeColor())
-      return;
-    Color parsed_color = Color::kTransparent;
-    if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
-      return;
-    if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
-      GetState().SetUnparsedStrokeColor(v8_style.string);
-      return;
+  switch (v8_style.type) {
+    case V8CanvasStyleType::kCSSColorValue:
+      GetState().SetStrokeColor(v8_style.css_color_value);
+      break;
+    case V8CanvasStyleType::kGradient:
+      GetState().SetStrokeGradient(v8_style.gradient);
+      break;
+    case V8CanvasStyleType::kPattern:
+      if (!origin_tainted_by_content_ && !v8_style.pattern->OriginClean())
+        SetOriginTaintedByContent();
+      GetState().SetStrokePattern(v8_style.pattern);
+      break;
+    case V8CanvasStyleType::kString: {
+      if (v8_style.string == GetState().UnparsedStrokeColor())
+        return;
+      Color parsed_color = Color::kTransparent;
+      if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
+        return;
+      if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
+        GetState().SetUnparsedStrokeColor(v8_style.string);
+        return;
+      }
+      GetState().SetStrokeColor(parsed_color.Rgb());
+      break;
     }
-    v8_style.style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
-  } else if (v8_style.type == V8CanvasStyleType::kPattern) {
-    CanvasPattern* canvas_pattern = v8_style.style->GetCanvasPattern();
-    if (!origin_tainted_by_content_ && !canvas_pattern->OriginClean())
-      SetOriginTaintedByContent();
-    v8_style.style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
   }
 
-  DCHECK(v8_style.style);
-  GetState().SetStrokeStyle(v8_style.style);
   GetState().SetUnparsedStrokeColor(v8_style.string);
   GetState().ClearResolvedFilter();
 }
@@ -479,26 +486,34 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
 
   UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(v8_style,
                                                       CanvasOps::kSetFillStyle);
-  if (v8_style.type == V8CanvasStyleType::kString) {
-    if (v8_style.string == GetState().UnparsedFillColor())
-      return;
-    Color parsed_color = Color::kTransparent;
-    if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
-      return;
-    if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
-      GetState().SetUnparsedFillColor(v8_style.string);
-      return;
+
+  switch (v8_style.type) {
+    case V8CanvasStyleType::kCSSColorValue:
+      GetState().SetFillColor(v8_style.css_color_value);
+      break;
+    case V8CanvasStyleType::kGradient:
+      GetState().SetFillGradient(v8_style.gradient);
+      break;
+    case V8CanvasStyleType::kPattern:
+      if (!origin_tainted_by_content_ && !v8_style.pattern->OriginClean())
+        SetOriginTaintedByContent();
+      GetState().SetFillPattern(v8_style.pattern);
+      break;
+    case V8CanvasStyleType::kString: {
+      if (v8_style.string == GetState().UnparsedFillColor())
+        return;
+      Color parsed_color = Color::kTransparent;
+      if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
+        return;
+      if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
+        GetState().SetUnparsedFillColor(v8_style.string);
+        return;
+      }
+      GetState().SetFillColor(parsed_color.Rgb());
+      break;
     }
-    v8_style.style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
-  } else if (v8_style.type == V8CanvasStyleType::kPattern) {
-    CanvasPattern* canvas_pattern = v8_style.style->GetCanvasPattern();
-    if (!origin_tainted_by_content_ && !canvas_pattern->OriginClean())
-      SetOriginTaintedByContent();
-    v8_style.style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
   }
 
-  DCHECK(v8_style.style);
-  GetState().SetFillStyle(v8_style.style);
   GetState().SetUnparsedFillColor(v8_style.string);
   GetState().ClearResolvedFilter();
 }

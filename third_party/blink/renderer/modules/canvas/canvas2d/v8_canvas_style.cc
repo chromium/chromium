@@ -20,24 +20,22 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
                           V8CanvasStyle& style,
                           ExceptionState& exception_state) {
   if (V8CanvasPattern::HasInstance(isolate, value)) {
-    CanvasPattern* canvas_pattern =
-        V8CanvasPattern::ToWrappableUnsafe(value.As<v8::Object>());
-    style.style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
+    style.pattern = V8CanvasPattern::ToWrappableUnsafe(value.As<v8::Object>());
     style.type = V8CanvasStyleType::kPattern;
     return true;
   }
   if (V8CanvasGradient::HasInstance(isolate, value)) {
     style.type = V8CanvasStyleType::kGradient;
-    style.style = MakeGarbageCollected<CanvasStyle>(
-        V8CanvasGradient::ToWrappableUnsafe(value.As<v8::Object>()));
+    style.gradient =
+        V8CanvasGradient::ToWrappableUnsafe(value.As<v8::Object>());
     return true;
   }
   if (V8CSSColorValue::HasInstance(isolate, value)) {
     style.type = V8CanvasStyleType::kCSSColorValue;
-    style.style = MakeGarbageCollected<CanvasStyle>(
+    style.css_color_value =
         V8CSSColorValue::ToWrappableUnsafe(value.As<v8::Object>())
             ->ToColor()
-            .Rgb());
+            .Rgb();
     return true;
   }
   style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,

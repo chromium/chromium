@@ -163,6 +163,8 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
   if (mode == kCopyClipList) {
     clip_list_ = other.clip_list_;
   }
+  stroke_style_->MarkShared(PassKey());
+  fill_style_->MarkShared(PassKey());
   // Since FontSelector is weakly persistent with |font_|, the memory may be
   // freed even |font_| is valid.
   if (realized_font_ && font_.GetFontSelector())
@@ -235,9 +237,104 @@ void CanvasRenderingContext2DState::UpdateLineDash() const {
   line_dash_dirty_ = false;
 }
 
+void CanvasRenderingContext2DState::SetStrokeColor(RGBA32 color) {
+  if (stroke_style_->IsEquivalentRGBA(color))
+    return;
+
+  if (stroke_style_->is_shared()) {
+    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(color));
+    return;
+  }
+
+  stroke_style_dirty_ = true;
+  stroke_style_->SetColor(PassKey(), color);
+}
+
+void CanvasRenderingContext2DState::SetStrokePattern(CanvasPattern* pattern) {
+  if (stroke_style_->IsEquivalentPattern(pattern)) {
+    // Even though the pointer value hasn't changed, the contents of the pattern
+    // may have. For this reason the style is marked dirty.
+    stroke_style_dirty_ = true;
+    return;
+  }
+
+  if (stroke_style_->is_shared()) {
+    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(pattern));
+    return;
+  }
+
+  stroke_style_->SetPattern(PassKey(), pattern);
+  stroke_style_dirty_ = true;
+}
+
+void CanvasRenderingContext2DState::SetStrokeGradient(
+    CanvasGradient* gradient) {
+  if (stroke_style_->IsEquivalentGradient(gradient)) {
+    // Even though the pointer value hasn't changed, the contents of the
+    // gradient may have. For this reason the style is marked dirty.
+    stroke_style_dirty_ = true;
+    return;
+  }
+
+  if (stroke_style_->is_shared()) {
+    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(gradient));
+    return;
+  }
+
+  stroke_style_->SetGradient(PassKey(), gradient);
+  stroke_style_dirty_ = true;
+}
+
 void CanvasRenderingContext2DState::SetStrokeStyle(CanvasStyle* style) {
   stroke_style_ = style;
   stroke_style_dirty_ = true;
+}
+
+void CanvasRenderingContext2DState::SetFillColor(RGBA32 color) {
+  if (fill_style_->IsEquivalentRGBA(color))
+    return;
+
+  if (fill_style_->is_shared()) {
+    SetFillStyle(MakeGarbageCollected<CanvasStyle>(color));
+    return;
+  }
+
+  fill_style_dirty_ = true;
+  fill_style_->SetColor(PassKey(), color);
+}
+
+void CanvasRenderingContext2DState::SetFillPattern(CanvasPattern* pattern) {
+  if (fill_style_->IsEquivalentPattern(pattern)) {
+    // Even though the pointer value hasn't changed, the contents of the pattern
+    // may have. For this reason the style is marked dirty.
+    fill_style_dirty_ = true;
+    return;
+  }
+
+  if (fill_style_->is_shared()) {
+    SetFillStyle(MakeGarbageCollected<CanvasStyle>(pattern));
+    return;
+  }
+
+  fill_style_dirty_ = true;
+  fill_style_->SetPattern(PassKey(), pattern);
+}
+
+void CanvasRenderingContext2DState::SetFillGradient(CanvasGradient* gradient) {
+  if (fill_style_->IsEquivalentGradient(gradient)) {
+    // Even though the pointer value hasn't changed, the contents of the
+    // gradient may have. For this reason the style is marked dirty.
+    fill_style_dirty_ = true;
+    return;
+  }
+
+  if (fill_style_->is_shared()) {
+    SetFillStyle(MakeGarbageCollected<CanvasStyle>(gradient));
+    return;
+  }
+
+  fill_style_dirty_ = true;
+  fill_style_->SetGradient(PassKey(), gradient);
 }
 
 void CanvasRenderingContext2DState::SetFillStyle(CanvasStyle* style) {

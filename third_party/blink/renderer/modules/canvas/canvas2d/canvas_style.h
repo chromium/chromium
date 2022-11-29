@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 
 #include "base/check_op.h"
+#include "base/types/pass_key.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -38,13 +39,23 @@ namespace blink {
 
 class CanvasGradient;
 class CanvasPattern;
+class CanvasRenderingContext2DState;
 class HTMLCanvasElement;
 
 class CanvasStyle final : public GarbageCollected<CanvasStyle> {
  public:
+  // Only CanvasRenderingContext2DState is allowed to mutate this.
+  using PassKey = base::PassKey<CanvasRenderingContext2DState>;
+
   explicit CanvasStyle(RGBA32);
   explicit CanvasStyle(CanvasGradient*);
   explicit CanvasStyle(CanvasPattern*);
+
+  // Marks this style as potentially being referenced by multiple
+  // CanvasRenderingContext2DStates. If the style is shared, then it should not
+  // be mutated.
+  void MarkShared(PassKey key) { shared_ = true; }
+  bool is_shared() const { return shared_; }
 
   String GetColorAsString() const {
     DCHECK_EQ(type_, kColorRGBA);
@@ -60,12 +71,44 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
     return type_ == kColorRGBA && rgba_ == rgba;
   }
 
+  bool IsEquivalentPattern(CanvasPattern* pattern) const {
+    return type_ == kImagePattern && pattern_ == pattern;
+  }
+
+  bool IsEquivalentGradient(CanvasGradient* gradient) const {
+    return type_ == kGradient && gradient_ == gradient;
+  }
+
+  void SetColor(PassKey key, RGBA32 color) {
+    DCHECK(!shared_);
+    type_ = kColorRGBA;
+    rgba_ = color;
+    gradient_ = nullptr;
+    pattern_ = nullptr;
+  }
+
+  void SetPattern(PassKey key, CanvasPattern* pattern) {
+    DCHECK(!shared_);
+    type_ = kImagePattern;
+    pattern_ = pattern;
+    gradient_ = nullptr;
+  }
+
+  void SetGradient(PassKey key, CanvasGradient* gradient) {
+    DCHECK(!shared_);
+    type_ = kGradient;
+    gradient_ = gradient;
+    pattern_ = nullptr;
+  }
+
   void Trace(Visitor*) const;
 
  private:
   enum Type { kColorRGBA, kGradient, kImagePattern };
 
   Type type_;
+
+  bool shared_ = false;
 
   // TODO(https://1351544): The CanvasStyle should be Color, not an SkColor or
   // an SkColor4f.

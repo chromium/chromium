@@ -6,21 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
+class CanvasGradient;
+class CanvasPattern;
 class CanvasStyle;
 class ExceptionState;
 class ScriptState;
 
 // Types of values supported for canvas style.
 enum class V8CanvasStyleType {
-  kPattern,
-  kGradient,
   kCSSColorValue,
+  kGradient,
+  kPattern,
   kString,
 };
 
@@ -30,9 +33,9 @@ struct MODULES_EXPORT V8CanvasStyle {
 
  public:
   V8CanvasStyleType type;
-  // Only one of `style` or `string` is set. Which one is set depends on
-  // `type`.
-  CanvasStyle* style = nullptr;
+  CanvasPattern* pattern = nullptr;
+  CanvasGradient* gradient = nullptr;
+  RGBA32 css_color_value = 0;
   String string;
 };
 

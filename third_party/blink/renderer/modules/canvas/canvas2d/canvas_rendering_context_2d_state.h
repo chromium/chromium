@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
+#include "base/types/pass_key.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -23,6 +24,8 @@ namespace blink {
 class BaseRenderingContext2D;
 class CanvasRenderingContext2D;
 class CanvasFilter;
+class CanvasGradient;
+class CanvasPattern;
 class CanvasStyle;
 class CSSValue;
 class Element;
@@ -130,9 +133,15 @@ class CanvasRenderingContext2DState final
   void ClearResolvedFilter();
   void ValidateFilterState() const;
 
+  void SetStrokeColor(RGBA32 color);
+  void SetStrokePattern(CanvasPattern* pattern);
+  void SetStrokeGradient(CanvasGradient* gradient);
   void SetStrokeStyle(CanvasStyle*);
   CanvasStyle* StrokeStyle() const { return stroke_style_.Get(); }
 
+  void SetFillColor(RGBA32 color);
+  void SetFillPattern(CanvasPattern* pattern);
+  void SetFillGradient(CanvasGradient* gradient);
   void SetFillStyle(CanvasStyle*);
   CanvasStyle* FillStyle() const { return fill_style_.Get(); }
 
@@ -249,6 +258,8 @@ class CanvasRenderingContext2DState final
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
+  using PassKey = base::PassKey<CanvasRenderingContext2DState>;
+
   void UpdateLineDash() const;
   void UpdateStrokeStyle() const;
   void UpdateFillStyle() const;
