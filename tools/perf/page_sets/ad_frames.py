@@ -7,11 +7,12 @@ from telemetry.page import shared_page_state
 from telemetry import story
 
 URL_LIST = [
-    'https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.261324265;sz=300x250',
-    'https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.238871593;sz=300x600',
-    'https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.256945163;sz=320x50',
-    'https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.127425649;sz=970x250',
-    'https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.129556071;sz=970x250',
+    "https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B9340305.127562781;sz=970x250",
+    "https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B9340305.128470354;sz=300x600",
+    "https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.126839257;sz=970x250",
+    "https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B9340305.127461685;sz=970x250",
+    "https://ad.doubleclick.net/ddm/adi/N378.3159.GOOGLE3/B9340305.138620671;sz=970x250",
+    "https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B9340305.128710365;sz=970x250",
 ]
 
 
