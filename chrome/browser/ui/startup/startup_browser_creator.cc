@@ -117,6 +117,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut_mac.h"
 #endif
 
@@ -1248,9 +1249,16 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // On Chrome OS, app launches are routed through the AppService and
   // WebAppPublisherHelper.
   //
-  // On Mac, PWA launch is handled in web_app_shim_manager_delegate_mac.cc, but
-  // tests still rely on this code.
-  // TODO(crbug.com/1232763): update tests and disable this path on Mac.
+  // On Mac, PWA launch is normally handled in
+  // web_app_shim_manager_delegate_mac.cc, but if an app shim for whatever
+  // reason fails to dlopen chrome we can still end up here. While in that case
+  // the launch behavior here isn't quite the correct behavior for an app launch
+  // on Mac OS, this behavior is better than nothing and should result in the
+  // app shim getting regenerated to hopefully fix future app launches.
+  // TODO(https://crbug.com/1232763): Some integration tests also rely on this
+  // code. Ideally those would be fixed to test the normal app launch path on
+  // Mac instead, and this code should be changed to make it harder to
+  // accidentally write tests that don't test the normal app launch path.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Try a web app launch.
   if (web_app::startup::MaybeHandleWebAppLaunch(
@@ -1479,9 +1487,27 @@ StartupProfilePathInfo GetStartupProfilePath(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (command_line.HasSwitch(switches::kProfileDirectory)) {
-    return {user_data_dir.Append(
-                command_line.GetSwitchValuePath(switches::kProfileDirectory)),
+  base::FilePath profile_directory =
+      command_line.GetSwitchValuePath(switches::kProfileDirectory);
+#if BUILDFLAG(IS_MAC)
+  // On Mac OS, when an app shim fails to dlopen chrome, the app shim falls back
+  // to trying to launch chrome passing its app-id on the command line. In this
+  // situation, the profile directory passed on the command line could be an
+  // empty string. When this happens, arbitrarily pick one of the profiles the
+  // app is installed in as profile directory. While this isn't necesarilly the
+  // right profile to use, it is good enough for the purpose of (indirectly)
+  // triggering a rebuild of the app shim, which should resolve whatever
+  // problem existed that let to this situation.
+  if (profile_directory.empty() && command_line.HasSwitch(switches::kAppId)) {
+    std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
+    std::set<base::FilePath> profile_paths =
+        AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id);
+    if (!profile_paths.empty())
+      profile_directory = profile_paths.begin()->BaseName();
+  }
+#endif
+  if (!profile_directory.empty()) {
+    return {user_data_dir.Append(profile_directory),
             StartupProfileMode::kBrowserWindow};
   }
 

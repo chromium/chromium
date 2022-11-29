@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 
@@ -11,6 +13,40 @@ namespace {
 using WebAppIntegration = WebAppIntegrationTest;
 
 // Manual tests:
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, LaunchFromAppShimFallback) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  // Currently LaunchFromAppShimFallback doesn't quite match how a regular PWA
+  // launch is supposed to behave on Mac (i.e. it opens a window even if there
+  // already is one open). As such, this ClosePwa call is redundant today, but
+  // would be needed if LaunchFromAppShimFallback triggered Mac specific app
+  // launch logic.
+  helper_.ClosePwa();
+  helper_.LaunchFromAppShimFallback(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       LaunchFromAppShimFallbackSecondaryProfile) {
+  helper_.SwitchActiveProfile(ProfileName::kProfile2);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+
+  // Make the default profile be the last active profile by activating the
+  // originally created browser window. This way we can make sure that
+  // launching works correctly even if the last active profile isn't the profile
+  // the app is installed in.
+  browser()->window()->Activate();
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(
+      g_browser_process->profile_manager()->GetLastUsedProfileDir().BaseName(),
+      base::FilePath("Default"));
+
+  helper_.LaunchFromAppShimFallback(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
 
 // Generated tests:
 

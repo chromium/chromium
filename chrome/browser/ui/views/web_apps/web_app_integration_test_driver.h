@@ -252,6 +252,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromLaunchIcon(Site site);
   void LaunchFromMenuOption(Site site);
   void LaunchFromPlatformShortcut(Site site);
+#if BUILDFLAG(IS_MAC)
+  void LaunchFromAppShimFallback(Site site);
+#endif
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);
   void CreateShortcutsFromList(Site site);

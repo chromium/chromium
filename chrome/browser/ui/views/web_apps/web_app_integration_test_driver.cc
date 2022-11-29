@@ -149,6 +149,7 @@
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
@@ -1338,7 +1339,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
       app_browser_ = browser_added_waiter.browser_added();
     }
     active_app_id_ = app_id;
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
     LaunchFromAppShim(site, /*urls=*/{});
   }
@@ -1350,7 +1351,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     app_browser_ = browser_added_waiter.browser_added();
     ActivateBrowserAndWait(app_browser_);
     active_app_id_ = app_id;
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
     LaunchAppStartupBrowserCreator(app_id);
   }
@@ -1360,6 +1361,47 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   NOTREACHED() << "Not implemented on Chrome OS.";
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+
+  WebAppRegistrar& app_registrar = provider()->registrar();
+  DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
+  bool is_open_in_app_browser =
+      (display_mode != blink::mojom::DisplayMode::kBrowser);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  command_line.AppendSwitchASCII(switches::kTestType, "browser");
+  command_line.AppendSwitchASCII(switches::kProfileDirectory, "");
+
+  if (is_open_in_app_browser) {
+    BrowserAddedWaiter browser_added_waiter;
+    // This should have similar logic to the IS_MAC branch in
+    // LaunchFromPlatformShortcut, however currently launching from app shim
+    // fallback actually uses the non-mac launch code, so for now that is what
+    // this is expecting.
+    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
+        command_line, /*current_directory=*/{}));
+    content::RunAllTasksUntilIdle();
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
+    active_app_id_ = app_id;
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+  } else {
+    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
+        command_line, /*current_directory=*/{}));
+    content::RunAllTasksUntilIdle();
+  }
+  AfterStateChangeAction();
+}
+#endif
 
 void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
