@@ -1745,6 +1745,8 @@ component("base") {
       sources += [
         "profiler/chrome_unwind_info_android.cc",
         "profiler/chrome_unwind_info_android.h",
+        "profiler/chrome_unwinder_android.cc",
+        "profiler/chrome_unwinder_android.h",
         "profiler/chrome_unwinder_android_v2.cc",
         "profiler/chrome_unwinder_android_v2.h",
       ]
@@ -2646,6 +2648,7 @@ buildflag_header("profiler_buildflags") {
   flags = [
     "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table",
     "IOS_STACK_PROFILER_ENABLED=$ios_stack_profiler_enabled",
+    "USE_ANDROID_UNWINDER_V2=$use_android_unwinder_v2",
   ]
 }
 
@@ -3641,6 +3644,7 @@ test("base_unittests") {
     if (current_cpu == "arm") {
       sources += [
         "profiler/chrome_unwind_info_android_unittest.cc",
+        "profiler/chrome_unwinder_android_unittest.cc",
         "profiler/chrome_unwinder_android_v2_unittest.cc",
       ]
     }
