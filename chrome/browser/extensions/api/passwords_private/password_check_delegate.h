@@ -30,8 +30,6 @@ class Profile;
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
-class PasswordFeatureManager;
-class PasswordScriptsFetcher;
 }  // namespace password_manager
 
 namespace extensions {
@@ -49,8 +47,6 @@ class PasswordCheckDelegate
  public:
   using StartPasswordCheckCallback =
       PasswordsPrivateDelegate::StartPasswordCheckCallback;
-  using RefreshScriptsIfNecessaryCallback =
-      PasswordsPrivateDelegate::RefreshScriptsIfNecessaryCallback;
 
   PasswordCheckDelegate(
       Profile* profile,
@@ -78,15 +74,9 @@ class PasswordCheckDelegate
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential);
 
-  // Records that a change password flow was started for `credential` and
-  // whether `is_manual_flow` applies to the flow.
+  // Records that a change password flow was started for `credential`.
   void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential,
-      bool is_manual_flow);
-
-  // Refreshes the cache for automatic password change scripts if that is stale
-  // and runs `callback` once that is complete.
-  void RefreshScriptsIfNecessary(RefreshScriptsIfNecessaryCallback callback);
+      const api::passwords_private::PasswordUiEntry& credential);
 
   // Checks that all preconditions for running a password check are fulfilled
   // and, once that is the case, launches the password check. Invokes `callback`
@@ -130,11 +120,6 @@ class PasswordCheckDelegate
   const password_manager::CredentialUIEntry* FindMatchingEntry(
       const api::passwords_private::PasswordUiEntry& credential) const;
 
-  // Reacts to a refreshed password scripts cache. Checks whether any of the
-  // compromised credentials have a password script and only then calls the
-  // event router to update the frontend.
-  void OnPasswordScriptsFetched(StartPasswordCheckCallback callback);
-
   // Starts the analyses of whether credentials are compromised and/or weak.
   // Assumes that `StartPasswordCheck()` was called prior.
   void StartPasswordAnalyses(StartPasswordCheckCallback callback);
@@ -161,22 +146,8 @@ class PasswordCheckDelegate
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() const;
 
-  // Returns a raw pointer to the `PasswordScriptsFetcher` associated with
-  // `profile_`.
-  password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher() const;
-
-  // Returns whether the credential `entry` supports automated password change.
-  // It assumes that the `PasswordScriptsFetcher` cache has been fetched.
-  bool CredentialSupportsAutomatedPasswordChange(
-      const password_manager::CredentialUIEntry& entry) const;
-
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;
-
-  // A password feature manager instance used to determine whether to offer
-  // automated password changes.
-  const std::unique_ptr<password_manager::PasswordFeatureManager>
-      password_feature_manager_;
 
   // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.
@@ -202,9 +173,6 @@ class PasswordCheckDelegate
   // Remembers the progress of the ongoing check. Null if no check is currently
   // running.
   base::WeakPtr<PasswordCheckProgress> password_check_progress_;
-
-  // Remembers whether scripts are fetching right now.
-  bool are_scripts_fetching_ = false;
 
   // Remembers whether a password check is running right now.
   bool is_check_running_ = false;

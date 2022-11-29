@@ -304,22 +304,6 @@ class PasswordsPrivateRecordChangePasswordFlowStartedFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateRefreshScriptsIfNecessaryFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.refreshScriptsIfNecessary",
-                             PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY)
-
- protected:
-  ~PasswordsPrivateRefreshScriptsIfNecessaryFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnRefreshed();
-};
-
 class PasswordsPrivateStartPasswordCheckFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startPasswordCheck",
@@ -358,22 +342,6 @@ class PasswordsPrivateGetPasswordCheckStatusFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-};
-
-class PasswordsPrivateStartAutomatedPasswordChangeFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startAutomatedPasswordChange",
-                             PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE)
-
- protected:
-  ~PasswordsPrivateStartAutomatedPasswordChangeFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnResultReceived(bool success);
 };
 
 class PasswordsPrivateIsAccountStoreDefaultFunction : public ExtensionFunction {

@@ -569,39 +569,11 @@ suite('PasswordsCheckSection', function() {
     assertEquals(PasswordCheckInteraction.CHANGE_PASSWORD, interaction);
   });
 
-  // Verify that a click on "Change password" starts an Automatic Password
-  // Change flow.
-  test(
-      'changePasswordOpensAutomaticPasswordChangeAndRecordsAction',
-      async function() {
-        const password = makeInsecureCredential(
-            /*url*/ 'one.com', /*username*/ 'test4',
-            /*types*/[CompromiseType.LEAKED]);
-        password.hasStartableScript = true;
-        const passwordCheckListItem =
-            await createInsecurePasswordItem(passwordManager, password);
-        const button =
-            passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
-                '#changePasswordButton');
-        assertTrue(!!button);
-        button.click();
-
-        const credentialApc =
-            await passwordManager.whenCalled('startAutomatedPasswordChange');
-        assertEquals(credentialApc, password);
-        const interaction =
-            await passwordManager.whenCalled('recordPasswordCheckInteraction');
-        assertEquals(
-            PasswordCheckInteraction.CHANGE_PASSWORD_AUTOMATICALLY,
-            interaction);
-      });
-
-  // Verify that elements without a startable script have the correct icon.
-  test('iconIsCorrectForPasswordWithoutScript', async function() {
+  // Verify that elements have the correct icon.
+  test('iconIsCorrect', async function() {
     const password = makeInsecureCredential(
         /*url*/ 'one.com', /*username*/ 'test4',
         /*types*/[CompromiseType.LEAKED]);
-    password.hasStartableScript = false;
     const passwordCheckListItem =
         await createInsecurePasswordItem(passwordManager, password);
 
@@ -609,31 +581,6 @@ suite('PasswordsCheckSection', function() {
         passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
             '#change-password-link-icon');
     assertTrue(!!manualChangeIcon);
-
-    const automatedChangeIcon =
-        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
-            '#change-password-automatically-icon');
-    assertFalse(!!automatedChangeIcon);
-  });
-
-  // Verify that elements with a startable script have the correct icon.
-  test('iconIsCorrectForPasswordWithScript', async function() {
-    const password = makeInsecureCredential(
-        /*url*/ 'one.com', /*username*/ 'test4',
-        /*types*/[CompromiseType.LEAKED]);
-    password.hasStartableScript = true;
-    const passwordCheckListItem =
-        await createInsecurePasswordItem(passwordManager, password);
-
-    const manualChangeIcon =
-        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
-            '#change-password-link-icon');
-    assertFalse(!!manualChangeIcon);
-
-    const automatedChangeIcon =
-        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
-            '#change-password-automatically-icon');
-    assertTrue(!!automatedChangeIcon);
   });
 
   // Verify that for a leaked password the More Actions menu opens when the

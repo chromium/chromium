@@ -351,27 +351,8 @@ ResponseAction PasswordsPrivateRecordChangePasswordFlowStartedFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->RecordChangePasswordFlowStarted(parameters->credential,
-                                        parameters->is_manual_flow);
+      ->RecordChangePasswordFlowStarted(parameters->credential);
   return RespondNow(NoArguments());
-}
-
-// PasswordsPrivateRefreshScriptsIfNecessaryFunction:
-PasswordsPrivateRefreshScriptsIfNecessaryFunction::
-    ~PasswordsPrivateRefreshScriptsIfNecessaryFunction() = default;
-
-ResponseAction PasswordsPrivateRefreshScriptsIfNecessaryFunction::Run() {
-  GetDelegate(browser_context())
-      ->RefreshScriptsIfNecessary(base::BindOnce(
-          &PasswordsPrivateRefreshScriptsIfNecessaryFunction::OnRefreshed,
-          this));
-
-  // OnRefreshed() might respond before we reach this point.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void PasswordsPrivateRefreshScriptsIfNecessaryFunction::OnRefreshed() {
-  Respond(NoArguments());
 }
 
 // PasswordsPrivateStartPasswordCheckFunction:
@@ -412,35 +393,6 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
   return RespondNow(ArgumentList(
       api::passwords_private::GetPasswordCheckStatus::Results::Create(
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
-}
-
-// PasswordsPrivateStartAutomatedPasswordChangeFunction:
-PasswordsPrivateStartAutomatedPasswordChangeFunction::
-    ~PasswordsPrivateStartAutomatedPasswordChangeFunction() = default;
-
-ResponseAction PasswordsPrivateStartAutomatedPasswordChangeFunction::Run() {
-  auto parameters =
-      api::passwords_private::StartAutomatedPasswordChange::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  // Forward the call to the delegate.
-  GetDelegate(browser_context())
-      ->StartAutomatedPasswordChange(
-          parameters->credential,
-          base::BindOnce(&PasswordsPrivateStartAutomatedPasswordChangeFunction::
-                             OnResultReceived,
-                         this));
-
-  // `OnResultReceived()` might respond before we reach this point.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void PasswordsPrivateStartAutomatedPasswordChangeFunction::OnResultReceived(
-    bool success) {
-  Respond(ArgumentList(
-      api::passwords_private::StartAutomatedPasswordChange::Results::Create(
-          success)));
 }
 
 // PasswordsPrivateIsAccountStoreDefaultFunction

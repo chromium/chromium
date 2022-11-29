@@ -38,12 +38,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
 
-  using RefreshScriptsIfNecessaryCallback = base::OnceClosure;
-
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
-
-  using StartAutomatedPasswordChangeCallback = base::OnceCallback<void(bool)>;
 
   ~PasswordsPrivateDelegate() override = default;
 
@@ -200,16 +196,9 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) = 0;
 
-  // Records that a change password flow was started for |credential| and
-  // whether |is_manual_flow| applies to the flow.
+  // Records that a change password flow was started for |credential|.
   virtual void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential,
-      bool is_manual_flow) = 0;
-
-  // Refreshes the cache for automatic password change scripts if that is stale
-  // and runs `callback` once that is complete.
-  virtual void RefreshScriptsIfNecessary(
-      RefreshScriptsIfNecessaryCallback callback) = 0;
+      const api::passwords_private::PasswordUiEntry& credential) = 0;
 
   // Requests to start a check for insecure passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().
@@ -220,13 +209,6 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Returns the current status of the password check.
   virtual api::passwords_private::PasswordCheckStatus
   GetPasswordCheckStatus() = 0;
-
-  // Starts an automated password change flow for `credential` and returns
-  // whether the credential was changed successfully by calling `callback` with
-  // a boolean parameter.
-  virtual void StartAutomatedPasswordChange(
-      const api::passwords_private::PasswordUiEntry& credential,
-      StartAutomatedPasswordChangeCallback callback) = 0;
 
   // Returns a pointer to the current instance of InsecureCredentialsManager.
   // Needed to get notified when compromised credentials are written out to

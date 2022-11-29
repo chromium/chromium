@@ -31,7 +31,6 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       driveSuggestAvailable: true,
-      isAutomatedPasswordChangeEnabled: true,
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
@@ -281,13 +280,6 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     await (autofillAssistantBrowserProxy.whenCalled('revokeConsent'));
     assertFalse(toggle.checked);
     assertFalse(testElement.prefs.autofill_assistant.enabled.value);
-  });
-
-  test('autofillAssistantUnavailable', function() {
-    loadTimeData.overrideValues({'isAutomatedPasswordChangeEnabled': false});
-    buildTestElement();  // Rebuild the element after modifying loadTimeData.
-    assertFalse(isVisible(testElement.shadowRoot!.querySelector(
-        '#enableAutofillAssistantToggle')));
   });
 
   test('priceEmailNotificationsToggleShown', function() {

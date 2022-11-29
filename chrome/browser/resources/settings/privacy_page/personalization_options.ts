@@ -148,12 +148,9 @@ export class SettingsPersonalizationOptionsElement extends
     }
     // </if>
 
-    // Currently, only automated password change uses Autofill Assistant. Only
-    // show the toggle if at least one entry point is enabled.
-    // Additional, the user must be signed in since the consent dialog uses the
+    // The user must be signed in since the consent dialog uses the
     // sync bridge for consent recording.
-    return loadTimeData.getBoolean('isAutomatedPasswordChangeEnabled') &&
-        !!this.syncStatus && !!this.syncStatus.signedIn;
+    return !!this.syncStatus && !!this.syncStatus.signedIn;
   }
 
   private showPriceEmailNotificationsToggle_(): boolean {

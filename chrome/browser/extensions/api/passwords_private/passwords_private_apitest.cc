@@ -290,16 +290,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, UnmuteInsecureCredentialFails) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RecordChangePasswordFlowStartedManual) {
-  EXPECT_TRUE(RunPasswordsSubtest("recordChangePasswordFlowStartedManual"))
-      << message_;
-  EXPECT_EQ(last_change_flow_url(),
-            "https://example.com/.well-known/change-password");
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RecordChangePasswordFlowStartedAutomated) {
-  EXPECT_TRUE(RunPasswordsSubtest("recordChangePasswordFlowStartedAutomated"))
+                       RecordChangePasswordFlowStarted) {
+  EXPECT_TRUE(RunPasswordsSubtest("recordChangePasswordFlowStarted"))
       << message_;
   EXPECT_EQ(last_change_flow_url(),
             "https://example.com/.well-known/change-password");
@@ -310,10 +302,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
   EXPECT_TRUE(RunPasswordsSubtest("recordChangePasswordFlowStartedAppNoUrl"))
       << message_;
   EXPECT_EQ(last_change_flow_url(), "");
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RefreshScriptsIfNecessary) {
-  EXPECT_TRUE(RunPasswordsSubtest("refreshScriptsIfNecessary")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartPasswordCheck) {
@@ -340,15 +328,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StopPasswordCheck) {
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPasswordCheckStatus) {
   EXPECT_TRUE(RunPasswordsSubtest("getPasswordCheckStatus")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartAutomatedPasswordChange) {
-  EXPECT_TRUE(RunPasswordsSubtest("startAutomatedPasswordChange"));
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       StartAutomatedPasswordChangeWithEmptyUrl) {
-  EXPECT_TRUE(RunPasswordsSubtest("startAutomatedPasswordChangeWithEmptyUrl"));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MovePasswordsToAccount) {

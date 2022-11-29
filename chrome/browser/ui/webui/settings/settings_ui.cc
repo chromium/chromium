@@ -90,10 +90,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/grit/chrome_unscaled_resources.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -299,28 +295,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
-  // Indicates whether any automated password change entry point is enabled.
-  // This is currently used as a prerequisite for showing a settings toggle
-  // for Autofill Assistant.
-  html_source->AddBoolean(
-      "isAutomatedPasswordChangeEnabled",
-      password_manager::features::IsAutomatedPasswordChangeEnabled());
-
-  html_source->AddBoolean(
-      "enableAutomaticPasswordChangeInSettings",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChangeInSettings));
-
   html_source->AddBoolean(
       "changePriceEmailNotificationsEnabled",
       base::FeatureList::IsEnabled(commerce::kShoppingList));
   commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
       ->FetchPriceEmailPref();
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddResourcePath("images/google_assistant.svg",
-                               IDR_ASSISTANT_LOGO_MONOCHROME);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

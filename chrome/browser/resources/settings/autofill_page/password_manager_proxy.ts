@@ -208,13 +208,6 @@ export interface PasswordManagerProxy {
   optInForAccountStorage(optIn: boolean): void;
 
   /**
-   * Refreshes the cache for automatic password change scripts if the cache is
-   * stale.
-   * @return A promise that resolves when the cache is fresh.
-   */
-  refreshScriptsIfNecessary(): Promise<void>;
-
-  /**
    * Requests the start of the bulk password check.
    */
   startBulkPasswordCheck(): Promise<void>;
@@ -236,13 +229,6 @@ export interface PasswordManagerProxy {
       Promise<chrome.passwordsPrivate.PasswordCheckStatus>;
 
   /**
-   * Starts an automated password change flow.
-   * @param credential The credential for which to start the flow.
-   */
-  startAutomatedPasswordChange(
-      credential: chrome.passwordsPrivate.PasswordUiEntry): Promise<boolean>;
-
-  /**
    * Dismisses / mutes the |insecureCredential| in the passwords store.
    */
   muteInsecureCredential(insecureCredential:
@@ -255,12 +241,10 @@ export interface PasswordManagerProxy {
                                chrome.passwordsPrivate.PasswordUiEntry): void;
 
   /**
-   * Records the state of a change password flow for |insecureCredential|
-   * and notes it is a manual flow via |isManualFlow|.
+   * Records the state of a change password flow for |insecureCredential|.
    */
   recordChangePasswordFlowStarted(
-      insecureCredential: chrome.passwordsPrivate.PasswordUiEntry,
-      isManualFlow: boolean): void;
+      insecureCredential: chrome.passwordsPrivate.PasswordUiEntry): void;
 
   /**
    * Requests extension of authentication validity.
@@ -490,17 +474,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     return chrome.passwordsPrivate.getPasswordCheckStatus();
   }
 
-  startAutomatedPasswordChange(credential:
-                                   chrome.passwordsPrivate.PasswordUiEntry) {
-    return chrome.passwordsPrivate.startAutomatedPasswordChange(credential);
-  }
-
   optInForAccountStorage(optIn: boolean) {
     chrome.passwordsPrivate.optInForAccountStorage(optIn);
-  }
-
-  refreshScriptsIfNecessary() {
-    return chrome.passwordsPrivate.refreshScriptsIfNecessary();
   }
 
   startBulkPasswordCheck() {
@@ -531,11 +506,9 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
   }
 
-  recordChangePasswordFlowStarted(
-      insecureCredential: chrome.passwordsPrivate.PasswordUiEntry,
-      isManualFlow: boolean) {
-    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
-        insecureCredential, isManualFlow);
+  recordChangePasswordFlowStarted(insecureCredential:
+                                      chrome.passwordsPrivate.PasswordUiEntry) {
+    chrome.passwordsPrivate.recordChangePasswordFlowStarted(insecureCredential);
   }
 
   extendAuthValidity() {

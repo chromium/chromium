@@ -103,16 +103,10 @@ class PasswordsPrivateDelegateImpl
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential,
-      bool is_manual_flow) override;
-  void RefreshScriptsIfNecessary(
-      RefreshScriptsIfNecessaryCallback callback) override;
+      const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
-  void StartAutomatedPasswordChange(
-      const api::passwords_private::PasswordUiEntry& credential,
-      StartAutomatedPasswordChangeCallback callback) override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
   void ExtendAuthValidity() override;

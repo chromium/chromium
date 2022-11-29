@@ -84,12 +84,6 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
 // All features parameters are in alphabetical order.
 
-// If `true`, then password change in settings will also be offered for
-// insecure credentials that are weak (and not phished or leaked).
-constexpr base::FeatureParam<bool>
-    kPasswordChangeInSettingsWeakCredentialsParam = {&kPasswordChangeInSettings,
-                                                     "weak_credentials", false};
-
 // True if the client is part of the live_experiment group for
 // |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
 // in the regular launch group.
@@ -195,10 +189,6 @@ extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
 
 // Returns true the password script fetching flag is enabled.
 bool IsPasswordScriptsFetchingEnabled();
-
-// Returns true if any of the features that unlock entry points for password
-// change flows are enabled.
-bool IsAutomatedPasswordChangeEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage

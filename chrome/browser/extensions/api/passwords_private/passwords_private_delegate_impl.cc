@@ -706,15 +706,8 @@ bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
 }
 
 void PasswordsPrivateDelegateImpl::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential,
-    bool is_manual_flow) {
-  password_check_delegate_.RecordChangePasswordFlowStarted(credential,
-                                                           is_manual_flow);
-}
-
-void PasswordsPrivateDelegateImpl::RefreshScriptsIfNecessary(
-    RefreshScriptsIfNecessaryCallback callback) {
-  password_check_delegate_.RefreshScriptsIfNecessary(std::move(callback));
+    const api::passwords_private::PasswordUiEntry& credential) {
+  password_check_delegate_.RecordChangePasswordFlowStarted(credential);
 }
 
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
@@ -729,38 +722,6 @@ void PasswordsPrivateDelegateImpl::StopPasswordCheck() {
 api::passwords_private::PasswordCheckStatus
 PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
   return password_check_delegate_.GetPasswordCheckStatus();
-}
-
-void PasswordsPrivateDelegateImpl::StartAutomatedPasswordChange(
-    const api::passwords_private::PasswordUiEntry& credential,
-    StartAutomatedPasswordChangeCallback callback) {
-  if (!credential.change_password_url) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  GURL url =
-      url::SchemeHostPort(GURL(*credential.change_password_url)).GetURL();
-  if (!url.is_valid()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  NavigateParams params(profile_, url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(&params);
-
-  if (!navigation_handle) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(
-      navigation_handle.get()->GetWebContents());
-  apc_client->Start(url, credential.username,
-                    /*skip_login=*/false, std::move(callback));
 }
 
 void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(

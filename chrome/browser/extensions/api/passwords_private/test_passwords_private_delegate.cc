@@ -281,15 +281,9 @@ bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
 }
 
 void TestPasswordsPrivateDelegate::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential,
-    bool is_manual_flow) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   last_change_flow_url_ =
       credential.change_password_url ? *credential.change_password_url : "";
-}
-
-void TestPasswordsPrivateDelegate::RefreshScriptsIfNecessary(
-    RefreshScriptsIfNecessaryCallback callback) {
-  std::move(callback).Run();
 }
 
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
@@ -300,13 +294,6 @@ void TestPasswordsPrivateDelegate::StartPasswordCheck(
 
 void TestPasswordsPrivateDelegate::StopPasswordCheck() {
   stop_password_check_triggered_ = true;
-}
-
-void TestPasswordsPrivateDelegate::StartAutomatedPasswordChange(
-    const api::passwords_private::PasswordUiEntry& credential,
-    StartAutomatedPasswordChangeCallback callback) {
-  std::move(callback).Run(credential.change_password_url &&
-                          GURL(*credential.change_password_url).is_valid());
 }
 
 api::passwords_private::PasswordCheckStatus

@@ -227,14 +227,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: false,
       },
 
-      isAutomaticPasswordChangeEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableAutomaticPasswordChangeInSettings');
-        },
-      },
-
       isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
@@ -292,7 +284,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private numberOfDevicePasswords_: number;
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
-  private isAutomaticPasswordChangeEnabled_: boolean;
   private isPasswordViewPageEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
@@ -393,12 +384,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     if (route !== routes.PASSWORDS) {
       return;
-    }
-
-    // If password change scripts are enabled, the scripts cache should be
-    // refreshed to minimize any UI modifications on the password check page.
-    if (this.isAutomaticPasswordChangeEnabled_) {
-      this.passwordManager_.refreshScriptsIfNecessary();
     }
 
     // Show the auth timeout dialog if the URL has the URL param.

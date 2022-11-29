@@ -28,7 +28,6 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
-#include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,7 +37,6 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
-#include "components/password_manager/core/browser/mock_password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -98,13 +96,11 @@ using password_manager::IsLeaked;
 using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
 using password_manager::MockPasswordChangeSuccessTracker;
-using password_manager::MockPasswordScriptsFetcher;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
-using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using signin::IdentityTestEnvironment;
 using ::testing::AllOf;
@@ -123,8 +119,6 @@ using ::testing::UnorderedElementsAre;
 
 using MockStartPasswordCheckCallback =
     base::MockCallback<PasswordCheckDelegate::StartPasswordCheckCallback>;
-using MockRefreshScriptsIfNecessaryCallback = base::MockCallback<
-    PasswordsPrivateDelegate::RefreshScriptsIfNecessaryCallback>;
 
 PasswordsPrivateEventRouter* CreateAndUsePasswordsPrivateEventRouter(
     Profile* profile) {
@@ -157,17 +151,6 @@ MockPasswordChangeSuccessTracker* CreateAndUsePasswordChangeSuccessTracker(
               profile, base::BindRepeating([](content::BrowserContext*) {
                 return std::make_unique<
                     testing::StrictMock<MockPasswordChangeSuccessTracker>>();
-              })));
-}
-
-MockPasswordScriptsFetcher* CreateAndUsePasswordScriptsFetcher(
-    Profile* profile) {
-  return static_cast<MockPasswordScriptsFetcher*>(
-      PasswordScriptsFetcherFactory::GetInstance()
-          ->SetTestingSubclassFactoryAndUse(
-              profile, base::BindRepeating([](content::BrowserContext*) {
-                return std::make_unique<
-                    testing::NiceMock<MockPasswordScriptsFetcher>>();
               })));
 }
 
@@ -293,15 +276,6 @@ auto ExpectCompromisedCredential(
                                           compromise_types))));
 }
 
-// Creates a simplified matcher that only checks the username name and
-// whether a startable script exists.
-auto ExpectCredentialWithScriptInfo(const std::u16string& username,
-                                    bool has_startable_script) {
-  return AllOf(
-      Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
-      Field(&PasswordUiEntry::has_startable_script, has_startable_script));
-}
-
 class PasswordCheckDelegateTest : public ::testing::Test {
  public:
   PasswordCheckDelegateTest() {
@@ -321,9 +295,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   BulkLeakCheckService* service() { return bulk_leak_check_service_; }
   MockPasswordChangeSuccessTracker& password_change_success_tracker() {
     return *password_change_success_tracker_;
-  }
-  MockPasswordScriptsFetcher& password_scripts_fetcher() {
-    return *password_scripts_fetcher_;
   }
   syncer::TestSyncService& sync_service() { return *sync_service_; }
   SavedPasswordsPresenter& presenter() { return presenter_; }
@@ -352,8 +323,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       CreateAndUseTestAccountPasswordStore(&profile_);
   raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
       CreateAndUsePasswordChangeSuccessTracker(&profile_);
-  raw_ptr<MockPasswordScriptsFetcher> password_scripts_fetcher_ =
-      CreateAndUsePasswordScriptsFetcher(&profile_);
   raw_ptr<syncer::TestSyncService> sync_service_ =
       CreateAndUseSyncService(&profile_);
   IdGenerator<password_manager::CredentialUIEntry,
@@ -692,7 +661,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialIdMismatch) {
   EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
 }
 
-TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedManual) {
+TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStarted) {
   // Create an insecure credential.
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
   AddIssueToForm(&form, InsecureType::kLeaked);
@@ -709,42 +678,7 @@ TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedManual) {
           GURL(*credential.change_password_url), credential.username,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
 
-  delegate().RecordChangePasswordFlowStarted(credential,
-                                             /*is_manual_flow=*/true);
-}
-
-TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedAutomated) {
-  // Create an insecure credential.
-  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  PasswordUiEntry credential =
-      std::move(delegate().GetInsecureCredentials().at(0));
-  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
-
-  EXPECT_CALL(
-      password_change_success_tracker(),
-      OnChangePasswordFlowStarted(
-          GURL(*credential.change_password_url), credential.username,
-          PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
-          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
-
-  delegate().RecordChangePasswordFlowStarted(credential,
-                                             /*is_manual_flow=*/false);
-}
-
-TEST_F(PasswordCheckDelegateTest, RefreshScriptsIfNecessary) {
-  base::OnceClosure refresh_callback = base::DoNothing();
-  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(MoveArg<0>(&refresh_callback));
-
-  MockRefreshScriptsIfNecessaryCallback callback;
-  delegate().RefreshScriptsIfNecessary(callback.Get());
-
-  EXPECT_CALL(callback, Run);
-  std::move(refresh_callback).Run();
+  delegate().RecordChangePasswordFlowStarted(credential);
 }
 
 TEST_F(PasswordCheckDelegateTest,
@@ -766,8 +700,7 @@ TEST_F(PasswordCheckDelegateTest,
           GURL(*credential.change_password_url), credential.username,
           PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
 
-  delegate().RecordChangePasswordFlowStarted(credential,
-                                             /*is_manual_flow=*/true);
+  delegate().RecordChangePasswordFlowStarted(credential);
 }
 
 TEST_F(PasswordCheckDelegateTest,
@@ -788,8 +721,7 @@ TEST_F(PasswordCheckDelegateTest,
               OnManualChangePasswordFlowStarted)
       .Times(0);
 
-  delegate().RecordChangePasswordFlowStarted(credential,
-                                             /*is_manual_flow=*/true);
+  delegate().RecordChangePasswordFlowStarted(credential);
 }
 
 // Tests that we don't create an entry in the database if there is no matching
@@ -1186,392 +1118,6 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
   EXPECT_EQ(GURL(*delegate().GetInsecureCredentials().at(1).change_password_url)
                 .path(),
             password_manager::kWellKnownChangePasswordPath);
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  // Add two forms, but only one already has a known issue.
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
-
-  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
-  store().AddLogin(form2);
-  const url::Origin origin2 = url::Origin::Create(GURL(kExampleOrg));
-
-  RunUntilIdle();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
-      .WillOnce(Return(false));
-
-  // Only the form with the known issue shows up and does not have a startable
-  // script.
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  kUsername1, /*has_startable_script=*/false)));
-
-  // Simulate a stale cache.
-  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(true));
-
-  base::OnceClosure refresh_callback;
-  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(MoveArg<0>(&refresh_callback));
-
-  MockStartPasswordCheckCallback start_callback1;
-  delegate().StartPasswordCheck(start_callback1.Get());
-
-  // Starting another check will indicate that the first one is still running.
-  MockStartPasswordCheckCallback start_callback2;
-  EXPECT_CALL(start_callback2, Run(BulkLeakCheckService::State::kRunning));
-  delegate().StartPasswordCheck(start_callback2.Get());
-
-  EXPECT_CALL(start_callback1, Run(BulkLeakCheckService::State::kRunning));
-
-  // From now on, always return that scripts are available.
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillRepeatedly(Return(true));
-
-  // Signal that scripts are fetched.
-  std::move(refresh_callback).Run();
-
-  static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
-  static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(kUsername2, kPassword2), IsLeaked(true));
-  RunUntilIdle();
-
-  EXPECT_THAT(
-      delegate().GetInsecureCredentials(),
-      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                               kUsername1, /*has_startable_script=*/true),
-                           ExpectCredentialWithScriptInfo(
-                               kUsername2, /*has_startable_script=*/true)));
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BulkCheck.ScriptsCacheState",
-      PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate, 1);
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  // Add two forms: One that is leaked and weak and one that is only weak.
-  PasswordForm form1 =
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
-
-  PasswordForm form2 =
-      MakeSavedPassword(kExampleOrg, kUsername2, kWeakPassword2);
-  store().AddLogin(form2);
-  const url::Origin origin2 = url::Origin::Create(GURL(kExampleOrg));
-
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillRepeatedly(Return(true));
-
-  RunUntilIdle();
-  delegate().StartPasswordCheck();
-  RunUntilIdle();
-
-  // By default only the first form has a startable script because it is also
-  // leaked.
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              ElementsAre(ExpectCredentialWithScriptInfo(
-                              kUsername1, /*has_startable_script=*/true),
-                          ExpectCredentialWithScriptInfo(
-                              kUsername2, /*has_startable_script=*/false)));
-
-  // After setin the feature parameter for weak credentials to `true` ...
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      password_manager::features::kPasswordChangeInSettings,
-      {{"weak_credentials", "true"}});
-
-  // ... both credentials are marked as having a password change script.
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              ElementsAre(ExpectCredentialWithScriptInfo(
-                              kUsername1, /*has_startable_script=*/true),
-                          ExpectCredentialWithScriptInfo(
-                              kUsername2, /*has_startable_script=*/true)));
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillByDefault(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Disable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
-
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-
-  RunUntilIdle();
-
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  kUsername1, /*has_startable_script=*/false)));
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.BulkCheck.ScriptsCacheState", 0u);
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_EmptyUsername) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-
-  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillByDefault(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, u"", kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-
-  RunUntilIdle();
-
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  u"", /*has_startable_script=*/false)));
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_AndroidCredential) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-
-  EXPECT_CALL(password_scripts_fetcher(),
-              IsScriptAvailable(url::Origin::Create(GURL(kExampleCom))))
-      .WillRepeatedly(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  PasswordForm form = MakeSavedAndroidPassword(
-      kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword2);
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  store().AddLogin(form);
-
-  RunUntilIdle();
-
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  kUsername2, /*has_startable_script=*/true)));
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_AccountStoreUser) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kPasswordChangeInSettings,
-       password_manager::features::kPasswordChangeAccountStoreUsers},
-      /*disabled_features=*/{});
-
-  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillByDefault(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Mark this user as an account store user.
-  sync_service().SetHasSyncConsent(false);
-
-  PasswordForm form1 =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"",
-                        PasswordForm::Store::kAccountStore);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  account_store().AddLogin(form1);
-
-  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
-  AddIssueToForm(&form2, InsecureType::kLeaked);
-  store().AddLogin(form2);
-
-  RunUntilIdle();
-
-  // Only the account store credential is stored in a remote store - therefore
-  // the profile store credential gets marked as not having a change script.
-  EXPECT_THAT(
-      delegate().GetInsecureCredentials(),
-      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                               kUsername1, /*has_startable_script=*/true),
-                           ExpectCredentialWithScriptInfo(
-                               kUsername2, /*has_startable_script=*/false)));
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       HasStartableScript_AccountStoreUserFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kPasswordChangeInSettings},
-      /*disabled_features=*/{
-          password_manager::features::kPasswordChangeAccountStoreUsers});
-
-  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillByDefault(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Mark this user as an account store user.
-  sync_service().SetHasSyncConsent(false);
-
-  PasswordForm form1 =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"",
-                        PasswordForm::Store::kAccountStore);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  account_store().AddLogin(form1);
-
-  RunUntilIdle();
-
-  // Only the account store credential is stored in a remote store - therefore
-  // the profile store credential gets marked as not having a change script.
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  kUsername1, /*has_startable_script=*/false)));
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillByDefault(Return(true));
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-
-  RunUntilIdle();
-
-  EXPECT_THAT(delegate().GetInsecureCredentials(),
-              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
-                  kUsername1, /*has_startable_script=*/false)));
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.BulkCheck.ScriptsCacheState", 0u);
-}
-
-TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
-
-  RunUntilIdle();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(false));
-  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary).Times(0);
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
-      .WillRepeatedly(Return(true));
-
-  delegate().StartPasswordCheck();
-  event_router_observer().ClearEvents();
-
-  RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BulkCheck.ScriptsCacheState",
-      PasswordCheckScriptsCacheState::kCacheFresh, 1);
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       HasStartableScript_CredentialListUpdateAfterScriptsFetched) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChangeInSettings);
-  base::HistogramTester histogram_tester;
-
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  // Enable password sync.
-  sync_service().GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet(
-          syncer::UserSelectableType::kPasswords));
-
-  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
-
-  RunUntilIdle();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(true));
-  base::OnceClosure refresh_callback;
-  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
-      .WillOnce(MoveArg<0>(&refresh_callback));
-
-  delegate().StartPasswordCheck();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
-      .WillRepeatedly(Return(true));
-
-  event_router_observer().ClearEvents();
-
-  // Signal that scripts are fetched.
-  std::move(refresh_callback).Run();
-  RunUntilIdle();
-
-  // Check that an update event was fired after the scripts were fetched.
-  EXPECT_EQ(
-      events::PASSWORDS_PRIVATE_ON_INSECURE_CREDENTIALS_CHANGED,
-      event_router_observer()
-          .events()
-          .at(api::passwords_private::OnInsecureCredentialsChanged::kEventName)
-          ->histogram_value);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BulkCheck.ScriptsCacheState",
-      PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate, 1);
 }
 
 }  // namespace extensions

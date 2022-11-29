@@ -72,7 +72,6 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     isAndroidCredential: params.isAndroidCredential || false,
     note: note,
     password: '',
-    hasStartableScript: false,
   };
 }
 
@@ -163,7 +162,6 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     id: id || 0,
     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     changePasswordUrl: `http://${url}/`,
-    hasStartableScript: false,
     urls: {
       signonRealm: `http://${url}/`,
       shown: url,

@@ -151,7 +151,6 @@ chrome.passwordsPrivate.CompromisedInfo;
  *   isAndroidCredential: boolean,
  *   note: (string|undefined),
  *   changePasswordUrl: (string|undefined),
- *   hasStartableScript: boolean,
  *   compromisedInfo: (!chrome.passwordsPrivate.CompromisedInfo|undefined)
  * }}
  */
@@ -269,11 +268,10 @@ chrome.passwordsPrivate.requestPlaintextPassword = function(id, reason, callback
  * corresponding to |ids|. Note that on some operating systems, this call may
  * result in an OS-level reauthentication. Once the PasswordUiEntry has been
  * fetched, it will be returned via |callback|.
- * @param {!Array<number>} ids The id for the password entry being being
- *     retrieved.
+ * @param {!Array<number>} ids Ids for the password entries being retrieved.
  * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
  *     callback The callback that gets invoked with the retrieved
- *     PasswordUiEntry.
+ *     PasswordUiEntries.
  */
 chrome.passwordsPrivate.requestCredentialsDetails = function(ids, callback) {};
 
@@ -285,11 +283,11 @@ chrome.passwordsPrivate.requestCredentialsDetails = function(ids, callback) {};
 chrome.passwordsPrivate.getSavedPasswordList = function(callback) {};
 
 /**
- * Returns the list of Credentials groups.
+ * Returns the list of Credential groups.
  * @param {function(!Array<!chrome.passwordsPrivate.CredentialGroup>): void}
  *     callback Called with the list of groups.
  */
-chrome.passwordsPrivate.getCredentialsGroups = function(callback) {};
+chrome.passwordsPrivate.getCredentialGroups = function(callback) {};
 
 /**
  * Returns the list of password exceptions.
@@ -380,17 +378,9 @@ chrome.passwordsPrivate.unmuteInsecureCredential = function(credential, callback
  * Records that a change password flow was started for |credential|.
  * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential The credential
  *     for which the flow was triggered.
- * @param {boolean} isManualFlow
  * @param {function(): void=} callback
  */
-chrome.passwordsPrivate.recordChangePasswordFlowStarted = function(credential, isManualFlow, callback) {};
-
-/**
- * Refreshes the cache for automatic password change scripts if it is stale.
- * Invokes `callback` on completion.
- * @param {function(): void=} callback
- */
-chrome.passwordsPrivate.refreshScriptsIfNecessary = function(callback) {};
+chrome.passwordsPrivate.recordChangePasswordFlowStarted = function(credential, callback) {};
 
 /**
  * Starts a check for insecure passwords. Invokes |callback| on completion.
@@ -410,15 +400,6 @@ chrome.passwordsPrivate.stopPasswordCheck = function(callback) {};
  *     callback
  */
 chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
-
-/**
- * Starts an automated password change for |credential|. Invokes |callback| on
- * completion with a boolean parameter that signals whether the credential was
- * changed successfully.
- * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential
- * @param {function(boolean): void=} callback
- */
-chrome.passwordsPrivate.startAutomatedPasswordChange = function(credential, callback) {};
 
 /**
  * Requests whether the account store is a default location for saving

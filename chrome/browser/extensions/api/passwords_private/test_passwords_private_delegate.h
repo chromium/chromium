@@ -84,18 +84,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Fake implementation of `RecordChangePasswordFlowStarted`. Sets the url
   // returned by `last_change_flow_url()`.
   void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential,
-      bool is_manual_flow) override;
-  // Fake implementation of `RefreshScriptsIfNecessary` that directly calls
-  // `callback`.
-  void RefreshScriptsIfNecessary(
-      RefreshScriptsIfNecessaryCallback callback) override;
+      const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
-  void StartAutomatedPasswordChange(
-      const api::passwords_private::PasswordUiEntry& credential,
-      StartAutomatedPasswordChangeCallback callback) override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
   void ExtendAuthValidity() override;

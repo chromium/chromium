@@ -396,7 +396,6 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
-          hasStartableScript: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -424,7 +423,6 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
-          hasStartableScript: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -454,7 +452,6 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
-          hasStartableScript: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -482,7 +479,6 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
-          hasStartableScript: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -502,7 +498,7 @@ var availableTests = [
         });
   },
 
-  function recordChangePasswordFlowStartedManual() {
+  function recordChangePasswordFlowStarted() {
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         {
           id: 0,
@@ -512,7 +508,6 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
-          hasStartableScript: false,
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
           compromisedInfo: {
@@ -523,36 +518,7 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
-        },
-        true, () => {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
-  },
-
-  function recordChangePasswordFlowStartedAutomated() {
-    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
-        {
-          id: 0,
-          urls: {
-            shown: 'example.com',
-            link: 'https://example.com',
-            signonRealm: 'https://example.com',
-          },
-          isAndroidCredential: false,
-          hasStartableScript: false,
-          username: 'alice',
-          changePasswordUrl: 'https://example.com/.well-known/change-password',
-          compromisedInfo: {
-            compromiseTime: COMPROMISE_TIME,
-            elapsedTimeSinceCompromise: '3 days ago',
-            compromiseTypes: ['LEAKED'],
-            isMuted: false,
-          },
-          storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-          note: '',
-        },
-        false, () => {
+        }, () => {
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
@@ -568,7 +534,6 @@ var availableTests = [
             signonRealm: '',
           },
           isAndroidCredential: true,
-          hasStartableScript: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -578,18 +543,10 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
-        },
-        true, () => {
+        }, () => {
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
-  },
-
-  function refreshScriptsIfNecessary() {
-    chrome.passwordsPrivate.refreshScriptsIfNecessary(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
   },
 
   function startPasswordCheck() {
@@ -621,63 +578,6 @@ var availableTests = [
       chrome.test.assertEq('5 mins ago', status.elapsedTimeSinceLastCheck);
       chrome.test.succeed();
     });
-  },
-
-  function startAutomatedPasswordChange() {
-    chrome.passwordsPrivate.startAutomatedPasswordChange(
-        {
-          id: 0,
-          urls: {
-            shown: 'example.com',
-            link: 'https://example.com',
-            signonRealm: 'https://example.com',
-          },
-          isAndroidCredential: false,
-          hasStartableScript: true,
-          username: 'alice',
-          changePasswordUrl: 'https://example.com/.well-known/change-password',
-          compromisedInfo: {
-            compromiseTime: COMPROMISE_TIME,
-            elapsedTimeSinceCompromise: '3 days ago',
-            compromiseTypes: ['LEAKED'],
-            isMuted: false,
-          },
-          storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-          note: '',
-        },
-        (status) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq(true, status);
-          chrome.test.succeed();
-        });
-  },
-
-  function startAutomatedPasswordChangeWithEmptyUrl() {
-    chrome.passwordsPrivate.startAutomatedPasswordChange(
-        {
-          id: 0,
-          urls: {
-            shown: 'example.com',
-            link: 'https://example.com',
-            signonRealm: 'https://example.com',
-          },
-          isAndroidCredential: false,
-          hasStartableScript: true,
-          username: 'alice',
-          compromisedInfo: {
-            compromiseTime: COMPROMISE_TIME,
-            elapsedTimeSinceCompromise: '3 days ago',
-            compromiseTypes: ['LEAKED'],
-            isMuted: false,
-          },
-          storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-          note: '',
-        },
-        (status) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq(false, status);
-          chrome.test.succeed();
-        });
   },
 
   function movePasswordsToAccount() {
