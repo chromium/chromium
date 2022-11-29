@@ -2153,36 +2153,6 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledOn32Bit) {
   EXPECT_EQ(request.memory_mib(), k32bitVmRamMaxMib);
 }
 
-// Test that the correct BalloonPolicyOptions are set on StartArcVmRequest when
-// kVmBalloonPolicy is enabled.
-TEST_F(ArcVmClientAdapterTest, ArcVmBalloonPolicyEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams params;
-  params["moderate_kib"] = "1";
-  params["critical_kib"] = "2";
-  params["reclaim_kib"] = "3";
-  feature_list.InitAndEnableFeatureWithParameters(kVmBalloonPolicy, params);
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.has_balloon_policy());
-  const auto& policy = request.balloon_policy();
-  EXPECT_EQ(policy.moderate_target_cache(), 1024);
-  EXPECT_EQ(policy.critical_target_cache(), 2048);
-  EXPECT_EQ(policy.reclaim_target_cache(), 3072);
-}
-
-// Test that BalloonPolicyOptions are not set on StartArcVmRequest when
-// kVmBalloonPolicy is disabled.
-TEST_F(ArcVmClientAdapterTest, ArcVmBalloonPolicyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kVmBalloonPolicy);
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.has_balloon_policy());
-}
-
 // Test that the request passes an empty disk for the demo image
 // or the block apex composite disk when they are not present.
 // There should be two empty disks (/dev/block/vdc and /dev/block/vdd)

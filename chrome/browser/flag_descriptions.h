@@ -2735,9 +2735,6 @@ extern const char kArcUpdateO4CListViaA2C2Desc[];
 extern const char kArcUsbDeviceDefaultAttachToVmName[];
 extern const char kArcUsbDeviceDefaultAttachToVmDescription[];
 
-extern const char kArcVmBalloonPolicyName[];
-extern const char kArcVmBalloonPolicyDesc[];
-
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 

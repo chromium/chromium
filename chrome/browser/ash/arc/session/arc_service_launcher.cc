@@ -311,8 +311,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
-    if (base::FeatureList::IsEnabled(kVmBalloonPolicy))
-      ArcMemoryPressureBridge::GetForBrowserContext(profile);
+    ArcMemoryPressureBridge::GetForBrowserContext(profile);
   } else {
     // ARC Container-only services.
     ArcAppfuseBridge::GetForBrowserContext(profile);

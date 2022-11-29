@@ -367,28 +367,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     VLOG(1) << "VmMemorySize is disabled.";
   }
 
-  // Specify balloon policy.
-  if (base::FeatureList::IsEnabled(kVmBalloonPolicy)) {
-    vm_tools::concierge::BalloonPolicyOptions* balloon_policy =
-        request.mutable_balloon_policy();
-    const int64_t moderate_kib = kVmBalloonPolicyModerateKiB.Get();
-    const int64_t critical_kib = kVmBalloonPolicyCriticalKiB.Get();
-    const int64_t reclaim_kib = kVmBalloonPolicyReclaimKiB.Get();
-    balloon_policy->set_moderate_target_cache(moderate_kib * 1024);
-    balloon_policy->set_critical_target_cache(critical_kib * 1024);
-    balloon_policy->set_reclaim_target_cache(reclaim_kib * 1024);
-    balloon_policy->set_responsive(kVmBalloonPolicyResponsive.Get());
-    balloon_policy->set_responsive_timeout_ms(
-        kVmBalloonPolicyResponsiveTimeoutMs.Get());
-    balloon_policy->set_responsive_max_deflate_bytes(
-        kVmBalloonPolicyResponsiveMaxDeflateBytes.Get());
-    VLOG(1) << "Use LimitCacheBalloonPolicy. ModerateKiB=" << moderate_kib
-            << ", CriticalKiB=" << critical_kib
-            << ", ReclaimKiB=" << reclaim_kib;
-  } else {
-    VLOG(1) << "Use BalanceAvailableBalloonPolicy";
-  }
-
   AppendParamsFromStartParams(request, start_params);
 
   auto* mini_instance_request = request.mutable_mini_instance_request();

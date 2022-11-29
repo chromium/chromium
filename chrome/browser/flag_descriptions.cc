@@ -4754,12 +4754,6 @@ const char kArcUsbDeviceDefaultAttachToVmName[] =
 const char kArcUsbDeviceDefaultAttachToVmDescription[] =
     "When ARCVM is enabled, always attach unclaimed USB devices to ARCVM";
 
-const char kArcVmBalloonPolicyName[] =
-    "Enable ARCVM limit cache balloon policy";
-const char kArcVmBalloonPolicyDesc[] =
-    "Trigger reclaim in ARCVM to reduce memory use when ChromeOS is running "
-    "low on memory.";
-
 const char kArcEnableUsapName[] =
     "Enable ARC Unspecialized Application Processes";
 const char kArcEnableUsapDesc[] =

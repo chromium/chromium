@@ -65,15 +65,8 @@ extern const base::FeatureParam<int> kVmMemoryPSIReportsPeriod;
 BASE_DECLARE_FEATURE(kVmMemorySize);
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
-BASE_DECLARE_FEATURE(kVmBalloonPolicy);
-extern const base::FeatureParam<int> kVmBalloonPolicyModerateKiB;
-extern const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB;
-extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
 BASE_DECLARE_FEATURE(kVmBroadcastPreNotifyANR);
 BASE_DECLARE_FEATURE(kVmGmsCoreLowMemoryKillerProtection);
-extern const base::FeatureParam<bool> kVmBalloonPolicyResponsive;
-extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs;
-extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes;
 
 }  // namespace arc
 

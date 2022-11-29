@@ -304,41 +304,6 @@ const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
 const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
                                                   INT32_MAX};
 
-// Controls whether to use the new limit cache balloon policy. If disabled the
-// old balance available balloon policy is used. If enabled, ChromeOS's Resource
-// Manager (resourced) is able to kill ARCVM apps by sending a memory pressure
-// signal.
-// The limit cache balloon policy inflates the balloon to limit the kernel page
-// cache inside ARCVM if memory in the host is low. See FeatureParams below for
-// the conditions that limit cache. See mOomMinFreeHigh and mOomAdj in
-// frameworks/base/services/core/java/com/android/server/am/ProcessList.java
-// to see how LMKD maps kernel page cache to a priority level of app to kill.
-// To ensure fairness between tab manager discards and ARCVM low memory kills,
-// we want to stop LMKD killing things out of turn. We do this by making sure
-// ARCVM never has it's kernel page cache drop below the level that LMKD will
-// start killing.
-BASE_FEATURE(kVmBalloonPolicy,
-             "ArcVmBalloonPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
-// moderate memory pressure. 0 for no limit.
-const base::FeatureParam<int> kVmBalloonPolicyModerateKiB{&kVmBalloonPolicy,
-                                                          "moderate_kib", 0};
-
-// The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
-// critical memory pressure. 0 for no limit. The default value of 322560KiB
-// corresponds to the level LMKD will start to kill the lowest priority cached
-// app.
-const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB{
-    &kVmBalloonPolicy, "critical_kib", 322560};
-
-// The maximum amount of kernel page cache ARCVM can have when ChromeOS is
-// reclaiming. 0 for no limit. The default value of 322560KiB corresponds to the
-// level LMKD will start to kill the lowest priority cached app.
-const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
-                                                         "reclaim_kib", 322560};
-
 // Controls experimental key GMS Core and related services protection against to
 // be killed by low memory killer in ARCVM.
 BASE_FEATURE(kVmGmsCoreLowMemoryKillerProtection,
@@ -350,23 +315,5 @@ BASE_FEATURE(kVmGmsCoreLowMemoryKillerProtection,
 BASE_FEATURE(kVmBroadcastPreNotifyANR,
              "ArcVmBroadcastPreAnrHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If set, enable responsive balloon sizing. Concierge will listen on a VSOCK
-// for connections from LMKD in Android. When LMKD is about to kill an App, it
-// will signal the balloon sizing code, which may deflate the balloon instead
-// of killing the app.
-const base::FeatureParam<bool> kVmBalloonPolicyResponsive{&kVmBalloonPolicy,
-                                                          "responsive", true};
-
-// The amount of time LMKD will wait for a response from concierge before
-// killing an app.
-const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs{
-    &kVmBalloonPolicy, "responsive_timeout_ms", 100};
-
-// If an app should not be killed, the balloon will be deflated by
-// min(app_size, responsive_max_deflate_bytes), so that large apps don't
-// completely deflate the balloon.
-const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes{
-    &kVmBalloonPolicy, "responsive_max_deflate_bytes", 256 * 1024 * 1024};
 
 }  // namespace arc

@@ -891,8 +891,6 @@ const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kWebAppsCrosapiInternalName[] = "web-apps-crosapi";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
-const char kArcVmBalloonPolicyInternalName[] =
-    "arc-use-limit-cache-balloon-policy";
 
 const FeatureEntry::Choice kPreferDcheckChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -5038,10 +5036,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcUsbDeviceDefaultAttachToVmName,
      flag_descriptions::kArcUsbDeviceDefaultAttachToVmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUsbDeviceDefaultAttachToArcVm)},
-    {kArcVmBalloonPolicyInternalName,
-     flag_descriptions::kArcVmBalloonPolicyName,
-     flag_descriptions::kArcVmBalloonPolicyDesc, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kVmBalloonPolicy)},
     {"enable-arc-host-vpn", flag_descriptions::kEnableArcHostVpnName,
      flag_descriptions::kEnableArcHostVpnDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcHostVpn)},
@@ -9621,10 +9615,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
-    return !arc::IsArcVmEnabled();
-  }
-
-  if (!strcmp(kArcVmBalloonPolicyInternalName, entry.internal_name)) {
     return !arc::IsArcVmEnabled();
   }
 
