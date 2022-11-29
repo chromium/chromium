@@ -10,7 +10,6 @@
 import {constants} from '../../common/constants.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {CompositeTts} from '../common/composite_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
@@ -18,6 +17,7 @@ import * as ttsTypes from '../common/tts_types.js';
 
 import {AbstractTts} from './abstract_tts.js';
 import {ChromeVox} from './chromevox.js';
+import {CompositeTts} from './composite_tts.js';
 import {ConsoleTts} from './console_tts.js';
 import {PhoneticData} from './phonetic_data.js';
 
