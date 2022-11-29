@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
@@ -24,6 +25,9 @@ struct WebAppInstallInfo;
 namespace content {
 class WebContents;
 }  // namespace content
+
+class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 namespace web_app {
 
@@ -134,6 +138,8 @@ class WebAppCommandScheduler {
 
   // Schedules provided callback after `lock` is granted. The callback can
   // access web app resources through the `lock`.
+  // If the system is shutting down, or has already shut down, then the callback
+  // will not be called & will simply be destroyed.
   template <typename LockType,
             typename DescriptionType = typename LockType::LockDescription>
   void ScheduleCallbackWithLock(
@@ -144,8 +150,12 @@ class WebAppCommandScheduler {
   // operations.
 
  private:
+  bool IsShuttingDown() const;
+
   const raw_ref<Profile> profile_;
+  // Safe because we live on the WebAppProvider.
   raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
+
   bool is_in_shutdown_ = false;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};
