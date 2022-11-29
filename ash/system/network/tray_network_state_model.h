@@ -82,6 +82,8 @@ class ASH_EXPORT TrayNetworkStateModel {
   }
 
  private:
+  friend class VPNFeaturePodControllerTest;
+
   void OnGetDeviceStateList(
       std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
           devices);

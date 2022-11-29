@@ -3023,6 +3023,7 @@ test("ash_unittests") {
     "system/network/network_list_view_controller_unittest.cc",
     "system/network/network_list_wifi_header_view_unittest.cc",
     "system/network/sms_observer_unittest.cc",
+    "system/network/vpn_feature_pod_controller_unittest.cc",
     "system/network/vpn_list_unittest.cc",
     "system/network/wifi_toggle_notification_controller_unittest.cc",
     "system/night_light/night_light_controller_unittest.cc",

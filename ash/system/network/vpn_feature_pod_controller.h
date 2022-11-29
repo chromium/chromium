@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_NETWORK_VPN_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_NETWORK_VPN_FEATURE_POD_CONTROLLER_H_
 
+#include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -14,8 +15,8 @@ namespace ash {
 class UnifiedSystemTrayController;
 
 // Controller of vpn feature pod button.
-class VPNFeaturePodController : public FeaturePodControllerBase,
-                                public TrayNetworkStateObserver {
+class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
+                                           public TrayNetworkStateObserver {
  public:
   explicit VPNFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
@@ -27,6 +28,7 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
 
@@ -36,9 +38,11 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
  private:
   void Update();
 
-  // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
+
+  // Owned by views hierarchy.
   FeaturePodButton* button_ = nullptr;
+  FeatureTile* tile_ = nullptr;
 };
 
 }  // namespace ash
