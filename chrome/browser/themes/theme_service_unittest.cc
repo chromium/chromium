@@ -119,7 +119,7 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
   }
 
  private:
-  ui::LinuxUiTheme* const linux_ui_theme_;
+  const raw_ptr<ui::LinuxUiTheme> linux_ui_theme_;
 };
 #endif
 

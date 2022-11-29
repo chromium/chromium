@@ -74,8 +74,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   using SequenceType = unsigned int;
 
   struct VisualInfo {
-    const Format* format;
-    const VisualType* visual_type;
+    raw_ptr<const Format> format;
+    raw_ptr<const VisualType> visual_type;
   };
 
   // Gets or creates the thread local connection instance.

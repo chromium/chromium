@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "gin/array_buffer.h"
@@ -45,7 +46,7 @@ class FakeAutomationTreeManagerOwner : public AutomationTreeManagerOwner {
   }
 
  private:
-  AutomationV8Bindings* automation_v8_bindings_ = nullptr;
+  raw_ptr<AutomationV8Bindings> automation_v8_bindings_ = nullptr;
 };
 
 // A skeleton AutomationV8Router implementation for use by a test.

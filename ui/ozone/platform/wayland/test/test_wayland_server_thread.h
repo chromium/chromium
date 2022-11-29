@@ -71,7 +71,7 @@ struct TestServerListener {
   explicit TestServerListener(TestWaylandServerThread* server)
       : test_server(server) {}
   wl_listener listener;
-  TestWaylandServerThread* const test_server;
+  const raw_ptr<TestWaylandServerThread> test_server;
 };
 
 class TestSelectionDeviceManager;

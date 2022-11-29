@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
@@ -213,7 +214,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
       dbus::ExportedObject::ResponseSender response_sender);
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  dbus::Bus* bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Adapter used for socket connections by this class.
   dbus::ObjectPath adapter_path_;

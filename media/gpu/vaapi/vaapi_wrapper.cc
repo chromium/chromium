@@ -3478,7 +3478,7 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
     // mismatch. https://github.com/intel/libva/issues/597
     const VAStatus va_res = vaCreateBuffer(
         va_display_, va_context_id_, va_buffer.type, va_buffer_size, 1,
-        const_cast<void*>(va_buffer.data), &buffer_id);
+        const_cast<void*>(va_buffer.data.get()), &buffer_id);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
   }
 

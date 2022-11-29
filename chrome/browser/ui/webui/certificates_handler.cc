@@ -108,7 +108,7 @@ struct DictionaryIdComparator {
            UCOL_LESS;
   }
 
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 std::string NetErrorToString(int net_error) {

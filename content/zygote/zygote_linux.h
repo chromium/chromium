@@ -14,6 +14,7 @@
 #include "base/containers/small_map.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/global_descriptors.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
@@ -45,7 +46,7 @@ class Zygote {
     // Pid from inside the Zygote's PID namespace.
     base::ProcessHandle internal_pid;
     // Keeps track of which fork delegate helper the process was started from.
-    ZygoteForkDelegate* started_from_helper;
+    raw_ptr<ZygoteForkDelegate> started_from_helper;
     // Records when the browser requested the zygote to reap this process.
     base::TimeTicks time_of_reap_request;
     // Notes whether the zygote has sent SIGKILL to this process.

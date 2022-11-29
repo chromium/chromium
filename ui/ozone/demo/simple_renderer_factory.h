@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/ozone/demo/renderer_factory.h"
 
@@ -47,7 +48,7 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace ui

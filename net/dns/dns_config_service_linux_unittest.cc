@@ -276,7 +276,7 @@ class TestResolvReader : public ResolvReader {
 
  private:
   std::unique_ptr<TestScopedResState> value_;
-  BlockingHelper* blocking_helper_ = nullptr;
+  raw_ptr<BlockingHelper> blocking_helper_ = nullptr;
 };
 
 class TestNsswitchReader : public NsswitchReader {

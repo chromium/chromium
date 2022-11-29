@@ -38,6 +38,7 @@ chrome/installer/mini_installer/
 
 # DEPS prohibits includes from base/
 chrome/install_static
+net/cert/pki
 
 # Exclude pocdll.dll as it doesn't depend on //base and only used for testing.
 sandbox/win/sandbox_poc/pocdll
@@ -46,6 +47,7 @@ sandbox/win/sandbox_poc/pocdll
 # anything from /base.
 sandbox/linux/system_headers/
 components/history_clusters/core/
+ui/qt/
 
 # The folder holds headers that are duplicated in the Android source and need to
 # provide a stable C ABI. Can't depend on //base.

@@ -198,7 +198,7 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
 
   void ResetNativeNavButtonImagesFromButtonProvider() {
     struct {
-      views::ImageButton* button;
+      raw_ptr<views::ImageButton> button;
       ui::NavButtonProvider::FrameButtonDisplayType type;
     } const kButtons[] = {
         {minimize_button_,

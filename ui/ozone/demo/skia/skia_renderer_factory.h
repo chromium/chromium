@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/demo/renderer_factory.h"
@@ -38,7 +39,7 @@ class SkiaRendererFactory : public RendererFactory {
                                            const gfx::Size& size) override;
 
  private:
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace ui

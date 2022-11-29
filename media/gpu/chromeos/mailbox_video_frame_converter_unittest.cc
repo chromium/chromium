@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
@@ -104,7 +105,7 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  StrictMock<MockGpuDelegate>* mock_gpu_delegate_;
+  raw_ptr<StrictMock<MockGpuDelegate>> mock_gpu_delegate_;
 
   // Note: we intentionally make all the mock callbacks members of the test
   // fixture instead of limiting their lifetime to each test. The reason is that

@@ -9,6 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "dbus/message.h"
@@ -219,7 +220,7 @@ base::Value PopDataAsValue(MessageReader* reader) {
 
 void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
   struct Visitor {
-    MessageWriter* writer;
+    raw_ptr<MessageWriter> writer;
 
     void operator()(absl::monostate) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;
@@ -259,7 +260,7 @@ void AppendBasicTypeValueDataAsVariant(MessageWriter* writer,
 
 void AppendValueData(MessageWriter* writer, base::ValueView value) {
   struct Visitor {
-    MessageWriter* writer;
+    raw_ptr<MessageWriter> writer;
 
     void operator()(absl::monostate) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;

@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -40,7 +41,7 @@ struct DecodedImage {
   uint32_t number_of_planes;  // Can not be greater than kMaxNumberPlanes.
   gfx::Size size;
   struct {
-    uint8_t* data;
+    raw_ptr<uint8_t> data;
     int stride;
   } planes[kMaxNumberPlanes];
 };

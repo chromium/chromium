@@ -58,7 +58,7 @@ void NativeEventObserver::OnWindowEventDispatcherStartedProcessing(
 void NativeEventObserver::OnWindowEventDispatcherFinishedProcessingEvent(
     aura::WindowEventDispatcher* dispatcher) {
   EventInfo& info = events_being_processed_.back();
-  did_run_event_callback_.Run(info.unique_id);
+  did_run_event_callback_.Run(info.unique_id.get());
   events_being_processed_.pop_back();
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

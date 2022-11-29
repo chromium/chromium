@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_H265_VAAPI_WRAPPER_H_
 #define MEDIA_GPU_VAAPI_TEST_H265_VAAPI_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "media/gpu/vaapi/test/h265_dpb.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
@@ -83,7 +84,7 @@ class H265VaapiWrapper {
   struct VABufferDescriptor {
     VABufferType type;
     size_t size;
-    const void* data;
+    raw_ptr<const void> data;
   };
   [[nodiscard]] bool SubmitBuffers(
       const std::vector<VABufferDescriptor>& va_buffers);

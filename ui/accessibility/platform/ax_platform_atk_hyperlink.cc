@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enum_localization_util.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
@@ -15,7 +16,7 @@
 namespace ui {
 
 struct _AXPlatformAtkHyperlinkPrivate {
-  AXPlatformNodeAuraLinux* platform_node = nullptr;
+  raw_ptr<AXPlatformNodeAuraLinux> platform_node = nullptr;
 };
 
 static gpointer kAXPlatformAtkHyperlinkParentClass = nullptr;

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -92,7 +93,7 @@ class CONTENT_EXPORT NativeEventObserver
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   struct EventInfo {
-    const void* unique_id;
+    raw_ptr<const void> unique_id;
   };
   std::vector<EventInfo> events_being_processed_;
 #endif

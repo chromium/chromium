@@ -356,8 +356,8 @@ struct BitstreamQualityMetrics {
                    uint32_t target_bitrate,
                    uint32_t actual_bitrate) const;
 
-  const PSNRVideoFrameValidator* const psnr_validator;
-  const SSIMVideoFrameValidator* const ssim_validator;
+  const raw_ptr<const PSNRVideoFrameValidator> psnr_validator;
+  const raw_ptr<const SSIMVideoFrameValidator> ssim_validator;
 };
 
 BitstreamQualityMetrics::BitstreamQualityMetrics(

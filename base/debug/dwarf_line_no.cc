@@ -1161,7 +1161,7 @@ bool GetLineNumberInfoFromObject(int fd,
 }
 
 struct FrameInfo {
-  uint64_t* cu_offset;
+  raw_ptr<uint64_t> cu_offset;
   uintptr_t pc;
 };
 

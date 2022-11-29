@@ -196,8 +196,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   TextInputMode input_mode_;
   uint32_t input_flags_;
   bool should_do_learning_;
-  TextInputClient* old_client_ = nullptr;
-  TextInputClient* new_client_ = nullptr;
+  raw_ptr<TextInputClient> old_client_ = nullptr;
+  raw_ptr<TextInputClient> new_client_ = nullptr;
 };
 
 class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {

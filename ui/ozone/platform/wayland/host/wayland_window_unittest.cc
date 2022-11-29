@@ -2406,7 +2406,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
       output_manager->GetAllOutputs().rbegin()->second.get();
 
   struct {
-    const WaylandOutput* output;
+    raw_ptr<const WaylandOutput> output;
     const char* label;
   } screen[] = {{main_output, "main output"},
                 {secondary_output, "secondary output"}};

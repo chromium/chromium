@@ -9,6 +9,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
@@ -32,7 +33,7 @@ struct ZwpPrimarySelectionOffer final : public TestSelectionOffer::Delegate {
 
   void OnDestroying() override { delete this; }
 
-  TestSelectionOffer* offer = nullptr;
+  raw_ptr<TestSelectionOffer> offer = nullptr;
 };
 
 struct ZwpPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
@@ -67,7 +68,7 @@ struct ZwpPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
 
   void OnDestroying() override { delete this; }
 
-  TestSelectionDevice* device = nullptr;
+  raw_ptr<TestSelectionDevice> device = nullptr;
 };
 
 struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
@@ -92,7 +93,7 @@ struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
 
   void OnDestroying() override { delete this; }
 
-  TestSelectionSource* source = nullptr;
+  raw_ptr<TestSelectionSource> source = nullptr;
 };
 
 struct ZwpPrimarySelectionDeviceManager
