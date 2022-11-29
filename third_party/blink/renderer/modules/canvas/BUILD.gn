@@ -33,6 +33,8 @@ blink_modules_sources("canvas") {
     "canvas2d/identifiability_study_helper.h",
     "canvas2d/path_2d.cc",
     "canvas2d/path_2d.h",
+    "canvas2d/v8_canvas_style.cc",
+    "canvas2d/v8_canvas_style.h",
     "htmlcanvas/canvas_context_creation_attributes_helpers.cc",
     "htmlcanvas/canvas_context_creation_attributes_helpers.h",
     "htmlcanvas/html_canvas_element_module.cc",

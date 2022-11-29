@@ -42,8 +42,8 @@
     [MeasureAs=Canvas2DImageSmoothingQuality] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles
-    attribute (DOMString or CanvasGradient or CanvasPattern or CSSColorValue) strokeStyle; // (default black)
-    attribute (DOMString or CanvasGradient or CanvasPattern or CSSColorValue) fillStyle; // (default black)
+    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
+    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     CanvasGradient createConicGradient(double startAngle, double centerX, double centerY);

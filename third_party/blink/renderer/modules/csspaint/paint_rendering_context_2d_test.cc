@@ -6,7 +6,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 
 namespace blink {
 namespace {
@@ -15,21 +17,18 @@ static const int kWidth = 50;
 static const int kHeight = 75;
 static const float kZoom = 1.0;
 
-void TrySettingStrokeStyle(PaintRenderingContext2D* ctx,
+void TrySettingStrokeStyle(V8TestingScope& v8_testing_scope,
+                           PaintRenderingContext2D* ctx,
                            const String& expected,
                            const String& value) {
-  ctx->setStrokeStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red"));
-  ctx->setStrokeStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
-  auto* result = ctx->strokeStyle();
-  ASSERT_TRUE(result);
-  EXPECT_EQ(expected, result->GetAsString());
+  auto* script_state = v8_testing_scope.GetScriptState();
+  SetStrokeStyleString(ctx, script_state, "red");
+  SetStrokeStyleString(ctx, script_state, value);
+  EXPECT_EQ(expected, GetStrokeStyleAsString(ctx, script_state));
 }
 
 TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
+  V8TestingScope v8_testing_scope;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   context_settings->setAlpha(false);
@@ -37,8 +36,8 @@ TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
       gfx::Size(kWidth, kHeight), context_settings, kZoom,
       1.0 /* device_scale_factor */,
       scheduler::GetSingleThreadTaskRunnerForTesting());
-  TrySettingStrokeStyle(ctx, "#0000ff", "blue");
-  TrySettingStrokeStyle(ctx, "#000000", "currentColor");
+  TrySettingStrokeStyle(v8_testing_scope, ctx, "#0000ff", "blue");
+  TrySettingStrokeStyle(v8_testing_scope, ctx, "#000000", "currentColor");
 }
 
 TEST(PaintRenderingContext2DTest, testWidthAndHeight) {

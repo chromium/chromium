@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
+
+#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8.h"
+
+namespace blink {
+
+class CanvasStyle;
+class ExceptionState;
+class ScriptState;
+
+// Types of values supported for canvas style.
+enum class V8CanvasStyleType {
+  kPattern,
+  kGradient,
+  kCSSColorValue,
+  kString,
+};
+
+// Temporary structure used when extracting the canvas style from v8.
+struct MODULES_EXPORT V8CanvasStyle {
+  STACK_ALLOCATED();
+
+ public:
+  V8CanvasStyleType type;
+  // Only one of `style` or `string` is set. Which one is set depends on
+  // `type`.
+  CanvasStyle* style = nullptr;
+  String string;
+};
+
+// Sets `style` from v8. Returns true on success, false if there is a conversion
+// error.
+MODULES_EXPORT bool ExtractV8CanvasStyle(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value,
+                                         V8CanvasStyle& style,
+                                         ExceptionState& exception_state);
+
+// Converts `style` to a v8 value.
+MODULES_EXPORT v8::Local<v8::Value> CanvasStyleToV8(ScriptState* script_state,
+                                                    CanvasStyle* style);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_

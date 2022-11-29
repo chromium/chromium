@@ -17,13 +17,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
@@ -195,10 +196,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
       visitor->Trace(alpha_gradient_);
     }
 
-    Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>
-        opaque_gradient_;
-    Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>
-        alpha_gradient_;
+    Member<CanvasGradient> opaque_gradient_;
+    Member<CanvasGradient> alpha_gradient_;
   };
 
   // TODO(Oilpan): avoid tedious part-object wrapper by supporting on-heap
@@ -213,12 +212,10 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   FakeImageSource alpha_bitmap_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 
-  Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>&
-  OpaqueGradient() {
+  Member<CanvasGradient>& OpaqueGradient() {
     return wrap_gradients_->opaque_gradient_;
   }
-  Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>&
-  AlphaGradient() {
+  Member<CanvasGradient>& AlphaGradient() {
     return wrap_gradients_->alpha_gradient_;
   }
 };
@@ -274,9 +271,7 @@ void CanvasRenderingContext2DTest::SetUp() {
   EXPECT_FALSE(exception_state.HadException());
   opaque_gradient->addColorStop(1, String("blue"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  OpaqueGradient() = MakeGarbageCollected<
-      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
-      opaque_gradient);
+  OpaqueGradient() = opaque_gradient;
 
   auto* alpha_gradient = MakeGarbageCollected<CanvasGradient>(
       gfx::PointF(0, 0), gfx::PointF(10, 0));
@@ -285,9 +280,7 @@ void CanvasRenderingContext2DTest::SetUp() {
   alpha_gradient->addColorStop(1, String("rgba(0, 0, 255, 0.5)"),
                                exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  AlphaGradient() = MakeGarbageCollected<
-      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
-      alpha_gradient);
+  AlphaGradient() = alpha_gradient;
 
   global_memory_cache_ =
       ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
@@ -503,12 +496,14 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_GlobalAlpha) {
 }
 
 TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_TransparentGradient) {
+  auto* script_state = GetScriptState();
+  ScriptState::Scope script_state_scope(script_state);
   ExpectOverdraw({
       BaseRenderingContext2D::OverdrawOp::kTotal,
       BaseRenderingContext2D::OverdrawOp::kClearRect,
   });
-  Context2D()->setFillStyle(AlphaGradient()),
-      Context2D()->clearRect(0, 0, 10, 10);
+  SetFillStyleHelper(Context2D(), script_state, AlphaGradient().Get());
+  Context2D()->clearRect(0, 0, 10, 10);
   VerifyExpectations();
 }
 
@@ -674,9 +669,11 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
 
 TEST_P(CanvasRenderingContext2DOverdrawTest,
        DrawImage_TransparenBitmapOpaqueGradient) {
+  auto* script_state = GetScriptState();
+  ScriptState::Scope script_state_scope(script_state);
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->setFillStyle(OpaqueGradient());
+  SetFillStyleHelper(Context2D(), GetScriptState(), OpaqueGradient().Get());
   Context2D()->drawImage(&alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -685,12 +682,14 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
 
 TEST_P(CanvasRenderingContext2DOverdrawTest,
        DrawImage_OpaqueBitmapTransparentGradient) {
+  auto* script_state = GetScriptState();
+  ScriptState::Scope script_state_scope(script_state);
   ExpectOverdraw({
       BaseRenderingContext2D::OverdrawOp::kTotal,
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->setFillStyle(AlphaGradient());
+  SetFillStyleHelper(Context2D(), GetScriptState(), AlphaGradient().Get());
   Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
   EXPECT_FALSE(exception_state.HadException());

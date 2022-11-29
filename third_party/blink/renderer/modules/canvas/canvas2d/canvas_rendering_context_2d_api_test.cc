@@ -11,8 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -34,13 +35,19 @@ using testing::Mock;
 namespace blink {
 
 class CanvasRenderingContext2DAPITest : public PageTestBase {
+ public:
+  ScriptState* GetScriptState() {
+    return ToScriptStateForMainWorld(GetDocument().GetFrame());
+  }
+  v8::Isolate* GetIsolate() { return GetScriptState()->GetIsolate(); }
+  CanvasRenderingContext2D* Context2D() const;
+
  protected:
   CanvasRenderingContext2DAPITest();
   void SetUp() override;
   void TearDown() override;
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
-  CanvasRenderingContext2D* Context2D() const;
 
   void CreateContext(OpacityMode);
 
@@ -145,29 +152,18 @@ TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
   EXPECT_EQ(String("rgba(0, 255, 0, 0.4)"), Context2D()->shadowColor());
 }
 
-String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
+String TrySettingStrokeStyle(CanvasRenderingContext2DAPITest* test,
                              const String& value) {
-  ctx->setStrokeStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
-  ctx->setStrokeStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
-  auto* style = ctx->strokeStyle();
-  EXPECT_TRUE(style->IsString());
-  return style->GetAsString();
+  SetStrokeStyleString(test->Context2D(), test->GetScriptState(), "#666");
+  SetStrokeStyleString(test->Context2D(), test->GetScriptState(), value);
+  return GetStrokeStyleAsString(test->Context2D(), test->GetScriptState());
 }
 
-String TrySettingFillStyle(CanvasRenderingContext2D* ctx, const String& value) {
-  ctx->setFillStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
-  ctx->setFillStyle(
-      MakeGarbageCollected<
-          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
-  auto* style = ctx->fillStyle();
-  EXPECT_TRUE(style->IsString());
-  return style->GetAsString();
+String TrySettingFillStyle(CanvasRenderingContext2DAPITest* test,
+                           const String& value) {
+  SetFillStyleString(test->Context2D(), test->GetScriptState(), "#666");
+  SetFillStyleString(test->Context2D(), test->GetScriptState(), value);
+  return GetFillStyleAsString(test->Context2D(), test->GetScriptState());
 }
 
 String TrySettingShadowColor(CanvasRenderingContext2D* ctx,
@@ -177,42 +173,40 @@ String TrySettingShadowColor(CanvasRenderingContext2D* ctx,
   return ctx->shadowColor();
 }
 
-void TrySettingColor(CanvasRenderingContext2D* ctx,
+void TrySettingColor(CanvasRenderingContext2DAPITest* test,
                      const String& value,
                      const String& expected) {
-  EXPECT_EQ(expected, TrySettingStrokeStyle(ctx, value));
-  EXPECT_EQ(expected, TrySettingFillStyle(ctx, value));
-  EXPECT_EQ(expected, TrySettingShadowColor(ctx, value));
+  EXPECT_EQ(expected, TrySettingStrokeStyle(test, value));
+  EXPECT_EQ(expected, TrySettingFillStyle(test, value));
+  EXPECT_EQ(expected, TrySettingShadowColor(test->Context2D(), value));
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, ColorSerialization) {
+  v8::HandleScope handle_scope(GetIsolate());
+
   CreateContext(kNonOpaque);
   // Check round trips
-  TrySettingColor(Context2D(), "transparent", "rgba(0, 0, 0, 0)");
-  TrySettingColor(Context2D(), "red", "#ff0000");
-  TrySettingColor(Context2D(), "white", "#ffffff");
-  TrySettingColor(Context2D(), "", "#666666");
-  TrySettingColor(Context2D(), "RGBA(0, 0, 0, 0)", "rgba(0, 0, 0, 0)");
-  TrySettingColor(Context2D(), "rgba(0,255,0,1.0)", "#00ff00");
-  TrySettingColor(Context2D(), "rgba(1,2,3,0.4)", "rgba(1, 2, 3, 0.4)");
-  TrySettingColor(Context2D(), "RgB(1,2,3)", "#010203");
-  TrySettingColor(Context2D(), "rGbA(1,2,3,0)", "rgba(1, 2, 3, 0)");
+  TrySettingColor(this, "transparent", "rgba(0, 0, 0, 0)");
+  TrySettingColor(this, "red", "#ff0000");
+  TrySettingColor(this, "white", "#ffffff");
+  TrySettingColor(this, "", "#666666");
+  TrySettingColor(this, "RGBA(0, 0, 0, 0)", "rgba(0, 0, 0, 0)");
+  TrySettingColor(this, "rgba(0,255,0,1.0)", "#00ff00");
+  TrySettingColor(this, "rgba(1,2,3,0.4)", "rgba(1, 2, 3, 0.4)");
+  TrySettingColor(this, "RgB(1,2,3)", "#010203");
+  TrySettingColor(this, "rGbA(1,2,3,0)", "rgba(1, 2, 3, 0)");
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
+  v8::HandleScope handle_scope(GetIsolate());
+
   CreateContext(kNonOpaque);
 
-  {
-    auto* style = Context2D()->strokeStyle();
-    EXPECT_TRUE(style->IsString());
-    EXPECT_EQ(String("#000000"), style->GetAsString());
-  }
+  EXPECT_EQ(String("#000000"),
+            GetStrokeStyleAsString(Context2D(), GetScriptState()));
 
-  {
-    auto* style = Context2D()->fillStyle();
-    EXPECT_TRUE(style->IsString());
-    EXPECT_EQ(String("#000000"), style->GetAsString());
-  }
+  EXPECT_EQ(String("#000000"),
+            GetFillStyleAsString(Context2D(), GetScriptState()));
 
   EXPECT_EQ(String("rgba(0, 0, 0, 0)"), Context2D()->shadowColor());
 }
@@ -548,12 +542,11 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_StrokeStyle) {
+  v8::HandleScope handle_scope(GetIsolate());
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  auto* style = MakeGarbageCollected<
-      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
-  Context2D()->setStrokeStyle(style);
+  SetStrokeStyleString(Context2D(), GetScriptState(), "blue");
   EXPECT_EQ(INT64_C(-1964835352532316734),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
@@ -574,12 +567,11 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_FillStyle) {
+  v8::HandleScope handle_scope(GetIsolate());
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  auto* style = MakeGarbageCollected<
-      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
-  Context2D()->setFillStyle(style);
+  SetFillStyleString(Context2D(), GetScriptState(), "blue");
   EXPECT_EQ(INT64_C(-4860826471555317536),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
@@ -599,6 +591,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_Combo) {
+  v8::HandleScope handle_scope(GetIsolate());
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -608,9 +601,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
   Context2D()->setTextAlign("right");
-  auto* style = MakeGarbageCollected<
-      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red");
-  Context2D()->setFillStyle(style);
+  SetFillStyleString(Context2D(), GetScriptState(), "red");
   Context2D()->fillText("Bye", 4.0, 3.0);
   EXPECT_EQ(INT64_C(5574475585707445774),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());

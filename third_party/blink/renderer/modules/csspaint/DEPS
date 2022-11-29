@@ -1,6 +1,7 @@
 include_rules = [
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h",
+    "+third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h",
     "+third_party/blink/renderer/modules/csspaint",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/worklet",
