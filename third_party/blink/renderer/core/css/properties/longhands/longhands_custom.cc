@@ -6622,10 +6622,8 @@ const CSSValue* ScrollTimelineName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  const AtomicString& ident = style.ScrollTimelineName();
-  if (ident.empty())
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(ident);
+  return ComputedStyleUtils::ValueForCustomIdentOrNone(
+      style.ScrollTimelineName().Get());
 }
 
 const CSSValue* ScrollTimelineName::InitialValue() const {

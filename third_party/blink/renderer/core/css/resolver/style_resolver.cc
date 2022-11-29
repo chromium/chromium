@@ -194,7 +194,7 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 }
 
 bool HasTimelines(const StyleResolverState& state) {
-  if (!state.StyleBuilder().ScrollTimelineName().empty())
+  if (state.StyleBuilder().ScrollTimelineName())
     return true;
   if (state.StyleBuilder().ViewTimelineName())
     return true;

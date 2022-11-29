@@ -463,7 +463,10 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
     const ComputedStyleBuilder& style_builder) {
   Document& document = animating_element.GetDocument();
 
-  const AtomicString& name = style_builder.ScrollTimelineName();
+  // TODO(crbug.com/1382876): Handle TreeScope.
+  const AtomicString& name = style_builder.ScrollTimelineName()
+                                 ? style_builder.ScrollTimelineName()->GetName()
+                                 : g_null_atom;
   TimelineAxis axis = style_builder.ScrollTimelineAxis();
 
   const CSSAnimations::TimelineData* timeline_data =
