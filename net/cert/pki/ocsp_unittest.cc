@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include "base/strings/string_piece.h"
 #include "net/cert/pki/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/der/encode_values.h"

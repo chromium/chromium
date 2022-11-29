@@ -458,26 +458,30 @@ bool VerifyHash(const EVP_MD* type,
 //
 // Returns true on success and fills |*spk_tlv| with the result.
 //
-// SubjectPublicKeyInfo  ::=  SEQUENCE  {
+// From RFC 5280, Section 4.1
+//   SubjectPublicKeyInfo  ::=  SEQUENCE  {
 //     algorithm            AlgorithmIdentifier,
-//     subjectPublicKey     BIT STRING
-// }
+//     subjectPublicKey     BIT STRING  }
+//
+//   AlgorithmIdentifier  ::=  SEQUENCE  {
+//     algorithm               OBJECT IDENTIFIER,
+//     parameters              ANY DEFINED BY algorithm OPTIONAL  }
+//
 bool GetSubjectPublicKeyBytes(const der::Input& spki_tlv, der::Input* spk_tlv) {
-  // TODO(bbe) decide what to do with the asn1 utilities, bring them into pki
-  // or use the boringssl stuff internally..
-  base::StringPiece spk_strpiece;
-  if (!asn1::ExtractSubjectPublicKeyFromSPKI(spki_tlv.AsStringPiece(),
-                                             &spk_strpiece)) {
+  CBS outer, inner, alg, spk;
+  uint8_t unused_bit_count;
+  CBS_init(&outer, spki_tlv.UnsafeData(), spki_tlv.Length());
+  //   The subjectPublicKey field includes the unused bit count. For this
+  //   application, the unused bit count must be zero, and is not included in
+  //   the result. We extract the subjectPubicKey bit string, verify the first
+  //   byte is 0, and if so set |spk_tlv| to the remaining bytes.
+  if (!CBS_get_asn1(&outer, &inner, CBS_ASN1_SEQUENCE) ||
+      !CBS_get_asn1(&inner, &alg, CBS_ASN1_SEQUENCE) ||
+      !CBS_get_asn1(&inner, &spk, CBS_ASN1_BITSTRING) ||
+      !CBS_get_u8(&spk, &unused_bit_count) || unused_bit_count != 0) {
     return false;
   }
-  // ExtractSubjectPublicKeyFromSPKI() includes the unused bit count. For this
-  // application, the unused bit count must be zero, and is not included in the
-  // result.
-  if (!net::string_util::StartsWith(
-          std::string_view(spk_strpiece.data(), spk_strpiece.size()), "\0"))
-    return false;
-  spk_strpiece.remove_prefix(1);
-  *spk_tlv = der::Input(spk_strpiece);
+  *spk_tlv = der::Input(CBS_data(&spk), CBS_len(&spk));
   return true;
 }
 
@@ -531,7 +535,9 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(std::string_view der) {
   // parsing model.
   CertErrors errors;
   return ParsedCertificate::Create(
-      x509_util::CreateCryptoBuffer(base::StringPiece(der.data(), der.size())),
+      bssl::UniquePtr<CRYPTO_BUFFER>(
+          CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(der.data()),
+                            der.size(), x509_util::GetBufferPool())),
       {}, &errors);
 }
 
