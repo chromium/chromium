@@ -92,7 +92,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // TODO(crbug.com/1325073): Remove the default value as nullptr for
   // preloading_attempt once prerendering is integrated with Preloading APIs.
   int CreateAndStartHost(const PrerenderAttributes& attributes,
-                         WebContents& web_contents,
                          PreloadingAttempt* preloading_attempt = nullptr);
 
   // Creates and starts a host in a new WebContents so that a navigation in a
@@ -100,8 +99,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
   // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
-  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes,
-                                  WebContents& web_contents);
+  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved hosts but asynchronously

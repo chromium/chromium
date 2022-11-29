@@ -75,7 +75,7 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
 int PrerenderNewTabHandle::StartPrerendering() {
   // TODO(crbug.com/1350676): Pass a valid PreloadingAttempt.
   prerender_host_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
-      attributes_, *web_contents_, /*preloading_attempt=*/nullptr);
+      attributes_, /*preloading_attempt=*/nullptr);
   return prerender_host_id_;
 }
 

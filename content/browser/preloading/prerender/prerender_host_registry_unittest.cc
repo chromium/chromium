@@ -173,11 +173,9 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     const GURL kPrerenderingUrl("https://example.com/next");
 
     PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-    registry->CreateAndStartHost(
-        GeneratePrerenderAttributes(kPrerenderingUrl,
-                                    PrerenderTriggerType::kSpeculationRule, "",
-                                    render_frame_host),
-        *web_contents);
+    registry->CreateAndStartHost(GeneratePrerenderAttributes(
+        kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+        render_frame_host));
     PrerenderHost* prerender_host =
         registry->FindHostByUrlForTesting(kPrerenderingUrl);
     CommitPrerenderNavigation(*prerender_host);
@@ -224,11 +222,10 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     const GURL kPrerenderingUrl("https://example.com/next");
 
     PrerenderHostRegistry* registry = wc->GetPrerenderHostRegistry();
-    const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-        GeneratePrerenderAttributes(kPrerenderingUrl,
-                                    PrerenderTriggerType::kSpeculationRule, "",
-                                    render_frame_host),
-        *wc);
+    const int prerender_frame_tree_node_id =
+        registry->CreateAndStartHost(GeneratePrerenderAttributes(
+            kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+            render_frame_host));
     ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
     PrerenderHost* prerender_host =
         registry->FindNonReservedHostById(prerender_frame_tree_node_id);
@@ -299,11 +296,10 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {
   const GURL kPrerenderingUrl("https://example.com/next");
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -329,11 +325,10 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
   const GURL kPrerenderingUrl("https://example.com/next");
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kEmbedder,
-                                  "DirectURLInput", render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "DirectURLInput",
+          render_frame_host));
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -357,22 +352,20 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   const GURL kPrerenderingUrl("https://example.com/next");
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int frame_tree_node_id1 = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int frame_tree_node_id1 =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   EXPECT_NE(frame_tree_node_id1, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
   // Start the prerender host for the same URL. This second host should be
   // ignored, and the first host should still be findable.
-  const int frame_tree_node_id2 = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int frame_tree_node_id2 =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   EXPECT_EQ(frame_tree_node_id2, RenderFrameHost::kNoFrameTreeNodeId);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
@@ -396,16 +389,14 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
   const GURL kPrerenderingUrl2("https://example.com/next2");
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  int frame_tree_node_id1 = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl1,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
-  int frame_tree_node_id2 = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl2,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  int frame_tree_node_id1 =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl1, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
+  int frame_tree_node_id2 =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl2, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   ExpectUniqueSampleOfFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
@@ -421,11 +412,10 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
 
   // After the first prerender page was activated, PrerenderHostRegistry can
   // start prerendering a new one.
-  frame_tree_node_id2 = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl2,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  frame_tree_node_id2 =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl2, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   EXPECT_NE(frame_tree_node_id2, kNoFrameTreeNodeId);
   ExpectBucketCountOfFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
@@ -527,11 +517,10 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL kPrerenderingUrl("https://example.com/next");
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -588,11 +577,10 @@ TEST_F(PrerenderHostRegistryTest, CancelHost) {
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   registry->CancelHost(prerender_frame_tree_node_id,
@@ -615,11 +603,10 @@ TEST_F(PrerenderHostRegistryTest,
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -685,11 +672,10 @@ TEST_F(PrerenderHostRegistryTest,
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  render_frame_host),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          render_frame_host));
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -736,11 +722,10 @@ TEST_F(PrerenderHostRegistryTest,
 
   {
     // Start the second prerender for the same URL.
-    const int prerender_frame_tree_node_id2 = registry->CreateAndStartHost(
-        GeneratePrerenderAttributes(kPrerenderingUrl,
-                                    PrerenderTriggerType::kSpeculationRule, "",
-                                    render_frame_host),
-        *web_contents);
+    const int prerender_frame_tree_node_id2 =
+        registry->CreateAndStartHost(GeneratePrerenderAttributes(
+            kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+            render_frame_host));
     ASSERT_NE(prerender_frame_tree_node_id2, kNoFrameTreeNodeId);
     PrerenderHost* prerender_host2 =
         registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -770,11 +755,10 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  initiator_rfh),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          initiator_rfh));
   EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
@@ -1055,11 +1039,10 @@ TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl) {
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PrerenderTriggerType::kSpeculationRule, "",
-                                  initiator_rfh),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributes(
+          kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+          initiator_rfh));
   EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);

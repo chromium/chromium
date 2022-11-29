@@ -281,8 +281,7 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents);
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   CommitPrerenderNavigation(*prerender_host);
@@ -390,8 +389,7 @@ TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents);
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
@@ -409,8 +407,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents);
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
@@ -431,8 +428,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents);
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
@@ -453,10 +449,9 @@ TEST_F(PrerenderHostTest, UrlMatchPredicate) {
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   base::RepeatingCallback callback =
       base::BindRepeating([](const GURL&) { return true; });
-  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributesWithPredicate(kPrerenderingUrl, initiator_rfh,
-                                               callback),
-      *web_contents);
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(GeneratePrerenderAttributesWithPredicate(
+          kPrerenderingUrl, initiator_rfh, callback));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
@@ -491,7 +486,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
 
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents, preloading_attempt);
+      preloading_attempt);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);
@@ -559,8 +554,7 @@ TEST_F(PrerenderHostInBackgroundTest,
   RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
-      *web_contents);
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh));
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   ASSERT_NE(prerender_host, nullptr);

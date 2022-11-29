@@ -95,7 +95,6 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
-    WebContents& web_contents,
     PreloadingAttempt* attempt) {
   std::string recorded_url =
       attributes.initiator_origin.has_value()
@@ -116,7 +115,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
     WebContentsImpl& web_contents_impl =
-        static_cast<WebContentsImpl&>(web_contents);
+        static_cast<WebContentsImpl&>(*web_contents());
     if (web_contents_impl.IsPrerender2Disabled()) {
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
@@ -124,7 +123,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Don't prerender when the trigger is in the background.
-    if (web_contents.GetVisibility() == Visibility::HIDDEN) {
+    if (web_contents_impl.GetVisibility() == Visibility::HIDDEN) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(
               PrerenderFinalStatus::kTriggerBackgrounded),
@@ -146,7 +145,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Don't prerender when the Data Saver setting is enabled.
     if (GetContentClient()->browser()->IsDataSaverEnabled(
-            web_contents.GetBrowserContext())) {
+            web_contents_impl.GetBrowserContext())) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(PrerenderFinalStatus::kDataSaverEnabled),
           attributes);
@@ -186,8 +185,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Disallow all pages that have an effective URL like host apps and NTP.
-    if (SiteInstanceImpl::HasEffectiveURL(web_contents.GetBrowserContext(),
-                                          web_contents.GetURL())) {
+    if (SiteInstanceImpl::HasEffectiveURL(web_contents_impl.GetBrowserContext(),
+                                          web_contents_impl.GetURL())) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(PrerenderFinalStatus::kHasEffectiveUrl),
           attributes);
@@ -307,8 +306,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 }
 
 int PrerenderHostRegistry::CreateAndStartHostForNewTab(
-    const PrerenderAttributes& attributes,
-    WebContents& web_contents) {
+    const PrerenderAttributes& attributes) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
   std::string recorded_url =
       attributes.initiator_origin.has_value()
@@ -319,7 +317,7 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
                "attributes", attributes, "initiator_origin", recorded_url);
 
   auto handle = std::make_unique<PrerenderNewTabHandle>(
-      attributes, *web_contents.GetBrowserContext());
+      attributes, *web_contents()->GetBrowserContext());
   int prerender_host_id = handle->StartPrerendering();
   if (prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
     return RenderFrameHost::kNoFrameTreeNodeId;

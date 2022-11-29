@@ -248,7 +248,7 @@ void Prerenderer::ProcessCandidatesForPrerender(
           // TODO(crbug.com/1350676): Create new PreloadAttempt associated with
           // WebContents for prerendering.
           int prerender_host_id =
-              registry_->CreateAndStartHostForNewTab(attributes, *web_contents);
+              registry_->CreateAndStartHostForNewTab(attributes);
           started_prerenders_.insert(end,
                                      {.url = it->url,
                                       .referrer = referrer,
@@ -265,8 +265,7 @@ void Prerenderer::ProcessCandidatesForPrerender(
       case blink::mojom::SpeculationTargetHint::kNoHint:
       case blink::mojom::SpeculationTargetHint::kSelf: {
         int prerender_host_id = registry_->CreateAndStartHost(
-            attributes, *web_contents,
-            /*preloading_attempt=*/preloading_attempt);
+            attributes, /*preloading_attempt=*/preloading_attempt);
         started_prerenders_.insert(end,
                                    {.url = it->url,
                                     .referrer = referrer,

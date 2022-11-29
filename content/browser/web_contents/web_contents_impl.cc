@@ -9539,7 +9539,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
       ukm::kInvalidSourceId, page_transition, url_match_predicate);
   int frame_tree_node_id = GetPrerenderHostRegistry()->CreateAndStartHost(
-      attributes, *this, preloading_attempt);
+      attributes, preloading_attempt);
 
   if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
     return std::make_unique<PrerenderHandleImpl>(

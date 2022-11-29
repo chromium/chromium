@@ -457,16 +457,14 @@ int TestWebContents::AddPrerender(const GURL& url) {
       blink::features::kPrerender2MemoryControls));
 
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
-  return GetPrerenderHostRegistry()->CreateAndStartHost(
-      PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
-                          /*embedder_histogram_suffix=*/"", Referrer(),
-                          rfhi->GetLastCommittedOrigin(),
-                          rfhi->GetLastCommittedURL(),
-                          rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
-                          rfhi->GetFrameTreeNodeId(),
-                          rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-                          /*url_match_predicate=*/absl::nullopt),
-      *this);
+  return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
+      url, PrerenderTriggerType::kSpeculationRule,
+      /*embedder_histogram_suffix=*/"", Referrer(),
+      rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
+      rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
+      rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
+      /*url_match_predicate=*/absl::nullopt));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
