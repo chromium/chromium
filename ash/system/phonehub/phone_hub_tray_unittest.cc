@@ -686,15 +686,14 @@ TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
   EXPECT_FALSE(content_view());
 }
 
-// Flaky. See https://crbug.com/1308967.
-TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
+TEST_F(PhoneHubTrayTest, OnSessionChanged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Disable the tray first.
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kNotEligibleForFeature);
-  task_environment()->FastForwardBy(base::Seconds(3));
+  FastForwardByConnectingViewGracePeriod();
   EXPECT_FALSE(phone_hub_tray_->GetVisible());
 
   // Enable it to let it visible.
@@ -720,17 +719,15 @@ TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
     EXPECT_TRUE(phone_hub_tray_->GetVisible());
     GetFeatureStatusProvider()->SetStatus(
         phonehub::FeatureStatus::kNotEligibleForFeature);
-    task_environment()->FastForwardBy(base::Seconds(1));
+    FastForwardByConnectingViewGracePeriod();
     EXPECT_FALSE(phone_hub_tray_->GetVisible());
     GetFeatureStatusProvider()->SetStatus(
         phonehub::FeatureStatus::kEnabledAndConnected);
+    task_environment()->FastForwardBy(base::Seconds(3));
   }
   EXPECT_FALSE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
 
-  // Animation is enabled after 5 seconds. We already fast forwarded 3 second in
-  // the above loop. So here we are forwarding 2 more seconds.
-  task_environment()->FastForwardBy(base::Seconds(2));
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kNotEligibleForFeature);
   GetFeatureStatusProvider()->SetStatus(
