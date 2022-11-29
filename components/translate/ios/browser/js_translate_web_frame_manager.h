@@ -36,10 +36,6 @@ class JSTranslateWebFrameManager
   friend class web::WebFrameUserData<JSTranslateWebFrameManager>;
   friend class JSTranslateWebFrameManagerFactory;
   friend class TestJSTranslateWebFrameManager;
-
-  // Whether or not the translate script has been injected into the associated
-  // WebFrame.
-  bool injected_ = false;
 };
 
 #endif  // COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_WEB_FRAME_MANAGER_H_

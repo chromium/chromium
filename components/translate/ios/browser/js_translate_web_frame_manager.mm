@@ -39,6 +39,11 @@ NSString* GetPageScript(NSString* script_file_name) {
   return content;
 }
 
+constexpr char16_t kResetScript[] = u"try {"
+                                    "  cr.googleTranslate.revert();"
+                                    "} catch (e) {"
+                                    "}";
+
 }  // namespace
 
 JSTranslateWebFrameManager::JSTranslateWebFrameManager(web::WebFrame* web_frame)
@@ -50,21 +55,12 @@ JSTranslateWebFrameManager::~JSTranslateWebFrameManager() {}
 
 void JSTranslateWebFrameManager::InjectTranslateScript(
     const std::string& translate_script) {
-  // Prepend translate_ios.js
-  NSString* translate_ios = GetPageScript(@"translate_ios");
-  NSString* script = [translate_ios
-      stringByAppendingString:base::SysUTF8ToNSString(translate_script)];
-
-  // Reset translate state if previously injected.
-  if (injected_) {
-    NSString* resetScript = @"try {"
-                             "  cr.googleTranslate.revert();"
-                             "} catch (e) {"
-                             "}";
-    script = [resetScript stringByAppendingString:script];
-  }
-
-  injected_ = true;
+  // Always prepend reset script since this page could have been loaded from the
+  // WebKit page cache.
+  NSString* script = [NSString
+      stringWithFormat:@"%@%@%@", base::SysUTF16ToNSString(kResetScript),
+                       GetPageScript(@"translate_ios"),
+                       base::SysUTF8ToNSString(translate_script)];
   web_frame_->ExecuteJavaScript(base::SysNSStringToUTF16(script));
 }
 
@@ -77,10 +73,7 @@ void JSTranslateWebFrameManager::StartTranslation(const std::string& source,
 }
 
 void JSTranslateWebFrameManager::RevertTranslation() {
-  if (!injected_)
-    return;
-
-  web_frame_->ExecuteJavaScript(u"cr.googleTranslate.revert()");
+  web_frame_->ExecuteJavaScript(kResetScript);
 }
 
 void JSTranslateWebFrameManager::HandleTranslateResponse(
@@ -90,8 +83,6 @@ void JSTranslateWebFrameManager::HandleTranslateResponse(
     const std::string status_text,
     const std::string& response_url,
     const std::string& response_text) {
-  DCHECK(injected_);
-
   // Return the response details to function defined in translate_ios.js.
   std::string script = base::StringPrintf(
       "__gCrWeb.translate.handleResponse('%s', %d, %d, '%s', '%s', '%s')",
