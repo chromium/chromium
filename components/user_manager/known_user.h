@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/user_manager_export.h"
@@ -21,10 +22,6 @@ class AccountId;
 enum class AccountType;
 class PrefRegistrySimple;
 class PrefService;
-
-namespace base {
-class Value;
-}
 
 namespace user_manager {
 
@@ -191,7 +188,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   // can be used by this user to authenticate. The getter returns a null value
   // when the property isn't present. For the format of the value, refer to
   // chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h.
-  void SetChallengeResponseKeys(const AccountId& account_id, base::Value value);
+  void SetChallengeResponseKeys(const AccountId& account_id,
+                                base::Value::List value);
 
   base::Value GetChallengeResponseKeys(const AccountId& account_id);
 

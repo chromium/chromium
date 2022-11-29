@@ -421,8 +421,8 @@ TEST_F(KnownUserTest, ChallengeResponseKeys) {
 
   base::Value::List challenge_response_keys;
   challenge_response_keys.Append("key1");
-  known_user.SetChallengeResponseKeys(
-      kDefaultAccountId, base::Value(challenge_response_keys.Clone()));
+  known_user.SetChallengeResponseKeys(kDefaultAccountId,
+                                      challenge_response_keys.Clone());
 
   EXPECT_EQ(known_user.GetChallengeResponseKeys(kDefaultAccountId),
             challenge_response_keys);

@@ -618,9 +618,8 @@ absl::optional<int> KnownUser::FindReauthReason(
 }
 
 void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
-                                         base::Value value) {
-  DCHECK(value.is_list());
-  SetPath(account_id, kChallengeResponseKeys, std::move(value));
+                                         base::Value::List value) {
+  SetPath(account_id, kChallengeResponseKeys, base::Value(std::move(value)));
 }
 
 base::Value KnownUser::GetChallengeResponseKeys(const AccountId& account_id) {
