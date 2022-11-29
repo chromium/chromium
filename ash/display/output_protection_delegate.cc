@@ -77,12 +77,12 @@ void OutputProtectionDelegate::OnDisplayMetricsChanged(
     return;
   }
 
-  OnWindowMayHaveMovedToAnotherDisplay();
+  OnWindowMayHaveMovedToAnotherDisplayOrWindow();
 }
 
 void OutputProtectionDelegate::OnWindowHierarchyChanged(
     const aura::WindowObserver::HierarchyChangeParams& params) {
-  OnWindowMayHaveMovedToAnotherDisplay();
+  OnWindowMayHaveMovedToAnotherDisplayOrWindow();
 }
 
 void OutputProtectionDelegate::OnWindowDestroying(aura::Window* window) {
@@ -124,11 +124,16 @@ void OutputProtectionDelegate::SetProtection(uint32_t protection_mask,
                                     std::move(callback));
 }
 
-void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
+void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplayOrWindow() {
   DCHECK(window_);
-  int64_t new_display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_).id();
 
+  // The window may have moved to a display that is currently being recorded, or
+  // to be hosted by a browser window that is being recorded when a tab becomes
+  // active, so we need to refresh Capture Mode's content protection.
+  CaptureModeController::Get()->RefreshContentProtection();
+
+  const int64_t new_display_id =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_).id();
   if (display_id_ == new_display_id)
     return;
 
@@ -139,11 +144,8 @@ void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
     manager()->ApplyContentProtection(client_->id, display_id_,
                                       display::CONTENT_PROTECTION_METHOD_NONE,
                                       base::DoNothing());
-
-    // The window may have moved to a display that is currently being recorded,
-    // so we need to refresh Capture Mode's content protection.
-    CaptureModeController::Get()->RefreshContentProtection();
   }
+
   display_id_ = new_display_id;
 }
 

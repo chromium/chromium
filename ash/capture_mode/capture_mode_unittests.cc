@@ -3104,6 +3104,30 @@ TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedWhileRecording) {
       EndRecordingReason::kHdcpInterruption, 1);
 }
 
+TEST_F(CaptureModeHdcpTest, ProtectedTabBecomesActiveAfterRecordingStarts) {
+  // Simulate protected content being on an inactive tab.
+  protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
+                                      base::DoNothing());
+  Shell::GetPrimaryRootWindow()
+      ->GetChildById(kShellWindowId_UnparentedContainer)
+      ->AddChild(protected_content_window_.get());
+
+  // Recording should start normally, since the protected window is not a
+  // descendant of the window being recorded.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  GetEventGenerator()->MoveMouseToCenterOf(window_.get());
+  controller->StartVideoRecordingImmediatelyForTesting();
+  WaitForRecordingToStart();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Simulate activating the tab that has protected content by parenting it back
+  // to the window being recorded. Recording should stop immediately.
+  window_->AddChild(protected_content_window_.get());
+
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
 TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
   auto window_2 = CreateTestWindow(gfx::Rect(100, 50));
   OutputProtectionDelegate protection_delegate_2(window_2.get());
