@@ -2255,7 +2255,7 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
 void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
     bool has_tasks) {
   // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected");
+  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected %d", has_tasks);
 
   if (has_tasks ==
       main_thread_only().compositor_will_send_main_frame_not_expected.get()) {
@@ -2269,9 +2269,16 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
       "MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected",
       "has_tasks", has_tasks);
   bool success = false;
+  std::vector<PageSchedulerImpl*> page_schedulers;
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    page_schedulers.push_back(page_scheduler);
+  }
+  std::sort(page_schedulers.begin(), page_schedulers.end(),
+            recordreplay::CompareByPointerId());
+  for (PageSchedulerImpl* page_scheduler : page_schedulers) {
     // https://linear.app/replay/issue/RUN-827
-    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #2");
+    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #2 %d",
+                         recordreplay::PointerId(page_scheduler));
 
     success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
   }
