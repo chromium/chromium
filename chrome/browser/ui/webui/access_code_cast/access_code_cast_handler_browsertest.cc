@@ -111,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   CloseDialog(dialog_contents);
 }
 
-#if BUILDFLAG(IS_WIN)
+// TODO(b/260627828): This test is flaky on mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReturnSuccessfulResponseUsingKeyPress \
   DISABLED_ReturnSuccessfulResponseUsingKeyPress
 #else
