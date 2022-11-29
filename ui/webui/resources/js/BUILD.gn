@@ -83,7 +83,6 @@ preprocess_if_expr("preprocess_src") {
     "assert.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
-    "util.js",
   ]
 
   if (is_chromeos_ash) {
@@ -93,7 +92,10 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash || is_android) {
     # Used by ChromeOS and Android Closure UIs.
-    in_files += [ "cr.m.js" ]
+    in_files += [
+      "cr.m.js",
+      "util.js",
+    ]
   }
 
   if (is_chromeos_ash || is_ios) {
@@ -149,11 +151,13 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert",
     ":load_time_data.m",
-    ":util",
   ]
 
   if (is_chromeos_ash || is_android) {
-    deps += [ ":cr.m" ]
+    deps += [
+      ":cr.m",
+      ":util",
+    ]
   }
 }
 
@@ -168,6 +172,8 @@ if (is_chromeos_ash || is_android) {
 js_library("load_time_data.m") {
 }
 
-js_library("util") {
-  deps = [ ":assert" ]
+if (is_chromeos_ash || is_android) {
+  js_library("util") {
+    deps = [ ":assert" ]
+  }
 }

@@ -154,11 +154,14 @@ copy("copy_checked_in_dts_files") {
 generate_definitions_js_files = [
   "js/assert.js",
   "js/load_time_data.m.js",
-  "js/util.js",
 ]
 
 if (is_chromeos_ash) {
   generate_definitions_js_files += [ "js/cr/event_target.js" ]
+}
+
+if (is_chromeos_ash || is_android) {
+  generate_definitions_js_files += [ "js/util.js" ]
 }
 
 if (is_ios) {
