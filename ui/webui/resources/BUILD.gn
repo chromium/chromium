@@ -157,11 +157,10 @@ generate_definitions_js_files = [
 ]
 
 if (is_chromeos_ash) {
-  generate_definitions_js_files += [ "js/cr/event_target.js" ]
-}
-
-if (is_chromeos_ash || is_android) {
-  generate_definitions_js_files += [ "js/util.js" ]
+  generate_definitions_js_files += [
+    "js/cr/event_target.js",
+    "js/util.js",
+  ]
 }
 
 if (is_ios) {

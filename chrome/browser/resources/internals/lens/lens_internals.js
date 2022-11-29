@@ -1,14 +1,15 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {$} from 'chrome://resources/js/util.js';
 
 import {LensInternalsBrowserProxy, LensInternalsBrowserProxyImpl} from './lens_internals_browser_proxy.js';
 
 /** @param {boolean} showEnableButton Whether to show the "start" button. */
 function toggleDebugModeButton(showEnableButton) {
-  $('start-debug-mode').toggleAttribute('hidden', !showEnableButton);
-  $('stop-debug-mode').toggleAttribute('hidden', showEnableButton);
+  document.body.querySelector('#start-debug-mode')
+      .toggleAttribute('hidden', !showEnableButton);
+  document.body.querySelector('#stop-debug-mode')
+      .toggleAttribute('hidden', showEnableButton);
 }
 
 /**
@@ -44,7 +45,7 @@ function updateDebugDataTable(tableData) {
   });
   table.appendChild(tableBody);
 
-  $('debug-data-table').replaceWith(table);
+  document.body.querySelector('#debug-data-table').replaceWith(table);
   table.id = 'debug-data-table';
 }
 
@@ -52,7 +53,7 @@ function initialize() {
   /** @type {!LensInternalsBrowserProxy} */
   const browserProxy = LensInternalsBrowserProxyImpl.getInstance();
 
-  $('start-debug-mode').onclick = function() {
+  document.body.querySelector('#start-debug-mode').onclick = function() {
     browserProxy.startDebugMode().then(function() {
       // After starting debug mode automatically refresh data.  This will
       // toggle the button if the call was successful.
@@ -60,7 +61,7 @@ function initialize() {
     });
   };
 
-  $('stop-debug-mode').onclick = function() {
+  document.body.querySelector('#stop-debug-mode').onclick = function() {
     browserProxy.stopDebugMode().then(function() {
       // After stopping debug mode automatically refresh data.  This will
       // toggle the button if the call was successful.

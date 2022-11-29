@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
 import {PageHandler} from './explore_sites_internals.mojom-webui.js';
 
 // Reference to the backend.
@@ -25,7 +24,7 @@ const FAILED_CSS_CLASS = 'failed';
  */
 function showThrobber(id, promiseToWaitFor) {
   const delayMs = 400;
-  const element = $(id);
+  const element = document.body.querySelector(`#${id}`);
   element.classList.remove(FAILED_CSS_CLASS);
 
   element.removeAttribute('hidden');
@@ -42,7 +41,7 @@ function showThrobber(id, promiseToWaitFor) {
 function updatePageWithProperties() {
   pageHandler.getProperties().then(function(response) {
     for (const [field, value] of Object.entries(response.properties)) {
-      $(field).textContent = value;
+      document.body.querySelector(`#${field}`).textContent = value;
     }
   });
 }
@@ -54,7 +53,10 @@ function updatePageWithProperties() {
 function clearCachedCatalog() {
   const id = 'clear-catalog-throbber';
   showThrobber(id, pageHandler.clearCachedExploreSitesCatalog())
-      .then(success => $(id).classList.toggle(FAILED_CSS_CLASS, !success));
+      .then(success => {
+        document.body.querySelector(`#${id}`).classList.toggle(
+            FAILED_CSS_CLASS, !success);
+      });
 }
 
 /**
@@ -63,10 +65,12 @@ function clearCachedCatalog() {
  */
 function overrideCountryCode() {
   const id = 'country-override-throbber';
-  const newCountryCode = $('country-code-input').value;
+  const newCountryCode =
+      document.body.querySelector('#country-code-input').value;
   showThrobber(id, pageHandler.overrideCountryCode(newCountryCode))
       .then(success => {
-        $(id).classList.toggle(FAILED_CSS_CLASS, !success);
+        document.body.querySelector(`#${id}`).classList.toggle(
+            FAILED_CSS_CLASS, !success);
         updatePageWithProperties();
       });
 }
@@ -78,8 +82,10 @@ function overrideCountryCode() {
  */
 function forceNetworkRequest() {
   const id = 'network-request-throbber';
-  showThrobber(id, pageHandler.forceNetworkRequest())
-      .then(e => $(id).classList.toggle(FAILED_CSS_CLASS, !e.success));
+  showThrobber(id, pageHandler.forceNetworkRequest()).then(e => {
+    document.body.querySelector(`#${id}`).classList.toggle(
+        FAILED_CSS_CLASS, !e.success);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -88,7 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
   updatePageWithProperties();
 
   // Set up event listeners.
-  $('clear-cached-catalog').onclick = clearCachedCatalog;
-  $('override-country-code').onclick = overrideCountryCode;
-  $('force-network-request').onclick = forceNetworkRequest;
+  document.body.querySelector('#clear-cached-catalog').onclick =
+      clearCachedCatalog;
+  document.body.querySelector('#override-country-code').onclick =
+      overrideCountryCode;
+  document.body.querySelector('#force-network-request').onclick =
+      forceNetworkRequest;
 });

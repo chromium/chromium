@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.js';
 
 import {QueryTilesInternalsBrowserProxy, QueryTilesInternalsBrowserProxyImpl, ServiceStatus, TileData} from './query_tiles_internals_browser_proxy.js';
 
@@ -12,16 +11,18 @@ import {QueryTilesInternalsBrowserProxy, QueryTilesInternalsBrowserProxyImpl, Se
  *     service.
  */
 function onServiceStatusChanged(serviceStatus) {
-  $('group-status').textContent = serviceStatus.groupStatus;
-  $('fetcher-status').textContent = serviceStatus.fetcherStatus;
+  document.body.querySelector('#group-status').textContent =
+      serviceStatus.groupStatus;
+  document.body.querySelector('#fetcher-status').textContent =
+      serviceStatus.fetcherStatus;
 }
 
 /**
  * @param {!TileData} tileData The raw data persisted in database.
  */
 function onTileDataAvailable(tileData) {
-  $('group-info').textContent = tileData.groupInfo;
-  $('tile-proto').textContent = tileData.tilesProto;
+  document.body.querySelector('#group-info').textContent = tileData.groupInfo;
+  document.body.querySelector('#tile-proto').textContent = tileData.tilesProto;
 }
 
 function initialize() {
@@ -33,25 +34,26 @@ function initialize() {
 
   addWebUIListener('tile-data-available', onTileDataAvailable);
 
-  $('start-fetch').onclick = function() {
+  document.body.querySelector('#start-fetch').onclick = function() {
     browserProxy.startFetch();
   };
 
-  $('purge-db').onclick = function() {
+  document.body.querySelector('#purge-db').onclick = function() {
     browserProxy.purgeDb();
   };
 
-  $('prototype-server').onclick = function() {
-    $('base-url').value =
+  document.body.querySelector('#prototype-server').onclick = function() {
+    document.body.querySelector('#base-url').value =
         'https://staging-gsaprototype-pa.sandbox.googleapis.com';
   };
 
-  $('prod-server').onclick = function() {
-    $('base-url').value = 'https://chromeupboarding-pa.googleapis.com';
+  document.body.querySelector('#prod-server').onclick = function() {
+    document.body.querySelector('#base-url').value =
+        'https://chromeupboarding-pa.googleapis.com';
   };
 
-  $('set-url').onclick = function() {
-    browserProxy.setServerUrl($('base-url').value);
+  document.body.querySelector('#set-url').onclick = function() {
+    browserProxy.setServerUrl(document.body.querySelector('#base-url').value);
   };
   // Kick off requests for the current system state.
   browserProxy.getServiceStatus().then(onServiceStatusChanged);

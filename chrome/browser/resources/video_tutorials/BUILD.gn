@@ -9,5 +9,4 @@ js_type_check("closure_compile") {
 }
 
 js_library("video_player") {
-  deps = [ "//ui/webui/resources/js:util" ]
 }

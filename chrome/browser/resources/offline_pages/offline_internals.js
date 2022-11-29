@@ -5,7 +5,6 @@
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.js';
 
 import {IsLogging, OfflineInternalsBrowserProxy, OfflineInternalsBrowserProxyImpl, OfflinePage, SavePageRequest} from './offline_internals_browser_proxy.js';
 
@@ -24,10 +23,10 @@ const browserProxy = OfflineInternalsBrowserProxyImpl.getInstance();
  *     stored offline pages.
  */
 function fillStoredPages(pages) {
-  const storedPagesTable = $('stored-pages');
+  const storedPagesTable = document.body.querySelector('#stored-pages');
   storedPagesTable.textContent = '';
 
-  const template = $('stored-pages-table-row');
+  const template = document.body.querySelector('#stored-pages-table-row');
   const td = template.content.querySelectorAll('td');
   for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
     const page = pages[pageIndex];
@@ -63,10 +62,10 @@ function fillStoredPages(pages) {
  *     the request queue.
  */
 function fillRequestQueue(requests) {
-  const requestQueueTable = $('request-queue');
+  const requestQueueTable = document.body.querySelector('#request-queue');
   requestQueueTable.textContent = '';
 
-  const template = $('request-queue-table-row');
+  const template = document.body.querySelector('#request-queue-table-row');
   const td = template.content.querySelectorAll('td');
   for (const request of requests) {
     const checkbox = td[0].querySelector('input');
@@ -88,7 +87,7 @@ function fillRequestQueue(requests) {
  * @param {!Array<string>} logs A list of log strings.
  */
 function fillEventLog(logs) {
-  const element = $('logs');
+  const element = document.body.querySelector('#logs');
   element.textContent = '';
   for (const log of logs) {
     const logItem = document.createElement('li');
@@ -104,21 +103,22 @@ function refreshAll() {
   browserProxy.getStoredPages().then(fillStoredPages);
   browserProxy.getRequestQueue().then(fillRequestQueue);
   browserProxy.getNetworkStatus().then(function(networkStatus) {
-    $('current-status').textContent = networkStatus;
+    document.body.querySelector('#current-status').textContent = networkStatus;
   });
   browserProxy.getLimitlessPrefetchingEnabled().then(function(enabled) {
-    $('limitless-prefetching-checkbox').checked = enabled;
+    document.body.querySelector('#limitless-prefetching-checkbox').checked =
+        enabled;
   });
   browserProxy.getPrefetchTestingHeaderValue().then(function(value) {
     switch (value) {
       case 'ForceEnable':
-        $('testing-header-enable').checked = true;
+        document.body.querySelector('#testing-header-enable').checked = true;
         break;
       case 'ForceDisable':
-        $('testing-header-disable').checked = true;
+        document.body.querySelector('#testing-header-disable').checked = true;
         break;
       default:
-        $('testing-header-default').checked = true;
+        document.body.querySelector('#testing-header-default').checked = true;
     }
   });
   refreshLog();
@@ -129,7 +129,7 @@ function refreshAll() {
  * @param {string} status The status of the request.
  */
 function pagesDeleted(status) {
-  $('page-actions-info').textContent = status;
+  document.body.querySelector('#page-actions-info').textContent = status;
   browserProxy.getStoredPages().then(fillStoredPages);
 }
 
@@ -137,7 +137,8 @@ function pagesDeleted(status) {
  * Callback when requests are deleted.
  */
 function requestsDeleted(status) {
-  $('request-queue-actions-info').textContent = status;
+  document.body.querySelector('#request-queue-actions-info').textContent =
+      status;
   browserProxy.getRequestQueue().then(fillRequestQueue);
 }
 
@@ -146,7 +147,7 @@ function requestsDeleted(status) {
  * @param {string} info The result of performing the prefetch actions.
  */
 function setPrefetchResult(info) {
-  $('prefetch-actions-info').textContent = info;
+  document.body.querySelector('#prefetch-actions-info').textContent = info;
 }
 
 /**
@@ -156,7 +157,8 @@ function setPrefetchResult(info) {
 function prefetchResultError(error) {
   const errorText = error && error.message ? error.message : error;
 
-  $('prefetch-actions-info').textContent = 'Error: ' + errorText;
+  document.body.querySelector('#prefetch-actions-info').textContent =
+      'Error: ' + errorText;
 }
 
 /**
@@ -173,21 +175,22 @@ function dumpAsJson() {
       },
       2);
 
-  $('dump-box').value = json;
-  $('dump-info').textContent = '';
-  $('dump-modal').showModal();
-  $('dump-box').select();
+  document.body.querySelector('#dump-box').value = json;
+  document.body.querySelector('#dump-info').textContent = '';
+  document.body.querySelector('#dump-modal').showModal();
+  document.body.querySelector('#dump-box').select();
 }
 
 function closeDump() {
-  $('dump-modal').close();
-  $('dump-box').value = '';
+  document.body.querySelector('#dump-modal').close();
+  document.body.querySelector('#dump-box').value = '';
 }
 
 function copyDump() {
-  $('dump-box').select();
+  document.body.querySelector('#dump-box').select();
   document.execCommand('copy');
-  $('dump-info').textContent = 'Copied to clipboard!';
+  document.body.querySelector('#dump-info').textContent =
+      'Copied to clipboard!';
 }
 
 /**
@@ -195,9 +198,12 @@ function copyDump() {
  * @param {!IsLogging} logStatus Status of logging.
  */
 function updateLogStatus(logStatus) {
-  $('model-checkbox').checked = logStatus.modelIsLogging;
-  $('request-checkbox').checked = logStatus.queueIsLogging;
-  $('prefetch-checkbox').checked = logStatus.prefetchIsLogging;
+  document.body.querySelector('#model-checkbox').checked =
+      logStatus.modelIsLogging;
+  document.body.querySelector('#request-checkbox').checked =
+      logStatus.queueIsLogging;
+  document.body.querySelector('#prefetch-checkbox').checked =
+      logStatus.prefetchIsLogging;
 }
 
 /**
@@ -242,7 +248,8 @@ function ensureBackgroundTaskScheduledWithDelay() {
       .then((result) => {
         // The delays in these messages should correspond to the scheduling
         // delays defined in PrefetchBackgroundTaskScheduler.java.
-        if ($('limitless-prefetching-checkbox').checked) {
+        if (document.body.querySelector('#limitless-prefetching-checkbox')
+                .checked) {
           setPrefetchResult(
               result +
               ' (Limitless mode enabled; background task scheduled to run' +
@@ -261,94 +268,109 @@ function initialize() {
   const incognito = loadTimeData.getBoolean('isIncognito');
   ['delete-selected-pages', 'delete-selected-requests', 'model-checkbox',
    'request-checkbox', 'refresh']
-      .forEach(el => $(el).disabled = incognito);
+      .forEach(
+          el => document.body.querySelector(`#${el}`).disabled = incognito);
 
-  $('delete-selected-pages').onclick = function() {
+  document.body.querySelector('#delete-selected-pages').onclick = function() {
     const pageIds = getSelectedIdsFor('stored');
     browserProxy.deleteSelectedPages(pageIds).then(pagesDeleted);
   };
-  $('delete-selected-requests').onclick = function() {
+  document.body.querySelector('#delete-selected-requests').onclick =
+      function() {
     const requestIds = getSelectedIdsFor('requests');
     browserProxy.deleteSelectedRequests(requestIds).then(requestsDeleted);
   };
-  $('refresh').onclick = refreshAll;
-  $('dump').onclick = dumpAsJson;
-  $('close-dump').onclick = closeDump;
-  $('copy-to-clipboard').onclick = copyDump;
-  $('model-checkbox').onchange = (evt) => {
+  document.body.querySelector('#refresh').onclick = refreshAll;
+  document.body.querySelector('#dump').onclick = dumpAsJson;
+  document.body.querySelector('#close-dump').onclick = closeDump;
+  document.body.querySelector('#copy-to-clipboard').onclick = copyDump;
+  document.body.querySelector('#model-checkbox').onchange = (evt) => {
     browserProxy.setRecordPageModel(evt.target.checked);
   };
-  $('request-checkbox').onchange = (evt) => {
+  document.body.querySelector('#request-checkbox').onchange = (evt) => {
     browserProxy.setRecordRequestQueue(evt.target.checked);
   };
-  $('prefetch-checkbox').onchange = (evt) => {
+  document.body.querySelector('#prefetch-checkbox').onchange = (evt) => {
     browserProxy.setRecordPrefetchService(evt.target.checked);
   };
-  $('refresh-logs').onclick = refreshLog;
-  $('add-to-queue').onclick = function() {
-    const saveUrls = $('url').value.split(',');
+  document.body.querySelector('#refresh-logs').onclick = refreshLog;
+  document.body.querySelector('#add-to-queue').onclick = function() {
+    const saveUrls = document.body.querySelector('#url').value.split(',');
     let counter = saveUrls.length;
-    $('save-url-state').textContent = '';
+    document.body.querySelector('#save-url-state').textContent = '';
     for (let i = 0; i < saveUrls.length; i++) {
       browserProxy.addToRequestQueue(saveUrls[i]).then(function(state) {
         if (state) {
-          $('save-url-state').textContent +=
+          document.body.querySelector('#save-url-state').textContent +=
               saveUrls[i] + ' has been added to queue.\n';
-          $('url').value = '';
+          document.body.querySelector('#url').value = '';
           counter--;
           if (counter === 0) {
             browserProxy.getRequestQueue().then(fillRequestQueue);
           }
         } else {
-          $('save-url-state').textContent +=
+          document.body.querySelector('#save-url-state').textContent +=
               saveUrls[i] + ' failed to be added to queue.\n';
         }
       });
     }
   };
-  $('schedule-nwake').onclick = function() {
+  document.body.querySelector('#schedule-nwake').onclick = function() {
     browserProxy.scheduleNwake()
         .then(setPrefetchResult)
         .catch(prefetchResultError);
   };
-  $('cancel-nwake').onclick = function() {
+  document.body.querySelector('#cancel-nwake').onclick = function() {
     browserProxy.cancelNwake()
         .then(setPrefetchResult)
         .catch(prefetchResultError);
   };
-  $('generate-page-bundle').onclick = function() {
-    browserProxy.generatePageBundle($('generate-urls').value)
+  document.body.querySelector('#generate-page-bundle').onclick = function() {
+    browserProxy
+        .generatePageBundle(document.body.querySelector('#generate-urls').value)
         .then(setPrefetchResult)
         .catch(prefetchResultError);
   };
-  $('get-operation').onclick = function() {
-    browserProxy.getOperation($('operation-name').value)
+  document.body.querySelector('#get-operation').onclick = function() {
+    browserProxy
+        .getOperation(document.body.querySelector('#operation-name').value)
         .then(setPrefetchResult)
         .catch(prefetchResultError);
   };
-  $('download-archive').onclick = function() {
-    browserProxy.downloadArchive($('download-name').value);
+  document.body.querySelector('#download-archive').onclick = function() {
+    browserProxy.downloadArchive(
+        document.body.querySelector('#download-name').value);
   };
-  $('toggle-all-stored').onclick = function() {
-    toggleAllCheckboxes($('toggle-all-stored'), 'stored');
+  document.body.querySelector('#toggle-all-stored').onclick = function() {
+    toggleAllCheckboxes(
+        /** @type {!HTMLElement} */ (
+            document.body.querySelector('#toggle-all-stored')),
+        'stored');
   };
-  $('toggle-all-requests').onclick = function() {
-    toggleAllCheckboxes($('toggle-all-requests'), 'requests');
+  document.body.querySelector('#toggle-all-requests').onclick = function() {
+    toggleAllCheckboxes(
+        /** @type {!HTMLElement} */ (
+            document.body.querySelector('#toggle-all-requests')),
+        'requests');
   };
-  $('limitless-prefetching-checkbox').onchange = (evt) => {
-    browserProxy.setLimitlessPrefetchingEnabled(evt.target.checked);
-    if (evt.target.checked) {
-      ensureBackgroundTaskScheduledWithDelay();
-    }
-  };
+  document.body.querySelector('#limitless-prefetching-checkbox').onchange =
+      (evt) => {
+        browserProxy.setLimitlessPrefetchingEnabled(evt.target.checked);
+        if (evt.target.checked) {
+          ensureBackgroundTaskScheduledWithDelay();
+        }
+      };
   // Helper for setting prefetch testing header from a radio button.
   const setPrefetchTestingHeader = function(evt) {
     browserProxy.setPrefetchTestingHeaderValue(evt.target.value);
     ensureBackgroundTaskScheduledWithDelay();
   };
-  $('testing-header-default').onchange = setPrefetchTestingHeader;
-  $('testing-header-enable').onchange = setPrefetchTestingHeader;
-  $('testing-header-disable').onchange = setPrefetchTestingHeader;
+  document.body.querySelector('#testing-header-default').onchange =
+      setPrefetchTestingHeader;
+  document.body.querySelector('#testing-header-enable').onchange =
+      setPrefetchTestingHeader;
+  document.body.querySelector('#testing-header-disable').onchange =
+      setPrefetchTestingHeader;
   if (!incognito) {
     refreshAll();
   }

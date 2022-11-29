@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
-
 import {NotificationsInternalsBrowserProxy, NotificationsInternalsBrowserProxyImpl} from './notifications_internals_browser_proxy.js';
 
 function initialize() {
@@ -11,11 +9,11 @@ function initialize() {
   const browserProxy = NotificationsInternalsBrowserProxyImpl.getInstance();
 
   // Register all event listeners.
-  $('schedule-notification').onclick = function() {
+  document.body.querySelector('#schedule-notification').onclick = function() {
     browserProxy.scheduleNotification(
-        $('notification-scheduler-url').value,
-        $('notification-scheduler-title').value,
-        $('notification-scheduler-message').value);
+        document.body.querySelector('#notification-scheduler-url').value,
+        document.body.querySelector('#notification-scheduler-title').value,
+        document.body.querySelector('#notification-scheduler-message').value);
   };
 }
 
