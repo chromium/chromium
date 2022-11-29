@@ -60,12 +60,6 @@ bool HeapSnapshotTaker::ListensToConnections() const {
 
 Status HeapSnapshotTaker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
-                                  const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status HeapSnapshotTaker::OnEvent(DevToolsClient* client,
-                                  const std::string& method,
                                   const base::Value::Dict& params) {
   if (method == "HeapProfiler.addHeapSnapshotChunk") {
     const std::string* chunk = params.FindString("chunk");

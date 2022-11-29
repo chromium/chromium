@@ -21,12 +21,6 @@ Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
 
 Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
                                      const std::string& method,
-                                     const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
-                                     const std::string& method,
                                      const base::Value::Dict& params) {
   auto it = events_.find(method);
   if (it != events_.end()) {

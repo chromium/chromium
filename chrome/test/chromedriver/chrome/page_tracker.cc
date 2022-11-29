@@ -26,12 +26,6 @@ Status PageTracker::OnConnected(DevToolsClient* client) {
 
 Status PageTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
-                            const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status PageTracker::OnEvent(DevToolsClient* client,
-                            const std::string& method,
                             const base::Value::Dict& params) {
   if (method == "Target.detachedFromTarget") {
     const std::string* target_id = params.FindString("targetId");

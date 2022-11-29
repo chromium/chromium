@@ -99,9 +99,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
                                  const base::Value::Dict& params,
                                  base::Value* result) override {
     while (closing_count_ > 0) {
-      base::DictionaryValue empty;
-      Status status =
-          listener_->OnEvent(this, "Page.javascriptDialogClosed", empty);
+      Status status = listener_->OnEvent(this, "Page.javascriptDialogClosed",
+                                         base::Value::Dict());
       if (status.IsError())
         return status;
       closing_count_--;
@@ -124,10 +123,10 @@ TEST(JavaScriptDialogManager, OneDialog) {
   FakeDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "hi");
-  params.SetString("type", "alert");
-  params.SetString("defaultPrompt", "");
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "alert");
+  params.Set("defaultPrompt", "");
   ASSERT_FALSE(manager.IsDialogOpen());
   std::string message;
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
@@ -153,15 +152,15 @@ TEST(JavaScriptDialogManager, TwoDialogs) {
   FakeDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "1");
-  params.SetString("type", "confirm");
-  params.SetString("defaultPrompt", "");
+  base::Value::Dict params;
+  params.Set("message", "1");
+  params.Set("type", "confirm");
+  params.Set("defaultPrompt", "");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
-  params.SetString("message", "2");
-  params.SetString("type", "alert");
+  params.Set("message", "2");
+  params.Set("type", "alert");
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
@@ -192,10 +191,10 @@ TEST(JavaScriptDialogManager, OneDialogManualClose) {
   StubDevToolsClient client;
   BrowserInfo browser_info;
   JavaScriptDialogManager manager(&client, &browser_info);
-  base::DictionaryValue params;
-  params.SetString("message", "hi");
-  params.SetString("type", "alert");
-  params.SetString("defaultPrompt", "");
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "alert");
+  params.Set("defaultPrompt", "");
   ASSERT_FALSE(manager.IsDialogOpen());
   std::string message;
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());

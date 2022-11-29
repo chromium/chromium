@@ -47,12 +47,6 @@ Status ConsoleLogger::OnConnected(DevToolsClient* client) {
 
 Status ConsoleLogger::OnEvent(DevToolsClient* client,
                               const std::string& method,
-                              const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status ConsoleLogger::OnEvent(DevToolsClient* client,
-                              const std::string& method,
                               const base::Value::Dict& params) {
   if (method == "Log.entryAdded")
     return OnLogEntryAdded(params);

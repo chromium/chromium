@@ -58,15 +58,11 @@ class NavigationTracker : public DevToolsEventListener,
   Status OnConnected(DevToolsClient* client) override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override;
+                 const base::Value::Dict& params) override;
   Status OnCommandSuccess(DevToolsClient* client,
                           const std::string& method,
                           const base::DictionaryValue* result,
                           const Timeout& command_timeout) override;
-
-  Status OnEvent(DevToolsClient* client,
-                 const std::string& method,
-                 const base::Value::Dict& params);
   Status OnCommandSuccess(DevToolsClient* client,
                           const std::string& method,
                           const base::Value::Dict* result,

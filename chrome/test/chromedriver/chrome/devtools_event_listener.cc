@@ -18,7 +18,7 @@ Status DevToolsEventListener::OnConnected(DevToolsClient* client) {
 
 Status DevToolsEventListener::OnEvent(DevToolsClient* client,
                                       const std::string& method,
-                                      const base::DictionaryValue& params) {
+                                      const base::Value::Dict& params) {
   return Status(kOk);
 }
 

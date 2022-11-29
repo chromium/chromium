@@ -38,8 +38,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   Status TriggerEvent(const std::string& method,
                       const base::Value::Dict& params) {
-    return static_cast<ConsoleLogger*>(listener_)->OnEvent(this, method,
-                                                           params);
+    return listener_->OnEvent(this, method, params);
   }
 
   // Overridden from DevToolsClient:

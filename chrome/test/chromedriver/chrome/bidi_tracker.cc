@@ -10,7 +10,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -20,12 +19,6 @@ BidiTracker::~BidiTracker() = default;
 
 bool BidiTracker::ListensToConnections() const {
   return false;
-}
-
-Status BidiTracker::OnEvent(DevToolsClient* client,
-                            const std::string& method,
-                            const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
 }
 
 Status BidiTracker::OnEvent(DevToolsClient* client,

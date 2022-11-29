@@ -12,10 +12,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 class DevToolsClient;
 class Status;
 typedef base::RepeatingCallback<Status(base::Value::Dict)> SendBidiPayloadFunc;
@@ -34,10 +30,7 @@ class BidiTracker : public DevToolsEventListener {
   bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override;
-  Status OnEvent(DevToolsClient* client,
-                 const std::string& method,
-                 const base::Value::Dict& params);
+                 const base::Value::Dict& params) override;
 
   void SetBidiCallback(SendBidiPayloadFunc on_bidi_message);
 

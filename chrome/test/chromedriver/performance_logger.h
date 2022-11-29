@@ -52,10 +52,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Calls HandleInspectorEvents or HandleTraceEvents depending on client type.
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override;
-  Status OnEvent(DevToolsClient* client,
-                 const std::string& method,
-                 const base::Value::Dict& params);
+                 const base::Value::Dict& params) override;
 
   // Before allowed commands, if tracing enabled, calls CollectTraceEvents.
   Status BeforeCommand(const std::string& command_name) override;

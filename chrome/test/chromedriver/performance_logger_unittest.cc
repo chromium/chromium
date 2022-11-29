@@ -52,8 +52,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   Status TriggerEvent(const std::string& method,
                       const base::Value::Dict& params) {
-    return static_cast<PerformanceLogger*>(listener_)->OnEvent(this, method,
-                                                               params);
+    return listener_->OnEvent(this, method, params);
   }
 
   Status TriggerEvent(const std::string& method) {

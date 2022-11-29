@@ -71,8 +71,8 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
 
     if (send_event_first_.length()) {
       for (DevToolsEventListener* listener : listeners_) {
-        Status status = static_cast<NavigationTracker*>(listener)->OnEvent(
-            this, send_event_first_, *send_event_first_params_);
+        Status status = listener->OnEvent(this, send_event_first_,
+                                          *send_event_first_params_);
         if (status.IsError())
           return status;
       }

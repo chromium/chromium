@@ -40,10 +40,7 @@ class FrameTracker : public DevToolsEventListener {
   Status OnConnected(DevToolsClient* client) override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override;
-  Status OnEvent(DevToolsClient* client,
-                 const std::string& method,
-                 const base::Value::Dict& params);
+                 const base::Value::Dict& params) override;
 
  private:
   std::map<std::string, std::string> frame_to_context_map_;

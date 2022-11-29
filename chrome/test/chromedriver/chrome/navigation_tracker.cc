@@ -228,12 +228,6 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
 
 Status NavigationTracker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
-                                  const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status NavigationTracker::OnEvent(DevToolsClient* client,
-                                  const std::string& method,
                                   const base::Value::Dict& params) {
   if (client->IsMainPage() &&
       (method == "Page.loadEventFired" ||

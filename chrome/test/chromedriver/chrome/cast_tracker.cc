@@ -22,12 +22,6 @@ bool CastTracker::ListensToConnections() const {
 
 Status CastTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
-                            const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status CastTracker::OnEvent(DevToolsClient* client,
-                            const std::string& method,
                             const base::Value::Dict& params) {
   if (method == "Cast.sinksUpdated") {
     const base::Value* sinks = params.Find("sinks");

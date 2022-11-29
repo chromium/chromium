@@ -654,7 +654,6 @@ bool ReturnUnexpectedIdThenResponse(
   } else {
     *type = internal::kCommandResponseMessageType;
     command_response->id = expected_id;
-    base::DictionaryValue params;
     command_response->result = std::make_unique<base::DictionaryValue>();
     command_response->result->GetDict().Set("key", 2);
   }
@@ -684,10 +683,10 @@ class MockListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     called_ = true;
     EXPECT_STREQ("method", method.c_str());
-    EXPECT_TRUE(params.GetDict().Find("key"));
+    EXPECT_TRUE(params.Find("key"));
     return Status(kOk);
   }
 
@@ -712,7 +711,6 @@ bool ReturnEventThenResponse(
   } else {
     *type = internal::kCommandResponseMessageType;
     command_response->id = expected_id;
-    base::DictionaryValue params;
     command_response->result = std::make_unique<base::DictionaryValue>();
     command_response->result->GetDict().Set("key", 2);
   }
@@ -1421,7 +1419,7 @@ class OnConnectedListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     EXPECT_EQ(client_, client);
     EXPECT_STREQ("onconnected-id", client->GetId().c_str());
     EXPECT_TRUE(on_connected_called_);
@@ -1462,7 +1460,7 @@ class OnConnectedSyncWebSocket : public MockSyncWebSocket {
     if (connect_complete_) {
       base::Value::Dict response;
       response.Set("id", cmd_id);
-      response.Set("result", base::DictionaryValue());
+      response.Set("result", base::Value::Dict());
       std::string json_response;
       base::JSONWriter::Write(base::Value(std::move(response)), &json_response);
       queued_response_.push(std::move(json_response));
@@ -1470,7 +1468,7 @@ class OnConnectedSyncWebSocket : public MockSyncWebSocket {
       // Push one event.
       base::Value::Dict event;
       event.Set("method", "updateEvent");
-      event.Set("params", base::DictionaryValue());
+      event.Set("params", base::Value::Dict());
       std::string json_event;
       base::JSONWriter::Write(base::Value(std::move(event)), &json_event);
       queued_response_.push(std::move(json_event));
@@ -1569,7 +1567,7 @@ class OtherEventListener : public DevToolsEventListener {
   Status OnConnected(DevToolsClient* client) override { return Status(kOk); }
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     received_event_ = true;
     return Status(kOk);
   }
@@ -1592,9 +1590,9 @@ class OnEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     EXPECT_EQ(client_, client);
-    client_->SendCommand("method", params.GetDict());
+    client_->SendCommand("method", params);
     EXPECT_TRUE(other_listener_->received_event_);
     return Status(kOk);
   }
@@ -1742,11 +1740,11 @@ class MockDevToolsEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     DevToolsClientImpl* client_impl = static_cast<DevToolsClientImpl*>(client);
     int msg_id = client_impl->NextMessageId();
 
-    Status status = client->SendCommand("hello", params.GetDict());
+    Status status = client->SendCommand("hello", params);
 
     if (msg_id == expected_blocked_id_) {
       EXPECT_EQ(kUnexpectedAlertOpen, status.code());
@@ -1845,7 +1843,7 @@ class MockCommandListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params) override {
+                 const base::Value::Dict& params) override {
     msgs_.push_back(method);
     return Status(kOk);
   }
@@ -2146,7 +2144,7 @@ class PingingListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& event_params) override {
+                 const base::Value::Dict& event_params) override {
     if (event_handled_) {
       return Status{kOk};
     }
@@ -2637,12 +2635,10 @@ class BidiEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params_dv) override {
+                 const base::Value::Dict& params) override {
     if (method != "Runtime.bindingCalled") {
       return Status(kOk);
     }
-
-    const base::Value::Dict& params = params_dv.GetDict();
 
     const std::string* name = params.FindString("name");
     EXPECT_NE(name, nullptr);
@@ -2881,10 +2877,10 @@ class CdpEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::DictionaryValue& params_dv) override {
+                 const base::Value::Dict& params_dv) override {
     base::Value::Dict data;
     data.Set("method", method);
-    data.Set("params", params_dv.GetDict().Clone());
+    data.Set("params", params_dv.Clone());
     event_list.push_back(std::move(data));
     return Status(kOk);
   }

@@ -7,9 +7,7 @@
 
 #include <string>
 
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 class DevToolsClient;
 class Status;
@@ -29,7 +27,7 @@ class DevToolsEventListener {
   // Called when an event is received. Should avoid blocking if possible.
   virtual Status OnEvent(DevToolsClient* client,
                          const std::string& method,
-                         const base::DictionaryValue& params);
+                         const base::Value::Dict& params);
 
   // Called when a command success response is received.
   virtual Status OnCommandSuccess(DevToolsClient* client,

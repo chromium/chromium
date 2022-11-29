@@ -77,12 +77,6 @@ Status JavaScriptDialogManager::OnConnected(DevToolsClient* client) {
 
 Status JavaScriptDialogManager::OnEvent(DevToolsClient* client,
                                         const std::string& method,
-                                        const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status JavaScriptDialogManager::OnEvent(DevToolsClient* client,
-                                        const std::string& method,
                                         const base::Value::Dict& params) {
   if (method == "Page.javascriptDialogOpening") {
     const std::string* message = params.FindString("message");

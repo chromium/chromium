@@ -32,13 +32,6 @@ Status NetworkConditionsOverrideManager::OnConnected(DevToolsClient* client) {
 Status NetworkConditionsOverrideManager::OnEvent(
     DevToolsClient* client,
     const std::string& method,
-    const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status NetworkConditionsOverrideManager::OnEvent(
-    DevToolsClient* client,
-    const std::string& method,
     const base::Value::Dict& params) {
   if (method == "Page.frameNavigated") {
     if (!params.FindByDottedPath("frame.parentId"))

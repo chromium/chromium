@@ -93,12 +93,6 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
 
 Status FrameTracker::OnEvent(DevToolsClient* client,
                              const std::string& method,
-                             const base::DictionaryValue& params) {
-  return OnEvent(client, method, params.GetDict());
-}
-
-Status FrameTracker::OnEvent(DevToolsClient* client,
-                             const std::string& method,
                              const base::Value::Dict& params) {
   if (method == "Runtime.executionContextCreated") {
     const base::Value::Dict* context = params.FindDict("context");
