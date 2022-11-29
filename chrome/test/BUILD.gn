@@ -737,6 +737,7 @@ static_library("test_support") {
       "//build:chromeos_buildflags",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/web_package",
+      "//components/web_package/test_support",
       "//components/webapps/browser",
       "//third_party/zlib/google:zip",
     ]

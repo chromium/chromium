@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 
-#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -79,6 +82,39 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
                     const std::string& permissions_policy);
 };
 
+struct TestSignedWebBundle {
+  TestSignedWebBundle(std::vector<uint8_t> data,
+                      const web_package::SignedWebBundleId& id);
+
+  TestSignedWebBundle(const TestSignedWebBundle&);
+  TestSignedWebBundle(TestSignedWebBundle&&);
+
+  ~TestSignedWebBundle();
+
+  std::vector<uint8_t> data;
+  web_package::SignedWebBundleId id;
+};
+
+class TestSignedWebBundleBuilder {
+ public:
+  explicit TestSignedWebBundleBuilder(
+      web_package::WebBundleSigner::KeyPair key_pair =
+          web_package::WebBundleSigner::KeyPair::CreateRandom());
+
+  // Adds a manifest type payload to the bundle.
+  void AddManifest(base::StringPiece manifest_string);
+
+  // Adds a image/PNG type payload to the bundle.
+  void AddPngImage(base::StringPiece url, base::StringPiece image_string);
+
+  TestSignedWebBundle Build();
+
+ private:
+  web_package::WebBundleSigner::KeyPair key_pair_;
+  web_package::WebBundleBuilder builder_;
+};
+
+TestSignedWebBundle BuildDefaultTestSignedWebBundle();
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/command_line.h"
@@ -20,22 +21,19 @@
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
-#include "components/web_package/web_bundle_builder.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace web_app {
 namespace {
@@ -131,32 +129,14 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
   }
 
   void CreateSignedWebBundle(base::FilePath path) {
-    std::vector<uint8_t> bundle = BuildBundle();
-    DCHECK(base::WriteFile(path, bundle));
+    TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+    bundle_id_ = bundle.id;
+    DCHECK(base::WriteFile(path, bundle.data));
   }
 
-  std::vector<uint8_t> BuildBundle() {
-    web_package::WebBundleBuilder builder;
-    std::string primary_url =
-        base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      kTestEd25519WebBundleId});
-
-    builder.AddExchange(primary_url,
-                        {{":status", "200"}, {"content-type", "text/plain"}},
-                        "payload");
-
-    auto unsigned_bundle = builder.CreateBundle();
-    web_package::WebBundleSigner::KeyPair key_pair(kTestPublicKey,
-                                                   kTestPrivateKey);
-    return web_package::WebBundleSigner::SignBundle(unsigned_bundle,
-                                                    {key_pair});
-  }
-
-  base::FilePath WebBundlePath() const { return signed_web_bundle_path_; }
-
- private:
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath signed_web_bundle_path_;
+  absl::optional<web_package::SignedWebBundleId> bundle_id_;
 };
 
 // TODO: http://b/232991707 Enable this test with dev-mode signed web bundle
@@ -166,6 +146,10 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();
 
+  ASSERT_TRUE(bundle_id_.has_value());
+  ASSERT_EQ(
+      id, IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id_.value())
+              .app_id());
   ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
   EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
@@ -174,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                   Optional(Field(&IsolationData::content,
                                  VariantWith<IsolationData::DevModeBundle>(
                                      Field(&IsolationData::DevModeBundle::path,
-                                           Eq(WebBundlePath()))))))));
+                                           Eq(signed_web_bundle_path_))))))));
 }
 
 }  // namespace
